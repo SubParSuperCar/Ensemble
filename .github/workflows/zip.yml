@@ -1,0 +1,21 @@
+on:
+  push:
+    branches: [main]
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: timo-reymann/deterministic-zip-gh-action@v1
+        with:
+          source: .
+          target: src.zip
+
+      - run: sha256sum src.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: src
+          path: src.zip

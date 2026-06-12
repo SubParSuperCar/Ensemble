@@ -1,36 +1,37 @@
-using System.Numerics;
+using Godot;
 using Godot.Collections;
 using Root.Core.Api.Asset;
+using Variant = Godot.Variant;
 
 namespace Root.Core.Gd.Util;
 
 public static class GdConvert
 {
-	public static Vector3 FromGodot(this Godot.Vector3 v) => new(v.X, v.Y, v.Z);
-	public static Godot.Vector3 ToGodot(this Vector3 v) => new(v.X, v.Y, v.Z);
+	public static Vector3 ToGodot(this System.Numerics.Vector3 v) => new(v.X, v.Y, v.Z);
+	public static System.Numerics.Vector3 FromGodot(this Vector3 v) => new(v.X, v.Y, v.Z);
 
-	public static Quaternion FromGodot(this Godot.Quaternion q) => new(q.X, q.Y, q.Z, q.W);
-	public static Godot.Quaternion ToGodot(this Quaternion q) => new(q.X, q.Y, q.Z, q.W);
+	public static Quaternion ToGodot(this System.Numerics.Quaternion q) => new(q.X, q.Y, q.Z, q.W);
+	public static System.Numerics.Quaternion FromGodot(this Quaternion q) => new(q.X, q.Y, q.Z, q.W);
 
-	public static Variant FromGodot(this Godot.Variant v) => v.VariantType switch
+	public static Variant ToGodot(this Api.Asset.Variant v) => v.Type switch
 	{
-		Godot.Variant.Type.Bool => new Variant(v.AsBool()),
-		Godot.Variant.Type.Int => new Variant(v.AsInt64()),
-		Godot.Variant.Type.Float => new Variant(v.AsDouble()),
-		Godot.Variant.Type.String => new Variant(v.AsString()),
-		_ => Variant.Null
-	};
-
-	public static Godot.Variant ToGodot(this Variant v) => v.Type switch
-	{
-		VariantType.Bool => Godot.Variant.CreateFrom((bool)v),
-		VariantType.NumInt => Godot.Variant.CreateFrom((long)v),
-		VariantType.NumDouble => Godot.Variant.CreateFrom((double)v),
-		VariantType.Str => Godot.Variant.CreateFrom((string)v),
+		VariantType.Bool => Variant.CreateFrom((bool)v),
+		VariantType.NumInt => Variant.CreateFrom((long)v),
+		VariantType.NumDouble => Variant.CreateFrom((double)v),
+		VariantType.Str => Variant.CreateFrom((string)v),
 		_ => default
 	};
 
-	public static Dictionary ToGodotProperties(IReadOnlyDictionary<string, Variant> properties)
+	public static Api.Asset.Variant FromGodot(this Variant v) => v.VariantType switch
+	{
+		Variant.Type.Bool => new Api.Asset.Variant(v.AsBool()),
+		Variant.Type.Int => new Api.Asset.Variant(v.AsInt64()),
+		Variant.Type.Float => new Api.Asset.Variant(v.AsDouble()),
+		Variant.Type.String => new Api.Asset.Variant(v.AsString()),
+		_ => Api.Asset.Variant.Null
+	};
+
+	public static Dictionary ToGodotProperties(IReadOnlyDictionary<string, Api.Asset.Variant> properties)
 	{
 		var gdProperties = new Dictionary();
 
@@ -40,9 +41,10 @@ public static class GdConvert
 		return gdProperties;
 	}
 
-	public static IReadOnlyDictionary<string, Variant> FromGodotProperties(Dictionary gdProperties)
+	public static IReadOnlyDictionary<string, Api.Asset.Variant> FromGodotProperties(Dictionary gdProperties)
 	{
-		var properties = new System.Collections.Generic.Dictionary<string, Variant>(StringComparer.OrdinalIgnoreCase);
+		var properties =
+			new System.Collections.Generic.Dictionary<string, Api.Asset.Variant>(StringComparer.OrdinalIgnoreCase);
 
 		foreach (var key in gdProperties.Keys)
 			properties[key.AsString()] = gdProperties[key].FromGodot();

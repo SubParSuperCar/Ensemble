@@ -12,7 +12,7 @@ jobs:
         with:
           source: .
           target: src.zip
-          args: -i
+          args: -i -e "\.git"
 
       - run: sha256sum src.zip
 

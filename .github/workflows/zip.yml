@@ -8,11 +8,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - run: rm -rf .git
+
       - uses: timo-reymann/deterministic-zip-gh-action@v1
         with:
           source: .
           target: src.zip
-          args: -i -e "^\.git/"
+          args: -i
 
       - run: sha256sum src.zip
 

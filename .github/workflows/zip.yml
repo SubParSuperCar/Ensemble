@@ -6,9 +6,9 @@ jobs:
   job:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - run: rm -rf .git
+      - run: rm -rf .git .github
 
       - uses: timo-reymann/deterministic-zip-gh-action@v1
         with:
@@ -18,7 +18,7 @@ jobs:
 
       - run: sha256sum src.zip
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: src
           path: src.zip

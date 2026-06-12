@@ -52,10 +52,4 @@ public class Players : IPlayers
 		Local = player;
 		LocalChanged?.Invoke(player);
 	}
-
-	public void Reset()
-	{
-		_players.Clear();
-		Local = null;
-	}
 }

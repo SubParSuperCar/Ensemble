@@ -16,5 +16,4 @@ public interface IPlots
 	IOccupant GetOccupant(Guid playerId);
 
 	void Lock();
-	void Reset();
 }

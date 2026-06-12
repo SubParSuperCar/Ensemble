@@ -13,6 +13,4 @@ public interface IPlayers
 
 	void SetLocal(Guid? id = null);
 	event Action<IPlayer?> LocalChanged;
-
-	void Reset();
 }

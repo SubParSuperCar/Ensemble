@@ -79,8 +79,6 @@ public partial class GdPlayers : RefCounted
 		_players.SetLocal(guid);
 	}
 
-	public void Reset() => _players.Reset();
-
 	public Array<Dictionary> GetAllDicts()
 	{
 		var dicts = new Array<Dictionary>();

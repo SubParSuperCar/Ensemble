@@ -24,7 +24,7 @@ public partial class GdMp : Node
 
 	private ISession? _session;
 
-	public static GdMp Instance { get; private set; } = null!;
+	public static GdMp? Instance { get; private set; }
 
 	public bool IsServer => _session?.IsServer ?? false;
 	public bool IsActive => _session?.IsActive ?? false;
@@ -35,6 +35,12 @@ public partial class GdMp : Node
 			: new DateTimeOffset(_session.UtcStartedAt).ToUnixTimeSeconds();
 
 	public override void _EnterTree() => Instance = this;
+
+	public override void _ExitTree()
+	{
+		if (ReferenceEquals(Instance, this))
+			Instance = null;
+	}
 
 	public override void _Ready()
 	{

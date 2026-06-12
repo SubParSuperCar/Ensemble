@@ -42,11 +42,4 @@ public class Game : IGame
 	public IPlayers Players { get; }
 	public IAssets Assets { get; }
 	public IPlots Plots { get; }
-
-	public void Reset()
-	{
-		Players.Reset();
-		Plots.Reset();
-		Assets.Reset();
-	}
 }

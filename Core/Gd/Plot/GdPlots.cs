@@ -60,7 +60,6 @@ public partial class GdPlots : RefCounted
 		=> GdOccupant.From(_plots.GetOccupant(Guid.Parse(playerId)));
 
 	public void Lock() => _plots.Lock();
-	public void Reset() => _plots.Reset();
 
 	public Array<Dictionary> GetAllDicts()
 	{

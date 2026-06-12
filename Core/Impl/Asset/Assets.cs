@@ -39,10 +39,4 @@ public class Assets : IAssets
 	}
 
 	public void Lock() => IsLocked = true;
-
-	public void Reset()
-	{
-		_assets.Clear();
-		IsLocked = false;
-	}
 }

@@ -14,5 +14,4 @@ public interface IAssets
 	event Action<IAsset> Added;
 
 	void Lock();
-	void Reset();
 }

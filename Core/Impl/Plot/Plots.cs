@@ -94,10 +94,4 @@ public class Plots : IPlots
 			: throw new InvalidOperationException($"Occupant with player id {playerId} not found");
 
 	public void Lock() => IsLocked = true;
-
-	public void Reset()
-	{
-		_plots.Clear();
-		IsLocked = false;
-	}
 }

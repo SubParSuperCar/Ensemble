@@ -10,9 +10,7 @@ namespace Root.Core.Gd;
 
 public partial class GdGame : Node
 {
-	private Game _game = null!;
-
-	public static GdGame Instance { get; private set; } = null!;
+	public static GdGame? Instance { get; private set; }
 
 	public GdPlayers Players { get; private set; } = null!;
 	public GdAssets Assets { get; private set; } = null!;
@@ -20,17 +18,25 @@ public partial class GdGame : Node
 
 	public override void _EnterTree() => Instance = this;
 
-	public override void _Ready()
+	public override void _ExitTree()
+	{
+		if (ReferenceEquals(Instance, this))
+			Instance = null;
+	}
+
+	public override void _Ready() => Reset();
+
+	private void Reset()
 	{
 #if DEBUG
 		var stopwatch = Stopwatch.StartNew();
 #endif
 
-		_game = new Game();
+		var game = new Game();
 
-		Players = GdPlayers.From(_game.Players);
-		Assets = GdAssets.From(_game.Assets);
-		Plots = GdPlots.From(_game.Plots);
+		Players = GdPlayers.From(game.Players);
+		Assets = GdAssets.From(game.Assets);
+		Plots = GdPlots.From(game.Plots);
 
 #if DEBUG
 		stopwatch.Stop();
@@ -40,7 +46,4 @@ public partial class GdGame : Node
 			$"GdGame init time: {stopwatch.Elapsed} ({stopwatch.Elapsed.TotalMilliseconds} ms)"));
 #endif
 	}
-
-	// ReSharper disable once MemberCanBePrivate.Global
-	public void Reset() => _game.Reset();
 }

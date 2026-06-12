@@ -52,7 +52,6 @@ public partial class GdAssets : RefCounted
 			maxInstanceCount == 0 ? null : maxInstanceCount));
 
 	public void Lock() => _assets.Lock();
-	public void Reset() => _assets.Reset();
 
 	public Array<Dictionary> GetAllDicts()
 	{

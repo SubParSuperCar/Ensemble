@@ -1,0 +1,28 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Ensemble"
+run/main_scene="uid://cfj5hy6hy0a7r"
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
+
+[autoload]
+
+Game="uid://bul62obagk5sq"
+Mp="uid://cpsoqqdvbxx5r"
+
+[dotnet]
+
+project/assembly_name="Core"
+
+[physics]
+
+3d/physics_engine="Jolt Physics"

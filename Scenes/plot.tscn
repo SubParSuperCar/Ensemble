@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bctdhk6awxx0r"]
+
+[ext_resource type="Script" uid="uid://dt7squ3xe62fp" path="res://Scripts/Plot/PlotHandle.cs" id="1_syd1t"]
+
+[node name="Plot" type="Node3D" unique_id=1176841675]
+script = ExtResource("1_syd1t")

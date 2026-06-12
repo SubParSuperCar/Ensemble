@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://y6i76a7yj2rd"]
+
+[ext_resource type="Script" uid="uid://b0x362repu2pg" path="res://Scripts/Camera/Camera.cs" id="1_cvpoc"]
+[ext_resource type="PackedScene" uid="uid://brppeit4u8ivs" path="res://Scenes/poppercam.tscn" id="2_kod1s"]
+[ext_resource type="PackedScene" uid="uid://cswf0yojp7d6i" path="res://Scenes/invisicam.tscn" id="3_tmlye"]
+
+[node name="Camera" type="Node3D" unique_id=2128263305]
+script = ExtResource("1_cvpoc")
+CameraScenes = Dictionary[int, PackedScene]({
+0: ExtResource("2_kod1s"),
+1: ExtResource("3_tmlye")
+})

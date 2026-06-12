@@ -1,0 +1,32 @@
+<Project Sdk="Godot.NET.Sdk/4.6.3">
+    <PropertyGroup>
+        <AssemblyName>Core</AssemblyName>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>14</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AnalysisLevel>latest-recommended</AnalysisLevel>
+        <RootNamespace>Root</RootNamespace>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="**/*.gd" Exclude=".godot/**">
+            <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+
+        <Content Include="global.json"/>
+    </ItemGroup>
+
+    <!--<ItemGroup>
+        <Content Include="Ui"/>
+    </ItemGroup>-->
+
+    <ItemGroup>
+        <PackageReference Include="System.Threading.RateLimiting" Version="*"/>
+    </ItemGroup>
+</Project>

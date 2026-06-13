@@ -16,7 +16,7 @@ public partial class Camera : Node3D
 
 	[Export] public Godot.Collections.Dictionary<CameraMode, PackedScene> CameraScenes { get; set; } = null!;
 
-	[ExportCategory("")] [Export] public Node Focus { get; set; } = null!;
+	[ExportCategory("")][Export] public Node Focus { get; set; } = null!;
 
 	[Export(PropertyHint.Range, "0,0,or_greater")]
 	public float OrbitSensitivity { get; set; }

@@ -50,8 +50,8 @@ public partial class GdInstances : RefCounted
 		&& GdGame.Instance is { } game
 		&& game.Assets.Get(assetId) is { } asset
 		&& (asset.MaxInstanceCount < 0
-		    || !_instances.GetAllCounts().TryGetValue(assetId, out var count)
-		    || count.Count < asset.MaxInstanceCount);
+			|| !_instances.GetAllCounts().TryGetValue(assetId, out var count)
+			|| count.Count < asset.MaxInstanceCount);
 
 	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation)
 		=> GdInstance.From(_instances.Add(assetId, position.FromGodot(), rotation.FromGodot()));

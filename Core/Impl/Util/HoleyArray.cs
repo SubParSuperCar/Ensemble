@@ -62,9 +62,9 @@ public class HoleyArray<T> where T : class
 	public void Remove(int index)
 	{
 		var item = _items[index] ??
-		           throw new InvalidOperationException(string.Create(
-			           CultureInfo.InvariantCulture,
-			           $"Item at index {index} not found"));
+				   throw new InvalidOperationException(string.Create(
+					   CultureInfo.InvariantCulture,
+					   $"Item at index {index} not found"));
 
 		_items[index] = null;
 		Count--;

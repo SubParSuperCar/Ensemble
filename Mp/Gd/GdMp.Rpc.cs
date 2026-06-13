@@ -169,9 +169,9 @@ public partial class GdMp
 	{
 		var players = new Array<string>();
 
-		foreach (var id in Players.GetAll()
-			         .Where(p => !string.Equals(p.Id, localPlayerId, StringComparison.OrdinalIgnoreCase))
-			         .Select(p => p.Id))
+		foreach (var id in from player in Players.GetAll()
+						   where !string.Equals(player.Id, localPlayerId, StringComparison.OrdinalIgnoreCase)
+						   select player.Id)
 			players.Add(id);
 
 		var plots = GetPlotStates();

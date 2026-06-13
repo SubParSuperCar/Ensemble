@@ -5,8 +5,8 @@ namespace Root.Core.Impl.Util;
 
 public class HoleyArray<T> where T : class
 {
-	private readonly List<T?> _items = [];
-	private int _next;
+	private readonly List<T?> _slots = [];
+	private int _nextFreeIndex;
 
 	// ReSharper disable once MemberCanBePrivate.Global
 	public int Count { get; private set; }
@@ -14,25 +14,18 @@ public class HoleyArray<T> where T : class
 	public event Action<int, T>? Added;
 	public event Action<int, T>? Removed;
 
-	public IEnumerable<T> GetAll() => _items.OfType<T>();
+	public IEnumerable<T> GetAll() => _slots.OfType<T>();
 
 	public void Add(T item)
 	{
-		int index;
-		var count = _items.Count;
+		var index = _nextFreeIndex;
 
-		if (_next < count)
-		{
-			index = _next;
-			_items[index] = item;
-			_next = GetNextFree(_next + 1);
-		}
+		if (index < _slots.Count)
+			_slots[index] = item;
 		else
-		{
-			index = count;
-			_items.Add(item);
-			_next = count + 1;
-		}
+			_slots.Add(item);
+
+		_nextFreeIndex = FindNextFree(index + 1);
 
 		Count++;
 		Added?.Invoke(index, item);
@@ -42,63 +35,63 @@ public class HoleyArray<T> where T : class
 	{
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
 
-		while (_items.Count <= index)
-			_items.Add(null);
+		while (_slots.Count <= index)
+			_slots.Add(null);
 
-		if (_items[index] is not null)
+		if (_slots[index] is not null)
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Item at index {index} already exists"));
 
+		_slots[index] = item;
 		Count++;
-		_items[index] = item;
 
-		if (index == _next)
-			_next = GetNextFree(_next + 1);
+		if (index == _nextFreeIndex)
+			_nextFreeIndex = FindNextFree(index + 1);
 
 		Added?.Invoke(index, item);
 	}
 
 	public void Remove(int index)
 	{
-		var item = _items[index] ??
+		var item = _slots[index] ??
 				   throw new InvalidOperationException(string.Create(
 					   CultureInfo.InvariantCulture,
 					   $"Item at index {index} not found"));
 
-		_items[index] = null;
+		_slots[index] = null;
 		Count--;
 
-		if (index < _next)
-			_next = index;
+		if (index < _nextFreeIndex)
+			_nextFreeIndex = index;
 
 		Removed?.Invoke(index, item);
 	}
 
 	public bool TryGet(int index, out T item)
 	{
-		var span = CollectionsMarshal.AsSpan(_items);
+		var slots = CollectionsMarshal.AsSpan(_slots);
 
-		if (index < 0 || index >= span.Length || span[index] is null)
+		if (index >= 0 && index < slots.Length && slots[index] is { } found)
 		{
-			item = null!;
-			return false;
+			item = found;
+			return true;
 		}
 
-		item = span[index]!;
-		return true;
+		item = null!;
+		return false;
 	}
 
-	private int GetNextFree(int current)
+	private int FindNextFree(int from)
 	{
-		var span = CollectionsMarshal.AsSpan(_items);
+		var slots = CollectionsMarshal.AsSpan(_slots);
 
-		for (var i = current; i < span.Length; i++)
+		for (var i = from; i < slots.Length; i++)
 		{
-			if (span[i] is null)
+			if (slots[i] is null)
 				return i;
 		}
 
-		return span.Length;
+		return slots.Length;
 	}
 }

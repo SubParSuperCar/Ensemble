@@ -22,12 +22,12 @@ public partial class GdPlot : RefCounted
 	public GdOccupants Occupants => field ??= GdOccupants.From(_plot.Occupants);
 
 	public static GdPlot From(IPlot plot) => Cache.GetValue(plot,
-		static p =>
+		static value =>
 		{
-			var gdPlot = new GdPlot { _plot = p };
-			p.IsSpawnedChanged += isSpawned => gdPlot.EmitSignal(SignalName.IsSpawnedChanged, isSpawned);
+			var wrapper = new GdPlot { _plot = value };
+			value.IsSpawnedChanged += isSpawned => wrapper.EmitSignal(SignalName.IsSpawnedChanged, isSpawned);
 
-			return gdPlot;
+			return wrapper;
 		});
 
 	public void Spawn() => _plot.Spawn();
@@ -35,12 +35,11 @@ public partial class GdPlot : RefCounted
 
 	public void Reset() => _plot.Reset();
 
-	public Dictionary ToDict()
-		=> new()
-		{
-			["id"] = Id,
-			["isSpawned"] = IsSpawned
-		};
+	public Dictionary ToDict() => new()
+	{
+		["id"] = Id,
+		["isSpawned"] = IsSpawned
+	};
 
 	public override string ToString() => _plot.ToString()!;
 }

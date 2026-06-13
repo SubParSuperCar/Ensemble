@@ -19,22 +19,21 @@ public partial class GdOccupant : RefCounted
 	public GdPlot? Plot => _occupant.Plot is { } plot ? GdPlot.From(plot) : null;
 
 	public static GdOccupant From(IOccupant occupant) => Cache.GetValue(occupant,
-		static o =>
+		static value =>
 		{
-			var gdOccupant = new GdOccupant { _occupant = o };
+			var wrapper = new GdOccupant { _occupant = value };
 
-			o.PlotChanged += plot
-				=> gdOccupant.EmitSignal(SignalName.PlotChanged, (plot is null ? null : GdPlot.From(plot))!);
+			value.PlotChanged += plot
+				=> wrapper.EmitSignal(SignalName.PlotChanged, (plot is null ? null : GdPlot.From(plot))!);
 
-			return gdOccupant;
+			return wrapper;
 		});
 
-	public Dictionary ToDict()
-		=> new()
-		{
-			["playerId"] = Player.Id,
-			["plotId"] = Plot?.Id ?? -1
-		};
+	public Dictionary ToDict() => new()
+	{
+		["playerId"] = Player.Id,
+		["plotId"] = Plot?.Id ?? -1
+	};
 
 	public override string ToString() => _occupant.ToString()!;
 }

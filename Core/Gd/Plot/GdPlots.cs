@@ -18,12 +18,12 @@ public partial class GdPlots : RefCounted
 	public bool IsLocked => _plots.IsLocked;
 
 	public static GdPlots From(IPlots plots) => Cache.GetValue(plots,
-		static p =>
+		static value =>
 		{
-			var gdPlots = new GdPlots { _plots = p };
-			p.Added += plot => gdPlots.EmitSignal(SignalName.Added, GdPlot.From(plot));
+			var wrapper = new GdPlots { _plots = value };
+			value.Added += plot => wrapper.EmitSignal(SignalName.Added, GdPlot.From(plot));
 
-			return gdPlots;
+			return wrapper;
 		});
 
 	public GdPlot? Get(int id)
@@ -31,12 +31,12 @@ public partial class GdPlots : RefCounted
 
 	public Array<GdPlot> GetAll()
 	{
-		var plots = new Array<GdPlot>();
+		var result = new Array<GdPlot>();
 
 		foreach (var plot in _plots.All.Values)
-			plots.Add(GdPlot.From(plot));
+			result.Add(GdPlot.From(plot));
 
-		return plots;
+		return result;
 	}
 
 	public GdPlot Add(int id) => Add(id, 0, 0);
@@ -63,11 +63,11 @@ public partial class GdPlots : RefCounted
 
 	public Array<Dictionary> GetAllDicts()
 	{
-		var dicts = new Array<Dictionary>();
+		var result = new Array<Dictionary>();
 
 		foreach (var plot in _plots.All.Values)
-			dicts.Add(GdPlot.From(plot).ToDict());
+			result.Add(GdPlot.From(plot).ToDict());
 
-		return dicts;
+		return result;
 	}
 }

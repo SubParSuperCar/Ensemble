@@ -3,10 +3,10 @@ namespace Root.Mp.Gd;
 public partial class GdMp
 {
 	// ReSharper disable once CollectionNeverQueried.Local
-	private readonly Dictionary<int, string> _peers = [];
+	private readonly Dictionary<int, string> _peersById = [];
 
-	private void AddPeer(int peerId, string playerId) => _peers.Add(peerId, playerId);
-	private void RemovePeer(int peerId) => _peers.Remove(peerId);
+	private void AddPeer(int peerId, string playerId) => _peersById.Add(peerId, playerId);
+	private void RemovePeer(int peerId) => _peersById.Remove(peerId);
 
-	private void ClearPeers() => _peers.Clear();
+	private void ClearPeers() => _peersById.Clear();
 }

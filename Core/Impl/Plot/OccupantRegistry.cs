@@ -4,17 +4,17 @@ namespace Root.Core.Impl.Plot;
 
 public class OccupantRegistry
 {
-	private readonly Dictionary<Guid, Occupant> _occupants = [];
+	private readonly Dictionary<Guid, Occupant> _occupantsByPlayerId = [];
 
 	public bool TryGet(Guid playerId, out Occupant occupant)
-		=> _occupants.TryGetValue(playerId, out occupant!);
+		=> _occupantsByPlayerId.TryGetValue(playerId, out occupant!);
 
 	public void Add(IPlayer player)
 	{
-		if (_occupants.ContainsKey(player.Id))
+		if (_occupantsByPlayerId.ContainsKey(player.Id))
 			throw new InvalidOperationException($"Occupant for player with id {player.Id} already exists");
 
-		_occupants.Add(player.Id, new Occupant(player));
+		_occupantsByPlayerId.Add(player.Id, new Occupant(player));
 	}
 
 	public void Remove(IPlayer player)
@@ -23,6 +23,6 @@ public class OccupantRegistry
 			return;
 
 		occupant.Plot?.Occupants.Remove(occupant);
-		_occupants.Remove(player.Id);
+		_occupantsByPlayerId.Remove(player.Id);
 	}
 }

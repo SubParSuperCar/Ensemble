@@ -17,19 +17,20 @@ public partial class GdProperties : RefCounted
 	private IProperties _properties = null!;
 
 	public static GdProperties From(IProperties properties) => Cache.GetValue(properties,
-		static p =>
+		static value =>
 		{
-			var gdProperties = new GdProperties { _properties = p };
-			p.Changed += (key, value) => gdProperties.EmitSignal(SignalName.Changed, key, value.ToGodot());
+			var wrapper = new GdProperties { _properties = value };
 
-			return gdProperties;
+			value.Changed += (key, propertyValue)
+				=> wrapper.EmitSignal(SignalName.Changed, key, propertyValue.ToGodot());
+
+			return wrapper;
 		});
 
 	public Variant Get(string key)
 		=> _properties.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
 
-	public Dictionary GetAll()
-		=> GdConvert.ToGodotProperties(_properties.All);
+	public Dictionary GetAll() => GdConvert.ToGodotProperties(_properties.All);
 
 	public void Update(string key, Variant value)
 		=> _properties.Update(key, value.FromGodot());

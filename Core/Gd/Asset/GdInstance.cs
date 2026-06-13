@@ -23,17 +23,16 @@ public partial class GdInstance : RefCounted
 	public Quaternion Rotation => _instance.Rotation.ToGodot();
 
 	public static GdInstance From(IInstance instance)
-		=> Cache.GetValue(instance, static i => new GdInstance { _instance = i });
+		=> Cache.GetValue(instance, static value => new GdInstance { _instance = value });
 
-	public Dictionary ToDict()
-		=> new()
-		{
-			["id"] = Id,
-			["assetId"] = Asset.Id,
-			["position"] = Position,
-			["rotation"] = Rotation,
-			["properties"] = Properties.GetAll()
-		};
+	public Dictionary ToDict() => new()
+	{
+		["id"] = Id,
+		["assetId"] = Asset.Id,
+		["position"] = Position,
+		["rotation"] = Rotation,
+		["properties"] = Properties.GetAll()
+	};
 
 	public override string ToString() => _instance.ToString()!;
 }

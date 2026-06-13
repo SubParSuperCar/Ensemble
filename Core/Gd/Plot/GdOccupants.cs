@@ -26,19 +26,19 @@ public partial class GdOccupants : RefCounted
 	public GdOccupant? Owner => _occupants.Owner is { } owner ? GdOccupant.From(owner) : null;
 
 	public static GdOccupants From(IOccupants occupants) => Cache.GetValue(occupants,
-		static o =>
+		static value =>
 		{
-			var gdOccupants = new GdOccupants { _occupants = o };
+			var wrapper = new GdOccupants { _occupants = value };
 
-			o.Added += occupant => gdOccupants.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
-			o.Removed += occupant => gdOccupants.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
+			value.Added += occupant => wrapper.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
+			value.Removed += occupant => wrapper.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
 
-			o.OwnerChanged += occupant
-				=> gdOccupants.EmitSignal(
+			value.OwnerChanged += occupant
+				=> wrapper.EmitSignal(
 					SignalName.OwnerChanged,
 					(occupant is null ? null : GdOccupant.From(occupant))!);
 
-			return gdOccupants;
+			return wrapper;
 		});
 
 	public GdOccupant? Get(string playerId)
@@ -48,12 +48,12 @@ public partial class GdOccupants : RefCounted
 
 	public Array<GdOccupant> GetAll()
 	{
-		var occupants = new Array<GdOccupant>();
+		var result = new Array<GdOccupant>();
 
 		foreach (var occupant in _occupants.All.Values)
-			occupants.Add(GdOccupant.From(occupant));
+			result.Add(GdOccupant.From(occupant));
 
-		return occupants;
+		return result;
 	}
 
 	public void SetOwner() => SetOwner(string.Empty);
@@ -72,11 +72,11 @@ public partial class GdOccupants : RefCounted
 
 	public Array<Dictionary> GetAllDicts()
 	{
-		var dicts = new Array<Dictionary>();
+		var result = new Array<Dictionary>();
 
 		foreach (var occupant in _occupants.All.Values)
-			dicts.Add(GdOccupant.From(occupant).ToDict());
+			result.Add(GdOccupant.From(occupant).ToDict());
 
-		return dicts;
+		return result;
 	}
 }

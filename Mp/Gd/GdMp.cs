@@ -29,10 +29,9 @@ public partial class GdMp : Node
 	public bool IsServer => _session?.IsServer ?? false;
 	public bool IsActive => _session?.IsActive ?? false;
 
-	public double UtcStartedAtUnix =>
-		_session is null
-			? 0
-			: new DateTimeOffset(_session.UtcStartedAt).ToUnixTimeSeconds();
+	public double UtcStartedAtUnix => _session is null
+		? 0
+		: new DateTimeOffset(_session.UtcStartedAt).ToUnixTimeSeconds();
 
 	public override void _EnterTree() => Instance = this;
 
@@ -46,7 +45,7 @@ public partial class GdMp : Node
 	{
 		Multiplayer.PeerConnected += OnPeerConnected;
 		Multiplayer.PeerDisconnected += OnPeerDisconnected;
-		Multiplayer.PeerConnected += id => RemoveLimiter((int)id);
+		Multiplayer.PeerDisconnected += id => RemoveLimiter((int)id);
 	}
 
 	public void StartSinglePlayer()
@@ -54,10 +53,7 @@ public partial class GdMp : Node
 		StopSession();
 
 		_session = new SinglePlayerSession((SceneMultiplayer)Multiplayer);
-		_session.Started += OnSessionStarted;
-		_session.Stopped += OnSessionStopped;
-		_session.Failed += OnSessionFailed;
-		_session.StartSession();
+		AttachSession();
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty, 0);
@@ -74,10 +70,7 @@ public partial class GdMp : Node
 				password == string.Empty ? null : password,
 				maxPlayers == 0 ? null : maxPlayers));
 
-		_session.Started += OnSessionStarted;
-		_session.Stopped += OnSessionStopped;
-		_session.Failed += OnSessionFailed;
-		_session.StartSession();
+		AttachSession();
 	}
 
 	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
@@ -90,10 +83,7 @@ public partial class GdMp : Node
 			(SceneMultiplayer)Multiplayer,
 			new JoinConfig(address, port, password == string.Empty ? null : password));
 
-		_session.Started += OnSessionStarted;
-		_session.Stopped += OnSessionStopped;
-		_session.Failed += OnSessionFailed;
-		_session.StartSession();
+		AttachSession();
 	}
 
 	public void StopSession()
@@ -108,6 +98,14 @@ public partial class GdMp : Node
 		session.Stopped -= OnSessionStopped;
 		session.Failed -= OnSessionFailed;
 		session.StopSession();
+	}
+
+	private void AttachSession()
+	{
+		_session!.Started += OnSessionStarted;
+		_session.Stopped += OnSessionStopped;
+		_session.Failed += OnSessionFailed;
+		_session.StartSession();
 	}
 
 	private void OnPeerConnected(long peerId) => EmitSignal(SignalName.PeerConnected, (int)peerId);

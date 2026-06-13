@@ -19,12 +19,12 @@ public partial class GdAssets : RefCounted
 	public bool IsLocked => _assets.IsLocked;
 
 	public static GdAssets From(IAssets assets) => Cache.GetValue(assets,
-		static a =>
+		static value =>
 		{
-			var gdAssets = new GdAssets { _assets = a };
-			a.Added += asset => gdAssets.EmitSignal(SignalName.Added, GdAsset.From(asset));
+			var wrapper = new GdAssets { _assets = value };
+			value.Added += asset => wrapper.EmitSignal(SignalName.Added, GdAsset.From(asset));
 
-			return gdAssets;
+			return wrapper;
 		});
 
 	public GdAsset? Get(int id)
@@ -32,12 +32,12 @@ public partial class GdAssets : RefCounted
 
 	public Array<GdAsset> GetAll()
 	{
-		var assets = new Array<GdAsset>();
+		var result = new Array<GdAsset>();
 
 		foreach (var asset in _assets.All.Values)
-			assets.Add(GdAsset.From(asset));
+			result.Add(GdAsset.From(asset));
 
-		return assets;
+		return result;
 	}
 
 	public GdAsset Add(int id) => Add(id, string.Empty, null, 0);
@@ -55,11 +55,11 @@ public partial class GdAssets : RefCounted
 
 	public Array<Dictionary> GetAllDicts()
 	{
-		var dicts = new Array<Dictionary>();
+		var result = new Array<Dictionary>();
 
 		foreach (var asset in _assets.All.Values)
-			dicts.Add(GdAsset.From(asset).ToDict());
+			result.Add(GdAsset.From(asset).ToDict());
 
-		return dicts;
+		return result;
 	}
 }

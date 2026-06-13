@@ -25,6 +25,7 @@ public class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 			return;
 
 		multiplayer.MultiplayerPeer = new OfflineMultiplayerPeer();
+
 		IsActive = true;
 		Started?.Invoke();
 	}
@@ -35,6 +36,7 @@ public class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 			return;
 
 		multiplayer.MultiplayerPeer = null;
+
 		IsActive = false;
 		Stopped?.Invoke();
 	}

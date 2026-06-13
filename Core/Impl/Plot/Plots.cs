@@ -9,12 +9,12 @@ public class Plots : IPlots
 	private readonly IAssets _assets;
 	private readonly int? _defaultMaxInstanceCount;
 	private readonly int? _defaultMaxOccupantCount;
-	private readonly Dictionary<int, IPlot> _plots = [];
-	private readonly OccupantRegistry _registry;
+	private readonly OccupantRegistry _occupants;
+	private readonly Dictionary<int, IPlot> _plotsById = [];
 
 	public Plots(
 		IAssets assets,
-		OccupantRegistry registry,
+		OccupantRegistry occupants,
 		int? defaultMaxOccupantCount = null,
 		int? defaultMaxInstanceCount = null)
 	{
@@ -25,12 +25,12 @@ public class Plots : IPlots
 			ArgumentOutOfRangeException.ThrowIfNegative(defaultMaxInstanceCount.Value);
 
 		_assets = assets;
-		_registry = registry;
+		_occupants = occupants;
 		_defaultMaxOccupantCount = defaultMaxOccupantCount;
 		_defaultMaxInstanceCount = defaultMaxInstanceCount;
 	}
 
-	public IReadOnlyDictionary<int, IPlot> All => _plots;
+	public IReadOnlyDictionary<int, IPlot> All => _plotsById;
 	public bool IsLocked { get; private set; }
 
 	public event Action<IPlot>? Added;
@@ -48,7 +48,7 @@ public class Plots : IPlots
 		if (maxInstanceCount.HasValue)
 			ArgumentOutOfRangeException.ThrowIfNegative(maxInstanceCount.Value);
 
-		if (_plots.ContainsKey(id))
+		if (_plotsById.ContainsKey(id))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Plot with id {id} already exists"));
@@ -59,20 +59,20 @@ public class Plots : IPlots
 			maxOccupantCount ?? _defaultMaxOccupantCount,
 			maxInstanceCount ?? _defaultMaxInstanceCount);
 
-		_plots.Add(id, plot);
-		Added?.Invoke(plot);
+		_plotsById.Add(id, plot);
 
+		Added?.Invoke(plot);
 		return plot;
 	}
 
 	public void SetPlot(Guid playerId, int? plotId = null)
 	{
-		if (!_registry.TryGet(playerId, out var occupant))
+		if (!_occupants.TryGet(playerId, out var occupant))
 			throw new InvalidOperationException($"Occupant with player id {playerId} not found");
 
 		IPlot? plot = null;
 
-		if (plotId is { } id && !_plots.TryGetValue(id, out plot))
+		if (plotId is { } id && !_plotsById.TryGetValue(id, out plot))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Plot with id {plotId} not found"));
@@ -89,7 +89,7 @@ public class Plots : IPlots
 	}
 
 	public IOccupant GetOccupant(Guid playerId)
-		=> _registry.TryGet(playerId, out var occupant)
+		=> _occupants.TryGet(playerId, out var occupant)
 			? occupant
 			: throw new InvalidOperationException($"Occupant with player id {playerId} not found");
 

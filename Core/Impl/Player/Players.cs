@@ -4,10 +4,9 @@ namespace Root.Core.Impl.Player;
 
 public class Players : IPlayers
 {
-	private readonly Dictionary<Guid, IPlayer> _players = [];
+	private readonly Dictionary<Guid, IPlayer> _playersById = [];
 
-	public IReadOnlyDictionary<Guid, IPlayer> All => _players;
-
+	public IReadOnlyDictionary<Guid, IPlayer> All => _playersById;
 	public IPlayer? Local { get; private set; }
 
 	public event Action<IPlayer>? Added;
@@ -16,21 +15,21 @@ public class Players : IPlayers
 
 	public IPlayer Add(Guid? id = null, string? name = null)
 	{
-		id ??= Guid.NewGuid();
+		var playerId = id ?? Guid.NewGuid();
 
-		if (_players.ContainsKey(id.Value))
-			throw new InvalidOperationException($"Player with id {id} already exists");
+		if (_playersById.ContainsKey(playerId))
+			throw new InvalidOperationException($"Player with id {playerId} already exists");
 
-		var player = new Player(id.Value, name);
-		_players.Add(id.Value, player);
+		var player = new Player(playerId, name);
+		_playersById.Add(playerId, player);
+
 		Added?.Invoke(player);
-
 		return player;
 	}
 
 	public void Remove(Guid id)
 	{
-		if (!_players.Remove(id, out var player))
+		if (!_playersById.Remove(id, out var player))
 			throw new KeyNotFoundException($"Player with id {id} not found");
 
 		if (ReferenceEquals(player, Local))
@@ -43,7 +42,7 @@ public class Players : IPlayers
 	{
 		IPlayer? player = null;
 
-		if (id is { } guid && !_players.TryGetValue(guid, out player))
+		if (id is { } playerId && !_playersById.TryGetValue(playerId, out player))
 			throw new KeyNotFoundException($"Player with id {id} not found");
 
 		if (ReferenceEquals(player, Local))

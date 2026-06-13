@@ -28,9 +28,6 @@ public readonly struct Variant : IEquatable<Variant>
 
 	public static readonly Variant Null;
 
-	// ReSharper disable once UnusedMember.Global
-	public bool IsNull => Type == VariantType.Null;
-
 	public Variant(bool value) : this()
 	{
 		Type = VariantType.Bool;
@@ -56,13 +53,17 @@ public readonly struct Variant : IEquatable<Variant>
 	public Variant(string? value) : this()
 	{
 		if (value is null)
-			Type = VariantType.Null;
-		else
 		{
-			Type = VariantType.Str;
-			_stringValue = value;
+			Type = VariantType.Null;
+			return;
 		}
+
+		Type = VariantType.Str;
+		_stringValue = value;
 	}
+
+	// ReSharper disable once UnusedMember.Global
+	public bool IsNull => Type == VariantType.Null;
 
 	public static implicit operator Variant(bool value) => new(value);
 	public static implicit operator Variant(int value) => new(value);
@@ -93,8 +94,15 @@ public readonly struct Variant : IEquatable<Variant>
 	public static explicit operator string(Variant variant)
 		=> variant.Type == VariantType.Str ? variant._stringValue! : throw new InvalidCastException();
 
-	public bool Equals(Variant other) =>
-		Type == other.Type && Type switch
+	public static bool operator ==(Variant left, Variant right) => left.Equals(right);
+	public static bool operator !=(Variant left, Variant right) => !left.Equals(right);
+
+	public bool Equals(Variant other)
+	{
+		if (Type != other.Type)
+			return false;
+
+		return Type switch
 		{
 			VariantType.Null => true,
 			VariantType.Bool => _boolValue == other._boolValue,
@@ -103,31 +111,27 @@ public readonly struct Variant : IEquatable<Variant>
 			VariantType.Str => string.Equals(_stringValue, other._stringValue, StringComparison.Ordinal),
 			_ => false
 		};
+	}
 
 	public override bool Equals(object? obj) => obj is Variant other && Equals(other);
 
-	public override int GetHashCode() =>
-		Type switch
-		{
-			VariantType.Null => Type.GetHashCode(),
-			VariantType.Bool => HashCode.Combine(Type, _boolValue),
-			VariantType.NumInt => HashCode.Combine(Type, _intValue),
-			VariantType.NumDouble => HashCode.Combine(Type, _doubleValue),
-			VariantType.Str => HashCode.Combine(Type, _stringValue),
-			_ => Type.GetHashCode()
-		};
+	public override int GetHashCode() => Type switch
+	{
+		VariantType.Null => Type.GetHashCode(),
+		VariantType.Bool => HashCode.Combine(Type, _boolValue),
+		VariantType.NumInt => HashCode.Combine(Type, _intValue),
+		VariantType.NumDouble => HashCode.Combine(Type, _doubleValue),
+		VariantType.Str => HashCode.Combine(Type, _stringValue),
+		_ => Type.GetHashCode()
+	};
 
-	public override string ToString() =>
-		Type switch
-		{
-			VariantType.Null => "null",
-			VariantType.Bool => _boolValue.ToString(),
-			VariantType.NumInt => _intValue.ToString(CultureInfo.InvariantCulture),
-			VariantType.NumDouble => _doubleValue.ToString(CultureInfo.InvariantCulture),
-			VariantType.Str => _stringValue ?? "null",
-			_ => "unknown"
-		};
-
-	public static bool operator ==(Variant left, Variant right) => left.Equals(right);
-	public static bool operator !=(Variant left, Variant right) => !left.Equals(right);
+	public override string ToString() => Type switch
+	{
+		VariantType.Null => "null",
+		VariantType.Bool => _boolValue.ToString(),
+		VariantType.NumInt => _intValue.ToString(CultureInfo.InvariantCulture),
+		VariantType.NumDouble => _doubleValue.ToString(CultureInfo.InvariantCulture),
+		VariantType.Str => _stringValue ?? "null",
+		_ => "unknown"
+	};
 }

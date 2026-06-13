@@ -70,40 +70,43 @@ public partial class GdMp
 
 		RunRpc(senderId, 20, () =>
 		{
-			foreach (var id in players)
-				Players.Add(id);
+			foreach (var playerId in players)
+				Players.Add(playerId);
 
 			foreach (var plot in plots)
-			{
-				var plotId = plot["id"].As<int>();
-				var gdPlot = Plots.Get(plotId);
-
-				if (gdPlot is null)
-					continue;
-
-				if (plot.TryGetValue("occupantIds", out var occupantIds))
-				{
-					foreach (var playerId in occupantIds.AsGodotArray<string>())
-						Plots.SetPlot(playerId, plotId);
-				}
-
-				if (plot.TryGetValue("ownerId", out var ownerId))
-					gdPlot.Occupants.SetOwner(ownerId.AsString());
-
-				if (plot.TryGetValue("instances", out var instances))
-				{
-					foreach (var instance in instances.AsGodotArray<Dictionary>())
-						gdPlot.Instances.AddAt(
-							instance["assetId"].As<int>(),
-							instance["position"].As<Vector3>(),
-							instance["rotation"].As<Quaternion>(),
-							instance["instanceId"].As<int>());
-				}
-
-				if (plot.TryGetValue("isSpawned", out var isSpawned) && isSpawned.AsBool())
-					gdPlot.Spawn();
-			}
+				ApplyPlotState(plot);
 		});
+	}
+
+	private static void ApplyPlotState(Dictionary plot)
+	{
+		var plotId = plot["id"].As<int>();
+		var gdPlot = Plots.Get(plotId);
+
+		if (gdPlot is null)
+			return;
+
+		if (plot.TryGetValue("occupantIds", out var occupantIds))
+		{
+			foreach (var playerId in occupantIds.AsGodotArray<string>())
+				Plots.SetPlot(playerId, plotId);
+		}
+
+		if (plot.TryGetValue("ownerId", out var ownerId))
+			gdPlot.Occupants.SetOwner(ownerId.AsString());
+
+		if (plot.TryGetValue("instances", out var instances))
+		{
+			foreach (var instance in instances.AsGodotArray<Dictionary>())
+				gdPlot.Instances.AddAt(
+					instance["assetId"].As<int>(),
+					instance["position"].As<Vector3>(),
+					instance["rotation"].As<Quaternion>(),
+					instance["instanceId"].As<int>());
+		}
+
+		if (plot.TryGetValue("isSpawned", out var isSpawned) && isSpawned.AsBool())
+			gdPlot.Spawn();
 	}
 
 	private void SendGameState(int peerId, string localPlayerId)

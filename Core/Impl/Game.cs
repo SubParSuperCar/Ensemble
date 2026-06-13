@@ -17,11 +17,6 @@ public class Game : IGame
 		int? defaultMaxInstanceCount = null)
 	{
 		Players = new Players();
-
-		var local = localPlayerId is { } id
-			? Players.Add(id, localPlayerName)
-			: null;
-
 		Assets = new Assets();
 
 		var occupants = new OccupantRegistry();
@@ -29,8 +24,11 @@ public class Game : IGame
 		Players.Added += occupants.Add;
 		Players.Removed += occupants.Remove;
 
-		if (local is not null)
+		if (localPlayerId is { } id)
+		{
+			var local = Players.Add(id, localPlayerName);
 			Players.SetLocal(local.Id);
+		}
 
 		Plots = new Plots(
 			Assets,

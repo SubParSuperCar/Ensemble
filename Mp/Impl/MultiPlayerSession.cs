@@ -26,10 +26,10 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 
 		var error = config switch
 		{
-			HostConfig h => h.MaxPlayerCount is null
-				? peer.CreateServer(h.Port)
-				: peer.CreateServer(h.Port, h.MaxPlayerCount.Value),
-			JoinConfig j => peer.CreateClient(j.Address, j.Port),
+			HostConfig host => host.MaxPlayerCount is null
+				? peer.CreateServer(host.Port)
+				: peer.CreateServer(host.Port, host.MaxPlayerCount.Value),
+			JoinConfig join => peer.CreateClient(join.Address, join.Port),
 			_ => Error.InvalidParameter
 		};
 

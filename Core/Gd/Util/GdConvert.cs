@@ -33,22 +33,22 @@ public static class GdConvert
 
 	public static Dictionary ToGodotProperties(IReadOnlyDictionary<string, Api.Asset.Variant> properties)
 	{
-		var gdProperties = new Dictionary();
+		var converted = new Dictionary();
 
 		foreach (var (key, value) in properties)
-			gdProperties.Add(key, value.ToGodot());
+			converted.Add(key, value.ToGodot());
 
-		return gdProperties;
+		return converted;
 	}
 
-	public static IReadOnlyDictionary<string, Api.Asset.Variant> FromGodotProperties(Dictionary gdProperties)
+	public static IReadOnlyDictionary<string, Api.Asset.Variant> FromGodotProperties(Dictionary properties)
 	{
-		var properties =
-			new System.Collections.Generic.Dictionary<string, Api.Asset.Variant>(StringComparer.OrdinalIgnoreCase);
+		var converted = new System.Collections.Generic.Dictionary<string, Api.Asset.Variant>(
+			StringComparer.OrdinalIgnoreCase);
 
-		foreach (var key in gdProperties.Keys)
-			properties[key.AsString()] = gdProperties[key].FromGodot();
+		foreach (var key in properties.Keys)
+			converted[key.AsString()] = properties[key].FromGodot();
 
-		return properties;
+		return converted;
 	}
 }

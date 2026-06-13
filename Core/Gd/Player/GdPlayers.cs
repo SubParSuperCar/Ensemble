@@ -24,17 +24,17 @@ public partial class GdPlayers : RefCounted
 	public GdPlayer? Local => _players.Local is { } local ? GdPlayer.From(local) : null;
 
 	public static GdPlayers From(IPlayers players) => Cache.GetValue(players,
-		static p =>
+		static value =>
 		{
-			var gdPlayers = new GdPlayers { _players = p };
+			var wrapper = new GdPlayers { _players = value };
 
-			p.Added += player => gdPlayers.EmitSignal(SignalName.Added, GdPlayer.From(player));
-			p.Removed += player => gdPlayers.EmitSignal(SignalName.Removed, GdPlayer.From(player));
+			value.Added += player => wrapper.EmitSignal(SignalName.Added, GdPlayer.From(player));
+			value.Removed += player => wrapper.EmitSignal(SignalName.Removed, GdPlayer.From(player));
 
-			p.LocalChanged += player
-				=> gdPlayers.EmitSignal(SignalName.LocalChanged, (player is null ? null : GdPlayer.From(player))!);
+			value.LocalChanged += player
+				=> wrapper.EmitSignal(SignalName.LocalChanged, (player is null ? null : GdPlayer.From(player))!);
 
-			return gdPlayers;
+			return wrapper;
 		});
 
 	public GdPlayer? Get(string id)
@@ -44,21 +44,20 @@ public partial class GdPlayers : RefCounted
 
 	public Array<GdPlayer> GetAll()
 	{
-		var players = new Array<GdPlayer>();
+		var result = new Array<GdPlayer>();
 
 		foreach (var player in _players.All.Values)
-			players.Add(GdPlayer.From(player));
+			result.Add(GdPlayer.From(player));
 
-		return players;
+		return result;
 	}
 
 	public GdPlayer Add() => Add(string.Empty, string.Empty);
 	public GdPlayer Add(string id) => Add(id, string.Empty);
 
-	public GdPlayer Add(string id, string name) =>
-		GdPlayer.From(_players.Add(
-			id == string.Empty ? null : Guid.Parse(id),
-			name == string.Empty ? null : name));
+	public GdPlayer Add(string id, string name) => GdPlayer.From(_players.Add(
+		id == string.Empty ? null : Guid.Parse(id),
+		name == string.Empty ? null : name));
 
 	public void Remove(string id)
 	{
@@ -81,11 +80,11 @@ public partial class GdPlayers : RefCounted
 
 	public Array<Dictionary> GetAllDicts()
 	{
-		var dicts = new Array<Dictionary>();
+		var result = new Array<Dictionary>();
 
 		foreach (var player in _players.All.Values)
-			dicts.Add(GdPlayer.From(player).ToDict());
+			result.Add(GdPlayer.From(player).ToDict());
 
-		return dicts;
+		return result;
 	}
 }

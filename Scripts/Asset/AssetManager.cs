@@ -27,15 +27,15 @@ public partial class AssetManager : Node
 
 		dir.ListDirBegin();
 
-		string element;
+		string entry;
 
-		while ((element = dir.GetNext()) != string.Empty)
+		while ((entry = dir.GetNext()) != string.Empty)
 		{
-			var fullPath = path.PathJoin(element);
+			var fullPath = path.PathJoin(entry);
 
 			if (dir.CurrentIsDir())
 				Scan(fullPath);
-			else if (element.EndsWith(".tscn", StringComparison.OrdinalIgnoreCase))
+			else if (entry.EndsWith(".tscn", StringComparison.OrdinalIgnoreCase))
 				TryAdd(fullPath);
 		}
 
@@ -51,31 +51,31 @@ public partial class AssetManager : Node
 
 		var node = packed.Instantiate();
 
-		if (node is not AssetHandle asset)
+		if (node is not AssetHandle handle)
 		{
 			node.Free();
 			return;
 		}
 
-		var assetId = asset.AssetId;
-		var assetName = asset.AssetName;
-		var properties = asset.Properties;
-		var maxInstanceCount = asset.MaxInstanceCount;
+		var assetId = handle.AssetId;
+		var assetName = handle.AssetName;
+		var properties = handle.Properties;
+		var maxInstanceCount = handle.MaxInstanceCount;
 
 		node.Free();
 
 		if (!Scenes.TryAdd(assetId, packed))
 			return;
 
-		var gdProperties = new Dictionary();
+		var converted = new Dictionary();
 
 		foreach (var (key, value) in properties)
-			gdProperties.Add(key.ToString(), value);
+			converted.Add(key.ToString(), value);
 
 		Assets.Add(
 			assetId,
 			assetName,
-			gdProperties,
+			converted,
 			maxInstanceCount == 0 ? DefaultMaxInstanceCount : maxInstanceCount);
 	}
 }

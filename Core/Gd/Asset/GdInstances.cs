@@ -22,14 +22,14 @@ public partial class GdInstances : RefCounted
 	public int MaxCount => _instances.MaxCount;
 
 	public static GdInstances From(IInstances instances) => Cache.GetValue(instances,
-		static i =>
+		static value =>
 		{
-			var gdInstances = new GdInstances { _instances = i };
+			var wrapper = new GdInstances { _instances = value };
 
-			i.Added += instance => gdInstances.EmitSignal(SignalName.Added, GdInstance.From(instance));
-			i.Removed += instance => gdInstances.EmitSignal(SignalName.Removed, GdInstance.From(instance));
+			value.Added += instance => wrapper.EmitSignal(SignalName.Added, GdInstance.From(instance));
+			value.Removed += instance => wrapper.EmitSignal(SignalName.Removed, GdInstance.From(instance));
 
-			return gdInstances;
+			return wrapper;
 		});
 
 	public GdInstance Get(int id)
@@ -37,12 +37,12 @@ public partial class GdInstances : RefCounted
 
 	public Array<GdInstance> GetAll()
 	{
-		var instances = new Array<GdInstance>();
+		var result = new Array<GdInstance>();
 
 		foreach (var instance in _instances.All)
-			instances.Add(GdInstance.From(instance));
+			result.Add(GdInstance.From(instance));
 
-		return instances;
+		return result;
 	}
 
 	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation)
@@ -56,27 +56,27 @@ public partial class GdInstances : RefCounted
 
 	public Array<int> GetCount(int assetId)
 	{
-		var count = _instances.GetCount(assetId);
-		return [count.Count, count.MaxCount];
+		var (count, maxCount) = _instances.GetCount(assetId);
+		return [count, maxCount];
 	}
 
 	public Godot.Collections.Dictionary<int, Array<int>> GetAllCounts()
 	{
-		var counts = new Godot.Collections.Dictionary<int, Array<int>>();
+		var result = new Godot.Collections.Dictionary<int, Array<int>>();
 
-		foreach (var (key, value) in _instances.GetAllCounts())
-			counts.Add(key, [value.Count, value.MaxCount]);
+		foreach (var (assetId, count) in _instances.GetAllCounts())
+			result.Add(assetId, [count.Count, count.MaxCount]);
 
-		return counts;
+		return result;
 	}
 
 	public Array<Dictionary> GetAllDicts()
 	{
-		var dicts = new Array<Dictionary>();
+		var result = new Array<Dictionary>();
 
 		foreach (var instance in _instances.All)
-			dicts.Add(GdInstance.From(instance).ToDict());
+			result.Add(GdInstance.From(instance).ToDict());
 
-		return dicts;
+		return result;
 	}
 }

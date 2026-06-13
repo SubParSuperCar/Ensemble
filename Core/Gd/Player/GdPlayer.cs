@@ -19,15 +19,14 @@ public partial class GdPlayer : RefCounted
 	public double UtcCreatedAtUnix => new DateTimeOffset(_player.UtcCreatedAt).ToUnixTimeSeconds();
 
 	public static GdPlayer From(IPlayer player)
-		=> Cache.GetValue(player, static p => new GdPlayer { _player = p });
+		=> Cache.GetValue(player, static value => new GdPlayer { _player = value });
 
-	public Dictionary ToDict()
-		=> new()
-		{
-			["id"] = Id,
-			["name"] = Name,
-			["utcCreatedAtUnix"] = UtcCreatedAtUnix
-		};
+	public Dictionary ToDict() => new()
+	{
+		["id"] = Id,
+		["name"] = Name,
+		["utcCreatedAtUnix"] = UtcCreatedAtUnix
+	};
 
 	public override string ToString() => _player.ToString()!;
 }

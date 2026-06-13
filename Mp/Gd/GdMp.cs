@@ -46,6 +46,7 @@ public partial class GdMp : Node
 	{
 		Multiplayer.PeerConnected += OnPeerConnected;
 		Multiplayer.PeerDisconnected += OnPeerDisconnected;
+		Multiplayer.PeerConnected += id => RemoveLimiter((int)id);
 	}
 
 	public void StartSinglePlayer()
@@ -114,7 +115,6 @@ public partial class GdMp : Node
 
 	private void OnSessionStarted()
 	{
-		// TODO: Call SendGameState?
 		if (_session?.Mode == SessionMode.SinglePlayer)
 		{
 			var id = LoadOrCreatePlayerId();

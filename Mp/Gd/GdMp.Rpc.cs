@@ -9,7 +9,6 @@ namespace Root.Mp.Gd;
 // TODO
 public partial class GdMp
 {
-	// TODO: Remove Limiter on Player Removed
 	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> Limiters = [];
 
 	private static readonly TokenBucketRateLimiterOptions LimiterOptions = new()
@@ -47,6 +46,8 @@ public partial class GdMp
 				Console.WriteLine(e);
 			}
 		});
+
+	private static void RemoveLimiter(int id) => Limiters.TryRemove(id, out _);
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RpcSyncPlayerAdded(string playerId, string name)

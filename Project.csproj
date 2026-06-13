@@ -23,10 +23,6 @@
         <Content Include=".gitignore"/>
     </ItemGroup>
 
-    <!--<ItemGroup>
-        <Content Include="Ui"/>
-    </ItemGroup>-->
-
     <ItemGroup>
         <PackageReference Include="System.Threading.RateLimiting" Version="*"/>
     </ItemGroup>

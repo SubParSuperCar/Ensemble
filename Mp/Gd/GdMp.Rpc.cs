@@ -63,108 +63,48 @@ public partial class GdMp
 		RunRpc(senderId, 5, () => Players.Remove(playerId));
 	}
 
-	/*[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RpcSyncSetPlot(string playerId, int plotId)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-		RunRpc(senderId, 10, () => Plots.SetPlot(playerId, plotId));
-	}
-
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RpcSyncIsSpawned(int plotId, bool isSpawned)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-		var plot = Plots.Get(plotId);
-
-		RunRpc(
-			senderId,
-			10,
-			() =>
-			{
-				if (isSpawned)
-					plot!.Spawn();
-				else
-					plot!.Despawn();
-			});
-	}
-
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RpcSyncInstanceAdded(int plotId, int assetId, int instanceId, Vector3 position, Quaternion rotation)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-		var instances = Plots.Get(plotId)!.Instances;
-
-		RunRpc(senderId, 1, () => instances.AddAt(assetId, position, rotation, instanceId));
-	}
-
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RpcSyncInstanceRemoved(int plotId, int instanceId)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-		var instances = Plots.Get(plotId)!.Instances;
-
-		RunRpc(senderId, 1, () => instances.Remove(instanceId));
-	}*/
-
 	[Rpc(CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RpcSyncGameState(Array<string> players, Array<Dictionary> plots)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
 
-		RunRpc(
-			senderId,
-			20,
-			() =>
+		RunRpc(senderId, 20, () =>
+		{
+			foreach (var id in players)
+				Players.Add(id);
+
+			foreach (var plot in plots)
 			{
-				foreach (var id in players)
-					Players.Add(id);
+				var plotId = plot["id"].As<int>();
+				var gdPlot = Plots.Get(plotId);
 
-				foreach (var plot in plots)
+				if (gdPlot is null)
+					continue;
+
+				if (plot.TryGetValue("occupantIds", out var occupantIds))
 				{
-					var plotId = plot["id"].As<int>();
-					var gdPlot = Plots.Get(plotId);
-
-					if (gdPlot is null)
-						continue;
-
-					if (plot.TryGetValue("occupantIds", out var occupantIds))
-					{
-						foreach (var playerId in occupantIds.AsGodotArray<string>())
-							Plots.SetPlot(playerId, plotId);
-					}
-
-					if (plot.TryGetValue("ownerId", out var ownerId))
-						gdPlot.Occupants.SetOwner(ownerId.AsString());
-
-					if (plot.TryGetValue("instances", out var instances))
-					{
-						foreach (var instance in instances.AsGodotArray<Dictionary>())
-							gdPlot.Instances.AddAt(
-								instance["assetId"].As<int>(),
-								instance["position"].As<Vector3>(),
-								instance["rotation"].As<Quaternion>(),
-								instance["instanceId"].As<int>());
-					}
-
-					if (plot.TryGetValue("isSpawned", out var isSpawned) && isSpawned.AsBool())
-						gdPlot.Spawn();
+					foreach (var playerId in occupantIds.AsGodotArray<string>())
+						Plots.SetPlot(playerId, plotId);
 				}
-			});
+
+				if (plot.TryGetValue("ownerId", out var ownerId))
+					gdPlot.Occupants.SetOwner(ownerId.AsString());
+
+				if (plot.TryGetValue("instances", out var instances))
+				{
+					foreach (var instance in instances.AsGodotArray<Dictionary>())
+						gdPlot.Instances.AddAt(
+							instance["assetId"].As<int>(),
+							instance["position"].As<Vector3>(),
+							instance["rotation"].As<Quaternion>(),
+							instance["instanceId"].As<int>());
+				}
+
+				if (plot.TryGetValue("isSpawned", out var isSpawned) && isSpawned.AsBool())
+					gdPlot.Spawn();
+			}
+		});
 	}
-
-	/*[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RequestSetPlot(int plotId)
-	{
-		if (!IsServer)
-			return;
-
-		var senderId = Multiplayer.GetRemoteSenderId();
-
-		if (!_peers.TryGetValue(senderId, out var playerId))
-			return;
-
-		Rpc(MethodName.RpcSyncSetPlot, playerId, plotId);
-	}*/
 
 	private void SendGameState(int peerId, string localPlayerId)
 	{

@@ -14,5 +14,11 @@ public partial class PlotManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater")]
 	public int DefaultMaxTotalInstanceCount { get; set; }
 
-	public override void _EnterTree() => GdGlobals.PlotManager = this;
+	public override void _EnterTree()
+	{
+		GdGlobals.PlotManager = this;
+
+		foreach (var node in GetChildren().OfType<PlotHandle>())
+			Plots.Add(node.Id);
+	}
 }

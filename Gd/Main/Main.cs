@@ -27,9 +27,24 @@ public partial class Main : Node
 
 	private async Task StartSinglePlayer()
 	{
-		await ToSignal(GetTree().CreateTimer(1), SceneTreeTimer.SignalName.Timeout);
+		await ToSignal(GetTree().CreateTimer(0.5), SceneTreeTimer.SignalName.Timeout);
 
-		GdGlobals.Session.StartSinglePlayer();
+		GdGlobals.Session.HostMultiPlayer(8080);
+
+		Console.WriteLine("Players:");
+
+		foreach (var player in Players.GetAll())
+			Console.WriteLine(player.ToDict());
+
+		Console.WriteLine("Assets:");
+
+		foreach (var asset in Assets.GetAll())
+			Console.WriteLine(asset.ToDict());
+
+		Console.WriteLine("Plots:");
+
+		foreach (var plot in Plots.GetAll())
+			Console.WriteLine(plot.ToDict());
 	}
 
 	public void OnSessionStarted()

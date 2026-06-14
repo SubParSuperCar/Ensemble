@@ -25,25 +25,6 @@ public class Occupants : IOccupants
 	public event Action<IOccupant>? Removed;
 	public event Action<IOccupant?>? OwnerChanged;
 
-	public void Add(Occupant occupant)
-	{
-		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
-		occupant.SetPlot(_plot);
-
-		Added?.Invoke(occupant);
-	}
-
-	public void Remove(Occupant occupant)
-	{
-		_occupantsByPlayerId.Remove(occupant.Player.Id);
-		occupant.SetPlot(null);
-
-		if (ReferenceEquals(occupant, Owner))
-			SetOwner();
-
-		Removed?.Invoke(occupant);
-	}
-
 	public void Clear()
 	{
 		foreach (var occupant in _occupantsByPlayerId.Values.ToArray())
@@ -62,5 +43,24 @@ public class Occupants : IOccupants
 
 		Owner = occupant;
 		OwnerChanged?.Invoke(occupant);
+	}
+
+	public void Add(Occupant occupant)
+	{
+		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
+		occupant.SetPlot(_plot);
+
+		Added?.Invoke(occupant);
+	}
+
+	public void Remove(Occupant occupant)
+	{
+		_occupantsByPlayerId.Remove(occupant.Player.Id);
+		occupant.SetPlot(null);
+
+		if (ReferenceEquals(occupant, Owner))
+			SetOwner();
+
+		Removed?.Invoke(occupant);
 	}
 }

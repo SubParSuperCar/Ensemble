@@ -21,6 +21,8 @@ public partial class GdMp
 
 	private readonly ConcurrentQueue<Action> _rpcQueue = [];
 
+	private void RunRpc(int senderId, int tokens, Action action) => _ = RunRpcAsync(senderId, tokens, action);
+
 	private async Task RunRpcAsync(int senderId, int tokens, Action action)
 	{
 		var limiter = senderId == 1
@@ -63,7 +65,7 @@ public partial class GdMp
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
 
-		_ = RunRpcAsync(senderId, 5, () =>
+		RunRpc(senderId, 5, () =>
 		{
 			Players.Add(playerId, name);
 			AddPeer(senderId, playerId);
@@ -75,7 +77,7 @@ public partial class GdMp
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
 
-		_ = RunRpcAsync(senderId, 5, () =>
+		RunRpc(senderId, 5, () =>
 		{
 			Players.Remove(playerId);
 			RemovePeer(senderId);
@@ -87,7 +89,7 @@ public partial class GdMp
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
 
-		_ = RunRpcAsync(senderId, 20, () =>
+		RunRpc(senderId, 20, () =>
 		{
 			foreach (var playerId in players)
 				Players.Add(playerId);

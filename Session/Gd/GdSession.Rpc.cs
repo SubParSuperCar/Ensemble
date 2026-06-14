@@ -31,7 +31,7 @@ public partial class GdSession
 
 		using var lease = limiter is null
 			? null
-			: await limiter.AcquireAsync(tokens);
+			: await limiter.AcquireAsync(tokens).ConfigureAwait(false);
 
 		if (lease is { IsAcquired: false })
 			return;

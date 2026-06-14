@@ -24,9 +24,9 @@ public partial class GdGame : Node
 			Instance = null;
 	}
 
-	public override void _Ready() => Reset();
+	public override void _Ready() => OnReady();
 
-	private void Reset()
+	private void OnReady()
 	{
 #if DEBUG
 		var stopwatch = Stopwatch.StartNew();

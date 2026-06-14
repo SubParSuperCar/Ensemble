@@ -46,8 +46,8 @@ public static class GdConvert
 		var converted = new System.Collections.Generic.Dictionary<string, Api.Asset.Variant>(
 			StringComparer.OrdinalIgnoreCase);
 
-		foreach (var key in properties.Keys)
-			converted[key.AsString()] = properties[key].FromGodot();
+		foreach (var (key, value) in properties)
+			converted[key.AsString()] = value.FromGodot();
 
 		return converted;
 	}

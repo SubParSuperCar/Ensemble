@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Globalization;
 using System.Threading.RateLimiting;
 using Godot;
 using Godot.Collections;
@@ -20,47 +19,67 @@ public partial class GdMp
 		AutoReplenishment = true
 	};
 
-	private static readonly Lock Mutex = new();
+	private readonly ConcurrentQueue<Action> _rpcQueue = [];
 
-	private static void RunRpc(int senderId, int tokens, Action action) =>
-		_ = Task.Run(async () =>
+	private async Task RunRpcAsync(int senderId, int tokens, Action action)
+	{
+		var limiter = senderId == 1
+			? null
+			: Limiters.GetOrAdd(senderId, _ => new TokenBucketRateLimiter(LimiterOptions));
+
+		using var lease = limiter is null
+			? null
+			: await limiter.AcquireAsync(tokens);
+
+		if (lease is { IsAcquired: false })
+			return;
+
+		_rpcQueue.Enqueue(action);
+	}
+
+	public override void _Process(double delta)
+	{
+		while (_rpcQueue.TryDequeue(out var action))
 		{
-			var limiter = senderId == 1
-				? null
-				: Limiters.GetOrAdd(senderId, _ => new TokenBucketRateLimiter(LimiterOptions));
-
-			using var lease = limiter is null ? null : await limiter.AcquireAsync(tokens).ConfigureAwait(true);
-
 			try
 			{
-				if (lease is { IsAcquired: false })
-					throw new InvalidOperationException(string.Create(
-						CultureInfo.InvariantCulture,
-						$"Lease not acquired for sender with id {senderId}"));
-
-				lock (Mutex)
-					action();
+				action();
 			}
 			catch (Exception e)
 			{
 				Console.WriteLine(e);
 			}
-		});
+		}
+	}
 
-	private static void RemoveLimiter(int id) => Limiters.TryRemove(id, out _);
+	private static void OnPeerDisconnectedRpc(long id)
+	{
+		if (Limiters.TryRemove((int)id, out var limiter))
+			limiter.Dispose();
+	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RpcSyncPlayerAdded(string playerId, string name)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
-		RunRpc(senderId, 5, () => Players.Add(playerId, name));
+
+		_ = RunRpcAsync(senderId, 5, () =>
+		{
+			Players.Add(playerId, name);
+			AddPeer(senderId, playerId);
+		});
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RpcSyncPlayerRemoved(string playerId)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
-		RunRpc(senderId, 5, () => Players.Remove(playerId));
+
+		_ = RunRpcAsync(senderId, 5, () =>
+		{
+			Players.Remove(playerId);
+			RemovePeer(senderId);
+		});
 	}
 
 	[Rpc(CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
@@ -68,7 +87,7 @@ public partial class GdMp
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
 
-		RunRpc(senderId, 20, () =>
+		_ = RunRpcAsync(senderId, 20, () =>
 		{
 			foreach (var playerId in players)
 				Players.Add(playerId);

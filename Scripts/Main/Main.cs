@@ -11,10 +11,16 @@ public partial class Main : Node
 
 	[Export] public PackedScene GameScene { get; set; } = null!;
 
-	public override void _Ready()
+	public override void _EnterTree()
 	{
 		GdGlobals.Mp.SessionStarted += OnSessionStarted;
 		GdGlobals.Mp.SessionStopped += OnSessionStopped;
+	}
+
+	public override void _ExitTree()
+	{
+		GdGlobals.Mp.SessionStarted -= OnSessionStarted;
+		GdGlobals.Mp.SessionStopped -= OnSessionStopped;
 	}
 
 	public void OnSessionStarted()

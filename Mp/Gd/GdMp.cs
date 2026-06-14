@@ -33,19 +33,23 @@ public partial class GdMp : Node
 		? 0
 		: new DateTimeOffset(_session.UtcStartedAt).ToUnixTimeSeconds();
 
-	public override void _EnterTree() => Instance = this;
+	public override void _EnterTree()
+	{
+		Instance = this;
+
+		Multiplayer.PeerConnected += OnPeerConnected;
+		Multiplayer.PeerDisconnected += OnPeerDisconnected;
+		Multiplayer.PeerDisconnected += OnPeerDisconnectedRpc;
+	}
 
 	public override void _ExitTree()
 	{
+		Multiplayer.PeerConnected -= OnPeerConnected;
+		Multiplayer.PeerDisconnected -= OnPeerDisconnected;
+		Multiplayer.PeerDisconnected -= OnPeerDisconnectedRpc;
+
 		if (ReferenceEquals(Instance, this))
 			Instance = null;
-	}
-
-	public override void _Ready()
-	{
-		Multiplayer.PeerConnected += OnPeerConnected;
-		Multiplayer.PeerDisconnected += OnPeerDisconnected;
-		Multiplayer.PeerDisconnected += id => RemoveLimiter((int)id);
 	}
 
 	public void StartSinglePlayer()

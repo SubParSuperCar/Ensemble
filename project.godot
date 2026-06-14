@@ -16,12 +16,13 @@ config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 
 [autoload]
 
-Game="uid://bul62obagk5sq"
-Mp="uid://cpsoqqdvbxx5r"
+StdOut="uid://dyy4tfc4jbfhf"
+Core="uid://bul62obagk5sq"
+Session="uid://cpsoqqdvbxx5r"
 
 [dotnet]
 
-project/assembly_name="Core"
+project/assembly_name="Game"
 
 [physics]
 

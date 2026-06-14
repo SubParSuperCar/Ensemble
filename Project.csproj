@@ -1,6 +1,6 @@
 <Project Sdk="Godot.NET.Sdk/4.6.3">
     <PropertyGroup>
-        <AssemblyName>Core</AssemblyName>
+        <AssemblyName>Game</AssemblyName>
         <TargetFramework>net10.0</TargetFramework>
         <LangVersion>14</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>

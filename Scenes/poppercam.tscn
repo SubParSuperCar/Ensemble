@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://brppeit4u8ivs"]
 
-[ext_resource type="Script" uid="uid://duxwbrbuon4em" path="res://Scripts/Camera/PopperCam.cs" id="1_pdxku"]
+[ext_resource type="Script" uid="uid://duxwbrbuon4em" path="res://Gd/Camera/PopperCam.cs" id="1_pdxku"]
 
 [node name="PopperCam" type="SpringArm3D" unique_id=1884692317]
 script = ExtResource("1_pdxku")

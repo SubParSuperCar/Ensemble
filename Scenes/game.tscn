@@ -1,20 +1,24 @@
 [gd_scene format=3 uid="uid://csyba8yjabf7y"]
 
-[ext_resource type="Script" uid="uid://4rh6eyy8a1kh" path="res://Scripts/Player/PlayerManager.cs" id="1_uwrxv"]
+[ext_resource type="Script" uid="uid://4rh6eyy8a1kh" path="res://Gd/Player/PlayerManager.cs" id="1_qxrlw"]
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://Scenes/player.tscn" id="2_iywne"]
 [ext_resource type="PackedScene" uid="uid://y6i76a7yj2rd" path="res://Scenes/camera.tscn" id="2_lbhrr"]
-[ext_resource type="Script" uid="uid://bm2ar186ikanf" path="res://Scripts/Plot/PlotManager.cs" id="2_yqjtg"]
+[ext_resource type="Script" uid="uid://dhx1cnqutwmh" path="res://Gd/Asset/AssetManager.cs" id="2_wrm1d"]
+[ext_resource type="Script" uid="uid://bm2ar186ikanf" path="res://Gd/Plot/PlotManager.cs" id="3_3dryh"]
 [ext_resource type="PackedScene" uid="uid://bctdhk6awxx0r" path="res://Scenes/plot.tscn" id="3_lnu2h"]
 
 [node name="Game" type="Node3D" unique_id=1840370715]
 
-[node name="Players" type="Node3D" parent="." unique_id=390621213]
-script = ExtResource("1_uwrxv")
+[node name="Players" type="Node" parent="." unique_id=677572147]
+script = ExtResource("1_qxrlw")
 PlayerScene = ExtResource("2_iywne")
 CameraScene = ExtResource("2_lbhrr")
 
-[node name="Plots" type="Node3D" parent="." unique_id=824933685]
-script = ExtResource("2_yqjtg")
+[node name="Assets" type="Node" parent="." unique_id=633918342]
+script = ExtResource("2_wrm1d")
+
+[node name="Plots" type="Node" parent="." unique_id=795146723]
+script = ExtResource("3_3dryh")
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("3_lnu2h")]
 

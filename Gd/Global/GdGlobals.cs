@@ -10,7 +10,7 @@ using Root.Session.Gd;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Root.Globals;
+namespace Root.Gd.Global;
 
 public static class GdGlobals
 {

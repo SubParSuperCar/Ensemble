@@ -24,6 +24,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 
 		var peer = new ENetMultiplayerPeer();
 
+		// TODO: Fix bug throwing "ERROR: Couldn't create an ENet host" when port is occupied
 		var error = config switch
 		{
 			HostConfig host => host.MaxPlayerCount is null

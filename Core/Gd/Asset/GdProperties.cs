@@ -3,6 +3,7 @@ using Godot;
 using Godot.Collections;
 using Root.Core.Api.Asset;
 using Root.Core.Gd.Util;
+using Convert = Root.Core.Gd.Util.Convert;
 using Variant = Godot.Variant;
 
 namespace Root.Core.Gd.Asset;
@@ -30,13 +31,13 @@ public partial class GdProperties : RefCounted
 	public Variant Get(string key)
 		=> _properties.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
 
-	public Dictionary GetAll() => GdConvert.ToGodotProperties(_properties.All);
+	public Dictionary GetAll() => Convert.ToGodotProperties(_properties.All);
 
 	public void Update(string key, Variant value)
 		=> _properties.Update(key, value.FromGodot());
 
 	public void UpdateAll(Dictionary properties)
-		=> _properties.UpdateAll(GdConvert.FromGodotProperties(properties));
+		=> _properties.UpdateAll(Convert.FromGodotProperties(properties));
 
 	public override string ToString() => _properties.ToString()!;
 }

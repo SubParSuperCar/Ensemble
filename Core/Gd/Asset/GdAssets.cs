@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using Godot;
 using Godot.Collections;
 using Root.Core.Api.Asset;
-using Root.Core.Gd.Util;
+using Convert = Root.Core.Gd.Util.Convert;
 
 namespace Root.Core.Gd.Asset;
 
@@ -48,7 +48,7 @@ public partial class GdAssets : RefCounted
 		=> GdAsset.From(_assets.Add(
 			id,
 			name == string.Empty ? null : name,
-			properties is null ? null : GdConvert.FromGodotProperties(properties),
+			properties is null ? null : Convert.FromGodotProperties(properties),
 			maxInstanceCount == 0 ? null : maxInstanceCount));
 
 	public void Lock() => _assets.Lock();

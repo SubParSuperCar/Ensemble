@@ -1,6 +1,6 @@
 using Godot;
 using Root.Core.Gd.Player;
-using Root.Globals;
+using Root.Gd.Global;
 
 namespace Root.Gd.Player;
 

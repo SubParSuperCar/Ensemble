@@ -1,9 +1,10 @@
 using Godot;
 using Godot.Collections;
-using Root.Globals;
+using Root.Gd.Global;
 
 namespace Root.Gd.Asset;
 
+// TODO: For all classes inheriting Node and subscribing events, implement _ExitTree?
 public partial class AssetManager : Node
 {
 	// ReSharper disable once MemberCanBePrivate.Global

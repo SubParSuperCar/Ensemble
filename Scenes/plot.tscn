@@ -2,5 +2,40 @@
 
 [ext_resource type="Script" uid="uid://dt7squ3xe62fp" path="res://Gd/Plot/PlotHandle.cs" id="1_syd1t"]
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_f03gw"]
+size = Vector3(32, 32, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sbat0"]
+size = Vector3(32, 0.001, 32)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f03gw"]
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_f03gw"]
+material = SubResource("StandardMaterial3D_f03gw")
+size = Vector2(32, 32)
+
 [node name="Plot" type="Node3D" unique_id=1176841675]
 script = ExtResource("1_syd1t")
+
+[node name="Boundary" type="Area3D" parent="." unique_id=989283433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)
+monitoring = false
+
+[node name="Definition" type="CollisionShape3D" parent="Boundary" unique_id=80230571]
+shape = SubResource("BoxShape3D_f03gw")
+
+[node name="Instances" type="Node" parent="." unique_id=1994417706]
+
+[node name="Static" type="Node3D" parent="Instances" unique_id=703515400]
+
+[node name="Dynamic" type="Node3D" parent="Instances" unique_id=658314032]
+top_level = true
+
+[node name="Base" type="StaticBody3D" parent="." unique_id=1335038975]
+
+[node name="Collider" type="CollisionShape3D" parent="Base" unique_id=1890228800]
+shape = SubResource("BoxShape3D_sbat0")
+
+[node name="Mesh" type="MeshInstance3D" parent="Base" unique_id=890436308]
+mesh = SubResource("PlaneMesh_f03gw")

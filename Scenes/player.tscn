@@ -3,9 +3,9 @@
 [ext_resource type="Script" uid="uid://crh0lnvflr1va" path="res://Gd/Player/PlayerHandle.cs" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://cyis47puuu3vv" path="res://Gd/Player/CharacterController.cs" id="2_g2els"]
 
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_agfs1"]
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_agfs1"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_agfs1"]
 
 [node name="Player" type="Node3D" unique_id=1257470157]
 script = ExtResource("1_3vyb7")
@@ -13,8 +13,8 @@ CharacterControllerScript = ExtResource("2_g2els")
 
 [node name="Character" type="CharacterBody3D" parent="." unique_id=989463391]
 
-[node name="Mesh" type="MeshInstance3D" parent="Character" unique_id=2071167483]
-mesh = SubResource("CapsuleMesh_agfs1")
-
 [node name="Collider" type="CollisionShape3D" parent="Character" unique_id=2025839855]
 shape = SubResource("CapsuleShape3D_agfs1")
+
+[node name="Mesh" type="MeshInstance3D" parent="Character" unique_id=2071167483]
+mesh = SubResource("CapsuleMesh_agfs1")

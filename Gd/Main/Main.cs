@@ -29,7 +29,7 @@ public partial class Main : Node
 	{
 		await ToSignal(GetTree().CreateTimer(0.5), SceneTreeTimer.SignalName.Timeout);
 
-		GdGlobals.Session.HostMultiPlayer(8080);
+		GdGlobals.Session.StartSinglePlayer();
 
 		Console.WriteLine("Players:");
 

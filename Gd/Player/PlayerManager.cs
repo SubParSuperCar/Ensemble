@@ -31,6 +31,17 @@ public partial class PlayerManager : Node
 		var node = PlayerScene.Instantiate<PlayerHandle>();
 		node.Name = player.Name;
 
+		if (player == Players.Local)
+		{
+			var character = node.GetNode<CharacterBody3D>("Character");
+			character.SetScript(node.CharacterControllerScript);
+
+			var camera = CameraScene.Instantiate<Camera.Camera>();
+			camera.Focus = character;
+
+			node.AddChild(camera);
+		}
+
 		Nodes.Add(player.Id, node);
 		AddChild(node);
 	}

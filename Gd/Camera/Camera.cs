@@ -12,6 +12,7 @@ public partial class Camera : Node3D
 		InvisiCam
 	}
 
+	// TODO: Update Camera on CameraMode sets
 	[Export] public CameraMode Mode { get; set; }
 
 	[Export] public Godot.Collections.Dictionary<CameraMode, PackedScene> CameraScenes { get; set; } = [];
@@ -29,4 +30,11 @@ public partial class Camera : Node3D
 
 	[Export(PropertyHint.Range, "0,0,or_greater")]
 	public float KeyYawSpeed { get; set; }
+
+	public override void _Ready()
+	{
+		var scene = CameraScenes[Mode];
+		var node = scene.Instantiate();
+		AddChild(node);
+	}
 }

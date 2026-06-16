@@ -5,16 +5,70 @@ namespace Root.Gd.Player;
 public partial class CharacterController : CharacterBody3D
 {
 	[Export(PropertyHint.Range, "0,0,or_greater,suffix:m/s")]
-	public float WalkSpeed { get; set; }
+	public float WalkSpeed { get; set; } = 5;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,suffix:m/s")]
-	public float RunSpeed { get; set; }
+	public float RunSpeed { get; set; } = 10;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,suffix:m")]
-	public float JumpHeight { get; set; }
+	public float JumpHeight { get; set; } = 1;
 
 	[Export(PropertyHint.Range, "0,0,or_greater")]
-	public float TurnRate { get; set; }
+	public float TurnRate { get; set; } = 10;
 
-	[Export] public Node Camera { get; set; } = null!;
+	[Export] public Node3D Camera { get; set; } = null!;
+
+	public override void _Ready() =>
+		PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
+
+	public override void _PhysicsProcess(double delta)
+	{
+		var gravity = GetGravity();
+
+		if (!IsOnFloor())
+			Velocity += gravity * (float)delta;
+		else if (Input.IsActionPressed("jump"))
+		{
+			var velocity = Velocity;
+			velocity.Y = MathF.Sqrt(JumpHeight * 2f * -gravity.Y);
+
+			Velocity = velocity;
+		}
+
+		var inputDirection = Input.GetVector(
+			"strafe_left", "strafe_right",
+			"move_forward", "move_backward");
+
+		if (inputDirection != Vector2.Zero)
+		{
+			var velocity = Velocity;
+
+			// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+			var lookDirection = Camera?.GlobalBasis ?? Basis.Identity;
+			var moveDirection = lookDirection * new Vector3(inputDirection.X, 0, inputDirection.Y);
+			moveDirection.Y = 0;
+
+			var moveVelocity = Input.IsActionPressed("run") ? RunSpeed : WalkSpeed;
+			velocity.X = moveDirection.X * moveVelocity;
+			velocity.Z = moveDirection.Z * moveVelocity;
+
+			Velocity = velocity;
+
+			var rotation = Rotation;
+			var turnAngle = MathF.Atan2(moveDirection.X, moveDirection.Z);
+			rotation.Y = (float)Mathf.LerpAngle(rotation.Y, turnAngle, TurnRate * delta);
+
+			Rotation = rotation;
+		}
+		else
+		{
+			var velocity = Velocity;
+			velocity.X = 0;
+			velocity.Z = 0;
+
+			Velocity = velocity;
+		}
+
+		MoveAndSlide();
+	}
 }

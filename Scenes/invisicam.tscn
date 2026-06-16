@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://cswf0yojp7d6i"]
-
-[ext_resource type="Script" uid="uid://clsxb1rnwrf06" path="res://Gd/Camera/InvisiCam.cs" id="1_rms64"]
-
-[node name="InvisiCam" type="RayCast3D" unique_id=906288953]
-script = ExtResource("1_rms64")
-
-[node name="Camera" type="Camera3D" parent="." unique_id=1020402138]

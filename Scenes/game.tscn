@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://4rh6eyy8a1kh" path="res://Gd/Player/PlayerManager.cs" id="1_qxrlw"]
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://Scenes/player.tscn" id="2_iywne"]
-[ext_resource type="PackedScene" uid="uid://y6i76a7yj2rd" path="res://Scenes/camera.tscn" id="2_lbhrr"]
+[ext_resource type="PackedScene" uid="uid://y6i76a7yj2rd" path="res://Scenes/poppercam.tscn" id="2_lbhrr"]
 [ext_resource type="Script" uid="uid://dhx1cnqutwmh" path="res://Gd/Asset/AssetManager.cs" id="2_wrm1d"]
 [ext_resource type="Script" uid="uid://bm2ar186ikanf" path="res://Gd/Plot/PlotManager.cs" id="3_3dryh"]
 [ext_resource type="PackedScene" uid="uid://bctdhk6awxx0r" path="res://Scenes/plot.tscn" id="3_lnu2h"]
@@ -46,6 +46,7 @@ shadow_enabled = true
 script = ExtResource("1_qxrlw")
 PlayerScene = ExtResource("2_iywne")
 CameraScene = ExtResource("2_lbhrr")
+SpawnLocation = Vector3(0, 2, 0)
 
 [node name="Assets" type="Node" parent="." unique_id=633918342]
 script = ExtResource("2_wrm1d")

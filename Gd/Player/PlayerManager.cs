@@ -1,20 +1,18 @@
 using Godot;
 using Root.Core.Gd.Player;
-using Root.Gd.Camera;
 using Root.Gd.Global;
 
 namespace Root.Gd.Player;
 
+// TODO: Add methods or ways to access the nodes of each Player in the back-end
+// Since the back-end (GdGlobals.Players) is engine-agonistic/data-based its this classes responsibility to bridge the
+// gap for the nodes/actual game objects. Technically just adding/removing the nodes to the below dict is fine
 public partial class PlayerManager : Node
 {
 	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<string, PlayerHandle> Nodes { get; } = [];
 
 	[Export] public PackedScene PlayerScene { get; set; } = null!;
-
-	[Export] public PackedScene CameraScene { get; set; } = null!;
-
-	[Export] public Vector3 SpawnLocation { get; set; }
 
 	public override void _EnterTree()
 	{
@@ -27,13 +25,21 @@ public partial class PlayerManager : Node
 		Players.Removed += OnPlayerRemoved;
 	}
 
+	// Handle removal properly, but don't remove existing back-end player entries
+	public override void _ExitTree()
+	{
+		Players.Added -= OnPlayerAdded;
+		Players.Removed -= OnPlayerRemoved;
+
+		if (ReferenceEquals(GdGlobals.PlayerManager, this))
+			GdGlobals.PlayerManager = null!;
+	}
+
 	private void OnPlayerAdded(GdPlayer player)
 	{
 		var node = PlayerScene.Instantiate<PlayerHandle>();
+		node.Id = player.Id;
 		node.Name = player.Name;
-
-		if (player == Players.Local)
-			BuildLocalPlayer(node);
 
 		Nodes.Add(player.Id, node);
 		AddChild(node);
@@ -43,25 +49,5 @@ public partial class PlayerManager : Node
 	{
 		if (Nodes.Remove(player.Id, out var node))
 			node.QueueFree();
-	}
-
-	// TODO: Move to PlayerHandle?
-	private void BuildLocalPlayer(PlayerHandle node)
-	{
-		// Give the PlayerHandle a Controller & Camera
-		var character = node.GetNode<CharacterBody3D>("Character");
-		character.Position = SpawnLocation;
-
-		// Swap the CharacterBody3D for a CharacterController inheriting CharacterBody3D
-		var instanceId = character.GetInstanceId();
-		character.SetScript(node.CharacterControllerScript);
-
-		var controller = (CharacterController)InstanceFromId(instanceId)!;
-
-		var camera = CameraScene.Instantiate<PopperCam>();
-		camera.Focus = controller;
-		node.AddChild(camera);
-
-		controller.Camera = camera;
 	}
 }

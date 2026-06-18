@@ -7,10 +7,13 @@ using Root.Gd.Player;
 using Root.Gd.Plot;
 using Root.Session.Gd;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace Root.Gd.Globals;
 
 public static class GdGlobals
 {
+	// ReSharper disable once MemberCanBePrivate.Global
 	public static GdCore Core =>
 		GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} has not been instantiated");
 

@@ -7,6 +7,7 @@ public class HoleyArray<T> where T : class
 	private readonly List<T?> _slots = [];
 	private int _lowestFreeSlot;
 
+	// ReSharper disable once MemberCanBePrivate.Global
 	public int Count { get; private set; }
 
 	public event Action<int, T>? Added;

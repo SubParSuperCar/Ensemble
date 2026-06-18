@@ -6,6 +6,7 @@ namespace Root.Gd.Asset;
 
 public partial class AssetManager : Node
 {
+	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<int, PackedScene> Scenes { get; } = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater")]

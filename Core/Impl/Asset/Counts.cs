@@ -7,6 +7,7 @@ public class Counts<TKey> where TKey : notnull
 {
 	private readonly Dictionary<TKey, int> _byKey = [];
 
+	// ReSharper disable once UnusedMember.Global
 	public IReadOnlyDictionary<TKey, int> All => _byKey;
 	public int Total { get; private set; }
 

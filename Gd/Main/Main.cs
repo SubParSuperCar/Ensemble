@@ -23,7 +23,7 @@ public partial class Main : Node
 		GdGlobals.Session.SessionStopped -= OnSessionStopped;
 	}
 
-	public void OnSessionStarted()
+	private void OnSessionStarted()
 	{
 		if (_gameScene is not null)
 			return;
@@ -32,7 +32,7 @@ public partial class Main : Node
 		AddChild(_gameScene);
 	}
 
-	public void OnSessionStopped()
+	private void OnSessionStopped()
 	{
 		if (_gameScene is null)
 			return;

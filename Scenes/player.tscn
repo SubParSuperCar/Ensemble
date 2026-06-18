@@ -12,7 +12,7 @@
 script = ExtResource("1_3vyb7")
 CharacterControllerScript = ExtResource("2_g2els")
 CameraScene = ExtResource("3_6t5aa")
-SpawnLocation = Vector3(0, 3, 0)
+SpawnLocation = Vector3(0, 2.5, 0)
 
 [node name="Character" type="CharacterBody3D" parent="." unique_id=989463391]
 

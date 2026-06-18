@@ -80,6 +80,7 @@ public partial class PopperCam : SpringArm3D
 
 					break;
 				case InputEventMouseButton { Pressed: true } button:
+					// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
 					switch (button.ButtonIndex)
 					{
 						case MouseButton.WheelUp:
@@ -106,6 +107,7 @@ public partial class PopperCam : SpringArm3D
 		if (dollyInput != 0)
 			DollyLog(dollyInput * DollyRate * (float)delta);
 
+		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;
 
 		var rotation = Rotation;

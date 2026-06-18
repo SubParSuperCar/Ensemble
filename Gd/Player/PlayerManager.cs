@@ -6,6 +6,7 @@ namespace Root.Gd.Player;
 
 public partial class PlayerManager : Node
 {
+	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<string, PlayerHandle> Nodes { get; } = [];
 
 	[Export] public PackedScene PlayerScene { get; set; } = null!;

@@ -1,6 +1,9 @@
 using System.Globalization;
 using System.Runtime.InteropServices;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
+
 namespace Root.Core.Api.Asset;
 
 public enum VariantType : byte
@@ -58,6 +61,7 @@ public readonly struct Variant : IEquatable<Variant>
 		_text = value;
 	}
 
+	// ReSharper disable once UnusedMember.Global
 	public bool IsNull => Type == VariantType.Null;
 
 	public static implicit operator Variant(bool value) => new(value);
@@ -98,8 +102,7 @@ public readonly struct Variant : IEquatable<Variant>
 		return Type switch
 		{
 			VariantType.Null => true,
-			VariantType.Bool => _bits == other._bits,
-			VariantType.NumInt => _bits == other._bits,
+			VariantType.Bool or VariantType.NumInt => _bits == other._bits,
 			VariantType.NumDouble => _real.Equals(other._real),
 			VariantType.Str => string.Equals(_text, other._text, StringComparison.Ordinal),
 			_ => false
@@ -111,8 +114,7 @@ public readonly struct Variant : IEquatable<Variant>
 	public override int GetHashCode() => Type switch
 	{
 		VariantType.Null => Type.GetHashCode(),
-		VariantType.Bool => HashCode.Combine(Type, _bits),
-		VariantType.NumInt => HashCode.Combine(Type, _bits),
+		VariantType.Bool or VariantType.NumInt => HashCode.Combine(Type, _bits),
 		VariantType.NumDouble => HashCode.Combine(Type, _real),
 		VariantType.Str => HashCode.Combine(Type, _text),
 		_ => Type.GetHashCode()

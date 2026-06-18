@@ -14,6 +14,7 @@ public partial class GdPlayer : RefCounted
 	public string Id => _player.Id.ToString();
 	public string Name => _player.Name;
 
+	// ReSharper disable once MemberCanBePrivate.Global
 	public double UtcCreatedAtUnix => new DateTimeOffset(_player.UtcCreatedAt).ToUnixTimeSeconds();
 
 	public static GdPlayer From(IPlayer player)

@@ -43,6 +43,7 @@ public partial class CharacterController : CharacterBody3D
 		{
 			var velocity = Velocity;
 
+			// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 			var lookDirection = Camera?.GlobalBasis ?? Basis.Identity;
 			var moveDirection = lookDirection * new Vector3(inputDirection.X, 0, inputDirection.Y);
 			moveDirection.Y = 0;

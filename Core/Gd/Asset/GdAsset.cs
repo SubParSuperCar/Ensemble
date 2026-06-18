@@ -4,6 +4,8 @@ using Godot.Collections;
 using Root.Core.Api.Asset;
 using Convert = Root.Core.Gd.Util.Convert;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Root.Core.Gd.Asset;
 
 [GlobalClass]

@@ -5,6 +5,7 @@ namespace Root.Gd.Plot;
 
 public partial class PlotManager : Node
 {
+	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<int, PlotHandle> Nodes { get; } = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater")]

@@ -136,9 +136,7 @@ public partial class GdSession : Node
 		}
 		else
 		{
-			Players.Add(id);
 			Players.SetLocal(id);
-
 			AddPeer(1, id);
 		}
 

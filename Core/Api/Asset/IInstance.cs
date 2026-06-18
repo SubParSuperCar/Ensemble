@@ -1,0 +1,14 @@
+using System.Numerics;
+
+namespace Root.Core.Api.Asset;
+
+public interface IInstance
+{
+	int Id { get; }
+
+	IAsset Asset { get; }
+	IProperties Properties { get; }
+
+	Vector3 Position { get; }
+	Quaternion Rotation { get; }
+}

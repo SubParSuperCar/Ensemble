@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://y6i76a7yj2rd"]
+
+[ext_resource type="Script" uid="uid://b0x362repu2pg" path="res://Gd/Camera/PopperCam.cs" id="1_375tr"]
+
+[node name="Popper" type="SpringArm3D" unique_id=920130265]
+top_level = true
+script = ExtResource("1_375tr")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=229170312]

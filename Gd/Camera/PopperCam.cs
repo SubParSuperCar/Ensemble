@@ -82,13 +82,13 @@ public partial class PopperCam : SpringArm3D
 			switch (@event)
 			{
 				case InputEventMouseMotion motion when Input.IsActionPressed("orbit_camera"):
-					var radiansPerPixel = (float)Math.Tau * OrbitRatio / _viewportDiagonal;
+					var radiansPerPixel = Mathf.Tau * OrbitRatio / _viewportDiagonal;
 					_yaw -= motion.Relative.X * radiansPerPixel; // Left/right (should wrap around TAU?), below up/down
 					_pitch = Mathf.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
 
 					break;
 				case InputEventMouseButton { Pressed: true } button: // 'Pressed' just means the input was started
-																	 // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+					// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
 					switch (button.ButtonIndex)
 					{
 						case MouseButton.WheelUp:

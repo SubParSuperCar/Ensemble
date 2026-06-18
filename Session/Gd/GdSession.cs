@@ -128,17 +128,10 @@ public partial class GdSession : Node
 	private void OnSessionStarted()
 	{
 		var id = LoadOrCreatePlayerId();
+		Players.SetLocal(id);
 
 		if (_session is { IsServer: false })
-		{
-			Players.SetLocal(id);
 			RpcId(1, MethodName.RpcSyncPlayerAdded, id, string.Empty);
-		}
-		else
-		{
-			Players.SetLocal(id);
-			AddPeer(1, id);
-		}
 
 		EmitSignal(SignalName.SessionStarted);
 	}

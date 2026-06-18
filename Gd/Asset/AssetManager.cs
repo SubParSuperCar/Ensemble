@@ -1,6 +1,6 @@
 using Godot;
 using Godot.Collections;
-using Root.Gd.Global;
+using Root.Gd.Globals;
 
 namespace Root.Gd.Asset;
 

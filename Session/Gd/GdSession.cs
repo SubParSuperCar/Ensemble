@@ -1,5 +1,5 @@
 using Godot;
-using Root.Gd.Global;
+using Root.Gd.Globals;
 using Root.Session.Api;
 using Root.Session.Impl;
 

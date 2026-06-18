@@ -13,9 +13,9 @@ public class Plot : IPlot
 		Instances = new Instances(assets, maxInstanceCount);
 	}
 
-	public int Id { get; }
-
 	public Occupants Occupants { get; }
+
+	public int Id { get; }
 	public IInstances Instances { get; }
 
 	IOccupants IPlot.Occupants => Occupants;

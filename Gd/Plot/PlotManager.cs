@@ -1,5 +1,5 @@
 using Godot;
-using Root.Gd.Global;
+using Root.Gd.Globals;
 
 namespace Root.Gd.Plot;
 

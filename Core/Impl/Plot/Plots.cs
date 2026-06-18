@@ -7,10 +7,10 @@ namespace Root.Core.Impl.Plot;
 public class Plots : IPlots
 {
 	private readonly IAssets _assets;
+	private readonly Dictionary<int, IPlot> _byId = [];
 	private readonly int? _defaultMaxInstanceCount;
 	private readonly int? _defaultMaxOccupantCount;
 	private readonly OccupantRegistry _occupants;
-	private readonly Dictionary<int, IPlot> _byId = [];
 
 	public Plots(
 		IAssets assets,

@@ -1,4 +1,4 @@
-namespace Root.Core.Impl.Global;
+namespace Root.Core.Impl.Globals;
 
 public static class Globals
 {

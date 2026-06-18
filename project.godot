@@ -16,9 +16,9 @@ config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 
 [autoload]
 
-StdOut="uid://dyy4tfc4jbfhf"
-Core="uid://bul62obagk5sq"
-Session="uid://cpsoqqdvbxx5r"
+StdOut="uid://bfgcmjvl143kb"
+Core="uid://bk1271e1u6i1a"
+Session="uid://dk0x8nmog8sid"
 
 [dotnet]
 

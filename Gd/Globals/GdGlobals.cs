@@ -7,7 +7,7 @@ using Root.Gd.Player;
 using Root.Gd.Plot;
 using Root.Session.Gd;
 
-namespace Root.Gd.Global;
+namespace Root.Gd.Globals;
 
 public static class GdGlobals
 {

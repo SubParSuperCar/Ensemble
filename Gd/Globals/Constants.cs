@@ -1,4 +1,4 @@
-namespace Root.Gd.Global;
+namespace Root.Gd.Globals;
 
 public static class Constants
 {

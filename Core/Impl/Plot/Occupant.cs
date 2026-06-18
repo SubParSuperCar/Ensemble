@@ -5,8 +5,8 @@ namespace Root.Core.Impl.Plot;
 
 public class Occupant(IPlayer player) : IOccupant
 {
-	public IPlayer Player { get; } = player;
 	public Plot? Plot { get; private set; }
+	public IPlayer Player { get; } = player;
 
 	IPlot? IOccupant.Plot => Plot;
 

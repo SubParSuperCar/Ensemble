@@ -81,7 +81,7 @@ public partial class Watchdog : Node
 				if (missCount < MaxMissCount)
 					continue;
 
-				Environment.FailFast($"Main thread missed {missCount} heartbeats (~{missCount * PollIntervalMs} ms)");
+				Environment.FailFast($"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms");
 				return;
 			}
 		}

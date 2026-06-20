@@ -18,12 +18,18 @@ public partial class AssetManager : Node
 	[GeneratedRegex(@"\.t?scn$", RegexOptions.IgnoreCase)]
 	private static partial Regex SceneExtensionRegex();
 
-	public override void _EnterTree()
+	public override void _Ready()
 	{
 		GdGlobals.AssetManager = this;
 
 		ScanDirectory(Constants.AssetsDir);
 		Assets.Lock();
+	}
+
+	public override void _ExitTree()
+	{
+		if (ReferenceEquals(GdGlobals.AssetManager, this))
+			GdGlobals.AssetManager = null!;
 	}
 
 	public PackedScene GetPacked(int assetId)

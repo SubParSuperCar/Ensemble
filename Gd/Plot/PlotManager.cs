@@ -14,7 +14,7 @@ public partial class PlotManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxTotalInstanceCount { get; set; }
 
-	public override void _EnterTree()
+	public override void _Ready()
 	{
 		GdGlobals.PlotManager = this;
 
@@ -22,5 +22,11 @@ public partial class PlotManager : Node
 			Plots.Add(handle.Id, handle.MaxOccupantCount, handle.MaxTotalInstanceCount);
 
 		Plots.Lock();
+	}
+
+	public override void _ExitTree()
+	{
+		if (ReferenceEquals(GdGlobals.PlotManager, this))
+			GdGlobals.PlotManager = null!;
 	}
 }

@@ -7,6 +7,10 @@ on:
 jobs:
   job:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v6
 
@@ -18,9 +22,14 @@ jobs:
           target: src.zip
           args: -i
 
-      - run: sha256sum src.zip
+      - run: sha256sum src.zip > src.zip.sha256
 
-      - uses: actions/upload-artifact@v7
-        with:
-          name: src
-          path: src.zip
+      - run: cat src.zip.sha256
+
+      - run: |
+          gh release create "${{ github.ref_name }}" \
+            --generate-notes \
+            src.zip \
+            src.zip.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

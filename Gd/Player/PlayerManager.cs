@@ -1,12 +1,14 @@
+using System.Globalization;
 using Godot;
 using Root.Core.Gd.Player;
 using Root.Gd.Globals;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Root.Gd.Player;
 
 public partial class PlayerManager : Node
 {
-	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<string, PlayerHandle> Nodes { get; } = [];
 
 	[Export] public PackedScene PlayerScene { get; set; } = null!;
@@ -30,6 +32,13 @@ public partial class PlayerManager : Node
 		if (ReferenceEquals(GdGlobals.PlayerManager, this))
 			GdGlobals.PlayerManager = null!;
 	}
+
+	public PlayerHandle GetHandle(GdPlayer player)
+		=> Nodes.TryGetValue(player.Id, out var handle)
+			? handle
+			: throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture,
+				$"Handle with player id {player.Id} not found"));
 
 	private void OnPlayerAdded(GdPlayer player)
 	{

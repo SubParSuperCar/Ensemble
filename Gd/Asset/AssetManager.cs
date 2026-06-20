@@ -1,22 +1,33 @@
+using System.Globalization;
 using Godot;
 using Godot.Collections;
 using Root.Gd.Globals;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Root.Gd.Asset;
 
 public partial class AssetManager : Node
 {
-	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<int, PackedScene> Scenes { get; } = [];
 
-	[Export(PropertyHint.Range, "-1,0,1,or_greater")]
+	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
 
 	public override void _EnterTree()
 	{
 		GdGlobals.AssetManager = this;
+
 		ScanDirectory(Constants.AssetsDir);
+		Assets.Lock();
 	}
+
+	public PackedScene GetPacked(int assetId)
+		=> Scenes.TryGetValue(assetId, out var packed)
+			? packed
+			: throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture,
+				$"Packed scene with asset id {assetId} not found"));
 
 	private void ScanDirectory(string path)
 	{

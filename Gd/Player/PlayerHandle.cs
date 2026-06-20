@@ -1,10 +1,15 @@
 using Godot;
+using Root.Core.Gd.Plot;
 using Root.Gd.Camera;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Root.Gd.Player;
 
 public partial class PlayerHandle : Node
 {
+	private GdOccupant _occupant = null!;
+
 	[Export] public Script CharacterControllerScript { get; set; } = null!;
 
 	[Export] public PackedScene CameraScene { get; set; } = null!;
@@ -13,24 +18,45 @@ public partial class PlayerHandle : Node
 
 	public string Id { get; set; } = null!;
 
+	public CharacterBody3D Character { get; private set; } = null!;
+	public PopperCam Camera { get; private set; } = null!;
+
 	public override void _Ready()
 	{
+		Character = GetNode<CharacterBody3D>("Character");
+
 		if (Id != Players.Local?.Id)
 			return;
 
-		var character = GetNode<CharacterBody3D>("Character");
-		character.Position = SpawnLocation;
-
-		var instanceId = character.GetInstanceId();
-		character.SetScript(CharacterControllerScript);
+		var instanceId = Character.GetInstanceId();
+		Character.SetScript(CharacterControllerScript);
 
 		var controller = (CharacterController)InstanceFromId(instanceId)!;
 		controller.SetPhysicsProcess(true);
 
-		var camera = CameraScene.Instantiate<PopperCam>();
-		camera.Focus = controller;
-		AddChild(camera);
+		Camera = CameraScene.Instantiate<PopperCam>();
+		Camera.Focus = controller;
+		AddChild(Camera);
 
-		controller.Camera = camera;
+		controller.Camera = Camera;
+	}
+
+	public override void _EnterTree()
+	{
+		_occupant = Plots.GetOccupant(Id);
+
+		OnPlotChanged(_occupant.Plot);
+		_occupant.PlotChanged += OnPlotChanged;
+	}
+
+	public override void _ExitTree() => _occupant.PlotChanged -= OnPlotChanged;
+
+	private void OnPlotChanged(GdPlot? plot)
+	{
+		if (plot?.Id is not { } id)
+			return;
+
+		var node = PlotManager.Nodes[id];
+		Character.GlobalPosition = node.GlobalPosition;
 	}
 }

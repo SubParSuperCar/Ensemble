@@ -34,10 +34,10 @@ jobs:
       - shell: bash
         run: |
           set -euo pipefail
-          TAG="build-${{ github.run_id }}"
+          TAG="src-${{ github.run_id }}"
           gh release create "$TAG" \
-            --prerelease \
             --target "${{ github.sha }}" \
+            --prerelease \
             --generate-notes \
             src.zip \
             src.zip.sha256

@@ -74,6 +74,7 @@ Id = 3
 shape = SubResource("BoxShape3D_i6g32")
 
 [node name="Mesh" type="MeshInstance3D" parent="World/Ground" unique_id=2078281976]
+cast_shadow = 0
 mesh = SubResource("PlaneMesh_i6g32")
 
 [node name="Plots Base" type="StaticBody3D" parent="World" unique_id=523232624]
@@ -84,4 +85,5 @@ shape = SubResource("ConcavePolygonShape3D_1l0tm")
 
 [node name="Mesh" type="MeshInstance3D" parent="World/Plots Base" unique_id=1689705007]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.625, 0)
+cast_shadow = 0
 mesh = ExtResource("7_1l0tm")

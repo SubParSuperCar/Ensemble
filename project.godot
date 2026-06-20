@@ -20,6 +20,20 @@ StdOut="uid://bfgcmjvl143kb"
 Core="uid://bk1271e1u6i1a"
 Session="uid://dk0x8nmog8sid"
 
+[debug]
+
+settings/stdout/print_fps=true
+settings/stdout/verbose_stdout.editor=true
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/mode=2
+window/stretch/aspect="expand"
+window/vsync/vsync_mode=0
+window/size/mode.editor=0
+
 [dotnet]
 
 project/assembly_name="Game"
@@ -104,8 +118,11 @@ orbit_camera={
 
 [physics]
 
+3d/run_on_separate_thread=true
 3d/physics_engine="Jolt Physics"
+common/physics_interpolation=true
 
 [rendering]
 
-anti_aliasing/quality/msaa_3d=2
+driver/threads/thread_model=2
+anti_aliasing/quality/screen_space_aa=1

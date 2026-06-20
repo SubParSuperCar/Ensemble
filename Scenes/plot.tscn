@@ -38,4 +38,5 @@ top_level = true
 shape = SubResource("BoxShape3D_sbat0")
 
 [node name="Mesh" type="MeshInstance3D" parent="Base" unique_id=890436308]
+cast_shadow = 0
 mesh = SubResource("PlaneMesh_f03gw")

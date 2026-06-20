@@ -14,11 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - run: |
+      - shell: bash
+        run: |
+          set -euo pipefail
           mkdir src
           rsync -a . src/ \
-            --exclude .git \
-            --exclude .github
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=src
 
       - uses: timo-reymann/deterministic-zip-gh-action@v1
         with:
@@ -28,11 +31,13 @@ jobs:
 
       - run: sha256sum src.zip > src.zip.sha256
 
-      - run: cat src.zip.sha256
-
-      - run: |
-          gh release create "${{ github.run_number }}" \
+      - shell: bash
+        run: |
+          set -euo pipefail
+          TAG="build-${{ github.run_id }}"
+          gh release create "$TAG" \
             --prerelease \
+            --target "${{ github.sha }}" \
             --generate-notes \
             src.zip \
             src.zip.sha256

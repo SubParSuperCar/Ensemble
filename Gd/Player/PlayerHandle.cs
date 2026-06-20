@@ -24,6 +24,7 @@ public partial class PlayerHandle : Node
 	public override void _Ready()
 	{
 		Character = GetNode<CharacterBody3D>("Character");
+		Character.Position = SpawnLocation;
 
 		if (Id != Players.Local?.Id)
 			return;
@@ -44,8 +45,6 @@ public partial class PlayerHandle : Node
 	public override void _EnterTree()
 	{
 		_occupant = Plots.GetOccupant(Id);
-
-		OnPlotChanged(_occupant.Plot);
 		_occupant.PlotChanged += OnPlotChanged;
 	}
 

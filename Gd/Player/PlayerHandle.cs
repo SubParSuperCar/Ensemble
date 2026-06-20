@@ -24,7 +24,7 @@ public partial class PlayerHandle : Node
 	public override void _Ready()
 	{
 		Character = GetNode<CharacterBody3D>("Character");
-		Character.Position = SpawnLocation;
+		Character.GlobalPosition = SpawnLocation;
 
 		if (Id != Players.Local?.Id)
 			return;

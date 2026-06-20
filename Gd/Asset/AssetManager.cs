@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Godot;
 using Godot.Collections;
 using Root.Gd.Globals;
@@ -13,6 +14,9 @@ public partial class AssetManager : Node
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
+
+	[GeneratedRegex(@"\.t?scn$", RegexOptions.IgnoreCase)]
+	private static partial Regex SceneExtensionRegex();
 
 	public override void _EnterTree()
 	{
@@ -44,7 +48,7 @@ public partial class AssetManager : Node
 
 			if (directory.CurrentIsDir())
 				ScanDirectory(entryPath);
-			else if (entry.EndsWith(".tscn", StringComparison.OrdinalIgnoreCase))
+			else if (SceneExtensionRegex().IsMatch(entryPath))
 				RegisterScene(entryPath);
 		}
 

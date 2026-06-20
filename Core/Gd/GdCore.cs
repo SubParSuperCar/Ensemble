@@ -15,7 +15,7 @@ public partial class GdCore : Node
 		private set
 		{
 			field = value;
-			Console.WriteLine($"{nameof(GdCore)}.{nameof(Instance)} has been set");
+			Console.WriteLine($"{nameof(GdCore)}.{nameof(Instance)} set");
 		}
 	}
 

@@ -30,7 +30,7 @@ public partial class GdSession : Node
 		private set
 		{
 			field = value;
-			Console.WriteLine($"{nameof(GdSession)}.{nameof(Instance)} has been set");
+			Console.WriteLine($"{nameof(GdSession)}.{nameof(Instance)} set");
 		}
 	}
 

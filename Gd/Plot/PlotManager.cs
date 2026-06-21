@@ -1,6 +1,9 @@
 using System.Globalization;
 using Godot;
+using Root.Core.Gd.Plot;
 using Root.Gd.Globals;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Root.Gd.Plot;
 
@@ -30,7 +33,8 @@ public partial class PlotManager : Node
 			GdGlobals.PlotManager = null!;
 	}
 
-	// ReSharper disable once MemberCanBePrivate.Global
+	public PlotHandle GetHandle(GdPlot plot) => GetHandle(plot.Id);
+
 	public PlotHandle GetHandle(int plotId)
 		=> Handles.TryGetValue(plotId, out var handle)
 			? handle

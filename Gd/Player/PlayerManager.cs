@@ -32,6 +32,8 @@ public partial class PlayerManager : Node
 			GdGlobals.PlayerManager = null!;
 	}
 
+	public PlayerHandle GetHandle(GdPlayer player) => GetHandle(player.Id);
+
 	public PlayerHandle GetHandle(string playerId)
 		=> Handles.TryGetValue(playerId, out var handle)
 			? handle

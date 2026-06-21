@@ -7,3 +7,4 @@ top_level = true
 script = ExtResource("1_375tr")
 
 [node name="Camera" type="Camera3D" parent="." unique_id=229170312]
+fov = 90.0

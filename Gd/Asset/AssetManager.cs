@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Godot;
 using Godot.Collections;
+using Root.Core.Gd.Asset;
 using Root.Gd.Globals;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -31,6 +32,8 @@ public partial class AssetManager : Node
 		if (ReferenceEquals(GdGlobals.AssetManager, this))
 			GdGlobals.AssetManager = null!;
 	}
+
+	public PackedScene GetPacked(GdAsset asset) => GetPacked(asset.Id);
 
 	public PackedScene GetPacked(int assetId)
 		=> Scenes.TryGetValue(assetId, out var packed)

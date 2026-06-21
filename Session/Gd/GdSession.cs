@@ -34,6 +34,8 @@ public partial class GdSession : Node
 		}
 	}
 
+	public SessionMode Mode => _session?.Mode ?? SessionMode.Inactive;
+
 	public bool IsServer => _session?.IsServer ?? false;
 	public bool IsActive => _session?.IsActive ?? false;
 
@@ -107,14 +109,14 @@ public partial class GdSession : Node
 
 		OS.LowProcessorUsageMode = true;
 
+		_session.StopSession();
+
 		var session = _session;
 		_session = null;
 
 		session.Started -= OnSessionStarted;
 		session.Stopped -= OnSessionStopped;
 		session.Failed -= OnSessionFailed;
-
-		session.StopSession();
 	}
 
 	private void StartSession()

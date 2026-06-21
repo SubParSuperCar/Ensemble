@@ -21,6 +21,9 @@ public partial class PlotManager : Node
 	{
 		GdGlobals.PlotManager = this;
 
+		if (Plots.IsLocked)
+			return;
+
 		foreach (var handle in GetChildren().OfType<PlotHandle>())
 			Plots.Add(handle.Id, handle.MaxOccupantCount, handle.MaxTotalInstanceCount);
 

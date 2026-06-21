@@ -8,7 +8,6 @@ public partial class PopperCam : SpringArm3D
 	private float _dollyMinLog;
 	private Vector2 _mousePosition;
 	private float _pitch;
-	private Viewport _viewport = null!;
 	private float _viewportDiagonal;
 	private float _yaw;
 
@@ -57,10 +56,8 @@ public partial class PopperCam : SpringArm3D
 		_dollyMinLog = MathF.Log(DollyMin);
 		_dollyMaxLog = MathF.Log(DollyMax);
 
-		_viewport = GetViewport();
-
 		UpdateViewportDiagonal();
-		_viewport.SizeChanged += UpdateViewportDiagonal;
+		GetViewport().SizeChanged += UpdateViewportDiagonal;
 	}
 
 	public override void _Notification(int what)
@@ -132,19 +129,19 @@ public partial class PopperCam : SpringArm3D
 
 	private void UpdateViewportDiagonal()
 	{
-		var size = _viewport.GetVisibleRect().Size;
+		var size = GetViewport().GetVisibleRect().Size;
 		_viewportDiagonal = MathF.Max(size.Length(), 1);
 	}
 
 	private void CaptureMouse()
 	{
-		_mousePosition = _viewport.GetMousePosition();
+		_mousePosition = GetViewport().GetMousePosition();
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 	}
 
 	private void ReleaseMouse()
 	{
 		Input.MouseMode = Input.MouseModeEnum.Visible;
-		_viewport.WarpMouse(_mousePosition);
+		GetViewport().WarpMouse(_mousePosition);
 	}
 }

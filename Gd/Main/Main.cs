@@ -9,43 +9,9 @@ public partial class Main : Node
 
 	[Export] public PackedScene GameScene { get; set; } = null!;
 
-	public override void _Ready() => _ = StartSinglePlayer();
-
-	public override void _EnterTree()
+	public override void _Ready()
 	{
-		GdGlobals.Session.SessionStarted += OnSessionStarted;
-		GdGlobals.Session.SessionStopped += OnSessionStopped;
-	}
-
-	public override void _ExitTree()
-	{
-		GdGlobals.Session.SessionStarted -= OnSessionStarted;
-		GdGlobals.Session.SessionStopped -= OnSessionStopped;
-	}
-
-	private void OnSessionStarted()
-	{
-		if (_gameScene is not null)
-			return;
-
-		_gameScene = GameScene.Instantiate();
-		AddChild(_gameScene);
-	}
-
-	private void OnSessionStopped()
-	{
-		if (_gameScene is null)
-			return;
-
-		_gameScene.QueueFree();
-		_gameScene = null;
-	}
-
-	private async Task StartSinglePlayer()
-	{
-		await ToSignal(GetTree().CreateTimer(0.5), SceneTreeTimer.SignalName.Timeout);
-
-		GdGlobals.Session.StartSinglePlayer();
+		_ = ResetSinglePlayerSessionAsync();
 
 		Console.WriteLine("Players:");
 
@@ -61,5 +27,58 @@ public partial class Main : Node
 
 		foreach (var plot in Plots.GetAll())
 			Console.WriteLine(plot.ToDict());
+	}
+
+	public override void _EnterTree()
+	{
+		GdGlobals.Session.SessionStarted += OnSessionStarted;
+		GdGlobals.Session.SessionStopped += OnSessionStopped;
+	}
+
+	public override void _ExitTree()
+	{
+		GdGlobals.Session.SessionStarted -= OnSessionStarted;
+		GdGlobals.Session.SessionStopped -= OnSessionStopped;
+	}
+
+	public override void _Input(InputEvent @event)
+	{
+		if (Input.IsActionJustPressed("reset"))
+			_ = ResetSinglePlayerSessionAsync();
+	}
+
+	private async Task ResetSinglePlayerSessionAsync()
+	{
+		Console.WriteLine("Resetting single player session...");
+
+		GdGlobals.Session.StopSession();
+
+		await ToSignal(GetTree().CreateTimer(0.25), SceneTreeTimer.SignalName.Timeout);
+
+		GdGlobals.Session.StartSinglePlayer();
+
+		Console.WriteLine("Single player session reset");
+	}
+
+	private void OnSessionStarted()
+	{
+		Console.WriteLine($"Session started with mode {GdGlobals.Session.Mode}");
+
+		if (_gameScene is not null)
+			return;
+
+		_gameScene = GameScene.Instantiate();
+		AddChild(_gameScene);
+	}
+
+	private void OnSessionStopped()
+	{
+		Console.WriteLine("Session stopped");
+
+		if (_gameScene is null)
+			return;
+
+		_gameScene.QueueFree();
+		_gameScene = null;
 	}
 }

@@ -2,7 +2,6 @@ namespace Root.Session.Api;
 
 public interface ISession
 {
-	// ReSharper disable once UnusedMember.Global
 	SessionMode Mode { get; }
 
 	bool IsServer { get; }

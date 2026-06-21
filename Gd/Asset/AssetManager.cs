@@ -23,6 +23,9 @@ public partial class AssetManager : Node
 	{
 		GdGlobals.AssetManager = this;
 
+		if (Assets.IsLocked)
+			return;
+
 		ScanDirectory(Constants.AssetsDir);
 		Assets.Lock();
 	}

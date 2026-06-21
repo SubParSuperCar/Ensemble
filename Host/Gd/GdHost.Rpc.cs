@@ -3,9 +3,9 @@ using System.Threading.RateLimiting;
 using Godot;
 using Godot.Collections;
 
-namespace Root.Session.Gd;
+namespace Root.Host.Gd;
 
-public partial class GdSession
+public partial class GdHost
 {
 	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
 

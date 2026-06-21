@@ -1,11 +1,11 @@
 using Godot;
 using Root.Gd.Globals;
-using Root.Session.Api;
-using Root.Session.Impl;
+using Root.Host.Api;
+using Root.Host.Impl;
 
-namespace Root.Session.Gd;
+namespace Root.Host.Gd;
 
-public partial class GdSession : Node
+public partial class GdHost : Node
 {
 	[Signal]
 	public delegate void PeerConnectedEventHandler(int peerId);
@@ -24,13 +24,13 @@ public partial class GdSession : Node
 
 	private ISession? _session;
 
-	public static GdSession? Instance
+	public static GdHost? Instance
 	{
 		get;
 		private set
 		{
 			field = value;
-			Console.WriteLine($"{nameof(GdSession)}.{nameof(Instance)} set");
+			Console.WriteLine($"{nameof(GdHost)}.{nameof(Instance)} set");
 		}
 	}
 

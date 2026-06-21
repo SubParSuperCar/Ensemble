@@ -1,5 +1,8 @@
 * text=auto eol=lf
 
+**/bin/
+**/obj/
+
 /.godot
 /.idea
 *.uid

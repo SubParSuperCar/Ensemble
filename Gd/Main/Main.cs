@@ -31,14 +31,14 @@ public partial class Main : Node
 
 	public override void _EnterTree()
 	{
-		GdGlobals.Session.SessionStarted += OnSessionStarted;
-		GdGlobals.Session.SessionStopped += OnSessionStopped;
+		GdGlobals.Host.SessionStarted += OnSessionStarted;
+		GdGlobals.Host.SessionStopped += OnSessionStopped;
 	}
 
 	public override void _ExitTree()
 	{
-		GdGlobals.Session.SessionStarted -= OnSessionStarted;
-		GdGlobals.Session.SessionStopped -= OnSessionStopped;
+		GdGlobals.Host.SessionStarted -= OnSessionStarted;
+		GdGlobals.Host.SessionStopped -= OnSessionStopped;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -51,18 +51,18 @@ public partial class Main : Node
 	{
 		Console.WriteLine("Resetting single player session...");
 
-		GdGlobals.Session.StopSession();
+		GdGlobals.Host.StopSession();
 
 		await ToSignal(GetTree().CreateTimer(0.25), SceneTreeTimer.SignalName.Timeout);
 
-		GdGlobals.Session.StartSinglePlayer();
+		GdGlobals.Host.StartSinglePlayer();
 
 		Console.WriteLine("Single player session reset");
 	}
 
 	private void OnSessionStarted()
 	{
-		Console.WriteLine($"Session started with mode {GdGlobals.Session.Mode}");
+		Console.WriteLine($"Session started with mode {GdGlobals.Host.Mode}");
 
 		if (_gameScene is not null)
 			return;

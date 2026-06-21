@@ -1,6 +1,6 @@
-namespace Root.Session.Gd;
+namespace Root.Host.Gd;
 
-public partial class GdSession
+public partial class GdHost
 {
 	// ReSharper disable once CollectionNeverQueried.Local
 	private readonly Dictionary<int, string> _playerIdsByPeerId = [];

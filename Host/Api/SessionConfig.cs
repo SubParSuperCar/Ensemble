@@ -1,6 +1,6 @@
 // ReSharper disable NotAccessedPositionalProperty.Global
 
-namespace Root.Session.Api;
+namespace Root.Host.Api;
 
 public interface ISessionConfig;
 

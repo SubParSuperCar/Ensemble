@@ -1,7 +1,7 @@
 using Godot;
-using Root.Session.Api;
+using Root.Host.Api;
 
-namespace Root.Session.Impl;
+namespace Root.Host.Impl;
 
 public class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 {

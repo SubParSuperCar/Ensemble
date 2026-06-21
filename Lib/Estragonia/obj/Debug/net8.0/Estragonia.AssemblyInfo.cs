@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright © Julien Lebosquain - 2023-2026")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.3.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.3.1+6ca2f0d078f47d80233929d16880d1e76d149b6f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.3.1+09953606f18b0a847d0ec05ffb9eb472a1ce6796")]
 [assembly: System.Reflection.AssemblyProductAttribute("Estragonia")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Estragonia")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.3.1.0")]

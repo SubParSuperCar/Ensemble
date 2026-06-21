@@ -34,10 +34,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EditorConfigFiles Remove=".editorconfig"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Remove="Lib\**"/>
     </ItemGroup>
 

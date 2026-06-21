@@ -2,7 +2,7 @@ using System.Runtime.CompilerServices;
 using Godot;
 using Godot.Collections;
 using Root.Core.Api.Asset;
-using Convert = Root.Core.Gd.Util.Convert;
+using Root.Core.Gd.Util;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -19,7 +19,7 @@ public partial class GdAsset : RefCounted
 
 	public int MaxInstanceCount => _source.MaxInstanceCount;
 
-	public Dictionary Properties => Convert.ToGodotProperties(_source.Properties);
+	public Dictionary Properties => Converter.ToGodotProperties(_source.Properties);
 
 	public static GdAsset From(IAsset asset)
 		=> Wrappers.GetValue(asset, static source => new GdAsset { _source = source });

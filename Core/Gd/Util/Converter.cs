@@ -5,7 +5,7 @@ using Variant = Godot.Variant;
 
 namespace Root.Core.Gd.Util;
 
-public static class Convert
+public static class Converter
 {
 	public static Vector3 ToGodot(this System.Numerics.Vector3 vector) => new(vector.X, vector.Y, vector.Z);
 	public static System.Numerics.Vector3 FromGodot(this Vector3 vector) => new(vector.X, vector.Y, vector.Z);

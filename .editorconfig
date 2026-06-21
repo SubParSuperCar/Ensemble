@@ -4,9 +4,11 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.cs]
+[*.{cs,axaml}]
 indent_style = tab
 indent_size = 4
+
+[*.cs]
 max_line_length = 120
 csharp_prefer_braces = false
 csharp_preserve_single_line_blocks = true

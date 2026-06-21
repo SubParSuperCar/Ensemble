@@ -17,10 +17,12 @@ run/low_processor_mode=true
 
 [autoload]
 
+Avalonia="uid://cc7amrjp3eyda"
 Watchdog="uid://bwmiudn0jayqo"
 StdOut="uid://bfgcmjvl143kb"
 Core="uid://bk1271e1u6i1a"
 Host="uid://dk0x8nmog8sid"
+Ui="uid://g1rdjoicbycw"
 
 [debug]
 

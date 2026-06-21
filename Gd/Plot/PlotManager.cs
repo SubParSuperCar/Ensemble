@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 using Root.Gd.Globals;
 
@@ -5,8 +6,7 @@ namespace Root.Gd.Plot;
 
 public partial class PlotManager : Node
 {
-	// ReSharper disable once MemberCanBePrivate.Global
-	public Godot.Collections.Dictionary<int, PlotHandle> Nodes { get; } = [];
+	public Godot.Collections.Dictionary<int, PlotHandle> Handles { get; } = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxOccupantCount { get; set; }
@@ -29,4 +29,12 @@ public partial class PlotManager : Node
 		if (ReferenceEquals(GdGlobals.PlotManager, this))
 			GdGlobals.PlotManager = null!;
 	}
+
+	// ReSharper disable once MemberCanBePrivate.Global
+	public PlotHandle GetHandle(int plotId)
+		=> Handles.TryGetValue(plotId, out var handle)
+			? handle
+			: throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture,
+				$"Handle with plot id {plotId} not found"));
 }

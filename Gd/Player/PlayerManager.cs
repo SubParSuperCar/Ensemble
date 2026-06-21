@@ -9,7 +9,7 @@ namespace Root.Gd.Player;
 
 public partial class PlayerManager : Node
 {
-	public Godot.Collections.Dictionary<string, PlayerHandle> Nodes { get; } = [];
+	public Godot.Collections.Dictionary<string, PlayerHandle> Handles { get; } = [];
 
 	[Export] public PackedScene PlayerScene { get; set; } = null!;
 
@@ -33,12 +33,12 @@ public partial class PlayerManager : Node
 			GdGlobals.PlayerManager = null!;
 	}
 
-	public PlayerHandle GetHandle(GdPlayer player)
-		=> Nodes.TryGetValue(player.Id, out var handle)
+	public PlayerHandle GetHandle(string playerId)
+		=> Handles.TryGetValue(playerId, out var handle)
 			? handle
 			: throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Handle with player id {player.Id} not found"));
+				$"Handle with player id {playerId} not found"));
 
 	private void OnPlayerAdded(GdPlayer player)
 	{
@@ -46,13 +46,13 @@ public partial class PlayerManager : Node
 		node.Id = player.Id;
 		node.Name = player.Name;
 
-		Nodes.Add(player.Id, node);
+		Handles.Add(player.Id, node);
 		AddChild(node);
 	}
 
 	private void OnPlayerRemoved(GdPlayer player)
 	{
-		if (Nodes.Remove(player.Id, out var node))
+		if (Handles.Remove(player.Id, out var node))
 			node.QueueFree();
 	}
 }

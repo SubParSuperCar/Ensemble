@@ -55,7 +55,7 @@ public partial class PlayerHandle : Node
 		if (plot?.Id is not { } id)
 			return;
 
-		var node = PlotManager.Nodes[id];
+		var node = PlotManager.Handles[id];
 		Character.GlobalPosition = node.GlobalPosition;
 	}
 }

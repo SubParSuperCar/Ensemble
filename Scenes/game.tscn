@@ -37,8 +37,8 @@ data = PackedVector3Array(-76, 0.38459998, -16, -76, 0.38459998, 16, -80, -0.615
 [node name="Environment" type="WorldEnvironment" parent="." unique_id=63043784]
 environment = SubResource("Environment_v158k")
 
-[node name="Light" type="DirectionalLight3D" parent="." unique_id=670235298]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, 0)
+[node name="Sunlight" type="DirectionalLight3D" parent="." unique_id=670235298]
+transform = Transform3D(0.70710677, -0.65328145, 0.27059805, 0, 0.38268343, 0.9238795, -0.70710677, -0.65328145, 0.27059805, 0, 0, 0)
 shadow_enabled = true
 
 [node name="Players" type="Node" parent="." unique_id=677572147]

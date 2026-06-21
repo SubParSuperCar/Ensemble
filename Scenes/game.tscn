@@ -10,6 +10,7 @@
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i6g32"]
 sky_top_color = Color(0.24749999, 0.49874997, 0.75, 1)
 sky_horizon_color = Color(0.5019608, 0.62352943, 0.7490196, 1)
+energy_multiplier = 1.5
 
 [sub_resource type="Sky" id="Sky_1l0tm"]
 sky_material = SubResource("ProceduralSkyMaterial_i6g32")
@@ -44,6 +45,7 @@ environment = SubResource("Environment_v158k")
 
 [node name="Sunlight" type="DirectionalLight3D" parent="." unique_id=670235298]
 transform = Transform3D(0.70710677, -0.65328145, 0.27059805, 0, 0.38268343, 0.9238795, -0.70710677, -0.65328145, 0.27059805, 0, 0, 0)
+light_energy = 1.5
 shadow_enabled = true
 
 [node name="Players" type="Node" parent="." unique_id=677572147]

@@ -1,0 +1,251 @@
+using System;
+using System.Buffers;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text.Unicode;
+using Avalonia;
+using Avalonia.Platform;
+using Avalonia.Skia;
+using Godot;
+using SkiaSharp;
+using static Estragonia.VkInterop;
+using Environment = System.Environment;
+
+namespace Estragonia;
+
+/// <summary>Bridges the Godot Vulkan renderer with a Skia context used by Avalonia.</summary>
+internal sealed class GodotVkSkiaGpu : IGodotSkiaGpu
+{
+	private readonly VkBarrierHelper _barrierHelper;
+	private readonly GRContext _grContext;
+	private readonly uint _queueFamilyIndex;
+
+	private readonly RenderingDevice _renderingDevice;
+
+	public unsafe GodotVkSkiaGpu()
+	{
+		_renderingDevice = RenderingServer.GetRenderingDevice();
+
+		if (_renderingDevice is null)
+			throw new NotSupportedException("Estragonia is only supported on Vulkan renderers (Forward+ or Mobile)");
+
+		var vkInstance = new VkInstance(GetIntPtrDriverResource(RenderingDevice.DriverResource.TopmostObject));
+		var vkPhysicalDevice =
+			new VkPhysicalDevice(GetIntPtrDriverResource(RenderingDevice.DriverResource.PhysicalDevice));
+		var vkDevice = new VkDevice(GetIntPtrDriverResource(RenderingDevice.DriverResource.LogicalDevice));
+		var vkQueue = new VkQueue(GetIntPtrDriverResource(RenderingDevice.DriverResource.CommandQueue));
+		var vkQueueFamilyIndex =
+			(uint)_renderingDevice.GetDriverResource(RenderingDevice.DriverResource.QueueFamily, default, 0UL);
+
+		if (!TryLoadVulkanLibrary(out var vkLibrary))
+			throw new DllNotFoundException("Couldn't find Vulkan loader library");
+
+		var vkGetInstanceProcAddr =
+			(delegate* unmanaged[Stdcall]<VkInstance, byte*, IntPtr>)NativeLibrary.GetExport(vkLibrary,
+				"vkGetInstanceProcAddr");
+		var vkGetDeviceProcAddr =
+			(delegate* unmanaged[Stdcall]<VkDevice, byte*, IntPtr>)NativeLibrary.GetExport(vkLibrary,
+				"vkGetDeviceProcAddr");
+
+		var deviceApi = new VkDeviceApi(vkDevice, vkGetDeviceProcAddr);
+
+		var vkContext = new GRVkBackendContext
+		{
+			VkInstance = vkInstance.Handle,
+			VkPhysicalDevice = vkPhysicalDevice.Handle,
+			VkDevice = vkDevice.Handle,
+			VkQueue = vkQueue.Handle,
+			GraphicsQueueIndex = vkQueueFamilyIndex,
+			GetProcedureAddress = GetVkProcAddress
+		};
+
+		if (GRContext.CreateVulkan(vkContext) is not { } grContext)
+			throw new InvalidOperationException(
+				"Couldn't create Vulkan context. Note: SkiaSharp does not include Vulkan support on macOS.");
+
+		_grContext = grContext;
+		_queueFamilyIndex = vkQueueFamilyIndex;
+		_barrierHelper = new VkBarrierHelper(vkDevice, vkQueue, deviceApi, vkQueueFamilyIndex);
+		return;
+
+		IntPtr GetVkProcAddress(string name, IntPtr instance, IntPtr device)
+		{
+			Span<byte> utf8Name = stackalloc byte[128];
+
+			// The stackalloc buffer should always be sufficient for proc names
+			if (Utf8.FromUtf16(name, utf8Name[..^1], out _, out var bytesWritten) != OperationStatus.Done)
+				throw new InvalidOperationException($"Invalid proc name {name}");
+
+			utf8Name[bytesWritten] = 0;
+
+			fixed (byte* utf8NamePtr = utf8Name)
+			{
+				return device != IntPtr.Zero
+					? vkGetDeviceProcAddr(new VkDevice(device), utf8NamePtr)
+					: vkGetInstanceProcAddr(new VkInstance(instance), utf8NamePtr);
+			}
+		}
+
+		IntPtr GetIntPtrDriverResource(RenderingDevice.DriverResource resource)
+		{
+			var result = (IntPtr)_renderingDevice.GetDriverResource(resource, default, 0UL);
+
+			return result == IntPtr.Zero
+				? throw new InvalidOperationException($"Godot returned null for driver resource {resource}")
+				: result;
+		}
+	}
+
+	public bool IsLost
+		=> _grContext.IsAbandoned;
+
+	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) => null;
+
+	IDisposable IPlatformGraphicsContext.EnsureCurrent() => EmptyDisposable.Instance;
+
+	ISkiaGpuRenderTarget? ISkiaGpu.TryCreateRenderTarget(IEnumerable<object> surfaces) =>
+		surfaces.OfType<GodotSkiaSurface>().FirstOrDefault() is { } surface
+			? new GodotSkiaRenderTarget(surface, _grContext, _barrierHelper)
+			: null;
+
+	public IGodotSkiaSurface CreateSurface(PixelSize size, double renderScaling)
+	{
+		size = new PixelSize(Math.Max(size.Width, 1), Math.Max(size.Height, 1));
+
+		var gdRdTextureFormat = new RDTextureFormat
+		{
+			Format = RenderingDevice.DataFormat.R8G8B8A8Unorm,
+			TextureType = RenderingDevice.TextureType.Type2D,
+			Width = (uint)size.Width,
+			Height = (uint)size.Height,
+			Depth = 1,
+			ArrayLayers = 1,
+			Mipmaps = 1,
+			Samples = RenderingDevice.TextureSamples.Samples1,
+			UsageBits = RenderingDevice.TextureUsageBits.SamplingBit
+						| RenderingDevice.TextureUsageBits.CanCopyFromBit
+						| RenderingDevice.TextureUsageBits.CanCopyToBit
+						| RenderingDevice.TextureUsageBits.ColorAttachmentBit
+		};
+
+		var gdRdTexture = _renderingDevice.TextureCreate(gdRdTextureFormat, new RDTextureView());
+
+		var vkImage =
+			new VkImage(_renderingDevice.GetDriverResource(RenderingDevice.DriverResource.Texture, gdRdTexture, 0UL));
+		if (vkImage.Handle == 0UL)
+			throw new InvalidOperationException("Couldn't get Vulkan image from Godot texture");
+
+		var vkFormat =
+			(uint)_renderingDevice.GetDriverResource(RenderingDevice.DriverResource.TextureDataFormat, gdRdTexture,
+				0UL);
+		if (vkFormat == 0U)
+			throw new InvalidOperationException("Couldn't get Vulkan format from Godot texture");
+
+		var grVkImageInfo = new GRVkImageInfo
+		{
+			CurrentQueueFamily = _queueFamilyIndex,
+			Format = vkFormat,
+			Image = vkImage.Handle,
+			ImageLayout = (uint)VkImageLayout.COLOR_ATTACHMENT_OPTIMAL,
+			ImageTiling = (uint)VkImageTiling.OPTIMAL,
+			ImageUsageFlags = (uint)(
+				VkImageUsageFlags.SAMPLED_BIT |
+				VkImageUsageFlags.TRANSFER_SRC_BIT |
+				VkImageUsageFlags.TRANSFER_DST_BIT |
+				VkImageUsageFlags.COLOR_ATTACHMENT_BIT
+			),
+			LevelCount = 1,
+			SampleCount = 1,
+			Protected = false,
+			SharingMode = (uint)VkSharingMode.EXCLUSIVE
+		};
+
+		var skSurface = SKSurface.Create(
+			_grContext,
+			new GRBackendRenderTarget(size.Width, size.Height, 1, grVkImageInfo),
+			GRSurfaceOrigin.TopLeft,
+			SKColorType.Rgba8888,
+			new SKSurfaceProperties(SKPixelGeometry.RgbHorizontal)
+		);
+
+		if (skSurface is null)
+			throw new InvalidOperationException("Couldn't create Skia surface from Vulkan image");
+
+		var gdTexture = new Texture2Drd
+		{
+			TextureRdRid = gdRdTexture
+		};
+
+		var surface = new GodotSkiaSurface(
+			skSurface,
+			gdTexture,
+			vkImage,
+			VkImageLayout.UNDEFINED,
+			_renderingDevice,
+			renderScaling,
+			_barrierHelper
+		);
+
+		surface.TransitionLayoutTo(VkImageLayout.COLOR_ATTACHMENT_OPTIMAL);
+
+		return surface;
+	}
+
+	ISkiaSurface? ISkiaGpu.TryCreateSurface(PixelSize size, ISkiaGpuRenderSession? session) =>
+		session is GodotSkiaGpuRenderSession godotSession
+			? CreateSurface(size, godotSession.Surface.RenderScaling)
+			: null;
+
+	public void Dispose()
+	{
+		_grContext.Dispose();
+		_barrierHelper.Dispose();
+	}
+
+	// Logic should match volk:
+	// https://github.com/godotengine/godot/blob/e4e024ab88efe74677769395886bc1b09eccbac7/thirdparty/volk/volk.c#L71-L115
+	private static bool TryLoadVulkanLibrary(out IntPtr handle)
+	{
+		if (OperatingSystem.IsWindows())
+			return TryLoadByName("vulkan-1.dll", out handle);
+
+		if (!OperatingSystem.IsMacOS() && !OperatingSystem.IsIOS())
+			return TryLoadByName("libvulkan.so.1", out handle)
+				   || TryLoadByName("libvulkan.so", out handle);
+		// On macOS, Godot bundles MoltenVK statically in the executable.
+		// Try loading from the main program first to avoid conflicts with external MoltenVK.
+		if (TryLoadFromMainProgram(out handle))
+			return true;
+
+		return TryLoadByName("libvulkan.dylib", out handle)
+			   || TryLoadByName("libvulkan.1.dylib", out handle)
+			   || TryLoadByName("libMoltenVK.dylib", out handle)
+			   || TryLoadByPath("vulkan.framework/vulkan", out handle)
+			   || TryLoadByPath("MoltenVK.framework/MoltenVK", out handle)
+			   || (Environment.GetEnvironmentVariable("DYLD_FALLBACK_LIBRARY_PATH") is null
+				   && (TryLoadByPath("/opt/homebrew/lib/libvulkan.dylib", out handle) // Apple Silicon
+					   || TryLoadByPath("/opt/homebrew/lib/libMoltenVK.dylib", out handle) // Apple Silicon
+					   || TryLoadByPath("/usr/local/lib/libvulkan.dylib", out handle) // Intel
+					   || TryLoadByPath("/usr/local/lib/libMoltenVK.dylib", out handle)) // Intel
+			   );
+
+		static bool TryLoadFromMainProgram(out IntPtr handle)
+		{
+			handle = NativeLibrary.GetMainProgramHandle();
+			// Verify the main program exports Vulkan symbols
+			return handle != IntPtr.Zero
+				   && NativeLibrary.TryGetExport(handle, "vkGetInstanceProcAddr", out _);
+		}
+
+		static bool TryLoadByName(string libraryName, out IntPtr handle)
+		{
+			return NativeLibrary.TryLoad(libraryName, typeof(GodotVkSkiaGpu).Assembly, null, out handle);
+		}
+
+		static bool TryLoadByPath(string libraryPath, out IntPtr handle)
+		{
+			return NativeLibrary.TryLoad(libraryPath, out handle);
+		}
+	}
+}

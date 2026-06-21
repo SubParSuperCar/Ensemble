@@ -20,7 +20,7 @@ run/low_processor_mode=true
 Watchdog="uid://bwmiudn0jayqo"
 StdOut="uid://bfgcmjvl143kb"
 Core="uid://bk1271e1u6i1a"
-Session="uid://dk0x8nmog8sid"
+Host="uid://dk0x8nmog8sid"
 
 [debug]
 

@@ -7,6 +7,8 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_agfs1"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_agfs1"]
+radial_segments = 4
+rings = 0
 
 [node name="Player" type="Node3D" unique_id=1257470157]
 script = ExtResource("1_3vyb7")

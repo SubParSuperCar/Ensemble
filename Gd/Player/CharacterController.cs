@@ -5,16 +5,16 @@ namespace Root.Gd.Player;
 public partial class CharacterController : CharacterBody3D
 {
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]
-	public float WalkSpeed { get; set; } = 5;
+	public float WalkSpeed { get; set; } = 6;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]
-	public float RunSpeed { get; set; } = 10;
+	public float RunSpeed { get; set; } = 16;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
-	public float JumpHeight { get; set; } = 1;
+	public float JumpHeight { get; set; } = 1.25f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
-	public float TurnRate { get; set; } = 10;
+	public float TurnRate { get; set; } = 11.25f;
 
 	[Export] public Node3D Camera { get; set; } = null!;
 

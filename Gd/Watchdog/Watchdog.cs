@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using Godot;
 using Environment = System.Environment;
 
@@ -81,7 +82,9 @@ public partial class Watchdog : Node
 				if (missCount < MaxMissCount)
 					continue;
 
-				Environment.FailFast($"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms");
+				Environment.FailFast(string.Create(CultureInfo.InvariantCulture,
+					$"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms"));
+
 				return;
 			}
 		}

@@ -15,8 +15,8 @@ public partial class AssetManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
 
-	[GeneratedRegex(@"\.t?scn$", RegexOptions.IgnoreCase)]
-	private static partial Regex SceneExtensionRegex();
+	[GeneratedRegex(@"\.t?scn$", RegexOptions.IgnoreCase, 100)]
+	private static partial Regex SceneExtensionRegex { get; }
 
 	public override void _Ready()
 	{
@@ -54,7 +54,7 @@ public partial class AssetManager : Node
 
 			if (directory.CurrentIsDir())
 				ScanDirectory(entryPath);
-			else if (SceneExtensionRegex().IsMatch(entryPath))
+			else if (SceneExtensionRegex.IsMatch(entryPath))
 				RegisterScene(entryPath);
 		}
 

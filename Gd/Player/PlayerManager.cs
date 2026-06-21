@@ -1,4 +1,3 @@
-using System.Globalization;
 using Godot;
 using Root.Core.Gd.Player;
 using Root.Gd.Globals;
@@ -36,9 +35,7 @@ public partial class PlayerManager : Node
 	public PlayerHandle GetHandle(string playerId)
 		=> Handles.TryGetValue(playerId, out var handle)
 			? handle
-			: throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Handle with player id {playerId} not found"));
+			: throw new InvalidOperationException($"Handle with player id {playerId} not found");
 
 	private void OnPlayerAdded(GdPlayer player)
 	{

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Root.Core.Impl.Util;
@@ -43,7 +44,8 @@ public class HoleyArray<T> where T : class
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
 
 		if (TryGet(index, out _))
-			throw new InvalidOperationException($"Item at index {index} already exists");
+			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
+				$"Item at index {index} already exists"));
 
 		Insert(item, index);
 
@@ -56,7 +58,8 @@ public class HoleyArray<T> where T : class
 	public void Remove(int index)
 	{
 		if (!TryGet(index, out var item))
-			throw new InvalidOperationException($"Item at index {index} not found");
+			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
+				$"Item at index {index} not found"));
 
 		_slots[index] = null;
 		Count--;

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using Godot;
 
@@ -10,5 +11,6 @@ public class StdOutWriter : TextWriter
 	public override void Write(string? value) => Print(value);
 	public override void WriteLine(string? value) => Print(value);
 
-	private static void Print(string? message) => GD.Print($"[{DateTime.Now:HH:mm:ss.fff}]: {message}");
+	private static void Print(string? message) =>
+		GD.Print(string.Create(CultureInfo.InvariantCulture, $"[{DateTime.Now:HH:mm:ss.fff}]: {message}"));
 }

@@ -24,6 +24,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Meziantou.Analyzer" Version="3.0.108">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.9"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="10.0.9"/>
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.9"/>

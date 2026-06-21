@@ -5,8 +5,8 @@ namespace Root.Core.Impl.Util;
 
 public class HoleyArray<T> where T : class
 {
-	private readonly List<T?> _slots = [];
-	private int _lowestFreeSlot;
+	private readonly List<T?> _items = [];
+	private int _nextFreeIndex;
 
 	// ReSharper disable once MemberCanBePrivate.Global
 	public int Count { get; private set; }
@@ -14,13 +14,13 @@ public class HoleyArray<T> where T : class
 	public event Action<int, T>? Added;
 	public event Action<int, T>? Removed;
 
-	public IEnumerable<T> GetAll() => _slots.OfType<T>();
+	public IEnumerable<T> GetAll() => _items.OfType<T>();
 
 	public bool TryGet(int index, out T item)
 	{
-		var span = CollectionsMarshal.AsSpan(_slots);
+		var items = CollectionsMarshal.AsSpan(_items);
 
-		if (index >= 0 && index < span.Length && span[index] is { } found)
+		if (index >= 0 && index < items.Length && items[index] is { } found)
 		{
 			item = found;
 			return true;
@@ -32,11 +32,11 @@ public class HoleyArray<T> where T : class
 
 	public void Add(T item)
 	{
-		var slot = _lowestFreeSlot;
-		Insert(item, slot);
+		var index = _nextFreeIndex;
+		Place(item, index);
 
-		_lowestFreeSlot = ScanForFreeSlot(slot + 1);
-		Added?.Invoke(slot, item);
+		_nextFreeIndex = FindFreeIndex(index + 1);
+		Added?.Invoke(index, item);
 	}
 
 	public void AddAt(T item, int index)
@@ -47,10 +47,10 @@ public class HoleyArray<T> where T : class
 			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
 				$"Item at index {index} already exists"));
 
-		Insert(item, index);
+		Place(item, index);
 
-		if (index == _lowestFreeSlot)
-			_lowestFreeSlot = ScanForFreeSlot(index + 1);
+		if (index == _nextFreeIndex)
+			_nextFreeIndex = FindFreeIndex(index + 1);
 
 		Added?.Invoke(index, item);
 	}
@@ -61,34 +61,34 @@ public class HoleyArray<T> where T : class
 			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
 				$"Item at index {index} not found"));
 
-		_slots[index] = null;
+		_items[index] = null;
 		Count--;
 
-		if (index < _lowestFreeSlot)
-			_lowestFreeSlot = index;
+		if (index < _nextFreeIndex)
+			_nextFreeIndex = index;
 
 		Removed?.Invoke(index, item);
 	}
 
-	private void Insert(T item, int index)
+	private void Place(T item, int index)
 	{
-		while (_slots.Count <= index)
-			_slots.Add(null);
+		while (_items.Count <= index)
+			_items.Add(null);
 
-		_slots[index] = item;
+		_items[index] = item;
 		Count++;
 	}
 
-	private int ScanForFreeSlot(int from)
+	private int FindFreeIndex(int from)
 	{
-		var span = CollectionsMarshal.AsSpan(_slots);
+		var items = CollectionsMarshal.AsSpan(_items);
 
-		for (var index = from; index < span.Length; index++)
+		for (var index = from; index < items.Length; index++)
 		{
-			if (span[index] is null)
+			if (items[index] is null)
 				return index;
 		}
 
-		return span.Length;
+		return items.Length;
 	}
 }

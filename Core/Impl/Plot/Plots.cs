@@ -7,10 +7,10 @@ namespace Root.Core.Impl.Plot;
 public class Plots : IPlots
 {
 	private readonly IAssets _assets;
-	private readonly Dictionary<int, IPlot> _byId = [];
 	private readonly int? _defaultMaxInstanceCount;
 	private readonly int? _defaultMaxOccupantCount;
 	private readonly OccupantRegistry _occupants;
+	private readonly Dictionary<int, IPlot> _plotsById = [];
 
 	public Plots(
 		IAssets assets,
@@ -30,7 +30,7 @@ public class Plots : IPlots
 		_defaultMaxInstanceCount = defaultMaxInstanceCount;
 	}
 
-	public IReadOnlyDictionary<int, IPlot> All => _byId;
+	public IReadOnlyDictionary<int, IPlot> All => _plotsById;
 	public bool IsLocked { get; private set; }
 
 	public event Action<IPlot>? Added;
@@ -48,7 +48,7 @@ public class Plots : IPlots
 		if (maxInstanceCount is { } instanceCount)
 			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount);
 
-		if (_byId.ContainsKey(id))
+		if (_plotsById.ContainsKey(id))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Plot with id {id} already exists"));
@@ -59,7 +59,7 @@ public class Plots : IPlots
 			maxOccupantCount ?? _defaultMaxOccupantCount,
 			maxInstanceCount ?? _defaultMaxInstanceCount);
 
-		_byId.Add(id, plot);
+		_plotsById.Add(id, plot);
 
 		Added?.Invoke(plot);
 		return plot;
@@ -72,7 +72,7 @@ public class Plots : IPlots
 
 		IPlot? plot = null;
 
-		if (plotId is { } id && !_byId.TryGetValue(id, out plot))
+		if (plotId is { } id && !_plotsById.TryGetValue(id, out plot))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Plot with id {plotId} not found"));

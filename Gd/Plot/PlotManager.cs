@@ -25,7 +25,10 @@ public partial class PlotManager : Node
 			return;
 
 		foreach (var handle in GetChildren().OfType<PlotHandle>())
+		{
+			Handles.Add(handle.Id, handle);
 			Plots.Add(handle.Id, handle.MaxOccupantCount, handle.MaxTotalInstanceCount);
+		}
 
 		Plots.Lock();
 	}

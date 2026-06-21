@@ -12,28 +12,28 @@ public partial class GdPlot : RefCounted
 	[Signal]
 	public delegate void IsSpawnedChangedEventHandler(bool isSpawned);
 
-	private static readonly ConditionalWeakTable<IPlot, GdPlot> Cache = [];
-	private IPlot _plot = null!;
+	private static readonly ConditionalWeakTable<IPlot, GdPlot> Wrappers = [];
+	private IPlot _source = null!;
 
-	public int Id => _plot.Id;
-	public bool IsSpawned => _plot.IsSpawned;
+	public int Id => _source.Id;
+	public bool IsSpawned => _source.IsSpawned;
 
-	public GdInstances Instances => field ??= GdInstances.From(_plot.Instances);
-	public GdOccupants Occupants => field ??= GdOccupants.From(_plot.Occupants);
+	public GdInstances Instances => field ??= GdInstances.From(_source.Instances);
+	public GdOccupants Occupants => field ??= GdOccupants.From(_source.Occupants);
 
-	public static GdPlot From(IPlot plot) => Cache.GetValue(plot,
-		static value =>
+	public static GdPlot From(IPlot plot) => Wrappers.GetValue(plot,
+		static source =>
 		{
-			var wrapper = new GdPlot { _plot = value };
-			value.IsSpawnedChanged += isSpawned => wrapper.EmitSignal(SignalName.IsSpawnedChanged, isSpawned);
+			var wrapper = new GdPlot { _source = source };
+			source.IsSpawnedChanged += isSpawned => wrapper.EmitSignal(SignalName.IsSpawnedChanged, isSpawned);
 
 			return wrapper;
 		});
 
-	public void Spawn() => _plot.Spawn();
-	public void Despawn() => _plot.Despawn();
+	public void Spawn() => _source.Spawn();
+	public void Despawn() => _source.Despawn();
 
-	public void Reset() => _plot.Reset();
+	public void Reset() => _source.Reset();
 
 	public Dictionary ToDict() => new()
 	{
@@ -41,5 +41,5 @@ public partial class GdPlot : RefCounted
 		["isSpawned"] = IsSpawned
 	};
 
-	public override string ToString() => _plot.ToString()!;
+	public override string ToString() => _source.ToString()!;
 }

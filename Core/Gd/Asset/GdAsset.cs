@@ -11,18 +11,18 @@ namespace Root.Core.Gd.Asset;
 [GlobalClass]
 public partial class GdAsset : RefCounted
 {
-	private static readonly ConditionalWeakTable<IAsset, GdAsset> Cache = [];
-	private IAsset _asset = null!;
+	private static readonly ConditionalWeakTable<IAsset, GdAsset> Wrappers = [];
+	private IAsset _source = null!;
 
-	public int Id => _asset.Id;
-	public string Name => _asset.Name;
+	public int Id => _source.Id;
+	public string Name => _source.Name;
 
-	public int MaxInstanceCount => _asset.MaxInstanceCount;
+	public int MaxInstanceCount => _source.MaxInstanceCount;
 
-	public Dictionary Properties => Convert.ToGodotProperties(_asset.Properties);
+	public Dictionary Properties => Convert.ToGodotProperties(_source.Properties);
 
 	public static GdAsset From(IAsset asset)
-		=> Cache.GetValue(asset, static value => new GdAsset { _asset = value });
+		=> Wrappers.GetValue(asset, static source => new GdAsset { _source = source });
 
 	public Dictionary ToDict() => new()
 	{
@@ -32,5 +32,5 @@ public partial class GdAsset : RefCounted
 		["properties"] = Properties
 	};
 
-	public override string ToString() => _asset.ToString()!;
+	public override string ToString() => _source.ToString()!;
 }

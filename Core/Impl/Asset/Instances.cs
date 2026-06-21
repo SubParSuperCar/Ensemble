@@ -8,8 +8,8 @@ namespace Root.Core.Impl.Asset;
 public class Instances : IInstances
 {
 	private readonly IAssets _assets;
-	private readonly HoleyArray<Instance> _byId = new();
-	private readonly Counts<int> _perAsset = new();
+	private readonly Counts<int> _countsByAssetId = new();
+	private readonly HoleyArray<Instance> _instancesById = new();
 
 	public Instances(IAssets assets, int? maxCount = null)
 	{
@@ -19,18 +19,18 @@ public class Instances : IInstances
 		_assets = assets;
 		MaxCount = maxCount ?? Unlimited;
 
-		_byId.Added += (id, instance) =>
+		_instancesById.Added += (id, instance) =>
 		{
 			instance.Id = id;
 			Added?.Invoke(instance);
 		};
 
-		_byId.Removed += (_, instance) => Removed?.Invoke(instance);
+		_instancesById.Removed += (_, instance) => Removed?.Invoke(instance);
 	}
 
-	public IEnumerable<IInstance> All => _byId.GetAll();
+	public IEnumerable<IInstance> All => _instancesById.GetAll();
 
-	public int Count => _perAsset.Total;
+	public int Count => _countsByAssetId.Total;
 	public int MaxCount { get; }
 
 	public event Action<IInstance>? Added;
@@ -38,7 +38,7 @@ public class Instances : IInstances
 
 	public bool TryGet(int instanceId, out IInstance instance)
 	{
-		if (!_byId.TryGet(instanceId, out var found))
+		if (!_instancesById.TryGet(instanceId, out var found))
 		{
 			instance = null!;
 			return false;
@@ -68,11 +68,11 @@ public class Instances : IInstances
 		var instance = new Instance(asset, position, rotation);
 
 		if (instanceId is { } slot)
-			_byId.AddAt(instance, slot);
+			_instancesById.AddAt(instance, slot);
 		else
-			_byId.Add(instance);
+			_instancesById.Add(instance);
 
-		_perAsset.Increment(assetId);
+		_countsByAssetId.Increment(assetId);
 		return instance;
 	}
 
@@ -83,19 +83,19 @@ public class Instances : IInstances
 				CultureInfo.InvariantCulture,
 				$"Instance with id {instanceId} not found"));
 
-		_byId.Remove(instanceId);
-		_perAsset.Decrement(instance.Asset.Id);
+		_instancesById.Remove(instanceId);
+		_countsByAssetId.Decrement(instance.Asset.Id);
 	}
 
 	public void Clear()
 	{
-		foreach (var instance in _byId.GetAll().ToArray())
+		foreach (var instance in _instancesById.GetAll().ToArray())
 			Remove(instance.Id);
 	}
 
 	public (int Count, int MaxCount) GetCount(int assetId)
 		=> _assets.All.TryGetValue(assetId, out var asset)
-			? (_perAsset.Get(assetId), asset.MaxInstanceCount)
+			? (_countsByAssetId.Get(assetId), asset.MaxInstanceCount)
 			: throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Asset with id {assetId} not found"));

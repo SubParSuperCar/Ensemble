@@ -17,23 +17,23 @@ public partial class GdOccupants : RefCounted
 	[Signal]
 	public delegate void RemovedEventHandler(GdOccupant occupant);
 
-	private static readonly ConditionalWeakTable<IOccupants, GdOccupants> Cache = [];
-	private IOccupants _occupants = null!;
+	private static readonly ConditionalWeakTable<IOccupants, GdOccupants> Wrappers = [];
+	private IOccupants _source = null!;
 
-	public int Count => _occupants.All.Count;
-	public int MaxCount => _occupants.MaxCount;
+	public int Count => _source.All.Count;
+	public int MaxCount => _source.MaxCount;
 
-	public GdOccupant? Owner => _occupants.Owner is { } owner ? GdOccupant.From(owner) : null;
+	public GdOccupant? Owner => _source.Owner is { } owner ? GdOccupant.From(owner) : null;
 
-	public static GdOccupants From(IOccupants occupants) => Cache.GetValue(occupants,
-		static value =>
+	public static GdOccupants From(IOccupants occupants) => Wrappers.GetValue(occupants,
+		static source =>
 		{
-			var wrapper = new GdOccupants { _occupants = value };
+			var wrapper = new GdOccupants { _source = source };
 
-			value.Added += occupant => wrapper.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
-			value.Removed += occupant => wrapper.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
+			source.Added += occupant => wrapper.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
+			source.Removed += occupant => wrapper.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
 
-			value.OwnerChanged += occupant
+			source.OwnerChanged += occupant
 				=> wrapper.EmitSignal(
 					SignalName.OwnerChanged,
 					(occupant is null ? null : GdOccupant.From(occupant))!);
@@ -42,7 +42,7 @@ public partial class GdOccupants : RefCounted
 		});
 
 	public GdOccupant? Get(string playerId)
-		=> Guid.TryParse(playerId, out var guid) && _occupants.All.TryGetValue(guid, out var occupant)
+		=> Guid.TryParse(playerId, out var guid) && _source.All.TryGetValue(guid, out var occupant)
 			? GdOccupant.From(occupant)
 			: null;
 
@@ -50,7 +50,7 @@ public partial class GdOccupants : RefCounted
 	{
 		var result = new Array<GdOccupant>();
 
-		foreach (var occupant in _occupants.All.Values)
+		foreach (var occupant in _source.All.Values)
 			result.Add(GdOccupant.From(occupant));
 
 		return result;
@@ -65,16 +65,16 @@ public partial class GdOccupants : RefCounted
 		if (playerId != string.Empty && Guid.TryParse(playerId, out var guid))
 			id = guid;
 
-		_occupants.SetOwner(id);
+		_source.SetOwner(id);
 	}
 
-	public void Clear() => _occupants.Clear();
+	public void Clear() => _source.Clear();
 
 	public Array<Dictionary> GetAllDicts()
 	{
 		var result = new Array<Dictionary>();
 
-		foreach (var occupant in _occupants.All.Values)
+		foreach (var occupant in _source.All.Values)
 			result.Add(GdOccupant.From(occupant).ToDict());
 
 		return result;

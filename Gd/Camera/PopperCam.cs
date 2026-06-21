@@ -4,9 +4,9 @@ namespace Root.Gd.Camera;
 
 public partial class PopperCam : SpringArm3D
 {
+	private Vector2 _capturedMousePosition;
 	private float _dollyMaxLog;
 	private float _dollyMinLog;
-	private Vector2 _mousePosition;
 	private float _pitch;
 	private float _viewportDiagonal;
 	private float _yaw;
@@ -56,8 +56,8 @@ public partial class PopperCam : SpringArm3D
 		_dollyMinLog = MathF.Log(DollyMin);
 		_dollyMaxLog = MathF.Log(DollyMax);
 
-		UpdateViewportDiagonal();
-		GetViewport().SizeChanged += UpdateViewportDiagonal;
+		RecalculateViewportDiagonal();
+		GetViewport().SizeChanged += RecalculateViewportDiagonal;
 	}
 
 	public override void _Notification(int what)
@@ -86,10 +86,10 @@ public partial class PopperCam : SpringArm3D
 					switch (button.ButtonIndex)
 					{
 						case MouseButton.WheelUp:
-							DollyLog(-DollyStep);
+							ApplyDollyDelta(-DollyStep);
 							break;
 						case MouseButton.WheelDown:
-							DollyLog(DollyStep);
+							ApplyDollyDelta(DollyStep);
 							break;
 					}
 
@@ -107,7 +107,7 @@ public partial class PopperCam : SpringArm3D
 		var dollyInput = Input.GetAxis("dolly_in", "dolly_out");
 
 		if (dollyInput != 0)
-			DollyLog(dollyInput * DollyRate * (float)delta);
+			ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
 
 		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;
@@ -119,7 +119,7 @@ public partial class PopperCam : SpringArm3D
 		Rotation = rotation;
 	}
 
-	private void DollyLog(float delta)
+	private void ApplyDollyDelta(float delta)
 	{
 		var logLength = Mathf.Clamp(MathF.Log(SpringLength) + delta * LogScale(), _dollyMinLog, _dollyMaxLog);
 		SpringLength = MathF.Exp(logLength);
@@ -127,7 +127,7 @@ public partial class PopperCam : SpringArm3D
 
 	private float LogScale() => (_dollyMaxLog - _dollyMinLog) / (DollyMax - DollyMin);
 
-	private void UpdateViewportDiagonal()
+	private void RecalculateViewportDiagonal()
 	{
 		var size = GetViewport().GetVisibleRect().Size;
 		_viewportDiagonal = MathF.Max(size.Length(), 1);
@@ -135,13 +135,13 @@ public partial class PopperCam : SpringArm3D
 
 	private void CaptureMouse()
 	{
-		_mousePosition = GetViewport().GetMousePosition();
+		_capturedMousePosition = GetViewport().GetMousePosition();
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 	}
 
 	private void ReleaseMouse()
 	{
 		Input.MouseMode = Input.MouseModeEnum.Visible;
-		GetViewport().WarpMouse(_mousePosition);
+		GetViewport().WarpMouse(_capturedMousePosition);
 	}
 }

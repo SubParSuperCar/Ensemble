@@ -15,7 +15,7 @@ public partial class Watchdog : Node
 	private static long _heartbeatCount;
 
 	private CancellationTokenSource _cts = null!;
-	private Thread _thread = null!;
+	private Thread _pollThread = null!;
 
 	public static Watchdog Instance { get; private set; } = null!;
 
@@ -28,19 +28,19 @@ public partial class Watchdog : Node
 
 		Heartbeat();
 
-		_thread = new Thread(PollLoop)
+		_pollThread = new Thread(PollLoop)
 		{
 			IsBackground = true,
 			Name = nameof(Watchdog)
 		};
 
-		_thread.Start();
+		_pollThread.Start();
 	}
 
 	public override void _ExitTree()
 	{
 		_cts.Cancel();
-		_thread.Join(PollIntervalMs);
+		_pollThread.Join(PollIntervalMs);
 
 		if (ReferenceEquals(Instance, this))
 			Instance = null!;

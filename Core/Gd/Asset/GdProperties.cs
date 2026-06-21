@@ -14,30 +14,30 @@ public partial class GdProperties : RefCounted
 	[Signal]
 	public delegate void ChangedEventHandler(string key, Variant value);
 
-	private static readonly ConditionalWeakTable<IProperties, GdProperties> Cache = [];
-	private IProperties _properties = null!;
+	private static readonly ConditionalWeakTable<IProperties, GdProperties> Wrappers = [];
+	private IProperties _source = null!;
 
-	public static GdProperties From(IProperties properties) => Cache.GetValue(properties,
-		static value =>
+	public static GdProperties From(IProperties properties) => Wrappers.GetValue(properties,
+		static source =>
 		{
-			var wrapper = new GdProperties { _properties = value };
+			var wrapper = new GdProperties { _source = source };
 
-			value.Changed += (key, propertyValue)
-				=> wrapper.EmitSignal(SignalName.Changed, key, propertyValue.ToGodot());
+			source.Changed += (key, value)
+				=> wrapper.EmitSignal(SignalName.Changed, key, value.ToGodot());
 
 			return wrapper;
 		});
 
 	public Variant Get(string key)
-		=> _properties.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
+		=> _source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
 
-	public Dictionary GetAll() => Convert.ToGodotProperties(_properties.All);
+	public Dictionary GetAll() => Convert.ToGodotProperties(_source.All);
 
 	public void Update(string key, Variant value)
-		=> _properties.Update(key, value.FromGodot());
+		=> _source.Update(key, value.FromGodot());
 
 	public void UpdateAll(Dictionary properties)
-		=> _properties.UpdateAll(Convert.FromGodotProperties(properties));
+		=> _source.UpdateAll(Convert.FromGodotProperties(properties));
 
-	public override string ToString() => _properties.ToString()!;
+	public override string ToString() => _source.ToString()!;
 }

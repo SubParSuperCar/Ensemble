@@ -5,17 +5,17 @@ namespace Root.Core.Impl.Asset;
 
 public class Counts<TKey> where TKey : notnull
 {
-	private readonly Dictionary<TKey, int> _byKey = [];
+	private readonly Dictionary<TKey, int> _countsByKey = [];
 
 	// ReSharper disable once UnusedMember.Global
-	public IReadOnlyDictionary<TKey, int> All => _byKey;
+	public IReadOnlyDictionary<TKey, int> All => _countsByKey;
 	public int Total { get; private set; }
 
-	public int Get(TKey key) => _byKey.GetValueOrDefault(key);
+	public int Get(TKey key) => _countsByKey.GetValueOrDefault(key);
 
 	public void Increment(TKey key)
 	{
-		ref var count = ref CollectionsMarshal.GetValueRefOrAddDefault(_byKey, key, out _);
+		ref var count = ref CollectionsMarshal.GetValueRefOrAddDefault(_countsByKey, key, out _);
 		count++;
 
 		Total++;
@@ -23,13 +23,13 @@ public class Counts<TKey> where TKey : notnull
 
 	public void Decrement(TKey key)
 	{
-		ref var count = ref CollectionsMarshal.GetValueRefOrNullRef(_byKey, key);
+		ref var count = ref CollectionsMarshal.GetValueRefOrNullRef(_countsByKey, key);
 
 		if (Unsafe.IsNullRef(ref count))
 			return;
 
 		if (count <= 1)
-			_byKey.Remove(key);
+			_countsByKey.Remove(key);
 		else
 			count--;
 

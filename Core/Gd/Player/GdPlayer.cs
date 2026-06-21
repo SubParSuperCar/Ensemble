@@ -8,17 +8,17 @@ namespace Root.Core.Gd.Player;
 [GlobalClass]
 public partial class GdPlayer : RefCounted
 {
-	private static readonly ConditionalWeakTable<IPlayer, GdPlayer> Cache = [];
-	private IPlayer _player = null!;
+	private static readonly ConditionalWeakTable<IPlayer, GdPlayer> Wrappers = [];
+	private IPlayer _source = null!;
 
-	public string Id => _player.Id.ToString();
-	public string Name => _player.Name;
+	public string Id => _source.Id.ToString();
+	public string Name => _source.Name;
 
 	// ReSharper disable once MemberCanBePrivate.Global
-	public double UtcCreatedAtUnix => new DateTimeOffset(_player.UtcCreatedAt).ToUnixTimeSeconds();
+	public double UtcCreatedAtUnix => new DateTimeOffset(_source.UtcCreatedAt).ToUnixTimeSeconds();
 
 	public static GdPlayer From(IPlayer player)
-		=> Cache.GetValue(player, static value => new GdPlayer { _player = value });
+		=> Wrappers.GetValue(player, static source => new GdPlayer { _source = source });
 
 	public Dictionary ToDict() => new()
 	{
@@ -27,5 +27,5 @@ public partial class GdPlayer : RefCounted
 		["utcCreatedAtUnix"] = UtcCreatedAtUnix
 	};
 
-	public override string ToString() => _player.ToString()!;
+	public override string ToString() => _source.ToString()!;
 }

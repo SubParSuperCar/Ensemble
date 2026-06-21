@@ -7,9 +7,9 @@ namespace Root.Session.Gd;
 
 public partial class GdSession
 {
-	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> Limiters = [];
+	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
 
-	private static readonly TokenBucketRateLimiterOptions LimiterOptions = new()
+	private static readonly TokenBucketRateLimiterOptions RateLimiterOptions = new()
 	{
 		TokenLimit = 100,
 		QueueLimit = 10,
@@ -18,11 +18,11 @@ public partial class GdSession
 		AutoReplenishment = true
 	};
 
-	private readonly ConcurrentQueue<Action> _rpcQueue = [];
+	private readonly ConcurrentQueue<Action> _pendingRpcs = [];
 
 	public override void _Process(double delta)
 	{
-		while (_rpcQueue.TryDequeue(out var action))
+		while (_pendingRpcs.TryDequeue(out var action))
 		{
 			try
 			{
@@ -37,7 +37,7 @@ public partial class GdSession
 
 	private static void OnPeerDisconnectedRpc(long peerId)
 	{
-		if (Limiters.TryRemove((int)peerId, out var limiter))
+		if (RateLimitersByPeerId.TryRemove((int)peerId, out var limiter))
 			limiter.Dispose();
 	}
 
@@ -161,7 +161,7 @@ public partial class GdSession
 	{
 		var limiter = senderId == 1
 			? null
-			: Limiters.GetOrAdd(senderId, _ => new TokenBucketRateLimiter(LimiterOptions));
+			: RateLimitersByPeerId.GetOrAdd(senderId, _ => new TokenBucketRateLimiter(RateLimiterOptions));
 
 		using var lease = limiter is null
 			? null
@@ -170,6 +170,6 @@ public partial class GdSession
 		if (lease is { IsAcquired: false })
 			return;
 
-		_rpcQueue.Enqueue(action);
+		_pendingRpcs.Enqueue(action);
 	}
 }

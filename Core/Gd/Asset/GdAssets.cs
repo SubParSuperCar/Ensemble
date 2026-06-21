@@ -12,29 +12,29 @@ public partial class GdAssets : RefCounted
 	[Signal]
 	public delegate void AddedEventHandler(GdAsset asset);
 
-	private static readonly ConditionalWeakTable<IAssets, GdAssets> Cache = [];
-	private IAssets _assets = null!;
+	private static readonly ConditionalWeakTable<IAssets, GdAssets> Wrappers = [];
+	private IAssets _source = null!;
 
-	public int Count => _assets.All.Count;
-	public bool IsLocked => _assets.IsLocked;
+	public int Count => _source.All.Count;
+	public bool IsLocked => _source.IsLocked;
 
-	public static GdAssets From(IAssets assets) => Cache.GetValue(assets,
-		static value =>
+	public static GdAssets From(IAssets assets) => Wrappers.GetValue(assets,
+		static source =>
 		{
-			var wrapper = new GdAssets { _assets = value };
-			value.Added += asset => wrapper.EmitSignal(SignalName.Added, GdAsset.From(asset));
+			var wrapper = new GdAssets { _source = source };
+			source.Added += asset => wrapper.EmitSignal(SignalName.Added, GdAsset.From(asset));
 
 			return wrapper;
 		});
 
 	public GdAsset? Get(int id)
-		=> _assets.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
+		=> _source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
 
 	public Array<GdAsset> GetAll()
 	{
 		var result = new Array<GdAsset>();
 
-		foreach (var asset in _assets.All.Values)
+		foreach (var asset in _source.All.Values)
 			result.Add(GdAsset.From(asset));
 
 		return result;
@@ -45,19 +45,19 @@ public partial class GdAssets : RefCounted
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, 0);
 
 	public GdAsset Add(int id, string name, Dictionary? properties, int maxInstanceCount)
-		=> GdAsset.From(_assets.Add(
+		=> GdAsset.From(_source.Add(
 			id,
 			name == string.Empty ? null : name,
 			properties is null ? null : Convert.FromGodotProperties(properties),
 			maxInstanceCount == 0 ? null : maxInstanceCount));
 
-	public void Lock() => _assets.Lock();
+	public void Lock() => _source.Lock();
 
 	public Array<Dictionary> GetAllDicts()
 	{
 		var result = new Array<Dictionary>();
 
-		foreach (var asset in _assets.All.Values)
+		foreach (var asset in _source.All.Values)
 			result.Add(GdAsset.From(asset).ToDict());
 
 		return result;

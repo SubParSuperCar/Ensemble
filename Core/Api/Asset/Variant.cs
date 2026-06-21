@@ -20,17 +20,17 @@ public readonly struct Variant : IEquatable<Variant>
 {
 	[field: FieldOffset(0)] public VariantType Type { get; }
 
-	[FieldOffset(8)] private readonly long _bits;
-	[FieldOffset(8)] private readonly double _real;
+	[FieldOffset(8)] private readonly long _integer;
+	[FieldOffset(8)] private readonly double _float;
 
-	[FieldOffset(16)] private readonly string? _text;
+	[FieldOffset(16)] private readonly string? _string;
 
 	public static readonly Variant Null;
 
 	public Variant(bool value) : this()
 	{
 		Type = VariantType.Bool;
-		_bits = value ? 1 : 0;
+		_integer = value ? 1 : 0;
 	}
 
 	public Variant(int value) : this((long)value) { }
@@ -38,7 +38,7 @@ public readonly struct Variant : IEquatable<Variant>
 	public Variant(long value) : this()
 	{
 		Type = VariantType.NumInt;
-		_bits = value;
+		_integer = value;
 	}
 
 	public Variant(float value) : this((double)value) { }
@@ -46,7 +46,7 @@ public readonly struct Variant : IEquatable<Variant>
 	public Variant(double value) : this()
 	{
 		Type = VariantType.NumDouble;
-		_real = value;
+		_float = value;
 	}
 
 	public Variant(string? value) : this()
@@ -58,7 +58,7 @@ public readonly struct Variant : IEquatable<Variant>
 		}
 
 		Type = VariantType.Str;
-		_text = value;
+		_string = value;
 	}
 
 	// ReSharper disable once UnusedMember.Global
@@ -72,24 +72,24 @@ public readonly struct Variant : IEquatable<Variant>
 	public static implicit operator Variant(string? value) => new(value);
 
 	public static explicit operator bool(Variant variant)
-		=> variant.Type == VariantType.Bool ? variant._bits != 0 : throw new InvalidCastException();
+		=> variant.Type == VariantType.Bool ? variant._integer != 0 : throw new InvalidCastException();
 
 	public static explicit operator long(Variant variant) => variant.Type switch
 	{
-		VariantType.NumInt => variant._bits,
-		VariantType.NumDouble => (long)variant._real,
+		VariantType.NumInt => variant._integer,
+		VariantType.NumDouble => (long)variant._float,
 		_ => throw new InvalidCastException()
 	};
 
 	public static explicit operator double(Variant variant) => variant.Type switch
 	{
-		VariantType.NumDouble => variant._real,
-		VariantType.NumInt => variant._bits,
+		VariantType.NumDouble => variant._float,
+		VariantType.NumInt => variant._integer,
 		_ => throw new InvalidCastException()
 	};
 
 	public static explicit operator string(Variant variant)
-		=> variant.Type == VariantType.Str ? variant._text! : throw new InvalidCastException();
+		=> variant.Type == VariantType.Str ? variant._string! : throw new InvalidCastException();
 
 	public static bool operator ==(Variant left, Variant right) => left.Equals(right);
 	public static bool operator !=(Variant left, Variant right) => !left.Equals(right);
@@ -102,9 +102,9 @@ public readonly struct Variant : IEquatable<Variant>
 		return Type switch
 		{
 			VariantType.Null => true,
-			VariantType.Bool or VariantType.NumInt => _bits == other._bits,
-			VariantType.NumDouble => _real.Equals(other._real),
-			VariantType.Str => string.Equals(_text, other._text, StringComparison.Ordinal),
+			VariantType.Bool or VariantType.NumInt => _integer == other._integer,
+			VariantType.NumDouble => _float.Equals(other._float),
+			VariantType.Str => string.Equals(_string, other._string, StringComparison.Ordinal),
 			_ => false
 		};
 	}
@@ -114,19 +114,19 @@ public readonly struct Variant : IEquatable<Variant>
 	public override int GetHashCode() => Type switch
 	{
 		VariantType.Null => Type.GetHashCode(),
-		VariantType.Bool or VariantType.NumInt => HashCode.Combine(Type, _bits),
-		VariantType.NumDouble => HashCode.Combine(Type, _real),
-		VariantType.Str => HashCode.Combine(Type, _text),
+		VariantType.Bool or VariantType.NumInt => HashCode.Combine(Type, _integer),
+		VariantType.NumDouble => HashCode.Combine(Type, _float),
+		VariantType.Str => HashCode.Combine(Type, _string),
 		_ => Type.GetHashCode()
 	};
 
 	public override string ToString() => Type switch
 	{
 		VariantType.Null => "null",
-		VariantType.Bool => (_bits != 0).ToString(),
-		VariantType.NumInt => _bits.ToString(CultureInfo.InvariantCulture),
-		VariantType.NumDouble => _real.ToString(CultureInfo.InvariantCulture),
-		VariantType.Str => _text ?? "null",
+		VariantType.Bool => (_integer != 0).ToString(),
+		VariantType.NumInt => _integer.ToString(CultureInfo.InvariantCulture),
+		VariantType.NumDouble => _float.ToString(CultureInfo.InvariantCulture),
+		VariantType.Str => _string ?? "null",
 		_ => "unknown"
 	};
 }

@@ -3,10 +3,10 @@ namespace Root.Session.Gd;
 public partial class GdSession
 {
 	// ReSharper disable once CollectionNeverQueried.Local
-	private readonly Dictionary<int, string> _peersById = [];
+	private readonly Dictionary<int, string> _playerIdsByPeerId = [];
 
-	private void AddPeer(int peerId, string playerId) => _peersById.Add(peerId, playerId);
-	private void RemovePeer(int peerId) => _peersById.Remove(peerId);
+	private void AddPeer(int peerId, string playerId) => _playerIdsByPeerId.Add(peerId, playerId);
+	private void RemovePeer(int peerId) => _playerIdsByPeerId.Remove(peerId);
 
-	private void ClearPeers() => _peersById.Clear();
+	private void ClearPeers() => _playerIdsByPeerId.Clear();
 }

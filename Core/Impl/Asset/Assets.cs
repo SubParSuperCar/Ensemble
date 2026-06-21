@@ -5,9 +5,9 @@ namespace Root.Core.Impl.Asset;
 
 public class Assets : IAssets
 {
-	private readonly Dictionary<int, IAsset> _byId = [];
+	private readonly Dictionary<int, IAsset> _assetsById = [];
 
-	public IReadOnlyDictionary<int, IAsset> All => _byId;
+	public IReadOnlyDictionary<int, IAsset> All => _assetsById;
 	public bool IsLocked { get; private set; }
 
 	public event Action<IAsset>? Added;
@@ -26,13 +26,13 @@ public class Assets : IAssets
 		if (maxInstanceCount is { } count)
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
-		if (_byId.ContainsKey(id))
+		if (_assetsById.ContainsKey(id))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Asset with id {id} already exists"));
 
 		var asset = new Asset(id, name, properties, maxInstanceCount);
-		_byId.Add(id, asset);
+		_assetsById.Add(id, asset);
 
 		Added?.Invoke(asset);
 		return asset;

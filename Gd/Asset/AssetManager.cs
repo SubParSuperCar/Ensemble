@@ -17,7 +17,7 @@ public partial class AssetManager : Node
 	public int DefaultMaxInstanceCount { get; set; }
 
 	[GeneratedRegex(@"\.t?scn$", RegexOptions.IgnoreCase, 100)]
-	private static partial Regex SceneExtensionRegex { get; }
+	private static partial Regex SceneFileRegex { get; }
 
 	public override void _Ready()
 	{
@@ -60,7 +60,7 @@ public partial class AssetManager : Node
 
 			if (directory.CurrentIsDir())
 				ScanDirectory(entryPath);
-			else if (SceneExtensionRegex.IsMatch(entryPath))
+			else if (SceneFileRegex.IsMatch(entryPath))
 				RegisterScene(entryPath);
 		}
 

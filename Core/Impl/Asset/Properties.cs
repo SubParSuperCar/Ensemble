@@ -5,23 +5,23 @@ namespace Root.Core.Impl.Asset;
 
 public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : IProperties
 {
-	private readonly Dictionary<string, Variant> _byKey = values is null
+	private readonly Dictionary<string, Variant> _valuesByKey = values is null
 		? new Dictionary<string, Variant>(StringComparer.OrdinalIgnoreCase)
 		: new Dictionary<string, Variant>(values, StringComparer.OrdinalIgnoreCase);
 
-	public IReadOnlyDictionary<string, Variant> All => _byKey;
+	public IReadOnlyDictionary<string, Variant> All => _valuesByKey;
 
 	public event Action<string, Variant>? Changed;
 
 	public void Update(string key, Variant value)
 	{
-		if (!_byKey.TryGetValue(key, out var current))
+		if (!_valuesByKey.TryGetValue(key, out var current))
 			throw new KeyNotFoundException($"Property with key {key} not found");
 
 		if (current == value)
 			return;
 
-		_byKey[key] = value;
+		_valuesByKey[key] = value;
 		Changed?.Invoke(key, value);
 	}
 
@@ -33,15 +33,15 @@ public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : I
 
 	public override string ToString()
 	{
-		if (_byKey.Count == 0)
+		if (_valuesByKey.Count == 0)
 			return "{}";
 
-		var text = new StringBuilder("{");
+		var builder = new StringBuilder("{");
 
-		foreach (var (key, value) in _byKey)
-			text.Append(key).Append(": ").Append(value).Append(", ");
+		foreach (var (key, value) in _valuesByKey)
+			builder.Append(key).Append(": ").Append(value).Append(", ");
 
-		text.Length -= 2;
-		return text.Append('}').ToString();
+		builder.Length -= 2;
+		return builder.Append('}').ToString();
 	}
 }

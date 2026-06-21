@@ -11,19 +11,19 @@ namespace Root.Core.Gd.Asset;
 [GlobalClass]
 public partial class GdInstance : RefCounted
 {
-	private static readonly ConditionalWeakTable<IInstance, GdInstance> Cache = [];
-	private IInstance _instance = null!;
+	private static readonly ConditionalWeakTable<IInstance, GdInstance> Wrappers = [];
+	private IInstance _source = null!;
 
-	public int Id => _instance.Id;
+	public int Id => _source.Id;
 
-	public GdAsset Asset => GdAsset.From(_instance.Asset);
-	public GdProperties Properties => field ??= GdProperties.From(_instance.Properties);
+	public GdAsset Asset => GdAsset.From(_source.Asset);
+	public GdProperties Properties => field ??= GdProperties.From(_source.Properties);
 
-	public Vector3 Position => _instance.Position.ToGodot();
-	public Quaternion Rotation => _instance.Rotation.ToGodot();
+	public Vector3 Position => _source.Position.ToGodot();
+	public Quaternion Rotation => _source.Rotation.ToGodot();
 
 	public static GdInstance From(IInstance instance)
-		=> Cache.GetValue(instance, static value => new GdInstance { _instance = value });
+		=> Wrappers.GetValue(instance, static source => new GdInstance { _source = source });
 
 	public Dictionary ToDict() => new()
 	{
@@ -34,5 +34,5 @@ public partial class GdInstance : RefCounted
 		["properties"] = Properties.GetAll()
 	};
 
-	public override string ToString() => _instance.ToString()!;
+	public override string ToString() => _source.ToString()!;
 }

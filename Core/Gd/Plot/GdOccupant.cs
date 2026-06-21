@@ -12,18 +12,18 @@ public partial class GdOccupant : RefCounted
 	[Signal]
 	public delegate void PlotChangedEventHandler(GdPlot? plot);
 
-	private static readonly ConditionalWeakTable<IOccupant, GdOccupant> Cache = [];
-	private IOccupant _occupant = null!;
+	private static readonly ConditionalWeakTable<IOccupant, GdOccupant> Wrappers = [];
+	private IOccupant _source = null!;
 
-	public GdPlayer Player => GdPlayer.From(_occupant.Player);
-	public GdPlot? Plot => _occupant.Plot is { } plot ? GdPlot.From(plot) : null;
+	public GdPlayer Player => GdPlayer.From(_source.Player);
+	public GdPlot? Plot => _source.Plot is { } plot ? GdPlot.From(plot) : null;
 
-	public static GdOccupant From(IOccupant occupant) => Cache.GetValue(occupant,
-		static value =>
+	public static GdOccupant From(IOccupant occupant) => Wrappers.GetValue(occupant,
+		static source =>
 		{
-			var wrapper = new GdOccupant { _occupant = value };
+			var wrapper = new GdOccupant { _source = source };
 
-			value.PlotChanged += plot
+			source.PlotChanged += plot
 				=> wrapper.EmitSignal(SignalName.PlotChanged, (plot is null ? null : GdPlot.From(plot))!);
 
 			return wrapper;
@@ -35,5 +35,5 @@ public partial class GdOccupant : RefCounted
 		["plotId"] = Plot?.Id ?? -1
 	};
 
-	public override string ToString() => _occupant.ToString()!;
+	public override string ToString() => _source.ToString()!;
 }

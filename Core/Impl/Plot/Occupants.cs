@@ -4,7 +4,7 @@ namespace Root.Core.Impl.Plot;
 
 public class Occupants : IOccupants
 {
-	private readonly Dictionary<Guid, IOccupant> _byPlayerId = [];
+	private readonly Dictionary<Guid, IOccupant> _occupantsByPlayerId = [];
 	private readonly Plot _plot;
 
 	public Occupants(Plot plot, int? maxCount = null)
@@ -16,7 +16,7 @@ public class Occupants : IOccupants
 		MaxCount = maxCount ?? Unlimited;
 	}
 
-	public IReadOnlyDictionary<Guid, IOccupant> All => _byPlayerId;
+	public IReadOnlyDictionary<Guid, IOccupant> All => _occupantsByPlayerId;
 	public int MaxCount { get; }
 
 	public IOccupant? Owner { get; private set; }
@@ -29,7 +29,7 @@ public class Occupants : IOccupants
 	{
 		IOccupant? occupant = null;
 
-		if (playerId is { } id && !_byPlayerId.TryGetValue(id, out occupant))
+		if (playerId is { } id && !_occupantsByPlayerId.TryGetValue(id, out occupant))
 			throw new KeyNotFoundException($"Occupant with player id {playerId} not found");
 
 		if (ReferenceEquals(occupant, Owner))
@@ -41,13 +41,13 @@ public class Occupants : IOccupants
 
 	public void Clear()
 	{
-		foreach (var occupant in _byPlayerId.Values.ToArray())
+		foreach (var occupant in _occupantsByPlayerId.Values.ToArray())
 			Remove((Occupant)occupant);
 	}
 
 	public void Add(Occupant occupant)
 	{
-		_byPlayerId.Add(occupant.Player.Id, occupant);
+		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
 		occupant.SetPlot(_plot);
 
 		Added?.Invoke(occupant);
@@ -55,7 +55,7 @@ public class Occupants : IOccupants
 
 	public void Remove(Occupant occupant)
 	{
-		_byPlayerId.Remove(occupant.Player.Id);
+		_occupantsByPlayerId.Remove(occupant.Player.Id);
 		occupant.SetPlot(null);
 
 		if (ReferenceEquals(occupant, Owner))

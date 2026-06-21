@@ -6,7 +6,9 @@ public partial class PopperCam : SpringArm3D
 {
 	private float _dollyMaxLog;
 	private float _dollyMinLog;
+	private Vector2 _mousePosition;
 	private float _pitch;
+	private Viewport _viewport = null!;
 	private float _viewportDiagonal;
 	private float _yaw;
 
@@ -29,7 +31,7 @@ public partial class PopperCam : SpringArm3D
 			field = value;
 			_dollyMinLog = MathF.Log(DollyMin);
 		}
-	} = 2;
+	} = 1.25f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
 	public float DollyMax
@@ -40,35 +42,39 @@ public partial class PopperCam : SpringArm3D
 			field = value;
 			_dollyMaxLog = MathF.Log(DollyMax);
 		}
-	} = 32;
+	} = 48;
 
-	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
+	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
 	public float DollyStep { get; set; } = 2;
 
-	[Export(PropertyHint.None, "suffix:m/s")]
-	public float DollyRate { get; set; } = 24;
+	[Export] public float DollyRate { get; set; } = 24;
 
 	public override void _Ready()
 	{
+		_yaw = Rotation.Y;
+		_pitch = Rotation.X;
+
 		_dollyMinLog = MathF.Log(DollyMin);
 		_dollyMaxLog = MathF.Log(DollyMax);
 
+		_viewport = GetViewport();
+
 		UpdateViewportDiagonal();
-		GetViewport().SizeChanged += UpdateViewportDiagonal;
+		_viewport.SizeChanged += UpdateViewportDiagonal;
 	}
 
 	public override void _Notification(int what)
 	{
 		if (what == NotificationWMWindowFocusOut)
-			Input.MouseMode = Input.MouseModeEnum.Visible;
+			ReleaseMouse();
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressed("orbit_camera"))
-			Input.MouseMode = Input.MouseModeEnum.Captured;
+			CaptureMouse();
 		else if (Input.IsActionJustReleased("orbit_camera"))
-			Input.MouseMode = Input.MouseModeEnum.Visible;
+			ReleaseMouse();
 		else
 			switch (@event)
 			{
@@ -126,7 +132,19 @@ public partial class PopperCam : SpringArm3D
 
 	private void UpdateViewportDiagonal()
 	{
-		var size = GetViewport().GetVisibleRect().Size;
+		var size = _viewport.GetVisibleRect().Size;
 		_viewportDiagonal = MathF.Max(size.Length(), 1);
+	}
+
+	private void CaptureMouse()
+	{
+		_mousePosition = _viewport.GetMousePosition();
+		Input.MouseMode = Input.MouseModeEnum.Captured;
+	}
+
+	private void ReleaseMouse()
+	{
+		Input.MouseMode = Input.MouseModeEnum.Visible;
+		_viewport.WarpMouse(_mousePosition);
 	}
 }

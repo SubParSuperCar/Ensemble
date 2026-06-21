@@ -1,2 +1,2 @@
-- Code is licensed under [GPL-3.0-or-later](https://spdx.org/licenses/GPL-3.0-or-later.html).
-- Assets, such as 3D models, textures, and sounds, are licensed under [CC-BY-NC-SA-4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
+- **Code** is licensed under [GPL-3.0-or-later](https://spdx.org/licenses/GPL-3.0-or-later.html). ([Click here to view the license file](LICENSE-CODE.txt))
+- **Assets**, such as 3D models, textures, and sounds, are licensed under [CC-BY-NC-SA-4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode). ([Click here to view the license file](LICENSE-ASSETS.txt))

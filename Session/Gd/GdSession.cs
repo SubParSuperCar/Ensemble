@@ -75,6 +75,8 @@ public partial class GdSession : Node
 	{
 		StopSession();
 
+		OS.LowProcessorUsageMode = false;
+
 		_session = new MultiPlayerSession(
 			(SceneMultiplayer)Multiplayer,
 			new HostConfig(
@@ -102,6 +104,8 @@ public partial class GdSession : Node
 	{
 		if (_session is null)
 			return;
+
+		OS.LowProcessorUsageMode = true;
 
 		var session = _session;
 		_session = null;

@@ -13,6 +13,7 @@ config_version=5
 config/name="Ensemble"
 run/main_scene="uid://cfj5hy6hy0a7r"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
+run/low_processor_mode=true
 
 [autoload]
 

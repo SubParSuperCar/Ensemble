@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.0.4"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="[11.3.17]"/>
         <PackageReference Include="Meziantou.Analyzer" Version="3.0.108">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -36,6 +36,10 @@
 
     <ItemGroup>
         <Compile Remove="Lib\**"/>
+        <Compile Update="Ui\Impl\Views\MainView.axaml.cs">
+            <DependentUpon>MainView.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>

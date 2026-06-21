@@ -1,4 +1,5 @@
 using Estragonia;
+using Root.Ui.Impl.Views;
 
 namespace Root.Ui.Gd;
 
@@ -8,13 +9,8 @@ public partial class GdUi : AvaloniaControl
 	{
 		GetWindow().SetImeActive(true);
 
-		//Control = new HelloWorldView();
+		Control = new MainView();
 
 		base._Ready();
 	}
-
-	/*public override void _Process(double delta)
-	{
-		base._Process(delta);
-	}*/
 }

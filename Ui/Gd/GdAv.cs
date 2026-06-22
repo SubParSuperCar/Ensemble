@@ -1,5 +1,6 @@
 using Avalonia;
 using Estragonia;
+using Fonts.Avalonia.JetBrainsMono;
 using Godot;
 using Root.Ui.Impl;
 
@@ -11,5 +12,6 @@ public partial class GdAv : Node
 		=> AppBuilder
 			.Configure<App>()
 			.UseGodot()
+			.WithJetBrainsMonoFont()
 			.SetupWithoutStarting();
 }

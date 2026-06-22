@@ -17,17 +17,17 @@ public partial class GdPlots : RefCounted
 	public int Count => _source.All.Count;
 	public bool IsLocked => _source.IsLocked;
 
-	public static GdPlots From(IPlots plots) => Wrappers.GetValue(plots,
-		static source =>
-		{
-			var wrapper = new GdPlots { _source = source };
-			source.Added += plot => wrapper.EmitSignal(SignalName.Added, GdPlot.From(plot));
+	public static GdPlots From(IPlots plots) =>
+		Wrappers.GetValue(plots,
+			static source =>
+			{
+				var wrapper = new GdPlots { _source = source };
+				source.Added += plot => wrapper.EmitSignal(SignalName.Added, GdPlot.From(plot));
 
-			return wrapper;
-		});
+				return wrapper;
+			});
 
-	public GdPlot? Get(int id)
-		=> _source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
+	public GdPlot? Get(int id) => _source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
 
 	public Array<GdPlot> GetAll()
 	{
@@ -42,8 +42,8 @@ public partial class GdPlots : RefCounted
 	public GdPlot Add(int id) => Add(id, 0, 0);
 	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, 0);
 
-	public GdPlot Add(int id, int maxOccupantCount, int maxInstanceCount)
-		=> GdPlot.From(_source.Add(
+	public GdPlot Add(int id, int maxOccupantCount, int maxInstanceCount) =>
+		GdPlot.From(_source.Add(
 			id,
 			maxOccupantCount == 0 ? null : maxOccupantCount,
 			maxInstanceCount == 0 ? null : maxInstanceCount));
@@ -56,8 +56,7 @@ public partial class GdPlots : RefCounted
 			_source.SetPlot(guid, plotId == -1 ? null : plotId);
 	}
 
-	public GdOccupant GetOccupant(string playerId)
-		=> GdOccupant.From(_source.GetOccupant(Guid.Parse(playerId)));
+	public GdOccupant GetOccupant(string playerId) => GdOccupant.From(_source.GetOccupant(Guid.Parse(playerId)));
 
 	public void Lock() => _source.Lock();
 

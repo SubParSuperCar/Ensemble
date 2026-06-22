@@ -30,11 +30,9 @@ internal sealed class GodotDispatcherImpl : IDispatcherImpl
 		_timer = new SysTimer(OnTimerTick, this, Timeout.Infinite, Timeout.Infinite);
 	}
 
-	public long Now
-		=> (long)Time.GetTicksMsec();
+	public long Now => (long)Time.GetTicksMsec();
 
-	public bool CurrentThreadIsLoopThread
-		=> _mainThread == Thread.CurrentThread;
+	public bool CurrentThreadIsLoopThread => _mainThread == Thread.CurrentThread;
 
 	public event Action? Signaled;
 

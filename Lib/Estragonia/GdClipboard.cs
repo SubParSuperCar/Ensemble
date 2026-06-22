@@ -24,8 +24,7 @@ internal sealed class GodotClipboard : IClipboard
 
 	public Task SetDataAsync(IAsyncDataTransfer? dataTransfer) => throw new NotImplementedException();
 
-	public Task FlushAsync()
-		=> Task.CompletedTask;
+	public Task FlushAsync() => Task.CompletedTask;
 
 	public Task<string[]> GetFormatsAsync() => Task.FromResult(Array.Empty<string>());
 
@@ -34,8 +33,7 @@ internal sealed class GodotClipboard : IClipboard
 	public Task<IAsyncDataTransfer?> TryGetDataAsync() => throw new NotImplementedException();
 
 	[Obsolete("Obsolete")]
-	public Task<IDataObject?> TryGetInProcessDataObjectAsync()
-		=> Task.FromResult<IDataObject?>(null);
+	public Task<IDataObject?> TryGetInProcessDataObjectAsync() => Task.FromResult<IDataObject?>(null);
 
 	public Task<IAsyncDataTransfer?> TryGetInProcessDataAsync() => throw new NotImplementedException();
 }

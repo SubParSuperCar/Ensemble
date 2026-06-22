@@ -44,11 +44,9 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public double RenderScaling { get; private set; } = 1.0;
 
-	double ITopLevelImpl.DesktopScaling
-		=> 1.0;
+	double ITopLevelImpl.DesktopScaling => 1.0;
 
-	IPlatformHandle? ITopLevelImpl.Handle
-		=> null;
+	IPlatformHandle? ITopLevelImpl.Handle => null;
 
 	public AvCompositor Compositor { get; }
 
@@ -81,11 +79,9 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public Action<WindowTransparencyLevel>? TransparencyLevelChanged { get; set; }
 
-	IEnumerable<object> ITopLevelImpl.Surfaces
-		=> GetOrCreateSurfaces();
+	IEnumerable<object> ITopLevelImpl.Surfaces => GetOrCreateSurfaces();
 
-	AcrylicPlatformCompensationLevels ITopLevelImpl.AcrylicCompensationLevels
-		=> new(1.0, 1.0, 1.0);
+	AcrylicPlatformCompensationLevels ITopLevelImpl.AcrylicCompensationLevels => new(1.0, 1.0, 1.0);
 
 	void ITopLevelImpl.SetInputRoot(IInputRoot inputRoot) => _inputRoot = inputRoot;
 
@@ -141,9 +137,10 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		_platformGraphics.Release();
 	}
 
-	private IGodotSkiaSurface CreateSurface() => _isDisposed
-		? throw new ObjectDisposedException(nameof(GodotTopLevelImpl))
-		: _platformGraphics.GetSharedContext().CreateSurface(_renderSize, RenderScaling);
+	private IGodotSkiaSurface CreateSurface() =>
+		_isDisposed
+			? throw new ObjectDisposedException(nameof(GodotTopLevelImpl))
+			: _platformGraphics.GetSharedContext().CreateSurface(_renderSize, RenderScaling);
 
 	public IGodotSkiaSurface? TryGetSurface() => _surface;
 

@@ -21,19 +21,19 @@ public partial class GdInstances : RefCounted
 	public int Count => _source.Count;
 	public int MaxCount => _source.MaxCount;
 
-	public static GdInstances From(IInstances instances) => Wrappers.GetValue(instances,
-		static source =>
-		{
-			var wrapper = new GdInstances { _source = source };
+	public static GdInstances From(IInstances instances) =>
+		Wrappers.GetValue(instances,
+			static source =>
+			{
+				var wrapper = new GdInstances { _source = source };
 
-			source.Added += instance => wrapper.EmitSignal(SignalName.Added, GdInstance.From(instance));
-			source.Removed += instance => wrapper.EmitSignal(SignalName.Removed, GdInstance.From(instance));
+				source.Added += instance => wrapper.EmitSignal(SignalName.Added, GdInstance.From(instance));
+				source.Removed += instance => wrapper.EmitSignal(SignalName.Removed, GdInstance.From(instance));
 
-			return wrapper;
-		});
+				return wrapper;
+			});
 
-	public GdInstance Get(int id)
-		=> GdInstance.From(_source.GetInstance(id));
+	public GdInstance Get(int id) => GdInstance.From(_source.GetInstance(id));
 
 	public Array<GdInstance> GetAll()
 	{
@@ -45,11 +45,11 @@ public partial class GdInstances : RefCounted
 		return result;
 	}
 
-	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation)
-		=> GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot()));
+	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation) =>
+		GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot()));
 
-	public GdInstance AddAt(int assetId, Vector3 position, Quaternion rotation, int instanceId)
-		=> GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot(), instanceId));
+	public GdInstance AddAt(int assetId, Vector3 position, Quaternion rotation, int instanceId) =>
+		GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot(), instanceId));
 
 	public void Remove(int id) => _source.Remove(id);
 	public void Clear() => _source.Clear();

@@ -88,8 +88,8 @@ public class Plots : IPlots
 		(plot as Plot)?.Occupants.Add(occupant);
 	}
 
-	public IOccupant GetOccupant(Guid playerId)
-		=> _occupants.TryGet(playerId, out var occupant)
+	public IOccupant GetOccupant(Guid playerId) =>
+		_occupants.TryGet(playerId, out var occupant)
 			? occupant
 			: throw new InvalidOperationException($"Occupant with player id {playerId} not found");
 

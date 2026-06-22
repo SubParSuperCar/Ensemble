@@ -18,8 +18,7 @@ internal static class AsyncEnumerableHelper
 	private sealed class EnumeratorAsyncWrapper<T>(IEnumerator<T> enumerator, CancellationToken cancellationToken)
 		: IAsyncEnumerator<T>
 	{
-		public T Current
-			=> enumerator.Current;
+		public T Current => enumerator.Current;
 
 		public ValueTask<bool> MoveNextAsync() =>
 			cancellationToken.IsCancellationRequested

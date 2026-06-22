@@ -25,24 +25,25 @@ public partial class GdOccupants : RefCounted
 
 	public GdOccupant? Owner => _source.Owner is { } owner ? GdOccupant.From(owner) : null;
 
-	public static GdOccupants From(IOccupants occupants) => Wrappers.GetValue(occupants,
-		static source =>
-		{
-			var wrapper = new GdOccupants { _source = source };
+	public static GdOccupants From(IOccupants occupants) =>
+		Wrappers.GetValue(occupants,
+			static source =>
+			{
+				var wrapper = new GdOccupants { _source = source };
 
-			source.Added += occupant => wrapper.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
-			source.Removed += occupant => wrapper.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
+				source.Added += occupant => wrapper.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
+				source.Removed += occupant => wrapper.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
 
-			source.OwnerChanged += occupant
-				=> wrapper.EmitSignal(
-					SignalName.OwnerChanged,
-					(occupant is null ? null : GdOccupant.From(occupant))!);
+				source.OwnerChanged += occupant
+					=> wrapper.EmitSignal(
+						SignalName.OwnerChanged,
+						(occupant is null ? null : GdOccupant.From(occupant))!);
 
-			return wrapper;
-		});
+				return wrapper;
+			});
 
-	public GdOccupant? Get(string playerId)
-		=> Guid.TryParse(playerId, out var guid) && _source.All.TryGetValue(guid, out var occupant)
+	public GdOccupant? Get(string playerId) =>
+		Guid.TryParse(playerId, out var guid) && _source.All.TryGetValue(guid, out var occupant)
 			? GdOccupant.From(occupant)
 			: null;
 

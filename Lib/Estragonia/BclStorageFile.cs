@@ -10,14 +10,11 @@ internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 {
 	private FileInfo FileInfo { get; } = fileInfo;
 
-	public string Name
-		=> FileInfo.Name;
+	public string Name => FileInfo.Name;
 
-	public bool CanBookmark
-		=> true;
+	public bool CanBookmark => true;
 
-	public Uri Path
-		=> field ??= BuildPath();
+	public Uri Path => field ??= BuildPath();
 
 	public Task<StorageItemProperties> GetBasicPropertiesAsync()
 	{

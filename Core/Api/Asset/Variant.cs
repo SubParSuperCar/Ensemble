@@ -71,25 +71,27 @@ public readonly struct Variant : IEquatable<Variant>
 	public static implicit operator Variant(double value) => new(value);
 	public static implicit operator Variant(string? value) => new(value);
 
-	public static explicit operator bool(Variant variant)
-		=> variant.Type == VariantType.Bool ? variant._integer != 0 : throw new InvalidCastException();
+	public static explicit operator bool(Variant variant) =>
+		variant.Type == VariantType.Bool ? variant._integer != 0 : throw new InvalidCastException();
 
-	public static explicit operator long(Variant variant) => variant.Type switch
-	{
-		VariantType.NumInt => variant._integer,
-		VariantType.NumDouble => (long)variant._float,
-		_ => throw new InvalidCastException()
-	};
+	public static explicit operator long(Variant variant) =>
+		variant.Type switch
+		{
+			VariantType.NumInt => variant._integer,
+			VariantType.NumDouble => (long)variant._float,
+			_ => throw new InvalidCastException()
+		};
 
-	public static explicit operator double(Variant variant) => variant.Type switch
-	{
-		VariantType.NumDouble => variant._float,
-		VariantType.NumInt => variant._integer,
-		_ => throw new InvalidCastException()
-	};
+	public static explicit operator double(Variant variant) =>
+		variant.Type switch
+		{
+			VariantType.NumDouble => variant._float,
+			VariantType.NumInt => variant._integer,
+			_ => throw new InvalidCastException()
+		};
 
-	public static explicit operator string(Variant variant)
-		=> variant.Type == VariantType.Str ? variant._string! : throw new InvalidCastException();
+	public static explicit operator string(Variant variant) =>
+		variant.Type == VariantType.Str ? variant._string! : throw new InvalidCastException();
 
 	public static bool operator ==(Variant left, Variant right) => left.Equals(right);
 	public static bool operator !=(Variant left, Variant right) => !left.Equals(right);
@@ -111,22 +113,24 @@ public readonly struct Variant : IEquatable<Variant>
 
 	public override bool Equals(object? obj) => obj is Variant other && Equals(other);
 
-	public override int GetHashCode() => Type switch
-	{
-		VariantType.Null => Type.GetHashCode(),
-		VariantType.Bool or VariantType.NumInt => HashCode.Combine(Type, _integer),
-		VariantType.NumDouble => HashCode.Combine(Type, _float),
-		VariantType.Str => HashCode.Combine(Type, _string),
-		_ => Type.GetHashCode()
-	};
+	public override int GetHashCode() =>
+		Type switch
+		{
+			VariantType.Null => Type.GetHashCode(),
+			VariantType.Bool or VariantType.NumInt => HashCode.Combine(Type, _integer),
+			VariantType.NumDouble => HashCode.Combine(Type, _float),
+			VariantType.Str => HashCode.Combine(Type, _string),
+			_ => Type.GetHashCode()
+		};
 
-	public override string ToString() => Type switch
-	{
-		VariantType.Null => "null",
-		VariantType.Bool => (_integer != 0).ToString(),
-		VariantType.NumInt => _integer.ToString(CultureInfo.InvariantCulture),
-		VariantType.NumDouble => _float.ToString(CultureInfo.InvariantCulture),
-		VariantType.Str => _string ?? "null",
-		_ => "unknown"
-	};
+	public override string ToString() =>
+		Type switch
+		{
+			VariantType.Null => "null",
+			VariantType.Bool => (_integer != 0).ToString(),
+			VariantType.NumInt => _integer.ToString(CultureInfo.InvariantCulture),
+			VariantType.NumDouble => _float.ToString(CultureInfo.InvariantCulture),
+			VariantType.Str => _string ?? "null",
+			_ => "unknown"
+		};
 }

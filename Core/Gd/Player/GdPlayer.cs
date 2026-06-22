@@ -17,15 +17,16 @@ public partial class GdPlayer : RefCounted
 	// ReSharper disable once MemberCanBePrivate.Global
 	public double UtcCreatedAtUnix => new DateTimeOffset(_source.UtcCreatedAt).ToUnixTimeSeconds();
 
-	public static GdPlayer From(IPlayer player)
-		=> Wrappers.GetValue(player, static source => new GdPlayer { _source = source });
+	public static GdPlayer From(IPlayer player) =>
+		Wrappers.GetValue(player, static source => new GdPlayer { _source = source });
 
-	public Dictionary ToDict() => new()
-	{
-		["id"] = Id,
-		["name"] = Name,
-		["utcCreatedAtUnix"] = UtcCreatedAtUnix
-	};
+	public Dictionary ToDict() =>
+		new()
+		{
+			["id"] = Id,
+			["name"] = Name,
+			["utcCreatedAtUnix"] = UtcCreatedAtUnix
+		};
 
 	public override string ToString() => _source.ToString()!;
 }

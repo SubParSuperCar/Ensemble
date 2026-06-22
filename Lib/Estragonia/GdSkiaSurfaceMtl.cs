@@ -49,11 +49,9 @@ internal sealed class GodotSkiaSurfaceMetal(
 
 	public bool IsDisposed { get; private set; }
 
-	SKSurface ISkiaSurface.Surface
-		=> SkSurface;
+	SKSurface ISkiaSurface.Surface => SkSurface;
 
-	bool ISkiaSurface.CanBlit
-		=> false;
+	bool ISkiaSurface.CanBlit => false;
 
 	void ISkiaSurface.Blit(SKCanvas canvas) => throw new NotSupportedException();
 

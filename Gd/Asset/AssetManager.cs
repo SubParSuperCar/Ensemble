@@ -38,8 +38,8 @@ public partial class AssetManager : Node
 
 	public PackedScene GetPacked(GdAsset asset) => GetPacked(asset.Id);
 
-	public PackedScene GetPacked(int assetId)
-		=> Scenes.TryGetValue(assetId, out var packed)
+	public PackedScene GetPacked(int assetId) =>
+		Scenes.TryGetValue(assetId, out var packed)
 			? packed
 			: throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,

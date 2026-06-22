@@ -97,8 +97,7 @@ internal sealed class GodotVkSkiaGpu : IGodotSkiaGpu
 		}
 	}
 
-	public bool IsLost
-		=> _grContext.IsAbandoned;
+	public bool IsLost => _grContext.IsAbandoned;
 
 	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) => null;
 

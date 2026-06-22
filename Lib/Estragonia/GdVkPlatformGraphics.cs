@@ -12,8 +12,7 @@ internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
 	private GodotVkSkiaGpu? _context;
 	private int _refCount;
 
-	bool IPlatformGraphics.UsesSharedContext
-		=> true;
+	bool IPlatformGraphics.UsesSharedContext => true;
 
 	public IGodotSkiaGpu GetSharedContext()
 	{

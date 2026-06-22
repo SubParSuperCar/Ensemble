@@ -48,8 +48,8 @@ public class Instances : IInstances
 		return true;
 	}
 
-	public IInstance GetInstance(int instanceId)
-		=> TryGet(instanceId, out var instance)
+	public IInstance GetInstance(int instanceId) =>
+		TryGet(instanceId, out var instance)
 			? instance
 			: throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
@@ -93,8 +93,8 @@ public class Instances : IInstances
 			Remove(instance.Id);
 	}
 
-	public (int Count, int MaxCount) GetCount(int assetId)
-		=> _assets.All.TryGetValue(assetId, out var asset)
+	public (int Count, int MaxCount) GetCount(int assetId) =>
+		_assets.All.TryGetValue(assetId, out var asset)
 			? (_countsByAssetId.Get(assetId), asset.MaxInstanceCount)
 			: throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,

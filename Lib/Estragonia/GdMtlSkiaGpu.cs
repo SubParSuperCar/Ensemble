@@ -43,8 +43,7 @@ internal sealed class GodotMtlSkiaGpu : IGodotSkiaGpu
 		_synchronizer = new MtlSynchronizer();
 	}
 
-	public bool IsLost
-		=> _grContext.IsAbandoned;
+	public bool IsLost => _grContext.IsAbandoned;
 
 	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) => null;
 

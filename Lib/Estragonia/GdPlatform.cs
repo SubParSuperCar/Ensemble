@@ -21,8 +21,8 @@ internal static class GodotPlatform
 	private static ManualRenderTimer? _sRenderTimer;
 	private static ulong _sLastProcessFrame = ulong.MaxValue;
 
-	public static AvCompositor Compositor
-		=> _sCompositor ?? throw new InvalidOperationException($"{nameof(GodotPlatform)} hasn't been initialized");
+	public static AvCompositor Compositor =>
+		_sCompositor ?? throw new InvalidOperationException($"{nameof(GodotPlatform)} hasn't been initialized");
 
 	public static void Initialize()
 	{

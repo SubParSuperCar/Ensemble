@@ -18,17 +18,17 @@ public partial class GdAssets : RefCounted
 	public int Count => _source.All.Count;
 	public bool IsLocked => _source.IsLocked;
 
-	public static GdAssets From(IAssets assets) => Wrappers.GetValue(assets,
-		static source =>
-		{
-			var wrapper = new GdAssets { _source = source };
-			source.Added += asset => wrapper.EmitSignal(SignalName.Added, GdAsset.From(asset));
+	public static GdAssets From(IAssets assets) =>
+		Wrappers.GetValue(assets,
+			static source =>
+			{
+				var wrapper = new GdAssets { _source = source };
+				source.Added += asset => wrapper.EmitSignal(SignalName.Added, GdAsset.From(asset));
 
-			return wrapper;
-		});
+				return wrapper;
+			});
 
-	public GdAsset? Get(int id)
-		=> _source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
+	public GdAsset? Get(int id) => _source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
 
 	public Array<GdAsset> GetAll()
 	{
@@ -44,8 +44,8 @@ public partial class GdAssets : RefCounted
 	public GdAsset Add(int id, string name) => Add(id, name, null, 0);
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, 0);
 
-	public GdAsset Add(int id, string name, Dictionary? properties, int maxInstanceCount)
-		=> GdAsset.From(_source.Add(
+	public GdAsset Add(int id, string name, Dictionary? properties, int maxInstanceCount) =>
+		GdAsset.From(_source.Add(
 			id,
 			name == string.Empty ? null : name,
 			properties is null ? null : Converter.FromGodotProperties(properties),

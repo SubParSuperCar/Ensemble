@@ -23,22 +23,23 @@ public partial class GdPlayers : RefCounted
 	public int Count => _source.All.Count;
 	public GdPlayer? Local => _source.Local is { } local ? GdPlayer.From(local) : null;
 
-	public static GdPlayers From(IPlayers players) => Wrappers.GetValue(players,
-		static source =>
-		{
-			var wrapper = new GdPlayers { _source = source };
+	public static GdPlayers From(IPlayers players) =>
+		Wrappers.GetValue(players,
+			static source =>
+			{
+				var wrapper = new GdPlayers { _source = source };
 
-			source.Added += player => wrapper.EmitSignal(SignalName.Added, GdPlayer.From(player));
-			source.Removed += player => wrapper.EmitSignal(SignalName.Removed, GdPlayer.From(player));
+				source.Added += player => wrapper.EmitSignal(SignalName.Added, GdPlayer.From(player));
+				source.Removed += player => wrapper.EmitSignal(SignalName.Removed, GdPlayer.From(player));
 
-			source.LocalChanged += player
-				=> wrapper.EmitSignal(SignalName.LocalChanged, (player is null ? null : GdPlayer.From(player))!);
+				source.LocalChanged += player
+					=> wrapper.EmitSignal(SignalName.LocalChanged, (player is null ? null : GdPlayer.From(player))!);
 
-			return wrapper;
-		});
+				return wrapper;
+			});
 
-	public GdPlayer? Get(string id)
-		=> Guid.TryParse(id, out var guid) && _source.All.TryGetValue(guid, out var player)
+	public GdPlayer? Get(string id) =>
+		Guid.TryParse(id, out var guid) && _source.All.TryGetValue(guid, out var player)
 			? GdPlayer.From(player)
 			: null;
 
@@ -55,9 +56,10 @@ public partial class GdPlayers : RefCounted
 	public GdPlayer Add() => Add(string.Empty, string.Empty);
 	public GdPlayer Add(string id) => Add(id, string.Empty);
 
-	public GdPlayer Add(string id, string name) => GdPlayer.From(_source.Add(
-		id == string.Empty ? null : Guid.Parse(id),
-		name == string.Empty ? null : name));
+	public GdPlayer Add(string id, string name) =>
+		GdPlayer.From(_source.Add(
+			id == string.Empty ? null : Guid.Parse(id),
+			name == string.Empty ? null : name));
 
 	public void Remove(string id)
 	{

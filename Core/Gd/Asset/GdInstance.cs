@@ -22,17 +22,18 @@ public partial class GdInstance : RefCounted
 	public Vector3 Position => _source.Position.ToGodot();
 	public Quaternion Rotation => _source.Rotation.ToGodot();
 
-	public static GdInstance From(IInstance instance)
-		=> Wrappers.GetValue(instance, static source => new GdInstance { _source = source });
+	public static GdInstance From(IInstance instance) =>
+		Wrappers.GetValue(instance, static source => new GdInstance { _source = source });
 
-	public Dictionary ToDict() => new()
-	{
-		["id"] = Id,
-		["assetId"] = Asset.Id,
-		["position"] = Position,
-		["rotation"] = Rotation,
-		["properties"] = Properties.GetAll()
-	};
+	public Dictionary ToDict() =>
+		new()
+		{
+			["id"] = Id,
+			["assetId"] = Asset.Id,
+			["position"] = Position,
+			["rotation"] = Rotation,
+			["properties"] = Properties.GetAll()
+		};
 
 	public override string ToString() => _source.ToString()!;
 }

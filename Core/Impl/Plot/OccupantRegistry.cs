@@ -6,8 +6,8 @@ public class OccupantRegistry
 {
 	private readonly Dictionary<Guid, Occupant> _occupantsByPlayerId = [];
 
-	public bool TryGet(Guid playerId, out Occupant occupant)
-		=> _occupantsByPlayerId.TryGetValue(playerId, out occupant!);
+	public bool TryGet(Guid playerId, out Occupant occupant) =>
+		_occupantsByPlayerId.TryGetValue(playerId, out occupant!);
 
 	public void Add(IPlayer player)
 	{

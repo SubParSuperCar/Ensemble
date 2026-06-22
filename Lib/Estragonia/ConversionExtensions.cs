@@ -327,8 +327,7 @@ public static class ConversionExtensions
 	{
 		public AvKey ToAvaloniaKey() => SKeyMap.GetValueOrDefault(source, AvKey.None);
 
-		public PhysicalKey ToAvaloniaPhysicalKey() =>
-			SPhysicalKeyMap.GetValueOrDefault(source, PhysicalKey.None);
+		public PhysicalKey ToAvaloniaPhysicalKey() => SPhysicalKeyMap.GetValueOrDefault(source, PhysicalKey.None);
 	}
 
 	extension(Vector2 source)

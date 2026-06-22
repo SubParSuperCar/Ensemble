@@ -14,8 +14,7 @@ internal sealed class GodotSkiaRenderTarget(
 	private readonly double _renderScaling = surface.RenderScaling;
 
 	[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Doesn't affect correctness")]
-	public bool IsCorrupted
-		=> surface.IsDisposed || grContext.IsAbandoned || _renderScaling != surface.RenderScaling;
+	public bool IsCorrupted => surface.IsDisposed || grContext.IsAbandoned || _renderScaling != surface.RenderScaling;
 
 	public ISkiaGpuRenderSession BeginRenderingSession() =>
 		new GodotSkiaGpuRenderSession(surface, grContext, synchronizer);

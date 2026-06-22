@@ -12,14 +12,11 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 {
 	public DirectoryInfo DirectoryInfo { get; } = directoryInfo;
 
-	public string Name
-		=> DirectoryInfo.Name;
+	public string Name => DirectoryInfo.Name;
 
-	public bool CanBookmark
-		=> true;
+	public bool CanBookmark => true;
 
-	public Uri Path
-		=> field ??= BuildPath();
+	public Uri Path => field ??= BuildPath();
 
 	public Task<StorageItemProperties> GetBasicPropertiesAsync() =>
 		Task.FromResult(new StorageItemProperties(

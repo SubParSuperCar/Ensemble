@@ -41,8 +41,8 @@ public partial class PlotManager : Node
 
 	public PlotHandle GetHandle(GdPlot plot) => GetHandle(plot.Id);
 
-	public PlotHandle GetHandle(int plotId)
-		=> Handles.TryGetValue(plotId, out var handle)
+	public PlotHandle GetHandle(int plotId) =>
+		Handles.TryGetValue(plotId, out var handle)
 			? handle
 			: throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,

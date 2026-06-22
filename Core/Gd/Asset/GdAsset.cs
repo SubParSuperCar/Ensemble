@@ -21,16 +21,17 @@ public partial class GdAsset : RefCounted
 
 	public Dictionary Properties => Converter.ToGodotProperties(_source.Properties);
 
-	public static GdAsset From(IAsset asset)
-		=> Wrappers.GetValue(asset, static source => new GdAsset { _source = source });
+	public static GdAsset From(IAsset asset) =>
+		Wrappers.GetValue(asset, static source => new GdAsset { _source = source });
 
-	public Dictionary ToDict() => new()
-	{
-		["id"] = Id,
-		["name"] = Name,
-		["maxInstanceCount"] = MaxInstanceCount,
-		["properties"] = Properties
-	};
+	public Dictionary ToDict() =>
+		new()
+		{
+			["id"] = Id,
+			["name"] = Name,
+			["maxInstanceCount"] = MaxInstanceCount,
+			["properties"] = Properties
+		};
 
 	public override string ToString() => _source.ToString()!;
 }

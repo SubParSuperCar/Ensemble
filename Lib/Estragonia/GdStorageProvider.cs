@@ -12,14 +12,11 @@ namespace Estragonia;
 /// <summary>Implementation of <see cref="IStorageProvider" /> for Godot.</summary>
 internal sealed class GodotStorageProvider : IStorageProvider
 {
-	public bool CanOpen
-		=> true;
+	public bool CanOpen => true;
 
-	public bool CanSave
-		=> true;
+	public bool CanSave => true;
 
-	public bool CanPickFolder
-		=> true;
+	public bool CanPickFolder => true;
 
 	public Task<IReadOnlyList<IStorageFile>> OpenFilePickerAsync(FilePickerOpenOptions options) =>
 		PickFilesAsync(

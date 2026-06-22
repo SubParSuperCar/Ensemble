@@ -16,27 +16,25 @@ public partial class GdProperties : RefCounted
 	private static readonly ConditionalWeakTable<IProperties, GdProperties> Wrappers = [];
 	private IProperties _source = null!;
 
-	public static GdProperties From(IProperties properties) => Wrappers.GetValue(properties,
-		static source =>
-		{
-			var wrapper = new GdProperties { _source = source };
+	public static GdProperties From(IProperties properties) =>
+		Wrappers.GetValue(properties,
+			static source =>
+			{
+				var wrapper = new GdProperties { _source = source };
 
-			source.Changed += (key, value)
-				=> wrapper.EmitSignal(SignalName.Changed, key, value.ToGodot());
+				source.Changed += (key, value)
+					=> wrapper.EmitSignal(SignalName.Changed, key, value.ToGodot());
 
-			return wrapper;
-		});
+				return wrapper;
+			});
 
-	public Variant Get(string key)
-		=> _source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
+	public Variant Get(string key) => _source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
 
 	public Dictionary GetAll() => Converter.ToGodotProperties(_source.All);
 
-	public void Update(string key, Variant value)
-		=> _source.Update(key, value.FromGodot());
+	public void Update(string key, Variant value) => _source.Update(key, value.FromGodot());
 
-	public void UpdateAll(Dictionary properties)
-		=> _source.UpdateAll(Converter.FromGodotProperties(properties));
+	public void UpdateAll(Dictionary properties) => _source.UpdateAll(Converter.FromGodotProperties(properties));
 
 	public override string ToString() => _source.ToString()!;
 }

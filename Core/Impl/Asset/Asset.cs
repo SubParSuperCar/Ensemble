@@ -19,6 +19,6 @@ public class Asset(
 
 	public IReadOnlyDictionary<string, Variant> Properties => _properties.All;
 
-	public override string ToString()
-		=> $"Asset(id={Id}, name={Name}, maxInstanceCount={MaxInstanceCount}, properties={_properties})";
+	public override string ToString() =>
+		$"Asset(id={Id}, name={Name}, maxInstanceCount={MaxInstanceCount}, properties={_properties})";
 }

@@ -18,8 +18,7 @@ public partial class CharacterController : CharacterBody3D
 
 	[Export] public Node3D Camera { get; set; } = null!;
 
-	public override void _Ready()
-		=> PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
+	public override void _Ready() => PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
 
 	public override void _PhysicsProcess(double delta)
 	{

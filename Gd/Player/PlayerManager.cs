@@ -34,8 +34,8 @@ public partial class PlayerManager : Node
 
 	public PlayerHandle GetHandle(GdPlayer player) => GetHandle(player.Id);
 
-	public PlayerHandle GetHandle(string playerId)
-		=> Handles.TryGetValue(playerId, out var handle)
+	public PlayerHandle GetHandle(string playerId) =>
+		Handles.TryGetValue(playerId, out var handle)
 			? handle
 			: throw new InvalidOperationException($"Handle with player id {playerId} not found");
 

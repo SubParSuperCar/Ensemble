@@ -8,8 +8,7 @@ internal sealed class ManualRenderTimer : IRenderTimer
 {
 	public event Action<TimeSpan>? Tick;
 
-	bool IRenderTimer.RunsInBackground
-		=> false;
+	bool IRenderTimer.RunsInBackground => false;
 
 	public void TriggerTick(TimeSpan elapsed) => Tick?.Invoke(elapsed);
 }

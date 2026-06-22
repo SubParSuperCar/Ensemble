@@ -22,14 +22,11 @@ internal sealed class GodotSkiaGpuRenderSession : ISkiaGpuRenderSession
 
 	public GRContext GrContext { get; }
 
-	SKSurface ISkiaGpuRenderSession.SkSurface
-		=> Surface.SkSurface;
+	SKSurface ISkiaGpuRenderSession.SkSurface => Surface.SkSurface;
 
-	double ISkiaGpuRenderSession.ScaleFactor
-		=> Surface.RenderScaling;
+	double ISkiaGpuRenderSession.ScaleFactor => Surface.RenderScaling;
 
-	GRSurfaceOrigin ISkiaGpuRenderSession.SurfaceOrigin
-		=> GRSurfaceOrigin.TopLeft;
+	GRSurfaceOrigin ISkiaGpuRenderSession.SurfaceOrigin => GRSurfaceOrigin.TopLeft;
 
 	public void Dispose() =>
 		// Finalize rendering (handles flush and layout transitions)

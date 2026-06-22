@@ -12,7 +12,7 @@ public partial class ClockViewModel : ViewModelBase, IDisposable
 	}
 
 	// ReSharper disable once MemberCanBeMadeStatic.Global
-	[ObservableProperty] public partial string Text { get; set; }
+	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
 
 	public void Dispose()
 	{

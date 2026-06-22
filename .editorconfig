@@ -10,4 +10,6 @@ indent_size = 4
 max_line_length = 120
 csharp_prefer_braces = false
 csharp_preserve_single_line_blocks = true
-csharp_style_expression_bodied_methods = true
+csharp_style_expression_bodied_methods = true:suggestion
+csharp_keep_existing_expr_member_arrangement = false
+resharper_csharp_wrap_before_arrow_with_expressions = false

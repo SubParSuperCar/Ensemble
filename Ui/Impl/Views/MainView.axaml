@@ -2,18 +2,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:Root.Ui.Impl.Views"
              xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Root.Ui.Impl.Views.MainView"
              x:DataType="viewModels:MainViewModel">
 
-    <Grid>
-        <views:PlayerListView
-            IsVisible="{Binding IsPlayerListVisible}"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Width="384" Height="256" />
-    </Grid>
+    <ContentControl Content="{Binding PlayerListView}">
+        <ContentControl.Styles>
+            <Style Selector="ContentControl">
+                <Setter Property="HorizontalAlignment" Value="Right" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="Width" Value="384" />
+                <Setter Property="Height" Value="256" />
+            </Style>
+        </ContentControl.Styles>
+    </ContentControl>
 
 </UserControl>

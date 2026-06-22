@@ -23,5 +23,10 @@ public partial class GdUi : AvaloniaControl
 		base._Process(delta);
 	}
 
-	public override void _Input(InputEvent @event) => Dispatcher.RaiseInput(@event);
+	public override void _Input(InputEvent @event)
+	{
+		Dispatcher.RaiseInput(@event);
+
+		base._Input(@event);
+	}
 }

@@ -16,4 +16,5 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 2
+mouse_force_pass_scroll_events = false
 script = ExtResource("3_8gbba")

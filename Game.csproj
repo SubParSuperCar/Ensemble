@@ -17,15 +17,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Content Include="**/*.gd" Exclude=".godot/**">
-            <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-        <Content Remove="Lib\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="[11.3.17]"/>
+        <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.17]"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
         <PackageReference Include="Meziantou.Analyzer" Version="3.0.108">
             <PrivateAssets>all</PrivateAssets>
@@ -39,18 +31,22 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="Lib\Estragonia\Estragonia.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="**/*.gd" Exclude=".godot/**">
+            <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Remove="Lib\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
         <Compile Remove="Lib\**"/>
-        <Compile Update="Ui\Impl\Views\MainView.axaml.cs">
-            <DependentUpon>MainView.axaml</DependentUpon>
-            <SubType>Code</SubType>
-        </Compile>
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Remove="Lib\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="Lib\Estragonia\Estragonia.csproj"/>
     </ItemGroup>
 </Project>

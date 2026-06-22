@@ -10,9 +10,10 @@
     <StackPanel Background="#80000000"
                 ToolTip.Tip="Player List">
 
-        <Grid ColumnDefinitions="*,Auto">
+        <Grid ColumnDefinitions="*,*,Auto">
             <TextBlock Text="Name" />
-            <TextBlock Grid.Column="1" Text="Peer ID" />
+            <TextBlock Grid.Column="1" Text="Player List" />
+            <TextBlock Grid.Column="2" Text="Peer ID" />
         </Grid>
 
         <ListBox ItemsSource="{Binding Players}"

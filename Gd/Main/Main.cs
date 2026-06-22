@@ -41,7 +41,7 @@ public partial class Main : Node
 		GdGlobals.Host.SessionStopped -= OnSessionStopped;
 	}
 
-	public override void _Input(InputEvent @event)
+	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("reset", @event))
 			GdGlobals.Host.StartSinglePlayer();

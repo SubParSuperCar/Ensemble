@@ -48,7 +48,7 @@ public partial class Watchdog : Node
 
 	public override void _Process(double delta) => Heartbeat();
 
-	public override void _Input(InputEvent @event)
+	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("hang", @event))
 			Thread.Sleep(int.MaxValue);

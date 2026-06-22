@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
+using Root.Ui.Impl.Views;
 
 namespace Root.Ui.Impl.ViewModels;
 
@@ -10,9 +11,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 		Dispatcher.Input += OnInput;
 	}
 
-	[ObservableProperty]
-	// TODO: Fix bug
-	public partial bool IsPlayerListVisible { get; set; }
+	[ObservableProperty] public partial PlayerListView? PlayerListView { get; set; } = new();
 
 	public void Dispose()
 	{
@@ -24,6 +23,6 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 	private void OnInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("toggle_player_list", @event))
-			IsPlayerListVisible = !IsPlayerListVisible;
+			PlayerListView = PlayerListView is null ? new PlayerListView() : null;
 	}
 }

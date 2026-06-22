@@ -29,11 +29,9 @@ public partial class GdProperties : RefCounted
 			});
 
 	public Variant Get(string key) => _source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
-
 	public Dictionary GetAll() => Converter.ToGodotProperties(_source.All);
 
 	public void Update(string key, Variant value) => _source.Update(key, value.FromGodot());
-
 	public void UpdateAll(Dictionary properties) => _source.UpdateAll(Converter.FromGodotProperties(properties));
 
 	public override string ToString() => _source.ToString()!;

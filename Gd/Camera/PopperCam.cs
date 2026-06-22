@@ -121,11 +121,10 @@ public partial class PopperCam : SpringArm3D
 
 	private void ApplyDollyDelta(float delta)
 	{
-		var logLength = Mathf.Clamp(MathF.Log(SpringLength) + delta * LogScale(), _dollyMinLog, _dollyMaxLog);
+		var logScale = (_dollyMaxLog - _dollyMinLog) / (DollyMax - DollyMin);
+		var logLength = Mathf.Clamp(MathF.Log(SpringLength) + delta * logScale, _dollyMinLog, _dollyMaxLog);
 		SpringLength = MathF.Exp(logLength);
 	}
-
-	private float LogScale() => (_dollyMaxLog - _dollyMinLog) / (DollyMax - DollyMin);
 
 	private void RecalculateViewportDiagonal()
 	{

@@ -60,8 +60,8 @@ public class Plots : IPlots
 			maxInstanceCount ?? _defaultMaxInstanceCount);
 
 		_plotsById.Add(id, plot);
-
 		Added?.Invoke(plot);
+
 		return plot;
 	}
 

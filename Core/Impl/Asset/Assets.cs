@@ -33,8 +33,8 @@ public class Assets : IAssets
 
 		var asset = new Asset(id, name, properties, maxInstanceCount);
 		_assetsById.Add(id, asset);
-
 		Added?.Invoke(asset);
+
 		return asset;
 	}
 

@@ -22,8 +22,8 @@ public class Players : IPlayers
 
 		var player = new Player(playerId, name);
 		_playersById.Add(playerId, player);
-
 		Added?.Invoke(player);
+
 		return player;
 	}
 

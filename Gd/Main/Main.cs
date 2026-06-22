@@ -11,7 +11,7 @@ public partial class Main : Node
 
 	public override void _Ready()
 	{
-		_ = ResetSinglePlayerSessionAsync();
+		GdGlobals.Host.StartSinglePlayer();
 
 		Console.WriteLine("Players:");
 
@@ -43,21 +43,8 @@ public partial class Main : Node
 
 	public override void _Input(InputEvent @event)
 	{
-		if (Input.IsActionJustPressed("reset"))
-			_ = ResetSinglePlayerSessionAsync();
-	}
-
-	private async Task ResetSinglePlayerSessionAsync()
-	{
-		Console.WriteLine("Resetting single player session...");
-
-		GdGlobals.Host.StopSession();
-
-		await ToSignal(GetTree().CreateTimer(0.25), SceneTreeTimer.SignalName.Timeout);
-
-		GdGlobals.Host.StartSinglePlayer();
-
-		Console.WriteLine("Single player session reset");
+		if (Input.IsActionJustPressedByEvent("reset", @event))
+			GdGlobals.Host.StartSinglePlayer();
 	}
 
 	private void OnSessionStarted()

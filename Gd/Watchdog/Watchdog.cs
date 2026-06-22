@@ -50,7 +50,7 @@ public partial class Watchdog : Node
 
 	public override void _Input(InputEvent @event)
 	{
-		if (Input.IsActionJustPressed("hang"))
+		if (Input.IsActionJustPressedByEvent("hang", @event))
 			Thread.Sleep(int.MaxValue);
 	}
 

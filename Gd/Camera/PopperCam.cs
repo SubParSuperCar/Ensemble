@@ -68,9 +68,9 @@ public partial class PopperCam : SpringArm3D
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressed("orbit_camera"))
+		if (Input.IsActionJustPressedByEvent("orbit_camera", @event))
 			CaptureMouse();
-		else if (Input.IsActionJustReleased("orbit_camera"))
+		else if (Input.IsActionJustReleasedByEvent("orbit_camera", @event))
 			ReleaseMouse();
 		else
 			switch (@event)

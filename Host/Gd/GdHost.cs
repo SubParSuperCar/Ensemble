@@ -43,6 +43,8 @@ public partial class GdHost : Node
 		? 0
 		: new DateTimeOffset(_session.UtcStartedAt).ToUnixTimeSeconds();
 
+	public int PeerId => Multiplayer.GetUniqueId();
+
 	public override void _EnterTree()
 	{
 		Instance = this;
@@ -110,6 +112,7 @@ public partial class GdHost : Node
 		OS.LowProcessorUsageMode = true;
 
 		_session.StopSession();
+		ClearPeers();
 
 		var session = _session;
 		_session = null;
@@ -134,6 +137,8 @@ public partial class GdHost : Node
 	private void OnSessionStarted()
 	{
 		var id = LoadOrCreatePlayerId();
+
+		AddPeer(PeerId, id);
 		Players.SetLocal(id);
 
 		if (_session is { IsServer: false })

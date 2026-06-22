@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Root.Ui.Impl.Views.PlayerListView"
+             x:DataType="viewModels:PlayerListViewModel">
+
+    <StackPanel Background="#80000000"
+                ToolTip.Tip="Player List">
+
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Name" />
+            <TextBlock Grid.Column="1" Text="Peer ID" />
+        </Grid>
+
+        <ListBox ItemsSource="{Binding Players}"
+                 Background="Transparent">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Grid.Column="1" Text="{Binding PeerId}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </StackPanel>
+
+</UserControl>

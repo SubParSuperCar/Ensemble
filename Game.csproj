@@ -7,9 +7,12 @@
         <Nullable>enable</Nullable>
         <AnalysisLevel>latest-recommended</AnalysisLevel>
         <RootNamespace>Root</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <OutputType>Exe</OutputType>
+        <UseAppHost>false</UseAppHost>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
@@ -23,6 +26,7 @@
 
     <ItemGroup>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="[11.3.17]"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
         <PackageReference Include="Meziantou.Analyzer" Version="3.0.108">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

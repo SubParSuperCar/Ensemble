@@ -1,12 +1,30 @@
+// ReSharper disable UnusedMember.Global
+
 namespace Root.Host.Gd;
 
 public partial class GdHost
 {
-	// ReSharper disable once CollectionNeverQueried.Local
+	private readonly Dictionary<string, int> _peerIdsByPlayerId = [];
 	private readonly Dictionary<int, string> _playerIdsByPeerId = [];
 
-	private void AddPeer(int peerId, string playerId) => _playerIdsByPeerId.Add(peerId, playerId);
-	private void RemovePeer(int peerId) => _playerIdsByPeerId.Remove(peerId);
+	public IReadOnlyDictionary<string, int> PeerIdsByPlayerId => _peerIdsByPlayerId;
+	public IReadOnlyDictionary<int, string> PlayerIdsByPeerId => _playerIdsByPeerId;
 
-	private void ClearPeers() => _playerIdsByPeerId.Clear();
+	private void AddPeer(int peerId, string playerId)
+	{
+		_playerIdsByPeerId.Add(peerId, playerId);
+		_peerIdsByPlayerId.Add(playerId, peerId);
+	}
+
+	private void RemovePeer(int peerId)
+	{
+		if (_playerIdsByPeerId.Remove(peerId, out var playerId))
+			_peerIdsByPlayerId.Remove(playerId);
+	}
+
+	private void ClearPeers()
+	{
+		_playerIdsByPeerId.Clear();
+		_peerIdsByPlayerId.Clear();
+	}
 }

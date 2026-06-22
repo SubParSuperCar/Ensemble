@@ -9,6 +9,7 @@
 
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="avares://Fonts.Avalonia.JetBrainsMono/Assets#JetBrains Mono" />
+            <Setter Property="FontSize" Value="16" />
         </Style>
     </Application.Styles>
 

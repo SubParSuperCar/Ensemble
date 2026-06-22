@@ -9,20 +9,36 @@
              x:DataType="viewModels:MainViewModel">
 
     <UserControl.DataTemplates>
+        <DataTemplate DataType="viewModels:ClockViewModel">
+            <views:ClockView />
+        </DataTemplate>
+
         <DataTemplate DataType="viewModels:PlayerListViewModel">
             <views:PlayerListView />
         </DataTemplate>
     </UserControl.DataTemplates>
 
-    <ContentControl Content="{Binding PlayerList}">
-        <ContentControl.Styles>
-            <Style Selector="views|PlayerListView">
-                <Setter Property="HorizontalAlignment" Value="Right" />
-                <Setter Property="VerticalAlignment" Value="Top" />
-                <Setter Property="Width" Value="384" />
-                <Setter Property="Height" Value="256" />
-            </Style>
-        </ContentControl.Styles>
-    </ContentControl>
+    <!-- TODO: Move to "GameView" & add "MenuView" -->
+    <Grid>
+        <ContentControl Content="{Binding Clock}">
+            <ContentControl.Styles>
+                <Style Selector="views|ClockView">
+                    <Setter Property="HorizontalAlignment" Value="Center" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                </Style>
+            </ContentControl.Styles>
+        </ContentControl>
+
+        <ContentControl Content="{Binding PlayerList}">
+            <ContentControl.Styles>
+                <Style Selector="views|PlayerListView">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                    <Setter Property="MaxWidth" Value="512" />
+                    <Setter Property="MaxHeight" Value="256" />
+                </Style>
+            </ContentControl.Styles>
+        </ContentControl>
+    </Grid>
 
 </UserControl>

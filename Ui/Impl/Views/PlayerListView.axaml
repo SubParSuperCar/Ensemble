@@ -21,9 +21,9 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="*,Auto">
+                    <Grid ColumnDefinitions="*,16,Auto">
                         <TextBlock Text="{Binding Name}" />
-                        <TextBlock Grid.Column="1" Text="{Binding PeerId}" />
+                        <TextBlock Grid.Column="2" Text="{Binding PeerId}" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

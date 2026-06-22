@@ -32,13 +32,12 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 			PlayerList = PlayerList is null ? new PlayerListViewModel() : null;
 	}
 
-	partial void OnClockChanging(ClockViewModel? oldValue, ClockViewModel? newValue)
-	{
-		_ = newValue;
-		oldValue?.Dispose();
-	}
+	partial void OnClockChanging(ClockViewModel? oldValue, ClockViewModel? newValue) => OnChanging(oldValue, newValue);
 
-	partial void OnPlayerListChanging(PlayerListViewModel? oldValue, PlayerListViewModel? newValue)
+	partial void OnPlayerListChanging(PlayerListViewModel? oldValue, PlayerListViewModel? newValue) =>
+		OnChanging(oldValue, newValue);
+
+	private static void OnChanging(IDisposable? oldValue, IDisposable? newValue)
 	{
 		_ = newValue;
 		oldValue?.Dispose();

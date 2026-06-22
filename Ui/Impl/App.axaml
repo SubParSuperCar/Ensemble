@@ -1,10 +1,10 @@
 <Application
-	xmlns="https://github.com/avaloniaui"
-	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	x:Class="Root.Ui.Impl.App">
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="Root.Ui.Impl.App">
 
-	<Application.Styles>
-		<FluentTheme />
-	</Application.Styles>
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
 
 </Application>

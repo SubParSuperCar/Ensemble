@@ -11,11 +11,12 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 		Dispatcher.Input += OnInput;
 	}
 
-	[ObservableProperty] public partial PlayerListView? PlayerListView { get; set; } = new();
+	[ObservableProperty] public partial PlayerListViewModel? PlayerList { get; set; } = new();
 
 	public void Dispose()
 	{
 		Dispatcher.Input -= OnInput;
+		PlayerList = null;
 
 		GC.SuppressFinalize(this);
 	}
@@ -23,6 +24,12 @@ public partial class MainViewModel : ViewModelBase, IDisposable
 	private void OnInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("toggle_player_list", @event))
-			PlayerListView = PlayerListView is null ? new PlayerListView() : null;
+			PlayerList = PlayerList is null ? new PlayerListViewModel() : null;
+	}
+
+	partial void OnPlayerListChanging(PlayerListViewModel? oldValue, PlayerListViewModel? newValue)
+	{
+		_ = newValue;
+		oldValue?.Dispose();
 	}
 }

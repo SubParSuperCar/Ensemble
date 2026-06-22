@@ -111,11 +111,10 @@ public partial class GdHost : Node
 
 		OS.LowProcessorUsageMode = true;
 
-		_session.StopSession();
-		ClearPeers();
-
 		var session = _session;
 		_session = null;
+
+		session.StopSession();
 
 		session.Started -= OnSessionStarted;
 		session.Stopped -= OnSessionStopped;
@@ -137,7 +136,6 @@ public partial class GdHost : Node
 	private void OnSessionStarted()
 	{
 		var id = LoadOrCreatePlayerId();
-
 		AddPeer(PeerId, id);
 		Players.SetLocal(id);
 
@@ -147,7 +145,11 @@ public partial class GdHost : Node
 		EmitSignal(SignalName.SessionStarted);
 	}
 
-	private void OnSessionStopped() => EmitSignal(SignalName.SessionStopped);
+	private void OnSessionStopped()
+	{
+		ClearPeers();
+		EmitSignal(SignalName.SessionStopped);
+	}
 
 	private void OnSessionFailed(string reason) => EmitSignal(SignalName.SessionFailed, reason);
 

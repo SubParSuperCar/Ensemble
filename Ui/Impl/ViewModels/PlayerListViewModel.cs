@@ -4,7 +4,6 @@ using Root.Gd.Globals;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once UnusedType.Global
 public class PlayerListViewModel : ViewModelBase, IDisposable
 {
 	private readonly Dictionary<string, Player> _playersById = [];

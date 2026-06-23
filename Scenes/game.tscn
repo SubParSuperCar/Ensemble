@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://b1fihxf4l1p5c" path="res://Gd/Asset/AssetManager.cs" id="2_wrm1d"]
 [ext_resource type="Script" uid="uid://dy6kkgfhg276v" path="res://Gd/Plot/PlotManager.cs" id="3_3dryh"]
 [ext_resource type="PackedScene" uid="uid://bctdhk6awxx0r" path="res://Scenes/plot.tscn" id="3_lnu2h"]
-[ext_resource type="ArrayMesh" uid="uid://dgicwmmgxnhx" path="res://Meshes/plots_base.obj" id="7_1l0tm"]
+[ext_resource type="ArrayMesh" uid="uid://ciwmq5hkhhgsi" path="res://Meshes/plots_base.obj" id="7_1l0tm"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i6g32"]
 sky_top_color = Color(0.24749999, 0.49874997, 0.75, 1)

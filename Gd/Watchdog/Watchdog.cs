@@ -10,7 +10,7 @@ namespace Root.Gd.Watchdog;
 public partial class Watchdog : Node
 {
 	private const int PollIntervalMs = 1000;
-	private const int MaxMissCount = 5;
+	private const int MaxMissCount = 15;
 
 	private static long _heartbeatCount;
 

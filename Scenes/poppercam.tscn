@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://y6i76a7yj2rd"]
 
-[ext_resource type="Script" uid="uid://n13v1lnqmwqm" path="res://Gd/Camera/PopperCam.cs" id="1_375tr"]
+[ext_resource type="Script" uid="uid://huebegdsp1d0" path="res://Gd/Camera/PopperCam.cs" id="1_375tr"]
 
 [node name="Popper" type="SpringArm3D" unique_id=920130265]
 transform = Transform3D(-1, 3.345525e-08, -8.076811e-08, 0, 0.9238795, 0.38268346, 8.742278e-08, 0.38268346, -0.9238795, 0, 0, 0)

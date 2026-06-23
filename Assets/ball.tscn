@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://oyvwnup33swu"]
 
-[ext_resource type="Script" uid="uid://b4yn1ejvcguvw" path="res://Gd/Asset/AssetHandle.cs" id="1_irkkq"]
+[ext_resource type="Script" uid="uid://mc1yya4k3mw8" path="res://Gd/Asset/AssetHandle.cs" id="1_irkkq"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_irkkq"]
 

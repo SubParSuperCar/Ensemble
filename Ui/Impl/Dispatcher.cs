@@ -4,7 +4,6 @@ namespace Root.Ui.Impl;
 
 public static class Dispatcher
 {
-	// ReSharper disable once EventNeverSubscribedTo.Global
 	public static event Action<double>? Process;
 	public static event Action<InputEvent>? Input;
 

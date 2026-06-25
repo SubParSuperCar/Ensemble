@@ -1,28 +1,27 @@
 using System.Collections.ObjectModel;
 using Root.Core.Gd.Player;
-using Root.Gd.Globals;
 
 namespace Root.Ui.Impl.ViewModels;
 
-public class PlayerListViewModel : ViewModelBase, IDisposable
+public class PlayerListViewModel : ViewModelBase
 {
 	private readonly Dictionary<string, Player> _playersById = [];
 
 	public PlayerListViewModel()
 	{
-		foreach (var player in GdGlobals.Players.GetAll())
+		foreach (var player in GPlayers.GetAll())
 			OnPlayerAdded(player);
 
-		GdGlobals.Players.Added += OnPlayerAdded;
-		GdGlobals.Players.Removed += OnPlayerRemoved;
+		GPlayers.Added += OnPlayerAdded;
+		GPlayers.Removed += OnPlayerRemoved;
 	}
 
 	public ObservableCollection<Player> Players { get; } = [];
 
-	public void Dispose()
+	public override void Dispose()
 	{
-		GdGlobals.Players.Added -= OnPlayerAdded;
-		GdGlobals.Players.Removed -= OnPlayerRemoved;
+		GPlayers.Added -= OnPlayerAdded;
+		GPlayers.Removed -= OnPlayerRemoved;
 
 		GC.SuppressFinalize(this);
 	}
@@ -32,7 +31,7 @@ public class PlayerListViewModel : ViewModelBase, IDisposable
 		var player = new Player
 		{
 			Name = gdPlayer.Name,
-			PeerId = GdGlobals.Host.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, -1)
+			PeerId = GHost.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, -1)
 		};
 
 		Players.Add(player);

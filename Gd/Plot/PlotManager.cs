@@ -1,7 +1,6 @@
 using System.Globalization;
 using Godot;
 using Root.Core.Gd.Plot;
-using Root.Gd.Globals;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -17,26 +16,26 @@ public partial class PlotManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxTotalInstanceCount { get; set; }
 
-	public override void _Ready()
+	public override void _EnterTree()
 	{
-		GdGlobals.PlotManager = this;
+		GPlotManager = this;
 
-		if (Plots.IsLocked)
+		if (GPlots.IsLocked)
 			return;
 
 		foreach (var handle in GetChildren().OfType<PlotHandle>())
 		{
 			Handles.Add(handle.Id, handle);
-			Plots.Add(handle.Id, handle.MaxOccupantCount, handle.MaxTotalInstanceCount);
+			GPlots.Add(handle.Id, handle.MaxOccupantCount, handle.MaxTotalInstanceCount);
 		}
 
-		Plots.Lock();
+		GPlots.Lock();
 	}
 
 	public override void _ExitTree()
 	{
-		if (ReferenceEquals(GdGlobals.PlotManager, this))
-			GdGlobals.PlotManager = null!;
+		if (ReferenceEquals(GPlotManager, this))
+			GPlotManager = null!;
 	}
 
 	public PlotHandle GetHandle(GdPlot plot) => GetHandle(plot.Id);

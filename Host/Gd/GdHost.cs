@@ -138,7 +138,7 @@ public partial class GdHost : Node
 	{
 		var id = LoadOrCreatePlayerId();
 		AddPeer(PeerId, id);
-		Players.SetLocal(id);
+		GPlayers.SetLocal(id);
 
 		if (_session is { IsServer: false })
 			RpcId(1, MethodName.RpcSyncPlayerAdded, id, string.Empty);

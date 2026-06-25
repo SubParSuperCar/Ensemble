@@ -1,6 +1,5 @@
 using Godot;
 using Root.Core.Gd.Player;
-using Root.Gd.Globals;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -14,22 +13,22 @@ public partial class PlayerManager : Node
 
 	public override void _EnterTree()
 	{
-		GdGlobals.PlayerManager = this;
+		GPlayerManager = this;
 
-		foreach (var player in Players.GetAll())
+		foreach (var player in GPlayers.GetAll())
 			OnPlayerAdded(player);
 
-		Players.Added += OnPlayerAdded;
-		Players.Removed += OnPlayerRemoved;
+		GPlayers.Added += OnPlayerAdded;
+		GPlayers.Removed += OnPlayerRemoved;
 	}
 
 	public override void _ExitTree()
 	{
-		Players.Added -= OnPlayerAdded;
-		Players.Removed -= OnPlayerRemoved;
+		GPlayers.Added -= OnPlayerAdded;
+		GPlayers.Removed -= OnPlayerRemoved;
 
-		if (ReferenceEquals(GdGlobals.PlayerManager, this))
-			GdGlobals.PlayerManager = null!;
+		if (ReferenceEquals(GPlayerManager, this))
+			GPlayerManager = null!;
 	}
 
 	public PlayerHandle GetHandle(GdPlayer player) => GetHandle(player.Id);

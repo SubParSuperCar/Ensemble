@@ -16,18 +16,18 @@
             <TextBlock Grid.Column="2" Text="Peer ID" />
         </Grid>
 
-        <ListBox ItemsSource="{Binding Players}"
-                 Background="Transparent">
+        <ItemsControl ItemsSource="{Binding Players}"
+                      Background="Transparent">
 
-            <ListBox.ItemTemplate>
+            <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*,16,Auto">
                         <TextBlock Text="{Binding Name}" />
                         <TextBlock Grid.Column="2" Text="{Binding PeerId}" />
                     </Grid>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </StackPanel>
 
 </UserControl>

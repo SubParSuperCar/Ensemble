@@ -41,12 +41,13 @@ public class Plot : IPlot
 		IsSpawnedChanged?.Invoke(false);
 	}
 
+	// TODO: Optimize order
 	public void Reset()
 	{
 		Occupants.Clear();
-		Instances.Clear();
 
 		Despawn();
+		Instances.Clear();
 	}
 
 	public override string ToString() => $"Plot(id={Id}, isSpawned={IsSpawned})";

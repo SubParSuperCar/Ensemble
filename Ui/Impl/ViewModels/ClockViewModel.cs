@@ -1,10 +1,9 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Root.Gd.Globals;
 
 namespace Root.Ui.Impl.ViewModels;
 
-public partial class ClockViewModel : ViewModelBase, IDisposable
+public partial class ClockViewModel : ViewModelBase
 {
 	public ClockViewModel()
 	{
@@ -14,7 +13,7 @@ public partial class ClockViewModel : ViewModelBase, IDisposable
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
 
-	public void Dispose()
+	public override void Dispose()
 	{
 		Dispatcher.Process -= OnProcess;
 
@@ -23,7 +22,7 @@ public partial class ClockViewModel : ViewModelBase, IDisposable
 
 	private void OnProcess(double delta)
 	{
-		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GdGlobals.Host.UtcStartedAtUnix);
+		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GHost.UtcStartedAtUnix);
 		var now = DateTimeOffset.UtcNow;
 		var sinceStarted = now - startedAt;
 

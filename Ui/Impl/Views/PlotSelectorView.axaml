@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Root.Ui.Impl.Views.PlotSelectorView"
+             x:DataType="viewModels:PlotSelectorViewModel">
+
+    <StackPanel Background="#80000000"
+                ToolTip.Tip="Plot Selector">
+
+        <Grid ColumnDefinitions="*,*,Auto">
+            <TextBlock Text="ID" />
+            <TextBlock Grid.Column="1" Text="Plot Selector" />
+            <TextBlock Grid.Column="2" Text="Occupancy" />
+        </Grid>
+
+        <ListBox ItemsSource="{Binding Plots}"
+                 SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                 Background="Transparent">
+
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,16,Auto">
+                        <TextBlock Text="{Binding Id}" />
+                        <TextBlock Grid.Column="2" Text="{Binding Occupancy}" />
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Button Content="Set Plot to Null"
+                HorizontalAlignment="Center"
+                Command="{Binding SetPlotToNullCommand}" />
+    </StackPanel>
+
+</UserControl>

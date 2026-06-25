@@ -48,7 +48,7 @@ public partial class GdHost
 
 		EnqueueRpc(senderId, 5, () =>
 		{
-			Players.Add(playerId, name);
+			GPlayers.Add(playerId, name);
 			AddPeer(senderId, playerId);
 		});
 	}
@@ -60,7 +60,7 @@ public partial class GdHost
 
 		EnqueueRpc(senderId, 5, () =>
 		{
-			Players.Remove(playerId);
+			GPlayers.Remove(playerId);
 			RemovePeer(senderId);
 		});
 	}
@@ -73,7 +73,7 @@ public partial class GdHost
 		EnqueueRpc(senderId, 20, () =>
 		{
 			foreach (var playerId in players)
-				Players.Add(playerId);
+				GPlayers.Add(playerId);
 
 			foreach (var plot in plots)
 				ApplyPlotState(plot);
@@ -83,7 +83,7 @@ public partial class GdHost
 	private static void ApplyPlotState(Dictionary plot)
 	{
 		var plotId = plot["id"].As<int>();
-		var gdPlot = Plots.Get(plotId);
+		var gdPlot = GPlots.Get(plotId);
 
 		if (gdPlot is null)
 			return;
@@ -91,7 +91,7 @@ public partial class GdHost
 		if (plot.TryGetValue("occupantIds", out var occupantIds))
 		{
 			foreach (var playerId in occupantIds.AsGodotArray<string>())
-				Plots.SetPlot(playerId, plotId);
+				GPlots.SetPlot(playerId, plotId);
 		}
 
 		if (plot.TryGetValue("ownerId", out var ownerId))
@@ -115,7 +115,7 @@ public partial class GdHost
 	{
 		var players = new Array<string>();
 
-		foreach (var player in Players.GetAll())
+		foreach (var player in GPlayers.GetAll())
 		{
 			if (!string.Equals(player.Id, localPlayerId, StringComparison.OrdinalIgnoreCase))
 				players.Add(player.Id);
@@ -129,7 +129,7 @@ public partial class GdHost
 	{
 		var states = new Array<Dictionary>();
 
-		foreach (var plot in Plots.GetAll())
+		foreach (var plot in GPlots.GetAll())
 		{
 			var state = plot.ToDict();
 

@@ -19,21 +19,21 @@ public partial class AssetManager : Node
 	[GeneratedRegex(@"\.t?scn$", RegexOptions.IgnoreCase, 100)]
 	private static partial Regex SceneFileRegex { get; }
 
-	public override void _Ready()
+	public override void _EnterTree()
 	{
-		GdGlobals.AssetManager = this;
+		GAssetManager = this;
 
-		if (Assets.IsLocked)
+		if (GAssets.IsLocked)
 			return;
 
 		ScanDirectory(Constants.AssetsDir);
-		Assets.Lock();
+		GAssets.Lock();
 	}
 
 	public override void _ExitTree()
 	{
-		if (ReferenceEquals(GdGlobals.AssetManager, this))
-			GdGlobals.AssetManager = null!;
+		if (ReferenceEquals(GAssetManager, this))
+			GAssetManager = null!;
 	}
 
 	public PackedScene GetPacked(GdAsset asset) => GetPacked(asset.Id);
@@ -97,7 +97,7 @@ public partial class AssetManager : Node
 		foreach (var (key, value) in properties)
 			converted.Add(key.ToString(), value);
 
-		Assets.Add(
+		GAssets.Add(
 			id,
 			name,
 			converted,

@@ -13,16 +13,34 @@ namespace Root.Gd.Globals;
 
 public static class GdGlobals
 {
-	// ReSharper disable once MemberCanBePrivate.Global
-	public static GdCore Core => GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null");
+	public static GdCore GCore => GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null");
 
-	public static GdPlayers Players => Core.Players;
-	public static GdAssets Assets => Core.Assets;
-	public static GdPlots Plots => Core.Plots;
+	public static GdPlayers GPlayers =>
+		GCore.Players ?? throw new InvalidOperationException($"{nameof(GdCore.Players)} is null");
 
-	public static GdHost Host => GdHost.Instance ?? throw new InvalidOperationException($"{nameof(GdHost)} is null");
+	public static GdAssets GAssets =>
+		GCore.Assets ?? throw new InvalidOperationException($"{nameof(GdCore.Assets)} is null");
 
-	public static PlayerManager PlayerManager { get; set; } = null!;
-	public static AssetManager AssetManager { get; set; } = null!;
-	public static PlotManager PlotManager { get; set; } = null!;
+	public static GdPlots GPlots =>
+		GCore.Plots ?? throw new InvalidOperationException($"{nameof(GdCore.Plots)} is null");
+
+	public static GdHost GHost => GdHost.Instance ?? throw new InvalidOperationException($"{nameof(GdHost)} is null");
+
+	public static PlayerManager GPlayerManager
+	{
+		get => field ?? throw new InvalidOperationException($"{nameof(PlayerManager)} is null");
+		set;
+	} = null!;
+
+	public static AssetManager GAssetManager
+	{
+		get => field ?? throw new InvalidOperationException($"{nameof(AssetManager)} is null");
+		set;
+	} = null!;
+
+	public static PlotManager GPlotManager
+	{
+		get => field ?? throw new InvalidOperationException($"{nameof(PlotManager)} is null");
+		set;
+	} = null!;
 }

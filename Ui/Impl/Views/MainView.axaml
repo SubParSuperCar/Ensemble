@@ -13,6 +13,10 @@
             <views:ClockView />
         </DataTemplate>
 
+        <DataTemplate DataType="viewModels:PlotSelectorViewModel">
+            <views:PlotSelectorView />
+        </DataTemplate>
+
         <DataTemplate DataType="viewModels:PlayerListViewModel">
             <views:PlayerListView />
         </DataTemplate>
@@ -25,6 +29,17 @@
                 <Style Selector="views|ClockView">
                     <Setter Property="HorizontalAlignment" Value="Center" />
                     <Setter Property="VerticalAlignment" Value="Top" />
+                </Style>
+            </ContentControl.Styles>
+        </ContentControl>
+
+        <ContentControl Content="{Binding PlotSelector}">
+            <ContentControl.Styles>
+                <Style Selector="views|PlotSelectorView">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Width" Value="512" />
+                    <Setter Property="MaxHeight" Value="512" />
                 </Style>
             </ContentControl.Styles>
         </ContentControl>

@@ -1,5 +1,4 @@
 using Godot;
-using Root.Gd.Globals;
 
 namespace Root.Gd.Main;
 
@@ -11,45 +10,45 @@ public partial class Main : Node
 
 	public override void _Ready()
 	{
-		GdGlobals.Host.StartSinglePlayer();
+		GHost.StartSinglePlayer();
 
 		Console.WriteLine("Players:");
 
-		foreach (var player in Players.GetAll())
+		foreach (var player in GPlayers.GetAll())
 			Console.WriteLine(player.ToDict());
 
 		Console.WriteLine("Assets:");
 
-		foreach (var asset in Assets.GetAll())
+		foreach (var asset in GAssets.GetAll())
 			Console.WriteLine(asset.ToDict());
 
 		Console.WriteLine("Plots:");
 
-		foreach (var plot in Plots.GetAll())
+		foreach (var plot in GPlots.GetAll())
 			Console.WriteLine(plot.ToDict());
 	}
 
 	public override void _EnterTree()
 	{
-		GdGlobals.Host.SessionStarted += OnSessionStarted;
-		GdGlobals.Host.SessionStopped += OnSessionStopped;
+		GHost.SessionStarted += OnSessionStarted;
+		GHost.SessionStopped += OnSessionStopped;
 	}
 
 	public override void _ExitTree()
 	{
-		GdGlobals.Host.SessionStarted -= OnSessionStarted;
-		GdGlobals.Host.SessionStopped -= OnSessionStopped;
+		GHost.SessionStarted -= OnSessionStarted;
+		GHost.SessionStopped -= OnSessionStopped;
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("reset", @event))
-			GdGlobals.Host.StartSinglePlayer();
+			GHost.StartSinglePlayer();
 	}
 
 	private void OnSessionStarted()
 	{
-		Console.WriteLine($"Session started with mode {GdGlobals.Host.Mode}");
+		Console.WriteLine($"Session started with mode {GHost.Mode}");
 
 		if (_gameScene is not null)
 			return;
@@ -61,6 +60,8 @@ public partial class Main : Node
 	private void OnSessionStopped()
 	{
 		Console.WriteLine("Session stopped");
+
+		GCore.Reset();
 
 		if (_gameScene is null)
 			return;

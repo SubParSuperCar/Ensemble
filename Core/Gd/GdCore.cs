@@ -31,7 +31,9 @@ public partial class GdCore : Node
 			Instance = null;
 	}
 
-	public override void _Ready()
+	public override void _Ready() => Reset();
+
+	public void Reset()
 	{
 #if DEBUG
 		var stopwatch = Stopwatch.StartNew();

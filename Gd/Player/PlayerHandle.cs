@@ -19,6 +19,8 @@ public partial class PlayerHandle : Node
 	public string Id { get; set; } = null!;
 
 	public CharacterBody3D Character { get; private set; } = null!;
+	public CharacterController Controller { get; private set; } = null!;
+
 	public PopperCam Camera { get; private set; } = null!;
 
 	public override void _Ready()
@@ -26,25 +28,25 @@ public partial class PlayerHandle : Node
 		Character = GetNode<CharacterBody3D>("Character");
 		Character.GlobalPosition = SpawnLocation;
 
-		if (!string.Equals(Id, Players.Local?.Id, StringComparison.OrdinalIgnoreCase))
+		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.OrdinalIgnoreCase))
 			return;
 
 		var instanceId = Character.GetInstanceId();
 		Character.SetScript(CharacterControllerScript);
 
-		var controller = (CharacterController)InstanceFromId(instanceId)!;
-		controller.SetPhysicsProcess(true);
+		Controller = (CharacterController)InstanceFromId(instanceId)!;
+		Controller.SetPhysicsProcess(true);
 
 		Camera = CameraScene.Instantiate<PopperCam>();
-		Camera.Focus = controller;
+		Camera.Focus = Controller;
 		AddChild(Camera);
 
-		controller.Camera = Camera;
+		Controller.Camera = Camera;
 	}
 
 	public override void _EnterTree()
 	{
-		_occupant = Plots.GetOccupant(Id);
+		_occupant = GPlots.GetOccupant(Id);
 		_occupant.PlotChanged += OnPlotChanged;
 	}
 
@@ -52,10 +54,11 @@ public partial class PlayerHandle : Node
 
 	private void OnPlotChanged(GdPlot? plot)
 	{
-		if (plot?.Id is not { } id)
+		if (plot is null)
 			return;
 
-		var node = PlotManager.Handles[id];
-		Character.GlobalPosition = node.GlobalPosition;
+		// TODO: Offset based on character height
+		var handle = GPlotManager.GetHandle(plot);
+		Controller.GlobalPosition = handle.SpawnLocation;
 	}
 }

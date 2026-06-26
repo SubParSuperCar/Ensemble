@@ -16,15 +16,13 @@ public partial class ClockViewModel : ViewModelBase
 	public override void Dispose()
 	{
 		Dispatcher.Process -= OnProcess;
-
 		GC.SuppressFinalize(this);
 	}
 
 	private void OnProcess(double delta)
 	{
 		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GHost.UtcStartedAtUnix);
-		var now = DateTimeOffset.UtcNow;
-		var sinceStarted = now - startedAt;
+		var sinceStarted = DateTimeOffset.UtcNow - startedAt;
 
 		Text = string.Create(CultureInfo.InvariantCulture,
 			$"{DateTime.Now:G} - {TimeZoneInfo.Local} - {sinceStarted:G}");

@@ -8,6 +8,18 @@ public partial class Main : Node
 
 	[Export] public PackedScene GameScene { get; set; } = null!;
 
+	public override void _EnterTree()
+	{
+		GHost.SessionStarted += OnSessionStarted;
+		GHost.SessionStopped += OnSessionStopped;
+	}
+
+	public override void _ExitTree()
+	{
+		GHost.SessionStarted -= OnSessionStarted;
+		GHost.SessionStopped -= OnSessionStopped;
+	}
+
 	public override void _Ready()
 	{
 		GHost.StartSinglePlayer();
@@ -26,18 +38,6 @@ public partial class Main : Node
 
 		foreach (var plot in GPlots.GetAll())
 			Console.WriteLine(plot.ToDict());
-	}
-
-	public override void _EnterTree()
-	{
-		GHost.SessionStarted += OnSessionStarted;
-		GHost.SessionStopped += OnSessionStopped;
-	}
-
-	public override void _ExitTree()
-	{
-		GHost.SessionStarted -= OnSessionStarted;
-		GHost.SessionStopped -= OnSessionStopped;
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)

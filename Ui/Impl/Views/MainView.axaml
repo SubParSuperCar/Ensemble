@@ -38,8 +38,8 @@
                 <Style Selector="views|PlotSelectorView">
                     <Setter Property="HorizontalAlignment" Value="Left" />
                     <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="Width" Value="512" />
-                    <Setter Property="MaxHeight" Value="512" />
+                    <Setter Property="Width" Value="384" />
+                    <Setter Property="MaxHeight" Value="384" />
                 </Style>
             </ContentControl.Styles>
         </ContentControl>

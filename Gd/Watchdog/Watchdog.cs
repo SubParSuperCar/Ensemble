@@ -17,7 +17,7 @@ public partial class Watchdog : Node
 	private CancellationTokenSource _cts = null!;
 	private Thread _pollThread = null!;
 
-	public static Watchdog Instance { get; private set; } = null!;
+	public static Watchdog? Instance { get; private set; }
 
 	public override void _EnterTree()
 	{
@@ -43,7 +43,7 @@ public partial class Watchdog : Node
 		_pollThread.Join(PollIntervalMs);
 
 		if (ReferenceEquals(Instance, this))
-			Instance = null!;
+			Instance = null;
 	}
 
 	public override void _Process(double delta) => Heartbeat();

@@ -28,11 +28,9 @@ public class PlayerListViewModel : ViewModelBase
 
 	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
-		var player = new Player
-		{
-			Name = gdPlayer.Name,
-			PeerId = GHost.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, -1)
-		};
+		var player = new Player(
+			gdPlayer.Name,
+			GHost.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, -1));
 
 		Players.Add(player);
 		_playersById[gdPlayer.Id] = player;
@@ -45,8 +43,4 @@ public class PlayerListViewModel : ViewModelBase
 	}
 }
 
-public class Player
-{
-	public string Name { get; init; } = string.Empty;
-	public int PeerId { get; init; }
-}
+public record Player(string Name, int PeerId);

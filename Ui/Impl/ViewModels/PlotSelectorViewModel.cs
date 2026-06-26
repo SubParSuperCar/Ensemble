@@ -45,7 +45,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			Id = gdPlot.Id
 		};
 
-		// TODO: Fix bug where event references "slide out from under" when GCore.Reset is called
+		// TODO: Fix the bug where GdCore events are orphaned on GdCore.Reset
 		OnOccupantAddedOrRemoved(null!);
 		occupants.Added += OnOccupantAddedOrRemoved;
 		occupants.Removed += OnOccupantAddedOrRemoved;
@@ -64,7 +64,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 		void OnRemoved()
 		{
-			occupants.Removed -= OnOccupantAddedOrRemoved;
+			occupants.Added -= OnOccupantAddedOrRemoved;
 			occupants.Removed -= OnOccupantAddedOrRemoved;
 		}
 	}

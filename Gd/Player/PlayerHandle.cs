@@ -9,6 +9,7 @@ namespace Root.Gd.Player;
 public partial class PlayerHandle : Node
 {
 	private GdOccupant _occupant = null!;
+	private Vector3? _spawnOffset;
 
 	[Export] public Script CharacterControllerScript { get; set; } = null!;
 
@@ -18,10 +19,20 @@ public partial class PlayerHandle : Node
 
 	public string Id { get; set; } = null!;
 
-	public CharacterBody3D Character { get; private set; } = null!;
-	public CharacterController Controller { get; private set; } = null!;
+	public CharacterBody3D? Character { get; private set; }
+	public CharacterController? Controller { get; private set; }
 
-	public PopperCam Camera { get; private set; } = null!;
+	public PopperCam? Camera { get; private set; }
+
+	public Vector3 SpawnOffset => _spawnOffset ??= CalculateSpawnOffset();
+
+	public override void _EnterTree()
+	{
+		_occupant = GPlots.GetOccupant(Id);
+		_occupant.PlotChanged += OnPlotChanged;
+	}
+
+	public override void _ExitTree() => _occupant.PlotChanged -= OnPlotChanged;
 
 	public override void _Ready()
 	{
@@ -33,6 +44,7 @@ public partial class PlayerHandle : Node
 
 		var instanceId = Character.GetInstanceId();
 		Character.SetScript(CharacterControllerScript);
+		Character = null;
 
 		Controller = (CharacterController)InstanceFromId(instanceId)!;
 		Controller.SetPhysicsProcess(true);
@@ -44,21 +56,20 @@ public partial class PlayerHandle : Node
 		Controller.Camera = Camera;
 	}
 
-	public override void _EnterTree()
-	{
-		_occupant = GPlots.GetOccupant(Id);
-		_occupant.PlotChanged += OnPlotChanged;
-	}
-
-	public override void _ExitTree() => _occupant.PlotChanged -= OnPlotChanged;
-
 	private void OnPlotChanged(GdPlot? plot)
 	{
 		if (plot is null)
 			return;
 
-		// TODO: Offset based on character height
 		var handle = GPlotManager.GetHandle(plot);
-		Controller.GlobalPosition = handle.SpawnLocation;
+		(Character ?? Controller)!.GlobalPosition = handle.SpawnLocation + SpawnOffset;
+	}
+
+	private Vector3 CalculateSpawnOffset()
+	{
+		var collider = (Character ?? Controller)!.GetNode<CollisionShape3D>("Collider");
+		var aabb = collider.Shape.GetDebugMesh().GetAabb();
+
+		return new Vector3(0, aabb.Size.Y / 2, 0);
 	}
 }

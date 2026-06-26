@@ -42,9 +42,5 @@ public partial class MainViewModel : ViewModelBase
 	partial void OnPlotSelectorChanging(PlotSelectorViewModel? oldValue, PlotSelectorViewModel? newValue) =>
 		OnChanging(oldValue, newValue);
 
-	private static void OnChanging(IDisposable? oldValue, IDisposable? newValue)
-	{
-		_ = newValue;
-		oldValue?.Dispose();
-	}
+	private static void OnChanging(IDisposable? oldValue, IDisposable? _) => oldValue?.Dispose();
 }

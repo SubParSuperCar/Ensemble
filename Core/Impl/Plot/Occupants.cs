@@ -50,16 +50,19 @@ public class Occupants : IOccupants
 		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
 		occupant.SetPlot(_plot);
 
+		if (Owner is null)
+			SetOwner(occupant.Player.Id);
+
 		Added?.Invoke(occupant);
 	}
 
 	public void Remove(Occupant occupant)
 	{
-		_occupantsByPlayerId.Remove(occupant.Player.Id);
-		occupant.SetPlot(null);
-
 		if (ReferenceEquals(occupant, Owner))
 			SetOwner();
+
+		_occupantsByPlayerId.Remove(occupant.Player.Id);
+		occupant.SetPlot(null);
 
 		Removed?.Invoke(occupant);
 	}

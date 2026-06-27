@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Root.Core.Gd.Plot;
 
+// ReSharper disable MemberCanBeMadeStatic.Global
+
 namespace Root.Ui.Impl.ViewModels;
 
 public partial class PlotSelectorViewModel : ViewModelBase
@@ -50,7 +52,9 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			Id = gdPlot.Id
 		};
 
-		// TODO: Fix the bug where GdCore events are orphaned on GdCore.Reset
+		OnOwnerChanged(occupants.Owner);
+		occupants.OwnerChanged += OnOwnerChanged;
+
 		OnOccupantAddedOrRemoved(null!);
 		occupants.Added += OnOccupantAddedOrRemoved;
 		occupants.Removed += OnOccupantAddedOrRemoved;
@@ -59,6 +63,29 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		_plotsById[gdPlot.Id] = plot;
 
 		return;
+
+		void OnOwnerChanged(GdOccupant? owner)
+		{
+			if (owner is null)
+			{
+				plot.OwnerName = "Null";
+				return;
+			}
+
+			const char delimiter = '-';
+
+			var span = owner.Player.Name.AsSpan();
+
+			var first = span.IndexOf(delimiter);
+			if (first != 0)
+			{
+				var second = span[++first..].IndexOf(delimiter);
+				if (second != 0)
+					span = span[..(first + second)];
+			}
+
+			plot.OwnerName = span.ToString();
+		}
 
 		void OnOccupantAddedOrRemoved(GdOccupant occupant)
 		{
@@ -94,6 +121,6 @@ public partial class Plot : ObservableObject
 
 	public int Id { get; init; }
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
+	[ObservableProperty] public partial string? OwnerName { get; set; }
 	[ObservableProperty] public partial string Occupancy { get; set; } = string.Empty;
 }

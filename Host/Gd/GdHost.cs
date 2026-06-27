@@ -136,7 +136,7 @@ public partial class GdHost : Node
 
 	private void OnSessionStarted()
 	{
-		var id = LoadOrCreatePlayerId();
+		var id = LoadOrGeneratePlayerId();
 		AddPeer(PeerId, id);
 		GPlayers.SetLocal(id);
 
@@ -154,10 +154,11 @@ public partial class GdHost : Node
 
 	private void OnSessionFailed(string reason) => EmitSignal(SignalName.SessionFailed, reason);
 
-	private static string LoadOrCreatePlayerId()
+	private static string LoadOrGeneratePlayerId()
 	{
 		var config = new ConfigFile();
 
+#if RELEASE
 		if (config.Load(Constants.UserDataCfgPath) == Error.Ok)
 		{
 			var stored = config.GetValue("player", "id", "").AsString();
@@ -165,6 +166,7 @@ public partial class GdHost : Node
 			if (Guid.TryParse(stored, out _))
 				return stored;
 		}
+#endif
 
 		var id = Guid.NewGuid().ToString();
 		config.SetValue("player", "id", id);

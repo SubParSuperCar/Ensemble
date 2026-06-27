@@ -10,10 +10,14 @@
     <StackPanel Background="#80000000"
                 ToolTip.Tip="Plot Selector">
 
-        <Grid ColumnDefinitions="*,*,Auto">
+        <Grid ColumnDefinitions="Auto,16,*">
             <TextBlock Text="ID" />
-            <TextBlock Grid.Column="1" Text="Plot Selector" />
-            <TextBlock Grid.Column="2" Text="Occupancy" />
+
+            <Grid Grid.Column="2" ColumnDefinitions="Auto,*,Auto">
+                <TextBlock Text="Owner Name" />
+                <TextBlock Grid.Column="1" Text="Plot Selector" HorizontalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="Occupancy" />
+            </Grid>
         </Grid>
 
         <ListBox ItemsSource="{Binding Plots}"
@@ -22,9 +26,10 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Grid ColumnDefinitions="*,16,Auto">
+                    <Grid ColumnDefinitions="Auto,16,*,Auto">
                         <TextBlock Text="{Binding Id}" />
-                        <TextBlock Grid.Column="2" Text="{Binding Occupancy}" />
+                        <TextBlock Grid.Column="2" Text="{Binding OwnerName}" />
+                        <TextBlock Grid.Column="3" Text="{Binding Occupancy}" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

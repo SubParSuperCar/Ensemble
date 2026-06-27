@@ -16,6 +16,10 @@
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.17]"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>

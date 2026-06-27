@@ -20,7 +20,10 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	}
 
 	public ObservableCollection<Plot> Plots { get; } = [];
-	[ObservableProperty] public partial Plot? SelectedItem { get; set; } = null!;
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(SetPlotToNullCommand))]
+	public partial Plot? SelectedItem { get; set; }
 
 	public override void Dispose()
 	{
@@ -33,8 +36,8 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		GC.SuppressFinalize(this);
 	}
 
-	[RelayCommand]
-	private void SetPlotToNull() => SelectedItem = null!;
+	[RelayCommand(CanExecute = nameof(CanSetPlotToNull))]
+	private void SetPlotToNull() => SelectedItem = null;
 
 	private void OnPlotAdded(GdPlot gdPlot)
 	{
@@ -61,7 +64,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		{
 			// ReSharper disable once AccessToModifiedClosure
 			plot.Occupancy = string.Create(CultureInfo.InvariantCulture,
-				$"{occupants.Count} / {occupants.MaxCount}");
+				$"{occupants.Count} / {(occupants.MaxCount == -1 ? double.PositiveInfinity : occupants.MaxCount)}");
 		}
 
 		void OnRemoved()
@@ -81,6 +84,8 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	}
 
 	partial void OnSelectedItemChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? -1);
+
+	private bool CanSetPlotToNull() => SelectedItem is not null;
 }
 
 public partial class Plot : ObservableObject

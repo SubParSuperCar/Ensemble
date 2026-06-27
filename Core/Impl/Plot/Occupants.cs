@@ -45,7 +45,7 @@ public class Occupants : IOccupants
 			Remove((Occupant)occupant);
 	}
 
-	public void Add(Occupant occupant, bool setOwner = true)
+	internal void Add(Occupant occupant, bool setOwner = true)
 	{
 		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
 		occupant.SetPlot(_plot);
@@ -56,7 +56,7 @@ public class Occupants : IOccupants
 		Added?.Invoke(occupant);
 	}
 
-	public void Remove(Occupant occupant, bool setOwner = true)
+	internal void Remove(Occupant occupant, bool setOwner = true)
 	{
 		if (ReferenceEquals(occupant, Owner))
 			SetOwner(_occupantsByPlayerId.Count > 1 && setOwner

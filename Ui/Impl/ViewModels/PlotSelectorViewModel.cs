@@ -81,10 +81,10 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			var wasTruncated = false;
 
 			var first = span.IndexOf(delimiter);
-			if (first != 0)
+			if (first != -1)
 			{
 				var second = span[++first..].IndexOf(delimiter);
-				if (second != 0)
+				if (second != -1)
 				{
 					span = span[..(first + second)];
 					wasTruncated = true;

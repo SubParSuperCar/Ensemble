@@ -7,8 +7,6 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class StatViewModel : ViewModelBase
 {
-	private ulong _lastProcessTime;
-
 	public StatViewModel()
 	{
 		Dispatcher.Process += OnProcess;
@@ -25,10 +23,6 @@ public partial class StatViewModel : ViewModelBase
 
 	private void OnProcess(double delta)
 	{
-		var ticks = Time.GetTicksMsec();
-		if (ticks - _lastProcessTime < 1000) return;
-		_lastProcessTime = ticks;
-
 		var fps = Performance.GetMonitor(Performance.Monitor.TimeFps);
 
 		var stats = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)

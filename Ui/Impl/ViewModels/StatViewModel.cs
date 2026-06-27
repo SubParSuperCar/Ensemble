@@ -7,7 +7,7 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class StatViewModel : ViewModelBase
 {
-	private ulong _lastTick;
+	private ulong _lastProcess;
 
 	public StatViewModel()
 	{
@@ -25,9 +25,9 @@ public partial class StatViewModel : ViewModelBase
 
 	private void OnProcess(double delta)
 	{
-		var tick = Time.GetTicksMsec();
-		if (tick - _lastTick < 1000) return;
-		_lastTick = tick;
+		var ticks = Time.GetTicksMsec();
+		if (ticks - _lastProcess < 1000) return;
+		_lastProcess = ticks;
 
 		var fps = Performance.GetMonitor(Performance.Monitor.TimeFps);
 

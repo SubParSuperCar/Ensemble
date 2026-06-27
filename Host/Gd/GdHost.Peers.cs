@@ -1,5 +1,3 @@
-// ReSharper disable UnusedMember.Global
-
 namespace Root.Host.Gd;
 
 public partial class GdHost

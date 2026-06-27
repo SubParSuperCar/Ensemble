@@ -4,8 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Root.Core.Gd.Plot;
 
-// ReSharper disable AccessToModifiedClosure
 // ReSharper disable MemberCanBeMadeStatic.Global
+// ReSharper disable AccessToModifiedClosure
 
 namespace Root.Ui.Impl.ViewModels;
 

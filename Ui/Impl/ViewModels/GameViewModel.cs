@@ -12,6 +12,7 @@ public partial class GameViewModel : ViewModelBase
 		Dispatcher.Input += OnInput;
 	}
 
+	[ObservableProperty] public partial StatViewModel? Stat { get; set; } = new();
 	[ObservableProperty] public partial ClockViewModel? Clock { get; set; } = new();
 	[ObservableProperty] public partial PlotSelectorViewModel? PlotSelector { get; set; } = new();
 	[ObservableProperty] public partial PlayerListViewModel? PlayerList { get; set; } = new();
@@ -20,6 +21,7 @@ public partial class GameViewModel : ViewModelBase
 	{
 		Dispatcher.Input -= OnInput;
 
+		Stat = null;
 		Clock = null;
 		PlotSelector = null;
 		PlayerList = null;
@@ -33,6 +35,7 @@ public partial class GameViewModel : ViewModelBase
 			PlayerList = PlayerList is null ? new PlayerListViewModel() : null;
 	}
 
+	partial void OnStatChanging(StatViewModel? oldValue, StatViewModel? newValue) => OnChanging(oldValue, newValue);
 	partial void OnClockChanging(ClockViewModel? oldValue, ClockViewModel? newValue) => OnChanging(oldValue, newValue);
 
 	partial void OnPlayerListChanging(PlayerListViewModel? oldValue, PlayerListViewModel? newValue) =>

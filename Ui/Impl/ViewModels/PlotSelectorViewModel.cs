@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.Input;
 using Root.Core.Gd.Plot;
 
 // ReSharper disable AccessToModifiedClosure
-
 // ReSharper disable MemberCanBeMadeStatic.Global
 
 namespace Root.Ui.Impl.ViewModels;

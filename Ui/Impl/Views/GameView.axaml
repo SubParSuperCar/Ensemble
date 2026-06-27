@@ -9,6 +9,10 @@
              x:DataType="viewModels:GameViewModel">
 
     <UserControl.DataTemplates>
+        <DataTemplate DataType="viewModels:StatViewModel">
+            <views:StatView />
+        </DataTemplate>
+
         <DataTemplate DataType="viewModels:ClockViewModel">
             <views:ClockView />
         </DataTemplate>
@@ -23,6 +27,15 @@
     </UserControl.DataTemplates>
 
     <Grid>
+        <ContentControl Content="{Binding Stat}">
+            <ContentControl.Styles>
+                <Style Selector="views|StatView">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="VerticalAlignment" Value="Top" />
+                </Style>
+            </ContentControl.Styles>
+        </ContentControl>
+
         <ContentControl Content="{Binding Clock}">
             <ContentControl.Styles>
                 <Style Selector="views|ClockView">

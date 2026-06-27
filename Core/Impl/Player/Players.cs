@@ -51,4 +51,10 @@ public class Players : IPlayers
 		Local = player;
 		LocalChanged?.Invoke(player);
 	}
+
+	internal void Reset()
+	{
+		foreach (var player in _playersById.Values.ToArray())
+			Remove(player.Id);
+	}
 }

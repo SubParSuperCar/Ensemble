@@ -12,6 +12,9 @@ public partial class GdAssets : RefCounted
 	[Signal]
 	public delegate void AddedEventHandler(GdAsset asset);
 
+	[Signal]
+	public delegate void RemovedEventHandler(GdAsset asset);
+
 	private static readonly ConditionalWeakTable<IAssets, GdAssets> Wrappers = [];
 	private IAssets _source = null!;
 
@@ -23,7 +26,9 @@ public partial class GdAssets : RefCounted
 			static source =>
 			{
 				var wrapper = new GdAssets { _source = source };
+
 				source.Added += asset => wrapper.EmitSignal(SignalName.Added, GdAsset.From(asset));
+				source.Removed += asset => wrapper.EmitSignal(SignalName.Removed, GdAsset.From(asset));
 
 				return wrapper;
 			});

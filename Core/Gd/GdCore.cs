@@ -9,6 +9,8 @@ namespace Root.Core.Gd;
 
 public partial class GdCore : Node
 {
+	private Impl.Core _core = null!;
+
 	public static GdCore? Instance
 	{
 		get;
@@ -31,19 +33,17 @@ public partial class GdCore : Node
 			Instance = null;
 	}
 
-	public override void _Ready() => Reset();
-
-	public void Reset()
+	public override void _Ready()
 	{
 #if DEBUG
 		var stopwatch = Stopwatch.StartNew();
 #endif
 
-		var core = new Impl.Core();
+		_core = new Impl.Core();
 
-		Players = GdPlayers.From(core.Players);
-		Assets = GdAssets.From(core.Assets);
-		Plots = GdPlots.From(core.Plots);
+		Players = GdPlayers.From(_core.Players);
+		Assets = GdAssets.From(_core.Assets);
+		Plots = GdPlots.From(_core.Plots);
 
 #if DEBUG
 		stopwatch.Stop();
@@ -53,4 +53,6 @@ public partial class GdCore : Node
 			$"{nameof(Impl.Core)} init time: {stopwatch.Elapsed} ({stopwatch.Elapsed.TotalMilliseconds} ms)"));
 #endif
 	}
+
+	public void Reset() => _core.Reset();
 }

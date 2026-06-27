@@ -11,6 +11,7 @@ public class Assets : IAssets
 	public bool IsLocked { get; private set; }
 
 	public event Action<IAsset>? Added;
+	public event Action<IAsset>? Removed;
 
 	public IAsset Add(
 		int id,
@@ -39,4 +40,15 @@ public class Assets : IAssets
 	}
 
 	public void Lock() => IsLocked = true;
+
+	internal void Reset()
+	{
+		foreach (var (id, asset) in _assetsById.ToDictionary())
+		{
+			_assetsById.Remove(id);
+			Removed?.Invoke(asset);
+		}
+
+		IsLocked = false;
+	}
 }

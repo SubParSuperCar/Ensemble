@@ -6,6 +6,7 @@ public interface IAssets
 	bool IsLocked { get; }
 
 	event Action<IAsset> Added;
+	event Action<IAsset> Removed;
 
 	IAsset Add(
 		int id,

@@ -32,12 +32,21 @@ public class Core : ICore
 
 		Plots = new Plots(
 			Assets,
-			occupants,
 			defaultMaxOccupantCount,
-			defaultMaxInstanceCount);
+			defaultMaxInstanceCount)
+		{
+			Occupants = occupants
+		};
 	}
 
 	public IPlayers Players { get; }
 	public IAssets Assets { get; }
 	public IPlots Plots { get; }
+
+	public void Reset()
+	{
+		(Plots as Plots)!.Reset();
+		(Assets as Assets)!.Reset();
+		(Players as Players)!.Reset();
+	}
 }

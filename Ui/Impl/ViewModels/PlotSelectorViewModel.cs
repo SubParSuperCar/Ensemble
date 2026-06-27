@@ -16,6 +16,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			OnPlotAdded(plot);
 
 		GPlots.Added += OnPlotAdded;
+		GPlots.Removed += OnPlotRemoved;
 	}
 
 	public ObservableCollection<Plot> Plots { get; } = [];
@@ -24,6 +25,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	public override void Dispose()
 	{
 		GPlots.Added -= OnPlotAdded;
+		GPlots.Removed -= OnPlotRemoved;
 
 		foreach (var plot in GPlots.GetAll())
 			OnPlotRemoved(plot);

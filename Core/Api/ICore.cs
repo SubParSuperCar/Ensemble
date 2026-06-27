@@ -11,4 +11,6 @@ public interface ICore
 	IPlayers Players { get; }
 	IAssets Assets { get; }
 	IPlots Plots { get; }
+
+	void Reset();
 }

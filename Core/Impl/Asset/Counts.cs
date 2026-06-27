@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Root.Core.Impl.Asset;
 
-public class Counts<TKey> where TKey : notnull
+internal class Counts<TKey> where TKey : notnull
 {
 	private readonly Dictionary<TKey, int> _countsByKey = [];
 

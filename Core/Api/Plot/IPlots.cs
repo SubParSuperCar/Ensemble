@@ -6,6 +6,7 @@ public interface IPlots
 	bool IsLocked { get; }
 
 	event Action<IPlot> Added;
+	event Action<IPlot> Removed;
 
 	IPlot Add(
 		int id,

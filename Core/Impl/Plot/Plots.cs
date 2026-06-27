@@ -9,12 +9,10 @@ public class Plots : IPlots
 	private readonly IAssets _assets;
 	private readonly int? _defaultMaxInstanceCount;
 	private readonly int? _defaultMaxOccupantCount;
-	private readonly OccupantRegistry _occupants;
 	private readonly Dictionary<int, IPlot> _plotsById = [];
 
 	public Plots(
 		IAssets assets,
-		OccupantRegistry occupants,
 		int? defaultMaxOccupantCount = null,
 		int? defaultMaxInstanceCount = null)
 	{
@@ -25,15 +23,21 @@ public class Plots : IPlots
 			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount);
 
 		_assets = assets;
-		_occupants = occupants;
 		_defaultMaxOccupantCount = defaultMaxOccupantCount;
 		_defaultMaxInstanceCount = defaultMaxInstanceCount;
+	}
+
+	internal OccupantRegistry Occupants
+	{
+		get => field ??= new OccupantRegistry();
+		init;
 	}
 
 	public IReadOnlyDictionary<int, IPlot> All => _plotsById;
 	public bool IsLocked { get; private set; }
 
 	public event Action<IPlot>? Added;
+	public event Action<IPlot>? Removed;
 
 	public IPlot Add(int id, int? maxOccupantCount = null, int? maxInstanceCount = null)
 	{
@@ -67,7 +71,7 @@ public class Plots : IPlots
 
 	public void SetPlot(Guid playerId, int? plotId = null)
 	{
-		if (!_occupants.TryGet(playerId, out var occupant))
+		if (!Occupants.TryGet(playerId, out var occupant))
 			throw new InvalidOperationException($"Occupant with player id {playerId} not found");
 
 		IPlot? plot = null;
@@ -89,9 +93,20 @@ public class Plots : IPlots
 	}
 
 	public IOccupant GetOccupant(Guid playerId) =>
-		_occupants.TryGet(playerId, out var occupant)
+		Occupants.TryGet(playerId, out var occupant)
 			? occupant
 			: throw new InvalidOperationException($"Occupant with player id {playerId} not found");
 
 	public void Lock() => IsLocked = true;
+
+	internal void Reset()
+	{
+		foreach (var (id, plot) in _plotsById.ToDictionary())
+		{
+			_plotsById.Remove(id);
+			Removed?.Invoke(plot);
+		}
+
+		IsLocked = false;
+	}
 }

@@ -11,6 +11,9 @@ public partial class GdPlots : RefCounted
 	[Signal]
 	public delegate void AddedEventHandler(GdPlot plot);
 
+	[Signal]
+	public delegate void RemovedEventHandler(GdPlot plot);
+
 	private static readonly ConditionalWeakTable<IPlots, GdPlots> Wrappers = [];
 	private IPlots _source = null!;
 
@@ -22,7 +25,9 @@ public partial class GdPlots : RefCounted
 			static source =>
 			{
 				var wrapper = new GdPlots { _source = source };
+
 				source.Added += plot => wrapper.EmitSignal(SignalName.Added, GdPlot.From(plot));
+				source.Removed += plot => wrapper.EmitSignal(SignalName.Removed, GdPlot.From(plot));
 
 				return wrapper;
 			});

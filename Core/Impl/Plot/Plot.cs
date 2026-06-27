@@ -41,7 +41,6 @@ public class Plot : IPlot
 		IsSpawnedChanged?.Invoke(false);
 	}
 
-	// TODO: Optimize the order
 	public void Reset()
 	{
 		Occupants.Clear();

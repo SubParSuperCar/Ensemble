@@ -43,7 +43,9 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	[RelayCommand(CanExecute = nameof(CanSetPlotToNull))]
 	private void SetPlotToNull() => SelectedItem = null;
 
+#pragma warning disable MA0051
 	private void OnPlotAdded(GdPlot gdPlot)
+#pragma warning restore MA0051
 	{
 		var occupants = gdPlot.Occupants;
 
@@ -70,29 +72,33 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		{
 			if (owner is null)
 			{
-				plot.OwnerName = "Null";
+				plot.OwnerName = "<Null>";
 				return;
 			}
 
 			const char delimiter = '-';
 
 			var span = owner.Player.Name.AsSpan();
+			var wasTruncated = false;
 
 			var first = span.IndexOf(delimiter);
 			if (first != 0)
 			{
 				var second = span[++first..].IndexOf(delimiter);
 				if (second != 0)
+				{
 					span = span[..(first + second)];
+					wasTruncated = true;
+				}
 			}
 
-			plot.OwnerName = span.ToString();
+			plot.OwnerName = wasTruncated ? $"{span}..." : span.ToString();
 		}
 
 		void OnOccupantAddedOrRemoved(GdOccupant occupant)
 		{
 			plot.Occupancy = string.Create(CultureInfo.InvariantCulture,
-				$"{occupants.Count} / {(occupants.MaxCount == -1 ? double.PositiveInfinity : occupants.MaxCount)}");
+				$"{occupants.Count} / {(occupants.MaxCount == -1 ? "<Unlimited>" : occupants.MaxCount)}");
 		}
 
 		void OnRemoved()

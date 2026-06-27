@@ -4,6 +4,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Root.Core.Gd.Plot;
 
+// ReSharper disable AccessToModifiedClosure
+
 // ReSharper disable MemberCanBeMadeStatic.Global
 
 namespace Root.Ui.Impl.ViewModels;
@@ -89,13 +91,14 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 		void OnOccupantAddedOrRemoved(GdOccupant occupant)
 		{
-			// ReSharper disable once AccessToModifiedClosure
 			plot.Occupancy = string.Create(CultureInfo.InvariantCulture,
 				$"{occupants.Count} / {(occupants.MaxCount == -1 ? double.PositiveInfinity : occupants.MaxCount)}");
 		}
 
 		void OnRemoved()
 		{
+			occupants.OwnerChanged -= OnOwnerChanged;
+
 			occupants.Added -= OnOccupantAddedOrRemoved;
 			occupants.Removed -= OnOccupantAddedOrRemoved;
 		}

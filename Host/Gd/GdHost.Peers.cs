@@ -12,7 +12,7 @@ public partial class GdHost
 		PlayerIdsByPeerId.Add(peerId, playerId);
 		PeerIdsByPlayerId.Add(playerId, peerId);
 
-		OnPeerConnected(peerId);
+		HandlePeerConnected(peerId);
 	}
 
 	private void RemovePeer(int peerId)
@@ -21,7 +21,7 @@ public partial class GdHost
 			return;
 
 		PeerIdsByPlayerId.Remove(playerId);
-		OnPeerDisconnected(peerId);
+		HandlePeerDisconnected(peerId);
 	}
 
 	private void ClearPeers()

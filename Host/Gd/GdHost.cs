@@ -47,15 +47,15 @@ public partial class GdHost : Node
 	{
 		Instance = this;
 
-		Multiplayer.PeerConnected += OnPeerConnected;
-		Multiplayer.PeerDisconnected += OnPeerDisconnected;
+		Multiplayer.PeerConnected += HandlePeerConnected;
+		Multiplayer.PeerDisconnected += HandlePeerDisconnected;
 		Multiplayer.PeerDisconnected += OnPeerDisconnectedRpc;
 	}
 
 	public override void _ExitTree()
 	{
-		Multiplayer.PeerConnected -= OnPeerConnected;
-		Multiplayer.PeerDisconnected -= OnPeerDisconnected;
+		Multiplayer.PeerConnected -= HandlePeerConnected;
+		Multiplayer.PeerDisconnected -= HandlePeerDisconnected;
 		Multiplayer.PeerDisconnected -= OnPeerDisconnectedRpc;
 
 		if (ReferenceEquals(Instance, this))
@@ -128,7 +128,7 @@ public partial class GdHost : Node
 		_session.StartSession();
 	}
 
-	private void OnPeerConnected(long peerId)
+	private void HandlePeerConnected(long peerId)
 	{
 		var playerId = PlayerIdsByPeerId[(int)peerId];
 		GPlayers.Add(playerId);
@@ -139,9 +139,11 @@ public partial class GdHost : Node
 		EmitSignal(SignalName.PeerConnected, (int)peerId);
 	}
 
-	private void OnPeerDisconnected(long peerId)
+	private void HandlePeerDisconnected(long peerId)
 	{
-		GPlayers.Remove(PlayerIdsByPeerId[(int)peerId]);
+		if (PlayerIdsByPeerId.TryGetValue((int)peerId, out var playerId))
+			GPlayers.Remove(playerId);
+
 		EmitSignal(SignalName.PeerDisconnected, (int)peerId);
 	}
 

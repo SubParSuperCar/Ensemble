@@ -17,7 +17,7 @@ public partial class GameViewModel : ViewModelBase
 	[ObservableProperty] public partial PlotSelectorViewModel? PlotSelector { get; set; } = new();
 	[ObservableProperty] public partial PlayerListViewModel? PlayerList { get; set; } = new();
 
-	public override void Dispose()
+	protected override void OnDispose()
 	{
 		Dispatcher.Input -= OnInput;
 
@@ -25,8 +25,6 @@ public partial class GameViewModel : ViewModelBase
 		Clock = null;
 		PlotSelector = null;
 		PlayerList = null;
-
-		GC.SuppressFinalize(this);
 	}
 
 	private void OnInput(InputEvent @event)

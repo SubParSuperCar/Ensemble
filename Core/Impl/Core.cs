@@ -10,28 +10,32 @@ namespace Root.Core.Impl;
 
 public class Core : ICore
 {
+	private readonly Assets _assets;
+	private readonly Players _players;
+	private readonly Plots _plots;
+
 	public Core(
 		Guid? localPlayerId = null,
 		string? localPlayerName = null,
 		int? defaultMaxOccupantCount = null,
 		int? defaultMaxInstanceCount = null)
 	{
-		Players = new Players();
-		Assets = new Assets();
+		_players = new Players();
+		_assets = new Assets();
 
 		var occupants = new OccupantRegistry();
 
-		Players.Added += occupants.Add;
-		Players.Removed += occupants.Remove;
+		_players.Added += occupants.Add;
+		_players.Removed += occupants.Remove;
 
 		if (localPlayerId is { } id)
 		{
-			var local = Players.Add(id, localPlayerName);
-			Players.SetLocal(local.Id);
+			var local = _players.Add(id, localPlayerName);
+			_players.SetLocal(local.Id);
 		}
 
-		Plots = new Plots(
-			Assets,
+		_plots = new Plots(
+			_assets,
 			defaultMaxOccupantCount,
 			defaultMaxInstanceCount)
 		{
@@ -39,14 +43,14 @@ public class Core : ICore
 		};
 	}
 
-	public IPlayers Players { get; }
-	public IAssets Assets { get; }
-	public IPlots Plots { get; }
+	public IPlayers Players => _players;
+	public IAssets Assets => _assets;
+	public IPlots Plots => _plots;
 
 	public void Reset()
 	{
-		(Plots as Plots)!.Reset();
-		(Assets as Assets)!.Reset();
-		(Players as Players)!.Reset();
+		_plots.Reset();
+		_assets.Reset();
+		_players.Reset();
 	}
 }

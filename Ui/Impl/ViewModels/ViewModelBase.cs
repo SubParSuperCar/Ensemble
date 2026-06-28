@@ -4,5 +4,11 @@ namespace Root.Ui.Impl.ViewModels;
 
 public abstract class ViewModelBase : ObservableObject, IDisposable
 {
-	public abstract void Dispose();
+	public void Dispose()
+	{
+		OnDispose();
+		GC.SuppressFinalize(this);
+	}
+
+	protected abstract void OnDispose();
 }

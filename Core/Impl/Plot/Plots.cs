@@ -101,7 +101,7 @@ public class Plots : IPlots
 
 	internal void Reset()
 	{
-		foreach (var (id, plot) in _plotsById.ToDictionary())
+		foreach (var (id, plot) in _plotsById.ToArray())
 		{
 			_plotsById.Remove(id);
 			Removed?.Invoke(plot);

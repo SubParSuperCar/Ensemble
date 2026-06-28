@@ -60,7 +60,7 @@ public class Occupants : IOccupants
 	{
 		if (ReferenceEquals(occupant, Owner))
 			SetOwner(_occupantsByPlayerId.Count > 1 && setOwner
-				? _occupantsByPlayerId.Values.ElementAt(1).Player.Id
+				? _occupantsByPlayerId.Values.First(o => !ReferenceEquals(o, occupant)).Player.Id
 				: null);
 
 		_occupantsByPlayerId.Remove(occupant.Player.Id);

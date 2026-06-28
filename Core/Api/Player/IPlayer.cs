@@ -5,5 +5,5 @@ public interface IPlayer
 	Guid Id { get; }
 	string Name { get; }
 
-	DateTime UtcCreatedAt { get; }
+	DateTimeOffset UtcCreatedAt { get; }
 }

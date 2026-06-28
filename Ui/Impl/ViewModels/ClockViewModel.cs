@@ -5,6 +5,10 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class ClockViewModel : ViewModelBase
 {
+	private static readonly string LocalTimeZone = TimeZoneInfo.Local.DisplayName;
+
+	private readonly DateTimeOffset _startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GHost.UtcStartedAtUnix);
+
 	public ClockViewModel()
 	{
 		Dispatcher.Process += OnProcess;
@@ -13,18 +17,9 @@ public partial class ClockViewModel : ViewModelBase
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
 
-	public override void Dispose()
-	{
-		Dispatcher.Process -= OnProcess;
-		GC.SuppressFinalize(this);
-	}
+	protected override void OnDispose() => Dispatcher.Process -= OnProcess;
 
-	private void OnProcess(double delta)
-	{
-		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GHost.UtcStartedAtUnix);
-		var sinceStarted = DateTimeOffset.UtcNow - startedAt;
-
+	private void OnProcess(double delta) =>
 		Text = string.Create(CultureInfo.InvariantCulture,
-			$"{DateTime.Now:G} - {TimeZoneInfo.Local} - {sinceStarted:G}");
-	}
+			$"{DateTime.Now:G} - {LocalTimeZone} - {DateTimeOffset.UtcNow - _startedAt:G}");
 }

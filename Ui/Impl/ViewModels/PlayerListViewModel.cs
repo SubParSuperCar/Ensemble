@@ -18,12 +18,10 @@ public class PlayerListViewModel : ViewModelBase
 
 	public ObservableCollection<Player> Players { get; } = [];
 
-	public override void Dispose()
+	protected override void OnDispose()
 	{
 		GPlayers.Added -= OnPlayerAdded;
 		GPlayers.Removed -= OnPlayerRemoved;
-
-		GC.SuppressFinalize(this);
 	}
 
 	private void OnPlayerAdded(GdPlayer gdPlayer)

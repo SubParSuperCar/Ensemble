@@ -36,12 +36,12 @@ public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : I
 		if (_valuesByKey.Count == 0)
 			return "{}";
 
-		var builder = new StringBuilder("{");
+		var sb = new StringBuilder("{");
 
 		foreach (var (key, value) in _valuesByKey)
-			builder.Append(key).Append(": ").Append(value).Append(", ");
+			sb.Append(key).Append(": ").Append(value).Append(", ");
 
-		builder.Length -= 2;
-		return builder.Append('}').ToString();
+		sb.Length -= 2;
+		return sb.Append('}').ToString();
 	}
 }

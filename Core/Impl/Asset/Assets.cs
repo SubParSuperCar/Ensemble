@@ -43,7 +43,7 @@ public class Assets : IAssets
 
 	internal void Reset()
 	{
-		foreach (var (id, asset) in _assetsById.ToDictionary())
+		foreach (var (id, asset) in _assetsById.ToArray())
 		{
 			_assetsById.Remove(id);
 			Removed?.Invoke(asset);

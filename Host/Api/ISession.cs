@@ -7,7 +7,7 @@ public interface ISession
 	bool IsServer { get; }
 	bool IsActive { get; }
 
-	DateTime UtcStartedAt { get; }
+	DateTimeOffset UtcStartedAt { get; }
 
 	event Action Started;
 	event Action Stopped;

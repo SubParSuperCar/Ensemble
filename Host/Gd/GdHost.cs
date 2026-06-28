@@ -39,10 +39,7 @@ public partial class GdHost : Node
 	public bool IsServer => _session?.IsServer ?? false;
 	public bool IsActive => _session?.IsActive ?? false;
 
-	public double UtcStartedAtUnix =>
-		_session is null
-			? 0
-			: new DateTimeOffset(_session.UtcStartedAt).ToUnixTimeSeconds();
+	public double UtcStartedAtUnix => _session?.UtcStartedAt.ToUnixTimeSeconds() ?? 0;
 
 	public int PeerId => Multiplayer.GetUniqueId();
 

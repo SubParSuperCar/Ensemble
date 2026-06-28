@@ -5,12 +5,12 @@ using CommunityToolkit.Mvvm.Input;
 using Root.Core.Gd.Plot;
 
 // ReSharper disable MemberCanBeMadeStatic.Global
-// ReSharper disable AccessToModifiedClosure
 
 namespace Root.Ui.Impl.ViewModels;
 
 public partial class PlotSelectorViewModel : ViewModelBase
 {
+	private readonly Dictionary<int, Action> _closureByPlotId = [];
 	private readonly Dictionary<int, Plot> _plotsById = [];
 
 	public PlotSelectorViewModel()
@@ -28,15 +28,13 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	[NotifyCanExecuteChangedFor(nameof(SetPlotToNullCommand))]
 	public partial Plot? SelectedItem { get; set; }
 
-	public override void Dispose()
+	protected override void OnDispose()
 	{
 		GPlots.Added -= OnPlotAdded;
 		GPlots.Removed -= OnPlotRemoved;
 
-		foreach (var plot in GPlots.GetAll())
-			OnPlotRemoved(plot);
-
-		GC.SuppressFinalize(this);
+		foreach (var closure in _closureByPlotId.Values)
+			closure();
 	}
 
 	[RelayCommand(CanExecute = nameof(CanSetPlotToNull))]
@@ -47,23 +45,19 @@ public partial class PlotSelectorViewModel : ViewModelBase
 #pragma warning restore MA0051
 	{
 		var occupants = gdPlot.Occupants;
+		var plot = new Plot { Id = gdPlot.Id };
 
-		Plot plot = null!;
-		plot = new Plot
-		{
-			OnRemoved = OnRemoved,
-			Id = gdPlot.Id
-		};
+		UpdateOccupancy();
+		occupants.Added += OnOccupantChanged;
+		occupants.Removed += OnOccupantChanged;
 
 		OnOwnerChanged(occupants.Owner);
 		occupants.OwnerChanged += OnOwnerChanged;
 
-		OnOccupantAddedOrRemoved(null!);
-		occupants.Added += OnOccupantAddedOrRemoved;
-		occupants.Removed += OnOccupantAddedOrRemoved;
-
 		Plots.Add(plot);
 		_plotsById[gdPlot.Id] = plot;
+
+		_closureByPlotId[gdPlot.Id] = Closure;
 
 		return;
 
@@ -94,18 +88,22 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			plot.OwnerName = wasTruncated ? $"{span}..." : span.ToString();
 		}
 
-		void OnOccupantAddedOrRemoved(GdOccupant occupant)
+		void OnOccupantChanged(GdOccupant occupant)
+		{
+			UpdateOccupancy();
+		}
+
+		void UpdateOccupancy()
 		{
 			plot.Occupancy = string.Create(CultureInfo.InvariantCulture,
 				$"{occupants.Count} / {(occupants.MaxCount == -1 ? "<Unlimited>" : occupants.MaxCount)}");
 		}
 
-		void OnRemoved()
+		void Closure()
 		{
 			occupants.OwnerChanged -= OnOwnerChanged;
-
-			occupants.Added -= OnOccupantAddedOrRemoved;
-			occupants.Removed -= OnOccupantAddedOrRemoved;
+			occupants.Added -= OnOccupantChanged;
+			occupants.Removed -= OnOccupantChanged;
 		}
 	}
 
@@ -115,7 +113,9 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			return;
 
 		Plots.Remove(plot);
-		plot.OnRemoved();
+
+		if (_closureByPlotId.Remove(gdPlot.Id, out var closure))
+			closure();
 	}
 
 	partial void OnSelectedItemChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? -1);
@@ -125,8 +125,6 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 public partial class Plot : ObservableObject
 {
-	public required Action OnRemoved { get; init; }
-
 	public int Id { get; init; }
 
 	[ObservableProperty] public partial string? OwnerName { get; set; }

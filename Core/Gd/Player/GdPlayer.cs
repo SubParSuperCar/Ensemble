@@ -15,7 +15,7 @@ public partial class GdPlayer : RefCounted
 	public string Name => _source.Name;
 
 	// ReSharper disable once MemberCanBePrivate.Global
-	public double UtcCreatedAtUnix => new DateTimeOffset(_source.UtcCreatedAt).ToUnixTimeSeconds();
+	public double UtcCreatedAtUnix => _source.UtcCreatedAt.ToUnixTimeSeconds();
 
 	public static GdPlayer From(IPlayer player) =>
 		Wrappers.GetValue(player, static source => new GdPlayer { _source = source });

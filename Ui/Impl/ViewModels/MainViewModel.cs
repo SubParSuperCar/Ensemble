@@ -7,11 +7,7 @@ public partial class MainViewModel : ViewModelBase
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial GameViewModel? Game { get; set; } = new();
 
-	public override void Dispose()
-	{
-		Game = null;
-		GC.SuppressFinalize(this);
-	}
+	protected override void OnDispose() => Game = null;
 
 	partial void OnGameChanging(GameViewModel? oldValue, GameViewModel? newValue)
 	{

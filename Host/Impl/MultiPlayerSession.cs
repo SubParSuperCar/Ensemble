@@ -10,7 +10,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 	public bool IsServer => multiplayer.IsServer();
 	public bool IsActive { get; private set; }
 
-	public DateTime UtcStartedAt { get; } = DateTime.UtcNow;
+	public DateTimeOffset UtcStartedAt { get; } = DateTimeOffset.UtcNow;
 
 	public event Action? Started;
 	public event Action? Stopped;

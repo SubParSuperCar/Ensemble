@@ -1,42 +1,43 @@
 using System.Collections.ObjectModel;
-using Root.Core.Gd.Player;
 
 namespace Root.Ui.Impl.ViewModels;
 
 public class PlayerListViewModel : ViewModelBase
 {
-	private readonly Dictionary<string, Player> _playersById = [];
+	private readonly Dictionary<int, Player> _playersByPeerId = [];
 
 	public PlayerListViewModel()
 	{
-		foreach (var player in GPlayers.GetAll())
-			OnPlayerAdded(player);
+		foreach (var peerId in GHost.PeerIdsByPlayerId.Values)
+			OnPeerConnected(peerId);
 
-		GPlayers.Added += OnPlayerAdded;
-		GPlayers.Removed += OnPlayerRemoved;
+		GHost.PeerConnected += OnPeerConnected;
+		GHost.PeerDisconnected += OnPeerDisconnected;
 	}
 
 	public ObservableCollection<Player> Players { get; } = [];
 
 	protected override void OnDispose()
 	{
-		GPlayers.Added -= OnPlayerAdded;
-		GPlayers.Removed -= OnPlayerRemoved;
+		GHost.PeerConnected -= OnPeerConnected;
+		GHost.PeerDisconnected -= OnPeerDisconnected;
 	}
 
-	private void OnPlayerAdded(GdPlayer gdPlayer)
+	private void OnPeerConnected(int peerId)
 	{
+		var playerId = GHost.PlayerIdsByPeerId[peerId];
+
 		var player = new Player(
-			gdPlayer.Name,
-			GHost.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, -1));
+			GPlayers.Get(playerId)!.Name,
+			GHost.PeerIdsByPlayerId.GetValueOrDefault(playerId, -1));
 
 		Players.Add(player);
-		_playersById[gdPlayer.Id] = player;
+		_playersByPeerId[peerId] = player;
 	}
 
-	private void OnPlayerRemoved(GdPlayer gdPlayer)
+	private void OnPeerDisconnected(int peerId)
 	{
-		if (_playersById.Remove(gdPlayer.Id, out var player))
+		if (_playersByPeerId.Remove(peerId, out var player))
 			Players.Remove(player);
 	}
 }

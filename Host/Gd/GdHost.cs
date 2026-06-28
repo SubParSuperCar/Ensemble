@@ -41,7 +41,7 @@ public partial class GdHost : Node
 
 	public double UtcStartedAtUnix => _session?.UtcStartedAt.ToUnixTimeSeconds() ?? 0;
 
-	public int PeerId => Multiplayer.GetUniqueId();
+	public int LocalPeerId => Multiplayer.GetUniqueId();
 
 	public override void _EnterTree()
 	{
@@ -128,14 +128,27 @@ public partial class GdHost : Node
 		_session.StartSession();
 	}
 
-	private void OnPeerConnected(long peerId) => EmitSignal(SignalName.PeerConnected, (int)peerId);
-	private void OnPeerDisconnected(long peerId) => EmitSignal(SignalName.PeerDisconnected, (int)peerId);
+	private void OnPeerConnected(long peerId)
+	{
+		var playerId = PlayerIdsByPeerId[(int)peerId];
+		GPlayers.Add(playerId);
+
+		if (peerId == LocalPeerId)
+			GPlayers.SetLocal(playerId);
+
+		EmitSignal(SignalName.PeerConnected, (int)peerId);
+	}
+
+	private void OnPeerDisconnected(long peerId)
+	{
+		GPlayers.Remove(PlayerIdsByPeerId[(int)peerId]);
+		EmitSignal(SignalName.PeerDisconnected, (int)peerId);
+	}
 
 	private void OnSessionStarted()
 	{
 		var id = LoadOrGeneratePlayerId();
-		AddPeer(PeerId, id);
-		GPlayers.SetLocal(id);
+		AddPeer(LocalPeerId, id);
 
 		if (_session is { IsServer: false })
 			RpcId(1, MethodName.RpcSyncPlayerAdded, id, string.Empty);

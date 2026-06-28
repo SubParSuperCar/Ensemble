@@ -5,6 +5,8 @@ using Root.Host.Impl;
 
 namespace Root.Host.Gd;
 
+/* TODO: Refactor & support passwords & authentication:
+   https://github.com/Faless/gd-mp-password-auth/tree/main */
 public partial class GdHost : Node
 {
 	[Signal]

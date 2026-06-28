@@ -7,8 +7,6 @@ public partial class ClockViewModel : ViewModelBase
 {
 	private static readonly string LocalTimeZone = TimeZoneInfo.Local.DisplayName;
 
-	private readonly DateTimeOffset _startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GHost.UtcStartedAtUnix);
-
 	public ClockViewModel()
 	{
 		Dispatcher.Process += OnProcess;
@@ -19,7 +17,11 @@ public partial class ClockViewModel : ViewModelBase
 
 	protected override void OnDispose() => Dispatcher.Process -= OnProcess;
 
-	private void OnProcess(double delta) =>
+	private void OnProcess(double delta)
+	{
+		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GHost.UtcStartedAtUnix);
+
 		Text = string.Create(CultureInfo.InvariantCulture,
-			$"{DateTime.Now:G} - {LocalTimeZone} - {DateTimeOffset.UtcNow - _startedAt:G}");
+			$"{DateTime.Now:G} - {LocalTimeZone} - {DateTimeOffset.UtcNow - startedAt:G}");
+	}
 }

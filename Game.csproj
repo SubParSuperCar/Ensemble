@@ -21,7 +21,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.17]"/>
+        <PackageReference Include="Avalonia.Themes.Simple" Version="[12.0.5]"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
         <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
         <PackageReference Include="Meziantou.Analyzer" Version="3.0.108">

@@ -19,11 +19,11 @@ public partial class GdHost
 		AutoReplenishment = true
 	};
 
-	private readonly ConcurrentQueue<Action> _pendingRpcs = [];
+	private readonly ConcurrentQueue<Action> _rpcQueue = [];
 
 	public override void _Process(double delta)
 	{
-		while (_pendingRpcs.TryDequeue(out var action))
+		while (_rpcQueue.TryDequeue(out var action))
 		{
 			try
 			{
@@ -171,6 +171,6 @@ public partial class GdHost
 		if (lease is { IsAcquired: false })
 			return;
 
-		_pendingRpcs.Enqueue(action);
+		_rpcQueue.Enqueue(action);
 	}
 }

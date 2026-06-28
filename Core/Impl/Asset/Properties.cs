@@ -5,9 +5,8 @@ namespace Root.Core.Impl.Asset;
 
 public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : IProperties
 {
-	private readonly Dictionary<string, Variant> _valuesByKey = values is null
-		? new Dictionary<string, Variant>(StringComparer.OrdinalIgnoreCase)
-		: new Dictionary<string, Variant>(values, StringComparer.OrdinalIgnoreCase);
+	private readonly Dictionary<string, Variant> _valuesByKey =
+		values is null ? [] : new Dictionary<string, Variant>(values, StringComparer.OrdinalIgnoreCase);
 
 	public IReadOnlyDictionary<string, Variant> All => _valuesByKey;
 

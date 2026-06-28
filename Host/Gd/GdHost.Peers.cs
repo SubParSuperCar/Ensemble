@@ -2,27 +2,26 @@ namespace Root.Host.Gd;
 
 public partial class GdHost
 {
-	private readonly Dictionary<string, int> _peerIdsByPlayerId = [];
-	private readonly Dictionary<int, string> _playerIdsByPeerId = [];
+	public Godot.Collections.Dictionary<string, int> PeerIdsByPlayerId { get; } = [];
 
-	public IReadOnlyDictionary<string, int> PeerIdsByPlayerId => _peerIdsByPlayerId;
-	public IReadOnlyDictionary<int, string> PlayerIdsByPeerId => _playerIdsByPeerId;
+	// ReSharper disable once MemberCanBePrivate.Global
+	public Godot.Collections.Dictionary<int, string> PlayerIdsByPeerId { get; } = [];
 
 	private void AddPeer(int peerId, string playerId)
 	{
-		_playerIdsByPeerId.Add(peerId, playerId);
-		_peerIdsByPlayerId.Add(playerId, peerId);
+		PlayerIdsByPeerId.Add(peerId, playerId);
+		PeerIdsByPlayerId.Add(playerId, peerId);
 	}
 
 	private void RemovePeer(int peerId)
 	{
-		if (_playerIdsByPeerId.Remove(peerId, out var playerId))
-			_peerIdsByPlayerId.Remove(playerId);
+		if (PlayerIdsByPeerId.Remove(peerId, out var playerId))
+			PeerIdsByPlayerId.Remove(playerId);
 	}
 
 	private void ClearPeers()
 	{
-		_playerIdsByPeerId.Clear();
-		_peerIdsByPlayerId.Clear();
+		PlayerIdsByPeerId.Clear();
+		PeerIdsByPlayerId.Clear();
 	}
 }

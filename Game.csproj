@@ -40,7 +40,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="**/*.gd" Exclude=".godot/**">
+        <Content Include="**\*.gd" Exclude=".godot\**">
             <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>

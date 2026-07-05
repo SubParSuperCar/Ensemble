@@ -24,7 +24,7 @@
         <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.17]"/>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
         <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
-        <PackageReference Include="Meziantou.Analyzer" Version="3.0.117">
+        <PackageReference Include="Meziantou.Analyzer" Version="3.0.121">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>

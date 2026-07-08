@@ -8,8 +8,8 @@
 [ext_resource type="Script" uid="uid://dy6kkgfhg276v" path="res://Scripts/Plot/PlotManager.cs" id="3_wowpa"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i6g32"]
-sky_top_color = Color(0.24749999, 0.49874997, 0.75, 1)
-sky_horizon_color = Color(0.5019608, 0.62352943, 0.7490196, 1)
+sky_top_color = Color(0.2475, 0.5, 0.75, 1)
+sky_horizon_color = Color(0.5, 0.625, 0.75, 1)
 energy_multiplier = 1.5
 
 [sub_resource type="Sky" id="Sky_1l0tm"]
@@ -26,14 +26,14 @@ tonemap_mode = 2
 size = Vector3(65536, 0.001, 65536)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i6g32"]
-albedo_color = Color(0.1254902, 0.2509804, 0.1254902, 1)
+albedo_color = Color(0.125, 0.25, 0.125, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_i6g32"]
 material = SubResource("StandardMaterial3D_i6g32")
 size = Vector2(65536, 65536)
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
-points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76.00626, 0, -16.00235, 80, -1, -20, -76.00626, 0, 15.998432, 80, -1, 20, 75.9906, 0, -16.00235, 75.9906, 0, 15.998432)
+points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 75, 0, -16, 75, 0, 15)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qxrlw"]
 albedo_color = Color(0.45, 0.475, 0.5, 1)

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig"/>
+    <File Path=".gitignore"/>
+    <File Path="appsettings.json"/>
+    <File Path="FodyWeavers.xml"/>
+    <File Path="FodyWeavers.xsd"/>
+    <File Path="global.json"/>
+  </Folder>
+  <Project Path="Game.csproj"/>
+  <Project Path="Lib/Estragonia/Estragonia.csproj"/>
+</Solution>

@@ -1,25 +1,30 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public partial class ClockViewModel : ViewModelBase
 {
 	private static readonly string LocalTimeZone = TimeZoneInfo.Local.DisplayName;
+	private readonly DispatcherService _dispatcher;
 
-	public ClockViewModel()
+	public ClockViewModel(DispatcherService dispatcher)
 	{
-		Dispatcher.Process += OnProcess;
+		_dispatcher = dispatcher;
+		_dispatcher.Process += OnProcess;
 	}
 
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
 
-	protected override void OnDispose() => Dispatcher.Process -= OnProcess;
+	protected override void OnDispose() => _dispatcher.Process -= OnProcess;
 
 	private void OnProcess(double delta)
 	{
-		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GHost.UtcStartedAtUnix);
+		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GSessionManager.UtcStartedAtUnix);
 
 		Text = string.Create(CultureInfo.InvariantCulture,
 			$"{DateTime.Now:G} - {LocalTimeZone} - {DateTimeOffset.UtcNow - startedAt:G}");

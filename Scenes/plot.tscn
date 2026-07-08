@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bctdhk6awxx0r"]
 
-[ext_resource type="Script" uid="uid://cnlahdcnf55uh" path="res://Gd/Plot/PlotHandle.cs" id="1_syd1t"]
+[ext_resource type="Script" uid="uid://cnlahdcnf55uh" path="res://Scripts/Plot/PlotHandle.cs" id="1_syd1t"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f03gw"]
 size = Vector3(32, 32, 32)

@@ -14,15 +14,17 @@ config/name="Ensemble"
 run/main_scene="uid://cfj5hy6hy0a7r"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 run/low_processor_mode=true
+boot_splash/stretch_mode=0
+boot_splash/image="uid://dgmhggqeiyhcb"
+config/icon="uid://dgmhggqeiyhcb"
 
 [autoload]
 
-Avalonia="uid://b7iofxf07ba7v"
+AvaloniaLoader="uid://c54c7imyk6yl"
 Watchdog="uid://0tvgo7nfrgu5"
 StdOut="uid://oyno5534wd27"
 Core="uid://c88mfna0wvuv0"
-Host="uid://cfyi6ivoprayx"
-Ui="uid://bvkgvmmep2hrk"
+SessionManager="uid://cfyi6ivoprayx"
 
 [debug]
 

@@ -13,4 +13,11 @@
         </Style>
     </Application.Styles>
 
+    <Application.Resources>
+        <SolidColorBrush
+            x:Key="TranslucentBackgroundBrush"
+            Color="{DynamicResource ThemeBackgroundColor}"
+            Opacity="0.5" />
+    </Application.Resources>
+
 </Application>

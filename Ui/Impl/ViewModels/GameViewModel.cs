@@ -1,46 +1,43 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
-
-// ReSharper disable MemberCanBeMadeStatic.Global
+using Microsoft.Extensions.DependencyInjection;
+using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Attributes;
+using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public partial class GameViewModel : ViewModelBase
 {
-	public GameViewModel()
+	private readonly DispatcherService _dispatcher;
+	private readonly IServiceProvider _services;
+
+	public GameViewModel(IServiceProvider services, DispatcherService dispatcher)
 	{
-		Dispatcher.Input += OnInput;
+		_services = services;
+		_dispatcher = dispatcher;
+
+		dispatcher.Input += OnInput;
+
+		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 	}
 
-	[ObservableProperty] public partial StatViewModel? Stat { get; set; } = new();
-	[ObservableProperty] public partial ClockViewModel? Clock { get; set; } = new();
-	[ObservableProperty] public partial PlotSelectorViewModel? PlotSelector { get; set; } = new();
-	[ObservableProperty] public partial PlayerListViewModel? PlayerList { get; set; } = new();
+	// ReSharper disable once MemberCanBeMadeStatic.Global
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial PlayerListViewModel? PlayerList { get; set; }
 
 	protected override void OnDispose()
 	{
-		Dispatcher.Input -= OnInput;
+		_dispatcher.Input -= OnInput;
 
-		Stat = null;
-		Clock = null;
-		PlotSelector = null;
 		PlayerList = null;
 	}
 
 	private void OnInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("toggle_player_list", @event))
-			PlayerList = PlayerList is null ? new PlayerListViewModel() : null;
+			PlayerList = PlayerList is null ? _services.GetRequiredService<PlayerListViewModel>() : null;
 	}
-
-	partial void OnStatChanging(StatViewModel? oldValue, StatViewModel? newValue) => OnChanging(oldValue, newValue);
-	partial void OnClockChanging(ClockViewModel? oldValue, ClockViewModel? newValue) => OnChanging(oldValue, newValue);
-
-	partial void OnPlayerListChanging(PlayerListViewModel? oldValue, PlayerListViewModel? newValue) =>
-		OnChanging(oldValue, newValue);
-
-	partial void OnPlotSelectorChanging(PlotSelectorViewModel? oldValue, PlotSelectorViewModel? newValue) =>
-		OnChanging(oldValue, newValue);
-
-	private static void OnChanging(IDisposable? oldValue, IDisposable? _) => oldValue?.Dispose();
 }

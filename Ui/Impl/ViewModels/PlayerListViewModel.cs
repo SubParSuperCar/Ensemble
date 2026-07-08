@@ -1,35 +1,37 @@
 using System.Collections.ObjectModel;
+using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public class PlayerListViewModel : ViewModelBase
 {
 	private readonly Dictionary<int, Player> _playersByPeerId = [];
 
 	public PlayerListViewModel()
 	{
-		foreach (var peerId in GHost.PeerIdsByPlayerId.Values)
+		foreach (var peerId in GSessionManager.PeerIdsByPlayerId.Values)
 			OnPeerConnected(peerId);
 
-		GHost.PeerConnected += OnPeerConnected;
-		GHost.PeerDisconnected += OnPeerDisconnected;
+		GSessionManager.PeerConnected += OnPeerConnected;
+		GSessionManager.PeerDisconnected += OnPeerDisconnected;
 	}
 
 	public ObservableCollection<Player> Players { get; } = [];
 
 	protected override void OnDispose()
 	{
-		GHost.PeerConnected -= OnPeerConnected;
-		GHost.PeerDisconnected -= OnPeerDisconnected;
+		GSessionManager.PeerConnected -= OnPeerConnected;
+		GSessionManager.PeerDisconnected -= OnPeerDisconnected;
 	}
 
 	private void OnPeerConnected(int peerId)
 	{
-		var playerId = GHost.PlayerIdsByPeerId[peerId];
+		var playerId = GSessionManager.PlayerIdsByPeerId[peerId];
 
 		var player = new Player(
 			GPlayers.Get(playerId)!.Name,
-			GHost.PeerIdsByPlayerId.GetValueOrDefault(playerId, -1));
+			GSessionManager.PeerIdsByPlayerId.GetValueOrDefault(playerId, -1));
 
 		Players.Add(player);
 		_playersByPeerId[peerId] = player;

@@ -1,71 +1,15 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:Root.Ui.Impl.Views"
-             xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Root.Ui.Impl.Views.GameView"
-             x:DataType="viewModels:GameViewModel">
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.GameView"
+    x:DataType="viewModels:GameViewModel">
 
-    <UserControl.DataTemplates>
-        <DataTemplate DataType="viewModels:StatViewModel">
-            <views:StatView />
-        </DataTemplate>
-
-        <DataTemplate DataType="viewModels:ClockViewModel">
-            <views:ClockView />
-        </DataTemplate>
-
-        <DataTemplate DataType="viewModels:PlotSelectorViewModel">
-            <views:PlotSelectorView />
-        </DataTemplate>
-
-        <DataTemplate DataType="viewModels:PlayerListViewModel">
-            <views:PlayerListView />
-        </DataTemplate>
-    </UserControl.DataTemplates>
-
-    <Grid>
-        <ContentControl Content="{Binding Stat}">
-            <ContentControl.Styles>
-                <Style Selector="views|StatView">
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                </Style>
-            </ContentControl.Styles>
-        </ContentControl>
-
-        <ContentControl Content="{Binding Clock}">
-            <ContentControl.Styles>
-                <Style Selector="views|ClockView">
-                    <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                </Style>
-            </ContentControl.Styles>
-        </ContentControl>
-
-        <ContentControl Content="{Binding PlotSelector}">
-            <ContentControl.Styles>
-                <Style Selector="views|PlotSelectorView">
-                    <Setter Property="HorizontalAlignment" Value="Left" />
-                    <Setter Property="VerticalAlignment" Value="Center" />
-                    <Setter Property="Width" Value="432" />
-                    <Setter Property="MaxHeight" Value="432" />
-                </Style>
-            </ContentControl.Styles>
-        </ContentControl>
-
-        <ContentControl Content="{Binding PlayerList}">
-            <ContentControl.Styles>
-                <Style Selector="views|PlayerListView">
-                    <Setter Property="HorizontalAlignment" Value="Right" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                    <Setter Property="MaxWidth" Value="512" />
-                    <Setter Property="MaxHeight" Value="256" />
-                </Style>
-            </ContentControl.Styles>
-        </ContentControl>
-    </Grid>
+    <ContentControl Content="{Binding PlayerList}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    MaxWidth="512" MaxHeight="256" />
 
 </UserControl>

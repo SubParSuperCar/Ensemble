@@ -20,6 +20,7 @@ public class AvaloniaControl : GdControl
 	private GodotTopLevel? _topLevel;
 
 	/// <summary>Gets or sets the underlying Avalonia control that will be rendered.</summary>
+	// ReSharper disable once MemberCanBeProtected.Global
 	public AvControl? Control
 	{
 		get;

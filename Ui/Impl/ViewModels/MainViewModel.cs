@@ -1,17 +1,17 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
+using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Attributes;
 
 namespace Root.Ui.Impl.ViewModels;
 
-public partial class MainViewModel : ViewModelBase
+// ReSharper disable once ClassNeverInstantiated.Global
+public partial class MainViewModel(IServiceProvider services) : ViewModelBase
 {
 	// ReSharper disable once MemberCanBeMadeStatic.Global
-	[ObservableProperty] public partial GameViewModel? Game { get; set; } = new();
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial ViewModelBase? ViewModel { get; set; } = services.GetRequiredService<GameViewModel>();
 
-	protected override void OnDispose() => Game = null;
-
-	partial void OnGameChanging(GameViewModel? oldValue, GameViewModel? newValue)
-	{
-		_ = newValue;
-		oldValue?.Dispose();
-	}
+	protected override void OnDispose() => ViewModel = null;
 }

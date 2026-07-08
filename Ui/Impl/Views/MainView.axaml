@@ -1,27 +1,13 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:views="clr-namespace:Root.Ui.Impl.Views"
-             xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Root.Ui.Impl.Views.MainView"
-             x:DataType="viewModels:MainViewModel">
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.MainView"
+    x:DataType="viewModels:MainViewModel">
 
-    <UserControl.DataTemplates>
-        <DataTemplate DataType="viewModels:GameViewModel">
-            <views:GameView />
-        </DataTemplate>
-    </UserControl.DataTemplates>
+    <ContentControl Content="{Binding ViewModel}" />
 
-    <Grid>
-        <ContentControl Content="{Binding Game}">
-            <ContentControl.Styles>
-                <Style Selector="views|ClockView">
-                    <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="VerticalAlignment" Value="Top" />
-                </Style>
-            </ContentControl.Styles>
-        </ContentControl>
-    </Grid>
 </UserControl>

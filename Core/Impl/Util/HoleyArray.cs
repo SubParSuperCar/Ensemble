@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Root.Core.Impl.Util;
 
-internal class HoleyArray<T> where T : class
+internal sealed class HoleyArray<T> where T : class
 {
 	private readonly List<T?> _items = [];
 	private int _nextFreeIndex;

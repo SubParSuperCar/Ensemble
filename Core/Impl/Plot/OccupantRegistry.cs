@@ -2,7 +2,7 @@ using Root.Core.Api.Player;
 
 namespace Root.Core.Impl.Plot;
 
-internal class OccupantRegistry
+internal sealed class OccupantRegistry
 {
 	private readonly Dictionary<Guid, Occupant> _occupantsByPlayerId = [];
 

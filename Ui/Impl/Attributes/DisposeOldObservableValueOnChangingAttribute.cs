@@ -8,7 +8,7 @@ public class DisposeOldObservableValueOnChangingAttribute : OnMethodBoundaryAspe
 {
 	public override void OnEntry(MethodExecutionArgs arg)
 	{
-		var propName = arg.Method.Name.Replace("set_", "", StringComparison.OrdinalIgnoreCase);
+		var propName = arg.Method.Name.Replace("set_", "", StringComparison.Ordinal);
 		var prop = arg.Instance.GetType().GetProperty(propName);
 
 		var oldValue = prop?.GetValue(arg.Instance);

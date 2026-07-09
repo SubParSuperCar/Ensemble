@@ -5,6 +5,8 @@ using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 using Root.Ui.Impl.Services;
 
+// ReSharper disable MemberCanBeMadeStatic.Global
+
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -20,10 +22,14 @@ public partial class GameViewModel : ViewModelBase
 
 		dispatcher.Input += OnInput;
 
+		Clock = services.GetRequiredService<ClockViewModel>();
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 	}
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial ClockViewModel? Clock { get; set; }
+
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
 	public partial PlayerListViewModel? PlayerList { get; set; }
@@ -32,6 +38,7 @@ public partial class GameViewModel : ViewModelBase
 	{
 		_dispatcher.Input -= OnInput;
 
+		Clock = null;
 		PlayerList = null;
 	}
 

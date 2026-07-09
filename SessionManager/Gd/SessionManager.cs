@@ -5,8 +5,7 @@ using Root.SessionManager.Impl;
 
 namespace Root.SessionManager.Gd;
 
-/* TODO: Refactor & support passwords & authentication:
-   https://github.com/Faless/gd-mp-password-auth/tree/main */
+// TODO: https://github.com/Faless/gd-mp-password-auth/tree/main
 public partial class SessionManager : Node
 {
 	[Signal]
@@ -49,15 +48,15 @@ public partial class SessionManager : Node
 	{
 		Instance = this;
 
-		Multiplayer.PeerConnected += HandlePeerConnected;
-		Multiplayer.PeerDisconnected += HandlePeerDisconnected;
+		Multiplayer.PeerConnected += OnPeerConnected;
+		Multiplayer.PeerDisconnected += OnPeerDisconnected;
 		Multiplayer.PeerDisconnected += OnPeerDisconnectedRpc;
 	}
 
 	public override void _ExitTree()
 	{
-		Multiplayer.PeerConnected -= HandlePeerConnected;
-		Multiplayer.PeerDisconnected -= HandlePeerDisconnected;
+		Multiplayer.PeerConnected -= OnPeerConnected;
+		Multiplayer.PeerDisconnected -= OnPeerDisconnected;
 		Multiplayer.PeerDisconnected -= OnPeerDisconnectedRpc;
 
 		if (ReferenceEquals(Instance, this))
@@ -130,8 +129,7 @@ public partial class SessionManager : Node
 		_session.StartSession();
 	}
 
-	// TODO
-	private void HandlePeerConnected(long peerId)
+	private void OnPeerConnected(long peerId)
 	{
 		var playerId = PlayerIdsByPeerId[(int)peerId];
 		GPlayers.Add(playerId);
@@ -142,7 +140,7 @@ public partial class SessionManager : Node
 		EmitSignal(SignalName.PeerConnected, (int)peerId);
 	}
 
-	private void HandlePeerDisconnected(long peerId)
+	private void OnPeerDisconnected(long peerId)
 	{
 		if (PlayerIdsByPeerId.TryGetValue((int)peerId, out var playerId))
 			GPlayers.Remove(playerId);

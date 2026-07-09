@@ -233,34 +233,6 @@ public partial class SessionManager
 
 	//
 
-	/* RPCs:
-	 *
-	 * Sync:
-	 * Host Authority:
-	 * RpcSyncAll (Dictionary All)
-	 *
-	 * RpcSyncPlayerAdded (string PlayerId, string Name)
-	 * RpcSyncPlayerRemoved (string PlayerId)
-	 *
-	 * RpcSyncOwnerChanged (int PlotId, string PlayerId)
-	 *
-	 * Owner Authority (Rate Limited, PlotId = SenderId -> PlayerId -> Occupant.Plot.Id):
-	 * RpcSyncInstanceAdded (int InstanceId, Vector3 Position, Quaternion Rotation)
-	 * RpcSyncInstanceRemoved (int InstanceId)
-	 *
-	 * RpcSyncPropertyChanged (int InstanceId, string Key, Variant Value)
-	 *
-	 * RpcSyncIsSpawnedChanged (bool IsSpawned)
-	 *
-	 * Request:
-	 * RequestSetPlot (int PlotId)
-	 *
-	 * RequestAddInstance (int InstanceId, Vector3 Position, Quaternion Rotation)
-	 * RequestRemoveInstance (int InstanceId)
-	 *
-	 * RequestSetProperty (int InstanceId, string Key, Variant Value)
-	 */
-
 	/*[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RpcSyncPlayerRemoved(string playerId)
 	{

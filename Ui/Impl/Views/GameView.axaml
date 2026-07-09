@@ -8,8 +8,13 @@
     x:Class="Root.Ui.Impl.Views.GameView"
     x:DataType="viewModels:GameViewModel">
 
-    <ContentControl Content="{Binding PlayerList}"
-                    HorizontalAlignment="Right" VerticalAlignment="Top"
-                    MaxWidth="512" MaxHeight="256" />
+    <Grid>
+        <ContentControl Content="{Binding PlayerList}"
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        MaxWidth="512" MaxHeight="256" />
+
+        <ContentControl Content="{Binding Clock}"
+                        HorizontalAlignment="Center" VerticalAlignment="Top" />
+    </Grid>
 
 </UserControl>

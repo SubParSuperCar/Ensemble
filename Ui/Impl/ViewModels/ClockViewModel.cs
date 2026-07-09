@@ -14,7 +14,8 @@ public partial class ClockViewModel : ViewModelBase
 	public ClockViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
-		_dispatcher.Process += OnProcess;
+
+		dispatcher.Process += OnProcess;
 	}
 
 	// ReSharper disable once MemberCanBeMadeStatic.Global

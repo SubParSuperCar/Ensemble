@@ -13,6 +13,7 @@ public partial class SessionManager
 		OnPeerConnected(peerId);
 	}
 
+	// ReSharper disable once MemberCanBeMadeStatic.Local
 	private void RemovePeer(int peerId)
 	{
 		if (!PlayerIdsByPeerId.Remove(peerId, out var playerId))
@@ -24,7 +25,7 @@ public partial class SessionManager
 
 	private void ClearPeers()
 	{
-		PlayerIdsByPeerId.Clear();
-		PeerIdsByPlayerId.Clear();
+		foreach (var peerId in PeerIdsByPlayerId.Values)
+			RemovePeer(peerId);
 	}
 }

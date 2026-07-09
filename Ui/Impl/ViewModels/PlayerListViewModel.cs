@@ -1,10 +1,11 @@
 using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class PlayerListViewModel : ViewModelBase
+public partial class PlayerListViewModel : ViewModelBase
 {
 	private readonly Dictionary<int, Player> _playersByPeerId = [];
 
@@ -19,6 +20,9 @@ public class PlayerListViewModel : ViewModelBase
 
 	public ObservableCollection<Player> Players { get; } = [];
 
+	// ReSharper disable once MemberCanBeMadeStatic.Global
+	[ObservableProperty] public partial Player? SelectedPlayer { get; set; }
+
 	protected override void OnDispose()
 	{
 		GSessionManager.PeerConnected -= OnPeerConnected;
@@ -31,14 +35,20 @@ public class PlayerListViewModel : ViewModelBase
 
 		var player = new Player(
 			GPlayers.Get(playerId)!.Name,
-			GSessionManager.PeerIdsByPlayerId.GetValueOrDefault(playerId, -1));
+			peerId);
 
 		Players.Add(player);
 		_playersByPeerId[peerId] = player;
+
+		if (peerId == GSessionManager.LocalPeerId)
+			SelectedPlayer = player;
 	}
 
 	private void OnPeerDisconnected(int peerId)
 	{
+		if (peerId == GSessionManager.LocalPeerId)
+			SelectedPlayer = null;
+
 		if (_playersByPeerId.Remove(peerId, out var player))
 			Players.Remove(player);
 	}

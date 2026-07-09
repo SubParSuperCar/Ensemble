@@ -8,7 +8,8 @@
     x:Class="Root.Ui.Impl.Views.PlayerListView"
     x:DataType="viewModels:PlayerListViewModel">
 
-    <StackPanel
+    <Grid
+        RowDefinitions="Auto,*"
         ToolTip.Tip="Player List"
         Background="{DynamicResource TranslucentBackgroundBrush}">
 
@@ -19,19 +20,20 @@
             <TextBlock Grid.Column="2" Text="Peer ID&#x0a;&#x2193; " TextAlignment="Right" />
         </Grid>
 
-        <ItemsControl
+        <ListBox
+            Grid.Row="1"
             ItemsSource="{Binding Players}"
-            Background="Transparent">
+            SelectedItem="{Binding SelectedPlayer}">
 
-            <ItemsControl.ItemTemplate>
+            <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*,16,Auto">
                         <TextBlock Text="{Binding Name}" />
                         <TextBlock Grid.Column="2" Text="{Binding PeerId, StringFormat='{}{0:000}'}" />
                     </Grid>
                 </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
-    </StackPanel>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
 
 </UserControl>

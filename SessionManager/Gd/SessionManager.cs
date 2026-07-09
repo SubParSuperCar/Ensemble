@@ -42,7 +42,7 @@ public partial class SessionManager : Node
 
 	public double UtcStartedAtUnix => _session?.UtcStartedAt.ToUnixTimeSeconds() ?? 0;
 
-	public int LocalPeerId => Multiplayer.GetUniqueId();
+	public int LocalPeerId { get; private set; }
 
 	public override void _EnterTree()
 	{
@@ -78,8 +78,6 @@ public partial class SessionManager : Node
 	{
 		StopSession();
 
-		OS.LowProcessorUsageMode = false;
-
 		_session = new MultiPlayerSession(
 			(SceneMultiplayer)Multiplayer,
 			new HostConfig(
@@ -107,8 +105,6 @@ public partial class SessionManager : Node
 	{
 		if (_session is null)
 			return;
-
-		OS.LowProcessorUsageMode = true;
 
 		var session = _session;
 		_session = null;
@@ -150,6 +146,8 @@ public partial class SessionManager : Node
 
 	private void OnSessionStarted()
 	{
+		LocalPeerId = Multiplayer.GetUniqueId();
+
 		var id = LoadOrGeneratePlayerId();
 		AddPeer(LocalPeerId, id);
 

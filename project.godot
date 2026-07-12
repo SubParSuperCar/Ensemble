@@ -21,11 +21,11 @@ boot_splash/minimum_display_time=250
 
 [autoload]
 
-AvaloniaLoader="*uid://chxjmih74cyql"
-Watchdog="*uid://wlfdpln5yhaq"
-StandardOutput="*uid://sxpqu8o36vtq"
-Core="*uid://c88mfna0wvuv0"
-SessionManager="*uid://drxhvs7hd1plw"
+AvaloniaLoader="uid://chxjmih74cyql"
+Watchdog="uid://2tmgqp5ocfyh"
+StandardOutput="uid://d2qsep2vpj2q1"
+Core="uid://cw52xu76o1ywe"
+SessionManager="uid://b0sclnm4uupay"
 
 [debug]
 

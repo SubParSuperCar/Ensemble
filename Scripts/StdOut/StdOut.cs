@@ -6,8 +6,6 @@ using Root.Scripts.StdOut.Impl;
 
 namespace Root.Scripts.StdOut;
 
-// Intercepts all C# output, prefixes it with a simple timestamp, and re-routes it to the Godot output
-// Rider shows all Godot output in the console, so C# output still shows up in the editor
 public partial class StdOut : Node
 {
 	// ReSharper disable once NotAccessedField.Local
@@ -18,8 +16,6 @@ public partial class StdOut : Node
 		Console.SetOut(new StdOutWriter());
 
 #if DEBUG
-		// Sets the logger to the stored level, if it exists
-		// Currently it's set to 'Trace' for enhanced debugging
 		var configuration = new ConfigurationBuilder()
 			.SetBasePath(ProjectSettings.GlobalizePath(ScriptConstants.ResourceScheme))
 			.AddJsonFile("appsettings.json", true, true)

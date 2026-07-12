@@ -5,8 +5,6 @@ using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 using Root.Ui.Impl.Services;
 
-// ReSharper disable MemberCanBeMadeStatic.Global
-
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -26,7 +24,6 @@ public partial class GameViewModel : ViewModelBase
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 	}
 
-	// When these start piling up (there could be a dozen of these UI elements), it would be nice to do this differently
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
 	public partial ClockViewModel? Clock { get; set; }

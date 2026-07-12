@@ -17,7 +17,7 @@ public partial class GdCore : Node
 		private set
 		{
 			field = value;
-			Console.WriteLine($"{nameof(GdCore)}.{nameof(Instance)} set"); // Log for debugging purposes
+			Console.WriteLine($"{nameof(GdCore)}.{nameof(Instance)} set");
 		}
 	}
 
@@ -29,7 +29,6 @@ public partial class GdCore : Node
 
 	public override void _ExitTree()
 	{
-		// Only overwrite if it is this instance that is being removed
 		if (ReferenceEquals(Instance, this))
 			Instance = null;
 	}
@@ -37,8 +36,6 @@ public partial class GdCore : Node
 	public override void _Ready()
 	{
 #if DEBUG
-		// Log how long it takes to start the whole Core (including the Godot bridge and its main wrappers)
-		// Useful for detecting startup performance degradation
 		var stopwatch = Stopwatch.StartNew();
 #endif
 

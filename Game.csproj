@@ -1,5 +1,4 @@
 <Project Sdk="Godot.NET.Sdk/4.7.0">
-  <!-- TODO comments suffixed with a question mark are optional -->
   <PropertyGroup>
     <AssemblyName>Game</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
@@ -9,14 +8,11 @@
     <AnalysisMode>Recommended</AnalysisMode>
     <RootNamespace>Root</RootNamespace>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <!-- TODO: Enable NativeAot? May require updates to Lib/Estragonia, so it must wait -->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <!-- Build an .exe file for the Avalonia UI designer -->
     <OutputType>Exe</OutputType>
     <UseAppHost>false</UseAppHost>
-    <!-- Fix for a bug where the System.Threading.RateLimiting .dll file is not copied to the '/bin/' directory -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
@@ -25,12 +21,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- TODO: Explicitly define the 'PrivateAssets' tag for each package reference? I don't intend on using this proj as a dep -->
     <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.18]"/>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.121">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.122">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -48,7 +43,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Include GDScript source code files, but exclude those cached in the '/.godot/' directory -->
     <Content Include="**\*.gd" Exclude=".godot\**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -62,9 +56,5 @@
 
   <ItemGroup>
     <EmbeddedResource Remove="Lib\**"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SessionManager\" />
   </ItemGroup>
 </Project>

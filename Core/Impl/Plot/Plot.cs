@@ -18,7 +18,6 @@ public class Plot : IPlot
 
 	public int Id { get; }
 
-	// Expose the concrete class and interface for internal/technical reasons
 	IOccupants IPlot.Occupants => Occupants;
 
 	public bool IsSpawned { get; private set; }
@@ -44,7 +43,6 @@ public class Plot : IPlot
 
 	public void Reset()
 	{
-		// TODO: Validate the order of operations
 		Occupants.Clear();
 
 		Despawn();

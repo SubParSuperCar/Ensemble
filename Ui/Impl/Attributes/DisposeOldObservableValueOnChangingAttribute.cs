@@ -2,7 +2,6 @@ using MethodBoundaryAspect.Fody.Attributes;
 
 namespace Root.Ui.Impl.Attributes;
 
-// Automatically disposes old values that have been overwritten in observable properties (to reduce a lot of boilerplate)
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 [Serializable]
 public class DisposeOldObservableValueOnChangingAttribute : OnMethodBoundaryAspect

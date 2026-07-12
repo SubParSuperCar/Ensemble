@@ -23,13 +23,11 @@ public class Core : ICore
 		_players = new Players();
 		_assets = new Assets();
 
-		// Create and wire up a custom Occupant Registry that is linked to Players
 		var occupants = new OccupantRegistry();
 
 		_players.Added += occupants.Add;
 		_players.Removed += occupants.Remove;
 
-		// If a local player ID is given, handle it now
 		if (localPlayerId is { } id)
 		{
 			var local = _players.Add(id, localPlayerName);

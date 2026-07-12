@@ -6,7 +6,6 @@ using Root.Core.Api.Plot;
 
 namespace Root.Core.Api;
 
-// These APIs act as a contract between the agnostic Core and the Godot-facing bridge
 public interface ICore
 {
 	IPlayers Players { get; }

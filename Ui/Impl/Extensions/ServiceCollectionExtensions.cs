@@ -3,8 +3,6 @@ using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.Extensions;
 
-// Provides extensions for scanning the assembly and registering services (actual services and ViewModels)
-// Each object gets one lifetime depending on which are defined
 public static class ServiceCollectionExtensions
 {
 	public static void AddServices(this IServiceCollection services) =>

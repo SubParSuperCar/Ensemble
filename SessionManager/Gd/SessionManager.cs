@@ -5,8 +5,6 @@ using Root.SessionManager.Impl;
 
 namespace Root.SessionManager.Gd;
 
-// TODO: https://github.com/Faless/gd-mp-password-auth/tree/main
-// I will be overhauling this myself very soon. It is W.I.P. and is mostly for debugging purposes rather than long-term
 public partial class SessionManager : Node
 {
 	[Signal]
@@ -170,9 +168,8 @@ public partial class SessionManager : Node
 	{
 		var config = new ConfigFile();
 
-		// Regenerate a new GUID anyway in DEBUG mode
 #if RELEASE
-		if (config.Load(Constants.UserDataCfgPath) == Error.Ok)
+		if (config.Load(ScriptConstants.UserDataCfgPath) == Error.Ok)
 		{
 			var stored = config.GetValue("player", "id", "").AsString();
 

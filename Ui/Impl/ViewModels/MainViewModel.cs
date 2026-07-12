@@ -8,7 +8,6 @@ namespace Root.Ui.Impl.ViewModels;
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class MainViewModel(IServiceProvider services) : ViewModelBase
 {
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
 	public partial ViewModelBase? ViewModel { get; set; } = services.GetRequiredService<GameViewModel>();

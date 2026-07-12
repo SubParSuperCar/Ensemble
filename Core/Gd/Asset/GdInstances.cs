@@ -33,7 +33,7 @@ public partial class GdInstances : RefCounted
 				return wrapper;
 			});
 
-	public GdInstance Get(int id) => GdInstance.From(_source.GetInstance(id));
+	public GdInstance? Get(int id) => _source.TryGet(id, out var instance) ? GdInstance.From(instance) : null;
 
 	public Array<GdInstance> GetAll()
 	{
@@ -48,7 +48,6 @@ public partial class GdInstances : RefCounted
 	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation) =>
 		GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot()));
 
-	// This method is particularly useful for content replication
 	public GdInstance AddAt(int assetId, Vector3 position, Quaternion rotation, int instanceId) =>
 		GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot(), instanceId));
 

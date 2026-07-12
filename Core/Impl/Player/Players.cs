@@ -15,7 +15,6 @@ public class Players : IPlayers
 
 	public IPlayer Add(Guid? id = null, string? name = null)
 	{
-		// Generate a GUID if none is provided
 		var playerId = id ?? Guid.NewGuid();
 
 		if (_playersById.ContainsKey(playerId))
@@ -33,8 +32,6 @@ public class Players : IPlayers
 		if (!_playersById.Remove(id, out var player))
 			throw new KeyNotFoundException($"Player with id {id} not found");
 
-		// If this Player is assigned as Local, unassign it
-		// TODO: Should this occur before or after being removed from the dictionary?
 		if (ReferenceEquals(player, Local))
 			SetLocal();
 

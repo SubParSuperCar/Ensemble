@@ -6,14 +6,8 @@ using Root.Scripts.Asset;
 using Root.Scripts.Player;
 using Root.Scripts.Plot;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace Root.Scripts.Globals;
 
-// This class acts as the one-stop shop for all major components of the game. It allows every system to reference each other.
-// It follows a certain flow pattern where Core should never be dependent on anything else, but other classes can
-// The flow/dependency hierarchy should be reflected by the order they are defined here.
-// It might be worth moving this closer to the project root, maybe at Ensemble/Globals/...
 public static class ScriptGlobals
 {
 	public static GdCore GCore => GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null");

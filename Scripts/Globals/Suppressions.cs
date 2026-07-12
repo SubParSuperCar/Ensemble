@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 
-// Make certain annoying analyzer lints shut up
 [assembly: SuppressMessage("Meziantou.Analyzer", "MA0007")]
 [assembly: SuppressMessage("Meziantou.Analyzer", "MA0048")]
 [assembly: SuppressMessage("Meziantou.Analyzer", "MA0046")]

@@ -20,7 +20,6 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	public ObservableCollection<Player> Players { get; } = [];
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial Player? SelectedPlayer { get; set; }
 
 	protected override void OnDispose()
@@ -31,7 +30,6 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPeerConnected(int peerId)
 	{
-		// This may change in the future as GSessionManager is incomplete
 		var playerId = GSessionManager.PlayerIdsByPeerId[peerId];
 
 		var player = new Player(

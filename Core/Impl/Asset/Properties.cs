@@ -5,7 +5,6 @@ namespace Root.Core.Impl.Asset;
 
 public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : IProperties
 {
-	// If no initial values are provided, default to an empty dictionary. Prefer collection expression.
 	private readonly Dictionary<string, Variant> _valuesByKey =
 		values is null ? [] : new Dictionary<string, Variant>(values, StringComparer.OrdinalIgnoreCase);
 
@@ -15,12 +14,9 @@ public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : I
 
 	public void Update(string key, Variant value)
 	{
-		// Only update the property if it exists. The caller should not be able to make up new property keys.
 		if (!_valuesByKey.TryGetValue(key, out var current))
 			throw new KeyNotFoundException($"Property with key {key} not found");
 
-		// Only update the property if it's actually different
-		// TODO: For comparisons, make which side each value is on deterministic
 		if (current == value)
 			return;
 
@@ -36,7 +32,6 @@ public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : I
 
 	public override string ToString()
 	{
-		// Utilize a StringBuilder for optimization. The property table may be large.
 		if (_valuesByKey.Count == 0)
 			return "{}";
 

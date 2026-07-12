@@ -7,7 +7,6 @@ using Environment = System.Environment;
 
 namespace Root.Scripts.Watchdog;
 
-// Emergency shuts down the process if the main thread hangs to save the host machine from potentially deadlocking in certain scenarios
 public partial class Watchdog : Node
 {
 	private const int PollIntervalMs = 1000;

@@ -74,7 +74,6 @@ public partial class GdPlayers : RefCounted
 		if (!Guid.TryParse(id, out var guid))
 			return;
 
-		// Unlike the agnostic Core, create a Player object when none with the given ID exists
 		if (!_source.All.ContainsKey(guid))
 			_source.Add(guid, name == string.Empty ? null : name);
 

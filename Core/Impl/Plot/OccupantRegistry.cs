@@ -2,7 +2,6 @@ using Root.Core.Api.Player;
 
 namespace Root.Core.Impl.Plot;
 
-// This is a global registry of all Occupant objects that currently exist. It is for the Plots class
 internal sealed class OccupantRegistry
 {
 	private readonly Dictionary<Guid, Occupant> _occupantsByPlayerId = [];

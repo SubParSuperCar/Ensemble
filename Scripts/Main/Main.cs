@@ -8,7 +8,6 @@ public partial class Main : Node
 
 	[Export] public PackedScene GameScene { get; set; } = null!;
 
-	// No changes should be made to how this uses SessionManager because it is currently undergoing major renovations
 	public override void _EnterTree()
 	{
 		GSessionManager.SessionStarted += OnSessionStarted;
@@ -25,7 +24,6 @@ public partial class Main : Node
 	{
 		GSessionManager.StartSinglePlayer();
 
-		// Debug logging
 		Console.WriteLine("Players:");
 
 		foreach (var player in GPlayers.GetAll())

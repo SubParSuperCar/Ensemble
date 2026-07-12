@@ -15,6 +15,5 @@ public partial class AssetHandle : Node3D
 	public int MaxInstanceCount { get; set; }
 
 	// ReSharper disable once MemberCanBePrivate.Global
-	// Only store non-exported members that are necessary for referencing the associated Core object or are not included in it
 	public int InstanceId { get; set; }
 }

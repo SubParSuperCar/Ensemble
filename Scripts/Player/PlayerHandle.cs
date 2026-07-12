@@ -19,7 +19,6 @@ public partial class PlayerHandle : Node
 
 	public string Id { get; set; } = null!;
 
-	// For the local Player, Controller contains the Body, while a non-local Player has Character as the Body for technical reasons
 	public CharacterBody3D? Character { get; private set; }
 	public CharacterController? Controller { get; private set; }
 
@@ -29,7 +28,7 @@ public partial class PlayerHandle : Node
 
 	public override void _EnterTree()
 	{
-		_occupant = GPlots.GetOccupant(Id);
+		_occupant = GPlots.GetOccupant(Id)!;
 		_occupant.PlotChanged += OnPlotChanged;
 	}
 
@@ -40,14 +39,13 @@ public partial class PlayerHandle : Node
 		Character = GetNode<CharacterBody3D>("Character");
 		Character.GlobalPosition = SpawnLocation;
 
-		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.OrdinalIgnoreCase))
+		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
 			return;
 
 		var instanceId = Character.GetInstanceId();
 		Character.SetScript(CharacterControllerScript);
 		Character = null;
 
-		// Setting the Script breaks the original reference, so it should be re-referenced based on its original Instance ID
 		Controller = (CharacterController)InstanceFromId(instanceId)!;
 		Controller.SetPhysicsProcess(true);
 

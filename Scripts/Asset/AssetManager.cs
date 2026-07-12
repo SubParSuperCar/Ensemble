@@ -16,9 +16,6 @@ public partial class AssetManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
 
-	// RegEx may be overkill, but it's elegant
-	// TODO: Should time out ms be made a global?
-	// TODO: Normalize Ordinal & OrdinalIgnoreCase usage across the project
 	[GeneratedRegex(@"\.t?scn$", RegexOptions.Compiled, 100)]
 	private static partial Regex SceneFileRegex { get; }
 
@@ -92,7 +89,6 @@ public partial class AssetManager : Node
 
 		instance.Free();
 
-		// TODO: Should it cancel if an Asset with the given ID is already registered as a Scene or in Core? Probably both.
 		if (!Scenes.TryAdd(id, scene))
 			return;
 

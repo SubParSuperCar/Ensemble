@@ -2,7 +2,6 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace Root.Core.Api.Asset;
 
@@ -10,13 +9,11 @@ public enum VariantType : byte
 {
 	Null,
 	Bool,
-	// Use abbreviated names to avoid compiler warnings regarding shadowing keywords
 	NumInt,
 	NumDouble,
 	Str
 }
 
-// Use explicit memory layout for optimization
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct Variant : IEquatable<Variant>
 {
@@ -76,6 +73,7 @@ public readonly struct Variant : IEquatable<Variant>
 	public static explicit operator bool(Variant variant) =>
 		variant.Type == VariantType.Bool ? variant._integer != 0 : throw new InvalidCastException();
 
+	// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 	public static explicit operator long(Variant variant) =>
 		variant.Type switch
 		{
@@ -91,6 +89,7 @@ public readonly struct Variant : IEquatable<Variant>
 			VariantType.NumInt => variant._integer,
 			_ => throw new InvalidCastException()
 		};
+	// ReSharper restore SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 	public static explicit operator string(Variant variant) =>
 		variant.Type == VariantType.Str ? variant._string! : throw new InvalidCastException();

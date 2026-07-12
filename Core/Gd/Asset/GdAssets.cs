@@ -45,8 +45,6 @@ public partial class GdAssets : RefCounted
 		return result;
 	}
 
-	// Use explicit overloads for GDScript compatibility
-	// TODO: Should each overload point toward the main method or call the one with the next least parameters for brevity?
 	public GdAsset Add(int id) => Add(id, string.Empty);
 	public GdAsset Add(int id, string name) => Add(id, name, null, Default);
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, Default);

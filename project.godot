@@ -15,16 +15,17 @@ run/main_scene="uid://cfj5hy6hy0a7r"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 run/low_processor_mode=true
 boot_splash/stretch_mode=0
-boot_splash/image="uid://dgmhggqeiyhcb"
-config/icon="uid://dgmhggqeiyhcb"
+boot_splash/image="uid://3t3240rpvh41"
+config/icon="uid://3t3240rpvh41"
+boot_splash/minimum_display_time=250
 
 [autoload]
 
-AvaloniaLoader="uid://c54c7imyk6yl"
-Watchdog="uid://0tvgo7nfrgu5"
-StdOut="uid://oyno5534wd27"
-Core="uid://c88mfna0wvuv0"
-SessionManager="uid://cfyi6ivoprayx"
+AvaloniaLoader="*uid://chxjmih74cyql"
+Watchdog="*uid://wlfdpln5yhaq"
+StandardOutput="*uid://sxpqu8o36vtq"
+Core="*uid://c88mfna0wvuv0"
+SessionManager="*uid://drxhvs7hd1plw"
 
 [debug]
 

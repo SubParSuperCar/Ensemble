@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cfj5hy6hy0a7r"]
 
-[ext_resource type="Script" uid="uid://cqduyw5dbxtht" path="res://Scripts/Main/Main.cs" id="1_0wfyh"]
+[ext_resource type="Script" uid="uid://sqj3rwcbjxs6" path="res://Scripts/Main/Main.cs" id="1_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://csyba8yjabf7y" path="res://Scenes/game.tscn" id="2_0wfyh"]
-[ext_resource type="Script" uid="uid://cag1hmfs3cuxh" path="res://Ui/Gd/Ui.cs" id="3_8gbba"]
+[ext_resource type="Script" uid="uid://bixcblqw14ulf" path="res://Ui/Gd/Ui.cs" id="3_8gbba"]
 
 [node name="Main" type="Node" unique_id=516992775]
 script = ExtResource("1_0wfyh")

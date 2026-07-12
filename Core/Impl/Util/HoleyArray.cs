@@ -72,6 +72,8 @@ internal sealed class HoleyArray<T> where T : class
 
 	private void Place(T item, int index)
 	{
+		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, ushort.MaxValue);
+
 		while (_items.Count <= index)
 			_items.Add(null);
 

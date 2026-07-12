@@ -45,16 +45,16 @@ public partial class GdAssets : RefCounted
 		return result;
 	}
 
-	public GdAsset Add(int id) => Add(id, string.Empty, null, 0);
-	public GdAsset Add(int id, string name) => Add(id, name, null, 0);
-	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, 0);
+	public GdAsset Add(int id) => Add(id, string.Empty);
+	public GdAsset Add(int id, string name) => Add(id, name, null, Default);
+	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, Default);
 
 	public GdAsset Add(int id, string name, Dictionary? properties, int maxInstanceCount) =>
 		GdAsset.From(_source.Add(
 			id,
 			name == string.Empty ? null : name,
 			properties is null ? null : Converter.FromGodotProperties(properties),
-			maxInstanceCount == 0 ? null : maxInstanceCount));
+			maxInstanceCount == Default ? null : maxInstanceCount));
 
 	public void Lock() => _source.Lock();
 

@@ -5,8 +5,6 @@ using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 using Root.Ui.Impl.Services;
 
-// ReSharper disable MemberCanBeMadeStatic.Global
-
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global

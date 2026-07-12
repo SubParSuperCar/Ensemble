@@ -53,7 +53,7 @@ public partial class GdPlayers : RefCounted
 		return result;
 	}
 
-	public GdPlayer Add() => Add(string.Empty, string.Empty);
+	public GdPlayer Add() => Add(string.Empty);
 	public GdPlayer Add(string id) => Add(id, string.Empty);
 
 	public GdPlayer Add(string id, string name) =>

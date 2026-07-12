@@ -48,13 +48,6 @@ public class Instances : IInstances
 		return true;
 	}
 
-	public IInstance GetInstance(int instanceId) =>
-		TryGet(instanceId, out var instance)
-			? instance
-			: throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Instance with id {instanceId} not found"));
-
 	public IInstance Add(int assetId, Vector3 position, Quaternion rotation, int? instanceId = null)
 	{
 		if (instanceId is { } id)
@@ -93,20 +86,27 @@ public class Instances : IInstances
 			Remove(instance.Id);
 	}
 
-	public (int Count, int MaxCount) GetCount(int assetId) =>
+	public Quota GetCount(int assetId) =>
 		_assets.All.TryGetValue(assetId, out var asset)
 			? (_countsByAssetId.Get(assetId), asset.MaxInstanceCount)
 			: throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Asset with id {assetId} not found"));
 
-	public IReadOnlyDictionary<int, (int Count, int MaxCount)> GetAllCounts()
+	public IReadOnlyDictionary<int, Quota> GetAllCounts()
 	{
-		var counts = new Dictionary<int, (int Count, int MaxCount)>();
+		var counts = new Dictionary<int, Quota>();
 
 		foreach (var assetId in _assets.All.Keys)
 			counts[assetId] = GetCount(assetId);
 
 		return counts;
 	}
+
+	public IInstance GetInstance(int instanceId) =>
+		TryGet(instanceId, out var instance)
+			? instance
+			: throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture,
+				$"Instance with id {instanceId} not found"));
 }

@@ -101,6 +101,6 @@ public partial class AssetManager : Node
 			id,
 			name,
 			converted,
-			maxInstanceCount == 0 ? DefaultMaxInstanceCount : maxInstanceCount);
+			maxInstanceCount == Default ? DefaultMaxInstanceCount : maxInstanceCount);
 	}
 }

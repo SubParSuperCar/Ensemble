@@ -5,8 +5,6 @@ namespace Root.Scripts.Camera;
 public partial class PopperCam : SpringArm3D
 {
 	private Vector2 _capturedMousePosition;
-	private float _dollyMaxLog;
-	private float _dollyMinLog;
 	private float _pitch;
 	private float _viewportDiagonal;
 	private float _yaw;
@@ -22,26 +20,10 @@ public partial class PopperCam : SpringArm3D
 	public float YawRate { get; set; } = Mathf.DegToRad(90);
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
-	public float DollyMin
-	{
-		get;
-		set
-		{
-			field = value;
-			_dollyMinLog = MathF.Log(DollyMin);
-		}
-	} = 1.25f;
+	public float DollyMin { get; set; } = 1.25f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
-	public float DollyMax
-	{
-		get;
-		set
-		{
-			field = value;
-			_dollyMaxLog = MathF.Log(DollyMax);
-		}
-	} = 48;
+	public float DollyMax { get; set; } = 48;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
 	public float DollyStep { get; set; } = 2;
@@ -52,9 +34,6 @@ public partial class PopperCam : SpringArm3D
 	{
 		_yaw = Rotation.Y;
 		_pitch = Rotation.X;
-
-		_dollyMinLog = MathF.Log(DollyMin);
-		_dollyMaxLog = MathF.Log(DollyMax);
 
 		RecalculateViewportDiagonal();
 		GetViewport().SizeChanged += RecalculateViewportDiagonal;
@@ -121,8 +100,11 @@ public partial class PopperCam : SpringArm3D
 
 	private void ApplyDollyDelta(float delta)
 	{
-		var logScale = (_dollyMaxLog - _dollyMinLog) / (DollyMax - DollyMin);
-		var logLength = Mathf.Clamp(MathF.Log(SpringLength) + delta * logScale, _dollyMinLog, _dollyMaxLog);
+		var dollyMinLog = MathF.Log(DollyMin);
+		var dollyMaxLog = MathF.Log(DollyMax);
+
+		var logScale = (dollyMaxLog - dollyMinLog) / (DollyMax - DollyMin);
+		var logLength = Mathf.Clamp(MathF.Log(SpringLength) + delta * logScale, dollyMinLog, dollyMaxLog);
 		SpringLength = MathF.Exp(logLength);
 	}
 

@@ -1,9 +1,8 @@
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Root.Scripts.Globals;
 
 public static class ScriptConstants
 {
+	// ReSharper disable once MemberCanBePrivate.Global
 	public const string UserScheme = "user://";
 	public const string ResourceScheme = "res://";
 

@@ -44,14 +44,14 @@ public partial class GdPlots : RefCounted
 		return result;
 	}
 
-	public GdPlot Add(int id) => Add(id, 0, 0);
-	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, 0);
+	public GdPlot Add(int id) => Add(id, Default);
+	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, Default);
 
 	public GdPlot Add(int id, int maxOccupantCount, int maxInstanceCount) =>
 		GdPlot.From(_source.Add(
 			id,
-			maxOccupantCount == 0 ? null : maxOccupantCount,
-			maxInstanceCount == 0 ? null : maxInstanceCount));
+			maxOccupantCount == Default ? null : maxOccupantCount,
+			maxInstanceCount == Default ? null : maxInstanceCount));
 
 	public void SetPlot(string playerId) => SetPlot(playerId, -1);
 
@@ -61,7 +61,20 @@ public partial class GdPlots : RefCounted
 			_source.SetPlot(guid, plotId == -1 ? null : plotId);
 	}
 
-	public GdOccupant GetOccupant(string playerId) => GdOccupant.From(_source.GetOccupant(Guid.Parse(playerId)));
+	public GdOccupant? GetOccupant(string playerId)
+	{
+		if (!Guid.TryParse(playerId, out var guid))
+			return null;
+
+		try
+		{
+			return GdOccupant.From(_source.GetOccupant(guid));
+		}
+		catch (InvalidOperationException)
+		{
+			return null;
+		}
+	}
 
 	public void Lock() => _source.Lock();
 

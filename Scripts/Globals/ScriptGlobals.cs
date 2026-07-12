@@ -6,8 +6,6 @@ using Root.Scripts.Asset;
 using Root.Scripts.Player;
 using Root.Scripts.Plot;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace Root.Scripts.Globals;
 
 public static class ScriptGlobals

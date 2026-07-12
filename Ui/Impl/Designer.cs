@@ -4,7 +4,6 @@ using Avalonia;
 
 namespace Root.Ui.Impl;
 
-// ReSharper disable once UnusedType.Global
 public static class Designer
 {
 	public static int Main() =>

@@ -14,7 +14,6 @@
         Background="{DynamicResource TranslucentBackgroundBrush}">
 
         <Grid ColumnDefinitions="*,*,Auto">
-            <!-- The spaces are intentional -->
             <TextBlock Text="Moniker&#x0a; &#x2193;" />
             <TextBlock Grid.Column="1" Text="Player List" />
             <TextBlock Grid.Column="2" Text="Peer ID&#x0a;&#x2193; " TextAlignment="Right" />

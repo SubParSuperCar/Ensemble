@@ -12,15 +12,13 @@ public interface IInstances
 	event Action<IInstance> Added;
 	event Action<IInstance> Removed;
 
-	// ReSharper disable once UnusedMemberInSuper.Global
 	bool TryGet(int instanceId, out IInstance instance);
-	IInstance GetInstance(int instanceId);
 
 	IInstance Add(int assetId, Vector3 position, Quaternion rotation, int? instanceId = null);
 
 	void Remove(int instanceId);
 	void Clear();
 
-	(int Count, int MaxCount) GetCount(int assetId);
-	IReadOnlyDictionary<int, (int Count, int MaxCount)> GetAllCounts();
+	Quota GetCount(int assetId);
+	IReadOnlyDictionary<int, Quota> GetAllCounts();
 }

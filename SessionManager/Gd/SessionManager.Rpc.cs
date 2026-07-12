@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.RateLimiting;
 using Godot;
 using Godot.Collections;
@@ -6,7 +7,6 @@ using Root.Core.Gd.Plot;
 
 namespace Root.SessionManager.Gd;
 
-// TODO
 public partial class SessionManager
 {
 	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
@@ -54,8 +54,6 @@ public partial class SessionManager
 			AddPeer(senderId, playerId);
 		});
 	}
-
-	//
 
 	[Rpc]
 	private void RpcSyncGame(Array<Dictionary> players, Array<Dictionary> plots)
@@ -222,118 +220,14 @@ public partial class SessionManager
 		}
 	}
 
-	private bool IsRemoteSenderPlotOwner(out GdOccupant occupant)
+	private bool IsRemoteSenderPlotOwner([NotNullWhen(true)] out GdOccupant? occupant)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
 		var playerId = PlayerIdsByPeerId[senderId];
 
 		occupant = GPlots.GetOccupant(playerId);
-		return occupant == occupant.Plot?.Occupants.Owner;
+		return occupant is not null && occupant == occupant.Plot?.Occupants.Owner;
 	}
-
-	//
-
-	/*[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RpcSyncPlayerRemoved(string playerId)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-
-		EnqueueRpc(senderId, 5, () =>
-		{
-			GPlayers.Remove(playerId);
-			RemovePeer(senderId);
-		});
-	}
-
-	[Rpc(CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RpcSyncGameState(Array<string> players, Array<Dictionary> plots)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-
-		EnqueueRpc(senderId, 20, () =>
-		{
-			foreach (var playerId in players)
-				GPlayers.Add(playerId);
-
-			foreach (var plot in plots)
-				ApplyPlotState(plot);
-		});
-	}
-
-	private static void ApplyPlotState(Dictionary plot)
-	{
-		var plotId = plot["id"].As<int>();
-		var gdPlot = GPlots.Get(plotId);
-
-		if (gdPlot is null)
-			return;
-
-		if (plot.TryGetValue("occupantIds", out var occupantIds))
-		{
-			foreach (var playerId in occupantIds.AsGodotArray<string>())
-				GPlots.SetPlot(playerId, plotId);
-		}
-
-		if (plot.TryGetValue("ownerId", out var ownerId))
-			gdPlot.Occupants.SetOwner(ownerId.AsString());
-
-		if (plot.TryGetValue("instances", out var instances))
-		{
-			foreach (var instance in instances.AsGodotArray<Dictionary>())
-				gdPlot.Instances.AddAt(
-					instance["assetId"].As<int>(),
-					instance["position"].As<Vector3>(),
-					instance["rotation"].As<Quaternion>(),
-					instance["instanceId"].As<int>());
-		}
-
-		if (plot.TryGetValue("isSpawned", out var isSpawned) && isSpawned.AsBool())
-			gdPlot.Spawn();
-	}
-
-	private void SendGameState(int peerId, string localPlayerId)
-	{
-		var players = new Array<string>();
-
-		foreach (var player in GPlayers.GetAll())
-		{
-			if (!string.Equals(player.Id, localPlayerId, StringComparison.OrdinalIgnoreCase))
-				players.Add(player.Id);
-		}
-
-		var plots = GetPlotStates();
-		RpcId(peerId, MethodName.RpcSyncGameState, players, plots);
-	}
-
-	private static Array<Dictionary> GetPlotStates()
-	{
-		var states = new Array<Dictionary>();
-
-		foreach (var plot in GPlots.GetAll())
-		{
-			var state = plot.ToDict();
-
-			if (plot.Occupants.Owner?.Player is { } owner)
-				state["ownerId"] = owner.Id;
-
-			var occupants = new Array<string>();
-
-			foreach (var occupant in plot.Occupants.GetAll())
-				occupants.Add(occupant.Player.Id);
-
-			if (occupants.Count > 0)
-				state["occupantIds"] = occupants;
-
-			var instances = plot.Instances.GetAllDicts();
-
-			if (instances.Count > 0)
-				state["instances"] = instances;
-
-			states.Add(state);
-		}
-
-		return states;
-	}*/
 
 	private void EnqueueRpc(int senderId, int tokens, Action action) => _ = EnqueueRpcAsync(senderId, tokens, action);
 

@@ -28,7 +28,7 @@ public partial class PlayerHandle : Node
 
 	public override void _EnterTree()
 	{
-		_occupant = GPlots.GetOccupant(Id);
+		_occupant = GPlots.GetOccupant(Id)!;
 		_occupant.PlotChanged += OnPlotChanged;
 	}
 
@@ -39,7 +39,7 @@ public partial class PlayerHandle : Node
 		Character = GetNode<CharacterBody3D>("Character");
 		Character.GlobalPosition = SpawnLocation;
 
-		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.OrdinalIgnoreCase))
+		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
 			return;
 
 		var instanceId = Character.GetInstanceId();

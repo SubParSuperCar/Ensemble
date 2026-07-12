@@ -53,7 +53,7 @@ public partial class GdPlayers : RefCounted
 		return result;
 	}
 
-	public GdPlayer Add() => Add(string.Empty, string.Empty);
+	public GdPlayer Add() => Add(string.Empty);
 	public GdPlayer Add(string id) => Add(id, string.Empty);
 
 	public GdPlayer Add(string id, string name) =>
@@ -74,6 +74,7 @@ public partial class GdPlayers : RefCounted
 		if (!Guid.TryParse(id, out var guid))
 			return;
 
+		// Unlike the agnostic Core, create a Player object when none with the given ID exists
 		if (!_source.All.ContainsKey(guid))
 			_source.Add(guid, name == string.Empty ? null : name);
 

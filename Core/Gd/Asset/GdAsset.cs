@@ -19,6 +19,7 @@ public partial class GdAsset : RefCounted
 
 	public int MaxInstanceCount => _source.MaxInstanceCount;
 
+	// Use a dictionary instead of an IProperties object because it is immutable until it becomes an IInstance object.
 	public Dictionary Properties => Converter.ToGodotProperties(_source.Properties);
 
 	public static GdAsset From(IAsset asset) =>

@@ -4,6 +4,7 @@ using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.Services;
 
+// Your typical run-of-the-mill ViewLocator, but DI compatible
 // ReSharper disable once ClassNeverInstantiated.Global
 public class ViewLocatorService : ISingletonObject, IServiceBase, IDataTemplate
 {
@@ -18,6 +19,7 @@ public class ViewLocatorService : ISingletonObject, IServiceBase, IDataTemplate
 		if (type is null)
 			return new TextBlock { Text = $"View with name {name} not found" };
 
+		// Since it's a view, we don't have to worry about dependencies
 		var view = (Control?)Activator.CreateInstance(type);
 		view?.DataContext = data;
 

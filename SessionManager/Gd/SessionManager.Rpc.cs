@@ -20,6 +20,7 @@ public partial class SessionManager
 		AutoReplenishment = true
 	};
 
+	// We have to use this queue to ensure RPCs run on the right context if rate limiters yield
 	private readonly ConcurrentQueue<Action> _rpcQueue = [];
 
 	public override void _Process(double delta)
@@ -43,6 +44,7 @@ public partial class SessionManager
 			limiter.Dispose();
 	}
 
+	// All RPCs are W.I.P. and not complete
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RpcSyncPlayerAdded(string playerId, string name)
 	{

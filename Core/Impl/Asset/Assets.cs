@@ -41,6 +41,8 @@ public class Assets : IAssets
 
 	public void Lock() => IsLocked = true;
 
+	// An internal method for resetting everything when the session ends
+	// This is a more efficient method than implementing IDisposable and/or having to update GdCore
 	internal void Reset()
 	{
 		foreach (var (id, asset) in _assetsById.ToArray())

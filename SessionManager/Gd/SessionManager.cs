@@ -6,6 +6,7 @@ using Root.SessionManager.Impl;
 namespace Root.SessionManager.Gd;
 
 // TODO: https://github.com/Faless/gd-mp-password-auth/tree/main
+// I will be overhauling this myself very soon. It is W.I.P. and is mostly for debugging purposes rather than long-term
 public partial class SessionManager : Node
 {
 	[Signal]
@@ -71,8 +72,8 @@ public partial class SessionManager : Node
 		StartSession();
 	}
 
-	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty, 0);
-	public void HostMultiPlayer(int port, string password) => HostMultiPlayer(port, password, 0);
+	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
+	public void HostMultiPlayer(int port, string password) => HostMultiPlayer(port, password, Unlimited);
 
 	public void HostMultiPlayer(int port, string password, int maxPlayers)
 	{
@@ -83,7 +84,7 @@ public partial class SessionManager : Node
 			new HostConfig(
 				port,
 				password == string.Empty ? null : password,
-				maxPlayers == 0 ? null : maxPlayers));
+				maxPlayers == Unlimited ? null : maxPlayers));
 
 		StartSession();
 	}
@@ -169,6 +170,7 @@ public partial class SessionManager : Node
 	{
 		var config = new ConfigFile();
 
+		// Regenerate a new GUID anyway in DEBUG mode
 #if RELEASE
 		if (config.Load(Constants.UserDataCfgPath) == Error.Ok)
 		{

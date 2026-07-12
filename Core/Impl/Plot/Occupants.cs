@@ -9,6 +9,7 @@ public class Occupants : IOccupants
 
 	public Occupants(Plot plot, int? maxCount = null)
 	{
+		// Ensure values like these are sane
 		if (maxCount is { } count)
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
@@ -50,6 +51,7 @@ public class Occupants : IOccupants
 		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
 		occupant.SetPlot(_plot);
 
+		// By default, handle updating the Owner, but skip it if the caller specifically indicated not to
 		if (Owner is null && setOwner)
 			SetOwner(occupant.Player.Id);
 
@@ -58,6 +60,8 @@ public class Occupants : IOccupants
 
 	internal void Remove(Occupant occupant, bool setOwner = true)
 	{
+		// Update the Owner similarly to in the Add method, but find the next most suitable (oldest?) runner-up to promote, or set it to null
+		// To determine seniority, it could be based on how long they've been occupying the Plot, or how long they've been in the session
 		if (ReferenceEquals(occupant, Owner))
 			SetOwner(_occupantsByPlayerId.Count > 1 && setOwner
 				? _occupantsByPlayerId.Values.First(o => !ReferenceEquals(o, occupant)).Player.Id

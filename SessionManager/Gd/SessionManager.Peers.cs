@@ -1,7 +1,9 @@
 namespace Root.SessionManager.Gd;
 
+// Basic helper for storing and adding/removing peers bound to players
 public partial class SessionManager
 {
+	// Should probably expose these as IReadOnlyDictionary objects but Godot may not have that (?)
 	public Godot.Collections.Dictionary<string, int> PeerIdsByPlayerId { get; } = [];
 	public Godot.Collections.Dictionary<int, string> PlayerIdsByPeerId { get; } = [];
 

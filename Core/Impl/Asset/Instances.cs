@@ -19,6 +19,7 @@ public class Instances : IInstances
 		_assets = assets;
 		MaxCount = maxCount ?? Unlimited;
 
+		// Update the Instance ID and fire the Added event after the HoleyArray determines its slot
 		_instancesById.Added += (id, instance) =>
 		{
 			instance.Id = id;
@@ -67,6 +68,7 @@ public class Instances : IInstances
 
 		var instance = new Instance(asset, position, rotation);
 
+		// TODO: Validate that the order of operations is OK. Added -> Count bumped -> Added event fired
 		if (instanceId is { } slot)
 			_instancesById.AddAt(instance, slot);
 		else

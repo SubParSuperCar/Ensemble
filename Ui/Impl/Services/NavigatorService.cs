@@ -4,6 +4,7 @@ using Root.Ui.Impl.Attributes;
 
 namespace Root.Ui.Impl.Services;
 
+// This isn't used yet, but it will be soon (under MenuVM)
 [INotifyPropertyChanged]
 // ReSharper disable once UnusedType.Global
 public partial class NavigatorService : DisposableObject, IScopedObject, IServiceBase

@@ -31,6 +31,7 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPeerConnected(int peerId)
 	{
+		// This may change in the future as GSessionManager is incomplete
 		var playerId = GSessionManager.PlayerIdsByPeerId[peerId];
 
 		var player = new Player(

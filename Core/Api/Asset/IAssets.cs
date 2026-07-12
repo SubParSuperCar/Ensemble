@@ -8,6 +8,7 @@ public interface IAssets
 	event Action<IAsset> Added;
 	event Action<IAsset> Removed;
 
+	// TODO: For defaulting parameters like 'maxInstanceCount', should the default be defined in the parameters or inside the constructor?
 	IAsset Add(
 		int id,
 		string? name = null,

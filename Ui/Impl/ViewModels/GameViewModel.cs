@@ -26,6 +26,7 @@ public partial class GameViewModel : ViewModelBase
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 	}
 
+	// When these start piling up (there could be a dozen of these UI elements), it would be nice to do this differently
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
 	public partial ClockViewModel? Clock { get; set; }

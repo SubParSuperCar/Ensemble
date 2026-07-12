@@ -28,7 +28,7 @@ public partial class PopperCam : SpringArm3D
 		set
 		{
 			field = value;
-			_dollyMinLog = MathF.Log(DollyMin);
+			_dollyMinLog = MathF.Log(DollyMin); // TODO: Is there a way to make it so we don't have to write this twice?
 		}
 	} = 1.25f;
 

@@ -10,11 +10,13 @@ public enum VariantType : byte
 {
 	Null,
 	Bool,
+	// Use abbreviated names to avoid compiler warnings regarding shadowing keywords
 	NumInt,
 	NumDouble,
 	Str
 }
 
+// Use explicit memory layout for optimization
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct Variant : IEquatable<Variant>
 {

@@ -10,6 +10,7 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 {
 	public DispatcherService()
 	{
+		// Listens to Ui.cs without being directly tied to it
 		WeakReferenceMessenger.Default.Register<ProcessMessage>(this,
 			(_, message) => Process?.Invoke(message.Value));
 
@@ -17,6 +18,7 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 			(_, message) => Input?.Invoke(message.Value));
 	}
 
+	// WeakRefMessenger is supposed to be weak and memory leak safe, but we explicitly unregister anyway
 	protected override void OnDispose() => WeakReferenceMessenger.Default.UnregisterAll(this);
 
 	public event Action<double>? Process;

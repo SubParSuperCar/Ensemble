@@ -19,6 +19,7 @@ public partial class PlotHandle : Node3D
 
 	private Vector3 CalculateSpawnLocation()
 	{
+		// Global top center of the Plot Base Collider
 		var collider = GetNode<CollisionShape3D>("Base/Collider");
 
 		var position = collider.GlobalPosition;

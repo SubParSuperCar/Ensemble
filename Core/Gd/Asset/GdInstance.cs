@@ -17,7 +17,7 @@ public partial class GdInstance : RefCounted
 	public int Id => _source.Id;
 
 	public GdAsset Asset => GdAsset.From(_source.Asset);
-	public GdProperties Properties => field ??= GdProperties.From(_source.Properties);
+	public GdProperties Properties => field ??= GdProperties.From(_source.Properties); // Should this be cached?
 
 	public Vector3 Position => _source.Position.ToGodot();
 	public Quaternion Rotation => _source.Rotation.ToGodot();

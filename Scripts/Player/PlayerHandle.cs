@@ -19,6 +19,7 @@ public partial class PlayerHandle : Node
 
 	public string Id { get; set; } = null!;
 
+	// For the local Player, Controller contains the Body, while a non-local Player has Character as the Body for technical reasons
 	public CharacterBody3D? Character { get; private set; }
 	public CharacterController? Controller { get; private set; }
 
@@ -46,6 +47,7 @@ public partial class PlayerHandle : Node
 		Character.SetScript(CharacterControllerScript);
 		Character = null;
 
+		// Setting the Script breaks the original reference, so it should be re-referenced based on its original Instance ID
 		Controller = (CharacterController)InstanceFromId(instanceId)!;
 		Controller.SetPhysicsProcess(true);
 

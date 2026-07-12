@@ -16,13 +16,14 @@ public partial class Ui : AvaloniaControl
 	{
 		GetWindow().SetImeActive(true);
 
+		// Set up services for DI
 		var collection = new ServiceCollection();
 		collection.AddServices();
 
 		var services = collection.BuildServiceProvider();
 
 		var locator = services.GetRequiredService<ViewLocatorService>();
-		Application.Current!.DataTemplates.Add(locator);
+		Application.Current!.DataTemplates.Add(locator); // Make sure Avalonia can use the View Locator
 
 		var vm = services.GetRequiredService<MainViewModel>();
 		Control = locator.Build(vm);
@@ -32,6 +33,7 @@ public partial class Ui : AvaloniaControl
 
 	public override void _Process(double delta)
 	{
+		// Spread the word that _Process or _Input has been called
 		WeakReferenceMessenger.Default.Send(new ProcessMessage(delta));
 
 		base._Process(delta);

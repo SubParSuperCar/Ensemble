@@ -18,6 +18,7 @@ public partial class GdPlot : RefCounted
 	public int Id => _source.Id;
 	public bool IsSpawned => _source.IsSpawned;
 
+	// Lazily load these two large wrappers
 	public GdInstances Instances => field ??= GdInstances.From(_source.Instances);
 	public GdOccupants Occupants => field ??= GdOccupants.From(_source.Occupants);
 

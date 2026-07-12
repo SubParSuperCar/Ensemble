@@ -28,6 +28,7 @@ public partial class GdProperties : RefCounted
 				return wrapper;
 			});
 
+	// The Godot bridge should usually return null or default instead of throwing an exception when no value exists
 	public Variant Get(string key) => _source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
 	public Dictionary GetAll() => Converter.ToGodotProperties(_source.All);
 

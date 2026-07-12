@@ -20,11 +20,13 @@ public partial class PlotManager : Node
 	{
 		GPlotManager = this;
 
+		// If the Plots registry is locked, do not attempt to update it
 		if (GPlots.IsLocked)
 			return;
 
 		foreach (var handle in GetChildren().OfType<PlotHandle>())
 		{
+			// TODO: Validate the order of operations
 			Handles.Add(handle.Id, handle);
 			GPlots.Add(handle.Id, handle.MaxOccupantCount, handle.MaxTotalInstanceCount);
 		}

@@ -11,6 +11,7 @@ public static class Designer
 		throw new NotSupportedException("This project isn't meant to be run: it's only for Avalonia designer support.");
 
 	// ReSharper disable once UnusedMember.Global
+	// Entry point for the Avalonia UI designer
 	public static AppBuilder BuildAvaloniaApp() =>
 		AppBuilder
 			.Configure<App>()

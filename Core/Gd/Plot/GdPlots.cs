@@ -32,6 +32,7 @@ public partial class GdPlots : RefCounted
 				return wrapper;
 			});
 
+	// Safely getting this way is good, but is impossible in an instance like with IInstances (HoleyArray-based)
 	public GdPlot? Get(int id) => _source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
 
 	public Array<GdPlot> GetAll()
@@ -44,15 +45,16 @@ public partial class GdPlots : RefCounted
 		return result;
 	}
 
-	public GdPlot Add(int id) => Add(id, 0, 0);
-	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, 0);
+	public GdPlot Add(int id) => Add(id, Default);
+	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, Default);
 
 	public GdPlot Add(int id, int maxOccupantCount, int maxInstanceCount) =>
 		GdPlot.From(_source.Add(
 			id,
-			maxOccupantCount == 0 ? null : maxOccupantCount,
-			maxInstanceCount == 0 ? null : maxInstanceCount));
+			maxOccupantCount == Default ? null : maxOccupantCount,
+			maxInstanceCount == Default ? null : maxInstanceCount));
 
+	// I'd use the "Unlimited" sentinel here, but it's invalid because it doesn't represent no limit
 	public void SetPlot(string playerId) => SetPlot(playerId, -1);
 
 	public void SetPlot(string playerId, int plotId)
@@ -61,6 +63,8 @@ public partial class GdPlots : RefCounted
 			_source.SetPlot(guid, plotId == -1 ? null : plotId);
 	}
 
+	// TODO: Should this return null instead of throwing an exception when no value exists or the GUID cannot be parsed?
+	// Answer: Yes, and the same for other getters under Gd as well (but it must be ensured that the call is safe)
 	public GdOccupant GetOccupant(string playerId) => GdOccupant.From(_source.GetOccupant(Guid.Parse(playerId)));
 
 	public void Lock() => _source.Lock();

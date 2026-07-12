@@ -27,6 +27,8 @@ public class Plots : IPlots
 		_defaultMaxInstanceCount = defaultMaxInstanceCount;
 	}
 
+	// Expose the Occupant Registry as an initialized field to let the root Core.cs class set it with custom behavior
+	// This cannot be placed in the constructor because it's internal while this class itself is public
 	internal OccupantRegistry Occupants
 	{
 		get => field ??= new OccupantRegistry();
@@ -57,6 +59,7 @@ public class Plots : IPlots
 				CultureInfo.InvariantCulture,
 				$"Plot with id {id} already exists"));
 
+		// If no count limits are provided, use the global ones, or default to sentinels if those too are null
 		var plot = new Plot(
 			id,
 			_assets,
@@ -81,6 +84,7 @@ public class Plots : IPlots
 				CultureInfo.InvariantCulture,
 				$"Plot with id {plotId} not found"));
 
+		// If the provided Player is already in a Plot that is different, remove them from it first
 		if (occupant.Plot is { } current)
 		{
 			if (ReferenceEquals(plot, current))
@@ -89,6 +93,7 @@ public class Plots : IPlots
 			current.Occupants.Remove(occupant);
 		}
 
+		// Convert the interface to the concrete class
 		(plot as Plot)?.Occupants.Add(occupant);
 	}
 

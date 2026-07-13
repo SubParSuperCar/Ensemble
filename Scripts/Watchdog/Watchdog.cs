@@ -10,9 +10,9 @@ namespace Root.Scripts.Watchdog;
 public partial class Watchdog : Node
 {
 	private const int PollIntervalMs = 1000;
-	private const int MaxMissCount = 15;
+	private const int TimeoutMissCount = 15;
 
-	private static long _heartbeatCount;
+	private static byte _heartbeat;
 
 	private CancellationTokenSource _cts = null!;
 	private Thread _pollThread = null!;
@@ -23,10 +23,9 @@ public partial class Watchdog : Node
 	{
 		Instance = this;
 
-		Interlocked.Exchange(ref _heartbeatCount, 0);
-		_cts = new CancellationTokenSource();
+		Volatile.Write(ref _heartbeat, 1);
 
-		Heartbeat();
+		_cts = new CancellationTokenSource();
 
 		_pollThread = new Thread(PollLoop)
 		{
@@ -54,39 +53,28 @@ public partial class Watchdog : Node
 			Thread.Sleep(int.MaxValue);
 	}
 
-	public static void Heartbeat() => Interlocked.Increment(ref _heartbeatCount);
+	public static void Heartbeat() => Volatile.Write(ref _heartbeat, 1);
 
 	private void PollLoop()
 	{
-		var token = _cts.Token;
-
-		var missCount = 0;
-		var lastHeartbeatCount = Interlocked.Read(ref _heartbeatCount);
-
 		try
 		{
-			while (!token.WaitHandle.WaitOne(PollIntervalMs))
+			var missCount = 0;
+
+			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
 			{
-				if (Debugger.IsAttached)
-				{
+				if (Debugger.IsAttached || Volatile.Read(ref _heartbeat) == 1)
 					missCount = 0;
-					lastHeartbeatCount = Interlocked.Read(ref _heartbeatCount);
+				else if (++missCount >= TimeoutMissCount)
+				{
+					Environment.FailFast(string.Create(CultureInfo.InvariantCulture,
+						$"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms"));
 
-					continue;
+					return;
 				}
-
-				var heartbeatCount = Interlocked.Read(ref _heartbeatCount);
-				missCount = heartbeatCount == lastHeartbeatCount ? missCount + 1 : 0;
-				lastHeartbeatCount = heartbeatCount;
-
-				if (missCount < MaxMissCount)
-					continue;
-
-				Environment.FailFast(string.Create(CultureInfo.InvariantCulture,
-					$"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms"));
-
-				return;
 			}
+
+			Volatile.Write(ref _heartbeat, 0);
 		}
 		catch (Exception exception) when (exception is not OperationCanceledException)
 		{

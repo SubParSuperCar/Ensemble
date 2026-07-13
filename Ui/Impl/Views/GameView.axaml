@@ -9,16 +9,27 @@
     x:DataType="viewModels:GameViewModel">
 
     <Grid>
-        <ContentControl Content="{Binding Clock}"
-                        HorizontalAlignment="Center" VerticalAlignment="Top" />
+        <ContentControl
+            Content="{Binding Clock}"
+            HorizontalAlignment="Center" VerticalAlignment="Top" />
 
-        <ContentControl Content="{Binding PlayerList}"
-                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                        MaxWidth="512" MaxHeight="256" />
+        <TransitioningContentControl
+            Content="{Binding PlayerList}"
+            HorizontalAlignment="Right" VerticalAlignment="Top"
+            MaxWidth="512" MaxHeight="256">
 
-        <ContentControl Content="{Binding PlotSelector}"
-                        HorizontalAlignment="Left" VerticalAlignment="Center"
-                        MinWidth="384" MaxWidth="512" MaxHeight="256" />
+            <TransitioningContentControl.PageTransition>
+                <CompositePageTransition>
+                    <CrossFade Duration="0.25" />
+                    <Rotate3DTransition Duration="0.25" Orientation="Vertical" />
+                </CompositePageTransition>
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
+
+        <ContentControl
+            Content="{Binding PlotSelector}"
+            HorizontalAlignment="Left" VerticalAlignment="Center"
+            MinWidth="384" MaxWidth="512" MaxHeight="256" />
     </Grid>
 
 </UserControl>

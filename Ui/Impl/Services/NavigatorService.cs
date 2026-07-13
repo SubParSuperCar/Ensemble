@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 
@@ -8,9 +9,9 @@ namespace Root.Ui.Impl.Services;
 
 [INotifyPropertyChanged]
 // ReSharper disable once UnusedType.Global
-public partial class NavigatorService : DisposableObject, IScopedObject, IServiceBase
+public partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
 {
-	private readonly Stack<ViewModelBase> _history = [];
+	private readonly Stack<Type> _history = [];
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
@@ -20,12 +21,12 @@ public partial class NavigatorService : DisposableObject, IScopedObject, IServic
 
 	public bool CanGoBack => _history.Count > 0;
 
-	public void GoTo(ViewModelBase viewModel)
+	public void GoTo<T>() where T : ViewModelBase
 	{
 		if (Current is not null)
-			_history.Push(Current);
+			_history.Push(Current.GetType());
 
-		Current = viewModel;
+		Current = services.GetRequiredService<T>();
 		OnPropertyChanged(nameof(CanGoBack));
 	}
 
@@ -34,7 +35,8 @@ public partial class NavigatorService : DisposableObject, IScopedObject, IServic
 		if (!CanGoBack)
 			return;
 
-		Current = _history.Pop();
+		var type = _history.Pop();
+		Current = (ViewModelBase)services.GetRequiredService(type);
 		OnPropertyChanged(nameof(CanGoBack));
 	}
 }

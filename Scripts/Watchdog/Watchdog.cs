@@ -23,7 +23,7 @@ public partial class Watchdog : Node
 	{
 		Instance = this;
 
-		Volatile.Write(ref _heartbeat, 1);
+		Heartbeat();
 
 		_cts = new CancellationTokenSource();
 
@@ -72,9 +72,9 @@ public partial class Watchdog : Node
 
 					return;
 				}
-			}
 
-			Volatile.Write(ref _heartbeat, 0);
+				Volatile.Write(ref _heartbeat, 0);
+			}
 		}
 		catch (Exception exception) when (exception is not OperationCanceledException)
 		{

@@ -94,6 +94,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			closure();
 	}
 
+	// ReSharper disable once UnusedMember.Local
 	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? -1);
 
 	private bool CanSetPlotToNull() => SelectedPlot is not null;
@@ -103,6 +104,6 @@ public partial class Plot : ObservableObject
 {
 	public int Id { get; init; }
 
-	[ObservableProperty] public partial string? OwnerName { get; set; }
-	[ObservableProperty] public partial string Occupancy { get; set; } = string.Empty;
+	[ObservableProperty] public partial string OwnerName { get; set; }
+	[ObservableProperty] public partial string Occupancy { get; set; }
 }

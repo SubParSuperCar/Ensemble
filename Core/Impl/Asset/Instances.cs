@@ -102,11 +102,4 @@ public class Instances : IInstances
 
 		return counts;
 	}
-
-	public IInstance GetInstance(int instanceId) =>
-		TryGet(instanceId, out var instance)
-			? instance
-			: throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Instance with id {instanceId} not found"));
 }

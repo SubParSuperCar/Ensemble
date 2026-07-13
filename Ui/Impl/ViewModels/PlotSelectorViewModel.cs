@@ -104,6 +104,6 @@ public partial class Plot : ObservableObject
 {
 	public int Id { get; init; }
 
-	[ObservableProperty] public partial string OwnerName { get; set; }
-	[ObservableProperty] public partial string Occupancy { get; set; }
+	[ObservableProperty] public partial string OwnerName { get; set; } = string.Empty;
+	[ObservableProperty] public partial string Occupancy { get; set; } = string.Empty;
 }

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://csyba8yjabf7y" path="res://Scenes/game.tscn" id="2_0wfyh"]
 [ext_resource type="Script" uid="uid://crew3b1qn75fh" path="res://Ui/Gd/Ui.cs" id="3_8gbba"]
 
-[node name="Main" type="Node" unique_id=516992775]
+[node name="Main" type="Node" unique_id=1548621583]
 script = ExtResource("1_0wfyh")
 GameScene = ExtResource("2_0wfyh")
 

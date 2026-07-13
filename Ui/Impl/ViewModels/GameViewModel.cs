@@ -22,6 +22,7 @@ public partial class GameViewModel : ViewModelBase
 
 		Clock = services.GetRequiredService<ClockViewModel>();
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
+		PlotSelector = services.GetRequiredService<PlotSelectorViewModel>();
 	}
 
 	[ObservableProperty]
@@ -32,12 +33,17 @@ public partial class GameViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	public partial PlayerListViewModel? PlayerList { get; set; }
 
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial PlotSelectorViewModel? PlotSelector { get; set; }
+
 	protected override void OnDispose()
 	{
 		_dispatcher.Input -= OnInput;
 
 		Clock = null;
 		PlayerList = null;
+		PlotSelector = null;
 	}
 
 	private void OnInput(InputEvent @event)

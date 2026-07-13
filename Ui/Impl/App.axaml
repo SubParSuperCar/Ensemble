@@ -2,22 +2,34 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="Root.Ui.Impl.App"
-    RequestedThemeVariant="Dark">
-
-    <Application.Styles>
-        <SimpleTheme />
-
-        <Style Selector=":is(TopLevel)">
-            <Setter Property="FontFamily" Value="avares://Fonts.Avalonia.JetBrainsMono/Assets#JetBrains Mono" />
-            <Setter Property="FontSize" Value="16" />
-        </Style>
-    </Application.Styles>
+    RequestedThemeVariant="Default">
 
     <Application.Resources>
+        <FontFamily x:Key="AppFont">
+            avares://Fonts.Avalonia.JetBrainsMono/Assets#JetBrains Mono
+        </FontFamily>
+
+        <x:Double x:Key="AppFontSize">16</x:Double>
+
         <SolidColorBrush
             x:Key="TranslucentBackgroundBrush"
             Color="{DynamicResource ThemeBackgroundColor}"
             Opacity="0.5" />
     </Application.Resources>
+
+    <Application.Styles>
+        <SimpleTheme />
+
+        <Style Selector=":is(TopLevel)">
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="{StaticResource AppFontSize}" />
+        </Style>
+
+        <Style Selector="ToolTip">
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="FontSize" Value="{StaticResource AppFontSize}" />
+            <Setter Property="Background" Value="{StaticResource TranslucentBackgroundBrush}" />
+        </Style>
+    </Application.Styles>
 
 </Application>

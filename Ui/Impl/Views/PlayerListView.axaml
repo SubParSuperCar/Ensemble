@@ -22,12 +22,13 @@
         <ListBox
             Grid.Row="1"
             ItemsSource="{Binding Players}"
-            SelectedItem="{Binding SelectedPlayer}">
+            SelectedItem="{Binding SelectedPlayer}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid ColumnDefinitions="*,16,Auto">
-                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
                         <TextBlock Grid.Column="2" Text="{Binding PeerId, StringFormat='{}{0:000}'}" />
                     </Grid>
                 </DataTemplate>

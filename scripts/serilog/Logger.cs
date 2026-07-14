@@ -5,9 +5,9 @@ using Serilog;
 
 namespace Root.Scripts.StdOut;
 
-public partial class StdOut : Node
+public partial class Logger : Node
 {
-	public override void _Ready()
+	public override void _EnterTree()
 	{
 		var logDirectory = ProjectSettings.GlobalizePath("user://logs");
 		Directory.CreateDirectory(logDirectory);

@@ -22,8 +22,8 @@ boot_splash/minimum_display_time=1000
 [autoload]
 
 AvaloniaLoader="uid://chxjmih74cyql"
+Serilog="uid://d2qsep2vpj2q1"
 Watchdog="uid://2tmgqp5ocfyh"
-StandardOutput="uid://d2qsep2vpj2q1"
 Core="uid://cw52xu76o1ywe"
 SessionManager="uid://b0sclnm4uupay"
 

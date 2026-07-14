@@ -15,8 +15,8 @@ run/main_scene="uid://cfj5hy6hy0a7r"
 config/features=PackedStringArray("4.7", "C#", "Forward Plus")
 run/low_processor_mode=true
 boot_splash/stretch_mode=0
-boot_splash/image="uid://3t3240rpvh41"
-config/icon="uid://3t3240rpvh41"
+boot_splash/image="uid://k13r5j8hdurp"
+config/icon="uid://k13r5j8hdurp"
 boot_splash/minimum_display_time=1000
 
 [autoload]
@@ -45,6 +45,10 @@ window/size/mode.editor=0
 [dotnet]
 
 project/assembly_name="Game"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/rider-plugin/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [input]
 

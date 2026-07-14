@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://cfj5hy6hy0a7r"]
+
+[ext_resource type="Script" uid="uid://bknborbhcu7g3" path="res://scripts/main/Main.cs" id="1_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://csyba8yjabf7y" path="res://scenes/game.tscn" id="2_0wfyh"]
+[ext_resource type="Script" uid="uid://crew3b1qn75fh" path="res://ui/gd/Ui.cs" id="3_8gbba"]
+
+[node name="Main" type="Node" unique_id=1548621583]
+script = ExtResource("1_0wfyh")
+GameScene = ExtResource("2_0wfyh")
+
+[node name="Avalonia UI" type="Control" parent="." unique_id=197693921]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+mouse_force_pass_scroll_events = false
+script = ExtResource("3_8gbba")

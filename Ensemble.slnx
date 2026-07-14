@@ -8,5 +8,5 @@
     <File Path="global.json"/>
   </Folder>
   <Project Path="Game.csproj"/>
-  <Project Path="Lib/Estragonia/Estragonia.csproj"/>
+  <Project Path="lib/estragonia/Estragonia.csproj"/>
 </Solution>

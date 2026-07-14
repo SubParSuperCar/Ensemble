@@ -33,7 +33,7 @@ public partial class SessionManager
 			}
 			catch (Exception exception)
 			{
-				Log.Information("{@Exception}", exception);
+				Log.Information("{Exception}", exception);
 			}
 		}
 	}
@@ -82,7 +82,7 @@ public partial class SessionManager
 			}
 			catch (Exception exception)
 			{
-				Log.Information("{@Exception}", exception);
+				Log.Information("{Exception}", exception);
 			}
 		}
 	}
@@ -107,7 +107,7 @@ public partial class SessionManager
 					}
 					catch (Exception exception)
 					{
-						Log.Information("{@Exception}", exception);
+						Log.Information("{Exception}", exception);
 					}
 
 				if (plot.TryGetValue("instances", out var instances))
@@ -125,7 +125,7 @@ public partial class SessionManager
 						}
 						catch (Exception exception)
 						{
-							Log.Information("{@Exception}", exception);
+							Log.Information("{Exception}", exception);
 						}
 
 				if (plot.TryGetValue("ownerPlayerId", out var ownerId))
@@ -133,7 +133,7 @@ public partial class SessionManager
 			}
 			catch (Exception exception)
 			{
-				Log.Information("{@Exception}", exception);
+				Log.Information("{Exception}", exception);
 			}
 		}
 	}
@@ -148,7 +148,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Information("{@Exception}", exception);
+			Log.Information("{Exception}", exception);
 		}
 	}
 
@@ -162,7 +162,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Information("{@Exception}", exception);
+			Log.Information("{Exception}", exception);
 		}
 	}
 
@@ -175,7 +175,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Information("{@Exception}", exception);
+			Log.Information("{Exception}", exception);
 		}
 	}
 
@@ -189,7 +189,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Information("{@Exception}", exception);
+			Log.Information("{Exception}", exception);
 		}
 	}
 
@@ -203,7 +203,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Information("{@Exception}", exception);
+			Log.Information("{Exception}", exception);
 		}
 	}
 
@@ -217,7 +217,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Information("{@Exception}", exception);
+			Log.Information("{Exception}", exception);
 		}
 	}
 

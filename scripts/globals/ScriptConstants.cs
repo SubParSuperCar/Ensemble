@@ -6,6 +6,7 @@ public static class ScriptConstants
 	public const string UserScheme = "user://";
 	public const string ResourceScheme = "res://";
 
+	public const string LogDir = UserScheme + "logs";
 	public const string UserDataCfgPath = UserScheme + "user_data.cfg";
-	public const string AssetsDir = ResourceScheme + "build_assets";
+	public const string BuildAssetsDir = ResourceScheme + "build_assets";
 }

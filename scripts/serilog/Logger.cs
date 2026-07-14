@@ -14,7 +14,7 @@ public partial class Logger : Node
 
 	public override void _EnterTree()
 	{
-		var logDirectory = ProjectSettings.GlobalizePath("user://logs");
+		var logDirectory = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
 		Directory.CreateDirectory(logDirectory);
 
 		var configuration = new ConfigurationBuilder()

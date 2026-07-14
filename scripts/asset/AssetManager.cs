@@ -26,7 +26,7 @@ public partial class AssetManager : Node
 		if (GAssets.IsLocked)
 			return;
 
-		ScanDirectory(ScriptConstants.AssetsDir);
+		ScanDirectory(ScriptConstants.BuildAssetsDir);
 		GAssets.Lock();
 	}
 

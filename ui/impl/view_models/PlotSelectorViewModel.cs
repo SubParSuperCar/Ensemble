@@ -5,6 +5,8 @@ using CommunityToolkit.Mvvm.Input;
 using Root.Core.Gd.Plot;
 using Root.Ui.Impl.Abstractions;
 
+// ReSharper disable MemberCanBeMadeStatic.Global
+
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global

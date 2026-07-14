@@ -43,7 +43,7 @@ public partial class Logger : Node
 		_loggerFactory = LoggerFactory.Create(builder =>
 		{
 			builder.ClearProviders();
-			builder.AddSerilog(Log.Logger, false);
+			builder.AddSerilog(Log.Logger);
 		});
 	}
 

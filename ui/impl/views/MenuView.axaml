@@ -4,13 +4,14 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.MenuView"
     x:DataType="viewModels:MenuViewModel">
 
-    <ProgressBar
-        IsIndeterminate="True"
-        Width="256" Height="32"
+    <li:LoadingIndicator
+        Mode="ArcsRing"
+        Width="192" Height="192"
         HorizontalAlignment="Center" VerticalAlignment="Center" />
 
 </UserControl>

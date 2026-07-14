@@ -24,6 +24,7 @@
     <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.18]"/>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
+    <PackageReference Include="LoadingIndicators.Avalonia" Version="11.0.11.1" />
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
     <PackageReference Include="Meziantou.Analyzer" Version="3.0.122">
       <PrivateAssets>all</PrivateAssets>

@@ -5,16 +5,22 @@
     RequestedThemeVariant="Default">
 
     <Application.Resources>
-        <FontFamily x:Key="AppFont">
-            avares://Fonts.Avalonia.JetBrainsMono/Assets#JetBrains Mono
-        </FontFamily>
+        <ResourceDictionary>
+            <FontFamily x:Key="AppFont">
+                avares://Fonts.Avalonia.JetBrainsMono/Assets#JetBrains Mono
+            </FontFamily>
 
-        <x:Double x:Key="AppFontSize">16</x:Double>
+            <x:Double x:Key="AppFontSize">16</x:Double>
 
-        <SolidColorBrush
-            x:Key="TranslucentBackgroundBrush"
-            Color="{DynamicResource ThemeBackgroundColor}"
-            Opacity="0.5" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <SolidColorBrush
+                x:Key="TranslucentBackgroundBrush"
+                Color="{DynamicResource ThemeBackgroundColor}"
+                Opacity="0.5" />
+        </ResourceDictionary>
     </Application.Resources>
 
     <Application.Styles>
@@ -29,6 +35,20 @@
             <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
             <Setter Property="FontSize" Value="{StaticResource AppFontSize}" />
             <Setter Property="Background" Value="{StaticResource TranslucentBackgroundBrush}" />
+        </Style>
+
+        <Style Selector="ToolTip /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0" />
+
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0.25" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="ToolTip:open /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="1" />
         </Style>
     </Application.Styles>
 

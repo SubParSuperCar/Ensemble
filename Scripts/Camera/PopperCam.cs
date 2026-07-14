@@ -47,9 +47,9 @@ public partial class PopperCam : SpringArm3D
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressedByEvent("orbit_camera", @event))
+		if (@event.IsActionPressed("orbit_camera"))
 			CaptureMouse();
-		else if (Input.IsActionJustReleasedByEvent("orbit_camera", @event))
+		else if (@event.IsActionReleased("orbit_camera"))
 			ReleaseMouse();
 		else
 			switch (@event)
@@ -118,11 +118,15 @@ public partial class PopperCam : SpringArm3D
 	{
 		_capturedMousePosition = GetViewport().GetMousePosition();
 		Input.MouseMode = Input.MouseModeEnum.Captured;
+
+		Console.WriteLine("Captured mouse");
 	}
 
 	private void ReleaseMouse()
 	{
 		Input.MouseMode = Input.MouseModeEnum.Visible;
-		GetViewport().WarpMouse(_capturedMousePosition);
+		Input.WarpMouse(_capturedMousePosition);
+
+		Console.WriteLine("Released mouse");
 	}
 }

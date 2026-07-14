@@ -30,7 +30,7 @@ public partial class Main : Node
 
 	private static async Task OnReady()
 	{
-		await Task.Delay(2000).ConfigureAwait(false);
+		await Task.Delay(1500).ConfigureAwait(false);
 
 		Callable.From(() =>
 		{

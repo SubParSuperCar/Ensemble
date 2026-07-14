@@ -9,7 +9,7 @@ namespace Root.Scripts.Watchdog;
 
 public partial class Watchdog : Node
 {
-	private const int PollIntervalMs = 1000;
+	private const int PollIntervalMs = (int)TimeSpan.MillisecondsPerSecond;
 	private const int TimeoutMissCount = 15;
 
 	private static byte _heartbeat;

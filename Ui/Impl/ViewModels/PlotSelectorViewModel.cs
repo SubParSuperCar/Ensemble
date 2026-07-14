@@ -10,7 +10,7 @@ namespace Root.Ui.Impl.ViewModels;
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class PlotSelectorViewModel : ViewModelBase
 {
-	private readonly Dictionary<int, Action> _closureByPlotId = [];
+	private readonly Dictionary<int, Action> _closuresByPlotId = [];
 	private readonly Dictionary<int, Plot> _plotsById = [];
 
 	public PlotSelectorViewModel()
@@ -33,7 +33,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		GPlots.Added -= OnPlotAdded;
 		GPlots.Removed -= OnPlotRemoved;
 
-		foreach (var closure in _closureByPlotId.Values)
+		foreach (var closure in _closuresByPlotId.Values)
 			closure();
 	}
 
@@ -55,7 +55,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		Plots.Add(plot);
 		_plotsById[gdPlot.Id] = plot;
 
-		_closureByPlotId[gdPlot.Id] = Closure;
+		_closuresByPlotId[gdPlot.Id] = Closure;
 
 		return;
 
@@ -72,7 +72,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		void UpdateOccupancy()
 		{
 			plot.Occupancy = string.Create(CultureInfo.InvariantCulture,
-				$"{occupants.Count} / {(occupants.MaxCount == -1 ? "<Unlimited>" : occupants.MaxCount)}");
+				$"{occupants.Count} / {(occupants.MaxCount == Unlimited ? "<Unlimited>" : occupants.MaxCount)}");
 		}
 
 		void Closure()
@@ -90,7 +90,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 		Plots.Remove(plot);
 
-		if (_closureByPlotId.Remove(gdPlot.Id, out var closure))
+		if (_closuresByPlotId.Remove(gdPlot.Id, out var closure))
 			closure();
 	}
 

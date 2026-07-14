@@ -13,6 +13,10 @@
             Content="{Binding Clock}"
             HorizontalAlignment="Center" VerticalAlignment="Top" />
 
+        <ContentControl
+            Content="{Binding Stats}"
+            HorizontalAlignment="Left" VerticalAlignment="Top" />
+
         <TransitioningContentControl
             Content="{Binding PlayerList}"
             HorizontalAlignment="Right" VerticalAlignment="Top"

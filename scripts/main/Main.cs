@@ -39,15 +39,15 @@ public partial class Main : Node
 
 			Log.Information(nameof(GPlayers));
 			foreach (var player in GPlayers.GetAll())
-				Log.Information("{@Player}", player.ToDict());
+				Log.Information("{Player}", player.ToDict().ToString());
 
 			Log.Information(nameof(GAssets));
 			foreach (var asset in GAssets.GetAll())
-				Log.Information("{@Asset}", asset.ToDict());
+				Log.Information("{Asset}", asset.ToDict().ToString());
 
 			Log.Information(nameof(GPlots));
 			foreach (var plot in GPlots.GetAll())
-				Log.Information("{@Plot}", plot.ToDict());
+				Log.Information("{Plot}", plot.ToDict().ToString());
 		}).CallDeferred();
 	}
 

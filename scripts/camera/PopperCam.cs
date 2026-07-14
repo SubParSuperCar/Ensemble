@@ -1,4 +1,5 @@
 using Godot;
+using Serilog;
 
 namespace Root.Scripts.Camera;
 
@@ -119,7 +120,7 @@ public partial class PopperCam : SpringArm3D
 		_capturedMousePosition = GetViewport().GetMousePosition();
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 
-		Console.WriteLine("Captured mouse");
+		Log.Information("Captured mouse");
 	}
 
 	private void ReleaseMouse()
@@ -127,6 +128,6 @@ public partial class PopperCam : SpringArm3D
 		Input.MouseMode = Input.MouseModeEnum.Visible;
 		Input.WarpMouse(_capturedMousePosition);
 
-		Console.WriteLine("Released mouse");
+		Log.Information("Released mouse");
 	}
 }

@@ -4,6 +4,7 @@ using System.Threading.RateLimiting;
 using Godot;
 using Godot.Collections;
 using Root.Core.Gd.Plot;
+using Serilog;
 
 namespace Root.SessionManager.Gd;
 
@@ -32,7 +33,7 @@ public partial class SessionManager
 			}
 			catch (Exception exception)
 			{
-				Console.WriteLine(exception);
+				Log.Information("{@Exception}", exception);
 			}
 		}
 	}
@@ -79,9 +80,9 @@ public partial class SessionManager
 				AddPeer(peerId, playerId);
 				GPlayers.Add(playerId, displayName);
 			}
-			catch (Exception e)
+			catch (Exception exception)
 			{
-				Console.WriteLine(e);
+				Log.Information("{@Exception}", exception);
 			}
 		}
 	}
@@ -104,9 +105,9 @@ public partial class SessionManager
 						foreach (var occupantId in occupantIds.AsGodotArray<string>())
 							GPlots.SetPlot(occupantId, plotId);
 					}
-					catch (Exception e)
+					catch (Exception exception)
 					{
-						Console.WriteLine(e);
+						Log.Information("{@Exception}", exception);
 					}
 
 				if (plot.TryGetValue("instances", out var instances))
@@ -122,17 +123,17 @@ public partial class SessionManager
 							var properties = instance["properties"].AsGodotDictionary();
 							gdInstance.Properties.UpdateAll(properties);
 						}
-						catch (Exception e)
+						catch (Exception exception)
 						{
-							Console.WriteLine(e);
+							Log.Information("{@Exception}", exception);
 						}
 
 				if (plot.TryGetValue("ownerPlayerId", out var ownerId))
 					gdPlot.Occupants.SetOwner(ownerId.AsString());
 			}
-			catch (Exception e)
+			catch (Exception exception)
 			{
-				Console.WriteLine(e);
+				Log.Information("{@Exception}", exception);
 			}
 		}
 	}
@@ -145,9 +146,9 @@ public partial class SessionManager
 			AddPeer(peerId, playerId);
 			GPlayers.Add(playerId, displayName);
 		}
-		catch (Exception e)
+		catch (Exception exception)
 		{
-			Console.WriteLine(e);
+			Log.Information("{@Exception}", exception);
 		}
 	}
 
@@ -159,9 +160,9 @@ public partial class SessionManager
 			GPlayers.Remove(playerId);
 			RemovePeer(peerId);
 		}
-		catch (Exception e)
+		catch (Exception exception)
 		{
-			Console.WriteLine(e);
+			Log.Information("{@Exception}", exception);
 		}
 	}
 
@@ -172,9 +173,9 @@ public partial class SessionManager
 		{
 			GPlots.SetPlot(playerId, plotId);
 		}
-		catch (Exception e)
+		catch (Exception exception)
 		{
-			Console.WriteLine(e);
+			Log.Information("{@Exception}", exception);
 		}
 	}
 
@@ -186,9 +187,9 @@ public partial class SessionManager
 			var plot = GPlots.Get(plotId);
 			plot!.Occupants.SetOwner(playerId);
 		}
-		catch (Exception e)
+		catch (Exception exception)
 		{
-			Console.WriteLine(e);
+			Log.Information("{@Exception}", exception);
 		}
 	}
 
@@ -200,9 +201,9 @@ public partial class SessionManager
 			if (IsRemoteSenderPlotOwner(out var occupant))
 				occupant.Plot!.Instances.AddAt(assetId, position, rotation, instanceId);
 		}
-		catch (Exception e)
+		catch (Exception exception)
 		{
-			Console.WriteLine(e);
+			Log.Information("{@Exception}", exception);
 		}
 	}
 
@@ -214,9 +215,9 @@ public partial class SessionManager
 			if (IsRemoteSenderPlotOwner(out var occupant))
 				occupant.Plot!.Instances.Remove(instanceId);
 		}
-		catch (Exception e)
+		catch (Exception exception)
 		{
-			Console.WriteLine(e);
+			Log.Information("{@Exception}", exception);
 		}
 	}
 

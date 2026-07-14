@@ -1,9 +1,9 @@
 using System.Diagnostics;
-using System.Globalization;
 using Godot;
 using Root.Core.Gd.Asset;
 using Root.Core.Gd.Player;
 using Root.Core.Gd.Plot;
+using Serilog;
 
 namespace Root.Core.Gd;
 
@@ -17,7 +17,7 @@ public partial class GdCore : Node
 		private set
 		{
 			field = value;
-			Console.WriteLine($"{nameof(GdCore)}.{nameof(Instance)} set");
+			Log.Information("{Class}.{Property} set", nameof(GdCore), nameof(Instance));
 		}
 	}
 
@@ -48,9 +48,11 @@ public partial class GdCore : Node
 #if DEBUG
 		stopwatch.Stop();
 
-		Console.WriteLine(string.Create(
-			CultureInfo.InvariantCulture,
-			$"{nameof(Impl.Core)} init time: {stopwatch.Elapsed} ({stopwatch.Elapsed.TotalMilliseconds} ms)"));
+		Log.Information(
+			"{Class} init time: {Elapsed} ({ElapsedMs:F3} ms)",
+			nameof(Impl.Core),
+			stopwatch.Elapsed,
+			stopwatch.Elapsed.TotalMilliseconds);
 #endif
 	}
 

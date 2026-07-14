@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 using Root.Ui.Impl.Services;
+using Serilog;
 
 namespace Root.Ui.Impl.ViewModels;
 
@@ -47,7 +48,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		_dispatcher.Process -= OnProcess;
 
-		Console.WriteLine("Stopped force render drawing");
+		Log.Information("Stopped force render drawing");
 
 		ViewModel = _services.GetRequiredService<GameViewModel>();
 	}
@@ -56,7 +57,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		_dispatcher.Process += OnProcess;
 
-		Console.WriteLine("Started force render drawing");
+		Log.Information("Started force render drawing");
 
 		ViewModel = _services.GetRequiredService<MenuViewModel>();
 	}

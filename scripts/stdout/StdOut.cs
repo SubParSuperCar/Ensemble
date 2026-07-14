@@ -1,32 +1,34 @@
+using System.Globalization;
 using Godot;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Root.Scripts.Globals;
 using Root.Scripts.StdOut.Impl;
+using Serilog;
 
 namespace Root.Scripts.StdOut;
 
 public partial class StdOut : Node
 {
-	// ReSharper disable once NotAccessedField.Local
-	private ILoggerFactory _loggerFactory = null!;
-
 	public override void _Ready()
 	{
-		Console.SetOut(new StdOutWriter());
+		var logDirectory = ProjectSettings.GlobalizePath("user://logs");
+		Directory.CreateDirectory(logDirectory);
 
-#if DEBUG
-		var configuration = new ConfigurationBuilder()
-			.SetBasePath(ProjectSettings.GlobalizePath(ScriptConstants.ResourceScheme))
-			.AddJsonFile("appsettings.json", true, true)
-			.Build();
-
-		_loggerFactory = LoggerFactory.Create(builder =>
-		{
-			builder.AddConfiguration(configuration.GetSection("Logging"));
-			builder.AddConsole();
-			builder.AddDebug();
-		});
-#endif
+		Log.Logger = new LoggerConfiguration()
+			.MinimumLevel.Verbose()
+			.WriteTo.Sink(new GdSink())
+			.WriteTo.Console(
+				formatProvider: CultureInfo.InvariantCulture,
+				outputTemplate:
+				"[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+			.WriteTo.File(
+				Path.Combine(logDirectory, "serilog-.txt"),
+				formatProvider: CultureInfo.InvariantCulture,
+				rollingInterval: RollingInterval.Day,
+				retainedFileCountLimit: 30,
+				shared: true,
+				outputTemplate:
+				"[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+			.CreateLogger();
 	}
+
+	public override void _ExitTree() => Log.CloseAndFlush();
 }

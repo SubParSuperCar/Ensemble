@@ -1,4 +1,5 @@
 using Godot;
+using Serilog;
 
 namespace Root.Scripts.Main;
 
@@ -36,23 +37,23 @@ public partial class Main : Node
 		{
 			GSessionManager.StartSinglePlayer();
 
-			Console.WriteLine(nameof(GPlayers));
+			Log.Information(nameof(GPlayers));
 			foreach (var player in GPlayers.GetAll())
-				Console.WriteLine(player.ToDict());
+				Log.Information("{@Player}", player.ToDict());
 
-			Console.WriteLine(nameof(GAssets));
+			Log.Information(nameof(GAssets));
 			foreach (var asset in GAssets.GetAll())
-				Console.WriteLine(asset.ToDict());
+				Log.Information("{@Asset}", asset.ToDict());
 
-			Console.WriteLine(nameof(GPlots));
+			Log.Information(nameof(GPlots));
 			foreach (var plot in GPlots.GetAll())
-				Console.WriteLine(plot.ToDict());
+				Log.Information("{@Plot}", plot.ToDict());
 		}).CallDeferred();
 	}
 
 	private void OnSessionStarted()
 	{
-		Console.WriteLine($"Session started with mode {GSessionManager.Mode}");
+		Log.Information("Session started with mode {Mode}", GSessionManager.Mode);
 
 		if (_gameScene is not null)
 			return;
@@ -63,7 +64,7 @@ public partial class Main : Node
 
 	private void OnSessionStopped()
 	{
-		Console.WriteLine("Session stopped");
+		Log.Information("Session stopped");
 
 		GCore.Reset();
 

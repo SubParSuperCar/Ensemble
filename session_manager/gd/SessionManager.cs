@@ -2,6 +2,7 @@ using Godot;
 using Root.Scripts.Globals;
 using Root.SessionManager.Api;
 using Root.SessionManager.Impl;
+using Serilog;
 
 namespace Root.SessionManager.Gd;
 
@@ -30,7 +31,7 @@ public partial class SessionManager : Node
 		private set
 		{
 			field = value;
-			Console.WriteLine($"{nameof(SessionManager)}.{nameof(Instance)} set");
+			Log.Information("{Class}.{Property} set", nameof(SessionManager), nameof(Instance));
 		}
 	}
 

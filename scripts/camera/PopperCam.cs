@@ -23,12 +23,12 @@ public partial class PopperCam : SpringArm3D
 	public float DollyMin { get; set; } = 1.25f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
-	public float DollyMax { get; set; } = 48;
+	public float DollyMax { get; set; } = 96;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
-	public float DollyStep { get; set; } = 2;
+	public float DollyStep { get; set; } = 4;
 
-	[Export] public float DollyRate { get; set; } = 24;
+	[Export] public float DollyRate { get; set; } = 48;
 
 	public override void _Ready()
 	{

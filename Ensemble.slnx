@@ -6,6 +6,7 @@
     <File Path="FodyWeavers.xml"/>
     <File Path="FodyWeavers.xsd"/>
     <File Path="global.json"/>
+    <File Path=".run/Player.run.xml"/>
   </Folder>
   <Project Path="Game.csproj"/>
   <Project Path="lib/estragonia/Estragonia.csproj"/>

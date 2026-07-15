@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Root.Core.Gd.Player;
 using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;
@@ -7,15 +8,15 @@ namespace Root.Ui.Impl.ViewModels;
 // ReSharper disable once ClassNeverInstantiated.Global
 public partial class PlayerListViewModel : ViewModelBase
 {
-	private readonly Dictionary<int, Player> _playersByPeerId = [];
+	private readonly Dictionary<string, Player> _playersById = [];
 
 	public PlayerListViewModel()
 	{
-		foreach (var peerId in GSessionManager.PeerIdsByPlayerId.Values)
-			OnPeerConnected(peerId);
+		foreach (var player in GPlayers.GetAll())
+			OnPlayerAdded(player);
 
-		GSessionManager.PeerConnected += OnPeerConnected;
-		GSessionManager.PeerDisconnected += OnPeerDisconnected;
+		GPlayers.Added += OnPlayerAdded;
+		GPlayers.Removed += OnPlayerRemoved;
 	}
 
 	public ObservableCollection<Player> Players { get; } = [];
@@ -25,31 +26,28 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	protected override void OnDispose()
 	{
-		GSessionManager.PeerConnected -= OnPeerConnected;
-		GSessionManager.PeerDisconnected -= OnPeerDisconnected;
+		GPlayers.Added -= OnPlayerAdded;
+		GPlayers.Removed -= OnPlayerRemoved;
 	}
 
-	private void OnPeerConnected(int peerId)
+	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
-		var playerId = GSessionManager.PlayerIdsByPeerId[peerId];
+		var peerId = GSessionManager.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, -1);
 
-		var player = new Player(
-			GPlayers.Get(playerId)!.Name,
-			peerId);
-
+		var player = new Player(gdPlayer.Name, peerId);
 		Players.Add(player);
-		_playersByPeerId[peerId] = player;
+		_playersById[gdPlayer.Id] = player;
 
-		if (peerId == GSessionManager.LocalPeerId)
+		if (ReferenceEquals(gdPlayer, GPlayers.Local))
 			SelectedPlayer = player;
 	}
 
-	private void OnPeerDisconnected(int peerId)
+	private void OnPlayerRemoved(GdPlayer gdPlayer)
 	{
-		if (peerId == GSessionManager.LocalPeerId)
+		if (ReferenceEquals(gdPlayer, GPlayers.Local))
 			SelectedPlayer = null;
 
-		if (_playersByPeerId.Remove(peerId, out var player))
+		if (_playersById.Remove(gdPlayer.Id, out var player))
 			Players.Remove(player);
 	}
 }

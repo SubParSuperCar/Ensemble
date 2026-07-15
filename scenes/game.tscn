@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://csyba8yjabf7y"]
 
+[ext_resource type="Script" uid="uid://7p5ogfj3f2o" path="res://scripts/game/Game.cs" id="1_u5sy4"]
 [ext_resource type="Script" uid="uid://06fgagjn2dxc" path="res://scripts/player/PlayerManager.cs" id="1_wrm1d"]
 [ext_resource type="Script" uid="uid://bmh68q5egn16r" path="res://scripts/asset/AssetManager.cs" id="2_3dryh"]
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://scenes/player.tscn" id="2_i6g32"]
@@ -39,6 +40,7 @@ points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20,
 albedo_color = Color(0.45, 0.475, 0.5, 1)
 
 [node name="Game" type="Node3D" unique_id=1840370715]
+script = ExtResource("1_u5sy4")
 
 [node name="Environment" type="WorldEnvironment" parent="." unique_id=63043784]
 environment = SubResource("Environment_v158k")

@@ -25,11 +25,14 @@ monitoring = false
 [node name="Definition" type="CollisionShape3D" parent="Boundary" unique_id=80230571]
 shape = SubResource("BoxShape3D_f03gw")
 
-[node name="Instances" type="Node" parent="." unique_id=1994417706]
+[node name="Instances" type="Node3D" parent="." unique_id=814835998]
 
 [node name="Static" type="Node3D" parent="Instances" unique_id=703515400]
+process_mode = 4
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)
 
 [node name="Dynamic" type="Node3D" parent="Instances" unique_id=658314032]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)
 top_level = true
 
 [node name="Base" type="StaticBody3D" parent="." unique_id=1335038975]

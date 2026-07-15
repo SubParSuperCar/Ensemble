@@ -21,7 +21,7 @@ CameraScene = ExtResource("3_6t5aa")
 SpawnLocation = Vector3(0, 4, 0)
 
 [node name="Character" type="CharacterBody3D" parent="." unique_id=989463391]
-collision_layer = 3
+collision_layer = 2
 
 [node name="Collider" type="CollisionShape3D" parent="Character" unique_id=2025839855]
 shape = SubResource("CapsuleShape3D_agfs1")

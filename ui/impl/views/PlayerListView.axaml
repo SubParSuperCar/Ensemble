@@ -23,7 +23,8 @@
             Grid.Row="1"
             ItemsSource="{Binding Players}"
             SelectedItem="{Binding SelectedPlayer}"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            IsHitTestVisible="False">
 
             <ListBox.ItemTemplate>
                 <DataTemplate>

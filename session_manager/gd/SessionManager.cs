@@ -83,7 +83,7 @@ public partial class SessionManager : Node
 			new HostConfig(
 				port,
 				password == string.Empty ? null : password,
-				maxPlayers == Unlimited ? null : maxPlayers));
+				maxPlayers is Unlimited ? null : maxPlayers));
 
 		StartSession();
 	}

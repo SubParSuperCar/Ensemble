@@ -61,7 +61,7 @@ public readonly struct Variant : IEquatable<Variant>
 	}
 
 	// ReSharper disable once UnusedMember.Global
-	public bool IsNull => Type == VariantType.Null;
+	public bool IsNull => Type is VariantType.Null;
 
 	public static implicit operator Variant(bool value) => new(value);
 	public static implicit operator Variant(int value) => new(value);
@@ -71,7 +71,7 @@ public readonly struct Variant : IEquatable<Variant>
 	public static implicit operator Variant(string? value) => new(value);
 
 	public static explicit operator bool(Variant variant) =>
-		variant.Type == VariantType.Bool ? variant._integer != 0 : throw new InvalidCastException();
+		variant.Type is VariantType.Bool ? variant._integer is not 0 : throw new InvalidCastException();
 
 	// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 	public static explicit operator long(Variant variant) =>
@@ -92,7 +92,7 @@ public readonly struct Variant : IEquatable<Variant>
 	// ReSharper restore SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 	public static explicit operator string(Variant variant) =>
-		variant.Type == VariantType.Str ? variant._string! : throw new InvalidCastException();
+		variant.Type is VariantType.Str ? variant._string! : throw new InvalidCastException();
 
 	public static bool operator ==(Variant left, Variant right) => left.Equals(right);
 	public static bool operator !=(Variant left, Variant right) => !left.Equals(right);
@@ -128,7 +128,7 @@ public readonly struct Variant : IEquatable<Variant>
 		Type switch
 		{
 			VariantType.Null => "null",
-			VariantType.Bool => (_integer != 0).ToString(),
+			VariantType.Bool => (_integer is not 0).ToString(),
 			VariantType.NumInt => _integer.ToString(CultureInfo.InvariantCulture),
 			VariantType.NumDouble => _float.ToString(CultureInfo.InvariantCulture),
 			VariantType.Str => _string ?? "null",

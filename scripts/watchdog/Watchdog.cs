@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using Godot;
+using Serilog;
 using Environment = System.Environment;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -63,12 +64,21 @@ public partial class Watchdog : Node
 
 			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
 			{
-				if (Debugger.IsAttached || Volatile.Read(ref _heartbeat) == 1)
+				if (Debugger.IsAttached || Volatile.Read(ref _heartbeat) is 1)
 					missCount = 0;
 				else if (++missCount >= TimeoutMissCount)
 				{
-					Environment.FailFast(string.Create(CultureInfo.InvariantCulture,
-						$"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms"));
+					var message = string.Create(CultureInfo.InvariantCulture,
+						$"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms");
+
+					try
+					{
+						Log.Fatal("{Message}", message);
+					}
+					finally
+					{
+						Environment.FailFast(message);
+					}
 
 					return;
 				}

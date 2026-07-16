@@ -32,7 +32,7 @@ public class Properties(IReadOnlyDictionary<string, Variant>? values = null) : I
 
 	public override string ToString()
 	{
-		if (_valuesByKey.Count == 0)
+		if (_valuesByKey.Count is 0)
 			return "{}";
 
 		var sb = new StringBuilder("{");

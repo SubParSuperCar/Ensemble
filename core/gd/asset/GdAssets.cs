@@ -54,7 +54,7 @@ public partial class GdAssets : RefCounted
 			id,
 			name == string.Empty ? null : name,
 			properties is null ? null : Converter.FromGodotProperties(properties),
-			maxInstanceCount == Default ? null : maxInstanceCount));
+			maxInstanceCount is Default ? null : maxInstanceCount));
 
 	public void Lock() => _source.Lock();
 

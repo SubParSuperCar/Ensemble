@@ -50,15 +50,15 @@ public partial class GdPlots : RefCounted
 	public GdPlot Add(int id, int maxOccupantCount, int maxInstanceCount) =>
 		GdPlot.From(_source.Add(
 			id,
-			maxOccupantCount == Default ? null : maxOccupantCount,
-			maxInstanceCount == Default ? null : maxInstanceCount));
+			maxOccupantCount is Default ? null : maxOccupantCount,
+			maxInstanceCount is Default ? null : maxInstanceCount));
 
-	public void SetPlot(string playerId) => SetPlot(playerId, -1);
+	public void SetPlot(string playerId) => SetPlot(playerId, None);
 
 	public void SetPlot(string playerId, int plotId)
 	{
 		if (Guid.TryParse(playerId, out var guid))
-			_source.SetPlot(guid, plotId == -1 ? null : plotId);
+			_source.SetPlot(guid, plotId is None ? null : plotId);
 	}
 
 	public GdOccupant? GetOccupant(string playerId)

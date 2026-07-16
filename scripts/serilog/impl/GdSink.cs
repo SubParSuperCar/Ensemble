@@ -10,7 +10,7 @@ public sealed class GdSink : ILogEventSink
 {
 	public void Emit(LogEvent logEvent)
 	{
-		var output = string.Format(
+		var message = string.Format(
 			CultureInfo.InvariantCulture,
 			"[{0:HH:mm:ss.fff}] [{1:u3}] {2}",
 			logEvent.Timestamp,
@@ -18,18 +18,18 @@ public sealed class GdSink : ILogEventSink
 			logEvent.RenderMessage(CultureInfo.InvariantCulture));
 
 		if (logEvent.Exception is not null)
-			output = string.Concat(output, Environment.NewLine, logEvent.Exception);
+			message = string.Concat(message, Environment.NewLine, logEvent.Exception);
 
 		switch (logEvent.Level)
 		{
 			case LogEventLevel.Error or LogEventLevel.Fatal:
-				GD.PushError(output);
+				GD.PushError(message);
 				break;
 			case LogEventLevel.Warning:
-				GD.PushWarning(output);
+				GD.PushWarning(message);
 				break;
 			default:
-				GD.Print(output);
+				GD.Print(message);
 				break;
 		}
 	}

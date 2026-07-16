@@ -16,7 +16,7 @@ public partial class AssetManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
 
-	[GeneratedRegex(@"\.t?scn$", RegexOptions.Compiled, 100)]
+	[GeneratedRegex(@"\.t?scn$", RegexOptions.Compiled, (int)TimeSpan.MillisecondsPerSecond)]
 	private static partial Regex SceneFileRegex { get; }
 
 	public override void _EnterTree()
@@ -101,6 +101,6 @@ public partial class AssetManager : Node
 			id,
 			name,
 			converted,
-			maxInstanceCount == Default ? DefaultMaxInstanceCount : maxInstanceCount);
+			maxInstanceCount is Default ? DefaultMaxInstanceCount : maxInstanceCount);
 	}
 }

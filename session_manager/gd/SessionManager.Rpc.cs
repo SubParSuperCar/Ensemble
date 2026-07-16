@@ -33,7 +33,7 @@ public partial class SessionManager
 			}
 			catch (Exception exception)
 			{
-				Log.Information("{Exception}", exception);
+				Log.Error("{Exception}", exception);
 			}
 		}
 	}
@@ -44,6 +44,7 @@ public partial class SessionManager
 			limiter.Dispose();
 	}
 
+	// TODO
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
 	private void RpcSyncPlayerAdded(string playerId, string name)
 	{

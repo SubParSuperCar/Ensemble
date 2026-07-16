@@ -81,12 +81,12 @@ public partial class PopperCam : SpringArm3D
 	{
 		var turnInput = Input.GetAxis("turn_left", "turn_right");
 
-		if (turnInput != 0)
+		if (turnInput is not 0)
 			_yaw -= turnInput * YawRate * (float)delta;
 
 		var dollyInput = Input.GetAxis("dolly_in", "dolly_out");
 
-		if (dollyInput != 0)
+		if (dollyInput is not 0)
 			ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
 
 		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract

@@ -29,7 +29,7 @@ public partial class CharacterController : CharacterBody3D
 		else if (Input.IsActionPressed("jump"))
 		{
 			var velocity = Velocity;
-			velocity.Y = MathF.Sqrt(JumpHeight * 2f * -gravity.Y);
+			velocity.Y = MathF.Sqrt(JumpHeight * 2 * -gravity.Y);
 
 			Velocity = velocity;
 		}

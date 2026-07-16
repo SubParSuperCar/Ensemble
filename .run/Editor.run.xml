@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Player" type="RunExe" factoryName=".NET Executable">
+  <configuration default="false" name="Editor" type="RunExe" factoryName=".NET Executable">
     <option name="EXE_PATH" value="/usr/lib/godot-mono/godot.linuxbsd.editor.x86_64.mono"/>
-    <option name="PROGRAM_PARAMETERS" value="--path &quot;./&quot;"/>
+    <option name="PROGRAM_PARAMETERS" value="--path &quot;./&quot; --editor"/>
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$"/>
     <option name="PASS_PARENT_ENVS" value="1"/>
     <option name="ENV_FILE_PATHS" value=""/>

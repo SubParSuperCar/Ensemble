@@ -4,9 +4,9 @@
 [ext_resource type="Script" uid="uid://06fgagjn2dxc" path="res://scripts/player/PlayerManager.cs" id="1_wrm1d"]
 [ext_resource type="Script" uid="uid://bmh68q5egn16r" path="res://scripts/asset/AssetManager.cs" id="2_3dryh"]
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://scenes/player.tscn" id="2_i6g32"]
-[ext_resource type="ArrayMesh" uid="uid://brgrd3hjktrcx" path="res://assets/meshes/plots_base.obj" id="2_qxrlw"]
 [ext_resource type="PackedScene" uid="uid://bctdhk6awxx0r" path="res://scenes/plot.tscn" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://cm7njby1t063g" path="res://scripts/plot/PlotManager.cs" id="3_wowpa"]
+[ext_resource type="ArrayMesh" uid="uid://de601jxvpmvl1" path="res://assets/meshes/plots_base.obj" id="7_u5sy4"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_i6g32"]
 sky_top_color = Color(0.2475, 0.5, 0.75, 1)
@@ -36,7 +36,7 @@ size = Vector2(65536, 65536)
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
 points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 75, 0, -16, 75, 0, 15)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qxrlw"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u5sy4"]
 albedo_color = Color(0.45, 0.475, 0.5, 1)
 
 [node name="Game" type="Node3D" unique_id=1840370715]
@@ -56,36 +56,24 @@ PlayerScene = ExtResource("2_i6g32")
 
 [node name="Assets" type="Node" parent="." unique_id=633918342]
 script = ExtResource("2_3dryh")
-DefaultMaxInstanceCount = null
 
 [node name="Plots" type="Node" parent="." unique_id=795146723]
 script = ExtResource("3_wowpa")
-DefaultMaxOccupantCount = null
-DefaultMaxTotalInstanceCount = null
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 1, 0)
-Id = null
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
 
 [node name="Plot 2" parent="Plots" unique_id=1688772583 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, 0)
 Id = 1
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
 
 [node name="Plot 3" parent="Plots" unique_id=819557585 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 0)
 Id = 2
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
 
 [node name="Plot 4" parent="Plots" unique_id=18388373 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 1, 0)
 Id = 3
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
 
 [node name="World" type="Node3D" parent="." unique_id=125306369]
 
@@ -106,5 +94,5 @@ shape = SubResource("ConvexPolygonShape3D_i6g32")
 
 [node name="Mesh" type="MeshInstance3D" parent="World/Plots Base" unique_id=1689705007]
 cast_shadow = 0
-mesh = ExtResource("2_qxrlw")
-surface_material_override/0 = SubResource("StandardMaterial3D_qxrlw")
+mesh = ExtResource("7_u5sy4")
+surface_material_override/0 = SubResource("StandardMaterial3D_u5sy4")

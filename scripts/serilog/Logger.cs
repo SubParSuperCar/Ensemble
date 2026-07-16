@@ -14,25 +14,26 @@ public partial class Logger : Node
 
 	public override void _EnterTree()
 	{
-		var logDirectory = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
-		Directory.CreateDirectory(logDirectory);
+		var dir = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
+		Directory.CreateDirectory(dir);
 
-		var configuration = new ConfigurationBuilder()
+		var config = new ConfigurationBuilder()
 			.SetBasePath(ProjectSettings.GlobalizePath(ScriptConstants.ResourceScheme))
 			.AddJsonFile("appsettings.json", true, true)
 			.Build();
 
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Verbose()
-			.ReadFrom.Configuration(configuration)
+			.ReadFrom.Configuration(config)
 			.WriteTo.Sink(new GdSink())
 			.WriteTo.Console(
 				formatProvider: CultureInfo.InvariantCulture,
 				outputTemplate:
 				"[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
 			.WriteTo.File(
-				Path.Combine(logDirectory, "serilog-.txt"),
+				Path.Combine(dir, "serilog-.txt"),
 				formatProvider: CultureInfo.InvariantCulture,
+				flushToDiskInterval: TimeSpan.FromMinutes(1),
 				rollingInterval: RollingInterval.Day,
 				retainedFileCountLimit: 30,
 				shared: true,

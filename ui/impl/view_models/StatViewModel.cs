@@ -36,11 +36,11 @@ public partial class StatViewModel : ViewModelBase
 		var stats = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
 		{
 			["Frame Rate"] = string.Create(CultureInfo.InvariantCulture,
-				$"{fps} FPS ({(fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity):F3} ms)"),
+				$"{fps} FPS ({(fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity):F3} mspf)"),
 			["Process Time"] = string.Create(CultureInfo.InvariantCulture,
-				$"{Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond:F3} ms"),
+				$"{Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
 			["Physics Time"] = string.Create(CultureInfo.InvariantCulture,
-				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} ms"),
+				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
 			["Used Static Memory (DRAM)"] =
 				FormatBytes((long)Performance.GetMonitor(Performance.Monitor.MemoryStatic)),
 			["Used Video Memory (VRAM)"] =

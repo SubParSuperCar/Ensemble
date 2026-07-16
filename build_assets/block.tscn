@@ -3,8 +3,10 @@
 [ext_resource type="Script" uid="uid://4geafvpaedje" path="res://scripts/asset/AssetHandle.cs" id="1_qxhqx"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
+size = Vector3(0.5, 0.5, 0.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
+size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Block" type="RigidBody3D" unique_id=726135581]
 script = ExtResource("1_qxhqx")

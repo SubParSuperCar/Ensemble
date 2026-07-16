@@ -62,18 +62,22 @@ script = ExtResource("3_wowpa")
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 1, 0)
+metadata/_edit_lock_ = true
 
 [node name="Plot 2" parent="Plots" unique_id=1688772583 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, 0)
 Id = 1
+metadata/_edit_lock_ = true
 
 [node name="Plot 3" parent="Plots" unique_id=819557585 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 0)
 Id = 2
+metadata/_edit_lock_ = true
 
 [node name="Plot 4" parent="Plots" unique_id=18388373 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 1, 0)
 Id = 3
+metadata/_edit_lock_ = true
 
 [node name="World" type="Node3D" parent="." unique_id=125306369]
 
@@ -81,18 +85,22 @@ Id = 3
 
 [node name="Collider" type="CollisionShape3D" parent="World/Ground" unique_id=1870552136]
 shape = SubResource("BoxShape3D_i6g32")
+metadata/_edit_lock_ = true
 
 [node name="Mesh" type="MeshInstance3D" parent="World/Ground" unique_id=2078281976]
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_i6g32")
+metadata/_edit_lock_ = true
 
 [node name="Plots Base" type="StaticBody3D" parent="World" unique_id=523232624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="Collider" type="CollisionShape3D" parent="World/Plots Base" unique_id=1339389220]
 shape = SubResource("ConvexPolygonShape3D_i6g32")
+metadata/_edit_lock_ = true
 
 [node name="Mesh" type="MeshInstance3D" parent="World/Plots Base" unique_id=1689705007]
 cast_shadow = 0
 mesh = ExtResource("7_u5sy4")
 surface_material_override/0 = SubResource("StandardMaterial3D_u5sy4")
+metadata/_edit_lock_ = true

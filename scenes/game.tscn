@@ -24,14 +24,14 @@ reflected_light_source = 2
 tonemap_mode = 2
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_i6g32"]
-size = Vector3(65536, 0.001, 65536)
+size = Vector3(32767, 0.001, 32767)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i6g32"]
 albedo_color = Color(0.125, 0.25, 0.125, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_i6g32"]
 material = SubResource("StandardMaterial3D_i6g32")
-size = Vector2(65536, 65536)
+size = Vector2(32767, 32767)
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
 points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 75, 0, -16, 75, 0, 15)

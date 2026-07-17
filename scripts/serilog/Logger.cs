@@ -27,18 +27,21 @@ public partial class Logger : Node
 			.ReadFrom.Configuration(config)
 			.WriteTo.Sink(new GdSink())
 			.WriteTo.Console(
-				formatProvider: CultureInfo.InvariantCulture,
 				outputTemplate:
-				"[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+				"[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+				formatProvider: CultureInfo.InvariantCulture)
 			.WriteTo.File(
 				Path.Combine(dir, "serilog-.txt"),
-				formatProvider: CultureInfo.InvariantCulture,
-				flushToDiskInterval: TimeSpan.FromMinutes(1),
-				rollingInterval: RollingInterval.Day,
-				retainedFileCountLimit: 30,
-				shared: true,
 				outputTemplate:
-				"[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+				"[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+				formatProvider: CultureInfo.InvariantCulture,
+				buffered: true,
+				shared: true,
+				flushToDiskInterval: TimeSpan.FromSeconds(2),
+				rollingInterval: RollingInterval.Day,
+				rollOnFileSizeLimit: true,
+				retainedFileCountLimit: 30,
+				retainedFileTimeLimit: TimeSpan.FromDays(7))
 			.CreateLogger();
 
 		_loggerFactory = LoggerFactory.Create(builder =>

@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Root.Scripts.Globals;
 using Root.Scripts.StdOut.Impl;
 using Serilog;
+using Serilog.Templates;
 
 namespace Root.Scripts.StdOut;
 
@@ -25,16 +26,18 @@ public partial class Logger : Node
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Verbose()
 			.ReadFrom.Configuration(config)
-			.WriteTo.Sink(new GdSink())
+			.Enrich.With(new LogEnricher())
+			.WriteTo.Sink(new LogSink())
 			.WriteTo.Console(
 				outputTemplate:
 				"[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
 				formatProvider: CultureInfo.InvariantCulture)
 			.WriteTo.File(
-				Path.Combine(dir, "serilog-.txt"),
-				outputTemplate:
-				"[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
-				formatProvider: CultureInfo.InvariantCulture,
+				new ExpressionTemplate(
+					"{ {@t: @t, @l: @l, @m: @m, @x: @x, ..@p} }\n",
+					CultureInfo.InvariantCulture
+				),
+				Path.Combine(dir, "serilog-.json"),
 				shared: true,
 				flushToDiskInterval: TimeSpan.FromSeconds(2),
 				rollingInterval: RollingInterval.Day,
@@ -48,6 +51,8 @@ public partial class Logger : Node
 			builder.ClearProviders();
 			builder.AddSerilog(Log.Logger);
 		});
+
+		Log.Debug("Started logging to {Directory}", dir);
 	}
 
 	public override void _ExitTree()

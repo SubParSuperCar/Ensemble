@@ -6,7 +6,7 @@ using Environment = System.Environment;
 
 namespace Root.Scripts.StdOut.Impl;
 
-public sealed class GdSink : ILogEventSink
+public sealed class LogSink : ILogEventSink
 {
 	public void Emit(LogEvent logEvent)
 	{

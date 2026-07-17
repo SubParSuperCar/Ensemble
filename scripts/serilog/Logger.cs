@@ -35,7 +35,6 @@ public partial class Logger : Node
 				outputTemplate:
 				"[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
 				formatProvider: CultureInfo.InvariantCulture,
-				buffered: true,
 				shared: true,
 				flushToDiskInterval: TimeSpan.FromSeconds(2),
 				rollingInterval: RollingInterval.Day,

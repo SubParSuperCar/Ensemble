@@ -56,27 +56,39 @@ PlayerScene = ExtResource("2_i6g32")
 
 [node name="Assets" type="Node" parent="." unique_id=633918342]
 script = ExtResource("2_3dryh")
+DefaultMaxInstanceCount = null
 
 [node name="Plots" type="Node" parent="." unique_id=795146723]
 script = ExtResource("3_wowpa")
+DefaultMaxOccupantCount = null
+DefaultMaxTotalInstanceCount = null
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 1, 0)
+Id = null
+MaxOccupantCount = null
+MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Plot 2" parent="Plots" unique_id=1688772583 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, 0)
 Id = 1
+MaxOccupantCount = null
+MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Plot 3" parent="Plots" unique_id=819557585 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 0)
 Id = 2
+MaxOccupantCount = null
+MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Plot 4" parent="Plots" unique_id=18388373 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 1, 0)
 Id = 3
+MaxOccupantCount = null
+MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="World" type="Node3D" parent="." unique_id=125306369]

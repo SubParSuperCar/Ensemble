@@ -16,7 +16,7 @@ public partial class Hasher : Node
 		if (!File.Exists(exePath))
 			return;
 
-		await Task.Delay(1000).ConfigureAwait(false);
+		await Task.Delay((int)TimeSpan.MillisecondsPerSecond).ConfigureAwait(false);
 
 		using var sha256 = SHA256.Create();
 		var stream = new FileStream(

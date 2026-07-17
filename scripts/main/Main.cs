@@ -31,7 +31,7 @@ public partial class Main : Node
 
 	private static async Task OnReady()
 	{
-		await Task.Delay(1500).ConfigureAwait(false);
+		await Task.Delay((int)(TimeSpan.MillisecondsPerSecond * 1.5)).ConfigureAwait(false);
 
 		Callable.From(() =>
 		{

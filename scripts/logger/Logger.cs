@@ -52,11 +52,13 @@ public partial class Logger : Node
 			builder.AddSerilog(Log.Logger);
 		});
 
-		Log.Debug("Started logging to {Directory}", logDir);
+		Log.Debug("Created logger. Logging to directory: {Directory}", logDir);
 	}
 
 	public override void _ExitTree()
 	{
+		Log.Debug("Flushing & closing logger...");
+
 		_loggerFactory?.Dispose();
 		Log.CloseAndFlush();
 	}

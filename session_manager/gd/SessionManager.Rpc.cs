@@ -33,7 +33,7 @@ public partial class SessionManager
 			}
 			catch (Exception exception)
 			{
-				Log.Error("{Exception}", exception);
+				Log.Error(exception, "");
 			}
 		}
 	}

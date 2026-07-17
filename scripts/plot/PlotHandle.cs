@@ -46,7 +46,7 @@ public partial class PlotHandle : Node3D
 
 	private void OnInstanceAdded(GdInstance instance)
 	{
-		Log.Debug("Instance added");
+		Log.Debug("Core instance added. Adding handle...");
 
 		var packed = GAssetManager.GetPacked(instance.Asset);
 
@@ -62,6 +62,8 @@ public partial class PlotHandle : Node3D
 
 	private void OnInstanceRemoved(GdInstance instance)
 	{
+		Log.Debug("Core instance removed. Removing handle...");
+
 		if (InstanceHandles.Remove(instance.Id, out var handle))
 			_instances.RemoveChild(handle);
 	}

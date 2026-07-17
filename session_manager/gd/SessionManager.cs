@@ -31,7 +31,11 @@ public partial class SessionManager : Node
 		private set
 		{
 			field = value;
-			Log.Information("{Class}.{Property} set", nameof(SessionManager), nameof(Instance));
+
+			Log.Debug("{Class}.{Property} set. Hash code: {Hash}",
+				nameof(SessionManager),
+				nameof(Instance),
+				value?.GetHashCode());
 		}
 	}
 

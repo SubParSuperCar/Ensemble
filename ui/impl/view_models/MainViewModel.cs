@@ -57,7 +57,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		_dispatcher.Process += OnProcess;
 
-		Log.Debug("Started force render drawing");
+		Log.Debug("Started force render drawing...");
 
 		ViewModel = _services.GetRequiredService<MenuViewModel>();
 	}

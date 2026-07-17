@@ -32,7 +32,7 @@ public partial class Hasher : Node
 			var hashBytes = await sha256.ComputeHashAsync(stream).ConfigureAwait(false);
 			var hashHex = Convert.ToHexString(hashBytes);
 
-			Log.Debug("Exe SHA-256: {Hash}", hashHex);
+			Log.Debug("Process executable path & SHA-256 hash, respectively: {Path}, {Hash}", exePath, hashHex);
 		}
 	}
 }

@@ -69,7 +69,7 @@ public partial class Watchdog : Node
 				else if (++missCount >= TimeoutMissCount)
 				{
 					var message = string.Create(CultureInfo.InvariantCulture,
-						$"Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} ms");
+						$"Watchdog timeout: Main thread missed {missCount} heartbeats in ~{missCount * PollIntervalMs} msec");
 
 					try
 					{

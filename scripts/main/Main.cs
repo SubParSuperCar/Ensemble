@@ -37,23 +37,23 @@ public partial class Main : Node
 		{
 			GSessionManager.StartSinglePlayer();
 
-			Log.Information(nameof(GPlayers));
+			Log.Debug(nameof(GPlayers));
 			foreach (var player in GPlayers.GetAll())
-				Log.Information("{Player}", player.ToDict().ToString());
+				Log.Debug("{Player}", player.ToDict().ToString());
 
-			Log.Information(nameof(GAssets));
+			Log.Debug(nameof(GAssets));
 			foreach (var asset in GAssets.GetAll())
-				Log.Information("{Asset}", asset.ToDict().ToString());
+				Log.Debug("{Asset}", asset.ToDict().ToString());
 
-			Log.Information(nameof(GPlots));
+			Log.Debug(nameof(GPlots));
 			foreach (var plot in GPlots.GetAll())
-				Log.Information("{Plot}", plot.ToDict().ToString());
+				Log.Debug("{Plot}", plot.ToDict().ToString());
 		}).CallDeferred();
 	}
 
 	private void OnSessionStarted()
 	{
-		Log.Information("Session started with mode {Mode}", GSessionManager.Mode);
+		Log.Information("Session started with mode: {Mode}", GSessionManager.Mode);
 
 		if (_gameScene is not null)
 			return;

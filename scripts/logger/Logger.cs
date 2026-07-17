@@ -15,8 +15,8 @@ public partial class Logger : Node
 
 	public override void _EnterTree()
 	{
-		var dir = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
-		Directory.CreateDirectory(dir);
+		var logDir = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
+		Directory.CreateDirectory(logDir);
 
 		var config = new ConfigurationBuilder()
 			.SetBasePath(ProjectSettings.GlobalizePath(ScriptConstants.ResourceScheme))
@@ -37,7 +37,7 @@ public partial class Logger : Node
 					"{ {@t: @t, @l: @l, @m: @m, @x: @x, ..@p} }\n",
 					CultureInfo.InvariantCulture
 				),
-				Path.Combine(dir, "serilog-.json"),
+				Path.Combine(logDir, "serilog-.json"),
 				shared: true,
 				flushToDiskInterval: TimeSpan.FromSeconds(2),
 				rollingInterval: RollingInterval.Day,
@@ -52,7 +52,7 @@ public partial class Logger : Node
 			builder.AddSerilog(Log.Logger);
 		});
 
-		Log.Debug("Started logging to {Directory}", dir);
+		Log.Debug("Started logging to {Directory}", logDir);
 	}
 
 	public override void _ExitTree()

@@ -26,6 +26,7 @@ SeriLogger="uid://d2qsep2vpj2q1"
 Watchdog="uid://2tmgqp5ocfyh"
 Core="*uid://cw52xu76o1ywe"
 SessionManager="*uid://b0sclnm4uupay"
+ExeHasher="uid://dmwu8x8absnoy"
 
 [debug]
 

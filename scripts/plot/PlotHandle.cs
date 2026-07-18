@@ -70,10 +70,10 @@ public partial class PlotHandle : Node3D
 
 	private Vector3 CalculateSpawnLocation()
 	{
-		var @base = GetNode<CollisionShape3D>("Base/Collider");
+		var baseCollider = GetNode<CollisionShape3D>("Base/Collider");
 
-		var position = @base.GlobalPosition;
-		var aabb = @base.Shape.GetDebugMesh().GetAabb();
+		var position = baseCollider.GlobalPosition;
+		var aabb = baseCollider.Shape.GetDebugMesh().GetAabb();
 		position.Y += aabb.Size.Y / 2;
 
 		return position;

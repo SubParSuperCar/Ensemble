@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Root.scripts.test;
+namespace Root.Scripts.Test;
 
 // TODO: For testing purposes only
 public partial class Game : Node3D

@@ -6,11 +6,11 @@
 
     <Application.Resources>
         <ResourceDictionary>
-            <FontFamily x:Key="AppFont">
+            <FontFamily x:Key="Font">
                 avares://Fonts.Avalonia.JetBrainsMono/Assets#JetBrains Mono
             </FontFamily>
 
-            <x:Double x:Key="AppFontSize">16</x:Double>
+            <x:Double x:Key="FontSize">16</x:Double>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
@@ -26,14 +26,16 @@
     <Application.Styles>
         <SimpleTheme />
 
+        <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml" />
+
         <Style Selector=":is(TopLevel)">
-            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
-            <Setter Property="FontSize" Value="{StaticResource AppFontSize}" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="FontSize" Value="{StaticResource FontSize}" />
         </Style>
 
         <Style Selector="ToolTip">
-            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
-            <Setter Property="FontSize" Value="{StaticResource AppFontSize}" />
+            <Setter Property="FontFamily" Value="{StaticResource Font}" />
+            <Setter Property="FontSize" Value="{StaticResource FontSize}" />
             <Setter Property="Background" Value="{StaticResource TranslucentBackgroundBrush}" />
         </Style>
 

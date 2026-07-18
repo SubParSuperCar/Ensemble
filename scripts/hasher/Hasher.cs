@@ -4,7 +4,7 @@ using Serilog;
 using Environment = System.Environment;
 using FileAccess = System.IO.FileAccess;
 
-namespace Root.scripts.hasher;
+namespace Root.Scripts.Hasher;
 
 public partial class Hasher : Node
 {

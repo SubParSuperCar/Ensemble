@@ -19,6 +19,8 @@ public partial class MainViewModel : ViewModelBase
 		_services = services;
 		_dispatcher = dispatcher;
 
+		dispatcher.Input += OnInput;
+
 		if (GSessionManager.IsActive)
 			OnSessionStarted();
 		else
@@ -30,9 +32,11 @@ public partial class MainViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	// ReSharper disable once UnusedMember.Global
-	// ReSharper disable once MemberCanBeMadeStatic.Global
-	public partial ViewModelBase? ViewModel { get; set; }
+	public partial ViewModelBase? Main { get; set; }
+
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial ConsoleViewModel? Console { get; set; }
 
 	protected override void OnDispose()
 	{
@@ -40,8 +44,10 @@ public partial class MainViewModel : ViewModelBase
 		GSessionManager.SessionStopped -= OnSessionStopped;
 
 		_dispatcher.Process -= OnProcess;
+		_dispatcher.Input -= OnInput;
 
-		ViewModel = null;
+		Main = null;
+		Console = null;
 	}
 
 	private void OnSessionStarted()
@@ -50,7 +56,7 @@ public partial class MainViewModel : ViewModelBase
 
 		Log.Debug("Stopped force render drawing");
 
-		ViewModel = _services.GetRequiredService<GameViewModel>();
+		Main = _services.GetRequiredService<GameViewModel>();
 	}
 
 	private void OnSessionStopped()
@@ -59,8 +65,17 @@ public partial class MainViewModel : ViewModelBase
 
 		Log.Debug("Started force render drawing...");
 
-		ViewModel = _services.GetRequiredService<MenuViewModel>();
+		Main = _services.GetRequiredService<MenuViewModel>();
 	}
 
 	private static void OnProcess(double delta) => RenderingServer.ForceDraw();
+
+	private void OnInput(InputEvent @event)
+	{
+		if (!Input.IsActionJustPressedByEvent("toggle_console", @event))
+			return;
+
+		Console = Console is null ? _services.GetRequiredService<ConsoleViewModel>() : null;
+		Log.Debug("Set console");
+	}
 }

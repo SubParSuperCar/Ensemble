@@ -1,0 +1,35 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.ConsoleView"
+    x:DataType="vm:ConsoleViewModel">
+
+    <Border
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        CornerRadius="8"
+        ClipToBounds="True">
+
+        <Grid ColumnDefinitions="1.25*,*">
+            <SelectableTextBlock ToolTip.Tip="Output Log" />
+
+            <Grid Grid.Column="1">
+                <ae:TextEditor
+                    Text="Hello, World!&#x0a;"
+                    Background="{DynamicResource ThemeBackgroundColor}"
+                    ShowLineNumbers="True"
+                    FontSize="13" />
+
+                <Button
+                    Content="Execute"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom" />
+            </Grid>
+        </Grid>
+    </Border>
+
+</UserControl>

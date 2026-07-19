@@ -11,15 +11,17 @@
 
     <Border
         Background="{DynamicResource TranslucentBackgroundBrush}"
-        CornerRadius="8"
+        CornerRadius="6"
         ClipToBounds="True">
 
-        <Grid ColumnDefinitions="1.25*,*">
-            <SelectableTextBlock ToolTip.Tip="Output Log" />
+        <Grid ColumnDefinitions="1.125*,*">
+            <SelectableTextBlock
+                Text="{Binding Output}"
+                ToolTip.Tip="Output Log" />
 
             <Grid Grid.Column="1">
                 <ae:TextEditor
-                    Text="Hello, World!&#x0a;"
+                    Document="{Binding Source}"
                     Background="{DynamicResource ThemeBackgroundColor}"
                     ShowLineNumbers="True"
                     FontSize="13" />

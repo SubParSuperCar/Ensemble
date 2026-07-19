@@ -27,7 +27,7 @@ public partial class ClockViewModel : ViewModelBase
 	{
 		var startedAt = DateTimeOffset.FromUnixTimeSeconds((long)GSessionManager.UtcStartedAtUnix);
 
-		Text = string.Create(CultureInfo.InvariantCulture,
-			$"{DateTime.Now:G} - {LocalTimeZone} - {DateTimeOffset.UtcNow - startedAt:G}");
+		Text = string.Create(CultureInfo.CurrentCulture,
+			$"{DateTime.Now:F} - {LocalTimeZone} - {DateTimeOffset.UtcNow - startedAt:G}");
 	}
 }

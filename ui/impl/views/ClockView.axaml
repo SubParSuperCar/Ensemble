@@ -11,6 +11,7 @@
     <TextBlock Text="{Binding Text}"
                ToolTip.Tip="Clock (Real Time - Time Zone - Session Duration)"
                Background="{DynamicResource TranslucentBackgroundBrush}"
+               Padding="2"
                HorizontalAlignment="Center" VerticalAlignment="Center" />
 
 </UserControl>

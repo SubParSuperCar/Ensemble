@@ -8,33 +8,37 @@
     x:Class="Root.Ui.Impl.Views.PlayerListView"
     x:DataType="vm:PlayerListViewModel">
 
-    <Grid
-        RowDefinitions="Auto,*"
-        ToolTip.Tip="Player List"
+    <Border
+        Padding="2"
         Background="{DynamicResource TranslucentBackgroundBrush}">
 
-        <Grid ColumnDefinitions="*,*,Auto">
-            <TextBlock Text="Moniker&#x0a; &#x2198;" />
-            <TextBlock Grid.Column="1" Text="Player List" />
-            <TextBlock Grid.Column="2" Text="Peer ID&#x0a;&#x2193; " TextAlignment="Right" />
+        <Grid
+            RowDefinitions="Auto,*"
+            ToolTip.Tip="Player List">
+
+            <Grid ColumnDefinitions="*,*,Auto">
+                <TextBlock Text="Moniker&#x0a; &#x2198;" />
+                <TextBlock Grid.Column="1" Text="Player List" />
+                <TextBlock Grid.Column="2" Text="Peer ID&#x0a;&#x2193; " TextAlignment="Right" />
+            </Grid>
+
+            <ListBox
+                Grid.Row="1"
+                ItemsSource="{Binding Players}"
+                SelectedItem="{Binding SelectedPlayer}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                IsHitTestVisible="False">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="*,16,Auto">
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="2" Text="{Binding PeerId, StringFormat='{}{0:000}'}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
-
-        <ListBox
-            Grid.Row="1"
-            ItemsSource="{Binding Players}"
-            SelectedItem="{Binding SelectedPlayer}"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-            IsHitTestVisible="False">
-
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="*,16,Auto">
-                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="2" Text="{Binding PeerId, StringFormat='{}{0:000}'}" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-    </Grid>
+    </Border>
 
 </UserControl>

@@ -11,18 +11,23 @@
     <Grid>
         <ContentControl Content="{Binding Main}" />
 
-        <TransitioningContentControl
-            Content="{Binding Console}"
-            HorizontalAlignment="Center" VerticalAlignment="Center"
-            Width="1280" Height="720">
+        <Grid
+            ColumnDefinitions="5*,14*,5*"
+            RowDefinitions="5*,14*,5*">
 
-            <TransitioningContentControl.PageTransition>
-                <CompositePageTransition>
-                    <CrossFade Duration="0.25" />
-                    <Rotate3DTransition Duration="0.25" Orientation="Vertical" />
-                </CompositePageTransition>
-            </TransitioningContentControl.PageTransition>
-        </TransitioningContentControl>
+            <TransitioningContentControl
+                Grid.Column="1" Grid.Row="1"
+                Content="{Binding Console}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+                <TransitioningContentControl.PageTransition>
+                    <CompositePageTransition>
+                        <CrossFade Duration="0.25" />
+                        <Rotate3DTransition Duration="0.25" Orientation="Vertical" />
+                    </CompositePageTransition>
+                </TransitioningContentControl.PageTransition>
+            </TransitioningContentControl>
+        </Grid>
     </Grid>
 
 </UserControl>

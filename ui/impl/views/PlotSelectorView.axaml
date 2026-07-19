@@ -8,39 +8,43 @@
     x:Class="Root.Ui.Impl.Views.PlotSelectorView"
     x:DataType="vm:PlotSelectorViewModel">
 
-    <Grid
-        RowDefinitions="Auto,*,Auto"
-        ToolTip.Tip="Plot Selector"
+    <Border
+        Padding="2"
         Background="{DynamicResource TranslucentBackgroundBrush}">
 
-        <Grid ColumnDefinitions="Auto,32,*,Auto">
-            <TextBlock Text="ID&#x0a; &#x2193;" />
-            <TextBlock Grid.Column="2" Text="Owner Moniker&#x0a; &#x2198;" HorizontalAlignment="Left" />
-            <TextBlock Grid.Column="3" Text="Occupancy&#x0a;&#x2199; " TextAlignment="Right" />
+        <Grid
+            RowDefinitions="Auto,*,2,Auto"
+            ToolTip.Tip="Plot Selector">
+
+            <Grid ColumnDefinitions="Auto,32,*,Auto">
+                <TextBlock Text="ID&#x0a; &#x2193;" />
+                <TextBlock Grid.Column="2" Text="Owner Moniker&#x0a; &#x2198;" HorizontalAlignment="Left" />
+                <TextBlock Grid.Column="3" Text="Occupancy&#x0a;&#x2199; " TextAlignment="Right" />
+            </Grid>
+
+            <ListBox
+                Grid.Row="1"
+                ItemsSource="{Binding Plots}"
+                SelectedItem="{Binding SelectedPlot, Mode=TwoWay}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnDefinitions="Auto,16,*,16,Auto">
+                            <TextBlock Text="{Binding Id, StringFormat='{}{0:000}'}" />
+                            <TextBlock Grid.Column="2" Text="{Binding OwnerName}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="4" Text="{Binding Occupancy}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Button
+                Grid.Row="3"
+                Content="Set Plot to Null"
+                HorizontalAlignment="Center"
+                Command="{Binding SetPlotToNullCommand}" />
         </Grid>
-
-        <ListBox
-            Grid.Row="1"
-            ItemsSource="{Binding Plots}"
-            SelectedItem="{Binding SelectedPlot, Mode=TwoWay}"
-            ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="Auto,16,*,16,Auto">
-                        <TextBlock Text="{Binding Id, StringFormat='{}{0:000}'}" />
-                        <TextBlock Grid.Column="2" Text="{Binding OwnerName}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="4" Text="{Binding Occupancy}" />
-                    </Grid>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
-
-        <Button
-            Grid.Row="2"
-            Content="Set Plot to Null"
-            HorizontalAlignment="Center"
-            Command="{Binding SetPlotToNullCommand}" />
-    </Grid>
+    </Border>
 
 </UserControl>

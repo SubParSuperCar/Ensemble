@@ -10,16 +10,35 @@
     x:DataType="vm:ConsoleViewModel">
 
     <Border
-        Background="{DynamicResource TranslucentBackgroundBrush}"
-        CornerRadius="6"
-        ClipToBounds="True">
+        BorderBrush="#A00000"
+        BorderThickness="2">
 
-        <Grid ColumnDefinitions="1.125*,*">
-            <SelectableTextBlock
-                Text="{Binding Output}"
-                ToolTip.Tip="Output Log" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.25*" MinWidth="384" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MinWidth="256" />
+            </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="1">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <SelectableTextBlock
+                    Text="{Binding Output}"
+                    FontSize="11"
+                    Padding="1"
+                    Background="#000000"
+                    Foreground="#FFB000"
+                    SelectionBrush="#FFB000"
+                    SelectionForegroundBrush="#000000"
+                    TextWrapping="Wrap" />
+            </ScrollViewer>
+
+            <GridSplitter
+                Grid.Column="1"
+                Width="2"
+                Background="#D05800"
+                ResizeDirection="Columns" />
+
+            <Grid Grid.Column="2">
                 <ae:TextEditor
                     Document="{Binding Source}"
                     Background="{DynamicResource ThemeBackgroundColor}"
@@ -28,8 +47,9 @@
 
                 <Button
                     Content="Execute"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Bottom" />
+                    ToolTip.Tip="Execute the entered script source code."
+                    Margin="2"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom" />
             </Grid>
         </Grid>
     </Border>

@@ -11,6 +11,7 @@
     <TextBlock
         Text="{Binding Text}"
         ToolTip.Tip="Statistics"
+        Padding="2"
         Background="{DynamicResource TranslucentBackgroundBrush}" />
 
 </UserControl>

@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="GodotSharp" Version="4.7.0"/>
     <PackageReference Include="Avalonia.Skia" Version="[11.3.18]"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="[3.119.4]"/>
+    <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="[4.150.1]"/>
   </ItemGroup>
 
   <!--

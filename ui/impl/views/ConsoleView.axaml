@@ -34,7 +34,7 @@
 
             <GridSplitter
                 Grid.Column="1"
-                Width="2"
+                Width="4"
                 Background="#D05800"
                 ResizeDirection="Columns" />
 

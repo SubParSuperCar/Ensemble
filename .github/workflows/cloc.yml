@@ -4,6 +4,9 @@ on:
       - main
       - test
 
+permissions:
+  contents: read
+
 jobs:
   job:
     runs-on: ubuntu-latest

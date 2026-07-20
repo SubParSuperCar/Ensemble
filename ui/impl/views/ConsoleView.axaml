@@ -40,9 +40,11 @@
 
             <Grid Grid.Column="2">
                 <ae:TextEditor
+                    Name="Editor"
                     Document="{Binding Source}"
                     Background="{DynamicResource ThemeBackgroundColor}"
                     ShowLineNumbers="True"
+                    WordWrap="True"
                     FontSize="13" />
 
                 <Button

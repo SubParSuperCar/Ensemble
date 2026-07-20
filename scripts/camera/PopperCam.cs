@@ -1,4 +1,5 @@
 using Godot;
+using Root.Globals.Input;
 using Serilog;
 
 namespace Root.Scripts.Camera;
@@ -48,6 +49,9 @@ public partial class PopperCam : SpringArm3D
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
+		if (InputExtensions.IsSunk)
+			return;
+
 		if (@event.IsActionPressed("orbit_camera"))
 			CaptureMouse();
 		else if (@event.IsActionReleased("orbit_camera"))
@@ -79,15 +83,18 @@ public partial class PopperCam : SpringArm3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		var turnInput = Input.GetAxis("turn_left", "turn_right");
+		if (!InputExtensions.IsSunk)
+		{
+			var turnInput = Input.GetAxis("turn_left", "turn_right");
 
-		if (turnInput is not 0)
-			_yaw -= turnInput * YawRate * (float)delta;
+			if (turnInput is not 0)
+				_yaw -= turnInput * YawRate * (float)delta;
 
-		var dollyInput = Input.GetAxis("dolly_in", "dolly_out");
+			var dollyInput = Input.GetAxis("dolly_in", "dolly_out");
 
-		if (dollyInput is not 0)
-			ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
+			if (dollyInput is not 0)
+				ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
+		}
 
 		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Godot;
+using Root.Globals.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Messages;
 
@@ -14,7 +15,11 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 			(_, message) => Process?.Invoke(message.Value));
 
 		WeakReferenceMessenger.Default.Register<InputMessage>(this,
-			(_, message) => Input?.Invoke(message.Value));
+			(_, message) =>
+			{
+				if (!InputExtensions.IsSunk)
+					Input?.Invoke(message.Value);
+			});
 	}
 
 	protected override void OnDispose() => WeakReferenceMessenger.Default.UnregisterAll(this);

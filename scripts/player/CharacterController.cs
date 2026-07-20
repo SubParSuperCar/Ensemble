@@ -1,4 +1,5 @@
 using Godot;
+using Root.Globals.Input;
 
 namespace Root.Scripts.Player;
 
@@ -26,7 +27,7 @@ public partial class CharacterController : CharacterBody3D
 
 		if (!IsOnFloor())
 			Velocity += gravity * (float)delta;
-		else if (Input.IsActionPressed("jump"))
+		else if (!InputExtensions.IsSunk && Input.IsActionPressed("jump"))
 		{
 			var velocity = Velocity;
 			velocity.Y = MathF.Sqrt(JumpHeight * 2 * -gravity.Y);
@@ -34,9 +35,11 @@ public partial class CharacterController : CharacterBody3D
 			Velocity = velocity;
 		}
 
-		var inputDirection = Input.GetVector(
-			"strafe_left", "strafe_right",
-			"move_forward", "move_backward");
+		var inputDirection = !InputExtensions.IsSunk
+			? Input.GetVector(
+				"strafe_left", "strafe_right",
+				"move_forward", "move_backward")
+			: Vector2.Zero;
 
 		if (inputDirection != Vector2.Zero)
 		{

@@ -10,7 +10,7 @@
     x:DataType="vm:ConsoleViewModel">
 
     <Border
-        BorderBrush="#A00000"
+        BorderBrush="Red"
         BorderThickness="2">
 
         <Grid>
@@ -25,17 +25,17 @@
                     Text="{Binding Output}"
                     FontSize="11"
                     Padding="1"
-                    Background="#000000"
-                    Foreground="#FFB000"
-                    SelectionBrush="#FFB000"
-                    SelectionForegroundBrush="#000000"
+                    Background="Black"
+                    Foreground="White"
+                    SelectionBrush="White"
+                    SelectionForegroundBrush="Black"
                     TextWrapping="Wrap" />
             </ScrollViewer>
 
             <GridSplitter
                 Grid.Column="1"
                 Width="4"
-                Background="#D05800"
+                Background="Red"
                 ResizeDirection="Columns" />
 
             <Grid Grid.Column="2">

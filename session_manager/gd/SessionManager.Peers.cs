@@ -26,7 +26,7 @@ public partial class SessionManager
 
 	private void ClearPeers()
 	{
-		foreach (var peerId in PeerIdsByPlayerId.Values)
+		foreach (var peerId in PeerIdsByPlayerId.Values.ToArray())
 			RemovePeer(peerId);
 	}
 }

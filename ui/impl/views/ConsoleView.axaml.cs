@@ -14,6 +14,7 @@ public partial class ConsoleView : UserControl
 {
 	private const string LanguageExtension = ".lua";
 	private new const ThemeName Theme = ThemeName.HighContrastDark;
+	private const int IndentationSize = 2;
 	private const int RulerPosition = 60;
 
 	public ConsoleView()
@@ -42,6 +43,7 @@ public partial class ConsoleView : UserControl
 		options.EnableHyperlinks = true;
 		options.EnableTextDragDrop = true;
 		options.HighlightCurrentLine = true;
+		options.IndentationSize = IndentationSize;
 		options.ShowColumnRulers = true;
 		options.ColumnRulerPositions = [RulerPosition];
 

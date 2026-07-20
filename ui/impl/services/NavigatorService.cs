@@ -15,7 +15,6 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	// ReSharper disable once MemberCanBePrivate.Global
 	public partial ViewModelBase? Current { get; set; }
 

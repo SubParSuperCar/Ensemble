@@ -5,8 +5,6 @@ using CommunityToolkit.Mvvm.Input;
 using Root.Core.Gd.Plot;
 using Root.Ui.Impl.Abstractions;
 
-// ReSharper disable MemberCanBeMadeStatic.Global
-
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
@@ -96,7 +94,6 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			closure();
 	}
 
-	// ReSharper disable once UnusedMember.Local
 	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? -1);
 
 	private bool CanSetPlotToNull() => SelectedPlot is not null;

@@ -3,11 +3,11 @@ using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Root.Scripts.Globals;
-using Root.Scripts.StdOut.Impl;
+using Root.Scripts.Logger.Impl;
 using Serilog;
 using Serilog.Templates;
 
-namespace Root.Scripts.StdOut;
+namespace Root.Scripts.Logger;
 
 public partial class Logger : Node
 {

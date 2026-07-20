@@ -20,7 +20,6 @@ public partial class StatViewModel : ViewModelBase
 		dispatcher.Process += OnProcess;
 	}
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
 
 	protected override void OnDispose() => _dispatcher.Process -= OnProcess;

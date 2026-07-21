@@ -34,7 +34,7 @@ public partial class GdOccupant : RefCounted
 		new()
 		{
 			["playerId"] = Player.Id,
-			["plotId"] = Plot?.Id ?? Unlimited
+			["plotId"] = Plot?.Id ?? None
 		};
 
 	public override string ToString() => _source.ToString()!;

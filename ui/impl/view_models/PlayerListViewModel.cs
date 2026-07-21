@@ -21,6 +21,7 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	public ObservableCollection<Player> Players { get; } = [];
 
+	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial Player? SelectedPlayer { get; set; }
 
 	protected override void OnDispose()

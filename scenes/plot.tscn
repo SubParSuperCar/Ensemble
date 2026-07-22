@@ -8,33 +8,9 @@ size = Vector3(32, 32, 32)
 [sub_resource type="BoxShape3D" id="BoxShape3D_sbat0"]
 size = Vector3(32, 0.001, 32)
 
-[sub_resource type="Gradient" id="Gradient_syd1t"]
-colors = PackedColorArray(0, 0, 0, 1, 0.5, 0.5, 0.5, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_syd1t"]
-frequency = 0.1
-domain_warp_enabled = true
-domain_warp_type = 1
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_410i3"]
-noise = SubResource("FastNoiseLite_syd1t")
-color_ramp = SubResource("Gradient_syd1t")
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_cyvgl"]
-frequency = 0.1
-domain_warp_enabled = true
-domain_warp_type = 1
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_cyvgl"]
-noise = SubResource("FastNoiseLite_cyvgl")
-as_normal_map = true
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_72cjw"]
-albedo_texture = SubResource("NoiseTexture2D_410i3")
-roughness = 0.63
-normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_cyvgl")
-uv1_triplanar = true
+albedo_color = Color(0.25, 0.25, 0.25, 1)
+roughness = 0.6
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_f03gw"]
 material = SubResource("StandardMaterial3D_72cjw")

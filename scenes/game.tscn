@@ -24,53 +24,75 @@ ambient_light_source = 3
 reflected_light_source = 2
 tonemap_mode = 2
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_i6g32"]
-size = Vector3(8000, 0.001, 8000)
+[sub_resource type="Gradient" id="Gradient_gee14"]
+offsets = PackedFloat32Array(0.2, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
-[sub_resource type="Gradient" id="Gradient_trtic"]
-offsets = PackedFloat32Array(0, 0.25, 0.875, 1)
-colors = PackedColorArray(0, 0, 0, 1, 0.0625, 0.25, 0.0625, 1, 0.125, 0.5, 0.125, 1, 0.25, 1, 0.25, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_gee14"]
-frequency = 0.1
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_0tnpc"]
+noise_type = 2
+frequency = 0.03
+cellular_jitter = 3.0
+cellular_return_type = 0
 domain_warp_enabled = true
 domain_warp_type = 1
+domain_warp_amplitude = 50.0
+domain_warp_fractal_type = 2
+domain_warp_fractal_lacunarity = 1.5
+domain_warp_fractal_gain = 1.0
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_dinhu"]
-noise = SubResource("FastNoiseLite_gee14")
-color_ramp = SubResource("Gradient_trtic")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_vtaks"]
+noise = SubResource("FastNoiseLite_0tnpc")
+color_ramp = SubResource("Gradient_gee14")
+seamless = true
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_u5sy4"]
-noise = SubResource("FastNoiseLite_gee14")
-as_normal_map = true
+[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_kvpfn"]
+_shader_parameters = {
+&"bias_distance": null,
+&"blend_sharpness": null,
+&"depth_blur": null,
+&"enable_macro_variation": null,
+&"enable_projection": null,
+&"flat_terrain_normals": null,
+&"macro_variation1": null,
+&"macro_variation2": null,
+&"macro_variation_slope": null,
+&"mipmap_bias": null,
+&"noise1_angle": null,
+&"noise1_offset": null,
+&"noise1_scale": null,
+&"noise2_scale": null,
+&"noise_texture": SubResource("NoiseTexture2D_vtaks"),
+&"projection_threshold": null
+}
+show_checkered = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u5sy4"]
-albedo_texture = SubResource("NoiseTexture2D_dinhu")
-roughness = 0.63
-normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_u5sy4")
-uv1_triplanar = true
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dinhu"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_i6g32"]
-material = SubResource("StandardMaterial3D_u5sy4")
-size = Vector2(8000, 8000)
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_kvuet"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_dinhu")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_trtic"]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_kvuet")])
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
 points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 76, 0, -16, 76, 0, 16)
 
-[sub_resource type="Gradient" id="Gradient_u5sy4"]
-colors = PackedColorArray(0.25, 0.25, 0.25, 1, 0.75, 0.75, 0.75, 1)
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_gee14"]
-noise = SubResource("FastNoiseLite_gee14")
-color_ramp = SubResource("Gradient_u5sy4")
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0tnpc"]
-albedo_texture = SubResource("NoiseTexture2D_gee14")
-roughness = 0.63
-normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_u5sy4")
-uv1_triplanar = true
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+roughness = 0.6
 
 [node name="Game" type="Node3D" unique_id=1840370715]
 script = ExtResource("1_u5sy4")
@@ -82,6 +104,15 @@ environment = SubResource("Environment_v158k")
 transform = Transform3D(0.70710677, -0.65328145, 0.27059805, 0, 0.38268343, 0.9238795, -0.70710677, -0.65328145, 0.27059805, 0, 0, 0)
 light_energy = 1.5
 shadow_enabled = true
+
+[node name="Terrain" type="Terrain3D" parent="." unique_id=1739292469]
+debug_level = 2
+data_directory = "res://terrain/"
+material = SubResource("Terrain3DMaterial_kvpfn")
+assets = SubResource("Terrain3DAssets_trtic")
+show_checkered = true
+top_level = true
+metadata/_edit_lock_ = true
 
 [node name="Players" type="Node" parent="." unique_id=677572147]
 script = ExtResource("1_wrm1d")
@@ -113,17 +144,6 @@ Id = 3
 metadata/_edit_lock_ = true
 
 [node name="World" type="Node3D" parent="." unique_id=125306369]
-
-[node name="Ground" type="StaticBody3D" parent="World" unique_id=1166203854]
-
-[node name="Collider" type="CollisionShape3D" parent="World/Ground" unique_id=1870552136]
-shape = SubResource("BoxShape3D_i6g32")
-metadata/_edit_lock_ = true
-
-[node name="Mesh" type="MeshInstance3D" parent="World/Ground" unique_id=2078281976]
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_i6g32")
-metadata/_edit_lock_ = true
 
 [node name="Plots Base" type="StaticBody3D" parent="World" unique_id=523232624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

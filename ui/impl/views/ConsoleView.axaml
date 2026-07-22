@@ -49,7 +49,7 @@
 
                 <Button
                     Content="Execute"
-                    ToolTip.Tip="Execute the entered script source code."
+                    ToolTip.Tip="Executes the entered script source code."
                     Margin="2"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom" />
             </Grid>

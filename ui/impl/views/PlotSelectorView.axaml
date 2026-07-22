@@ -30,7 +30,10 @@
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid ColumnDefinitions="Auto,16,*,16,Auto">
+                        <Grid
+                            ColumnDefinitions="Auto,16,*,16,Auto"
+                            ToolTip.Tip="Requests that you occupy this plot.&#x0a;If no other player occupies the plot, ownership may be assigned to you.">
+
                             <TextBlock Text="{Binding Id, StringFormat='{}{0:000}'}" />
                             <TextBlock Grid.Column="2" Text="{Binding OwnerName}" TextTrimming="CharacterEllipsis" />
                             <TextBlock Grid.Column="4" Text="{Binding Occupancy}" />
@@ -42,6 +45,7 @@
             <Button
                 Grid.Row="3"
                 Content="Set Plot to Null"
+                ToolTip.Tip="Requests that you relinquish your occupancy of the current plot.&#x0a;If you own the plot and another player occupies it,&#x0a;ownership may be reassigned to the second oldest occupant."
                 HorizontalAlignment="Center"
                 Command="{Binding SetPlotToNullCommand}" />
         </Grid>

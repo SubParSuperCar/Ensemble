@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://7p5ogfj3f2o" path="res://scripts/game/Game.cs" id="1_u5sy4"]
 [ext_resource type="Script" uid="uid://06fgagjn2dxc" path="res://scripts/player/PlayerManager.cs" id="1_wrm1d"]
 [ext_resource type="Script" uid="uid://bmh68q5egn16r" path="res://scripts/asset/AssetManager.cs" id="2_3dryh"]
+[ext_resource type="Terrain3DAssets" uid="uid://b2238ug3evnm2" path="res://resources/terrain_assets.tres" id="2_gee14"]
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://scenes/player.tscn" id="2_i6g32"]
 [ext_resource type="PackedScene" uid="uid://bctdhk6awxx0r" path="res://scenes/plot.tscn" id="3_lnu2h"]
 [ext_resource type="Script" uid="uid://cm7njby1t063g" path="res://scripts/plot/PlotManager.cs" id="3_wowpa"]
@@ -66,27 +67,6 @@ _shader_parameters = {
 }
 show_checkered = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dinhu"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_kvuet"]
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_dinhu")
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 128.0
-
-[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_trtic"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_kvuet")])
-
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
 points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 76, 0, -16, 76, 0, 16)
 
@@ -109,7 +89,7 @@ shadow_enabled = true
 debug_level = 2
 data_directory = "res://terrain/"
 material = SubResource("Terrain3DMaterial_kvpfn")
-assets = SubResource("Terrain3DAssets_trtic")
+assets = ExtResource("2_gee14")
 show_checkered = true
 top_level = true
 metadata/_edit_lock_ = true

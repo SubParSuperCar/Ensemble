@@ -18,7 +18,7 @@
 
             <Grid ColumnDefinitions="Auto,32,*,Auto">
                 <TextBlock Text="ID&#x0a; &#x2193;" />
-                <TextBlock Grid.Column="2" Text="Owner Moniker&#x0a; &#x2198;" HorizontalAlignment="Left" />
+                <TextBlock Grid.Column="2" Text="Owner Name&#x0a; &#x2198;" HorizontalAlignment="Left" />
                 <TextBlock Grid.Column="3" Text="Occupancy&#x0a;&#x2199; " TextAlignment="Right" />
             </Grid>
 

@@ -87,7 +87,7 @@ shadow_enabled = true
 
 [node name="Terrain" type="Terrain3D" parent="." unique_id=1739292469]
 debug_level = 2
-data_directory = "res://resources/terrain/"
+data_directory = "res://resources/terrain_regions/"
 material = SubResource("Terrain3DMaterial_kvpfn")
 assets = ExtResource("2_gee14")
 save_16_bit = true

@@ -94,6 +94,7 @@ save_16_bit = true
 cast_shadows = 0
 show_checkered = true
 top_level = true
+visible = false
 metadata/_edit_lock_ = true
 
 [node name="Players" type="Node" parent="." unique_id=677572147]

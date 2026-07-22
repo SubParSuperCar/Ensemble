@@ -10,17 +10,15 @@
 
     <Grid>
         <ContentControl
-            Content="{Binding Clock}"
-            HorizontalAlignment="Center" VerticalAlignment="Top" />
-
-        <ContentControl
             Content="{Binding Stats}"
-            HorizontalAlignment="Left" VerticalAlignment="Top" />
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            Margin="0,26,0,0" />
 
         <TransitioningContentControl
             Content="{Binding PlayerList}"
             HorizontalAlignment="Right" VerticalAlignment="Top"
-            MaxWidth="512" MaxHeight="256">
+            MaxWidth="512" MaxHeight="256"
+            Margin="0,26,0,0">
 
             <TransitioningContentControl.PageTransition>
                 <CompositePageTransition>
@@ -29,6 +27,10 @@
                 </CompositePageTransition>
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
+
+        <ContentControl
+            Content="{Binding Clock}"
+            HorizontalAlignment="Center" VerticalAlignment="Top" />
 
         <ContentControl
             Content="{Binding PlotSelector}"

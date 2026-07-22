@@ -10,7 +10,7 @@ public partial class Hasher : Node
 {
 	public override void _Ready() => _ = OnReady();
 
-	private static async Task OnReady()
+	private async Task OnReady()
 	{
 		var exePath = Environment.ProcessPath;
 		if (!File.Exists(exePath))
@@ -34,5 +34,7 @@ public partial class Hasher : Node
 
 			Log.Debug("Process executable path & SHA-256 hash, respectively: {Path}, {Hash}", exePath, hashHex);
 		}
+
+		QueueFree();
 	}
 }

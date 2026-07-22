@@ -1,6 +1,7 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
+using Root.Globals;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Services;
 using Environment = System.Environment;
@@ -41,9 +42,9 @@ public partial class StatViewModel : ViewModelBase
 			["Physics Time"] = string.Create(CultureInfo.InvariantCulture,
 				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
 			["Used Static Memory (DRAM)"] =
-				FormatBytes((long)Performance.GetMonitor(Performance.Monitor.MemoryStatic)),
+				Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.MemoryStatic)),
 			["Used Video Memory (VRAM)"] =
-				FormatBytes((long)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
+				Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
 			["Object Count"] =
 				Performance.GetMonitor(Performance.Monitor.ObjectCount),
 			["Node Count"] =
@@ -58,21 +59,5 @@ public partial class StatViewModel : ViewModelBase
 
 		var width = stats.Keys.Max(k => k.Length);
 		Text = string.Join(Environment.NewLine, stats.Select(kvp => $"{kvp.Key.PadRight(width)} = {kvp.Value}"));
-	}
-
-	private static string FormatBytes(long bytes)
-	{
-		string[] units = ["B", "KiB", "MiB", "GiB", "TiB"];
-
-		double value = bytes;
-		var unit = 0;
-
-		while (value >= 1024 && unit < units.Length - 1)
-		{
-			value /= 1024;
-			unit++;
-		}
-
-		return string.Create(CultureInfo.InvariantCulture, $"{value:F3} {units[unit]}");
 	}
 }

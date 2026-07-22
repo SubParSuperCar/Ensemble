@@ -26,6 +26,7 @@
     <PackageReference Include="AvaloniaEdit.TextMate" Version="[11.4.1]"/>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
+    <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
     <PackageReference Include="LoadingIndicators.Avalonia" Version="11.0.11.1"/>
     <PackageReference Include="LuaCSharp" Version="0.5.5"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>

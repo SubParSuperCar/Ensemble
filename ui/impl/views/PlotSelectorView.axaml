@@ -32,7 +32,8 @@
                     <DataTemplate>
                         <Grid
                             ColumnDefinitions="Auto,16,*,16,Auto"
-                            ToolTip.Tip="Requests that you occupy this plot.&#x0a;If no other player occupies the plot, ownership may be assigned to you.">
+                            ToolTip.Tip="Requests that you occupy this plot.&#x0a;If no other player occupies the plot, ownership may be assigned to you."
+                            Background="Transparent">
 
                             <TextBlock Text="{Binding Id, StringFormat='{}{0:000}'}" />
                             <TextBlock Grid.Column="2" Text="{Binding OwnerName}" TextTrimming="CharacterEllipsis" />

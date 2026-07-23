@@ -29,7 +29,7 @@ public partial class InfoLogger : Node
 		Add("User", Environment.UserName);
 
 		Add("OS", RuntimeInformation.OSDescription);
-		Add("OS Arch", RuntimeInformation.OSArchitecture);
+		Add("OS Arch.", RuntimeInformation.OSArchitecture);
 		Add("Process", RuntimeInformation.ProcessArchitecture);
 		Add(".NET", RuntimeInformation.FrameworkDescription);
 
@@ -53,6 +53,8 @@ public partial class InfoLogger : Node
 				Add("Max Clock", string.Create(CultureInfo.InvariantCulture, $"{cpu.MaxClockSpeed / 1000.0:F2} GHz"));
 		}
 
+		Add("Endianness", BitConverter.IsLittleEndian ? "Little" : "Big");
+
 		if (gpu is not null)
 			Add("GPU", gpu.Name);
 
@@ -73,8 +75,8 @@ public partial class InfoLogger : Node
 			Add("Monitor", monitor.Name);
 
 		foreach (var nic in hw.NetworkAdapterList
-					 .Where(n => !string.IsNullOrWhiteSpace(n.Name))
-					 .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
+			         .Where(n => !string.IsNullOrWhiteSpace(n.Name))
+			         .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
 			Add("Network", nic.Name);
 
 		Add("Culture", CultureInfo.CurrentCulture.DisplayName);

@@ -11,6 +11,8 @@ namespace Root.Scripts.Info;
 
 public partial class InfoLogger : Node
 {
+	private const string LinuxKernelVersionFilePath = "/proc/sys/kernel/osrelease";
+
 #pragma warning disable MA0051
 	public override void _Ready()
 #pragma warning restore MA0051
@@ -35,6 +37,16 @@ public partial class InfoLogger : Node
 
 		if (OperatingSystem.IsLinux())
 		{
+			try
+			{
+				if (File.Exists(LinuxKernelVersionFilePath))
+					Add("Kernel", File.ReadAllText(LinuxKernelVersionFilePath).Trim());
+			}
+			catch
+			{
+				// Ignore
+			}
+
 			Add("Shell", Environment.GetEnvironmentVariable("SHELL"));
 			Add("Desktop", Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP"));
 			Add("Session", Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"));
@@ -75,8 +87,8 @@ public partial class InfoLogger : Node
 			Add("Monitor", monitor.Name);
 
 		foreach (var nic in hw.NetworkAdapterList
-			         .Where(n => !string.IsNullOrWhiteSpace(n.Name))
-			         .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
+					 .Where(n => !string.IsNullOrWhiteSpace(n.Name))
+					 .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
 			Add("Network", nic.Name);
 
 		Add("Culture", CultureInfo.CurrentCulture.DisplayName);
@@ -88,8 +100,8 @@ public partial class InfoLogger : Node
 
 		sb.AppendLine("=== System Information ===");
 
-		foreach (var (key, value) in lines)
-			sb.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value.Trim()}");
+		foreach (var line in lines)
+			sb.AppendLine(CultureInfo.InvariantCulture, $"{line.Key.PadRight(width)} : {line.Value.Trim()}");
 
 		Log.Information("{SystemInfo}", Environment.NewLine + sb.ToString().TrimEnd());
 

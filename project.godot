@@ -39,8 +39,8 @@ settings/stdout/verbose_stdout.editor=true
 window/size/viewport_width=1600
 window/size/viewport_height=900
 window/size/mode=2
-window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/stretch/scale_mode="integer"
 window/vsync/vsync_mode=3
 window/size/mode.editor=0
 

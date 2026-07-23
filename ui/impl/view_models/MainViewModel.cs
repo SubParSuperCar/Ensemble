@@ -75,7 +75,15 @@ public partial class MainViewModel : ViewModelBase
 		if (!Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
 			return;
 
-		Console = Console is null ? _services.GetRequiredService<ConsoleViewModel>() : null;
-		Log.Debug("Set console");
+		if (Console is null)
+		{
+			Console = _services.GetRequiredService<ConsoleViewModel>();
+			Log.Debug("Opened console");
+		}
+		else
+		{
+			Console = null;
+			Log.Debug("Closed console");
+		}
 	}
 }

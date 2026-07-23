@@ -37,15 +37,15 @@ public partial class Main : Node
 		{
 			GSessionManager.StartSinglePlayer();
 
-			Log.Debug(nameof(GPlayers));
+			Log.Debug($"{nameof(GPlayers)}:");
 			foreach (var player in GPlayers.GetAll())
 				Log.Debug("{Player}", player.ToDict().ToString());
 
-			Log.Debug(nameof(GAssets));
+			Log.Debug($"{nameof(GAssets)}:");
 			foreach (var asset in GAssets.GetAll())
 				Log.Debug("{Asset}", asset.ToDict().ToString());
 
-			Log.Debug(nameof(GPlots));
+			Log.Debug($"{nameof(GPlots)}:");
 			foreach (var plot in GPlots.GetAll())
 				Log.Debug("{Plot}", plot.ToDict().ToString());
 		}).CallDeferred();

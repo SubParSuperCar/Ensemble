@@ -7,7 +7,9 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_agfs1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8p2pg"]
-albedo_color = Color(1, 0.25, 0.25, 1)
+transparency = 4
+cull_mode = 2
+albedo_color = Color(1, 0.25, 0.25, 0.625)
 roughness = 0.6
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_agfs1"]

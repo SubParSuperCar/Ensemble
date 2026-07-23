@@ -17,10 +17,20 @@ public partial class ConsoleView : UserControl
 	private const int IndentationSize = 2;
 	private const int RulerPosition = 60;
 
+	private ScrollViewer _outputScroll = null!;
+	private bool _shouldScrollToBottom;
+
 	public ConsoleView()
 	{
 		InitializeComponent();
+		InitializeOutputScroll();
 		InitializeEditor();
+	}
+
+	private void InitializeOutputScroll()
+	{
+		_outputScroll = this.FindControl<ScrollViewer>("OutputScroll")!;
+		_outputScroll.ScrollChanged += OnOutputScrollChanged;
 	}
 
 	private void InitializeEditor()
@@ -49,6 +59,20 @@ public partial class ConsoleView : UserControl
 
 		Editor.TextArea.GotFocus += OnEditorGotFocus;
 		Editor.TextArea.LostFocus += OnEditorLostFocus;
+	}
+
+	private void OnOutputScrollChanged(object? sender, ScrollChangedEventArgs e)
+	{
+		if (e.ExtentDelta.Y > 0)
+		{
+			if (_shouldScrollToBottom)
+				OutputScroll.ScrollToEnd();
+		}
+		else
+		{
+			var distanceToBottom = OutputScroll.Extent.Height - OutputScroll.Offset.Y - OutputScroll.Viewport.Height;
+			_shouldScrollToBottom = distanceToBottom <= double.Epsilon;
+		}
 	}
 
 	private void OnEditorGotFocus(object? sender, GotFocusEventArgs e) => InputExtensions.Sink.Acquire(this);

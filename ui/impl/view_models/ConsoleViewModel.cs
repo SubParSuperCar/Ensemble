@@ -1,4 +1,5 @@
 using System.Text;
+using Avalonia.Threading;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Root.Globals.Log;
@@ -23,15 +24,16 @@ public partial class ConsoleViewModel : ViewModelBase
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
 
-	private void OnLogHistoryUpdated()
-	{
-		var history = LogHistorySinkVolatile.History;
-		var sb = new StringBuilder(history.Count * 128);
+	private void OnLogHistoryUpdated() =>
+		Dispatcher.UIThread.Post(() =>
+		{
+			var history = LogHistorySinkVolatile.History;
+			var sb = new StringBuilder(history.Count * 128);
 
-		foreach (var line in history)
-			sb.AppendLine(line);
+			foreach (var line in history)
+				sb.AppendLine(line);
 
-		sb.Length--;
-		Output = sb.ToString();
-	}
+			sb.Length--;
+			Output = sb.ToString();
+		});
 }

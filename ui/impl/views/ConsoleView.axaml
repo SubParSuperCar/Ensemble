@@ -20,7 +20,10 @@
                 <ColumnDefinition Width="*" MinWidth="256" />
             </Grid.ColumnDefinitions>
 
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+            <ScrollViewer
+                x:Name="OutputScroll"
+                HorizontalScrollBarVisibility="Disabled">
+
                 <SelectableTextBlock
                     Text="{Binding Output}"
                     FontSize="11"

@@ -87,7 +87,9 @@ public partial class InfoLogger : Node
 			Add("Monitor", monitor.Name);
 
 		foreach (var nic in hw.NetworkAdapterList
-					 .Where(n => !string.IsNullOrWhiteSpace(n.Name))
+					 .Where(n =>
+						 !string.IsNullOrWhiteSpace(n.Name) &&
+						 !string.Equals(n.Name, "lo", StringComparison.Ordinal))
 					 .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
 			Add("Network", nic.Name);
 

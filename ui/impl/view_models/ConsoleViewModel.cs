@@ -20,7 +20,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
 
-	public TextDocument Source { get; } = new("--[[\nLua 5.4\n(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\nprint(\"Hello, World!\")\n");
+	public TextDocument Source { get; } = new("--[[\nLua 5.2\n(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\nprint(\"Hello, World!\")\n");
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
 

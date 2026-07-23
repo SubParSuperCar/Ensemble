@@ -14,7 +14,7 @@ public partial class Logger : Node
 {
 	private ILoggerFactory? _loggerFactory;
 
-	public override void _EnterTree()
+	public override void _Ready()
 	{
 		var logDir = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
 		Directory.CreateDirectory(logDir);

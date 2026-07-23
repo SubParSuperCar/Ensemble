@@ -12,7 +12,7 @@ namespace Root.Scripts.Info;
 public partial class InfoLogger : Node
 {
 #pragma warning disable MA0051
-	public override void _EnterTree()
+	public override void _Ready()
 #pragma warning restore MA0051
 	{
 		var hw = new HardwareInfo();
@@ -87,7 +87,7 @@ public partial class InfoLogger : Node
 		sb.AppendLine("=== System Information ===");
 
 		foreach (var (key, value) in lines)
-			sb.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value}");
+			sb.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value.Trim()}");
 
 		Log.Information("{SystemInfo}", Environment.NewLine + sb.ToString().TrimEnd());
 

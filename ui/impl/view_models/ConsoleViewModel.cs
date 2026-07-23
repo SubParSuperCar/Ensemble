@@ -20,7 +20,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
 
-	public TextDocument Source { get; } = new("-- Lua 5.4\nprint(\"Hello, Ensemble!\")\n");
+	public TextDocument Source { get; } = new("--[[\nLua 5.4\n(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\nprint(\"Hello, World!\")\n");
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
 
@@ -33,7 +33,7 @@ public partial class ConsoleViewModel : ViewModelBase
 			foreach (var line in history)
 				sb.AppendLine(line);
 
-			sb.Length--;
+			sb.Length -= Environment.NewLine.Length;
 			Output = sb.ToString();
 		});
 }

@@ -35,7 +35,7 @@ public partial class ConsoleView : UserControl
 
 	private void InitializeEditor()
 	{
-		var editor = this.FindControl<TextEditor>("Editor");
+		var editor = this.FindControl<TextEditor>("Editor")!;
 
 		var registryOptions = new RegistryOptions(Theme);
 		var installation = editor.InstallTextMate(registryOptions);
@@ -45,7 +45,7 @@ public partial class ConsoleView : UserControl
 
 		installation.SetGrammar(scope);
 
-		var options = editor!.Options;
+		var options = editor.Options;
 		options.ShowSpaces = true;
 		options.ShowTabs = true;
 		options.ShowEndOfLine = true;

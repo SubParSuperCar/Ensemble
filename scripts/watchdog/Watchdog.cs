@@ -50,7 +50,7 @@ public partial class Watchdog : Node
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressedByEvent("hang", @event))
+		if (Input.IsActionJustPressedByEvent("test_hang", @event))
 			Thread.Sleep(int.MaxValue);
 	}
 

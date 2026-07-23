@@ -27,7 +27,7 @@ public partial class CharacterController : CharacterBody3D
 
 		if (!IsOnFloor())
 			Velocity += gravity * (float)delta;
-		else if (!InputExtensions.IsSunk && Input.IsActionPressed("jump"))
+		else if (!InputExtensions.IsSunk && Input.IsActionPressed("char_jump"))
 		{
 			var velocity = Velocity;
 			velocity.Y = MathF.Sqrt(JumpHeight * 2 * -gravity.Y);
@@ -37,8 +37,8 @@ public partial class CharacterController : CharacterBody3D
 
 		var inputDirection = !InputExtensions.IsSunk
 			? Input.GetVector(
-				"strafe_left", "strafe_right",
-				"move_forward", "move_backward")
+				"char_strafe_left", "char_strafe_right",
+				"char_move_forward", "char_move_backward")
 			: Vector2.Zero;
 
 		if (inputDirection != Vector2.Zero)
@@ -50,7 +50,7 @@ public partial class CharacterController : CharacterBody3D
 			var moveDirection = lookDirection * new Vector3(inputDirection.X, 0, inputDirection.Y);
 			moveDirection.Y = 0;
 
-			var speed = Input.IsActionPressed("run") ? RunSpeed : WalkSpeed;
+			var speed = Input.IsActionPressed("char_run") ? RunSpeed : WalkSpeed;
 			velocity.X = moveDirection.X * speed;
 			velocity.Z = moveDirection.Z * speed;
 

@@ -52,14 +52,14 @@ public partial class PopperCam : SpringArm3D
 		if (InputExtensions.IsSunk)
 			return;
 
-		if (@event.IsActionPressed("orbit_camera"))
+		if (@event.IsActionPressed("cam_orbit"))
 			CaptureMouse();
-		else if (@event.IsActionReleased("orbit_camera"))
+		else if (@event.IsActionReleased("cam_orbit"))
 			ReleaseMouse();
 		else
 			switch (@event)
 			{
-				case InputEventMouseMotion motion when Input.IsActionPressed("orbit_camera"):
+				case InputEventMouseMotion motion when Input.IsActionPressed("cam_orbit"):
 					var radiansPerPixel = Mathf.Tau * OrbitRatio / _viewportDiagonal;
 					_yaw -= motion.Relative.X * radiansPerPixel;
 					_pitch = Mathf.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
@@ -85,12 +85,12 @@ public partial class PopperCam : SpringArm3D
 	{
 		if (!InputExtensions.IsSunk)
 		{
-			var turnInput = Input.GetAxis("turn_left", "turn_right");
+			var yawInput = Input.GetAxis("cam_yaw_left", "cam_yaw_right");
 
-			if (turnInput is not 0)
-				_yaw -= turnInput * YawRate * (float)delta;
+			if (yawInput is not 0)
+				_yaw -= yawInput * YawRate * (float)delta;
 
-			var dollyInput = Input.GetAxis("dolly_in", "dolly_out");
+			var dollyInput = Input.GetAxis("cam_dolly_in", "cam_dolly_out");
 
 			if (dollyInput is not 0)
 				ApplyDollyDelta(dollyInput * DollyRate * (float)delta);

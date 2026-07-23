@@ -72,7 +72,7 @@ public partial class MainViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
-		if (!Input.IsActionJustPressedByEvent("toggle_console", @event))
+		if (!Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
 			return;
 
 		Console = Console is null ? _services.GetRequiredService<ConsoleViewModel>() : null;

@@ -54,7 +54,7 @@ public partial class GameViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressedByEvent("toggle_player_list", @event))
+		if (Input.IsActionJustPressedByEvent("ui_toggle_player_list", @event))
 			PlayerList = PlayerList is null ? _services.GetRequiredService<PlayerListViewModel>() : null;
 	}
 }

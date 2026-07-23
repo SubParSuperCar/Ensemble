@@ -17,6 +17,6 @@ public static class Util
 			unit++;
 		}
 
-		return string.Create(CultureInfo.InvariantCulture, $"{value:F3} {units[unit]}");
+		return $"{value.ToString(unit is 0 ? "F0" : "F3", CultureInfo.InvariantCulture)} {units[unit]}";
 	}
 }

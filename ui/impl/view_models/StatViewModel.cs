@@ -2,6 +2,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
 using Root.Globals;
+using Root.Globals.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Services;
 using Environment = System.Environment;
@@ -34,7 +35,7 @@ public partial class StatViewModel : ViewModelBase
 
 		var fps = Performance.GetMonitor(Performance.Monitor.TimeFps);
 
-		var stats = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+		Dictionary<string, object> stats = new(StringComparer.OrdinalIgnoreCase)
 		{
 			["Frame Rate"] = string.Create(CultureInfo.InvariantCulture,
 				$"{fps} FPS ({(fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity):F3} mspf)"),
@@ -42,21 +43,26 @@ public partial class StatViewModel : ViewModelBase
 				$"{Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
 			["Physics Time"] = string.Create(CultureInfo.InvariantCulture,
 				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
-			["Used Static Memory (DRAM)"] =
+			["Used DRAM"] =
 				Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.MemoryStatic)),
-			["Used Video Memory (VRAM)"] =
+			["Used VRAM"] =
 				Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
-			["Object Count"] =
-				Performance.GetMonitor(Performance.Monitor.ObjectCount),
-			["Node Count"] =
-				Performance.GetMonitor(Performance.Monitor.ObjectNodeCount),
-			["Orphan Node Count"] =
-				Performance.GetMonitor(Performance.Monitor.ObjectOrphanNodeCount),
-			["Draw Call Count"] =
-				Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame),
-			["Render Primitive Count"] =
-				Performance.GetMonitor(Performance.Monitor.RenderTotalPrimitivesInFrame)
+			["Objects"] = Performance.GetMonitor(Performance.Monitor.ObjectCount),
+			["Nodes"] = Performance.GetMonitor(Performance.Monitor.ObjectNodeCount),
+			["Orphan Nodes"] = Performance.GetMonitor(Performance.Monitor.ObjectOrphanNodeCount),
+			["Draw Calls"] = Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame),
+			["Render Prims."] = Performance.GetMonitor(Performance.Monitor.RenderTotalPrimitivesInFrame),
+			["Input Sinking"] = InputExtensions.IsSunk
 		};
+
+		if (GPlayers.Local is { } local && GPlayerManager.Handles.TryGetValue(local.Id, out var handle))
+		{
+			var character = handle.Character ?? handle.Controller!;
+
+			stats["Char. Pos."] = character.GlobalPosition.Round();
+			stats["Char. Speed"] =
+				string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():F3} m/s");
+		}
 
 		var width = stats.Keys.Max(k => k.Length);
 		Text = string.Join(Environment.NewLine, stats.Select(kvp => $"{kvp.Key.PadRight(width)} = {kvp.Value}"));

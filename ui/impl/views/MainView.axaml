@@ -18,14 +18,20 @@
             <TransitioningContentControl
                 Grid.Column="1" Grid.Row="1"
                 Content="{Binding Console}"
-                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                ClipToBounds="False">
+
+                <TransitioningContentControl.Effect>
+                    <DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="24" />
+                </TransitioningContentControl.Effect>
 
                 <TransitioningContentControl.PageTransition>
                     <CompositePageTransition>
-                        <CrossFade Duration="0.25" />
-                        <Rotate3DTransition Duration="0.25" Orientation="Vertical" />
+                        <CrossFade Duration="{StaticResource TransitionDuration}" />
+                        <Rotate3DTransition Duration="{StaticResource TransitionDuration}" Orientation="Vertical" />
                     </CompositePageTransition>
                 </TransitioningContentControl.PageTransition>
+
             </TransitioningContentControl>
         </Grid>
     </Grid>

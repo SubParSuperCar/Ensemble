@@ -18,12 +18,13 @@
             Content="{Binding PlayerList}"
             HorizontalAlignment="Right" VerticalAlignment="Top"
             MaxWidth="512" MaxHeight="256"
+            ClipToBounds="False"
             Margin="0,28,0,0">
 
             <TransitioningContentControl.PageTransition>
                 <CompositePageTransition>
-                    <CrossFade Duration="0.25" />
-                    <Rotate3DTransition Duration="0.25" Orientation="Vertical" />
+                    <CrossFade Duration="{StaticResource TransitionDuration}" />
+                    <Rotate3DTransition Duration="{StaticResource TransitionDuration}" Orientation="Vertical" />
                 </CompositePageTransition>
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>

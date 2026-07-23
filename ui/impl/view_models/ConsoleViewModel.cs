@@ -1,5 +1,7 @@
+using System.Text;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Root.Globals.Log;
 using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;
@@ -8,8 +10,28 @@ namespace Root.Ui.Impl.ViewModels;
 // TODO
 public partial class ConsoleViewModel : ViewModelBase
 {
-	// ReSharper disable once MemberCanBeMadeStatic.Global
-	[ObservableProperty] public partial string Output { get; set; } = GPlots.GetAllDicts().ToString();
+	public ConsoleViewModel()
+	{
+		OnLogHistoryUpdated();
+		LogHistorySinkVolatile.Updated += OnLogHistoryUpdated;
+	}
 
-	public TextDocument Source { get; } = new("-- Lua 5.4\nprint(\"Hello, World!\")\n");
+	// ReSharper disable once MemberCanBeMadeStatic.Global
+	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
+
+	public TextDocument Source { get; } = new("-- Lua 5.4\nprint(\"Hello, Ensemble!\")\n");
+
+	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
+
+	private void OnLogHistoryUpdated()
+	{
+		var history = LogHistorySinkVolatile.History;
+		var sb = new StringBuilder(history.Count * 128);
+
+		foreach (var line in history)
+			sb.AppendLine(line);
+
+		sb.Length--;
+		Output = sb.ToString();
+	}
 }

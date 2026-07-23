@@ -11,6 +11,7 @@
             </FontFamily>
 
             <x:Double x:Key="FontSize">16</x:Double>
+            <x:TimeSpan x:Key="TransitionDuration">0.2</x:TimeSpan>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
@@ -44,7 +45,7 @@
 
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="0.25" />
+                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
                 </Transitions>
             </Setter>
         </Style>

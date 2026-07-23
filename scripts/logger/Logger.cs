@@ -2,6 +2,7 @@ using System.Globalization;
 using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Root.Globals.Log;
 using Root.Scripts.Globals;
 using Root.Scripts.Logger.Impl;
 using Serilog;
@@ -28,6 +29,7 @@ public partial class Logger : Node
 			.ReadFrom.Configuration(config)
 			.Enrich.With(new LogEnricher())
 			.WriteTo.Sink(new LogSink())
+			.WriteTo.Sink(new LogHistorySinkVolatile())
 			.WriteTo.Console(
 				outputTemplate:
 				"[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",

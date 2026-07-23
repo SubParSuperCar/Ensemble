@@ -6,4 +6,5 @@
 /.vscode
 *.uid
 *.import
+*.DotSettings.user
 *.xsd

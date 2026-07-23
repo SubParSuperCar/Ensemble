@@ -10,7 +10,7 @@
     x:DataType="vm:ConsoleViewModel">
 
     <Border
-        BorderBrush="Red"
+        BorderBrush="YellowGreen"
         BorderThickness="2">
 
         <Grid>
@@ -35,7 +35,7 @@
             <GridSplitter
                 Grid.Column="1"
                 Width="4"
-                Background="Red"
+                Background="YellowGreen"
                 ResizeDirection="Columns" />
 
             <Grid Grid.Column="2">

@@ -13,7 +13,7 @@ namespace Root.Ui.Impl.Views;
 public partial class ConsoleView : UserControl
 {
 	private const string LanguageExtension = ".lua";
-	private new const ThemeName Theme = ThemeName.HighContrastDark;
+	private new const ThemeName Theme = ThemeName.OneDark;
 	private const int IndentationSize = 2;
 	private const int RulerPosition = 60;
 

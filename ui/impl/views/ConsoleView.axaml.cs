@@ -4,13 +4,15 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
+using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.ViewModels;
 using TextMateSharp.Grammars;
 using InputExtensions = Root.Globals.Input.InputExtensions;
 
 namespace Root.Ui.Impl.Views;
 
 // ReSharper disable once UnusedType.Global
-public partial class ConsoleView : UserControl
+public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 {
 	private const string LanguageExtension = ".lua";
 	private new const ThemeName Theme = ThemeName.OneDark;

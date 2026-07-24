@@ -5,27 +5,22 @@ using Root.Ui.Impl.Abstractions;
 namespace Root.Ui.Impl.Services;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class ViewLocatorService : ISingletonObject, IServiceBase, IDataTemplate
+public class ViewLocatorService(IServiceProvider services) : ISingletonObject, IServiceBase, IDataTemplate
 {
 	public Control? Build(object? data)
 	{
-		if (data is null)
+		if (data is not ViewModelBase viewModel)
 			return null;
 
-		var name = data.GetType().FullName!.Replace("ViewModel", "View", StringComparison.OrdinalIgnoreCase);
-#pragma warning disable IL2026
-		var type = typeof(ViewLocatorService)
-			.Assembly
-			.GetType(name);
-#pragma warning restore IL2026
+#pragma warning disable IL3050
+		var viewInterface = typeof(IViewFor<>).MakeGenericType(viewModel.GetType());
+#pragma warning restore IL3050
+		var view = (Control?)services.GetService(viewInterface);
 
-		if (type is null)
-			return new TextBlock { Text = $"View with name {name} not found" };
+		if (view is null)
+			return new TextBlock { Text = $"View for {viewModel.GetType().Name} not found" };
 
-#pragma warning disable IL2072
-		var view = (Control?)Activator.CreateInstance(type);
-#pragma warning restore IL2072
-		view?.DataContext = data;
+		view.DataContext = data;
 
 		return view;
 	}

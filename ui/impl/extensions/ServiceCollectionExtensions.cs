@@ -21,6 +21,9 @@ public static partial class ServiceCollectionExtensions
 		Lifetime = ServiceLifetime.Singleton,
 		AsSelf = true,
 		AsImplementedInterfaces = true)]
+	[GenerateServiceRegistrations(
+		AssignableTo = typeof(IViewFor<>),
+		Lifetime = ServiceLifetime.Transient)]
 	// ReSharper disable once UnusedMethodReturnValue.Global
 	public static partial IServiceCollection AddServices(this IServiceCollection services);
 }

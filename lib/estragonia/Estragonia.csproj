@@ -20,13 +20,16 @@
     <PackageReference Include="Avalonia" Version="[12.1.0]"/>
     <PackageReference Include="Avalonia.HarfBuzz" Version="[12.1.0]"/>
     <PackageReference Include="SkiaSharp" Version="[3.119.0.0]"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="[3.119.0.0]"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="[3.119.0.0]"/>
     <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="[3.119.0.0]"/>
+    <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="[3.119.0.0]"/>
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="[3.119.0.0]"/>
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Built Against: Version 12.1.0 & .NET 10.0.110 -->
+    <!--
+      Use a custom DLL where ISkiaGpu is public
+      Built Against: Avalonia 12.1.0 & .NET 10.0.110
+    -->
     <Reference Include="Avalonia.Skia">
       <HintPath>lib/Avalonia.Skia.dll</HintPath>
       <Private>true</Private>

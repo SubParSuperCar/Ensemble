@@ -1,6 +1,3 @@
 <linker>
-  <assembly fullname="Game">
-    <namespace fullname="Root.Ui.Impl.Views" preserve="all"/>
-  </assembly>
   <assembly fullname="Estragonia" preserve="all"/>
 </linker>

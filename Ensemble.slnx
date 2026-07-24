@@ -5,6 +5,7 @@
     <File Path=".gitignore"/>
     <File Path="appsettings.json"/>
     <File Path="FodyWeavers.xml"/>
+    <!-- Auto-generated -->
     <File Path="FodyWeavers.xsd"/>
     <File Path="global.json"/>
     <File Path="LICENSE.md"/>
@@ -15,6 +16,10 @@
     <File Path=".github/LICENSE-ASSETS.txt"/>
     <File Path=".github/LICENSE-CODE.txt"/>
     <File Path=".github/README.md"/>
+    <File Path=".github/workflows/cloc.yml"/>
+    <File Path=".github/workflows/zip.yml"/>
+  </Folder>
+  <Folder Name="/Solution Items/GitHub/Workflows/">
     <File Path=".github/workflows/cloc.yml"/>
     <File Path=".github/workflows/zip.yml"/>
   </Folder>

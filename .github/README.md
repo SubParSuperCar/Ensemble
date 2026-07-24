@@ -1,6 +1,6 @@
 # Ensemble
 
-A multiplayer, collaborative sandbox building game made with Godot 4, C#, and .NET.
+A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.
 
 ![](/assets/images/ensemble_icon_square_colored.png "Ensemble Icon")
 

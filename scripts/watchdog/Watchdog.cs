@@ -74,6 +74,7 @@ public partial class Watchdog : Node
 					try
 					{
 						Log.Fatal("{Message}", message);
+						Log.CloseAndFlush();
 					}
 					finally
 					{

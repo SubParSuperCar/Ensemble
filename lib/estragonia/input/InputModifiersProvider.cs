@@ -1,8 +1,10 @@
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Godot;
 using GdInput = Godot.Input;
 using GdKey = Godot.Key;
 using GdMouseButton = Godot.MouseButton;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Estragonia.Input;
 
@@ -97,7 +99,7 @@ internal static class InputModifiersProvider
 			? inputEventWithModifiers.GetKeyModifiers()
 			: GetKeyModifiers();
 
-	private static KeyModifiers GetKeyModifiers(this InputEventWithModifiers inputEvent)
+	public static KeyModifiers GetKeyModifiers(this InputEventWithModifiers inputEvent)
 	{
 		var modifiers = KeyModifiers.None;
 
@@ -113,7 +115,7 @@ internal static class InputModifiersProvider
 		return modifiers;
 	}
 
-	private static KeyModifiers GetKeyModifiers()
+	public static KeyModifiers GetKeyModifiers()
 	{
 		var modifiers = KeyModifiers.None;
 

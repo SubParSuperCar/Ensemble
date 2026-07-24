@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
 using Root.Ui.Impl.Abstractions;
@@ -77,8 +76,8 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 		}
 	}
 
-	private void OnEditorGotFocus(object? sender, GotFocusEventArgs e) => InputExtensions.Sink.Acquire(this);
-	private void OnEditorLostFocus(object? sender, RoutedEventArgs e) => InputExtensions.Sink.Release(this);
+	private void OnEditorGotFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Acquire(this);
+	private void OnEditorLostFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Release(this);
 
 	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
 	{

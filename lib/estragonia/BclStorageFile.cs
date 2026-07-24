@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Security;
 using System.Threading.Tasks;
@@ -8,22 +8,28 @@ namespace Estragonia;
 
 internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 {
-	private FileInfo FileInfo { get; } = fileInfo;
+	// ReSharper disable once ReplaceWithFieldKeyword
+	private Uri? _path;
+
+	// ReSharper disable once MemberCanBePrivate.Global
+	public FileInfo FileInfo { get; } = fileInfo;
 
 	public string Name => FileInfo.Name;
 
 	public bool CanBookmark => true;
 
-	public Uri Path => field ??= BuildPath();
+	public Uri Path => _path ??= BuildPath();
 
 	public Task<StorageItemProperties> GetBasicPropertiesAsync()
 	{
 		if (FileInfo.Exists)
+		{
 			return Task.FromResult(new StorageItemProperties(
 				(ulong)FileInfo.Length,
 				FileInfo.CreationTimeUtc,
 				FileInfo.LastAccessTimeUtc
 			));
+		}
 
 		return Task.FromResult(new StorageItemProperties());
 	}
@@ -42,12 +48,16 @@ internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 		return Task.FromResult<Stream>(stream);
 	}
 
-	public Task<string?> SaveBookmarkAsync() => Task.FromResult<string?>(FileInfo.FullName);
+	public Task<string?> SaveBookmarkAsync() =>
+		FileInfo.Exists ? Task.FromResult<string?>(FileInfo.FullName) : Task.FromResult<string?>(null);
 
 	public Task ReleaseBookmarkAsync() => Task.CompletedTask;
 
 	public Task DeleteAsync()
 	{
+		if (!FileInfo.Exists)
+			throw new FileNotFoundException($"File not found: {FileInfo.FullName}");
+
 		FileInfo.Delete();
 		return Task.CompletedTask;
 	}

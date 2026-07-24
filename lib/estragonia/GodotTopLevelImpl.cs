@@ -1,12 +1,16 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Security;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Input.Raw;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
+using Avalonia.Platform.Surfaces;
 using Estragonia.Input;
 using Godot;
 using AvCompositor = Avalonia.Rendering.Composition.Compositor;
@@ -21,17 +25,19 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 {
 	private readonly IClipboard _clipboard;
 
-	private readonly IGodotPlatformGraphics _platformGraphics;
+	private readonly GodotVkPlatformGraphics _platformGraphics;
 	private readonly TouchDevice _touchDevice = new();
 	private GdCursorShape _cursorShape;
-	private IInputRoot? _inputRoot;
 	private bool _isDisposed;
 	private int _lastMouseDeviceId = GodotDevices.EmulatedDeviceId;
 	private PixelSize _renderSize;
 
-	private IGodotSkiaSurface? _surface;
+	private GodotSkiaSurface? _surface;
 
-	public GodotTopLevelImpl(IGodotPlatformGraphics platformGraphics, IClipboard clipboard, AvCompositor compositor)
+	// ReSharper disable once ReplaceWithFieldKeyword
+	private WindowTransparencyLevel _transparencyLevel = WindowTransparencyLevel.Transparent;
+
+	public GodotTopLevelImpl(GodotVkPlatformGraphics platformGraphics, IClipboard clipboard, AvCompositor compositor)
 	{
 		_platformGraphics = platformGraphics;
 		_clipboard = clipboard;
@@ -40,7 +46,13 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		platformGraphics.AddRef();
 	}
 
-	public Action<GdCursorShape>? CursorChanged { get; init; }
+	public Action<GdCursorShape>? CursorChanged { get; set; }
+
+	/// <summary>
+	///     Exposes the current <see cref="IInputRoot" /> for use by <see cref="GodotWindowImpl" />.
+	///     Avoids reflection into this class's private fields.
+	/// </summary>
+	internal IInputRoot? InputRoot { get; private set; }
 
 	public double RenderScaling { get; private set; } = 1.0;
 
@@ -54,16 +66,16 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public WindowTransparencyLevel TransparencyLevel
 	{
-		get;
+		get => _transparencyLevel;
 		private set
 		{
-			if (field.Equals(value))
+			if (_transparencyLevel.Equals(value))
 				return;
 
-			field = value;
+			_transparencyLevel = value;
 			TransparencyLevelChanged?.Invoke(value);
 		}
-	} = WindowTransparencyLevel.Transparent;
+	}
 
 	public Action<Rect>? Paint { get; set; }
 
@@ -79,11 +91,11 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public Action<WindowTransparencyLevel>? TransparencyLevelChanged { get; set; }
 
-	IEnumerable<object> ITopLevelImpl.Surfaces => GetOrCreateSurfaces();
+	IPlatformRenderSurface[] ITopLevelImpl.Surfaces => GetOrCreateSurfaces();
 
 	AcrylicPlatformCompensationLevels ITopLevelImpl.AcrylicCompensationLevels => new(1.0, 1.0, 1.0);
 
-	void ITopLevelImpl.SetInputRoot(IInputRoot inputRoot) => _inputRoot = inputRoot;
+	void ITopLevelImpl.SetInputRoot(IInputRoot inputRoot) => InputRoot = inputRoot;
 
 	Point ITopLevelImpl.PointToClient(PixelPoint point) => point.ToPoint(RenderScaling);
 
@@ -101,18 +113,13 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	IPopupImpl? ITopLevelImpl.CreatePopup() => null;
 
-	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels)
-	{
-		foreach (var transparencyLevel in transparencyLevels)
-			if (transparencyLevel == WindowTransparencyLevel.Transparent ||
-				transparencyLevel == WindowTransparencyLevel.None)
-			{
-				TransparencyLevel = transparencyLevel;
-				return;
-			}
-	}
+	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels) =>
+		// Overlay windows are always composited onto the host control's texture,
+		// so we force Transparent level regardless of what Avalonia requests.
+		// This prevents PART_TransparencyFallback from showing an opaque white background.
+		TransparencyLevel = WindowTransparencyLevel.Transparent;
 
-	void ITopLevelImpl.SetFrameThemeVariant(PlatformThemeVariant themeVariant)
+	void ITopLevelImpl.SetFrameThemeVariant(PlatformThemeVariant? themeVariant)
 	{
 	}
 
@@ -137,16 +144,18 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		_platformGraphics.Release();
 	}
 
-	private IGodotSkiaSurface CreateSurface() =>
-		_isDisposed
-			? throw new ObjectDisposedException(nameof(GodotTopLevelImpl))
-			: _platformGraphics.GetSharedContext().CreateSurface(_renderSize, RenderScaling);
+	private GodotSkiaSurface CreateSurface()
+	{
+		ObjectDisposedException.ThrowIf(_isDisposed, nameof(GodotTopLevelImpl));
+		return _platformGraphics.GetSharedContext().CreateSurface(_renderSize, RenderScaling);
+	}
 
-	public IGodotSkiaSurface? TryGetSurface() => _surface;
+	// ReSharper disable once UnusedMember.Global
+	public GodotSkiaSurface? TryGetSurface() => _surface;
 
-	public IGodotSkiaSurface GetOrCreateSurface() => _surface ??= CreateSurface();
+	public GodotSkiaSurface GetOrCreateSurface() => _surface ??= CreateSurface();
 
-	private IEnumerable<object> GetOrCreateSurfaces() => [GetOrCreateSurface()];
+	private IPlatformRenderSurface[] GetOrCreateSurfaces() => [GetOrCreateSurface()];
 
 	[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Doesn't affect correctness")]
 	public void SetRenderSize(PixelSize renderSize, double renderScaling)
@@ -188,19 +197,25 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 				hasScalingChanged ? WindowResizeReason.DpiChange : WindowResizeReason.Unspecified);
 	}
 
-	public void OnDraw(Rect rect) => Paint?.Invoke(rect);
+	public void OnDraw(Rect rect)
+	{
+		if (_isDisposed)
+			return;
+
+		Paint?.Invoke(rect);
+	}
 
 	public bool OnMouseMotion(InputEventMouseMotion inputEvent, ulong timestamp)
 	{
 		_lastMouseDeviceId = inputEvent.Device;
 
-		if (_inputRoot is null || Input is not { } input)
+		if (InputRoot is null || Input is not { } input)
 			return false;
 
 		var args = new RawPointerEventArgs(
 			GodotDevices.GetMouse(inputEvent.Device),
 			timestamp,
-			_inputRoot,
+			InputRoot,
 			RawPointerEventType.Move,
 			CreateRawPointerPoint(inputEvent.Position, inputEvent.Pressure, inputEvent.Tilt),
 			inputEvent.GetRawInputModifiers()
@@ -215,7 +230,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	{
 		_lastMouseDeviceId = inputEvent.Device;
 
-		if (_inputRoot is null || Input is not { } input)
+		if (InputRoot is null || Input is not { } input)
 			return false;
 
 		var args = (inputEvent.ButtonIndex, inputEvent.Pressed) switch
@@ -249,7 +264,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			return new RawPointerEventArgs(
 				GodotDevices.GetMouse(inputEvent.Device),
 				timestamp,
-				_inputRoot,
+				InputRoot,
 				type,
 				inputEvent.Position.ToAvaloniaPoint() / RenderScaling,
 				inputEvent.GetRawInputModifiers()
@@ -261,7 +276,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			return new RawMouseWheelEventArgs(
 				GodotDevices.GetMouse(inputEvent.Device),
 				timestamp,
-				_inputRoot,
+				InputRoot,
 				inputEvent.Position.ToAvaloniaPoint() / RenderScaling,
 				delta,
 				inputEvent.GetRawInputModifiers()
@@ -271,13 +286,13 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public bool OnScreenTouch(InputEventScreenTouch inputEvent, ulong timestamp)
 	{
-		if (_inputRoot is null || Input is not { } input)
+		if (InputRoot is null || Input is not { } input)
 			return false;
 
 		var args = new RawTouchEventArgs(
 			_touchDevice,
 			timestamp,
-			_inputRoot,
+			InputRoot,
 			inputEvent.Pressed ? RawPointerEventType.TouchBegin : RawPointerEventType.TouchEnd,
 			inputEvent.Position.ToAvaloniaPoint() / RenderScaling,
 			InputModifiersProvider.GetRawInputModifiers(),
@@ -291,13 +306,13 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public bool OnScreenDrag(InputEventScreenDrag inputEvent, ulong timestamp)
 	{
-		if (_inputRoot is null || Input is not { } input)
+		if (InputRoot is null || Input is not { } input)
 			return false;
 
 		var args = new RawTouchEventArgs(
 			_touchDevice,
 			timestamp,
-			_inputRoot,
+			InputRoot,
 			RawPointerEventType.TouchUpdate,
 			CreateRawPointerPoint(inputEvent.Position, inputEvent.Pressure, inputEvent.Tilt),
 			inputEvent.GetRawInputModifiers(),
@@ -321,7 +336,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public bool OnKey(InputEventKey inputEvent, ulong timestamp)
 	{
-		if (_inputRoot is null || Input is not { } input)
+		if (InputRoot is null || Input is not { } input)
 			return false;
 
 		var keyCode = inputEvent.Keycode;
@@ -333,7 +348,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			var args = new RawKeyEventArgs(
 				GodotDevices.Keyboard,
 				timestamp,
-				_inputRoot,
+				InputRoot,
 				pressed ? RawKeyEventType.KeyDown : RawKeyEventType.KeyUp,
 				key,
 				inputEvent.GetRawInputModifiers(),
@@ -350,7 +365,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		if (!pressed || !OS.IsKeycodeUnicode((long)keyCode)) return false;
 		{
 			var text = char.ConvertFromUtf32((int)inputEvent.Unicode);
-			var args = new RawTextInputEventArgs(GodotDevices.Keyboard, timestamp, _inputRoot, text);
+			var args = new RawTextInputEventArgs(GodotDevices.Keyboard, timestamp, InputRoot, text);
 
 			input(args);
 
@@ -363,14 +378,15 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public bool OnJoypadButton(InputEventJoypadButton inputEvent, ulong timestamp)
 	{
-		if (_inputRoot is null || Input is not { } input)
+		if (InputRoot is null || Input is not { } input)
 			return false;
 
 		var args = new RawJoypadButtonEventArgs(
 			GodotDevices.GetJoypad(inputEvent.Device),
 			timestamp,
-			_inputRoot,
-			inputEvent.IsPressed() ? RawJoypadButtonEventType.ButtonDown : RawJoypadButtonEventType.ButtonUp
+			InputRoot,
+			inputEvent.IsPressed() ? RawJoypadButtonEventType.ButtonDown : RawJoypadButtonEventType.ButtonUp,
+			inputEvent.ButtonIndex
 		);
 
 		input(args);
@@ -380,13 +396,15 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public bool OnJoypadMotion(InputEventJoypadMotion inputEvent, ulong timestamp)
 	{
-		if (_inputRoot is null || Input is not { } input)
+		if (InputRoot is null || Input is not { } input)
 			return false;
 
 		var args = new RawJoypadAxisEventArgs(
 			GodotDevices.GetJoypad(inputEvent.Device),
 			timestamp,
-			_inputRoot
+			InputRoot,
+			inputEvent.Axis,
+			inputEvent.AxisValue
 		);
 
 		input(args);
@@ -396,19 +414,93 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public void OnLostFocus() => LostFocus?.Invoke();
 
-	public void OnMouseExited(ulong timestamp)
+	// ReSharper disable once UnusedMethodReturnValue.Global
+	public bool OnMouseExited(ulong timestamp)
 	{
-		if (_inputRoot is null || Input is not { } input) return;
+		if (InputRoot is null || Input is not { } input)
+			return false;
 
 		var args = new RawPointerEventArgs(
 			GodotDevices.GetMouse(_lastMouseDeviceId),
 			timestamp,
-			_inputRoot,
+			InputRoot,
 			RawPointerEventType.LeaveWindow,
 			new Point(-1, -1),
 			InputModifiersProvider.GetRawInputModifiers()
 		);
 
 		input(args);
+
+		return args.Handled;
+	}
+
+	/// <summary>
+	///     Handles files dropped from the OS onto the Godot window.
+	///     First sends DragLeave to end any hover session, then
+	///     synthesizes DragEnter → DragOver → Drop with real file data.
+	/// </summary>
+	// ReSharper disable once UnusedParameter.Global
+	public bool OnFilesDropped(string[] files, Vector2 position, ulong timestamp)
+	{
+		if (InputRoot is null || Input is not { } input)
+			return false;
+
+		var point = position.ToAvaloniaPoint() / RenderScaling;
+		var modifiers = InputModifiersProvider.GetRawInputModifiers();
+		var device = AvaloniaLocator.Current.GetRequiredService<IDragDropDevice>();
+
+		// Build IDataTransfer from the dropped file paths.
+		// Validate each path exists on the filesystem before creating storage items
+		// to prevent processing invalid or potentially malicious paths.
+		var dataTransfer = new DataTransfer();
+		foreach (var filePath in files)
+		{
+			if (string.IsNullOrWhiteSpace(filePath))
+				continue;
+
+			// Only accept absolute paths from OS drag-drop
+			if (!Path.IsPathRooted(filePath))
+				continue;
+
+			try
+			{
+				IStorageItem storageItem = Directory.Exists(filePath)
+					? new BclStorageFolder(new DirectoryInfo(filePath))
+					: File.Exists(filePath)
+						? new BclStorageFile(new FileInfo(filePath))
+						: null!; // Skip paths that no longer exist
+				dataTransfer.Add(DataTransferItem.CreateFile(storageItem));
+			}
+			catch (ArgumentException)
+			{
+				// Invalid path characters — skip
+			}
+			catch (SecurityException)
+			{
+				// No access to path — skip
+			}
+			catch (NotSupportedException)
+			{
+				// Path format not supported — skip
+			}
+		}
+
+		if (dataTransfer.Items.Count == 0)
+			return false;
+
+		// Synthesize DragEnter → DragOver → Drop sequence
+		var enterArgs = new RawDragEvent(device, RawDragEventType.DragEnter, InputRoot, point, dataTransfer,
+			DragDropEffects.Copy | DragDropEffects.Link, modifiers);
+		input(enterArgs);
+
+		var overArgs = new RawDragEvent(device, RawDragEventType.DragOver, InputRoot, point, dataTransfer,
+			DragDropEffects.Copy | DragDropEffects.Link, modifiers);
+		input(overArgs);
+
+		var dropArgs = new RawDragEvent(device, RawDragEventType.Drop, InputRoot, point, dataTransfer,
+			DragDropEffects.Copy | DragDropEffects.Link, modifiers);
+		input(dropArgs);
+
+		return dropArgs.Handled;
 	}
 }

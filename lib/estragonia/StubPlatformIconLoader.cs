@@ -1,4 +1,5 @@
-using System.IO;
+﻿using System.IO;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
 namespace Estragonia;
@@ -23,7 +24,7 @@ internal sealed class StubPlatformIconLoader : IPlatformIconLoader
 	public IWindowIconImpl LoadIcon(IBitmapImpl bitmap)
 	{
 		var memoryStream = new MemoryStream();
-		bitmap.Save(memoryStream);
+		bitmap.Save(memoryStream, new PngBitmapEncoderOptions());
 		memoryStream.Position = 0L;
 		return new StubWindowIconImpl(memoryStream);
 	}

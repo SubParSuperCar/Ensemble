@@ -8,7 +8,6 @@
     <AnalysisMode>Recommended</AnalysisMode>
     <RootNamespace>Root</RootNamespace>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -20,6 +19,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+    <PublishAot>true</PublishAot>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -32,16 +32,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1"/>
-    <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.18]"/>
-    <PackageReference Include="AvaloniaEdit.TextMate" Version="[11.4.1]"/>
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0"/>
+    <PackageReference Include="Avalonia.Themes.Simple" Version="12.1.0"/>
+    <PackageReference Include="AvaloniaEdit.TextMate" Version="12.0.0"/>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
     <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
-    <PackageReference Include="LoadingIndicators.Avalonia" Version="11.0.11.1"/>
+    <PackageReference Include="Optris.LoadingIndicators.Avalonia" Version="12.0.4"/>
     <PackageReference Include="LuaCSharp" Version="0.5.5"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.*">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.125">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -63,17 +63,6 @@
   <ItemGroup>
     <ProjectReference Include="lib/estragonia/Estragonia.csproj"/>
   </ItemGroup>
-
-  <!-- <Target Name="CopyNativeLibsNextToExecutable" AfterTargets="Publish">
-    <ItemGroup>
-      <SkiaNativeLibs Include="$(PublishDir)libSkiaSharp.so;$(PublishDir)libHarfBuzzSharp.so;$(PublishDir)libonigwrap.so"/>
-    </ItemGroup>
-
-    <Copy SourceFiles="@(SkiaNativeLibs)"
-          DestinationFolder="$(PublishDir)../"
-          SkipUnchangedFiles="true"
-          Condition="Exists('%(SkiaNativeLibs.Identity)')"/>
-  </Target> -->
 
   <ItemGroup>
     <Content Include="**/*.gd" Exclude=".godot/**">

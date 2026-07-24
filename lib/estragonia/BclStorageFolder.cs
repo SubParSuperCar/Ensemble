@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,13 +10,16 @@ namespace Estragonia;
 
 internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBookmarkFolder
 {
+	// ReSharper disable once ReplaceWithFieldKeyword
+	private Uri? _path;
+
 	public DirectoryInfo DirectoryInfo { get; } = directoryInfo;
 
 	public string Name => DirectoryInfo.Name;
 
 	public bool CanBookmark => true;
 
-	public Uri Path => field ??= BuildPath();
+	public Uri Path => _path ??= BuildPath();
 
 	public Task<StorageItemProperties> GetBasicPropertiesAsync() =>
 		Task.FromResult(new StorageItemProperties(
@@ -37,23 +40,8 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 			.Concat(DirectoryInfo.EnumerateFiles().Select(f => new BclStorageFile(f)))
 			.AsAsyncEnumerable();
 
-	public Task<IStorageFolder?> GetFolderAsync(string name)
-	{
-		var directory = DirectoryInfo.EnumerateDirectories().FirstOrDefault(d => d.Name == name);
-		return directory is null
-			? Task.FromResult<IStorageFolder?>(null)
-			: Task.FromResult<IStorageFolder?>(new BclStorageFolder(directory));
-	}
-
-	public Task<IStorageFile?> GetFileAsync(string name)
-	{
-		var file = DirectoryInfo.EnumerateFiles().FirstOrDefault(f => f.Name == name);
-		return file is null
-			? Task.FromResult<IStorageFile?>(null)
-			: Task.FromResult<IStorageFile?>(new BclStorageFile(file));
-	}
-
-	public Task<string?> SaveBookmarkAsync() => Task.FromResult<string?>(DirectoryInfo.FullName);
+	public Task<string?> SaveBookmarkAsync() =>
+		DirectoryInfo.Exists ? Task.FromResult<string?>(DirectoryInfo.FullName) : Task.FromResult<string?>(null);
 
 	public Task ReleaseBookmarkAsync() => Task.CompletedTask;
 
@@ -63,6 +51,14 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 
 	public Task DeleteAsync()
 	{
+		if (!DirectoryInfo.Exists)
+			throw new DirectoryNotFoundException($"Directory not found: {DirectoryInfo.FullName}");
+
+		// Guard against deleting root or system directories
+		var fullPath = System.IO.Path.GetFullPath(DirectoryInfo.FullName);
+		if (fullPath.Length <= 3) // "C:\" etc.
+			throw new UnauthorizedAccessException($"Refusing to delete root directory: {fullPath}");
+
 		DirectoryInfo.Delete(true);
 		return Task.CompletedTask;
 	}
@@ -91,6 +87,26 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 		var newFolder = DirectoryInfo.CreateSubdirectory(name);
 
 		return Task.FromResult<IStorageFolder?>(new BclStorageFolder(newFolder));
+	}
+
+	public Task<IStorageFolder?> GetFolderAsync(string name)
+	{
+		var path = System.IO.Path.Combine(DirectoryInfo.FullName, name);
+		var dir = new DirectoryInfo(path);
+
+		return Task.FromResult<IStorageFolder?>(
+			dir.Exists ? new BclStorageFolder(dir) : null
+		);
+	}
+
+	public Task<IStorageFile?> GetFileAsync(string name)
+	{
+		var path = System.IO.Path.Combine(DirectoryInfo.FullName, name);
+		var file = new FileInfo(path);
+
+		return Task.FromResult<IStorageFile?>(
+			file.Exists ? new BclStorageFile(file) : null
+		);
 	}
 
 	private Uri BuildPath()

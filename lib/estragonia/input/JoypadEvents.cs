@@ -1,4 +1,4 @@
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Avalonia.Interactivity;
 
 namespace Estragonia.Input;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Godot;
 using static Estragonia.VkInterop;
 
 namespace Estragonia;
@@ -12,40 +11,11 @@ namespace Estragonia;
 ///     An helper to create Vulkan image barriers.
 /// </summary>
 internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceApi deviceApi, uint queueFamilyIndex)
-	: ISurfaceSynchronizer
+	: IDisposable
 {
 	private readonly List<ReusableBuffer> _reusableBuffers = [];
 
 	private bool _isDisposed;
-
-	/// <summary>Prepares the surface for Skia rendering by transitioning to COLOR_ATTACHMENT_OPTIMAL.</summary>
-	public void PrepareForRendering(IGodotSkiaSurface surface)
-	{
-		if (surface is not GodotSkiaSurface vkSurface)
-			throw new ArgumentException("Surface must be a Vulkan surface", nameof(surface));
-
-		// Clear the texture on first draw. This is already done by Avalonia, but Godot doesn't know that.
-		// We need it to avoid texture corruption on first draw on AMD GPUs.
-		if (vkSurface.DrawCount == 0)
-			vkSurface.RenderingDevice.TextureClear(vkSurface.GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
-
-		// Godot leaves the image in SHADER_READ_ONLY_OPTIMAL but Skia expects it in COLOR_ATTACHMENT_OPTIMAL
-		vkSurface.TransitionLayoutTo(VkImageLayout.COLOR_ATTACHMENT_OPTIMAL);
-	}
-
-	/// <summary>Finalizes rendering by transitioning back to SHADER_READ_ONLY_OPTIMAL for Godot.</summary>
-	public void FinishRendering(IGodotSkiaSurface surface)
-	{
-		if (surface is not GodotSkiaSurface vkSurface)
-			throw new ArgumentException("Surface must be a Vulkan surface", nameof(surface));
-
-		vkSurface.SkSurface.Flush(true);
-
-		// Switch back to SHADER_READ_ONLY_OPTIMAL for Godot
-		vkSurface.TransitionLayoutTo(VkImageLayout.SHADER_READ_ONLY_OPTIMAL);
-
-		vkSurface.DrawCount++;
-	}
 
 	public void Dispose()
 	{
@@ -139,7 +109,9 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 	private ReusableBuffer GetOrCreateReusableBuffer()
 	{
 		foreach (var existingBuffer in _reusableBuffers.Where(existingBuffer => existingBuffer.IsAvailable()))
+		{
 			return existingBuffer;
+		}
 
 		var newBuffer = new ReusableBuffer(device, deviceApi, queueFamilyIndex);
 		_reusableBuffers.Add(newBuffer);

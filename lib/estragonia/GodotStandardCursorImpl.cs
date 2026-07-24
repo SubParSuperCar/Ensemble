@@ -1,4 +1,4 @@
-using Avalonia.Platform;
+﻿using Avalonia.Platform;
 using GdCursorShape = Godot.Control.CursorShape;
 
 namespace Estragonia;

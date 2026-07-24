@@ -43,10 +43,8 @@ public partial class StatViewModel : ViewModelBase
 				$"{Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
 			["Physics Time"] = string.Create(CultureInfo.InvariantCulture,
 				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
-			["Used DRAM"] =
-				Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.MemoryStatic)),
-			["Used VRAM"] =
-				Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
+			["Used DRAM"] = Util.FormatBytes(OS.GetStaticMemoryUsage()),
+			["Used VRAM"] = Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
 			["Objects"] = Performance.GetMonitor(Performance.Monitor.ObjectCount),
 			["Nodes"] = Performance.GetMonitor(Performance.Monitor.ObjectNodeCount),
 			["Orphan Nodes"] = Performance.GetMonitor(Performance.Monitor.ObjectOrphanNodeCount),

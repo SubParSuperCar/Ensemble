@@ -15,7 +15,7 @@
     <OutputType>Exe</OutputType>
     <UseAppHost>false</UseAppHost>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -63,6 +63,17 @@
   <ItemGroup>
     <ProjectReference Include="lib/estragonia/Estragonia.csproj"/>
   </ItemGroup>
+
+  <Target Name="CopyNativeLibsNextToExecutable" AfterTargets="Publish">
+    <ItemGroup>
+      <SkiaNativeLibs Include="$(PublishDir)libSkiaSharp.so;$(PublishDir)libHarfBuzzSharp.so;$(PublishDir)libonigwrap.so"/>
+    </ItemGroup>
+
+    <Copy SourceFiles="@(SkiaNativeLibs)"
+          DestinationFolder="$(PublishDir)../"
+          SkipUnchangedFiles="true"
+          Condition="Exists('%(SkiaNativeLibs.Identity)')"/>
+  </Target>
 
   <ItemGroup>
     <Content Include="**/*.gd" Exclude=".godot/**">

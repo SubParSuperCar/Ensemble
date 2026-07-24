@@ -47,6 +47,7 @@ public partial class AssetManager : Node
 
 	private void ScanDirectory(string path)
 	{
+		// TODO: Can't access 'res://' when published
 		using var directory = DirAccess.Open(path);
 
 		if (directory is null)

@@ -7,6 +7,7 @@ using Root.Scripts.Globals;
 using Root.Scripts.Logger.Impl;
 using Serilog;
 using Serilog.Templates;
+using FileAccess = Godot.FileAccess;
 
 namespace Root.Scripts.Logger;
 
@@ -19,10 +20,17 @@ public partial class Logger : Node
 		var logDir = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
 		Directory.CreateDirectory(logDir);
 
-		var config = new ConfigurationBuilder()
-			.SetBasePath(ProjectSettings.GlobalizePath(ScriptConstants.ResourceScheme))
-			.AddJsonFile("appsettings.json", true, true)
-			.Build();
+		var configBuilder = new ConfigurationBuilder();
+
+		using (var file = FileAccess.Open(ScriptConstants.ResourceScheme + "appsettings.json",
+				   FileAccess.ModeFlags.Read))
+			if (file is not null)
+			{
+				var bytes = file.GetBuffer((long)file.GetLength());
+				configBuilder.AddJsonStream(new MemoryStream(bytes));
+			}
+
+		var config = configBuilder.Build();
 
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Verbose()

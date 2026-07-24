@@ -35,6 +35,14 @@ public partial class StatViewModel : ViewModelBase
 
 		var fps = Performance.GetMonitor(Performance.Monitor.TimeFps);
 
+#if RELEASE
+		using var process = Process.GetCurrentProcess();
+		ulong dram = process.WorkingSet64;
+#elif DEBUG
+		// ReSharper disable once SuggestVarOrType_BuiltInTypes
+		ulong dram = OS.GetStaticMemoryUsage();
+#endif
+
 		Dictionary<string, object> stats = new(StringComparer.OrdinalIgnoreCase)
 		{
 			["Frame Rate"] = string.Create(CultureInfo.InvariantCulture,
@@ -43,7 +51,7 @@ public partial class StatViewModel : ViewModelBase
 				$"{Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
 			["Physics Time"] = string.Create(CultureInfo.InvariantCulture,
 				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
-			["Used DRAM"] = Util.FormatBytes(OS.GetStaticMemoryUsage()),
+			["Used DRAM"] = Util.FormatBytes(dram),
 			["Used VRAM"] = Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
 			["Objects"] = Performance.GetMonitor(Performance.Monitor.ObjectCount),
 			["Nodes"] = Performance.GetMonitor(Performance.Monitor.ObjectNodeCount),

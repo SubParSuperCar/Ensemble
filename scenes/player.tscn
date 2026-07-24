@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://boypbgb8eumkh"]
 
 [ext_resource type="Script" uid="uid://bcp3k2lr7xc5u" path="res://scripts/player/PlayerHandle.cs" id="1_3vyb7"]
-[ext_resource type="Script" uid="uid://cdu7rm7w2d2vd" path="res://scripts/player/CharacterController.cs" id="2_g2els"]
+[ext_resource type="Script" uid="uid://daka0fgmkrcsq" path="res://scripts/player/CharacterController.cs" id="2_g2els"]
 [ext_resource type="PackedScene" uid="uid://y6i76a7yj2rd" path="res://scenes/poppercam.tscn" id="3_6t5aa"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_agfs1"]

@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://el5y10hnh13g"]
 
-[ext_resource type="Shader" uid="uid://6ddsdqiif34x" path="res://addons/terrain_3d/extras/particle_example/particles.gdshader" id="1_t55me"]
+[ext_resource type="Shader" uid="uid://dce675i014xcn" path="res://addons/terrain_3d/extras/particle_example/particles.gdshader" id="1_t55me"]
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_544iv"]
 noise_type = 2

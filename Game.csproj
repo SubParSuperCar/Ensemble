@@ -11,12 +11,6 @@
     <PublishAot>true</PublishAot>
   </PropertyGroup>
 
-  <ItemGroup>
-    <TrimmerRootAssembly Include="$(TargetName)"/>
-    <TrimmerRootAssembly Include="GodotSharp"/>
-    <TrimmerRootDescriptor Include="TrimmerRoots.xml"/>
-  </ItemGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
     <UseAppHost>false</UseAppHost>
@@ -30,6 +24,12 @@
     <SelfContained>true</SelfContained>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="$(TargetName)"/>
+    <TrimmerRootAssembly Include="GodotSharp"/>
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1"/>

@@ -64,7 +64,7 @@
     <ProjectReference Include="lib/estragonia/Estragonia.csproj"/>
   </ItemGroup>
 
-  <Target Name="CopyNativeLibsNextToExecutable" AfterTargets="Publish">
+  <!-- <Target Name="CopyNativeLibsNextToExecutable" AfterTargets="Publish">
     <ItemGroup>
       <SkiaNativeLibs Include="$(PublishDir)libSkiaSharp.so;$(PublishDir)libHarfBuzzSharp.so;$(PublishDir)libonigwrap.so"/>
     </ItemGroup>
@@ -73,7 +73,7 @@
           DestinationFolder="$(PublishDir)../"
           SkipUnchangedFiles="true"
           Condition="Exists('%(SkiaNativeLibs.Identity)')"/>
-  </Target>
+  </Target> -->
 
   <ItemGroup>
     <Content Include="**/*.gd" Exclude=".godot/**">

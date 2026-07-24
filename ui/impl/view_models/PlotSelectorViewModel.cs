@@ -103,6 +103,7 @@ public partial class Plot : ObservableObject
 {
 	public int Id { get; init; }
 
+	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string OwnerName { get; set; } = string.Empty;
 	[ObservableProperty] public partial string Occupancy { get; set; } = string.Empty;
 }

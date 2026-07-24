@@ -8,16 +8,27 @@
     <AnalysisMode>Recommended</AnalysisMode>
     <RootNamespace>Root</RootNamespace>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="$(TargetName)"/>
+    <TrimmerRootAssembly Include="GodotSharp"/>
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml"/>
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <OutputType>Exe</OutputType>
     <UseAppHost>false</UseAppHost>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,13 +47,16 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10"/>
-    <PackageReference Include="Scrutor" Version="7.0.0"/>
     <PackageReference Include="Serilog" Version="4.4.0"/>
     <PackageReference Include="Serilog.Expressions" Version="5.0.0"/>
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+    <PackageReference Include="ServiceScan.SourceGenerator" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Threading.RateLimiting" Version="10.0.10"/>
   </ItemGroup>
 

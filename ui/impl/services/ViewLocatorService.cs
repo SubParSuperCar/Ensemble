@@ -13,12 +13,18 @@ public class ViewLocatorService : ISingletonObject, IServiceBase, IDataTemplate
 			return null;
 
 		var name = data.GetType().FullName!.Replace("ViewModel", "View", StringComparison.OrdinalIgnoreCase);
-		var type = Type.GetType(name);
+#pragma warning disable IL2026
+		var type = typeof(ViewLocatorService)
+			.Assembly
+			.GetType(name);
+#pragma warning restore IL2026
 
 		if (type is null)
 			return new TextBlock { Text = $"View with name {name} not found" };
 
+#pragma warning disable IL2072
 		var view = (Control?)Activator.CreateInstance(type);
+#pragma warning restore IL2072
 		view?.DataContext = data;
 
 		return view;

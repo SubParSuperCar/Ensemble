@@ -1,8 +1,8 @@
 using System.Globalization;
 
-namespace Root.Shared;
+namespace Root.Shared.Util;
 
-public static class Util
+public static class Formatter
 {
 	public static string FormatBytes(ulong bytes)
 	{

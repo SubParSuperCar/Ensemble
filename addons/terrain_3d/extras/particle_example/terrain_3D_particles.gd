@@ -15,6 +15,7 @@ extends Node3D
 		terrain = value
 		_create_grid()
 
+
 ## Distance between instances
 @export_range(0.125, 2.0, 0.015625) var instance_spacing: float = 0.5:
 	set(value):
@@ -22,6 +23,7 @@ extends Node3D
 		rows = maxi(int(cell_width / instance_spacing), 1)
 		amount = rows * rows
 		_set_offsets()
+
 
 ## Width of an individual cell of the grid
 @export_range(8.0, 256.0, 1.0) var cell_width: float = 32.0:
@@ -42,6 +44,7 @@ extends Node3D
 				p.custom_aabb = aabb
 		_set_offsets()
 
+
 ## Grid width. Must be odd. 
 ## Higher values cull slightly better, draw further out.
 @export_range(1, 15, 2) var grid_width: int = 9:
@@ -50,6 +53,7 @@ extends Node3D
 		particle_count = 1
 		min_draw_distance = 1.0
 		_create_grid()
+
 
 @export_storage var rows: int = 1
 
@@ -61,12 +65,14 @@ extends Node3D
 		for p in particle_nodes:
 			p.amount = amount
 
+
 @export_range(1, 256, 1) var process_fixed_fps: int = 30:
 	set(value):
 		process_fixed_fps = maxi(value, 1)
 		for p in particle_nodes:
 			p.fixed_fps = process_fixed_fps
 			p.preprocess = 1.0 / float(process_fixed_fps)
+
 
 ## Access to process material parameters
 @export var process_material: ShaderMaterial
@@ -75,11 +81,12 @@ extends Node3D
 @export var mesh: Mesh
 
 @export var shadow_mode: GeometryInstance3D.ShadowCastingSetting = (
-	GeometryInstance3D.ShadowCastingSetting.SHADOW_CASTING_SETTING_ON):
+		GeometryInstance3D.ShadowCastingSetting.SHADOW_CASTING_SETTING_ON):
 	set(value):
 		shadow_mode = value
 		for p in particle_nodes:
 			p.cast_shadow = value
+
 
 ## Override material for the particle mesh
 @export_custom(
@@ -90,12 +97,14 @@ extends Node3D
 		for p in particle_nodes:
 			p.material_override = mesh_material_override
 
+
 @export_group("Info")
 ## The minimum distance that particles will be drawn upto
 ## If using fade out effects like pixel alpha this is the limit to use.
 @export var min_draw_distance: float = 1.0:
 	set(value):
 		min_draw_distance = float(cell_width * grid_width) * 0.5
+
 
 ## Displays current total particle count based on Cell Width and Instance Spacing
 @export var particle_count: int = 1:
@@ -130,7 +139,7 @@ func _physics_process(delta: float) -> void:
 			if last_pos.distance_squared_to(camera.global_position) > 1.0:
 				var pos: Vector3 = camera.global_position.snapped(Vector3.ONE)
 				_position_grid(pos)
-				RenderingServer.material_set_param(process_material.get_rid(), "camera_position", pos)
+				RenderingServer.material_set_param(process_material.get_rid(), "camera_position", pos )
 				last_pos = camera.global_position
 		_update_process_parameters()
 	else:
@@ -171,7 +180,7 @@ func _create_grid() -> void:
 			if mesh_material_override:
 				particle_node.material_override = mesh_material_override
 			particle_node.use_fixed_seed = true
-			if (x > -half_grid and z > -half_grid):  # Use the same seed across all nodes
+			if (x > -half_grid and z > -half_grid): # Use the same seed across all nodes
 				particle_node.seed = particle_nodes[0].seed
 			self.add_child(particle_node)
 			particle_node.emitting = true
@@ -185,9 +194,9 @@ func _set_offsets() -> void:
 	for x in range(-half_grid, half_grid + 1):
 		for z in range(-half_grid, half_grid + 1):
 			var offset := Vector3(
-					float(x * rows) * instance_spacing,
-					0.0,
-					float(z * rows) * instance_spacing
+				float(x * rows) * instance_spacing,
+				0.0,
+				float(z * rows) * instance_spacing
 			)
 			offsets.append(offset)
 
@@ -205,7 +214,7 @@ func _position_grid(pos: Vector3) -> void:
 		var snap = Vector3(pos.x, 0, pos.z).snapped(Vector3.ONE) + offsets[i]
 		node.global_position = (snap / instance_spacing).round() * instance_spacing
 		node.reset_physics_interpolation()
-		node.restart(true)  # keep the same seed.
+		node.restart(true) # keep the same seed.
 
 
 func _update_process_parameters() -> void:

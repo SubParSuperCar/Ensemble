@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Root.Scripts.Globals;
 using Root.Scripts.Logger.Impl;
-using Root.Shared.LogSinks;
+using Root.Shared.Logging;
 using Serilog;
 using Serilog.Templates;
 using FileAccess = Godot.FileAccess;

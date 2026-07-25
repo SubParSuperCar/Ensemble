@@ -6,8 +6,10 @@ extends HBoxContainer
 signal pressed
 signal value_changed
 
+
 const ICON_PICKER_CHECKED: String = "res://addons/terrain_3d/icons/picker_checked.svg"
 const MAX_POINTS: int = 2
+
 
 var icon_picker: Texture2D
 var icon_picker_checked: Texture2D
@@ -18,9 +20,9 @@ var picking_index: int = -1
 func _enter_tree() -> void:
 	icon_picker = get_theme_icon("ColorPick", "EditorIcons")
 	icon_picker_checked = load(ICON_PICKER_CHECKED)
-
+	
 	points.resize(MAX_POINTS)
-
+	
 	for i in range(MAX_POINTS):
 		var button := Button.new()
 		button.icon = icon_picker
@@ -28,7 +30,7 @@ func _enter_tree() -> void:
 		button.set_meta(&"point_index", i)
 		button.pressed.connect(_on_button_pressed.bind(i))
 		add_child(button)
-
+	
 	_update_buttons()
 
 
@@ -47,7 +49,7 @@ func _update_buttons() -> void:
 
 func _update_button(button: Button) -> void:
 	var index: int = button.get_meta(&"point_index")
-
+	
 	if points[index] != Vector3.ZERO:
 		button.icon = icon_picker_checked
 	else:
@@ -67,7 +69,7 @@ func all_points_selected() -> bool:
 func add_point(p_value: Vector3) -> void:
 	if points.has(p_value):
 		return
-
+	
 	# If manually selecting a point individually
 	if picking_index != -1:
 		points[picking_index] = p_value

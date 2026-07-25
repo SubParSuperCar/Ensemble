@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Godot;
 using Hardware.Info;
-using Root.Shared;
+using Root.Shared.Util;
 using Serilog;
 using Environment = System.Environment;
 
@@ -82,7 +82,7 @@ public partial class InfoLogger : Node
 
 		Add(
 			"Memory",
-			$"{Util.FormatBytes(hw.MemoryStatus.TotalPhysical - hw.MemoryStatus.AvailablePhysical)} / {Util.FormatBytes(hw.MemoryStatus.TotalPhysical)}");
+			$"{Formatter.FormatBytes(hw.MemoryStatus.TotalPhysical - hw.MemoryStatus.AvailablePhysical)} / {Formatter.FormatBytes(hw.MemoryStatus.TotalPhysical)}");
 
 		if (board is not null)
 			Add("Board", $"{board.Manufacturer} {board.Product}");
@@ -91,7 +91,7 @@ public partial class InfoLogger : Node
 			Add("BIOS", $"{bios.Manufacturer} {bios.Version}");
 
 		foreach (var drive in hw.DriveList.OrderBy(d => d.Model, StringComparer.OrdinalIgnoreCase))
-			Add("Drive", $"{drive.Model} ({Util.FormatBytes(drive.Size)})");
+			Add("Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
 
 		foreach (var monitor in hw.MonitorList)
 			Add("Monitor", monitor.Name);

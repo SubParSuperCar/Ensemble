@@ -18,7 +18,7 @@ public partial class Game : Node3D
 		instances.Add(assetId, position, rotation);
 
 		GPlayers.Add(string.Empty, "Larpje139");
-		GPlayers.Add(string.Empty, "Pepsi bottle violator");
+		GPlayers.Add(string.Empty, "Pepsi bottle guzzler");
 #endif
 	}
 }

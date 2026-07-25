@@ -2,7 +2,7 @@ using Lua;
 using Lua.Standard;
 using Serilog;
 
-namespace Root.Shared;
+namespace Root.Shared.Execution;
 
 public static class LuaExecutor
 {

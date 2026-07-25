@@ -17,9 +17,8 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="9_e1j6l"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="10_pl11u"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="11_bhx41"]
-[ext_resource type="Terrain3DAssets" uid="uid://b2238ug3evnm2" path="res://resources/terrain_assets.tres" id="12_ssvqc"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_qnb83"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rysoc"]
 shader = ExtResource("2_rysoc")
 shader_parameter/sky_visible = true
 shader_parameter/color_correction = Vector2(0, 1)
@@ -72,8 +71,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.038490873, 0.038490873)
-shader_parameter/cirrus_position2 = Vector2(0.038490873, 0.038490873)
+shader_parameter/cirrus_position1 = Vector2(0.18956251, 0.18956251)
+shader_parameter/cirrus_position2 = Vector2(0.18956251, 0.18956251)
 shader_parameter/cirrus_texture = ExtResource("3_ssvqc")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +82,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.19244513, 0.19244513)
+shader_parameter/cumulus_position = Vector2(0.94783884, 0.94783884)
 shader_parameter/cumulus_texture = ExtResource("4_264po")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -95,19 +94,19 @@ shader_parameter/equatorial_grid_color = Color(0, 0.75, 1, 1)
 shader_parameter/equatorial_grid_rotation_offset = 0.03
 shader_parameter/moon_matrix = Basis(0.248294, -0.93115956, -0.2670057, 0.41473964, 0.35128424, -0.83939886, 0.8754091, 0.09767985, 0.4734105)
 
-[sub_resource type="Sky" id="Sky_sww3w"]
-sky_material = SubResource("ShaderMaterial_qnb83")
+[sub_resource type="Sky" id="Sky_ssvqc"]
+sky_material = SubResource("ShaderMaterial_rysoc")
 
-[sub_resource type="Environment" id="Environment_suyxu"]
+[sub_resource type="Environment" id="Environment_264po"]
 background_mode = 2
-sky = SubResource("Sky_sww3w")
+sky = SubResource("Sky_ssvqc")
 ambient_light_source = 3
 ambient_light_color = Color(0.75855124, 0.66286063, 0.6149106, 1)
 reflected_light_source = 2
 tonemap_mode = 3
 tonemap_white = 6.0
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ssvqc"]
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_1kice"]
 exposure_multiplier = 1.5
 
 [sub_resource type="Gradient" id="Gradient_u5sy4"]
@@ -152,6 +151,27 @@ _shader_parameters = {
 }
 show_checkered = true
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kvpfn"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_dinhu"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_kvpfn")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_kvuet"]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_dinhu")])
+
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
 points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 76, 0, -16, 76, 0, 16)
 
@@ -162,26 +182,26 @@ roughness = 0.6
 [node name="Game" type="Node3D" unique_id=1840370715]
 script = ExtResource("1_u5sy4")
 
-[node name="Sky" type="WorldEnvironment" parent="." unique_id=1185985814]
-environment = SubResource("Environment_suyxu")
-camera_attributes = SubResource("CameraAttributesPractical_ssvqc")
+[node name="Sky3D" type="WorldEnvironment" parent="." unique_id=1085309007]
+environment = SubResource("Environment_264po")
+camera_attributes = SubResource("CameraAttributesPractical_1kice")
 script = ExtResource("9_e1j6l")
 editor_time_enabled = false
 camera_exposure = 1.5
 wind_direction = 2.35619451204804
 metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
 
-[node name="SunLight" type="DirectionalLight3D" parent="Sky" unique_id=251690505]
+[node name="SunLight" type="DirectionalLight3D" parent="Sky3D" unique_id=1782178301]
 transform = Transform3D(0.5472129, -0.30361018, 0.7799865, 0, 0.9318908, 0.362739, -0.83699346, -0.19849546, 0.50994265, 0.7799865, 0.362739, 0.50994265)
 light_color = Color(0.9945096, 0.869053, 0.8061874, 1)
 shadow_enabled = true
 
-[node name="MoonLight" type="DirectionalLight3D" parent="Sky" unique_id=719448313]
+[node name="MoonLight" type="DirectionalLight3D" parent="Sky3D" unique_id=2079591738]
 transform = Transform3D(0, -0.48338273, 0.8754091, 0.97936994, 0.17689882, 0.09767985, -0.2020756, 0.8573494, 0.47341052, 0.8754091, 0.09767985, 0.47341052)
 light_color = Color(0.572549, 0.776471, 0.956863, 1)
 light_energy = 0.0
 
-[node name="SkyDome" type="Node" parent="Sky" unique_id=664469743]
+[node name="SkyDome" type="Node" parent="Sky3D" unique_id=916814502]
 script = ExtResource("10_pl11u")
 sun_azimuth = -2.149827
 sun_altitude = -1.1995909
@@ -189,17 +209,16 @@ moon_azimuth = -2.0665393
 moon_altitude = -1.4729605
 wind_direction = 2.35619451204804
 
-[node name="TimeOfDay" type="Node" parent="Sky" unique_id=869613856]
+[node name="TimeOfDay" type="Node" parent="Sky3D" unique_id=1689717495]
 script = ExtResource("11_bhx41")
 editor_time_enabled = false
 dome_path = NodePath("../SkyDome")
-system_sync = true
 
 [node name="Terrain" type="Terrain3D" parent="." unique_id=1739292469]
 debug_level = 1
 data_directory = "res://resources/terrain_regions/"
 material = SubResource("Terrain3DMaterial_vtaks")
-assets = ExtResource("12_ssvqc")
+assets = SubResource("Terrain3DAssets_kvuet")
 save_16_bit = true
 cast_shadows = 0
 show_checkered = true

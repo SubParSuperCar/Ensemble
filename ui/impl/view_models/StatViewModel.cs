@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
-using Root.Shared;
 using Root.Shared.Input;
+using Root.Shared.Util;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Services;
 using Environment = System.Environment;
@@ -53,8 +53,9 @@ public partial class StatViewModel : ViewModelBase
 				$"{Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
 			["Physics Time"] = string.Create(CultureInfo.InvariantCulture,
 				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} msec"),
-			["Used DRAM"] = Util.FormatBytes(dram),
-			["Used VRAM"] = Util.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
+			["Used DRAM"] = Formatter.FormatBytes(dram),
+			["Used VRAM"] =
+				Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed)),
 			["Objects"] = Performance.GetMonitor(Performance.Monitor.ObjectCount),
 			["Nodes"] = Performance.GetMonitor(Performance.Monitor.ObjectNodeCount),
 			["Orphan Nodes"] = Performance.GetMonitor(Performance.Monitor.ObjectOrphanNodeCount),

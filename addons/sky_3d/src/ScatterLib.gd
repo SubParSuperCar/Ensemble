@@ -8,10 +8,10 @@ class_name ScatterLib
 # - Preetham and Hoffman Paper:
 # See: https://developer.amd.com/wordpress/media/2012/10/ATI-LightScattering.pdf
 
-const n: float = 1.0003  # Index of the air refraction
-const n2: float = 1.00060009  # Index of the air refraction ˆ 2
-const N: float = 2.545e25  # Molecular Density
-const pn: float = 0.035  # Depolatization factor for standard air.
+const n: float = 1.0003 # Index of the air refraction
+const n2: float = 1.00060009 # Index of the air refraction ˆ 2
+const N: float = 2.545e25 # Molecular Density
+const pn: float = 0.035 # Depolatization factor for standard air.
 
 
 static func compute_wavelenghts_lambda(value: Vector3) -> Vector3:

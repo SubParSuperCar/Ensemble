@@ -1,33 +1,33 @@
 <Solution>
   <Folder Name="/Solution Items/">
-    <File Path=".editorconfig"/>
-    <File Path=".gitattributes"/>
-    <File Path=".gitignore"/>
-    <File Path="appsettings.json"/>
-    <File Path="FodyWeavers.xml"/>
+    <File Path=".editorconfig" />
+    <File Path=".gitattributes" />
+    <File Path=".gitignore" />
+    <File Path="appsettings.json" />
+    <File Path="FodyWeavers.xml" />
     <!-- Auto-generated -->
-    <File Path="FodyWeavers.xsd"/>
-    <File Path="global.json"/>
-    <File Path="LICENSE.md"/>
-    <File Path="TrimmerRoots.xml"/>
+    <File Path="FodyWeavers.xsd" />
+    <File Path="global.json" />
+    <File Path="LICENSE.md" />
+    <File Path="TrimmerRoots.xml" />
   </Folder>
   <Folder Name="/Solution Items/GitHub/">
-    <File Path=".github/dependabot.yml"/>
-    <File Path=".github/LICENSE-ASSETS.txt"/>
-    <File Path=".github/LICENSE-CODE.txt"/>
-    <File Path=".github/README.md"/>
-    <File Path=".github/workflows/cloc.yml"/>
-    <File Path=".github/workflows/zip.yml"/>
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/LICENSE-ASSETS.txt" />
+    <File Path=".github/LICENSE-CODE.txt" />
+    <File Path=".github/README.md" />
+    <File Path=".github/workflows/cloc.yml" />
+    <File Path=".github/workflows/zip.yml" />
   </Folder>
   <Folder Name="/Solution Items/GitHub/Workflows/">
-    <File Path=".github/workflows/cloc.yml"/>
-    <File Path=".github/workflows/zip.yml"/>
+    <File Path=".github/workflows/cloc.yml" />
+    <File Path=".github/workflows/zip.yml" />
   </Folder>
   <Folder Name="/Solution Items/Run Configs/">
-    <File Path=".run/Editor.run.xml"/>
-    <File Path=".run/Player (External Console).run.xml"/>
-    <File Path=".run/Player.run.xml"/>
+    <File Path=".run/Editor.run.xml" />
+    <File Path=".run/Player (External Console).run.xml" />
+    <File Path=".run/Player.run.xml" />
   </Folder>
-  <Project Path="Game.csproj"/>
-  <Project Path="lib/estragonia/Estragonia.csproj"/>
+  <Project Path="Game.csproj" />
+  <Project Path="lib/estragonia/Estragonia.csproj" />
 </Solution>

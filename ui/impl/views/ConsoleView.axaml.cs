@@ -6,7 +6,7 @@ using AvaloniaEdit.TextMate;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
 using TextMateSharp.Grammars;
-using InputExtensions = Root.Globals.Input.InputExtensions;
+using InputExtensions = Root.Shared.Input.InputExtensions;
 
 namespace Root.Ui.Impl.Views;
 

@@ -39,15 +39,15 @@ public partial class Main : Node
 
 			Log.Debug($"{nameof(GPlayers)}:");
 			foreach (var player in GPlayers.GetAll())
-				Log.Debug("{Player}", player.ToDict().ToString());
+				Log.Debug("{$Player}", player.ToDict());
 
 			Log.Debug($"{nameof(GAssets)}:");
 			foreach (var asset in GAssets.GetAll())
-				Log.Debug("{Asset}", asset.ToDict().ToString());
+				Log.Debug("{$Asset}", asset.ToDict());
 
 			Log.Debug($"{nameof(GPlots)}:");
 			foreach (var plot in GPlots.GetAll())
-				Log.Debug("{Plot}", plot.ToDict().ToString());
+				Log.Debug("{$Plot}", plot.ToDict());
 		}).CallDeferred();
 	}
 

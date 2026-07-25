@@ -3,7 +3,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 
-namespace Root.Globals.Log;
+namespace Root.Shared.LogSinks;
 
 public sealed class LogHistorySinkVolatile : ILogEventSink
 {
@@ -15,7 +15,7 @@ public sealed class LogHistorySinkVolatile : ILogEventSink
 		"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
 	);
 
-	public static IReadOnlyCollection<string> History => HistoryQueue.ToArray();
+	public static IReadOnlyCollection<string> History => [.. HistoryQueue];
 
 	public void Emit(LogEvent logEvent)
 	{

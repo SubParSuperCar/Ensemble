@@ -30,11 +30,11 @@ var search_button: Button
 
 #DEPRECATED 4.5
 #class EdDock extends EditorDock:
-	#func _update_layout(layout: int) -> void:
-		#layout 1 vertical, 2 horizontal, 4 window
-		#print("Terrain3DAssetDock: _update_layout called with: ", layout)
+#func _update_layout(layout: int) -> void:
+#layout 1 vertical, 2 horizontal, 4 window
+#print("Terrain3DAssetDock: _update_layout called with: ", layout)
 
-var _dock: MarginContainer #DEPRECATED 4.5 - Use EdDock
+var _dock: MarginContainer  #DEPRECATED 4.5 - Use EdDock
 var _initialized: bool = false
 var plugin: EditorPlugin
 var window: Window
@@ -44,18 +44,18 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_ENTER_TREE:
 		await get_tree().process_frame
 		update_layout()
-		
-		
+
+
 func initialize(p_plugin: EditorPlugin) -> void:
 	if p_plugin:
 		plugin = p_plugin
 
-	_dock = ClassDB.instantiate("EditorDock") #DEPRECATED 4.5 - EdDock.new()
+	_dock = ClassDB.instantiate("EditorDock")  #DEPRECATED 4.5 - EdDock.new()
 	_dock.title = "Terrain3D"
 	_dock.dock_icon = preload("../icons/terrain3d.svg")
-	_dock.default_slot = 8 #DEPRECATED 4.5 - EditorDock.DockSlot.DOCK_SLOT_BOTTOM
+	_dock.default_slot = 8  #DEPRECATED 4.5 - EditorDock.DockSlot.DOCK_SLOT_BOTTOM
 	_dock.closable = false
-	_dock.available_layouts = 0x7 #DEPRECATED 4.5 - EditorDock.DOCK_LAYOUT_ALL
+	_dock.available_layouts = 0x7  #DEPRECATED 4.5 - EditorDock.DOCK_LAYOUT_ALL
 	_dock.add_child(self)
 	plugin.add_dock(_dock)
 	_dock.open()
@@ -75,7 +75,7 @@ func initialize(p_plugin: EditorPlugin) -> void:
 	var editor_scale: float = EditorInterface.get_editor_scale()
 	search_box.custom_minimum_size = Vector2(100. * editor_scale, 30. * editor_scale)
 	search_button = $Box/Buttons/SearchBox/SearchButton
-	
+
 	texture_list = ListContainer.new()
 	texture_list.name = "TextureList"
 	texture_list.plugin = plugin
@@ -105,28 +105,31 @@ func initialize(p_plugin: EditorPlugin) -> void:
 
 	search_box.text_changed.connect(_on_search_text_changed)
 	search_button.pressed.connect(_on_search_button_pressed)
-	
+
 	confirm_dialog = ConfirmationDialog.new()
 	add_child(confirm_dialog, true)
 	confirm_dialog.hide()
 	confirm_dialog.confirmed.connect(func(): _confirmed = true; \
-		confirmation_closed.emit(); \
-		confirmation_confirmed.emit() )
-	confirm_dialog.canceled.connect(func(): _confirmed = false; \
-		confirmation_closed.emit(); \
-		confirmation_canceled.emit() )
+			confirmation_closed.emit() ; \
+	confirmation_confirmed.emit()
+)
+confirm_dialog.canceled.connect(
+func (
+	): _confirmed = false; \
+	confirmation_closed.emit(); \
+	confirmation_canceled.emit() )
 
-	# Setup styles
-	set("theme_override_styles/panel", get_theme_stylebox("panel", "Panel"))
-	# Avoid saving icon resources in tscn when editing w/ a tool script
-	if EditorInterface.get_edited_scene_root() != self:
+# Setup styles
+set("theme_override_styles/panel", get_theme_stylebox("panel", "Panel"))
+# Avoid saving icon resources in tscn when editing w/ a tool script
+if EditorInterface.get_edited_scene_root() != self:
 		pinned_btn.icon = get_theme_icon("Pin", "EditorIcons")
-		pinned_btn.text = ""
-		search_button.icon = get_theme_icon("Search", "EditorIcons")
+pinned_btn.text = ""
+search_button.icon = get_theme_icon("Search", "EditorIcons")
 
-	_initialized = true
-	update_dock()
-	update_layout()
+_initialized = true
+update_dock()
+update_layout()
 
 
 func _gui_input(p_event: InputEvent) -> void:
@@ -140,7 +143,7 @@ func _gui_input(p_event: InputEvent) -> void:
 ## Dock placement
 
 
-func remove_dock(p_force: bool = false) -> void:
+func remove_dock(p_force: bool=false) -> void:
 	plugin.remove_dock(_dock)
 
 
@@ -155,7 +158,7 @@ func update_layout() -> void:
 	if not _initialized:
 		return
 	if plugin.debug > 1:
-		print("Terrain3DAssetDock: update_layout")	
+		print("Terrain3DAssetDock: update_layout")
 
 	## Detect if we have a new window from `Make floating` and grab it
 	if not window:
@@ -163,12 +166,12 @@ func update_layout() -> void:
 			window = get_parent().get_parent().get_parent()
 			_on_pin_changed(pinned_btn.button_pressed)
 			plugin.godot_editor_window.mouse_entered.connect(_on_godot_window_entered)
-			return # Displaying will call this function again
+			return  # Displaying will call this function again
 		# Check if window was just freed. Freed objects have a different hash than null
 		elif hash(window) != hash(null):
 			window = null
 			plugin.godot_editor_window.mouse_entered.disconnect(_on_godot_window_entered)
-			return # Will call this function again upon display
+			return  # Will call this function again upon display
 
 	## Vertical layout: buttons on top
 	if size.x < 700:
@@ -180,7 +183,7 @@ func update_layout() -> void:
 		box.move_child(size_slider, 2)
 		pinned_btn.reparent(buttons)
 	else:
-	# Wide layout: buttons on left
+		# Wide layout: buttons on left
 		box.vertical = false
 		buttons.vertical = true
 		search_box.reparent(buttons)
@@ -205,8 +208,8 @@ func set_selected_by_asset_id(p_id: int) -> void:
 	search_box.text = ""
 	_on_search_text_changed()
 	current_list.set_selected_id(p_id)
-	
-	
+
+
 func _on_search_text_changed() -> void:
 	if plugin.debug:
 		print("Terrain3DAssetDock: _on_search_text_changed: ", search_box.text)
@@ -217,7 +220,7 @@ func _on_search_text_changed() -> void:
 		search_button.icon = get_theme_icon("Close", "EditorIcons")
 	else:
 		search_button.icon = get_theme_icon("Search", "EditorIcons")
-		
+
 	mesh_list.search_text = search_box.text
 	texture_list.search_text = search_box.text
 	current_list.update_asset_list()
@@ -298,7 +301,7 @@ func _on_tool_changed(p_tool: Terrain3DEditor.Tool, p_operation: Terrain3DEditor
 		print("Terrain3DAssetDock: _on_tool_changed: ", p_tool, ", ", p_operation)
 	if p_tool == Terrain3DEditor.INSTANCER:
 		_on_meshes_pressed()
-	elif p_tool in [ Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR, Terrain3DEditor.ROUGHNESS ]:
+	elif p_tool in [Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR, Terrain3DEditor.ROUGHNESS]:
 		_on_textures_pressed()
 
 
@@ -310,7 +313,7 @@ func update_assets() -> void:
 		print("Terrain3DAssetDock: update_assets: ", plugin.terrain.assets if plugin.terrain else "")
 	if not _initialized:
 		return
-	
+
 	# Verify signals to individual lists
 	if plugin.is_terrain_valid() and plugin.terrain.assets:
 		if not plugin.terrain.assets.textures_changed.is_connected(texture_list.update_asset_list):
@@ -327,14 +330,14 @@ func update_assets() -> void:
 func load_editor_settings() -> void:
 	# Remove old editor settings
 	const ES_DOCK: String = "terrain3d/dock/"
-	for setting in [ "slot", "floating", "window_position", "window_size" ]:
+	for setting in ["slot", "floating", "window_position", "window_size"]:
 		plugin.erase_setting(ES_DOCK + setting)
 	pinned_btn.button_pressed = plugin.get_setting(ES_DOCK_PINNED, true)
 	size_slider.value = plugin.get_setting(ES_DOCK_TILE_SIZE, 90)
 	_on_slider_changed(size_slider.value)
-	# TODO Don't save tab until thumbnail generation more reliable
-	#if plugin.get_setting(ES_DOCK_TAB, 0) == 1:
-	#	_on_meshes_pressed()
+# TODO Don't save tab until thumbnail generation more reliable
+#if plugin.get_setting(ES_DOCK_TAB, 0) == 1:
+#	_on_meshes_pressed()
 
 
 func save_editor_settings() -> void:
@@ -342,15 +345,15 @@ func save_editor_settings() -> void:
 		return
 	plugin.set_setting(ES_DOCK_TILE_SIZE, size_slider.value)
 	plugin.set_setting(ES_DOCK_PINNED, pinned_btn.button_pressed)
-	# TODO Don't save tab until thumbnail generation more reliable
-	# plugin.set_setting(ES_DOCK_TAB, 0 if current_list == texture_list else 1)
+# TODO Don't save tab until thumbnail generation more reliable
+# plugin.set_setting(ES_DOCK_TAB, 0 if current_list == texture_list else 1)
 
 
 ##############################################################
 ## class ListContainer
 ##############################################################
 
-	
+
 class ListContainer extends Container:
 	var plugin: EditorPlugin
 	var type := Terrain3DAssets.TYPE_TEXTURE
@@ -362,7 +365,6 @@ class ListContainer extends Container:
 	var _clearing_resource: bool = false
 	var search_text: String = ""
 
-	
 	func _ready() -> void:
 		set_v_size_flags(SIZE_EXPAND_FILL)
 		set_h_size_flags(SIZE_EXPAND_FILL)
@@ -371,24 +373,22 @@ class ListContainer extends Container:
 		add_theme_constant_override("shadow_offset_x", 1)
 		add_theme_constant_override("shadow_offset_y", 1)
 
-
 	func clear() -> void:
 		for e in entries:
 			e.get_parent().remove_child(e)
 			e.queue_free()
 		entries.clear()
 
-
 	func update_asset_list() -> void:
 		if plugin.debug:
 			print("Terrain3DListContainer ", name, ": update_asset_list")
 		clear()
-		
+
 		# Grab terrain
 		var t: Terrain3D = plugin.get_terrain()
 		if not (t and t.assets):
 			return
-		
+
 		if type == Terrain3DAssets.TYPE_TEXTURE:
 			var texture_count: int = t.assets.get_texture_count()
 			for i in texture_count:
@@ -407,8 +407,7 @@ class ListContainer extends Container:
 				add_item()
 		set_selected_id(selected_id)
 
-
-	func add_item(p_resource: Resource = null) -> void:
+	func add_item(p_resource: Resource=null) -> void:
 		var entry: ListEntry = ListEntry.new()
 		entry.focus_style = focus_style
 		entry.set_edited_resource(p_resource)
@@ -423,28 +422,26 @@ class ListContainer extends Container:
 		entry.type = type
 		add_child(entry, true)
 		entries.push_back(entry)
-		
+
 		if p_resource:
 			if not p_resource.id_changed.is_connected(set_selected_after_swap):
 				p_resource.id_changed.connect(set_selected_after_swap)
-
 
 	func _on_resource_hovered(p_id: int):
 		if type == Terrain3DAssets.TYPE_MESH:
 			if plugin.terrain:
 				plugin.terrain.assets.create_mesh_thumbnails(p_id)
 
-	
 	func set_selected_after_swap(p_type: Terrain3DAssets.AssetType, p_old_id: int, p_new_id: int) -> void:
 		EditorInterface.mark_scene_as_unsaved()
 		set_selected_id(clamp(p_new_id, 0, entries.size() - 2))
-
 
 	func clicked_id(p_id: int) -> void:
 		# Select Tool if clicking an asset
 		plugin.select_terrain()
 		if type == Terrain3DAssets.TYPE_TEXTURE and \
-				not plugin.editor.get_tool() in [ Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR, Terrain3DEditor.ROUGHNESS ]:
+				not plugin.editor.get_tool() in [Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR,
+					Terrain3DEditor.ROUGHNESS]:
 			var paint_btn: Button = plugin.ui.toolbar.get_node_or_null("PaintTexture")
 			if paint_btn:
 				paint_btn.set_pressed(true)
@@ -455,7 +452,6 @@ class ListContainer extends Container:
 				instancer_btn.set_pressed(true)
 				plugin.ui._on_tool_changed(Terrain3DEditor.INSTANCER, Terrain3DEditor.ADD)
 		set_selected_id(p_id)
-
 
 	func set_selected_id(p_id: int) -> void:
 		# "Add new" is the final entry only when search box is blank
@@ -468,13 +464,13 @@ class ListContainer extends Container:
 			entry.set_selected(i == selected_id)
 		plugin.ui._on_setting_changed()
 
-
 	func get_selected_asset_id() -> int:
 		# "Add new" is the final entry only when search box is blank
 		var max_id: int = max(0, entries.size() - (1 if search_text else 2))
 		var id: int = clamp(selected_id, 0, max_id)
 		if plugin.debug:
-			print("Terrain3DListContainer ", name, ": get_selected_asset_id: selected_id: ", selected_id, ", clamped: ", id, ", entries: ", entries.size())
+			print("Terrain3DListContainer ", name, ": get_selected_asset_id: selected_id: ", selected_id, ", clamped: ",
+					id, ", entries: ", entries.size())
 		if id >= entries.size():
 			return 0
 		var res: Resource = entries[id].resource
@@ -485,12 +481,10 @@ class ListContainer extends Container:
 		else:
 			return (res as Terrain3DTextureAsset).id
 
-
 	func _on_resource_inspected(p_resource: Resource) -> void:
 		await get_tree().process_frame
 		EditorInterface.edit_resource(p_resource)
-	
-	
+
 	func _on_resource_changed(p_resource: Resource, p_id: int) -> void:
 		if not p_resource and _clearing_resource:
 			return
@@ -509,7 +503,7 @@ class ListContainer extends Container:
 				update_asset_list()
 				_clearing_resource = false
 				return
-			
+
 		if not plugin.is_terrain_valid():
 			plugin.select_terrain()
 			await get_tree().process_frame
@@ -522,19 +516,16 @@ class ListContainer extends Container:
 
 			# If removing an entry, clear inspector
 			if not p_resource:
-				EditorInterface.inspect_object(null)			
+				EditorInterface.inspect_object(null)
 		_clearing_resource = false
-
 
 	func set_entry_width(value: float) -> void:
 		var min_width: float = 90.0 * max(1.0, EditorInterface.get_editor_scale())
 		width = clamp(value, min_width, 512.0)
 		redraw()
 
-
 	func get_entry_width() -> float:
 		return width
-	
 
 	func redraw() -> void:
 		height = 0
@@ -543,22 +534,20 @@ class ListContainer extends Container:
 		var columns: int = 3
 		columns = clamp(size.x / width, 1, 100)
 		var tile_size: Vector2 = Vector2(width, width) - Vector2(separation, separation)
-		var name_font_size := int(clamp(tile_size.x/12., 12., 16.) * EditorInterface.get_editor_scale())
+		var name_font_size := int(clamp(tile_size.x / 12., 12., 16.) * EditorInterface.get_editor_scale())
 		for c in get_children():
 			if is_instance_valid(c):
 				c.size = tile_size
 				c.position = Vector2(id % columns, id / columns) * width + \
-					Vector2(separation / columns, separation / columns)
+						Vector2(separation / columns, separation / columns)
 				height = max(height, c.position.y + width)
 				id += 1
 				c.name_label.add_theme_font_size_override("font_size", name_font_size)
-
 
 	# Needed to enable ScrollContainer scroll bar
 	func _get_minimum_size() -> Vector2:
 		return Vector2(0, height)
 
-		
 	func _notification(p_what) -> void:
 		if p_what == NOTIFICATION_SORT_CHILDREN:
 			redraw()
@@ -570,33 +559,32 @@ class ListContainer extends Container:
 
 
 class ListEntry extends MarginContainer:
-	signal hovered()
-	signal clicked()
-	signal changed(resource: Resource)
-	signal inspected(resource: Resource)
-	
+signal hovered()
+signal clicked()
+signal changed(resource: Resource)
+signal inspected(resource: Resource)
+
 	var resource: Resource
 	var type := Terrain3DAssets.TYPE_TEXTURE
 	var _thumbnail: Texture2D
 	var drop_data: bool = false
 	var is_hovered: bool = false
 	var is_selected: bool = false
-	
+
 	var name_label: Label
 	var button_row: FlowContainer
 	var button_enabled: TextureButton
 	var button_edit: TextureButton
-	var spacer: Control 
+	var spacer: Control
 	var button_clear: TextureButton
 
-	@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
-	@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
-	@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
-	@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
-	@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
-	@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
-	@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
-
+@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
+@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
+@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
+@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
+@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
+@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
+@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
 
 	func _ready() -> void:
 		name = "ListEntry"
@@ -611,18 +599,17 @@ class ListEntry extends MarginContainer:
 		focus_style.set_border_width_all(2)
 		focus_style.set_border_color(Color(1, 1, 1, .67))
 
-
 	func setup_buttons() -> void:
 		destroy_buttons()
-		
+
 		button_row = FlowContainer.new()
-		button_enabled = TextureButton.new() 
-		button_edit = TextureButton.new() 
+		button_enabled = TextureButton.new()
+		button_edit = TextureButton.new()
 		spacer = Control.new()
 		button_clear = TextureButton.new()
-		
+
 		var icon_size: Vector2 = Vector2(12, 12)
-		
+
 		button_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button_row.alignment = FlowContainer.ALIGNMENT_CENTER
 		button_row.mouse_filter = Control.MOUSE_FILTER_PASS
@@ -640,7 +627,7 @@ class ListEntry extends MarginContainer:
 			button_enabled.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 			button_enabled.pressed.connect(_on_enable)
 			button_row.add_child(button_enabled, true)
-			
+
 		button_edit.set_texture_normal(edit_icon)
 		button_edit.set_custom_minimum_size(icon_size)
 		button_edit.set_h_size_flags(Control.SIZE_SHRINK_END)
@@ -654,7 +641,7 @@ class ListEntry extends MarginContainer:
 		spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		spacer.mouse_filter = Control.MOUSE_FILTER_PASS
 		button_row.add_child(spacer, true)
-		
+
 		button_clear.set_texture_normal(clear_icon)
 		button_clear.set_custom_minimum_size(icon_size)
 		button_clear.set_h_size_flags(Control.SIZE_SHRINK_END)
@@ -664,7 +651,6 @@ class ListEntry extends MarginContainer:
 		button_clear.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		button_clear.pressed.connect(_on_clear)
 		button_row.add_child(button_clear, true)
-		
 
 	func destroy_buttons() -> void:
 		if button_row:
@@ -683,7 +669,6 @@ class ListEntry extends MarginContainer:
 			button_clear.free()
 			button_clear = null
 
-
 	func get_resource_name() -> StringName:
 		if resource:
 			if resource is Terrain3DMeshAsset:
@@ -691,7 +676,6 @@ class ListEntry extends MarginContainer:
 			elif resource is Terrain3DTextureAsset:
 				return (resource as Terrain3DTextureAsset).get_name()
 		return ""
-
 
 	func setup_label() -> void:
 		name_label = Label.new()
@@ -707,9 +691,8 @@ class ListEntry extends MarginContainer:
 		name_label.add_theme_constant_override("shadow_offset_y", 1)
 		name_label.visible = false
 		name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS	
+		name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		add_child(name_label, true)
-
 
 	func _notification(p_what) -> void:
 		match p_what:
@@ -719,7 +702,7 @@ class ListEntry extends MarginContainer:
 				# Hide spacer if icons are crowding small textures
 				spacer.visible = size.x > 94. or type == Terrain3DAssets.TYPE_TEXTURE
 				var rect: Rect2 = Rect2(Vector2.ZERO, get_size())
-				if !resource:
+				if ! resource:
 					draw_style_box(background, rect)
 					draw_texture(add_icon, (get_size() / 2) - (add_icon.get_size() / 2))
 				else:
@@ -735,7 +718,7 @@ class ListEntry extends MarginContainer:
 					if type == Terrain3DAssets.TYPE_TEXTURE:
 						self_modulate = resource.get_albedo_color()
 					else:
-						button_enabled.set_pressed_no_signal(!resource.is_enabled())
+						button_enabled.set_pressed_no_signal(! resource.is_enabled())
 				if drop_data:
 					draw_style_box(focus_style, rect)
 				if is_hovered:
@@ -758,14 +741,13 @@ class ListEntry extends MarginContainer:
 				drop_data = false
 				queue_redraw()
 
-
 	func _gui_input(p_event: InputEvent) -> void:
 		if p_event is InputEventMouseButton:
 			if p_event.is_pressed():
 				match p_event.get_button_index():
 					MOUSE_BUTTON_LEFT:
 						# If `Add new` is clicked
-						if !resource:
+						if ! resource:
 							if type == Terrain3DAssets.TYPE_TEXTURE:
 								set_edited_resource(Terrain3DTextureAsset.new(), false)
 							else:
@@ -780,7 +762,6 @@ class ListEntry extends MarginContainer:
 						if resource:
 							_on_clear()
 
-
 	func _can_drop_data(p_at_position: Vector2, p_data: Variant) -> bool:
 		drop_data = false
 		if typeof(p_data) == TYPE_DICTIONARY:
@@ -789,7 +770,6 @@ class ListEntry extends MarginContainer:
 				drop_data = true
 		return drop_data
 
-		
 	func _drop_data(p_at_position: Vector2, p_data: Variant) -> void:
 		if typeof(p_data) == TYPE_DICTIONARY:
 			var res: Resource = load(p_data.files[0])
@@ -806,7 +786,7 @@ class ListEntry extends MarginContainer:
 				set_edited_resource(res, false)
 			elif res is PackedScene and type == Terrain3DAssets.TYPE_MESH:
 				if not resource:
-					resource = Terrain3DMeshAsset.new()		
+					resource = Terrain3DMeshAsset.new()
 				set_edited_resource(resource, false)
 				resource.set_scene_file(res)
 			elif res is Terrain3DMeshAsset and type == Terrain3DAssets.TYPE_MESH:
@@ -816,8 +796,7 @@ class ListEntry extends MarginContainer:
 			emit_signal("clicked")
 			emit_signal("inspected", resource)
 
-
-	func set_edited_resource(p_res: Resource, p_no_signal: bool = true) -> void:
+	func set_edited_resource(p_res: Resource, p_no_signal: bool=true) -> void:
 		resource = p_res
 		if resource:
 			if not resource.setting_changed.is_connected(_on_resource_changed):
@@ -828,19 +807,17 @@ class ListEntry extends MarginContainer:
 			elif resource is Terrain3DMeshAsset:
 				if not resource.instancer_setting_changed.is_connected(_on_resource_changed):
 					resource.instancer_setting_changed.connect(_on_resource_changed)
-		
+
 		if button_clear:
 			button_clear.set_visible(resource != null)
-			
+
 		queue_redraw()
 		if not p_no_signal:
 			emit_signal("changed", resource)
 
-
-	func _on_resource_changed(_value: int = 0) -> void:
+	func _on_resource_changed(_value: int=0) -> void:
 		queue_redraw()
 		emit_signal("changed", resource)
-
 
 	func set_selected(value: bool) -> void:
 		if not is_inside_tree():
@@ -854,22 +831,18 @@ class ListEntry extends MarginContainer:
 				get_parent().get_parent().get_v_scroll_bar().ratio = position.y / get_parent().size.y
 		queue_redraw()
 
-
 	func _on_clear() -> void:
 		if resource:
 			name_label.hide()
 			set_edited_resource(null, false)
 
-	
 	func _on_edit() -> void:
 		emit_signal("clicked")
 		emit_signal("inspected", resource)
 
-
 	func _on_enable() -> void:
 		if resource is Terrain3DMeshAsset:
-			resource.set_enabled(!resource.is_enabled())
-
+			resource.set_enabled(! resource.is_enabled())
 
 	func _format_number(num: int) -> String:
 		var is_negative: bool = num < 0

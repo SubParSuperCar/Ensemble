@@ -35,22 +35,22 @@ func apply_operation(p_editor: Terrain3DEditor, p_global_position: Vector3, p_ca
 	var points: PackedVector3Array = _get_point_picker().get_points()
 	assert(points.size() == 2)
 	assert(not _is_drawable())
-	
+
 	var brush_size: float = _get_brush_size()
 	assert(brush_size > 0.0)
-	
+
 	var start: Vector3 = points[0]
 	var end: Vector3 = points[1]
-	
+
 	p_editor.start_operation(start)
-	
+
 	var dir: Vector3 = (end - start).normalized()
-	
+
 	var pos: Vector3 = start
 	while dir.dot(end - pos) > 0.0:
 		p_editor.operate(pos, p_camera_direction)
 		pos += dir * brush_size * 0.2
-	
+
 	p_editor.stop_operation()
-	
+
 	_get_point_picker().clear()

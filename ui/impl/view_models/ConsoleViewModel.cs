@@ -2,7 +2,9 @@ using System.Text;
 using Avalonia.Threading;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Root.Globals.Log;
+using CommunityToolkit.Mvvm.Input;
+using Root.Shared;
+using Root.Shared.LogSinks;
 using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;
@@ -24,6 +26,9 @@ public partial class ConsoleViewModel : ViewModelBase
 		new("--[[\nLua 5.2\n(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\nprint(\"Hello, World!\")\n");
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
+
+	[RelayCommand]
+	private void Execute() => _ = LuaExecutor.Execute(Source.Text);
 
 	private void OnLogHistoryUpdated() =>
 		Dispatcher.UIThread.Post(() =>

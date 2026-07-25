@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Godot;
 using Hardware.Info;
-using Root.Globals;
+using Root.Shared;
 using Serilog;
 using Environment = System.Environment;
 

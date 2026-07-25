@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Root.Globals;
+namespace Root.Shared;
 
 public static class Util
 {

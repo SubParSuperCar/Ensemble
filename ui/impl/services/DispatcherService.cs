@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.Messaging;
 using Godot;
-using Root.Globals.Input;
+using Root.Shared.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Messages;
 

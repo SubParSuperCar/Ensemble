@@ -1,5 +1,5 @@
 using Godot;
-using Root.Globals.Input;
+using Root.Shared.Input;
 
 namespace Root.Scripts.Player;
 

@@ -1,6 +1,6 @@
 // ReSharper disable UnusedMember.Global
 
-namespace Root.Globals.Input;
+namespace Root.Shared.Input;
 
 public sealed class OwnershipFlag
 {

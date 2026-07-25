@@ -1,4 +1,4 @@
-namespace Root.Globals.Input;
+namespace Root.Shared.Input;
 
 public static class InputExtensions
 {

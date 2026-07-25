@@ -18,7 +18,7 @@ public partial class InfoLogger : Node
 #pragma warning restore MA0051
 	{
 		var hw = new HardwareInfo();
-		hw.RefreshAll();
+		hw.RefreshAll(); // TODO: Only refresh used members
 
 		var lines = new List<(string Key, string Value)>();
 

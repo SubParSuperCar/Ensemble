@@ -47,6 +47,7 @@ window/size/mode.editor=0
 [dotnet]
 
 project/assembly_name="Game"
+project/assembly_reload_attempts=1
 
 [editor_plugins]
 

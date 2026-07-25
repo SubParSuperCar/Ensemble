@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <!--
-      Use a custom DLL where ISkiaGpu is public
+      Use a patched DLL where ISkiaGpu is public
       Built Against: Avalonia 12.1.0 & .NET 10.0.110
     -->
     <Reference Include="Avalonia.Skia">

@@ -17,6 +17,7 @@
 [ext_resource type="Script" uid="uid://deo0gxkmk2ahd" path="res://addons/sky_3d/src/Sky3D.gd" id="9_e1j6l"]
 [ext_resource type="Script" uid="uid://b4tkplvh7fq40" path="res://addons/sky_3d/src/SkyDome.gd" id="10_pl11u"]
 [ext_resource type="Script" uid="uid://cjmkcj8hwm7ts" path="res://addons/sky_3d/src/TimeOfDay.gd" id="11_bhx41"]
+[ext_resource type="Terrain3DAssets" uid="uid://b2238ug3evnm2" path="res://resources/terrain_assets.tres" id="12_ssvqc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rysoc"]
 shader = ExtResource("2_rysoc")
@@ -71,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.03026383, 0.03026383)
-shader_parameter/cirrus_position2 = Vector2(0.03026383, 0.03026383)
+shader_parameter/cirrus_position1 = Vector2(0.1398575, 0.1398575)
+shader_parameter/cirrus_position2 = Vector2(0.1398575, 0.1398575)
 shader_parameter/cirrus_texture = ExtResource("3_ssvqc")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -82,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.15131953, 0.15131953)
+shader_parameter/cumulus_position = Vector2(0.69925094, 0.69925094)
 shader_parameter/cumulus_texture = ExtResource("4_264po")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -151,27 +152,6 @@ _shader_parameters = {
 }
 show_checkered = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kvpfn"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_dinhu"]
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_kvpfn")
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 128.0
-
-[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_kvuet"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_dinhu")])
-
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
 points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 76, 0, -16, 76, 0, 16)
 
@@ -219,7 +199,7 @@ system_sync = true
 debug_level = 1
 data_directory = "res://resources/terrain_regions/"
 material = SubResource("Terrain3DMaterial_vtaks")
-assets = SubResource("Terrain3DAssets_kvuet")
+assets = ExtResource("12_ssvqc")
 save_16_bit = true
 cast_shadows = 0
 show_checkered = true

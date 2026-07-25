@@ -31,8 +31,8 @@ ExeHasher="uid://defjcppyvsxus"
 
 [debug]
 
-settings/stdout/print_fps=true
 settings/stdout/verbose_stdout.editor=true
+settings/stdout/print_fps.editor=true
 
 [display]
 

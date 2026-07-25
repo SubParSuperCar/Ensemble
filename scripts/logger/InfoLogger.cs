@@ -35,6 +35,16 @@ public partial class InfoLogger : Node
 		Add("Process", RuntimeInformation.ProcessArchitecture);
 		Add(".NET", RuntimeInformation.FrameworkDescription);
 
+		Add("Config",
+#if DEBUG
+			"DEBUG"
+#elif RELEASE
+			"RELEASE"
+#else
+			"Unknown"
+#endif
+		);
+
 		if (OperatingSystem.IsLinux())
 		{
 			try
@@ -87,8 +97,8 @@ public partial class InfoLogger : Node
 			Add("Monitor", monitor.Name);
 
 		foreach (var nic in hw.NetworkAdapterList
-					 .Where(n => !string.IsNullOrWhiteSpace(n.Name) && n.Name is not "lo")
-					 .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
+			         .Where(n => !string.IsNullOrWhiteSpace(n.Name) && n.Name is not "lo")
+			         .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
 			Add("Network", nic.Name);
 
 		Add("Culture", CultureInfo.CurrentCulture.DisplayName);

@@ -1,3 +1,6 @@
+#if !DEBUG
+using System.Diagnostics;
+#endif
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
@@ -35,12 +38,11 @@ public partial class StatViewModel : ViewModelBase
 
 		var fps = Performance.GetMonitor(Performance.Monitor.TimeFps);
 
-#if RELEASE
+#if DEBUG
+		var dram = OS.GetStaticMemoryUsage();
+#else
 		using var process = Process.GetCurrentProcess();
-		ulong dram = process.WorkingSet64;
-#elif DEBUG
-		// ReSharper disable once SuggestVarOrType_BuiltInTypes
-		ulong dram = OS.GetStaticMemoryUsage();
+		var dram = (ulong)process.WorkingSet64;
 #endif
 
 		Dictionary<string, object> stats = new(StringComparer.OrdinalIgnoreCase)

@@ -72,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.0064935726, 0.0064935726)
-shader_parameter/cirrus_position2 = Vector2(0.0064935726, 0.0064935726)
+shader_parameter/cirrus_position1 = Vector2(0.6882784, 0.6882784)
+shader_parameter/cirrus_position2 = Vector2(0.6882784, 0.6882784)
 shader_parameter/cirrus_texture = ExtResource("3_ssvqc")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.032467827, 0.032467827)
+shader_parameter/cumulus_position = Vector2(3.4399729, 3.4399729)
 shader_parameter/cumulus_texture = ExtResource("4_264po")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -108,6 +108,7 @@ tonemap_mode = 3
 tonemap_white = 6.0
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ssvqc"]
+exposure_multiplier = 1.5
 
 [sub_resource type="Gradient" id="Gradient_u5sy4"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -166,6 +167,7 @@ environment = SubResource("Environment_suyxu")
 camera_attributes = SubResource("CameraAttributesPractical_ssvqc")
 script = ExtResource("9_e1j6l")
 editor_time_enabled = false
+camera_exposure = 1.5
 wind_direction = 2.35619451204804
 metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
 

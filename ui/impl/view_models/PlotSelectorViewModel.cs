@@ -94,7 +94,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			closure();
 	}
 
-	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? -1);
+	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? None);
 
 	private bool CanSetPlotToNull() => SelectedPlot is not null;
 }

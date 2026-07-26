@@ -12,13 +12,11 @@ public partial class Hasher : Node
 
 	private async Task OnReady()
 	{
-		var exePath = Environment.ProcessPath;
-		if (!File.Exists(exePath))
+		if (Environment.ProcessPath is not { } exePath || !File.Exists(exePath))
 			return;
 
 		await Task.Delay((int)TimeSpan.MillisecondsPerSecond).ConfigureAwait(false);
 
-		using var sha256 = SHA256.Create();
 		var stream = new FileStream(
 			exePath,
 			FileMode.Open,
@@ -29,7 +27,7 @@ public partial class Hasher : Node
 
 		await using (stream.ConfigureAwait(false))
 		{
-			var hashBytes = await sha256.ComputeHashAsync(stream).ConfigureAwait(false);
+			var hashBytes = await SHA256.HashDataAsync(stream).ConfigureAwait(false);
 			var hashHex = Convert.ToHexString(hashBytes);
 
 			Log.Debug("Process executable path & SHA-256 hash, respectively: {Path}, {Hash}", exePath, hashHex);

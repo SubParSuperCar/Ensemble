@@ -10,7 +10,6 @@ using Root.Ui.Impl.Abstractions;
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-// TODO
 public partial class ConsoleViewModel : ViewModelBase
 {
 	public ConsoleViewModel()
@@ -39,7 +38,9 @@ public partial class ConsoleViewModel : ViewModelBase
 			foreach (var line in history)
 				sb.AppendLine(line);
 
-			sb.Length -= Environment.NewLine.Length;
+			if (sb.Length > 0)
+				sb.Length -= Environment.NewLine.Length;
+
 			Output = sb.ToString();
 		});
 }

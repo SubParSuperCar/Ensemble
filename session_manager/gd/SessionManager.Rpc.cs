@@ -8,6 +8,7 @@ using Serilog;
 
 namespace Root.SessionManager.Gd;
 
+// TODO
 public partial class SessionManager
 {
 	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
@@ -26,35 +27,13 @@ public partial class SessionManager
 	public override void _Process(double delta)
 	{
 		while (_rpcQueue.TryDequeue(out var action))
-		{
-			try
-			{
-				action();
-			}
-			catch (Exception exception)
-			{
-				Log.Error(exception, "");
-			}
-		}
+			RunSafely(action);
 	}
 
 	private static void OnPeerDisconnectedRpc(long peerId)
 	{
 		if (RateLimitersByPeerId.TryRemove((int)peerId, out var limiter))
 			limiter.Dispose();
-	}
-
-	// TODO
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer, CallLocal = false, TransferMode = MultiplayerPeer.TransferModeEnum.Reliable)]
-	private void RpcSyncPlayerAdded(string playerId, string name)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-
-		EnqueueRpc(senderId, 5, () =>
-		{
-			GPlayers.Add(playerId, name);
-			AddPeer(senderId, playerId);
-		});
 	}
 
 	[Rpc]
@@ -67,8 +46,7 @@ public partial class SessionManager
 	private void SyncPlayers(Array<Dictionary> players)
 	{
 		foreach (var player in players)
-		{
-			try
+			RunSafely(() =>
 			{
 				var peerId = player["peerId"].As<int>();
 				var playerId = player["playerId"].AsString();
@@ -80,40 +58,30 @@ public partial class SessionManager
 
 				AddPeer(peerId, playerId);
 				GPlayers.Add(playerId, displayName);
-			}
-			catch (Exception exception)
-			{
-				Log.Error(exception, "");
-			}
-		}
+			});
 	}
 
 	private static void SyncPlots(Array<Dictionary> plots)
 	{
 		foreach (var plot in plots)
-		{
-			try
+			RunSafely(() =>
 			{
 				var plotId = plot["plotId"].As<int>();
 				var gdPlot = GPlots.Get(plotId);
 
 				if (gdPlot is null)
-					continue;
+					return;
 
 				if (plot.TryGetValue("occupantPlayerIds", out var occupantIds))
-					try
+					RunSafely(() =>
 					{
 						foreach (var occupantId in occupantIds.AsGodotArray<string>())
 							GPlots.SetPlot(occupantId, plotId);
-					}
-					catch (Exception exception)
-					{
-						Log.Error(exception, "");
-					}
+					});
 
 				if (plot.TryGetValue("instances", out var instances))
 					foreach (var instance in instances.AsGodotArray<Dictionary>())
-						try
+						RunSafely(() =>
 						{
 							var gdInstance = gdPlot.Instances.AddAt(
 								instance["assetId"].As<int>(),
@@ -123,104 +91,56 @@ public partial class SessionManager
 
 							var properties = instance["properties"].AsGodotDictionary();
 							gdInstance.Properties.UpdateAll(properties);
-						}
-						catch (Exception exception)
-						{
-							Log.Error(exception, "");
-						}
+						});
 
 				if (plot.TryGetValue("ownerPlayerId", out var ownerId))
 					gdPlot.Occupants.SetOwner(ownerId.AsString());
-			}
-			catch (Exception exception)
-			{
-				Log.Error(exception, "");
-			}
-		}
+			});
 	}
 
 	[Rpc(CallLocal = true)]
-	private void RpcSyncPlayerAdded(int peerId, string playerId, string displayName)
-	{
-		try
+	private void RpcSyncPlayerAdded(int peerId, string playerId, string displayName) =>
+		RunSafely(() =>
 		{
 			AddPeer(peerId, playerId);
 			GPlayers.Add(playerId, displayName);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "");
-		}
-	}
+		});
 
 	[Rpc(CallLocal = true)]
-	private void RpcSyncPlayerRemoved(int peerId, string playerId)
-	{
-		try
+	private void RpcSyncPlayerRemoved(int peerId, string playerId) =>
+		RunSafely(() =>
 		{
 			GPlayers.Remove(playerId);
 			RemovePeer(peerId);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "");
-		}
-	}
+		});
 
 	[Rpc(CallLocal = true)]
-	private static void RpcSyncPlotChanged(string playerId, int plotId)
-	{
-		try
-		{
-			GPlots.SetPlot(playerId, plotId);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "");
-		}
-	}
+	private static void RpcSyncPlotChanged(string playerId, int plotId) =>
+		RunSafely(() => GPlots.SetPlot(playerId, plotId));
 
 	[Rpc(CallLocal = true)]
-	private static void RpcSyncOwnerChanged(int plotId, string playerId)
-	{
-		try
+	private static void RpcSyncOwnerChanged(int plotId, string playerId) =>
+		RunSafely(() =>
 		{
 			var plot = GPlots.Get(plotId);
 			plot!.Occupants.SetOwner(playerId);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "");
-		}
-	}
+		});
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-	private void RpcSyncInstanceAdded(int assetId, Vector3 position, Quaternion rotation, int instanceId)
-	{
-		try
+	private void RpcSyncInstanceAdded(int assetId, Vector3 position, Quaternion rotation, int instanceId) =>
+		RunSafely(() =>
 		{
 			if (IsRemoteSenderPlotOwner(out var occupant))
 				occupant.Plot!.Instances.AddAt(assetId, position, rotation, instanceId);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "");
-		}
-	}
+		});
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-	private void RpcSyncInstanceRemoved(int instanceId)
-	{
-		try
+	private void RpcSyncInstanceRemoved(int instanceId) =>
+		RunSafely(() =>
 		{
 			if (IsRemoteSenderPlotOwner(out var occupant))
 				occupant.Plot!.Instances.Remove(instanceId);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "");
-		}
-	}
+		});
 
 	private bool IsRemoteSenderPlotOwner([NotNullWhen(true)] out GdOccupant? occupant)
 	{
@@ -231,6 +151,19 @@ public partial class SessionManager
 		return occupant is not null && occupant == occupant.Plot?.Occupants.Owner;
 	}
 
+	private static void RunSafely(Action action)
+	{
+		try
+		{
+			action();
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "");
+		}
+	}
+
+	// ReSharper disable once UnusedMember.Local
 	private void EnqueueRpc(int senderId, int tokens, Action action) => _ = EnqueueRpcAsync(senderId, tokens, action);
 
 	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action)

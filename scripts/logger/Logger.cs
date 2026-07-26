@@ -22,12 +22,13 @@ public partial class Logger : Node
 
 		var configBuilder = new ConfigurationBuilder();
 
-		using (var file = FileAccess.Open(ScriptConstants.AppSettingsPath, FileAccess.ModeFlags.Read))
-			if (file is not null)
-			{
-				var bytes = file.GetBuffer((long)file.GetLength());
-				configBuilder.AddJsonStream(new MemoryStream(bytes));
-			}
+		using var file = FileAccess.Open(ScriptConstants.AppSettingsPath, FileAccess.ModeFlags.Read);
+
+		if (file is not null)
+		{
+			var bytes = file.GetBuffer((long)file.GetLength());
+			configBuilder.AddJsonStream(new MemoryStream(bytes));
+		}
 
 		var config = configBuilder.Build();
 

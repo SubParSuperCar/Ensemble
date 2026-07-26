@@ -24,7 +24,7 @@ public static class LuaExecutor
 
 	private static ValueTask<int> Print(LuaFunctionExecutionContext context, CancellationToken ct)
 	{
-		var args = new List<string>();
+		var args = new List<string>(context.ArgumentCount);
 
 		for (var i = 0; i < context.ArgumentCount; i++)
 			args.Add(context.GetArgument<LuaValue>(i).ToString());

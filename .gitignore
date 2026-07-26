@@ -1,11 +1,13 @@
 **/bin
 **/obj
 
-/.godot
 /.idea
 /.vscode
-*.uid
+
+/.godot
 *.import
+*.uid
+export_presets.cfg
+
 *.DotSettings.user
 *.xsd
-export_presets.cfg

@@ -16,8 +16,6 @@
     <File Path=".github/LICENSE-ASSETS.txt"/>
     <File Path=".github/LICENSE-CODE.txt"/>
     <File Path=".github/README.md"/>
-    <File Path=".github/workflows/cloc.yml"/>
-    <File Path=".github/workflows/zip.yml"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Workflows/">
     <File Path=".github/workflows/cloc.yml"/>
@@ -25,8 +23,8 @@
   </Folder>
   <Folder Name="/Solution Items/Run Configs/">
     <File Path=".run/Editor.run.xml"/>
-    <File Path=".run/Player (External Console).run.xml"/>
     <File Path=".run/Player.run.xml"/>
+    <File Path=".run/Player (External Console).run.xml"/>
   </Folder>
   <Project Path="Game.csproj"/>
   <Project Path="lib/estragonia/Estragonia.csproj"/>

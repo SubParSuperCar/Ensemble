@@ -3,8 +3,8 @@ using Avalonia.Threading;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Root.Shared.Execution;
-using Root.Shared.Logging;
+using Root.Common.Execution;
+using Root.Common.Logging;
 using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;

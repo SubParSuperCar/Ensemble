@@ -18,7 +18,7 @@
   <ItemGroup>
     <PackageReference Include="GodotSharp" Version="4.7.1"/>
     <PackageReference Include="Avalonia" Version="[12.1.0]"/>
-    <PackageReference Include="Avalonia.HarfBuzz" Version="[12.1.0]"/>
+    <PackageReference Include="Avalonia.HarfBuzz" Version="[12.0.0,13.0.0)"/>
     <PackageReference Include="SkiaSharp" Version="[3.119.0.0]"/>
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="[3.119.0.0]"/>
     <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="[3.119.0.0]"/>
@@ -27,8 +27,8 @@
 
   <ItemGroup>
     <!--
-      Use a patched DLL where ISkiaGpu is public (Thanks, Avalonia!)
-      Built Against: Avalonia 12.1.0 & .NET 10.0.110
+      Patched Avalonia.Skia.dll with ISkiaGpu made public
+      Built against Avalonia 12.1.0 (.NET 10.0.110)
     -->
     <Reference Include="Avalonia.Skia">
       <HintPath>lib/Avalonia.Skia.dll</HintPath>

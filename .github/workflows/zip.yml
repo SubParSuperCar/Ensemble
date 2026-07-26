@@ -1,3 +1,5 @@
+name: Create Release with Deterministic Source Archive and Its Digest
+
 on:
   push:
     branches:

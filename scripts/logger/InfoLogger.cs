@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Godot;
 using Hardware.Info;
-using Root.Shared.Util;
+using Root.Common.Util;
 using Serilog;
 using Environment = System.Environment;
 
@@ -20,6 +20,7 @@ public partial class InfoLogger : Node
 		var hw = new HardwareInfo();
 		hw.RefreshAll(); // TODO: Only refresh used members
 
+		// List of key-value pairs vs. Dictionary
 		var lines = new List<(string Key, string Value)>();
 
 		var cpu = hw.CpuList.FirstOrDefault();
@@ -44,6 +45,8 @@ public partial class InfoLogger : Node
 			"Unknown"
 #endif
 		);
+
+		Add("Build Time", BuildInfo.BuildTime);
 
 		if (OperatingSystem.IsLinux())
 		{
@@ -104,14 +107,13 @@ public partial class InfoLogger : Node
 		Add("Culture", CultureInfo.CurrentCulture.DisplayName);
 		Add("Time Zone", TimeZoneInfo.Local.DisplayName);
 
-		var width = lines.Max(l => l.Key.Length);
-
 		var sb = new StringBuilder();
-
 		sb.AppendLine("=== System Information ===");
 
-		foreach (var line in lines)
-			sb.AppendLine(CultureInfo.InvariantCulture, $"{line.Key.PadRight(width)} : {line.Value.Trim()}");
+		var width = lines.Max(kvp => kvp.Key.Length);
+
+		foreach (var (key, value) in lines)
+			sb.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value.Trim()}");
 
 		Log.Information("{SystemInfo}", Environment.NewLine + sb.ToString().TrimEnd());
 

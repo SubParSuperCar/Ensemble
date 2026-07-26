@@ -3,7 +3,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Display;
 
-namespace Root.Shared.Logging;
+namespace Root.Common.Logging;
 
 public sealed class LogHistorySinkVolatile : ILogEventSink
 {

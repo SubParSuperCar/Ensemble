@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
-using Root.Shared.Input;
-using Root.Shared.Util;
+using Root.Common.Input;
+using Root.Common.Util;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Services;
 using Environment = System.Environment;
@@ -42,9 +42,10 @@ public partial class StatViewModel : ViewModelBase
 		var dram = OS.GetStaticMemoryUsage();
 #else
 		using var process = Process.GetCurrentProcess();
-		var dram = (ulong)process.WorkingSet64;
+		var dram = (ulong)process.PrivateMemorySize64;
 #endif
 
+		// List of key-value pairs vs. Dictionary
 		Dictionary<string, object> stats = new(StringComparer.OrdinalIgnoreCase)
 		{
 			["Frame Rate"] = string.Create(CultureInfo.InvariantCulture,

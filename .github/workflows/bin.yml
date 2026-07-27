@@ -19,6 +19,33 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
+          submodules: recursive
+
+      - name: Verify addon native binaries are present
+        run: |
+          echo "Checking for GDExtension native libraries required by export..."
+          MISSING=0
+          for f in \
+            "addons/terrain_3d/bin/libterrain.linux.release.x86_64.so" \
+          ; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Missing required native binary: $f"
+              MISSING=1
+            else
+              echo "OK: $f ($(stat -c%s "$f") bytes)"
+            fi
+          done
+          if [ "$MISSING" -eq 1 ]; then
+            echo ""
+            echo "One or more GDExtension binaries are missing from the checkout."
+            echo "Check whether these are committed to git, tracked via Git LFS,"
+            echo "or need to be downloaded from the addon's release page (e.g."
+            echo "Terrain3D releases: https://github.com/TokisanGames/Terrain3D/releases)"
+            echo "and placed under addons/terrain_3d/bin/ before export."
+            exit 1
+          fi
 
       - name: Setup .NET (from global.json)
         uses: actions/setup-dotnet@v4
@@ -50,7 +77,6 @@ jobs:
           mkdir -p ~/.local/share/godot/export_templates
           curl -L -o templates.tpz "$GODOT_TEMPLATES_URL"
           unzip -q templates.tpz -d /tmp/templates
-          mv /tmp/templates/templates "~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono" 2>/dev/null || \
           mv /tmp/templates/templates "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono"
 
       - name: Locate Godot binary
@@ -65,9 +91,17 @@ jobs:
           chmod +x "$BIN"
           echo "path=$BIN" >> "$GITHUB_OUTPUT"
 
-      - name: Publish .NET assemblies (AOT, linux-x64)
+      - name: Import project (headless)
         run: |
-          dotnet publish Game.csproj -c Release -r linux-x64 --self-contained true -p:PublishAot=true
+          "${{ steps.godot-bin.outputs.path }}" --headless --import 2>&1 | tee import_log.txt
+
+      - name: Build C# solution (headless)
+        run: |
+          "${{ steps.godot-bin.outputs.path }}" --headless --build-solutions --quit 2>&1 | tee build_log.txt
+          if grep -Eqi "error" build_log.txt; then
+            echo "::error::C# build reported errors — see build_log.txt"
+            exit 1
+          fi
 
       - name: Prepare export output dir
         run: mkdir -p builds/linux-x86_64
@@ -76,10 +110,13 @@ jobs:
         run: |
           "${{ steps.godot-bin.outputs.path }}" \
             --headless \
+            --verbose \
             --export-release "Linux (x86_64)" \
-            builds/linux-x86_64/Ensemble.x86_64
-        env:
-          GODOT_HEADLESS: 1
+            builds/linux-x86_64/Ensemble.x86_64 2>&1 | tee export_log.txt
+          if grep -Eqi "ERROR|Failed to export|Cannot export|Failed to open|Failed to copy" export_log.txt; then
+            echo "::error::Export step reported an internal error — see export_log.txt"
+            exit 1
+          fi
 
       - name: Verify export output
         run: |
@@ -97,11 +134,47 @@ jobs:
           name: Ensemble-linux-x86_64
           path: Ensemble-linux-x86_64.zip
 
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-debug-logs
+          path: |
+            import_log.txt
+            build_log.txt
+            export_log.txt
+
   build-windows:
     runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          lfs: true
+          submodules: recursive
+
+      - name: Verify addon native binaries are present
+        shell: pwsh
+        run: |
+          $required = @(
+            "addons\terrain_3d\bin\libterrain.windows.release.x86_64.dll"
+          )
+          $missing = $false
+          foreach ($f in $required) {
+            if (-not (Test-Path $f)) {
+              Write-Host "::error::Missing required native binary: $f"
+              $missing = $true
+            } else {
+              Write-Host "OK: $f"
+            }
+          }
+          if ($missing) {
+            Write-Host ""
+            Write-Host "One or more GDExtension binaries are missing from the checkout."
+            Write-Host "Check whether these are committed to git, tracked via Git LFS,"
+            Write-Host "or need to be downloaded from the addon's release page."
+            exit 1
+          }
 
       - name: Setup .NET (from global.json)
         uses: actions/setup-dotnet@v4
@@ -147,9 +220,19 @@ jobs:
           }
           echo "path=$($bin.FullName)" >> $env:GITHUB_OUTPUT
 
-      - name: Publish .NET assemblies (AOT, win-x64)
+      - name: Import project (headless)
+        shell: pwsh
         run: |
-          dotnet publish Game.csproj -c Release -r win-x64 --self-contained true -p:PublishAot=true
+          & "${{ steps.godot-bin.outputs.path }}" --headless --import 2>&1 | Tee-Object -FilePath import_log.txt
+
+      - name: Build C# solution (headless)
+        shell: pwsh
+        run: |
+          & "${{ steps.godot-bin.outputs.path }}" --headless --build-solutions --quit 2>&1 | Tee-Object -FilePath build_log.txt
+          if (Select-String -Path build_log.txt -Pattern "error" -Quiet) {
+            Write-Error "C# build reported errors — see build_log.txt"
+            exit 1
+          }
 
       - name: Prepare export output dir
         shell: pwsh
@@ -160,8 +243,13 @@ jobs:
         run: |
           & "${{ steps.godot-bin.outputs.path }}" `
             --headless `
+            --verbose `
             --export-release "Windows (x86_64)" `
-            builds\win-x86_64\Ensemble.exe
+            builds\win-x86_64\Ensemble.exe 2>&1 | Tee-Object -FilePath export_log.txt
+          if (Select-String -Path export_log.txt -Pattern "ERROR|Failed to export|Cannot export|Failed to open|Failed to copy" -Quiet) {
+            Write-Error "Export step reported an internal error — see export_log.txt"
+            exit 1
+          }
 
       - name: Verify export output
         shell: pwsh
@@ -182,3 +270,13 @@ jobs:
         with:
           name: Ensemble-win-x86_64
           path: Ensemble-win-x86_64.zip
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-debug-logs
+          path: |
+            import_log.txt
+            build_log.txt
+            export_log.txt

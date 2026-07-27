@@ -1,0 +1,40 @@
+name: Publish Release Binaries
+
+on:
+  push:
+    branches:
+      - main
+      - test
+  workflow_dispatch:
+
+jobs:
+  publish:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: windows-latest
+            rid: win-x64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+
+      - run: dotnet publish Game.csproj -c Release -r ${{ matrix.rid }} -o publish
+
+      - if: runner.os == 'Linux'
+        run: |
+          cd publish
+          zip -r ../Ensemble-${{ matrix.rid }}.zip .
+
+      - if: runner.os == 'Windows'
+        run: Compress-Archive -Path publish\* -DestinationPath Ensemble-${{ matrix.rid }}.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ensemble-${{ matrix.rid }}
+          path: Ensemble-${{ matrix.rid }}.zip

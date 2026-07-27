@@ -47,9 +47,9 @@
             <Button
                 Grid.Row="3"
                 Content="Set Plot to Null"
+                Command="{Binding SetPlotToNullCommand}"
                 ToolTip.Tip="Requests that you relinquish your occupancy of the current plot.&#x0a;If you own the plot and another player occupies it,&#x0a;ownership may be reassigned to the second oldest occupant."
-                HorizontalAlignment="Center"
-                Command="{Binding SetPlotToNullCommand}" />
+                HorizontalAlignment="Center" />
         </Grid>
     </Border>
 

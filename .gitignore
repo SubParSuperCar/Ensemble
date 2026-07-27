@@ -5,8 +5,8 @@
 /.vscode
 
 /.godot
-*.import
-*.uid
+# *.import
+# *.uid
 # export_presets.cfg
 
 *.DotSettings.user

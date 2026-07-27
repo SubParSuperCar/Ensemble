@@ -21,7 +21,6 @@ jobs:
           mkdir src
           rsync -a . src/ \
             --exclude=.git \
-            --exclude=.github \
             --exclude=src
 
       - uses: timo-reymann/deterministic-zip-gh-action@v1

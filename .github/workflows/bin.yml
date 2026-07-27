@@ -13,69 +13,96 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            godot: linux
+            name: linux-x86_64
             preset: Linux (x86_64)
-            output: builds/linux-x86_64
+            godot_binary: Godot_v4.7.1-stable_mono_linux.x86_64
+
           - os: windows-latest
-            godot: windows
+            name: win-x86_64
             preset: Windows (x86_64)
-            output: builds/win-x86_64
+            godot_binary: Godot_v4.7.1-stable_mono_win64.exe
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-dotnet@v4
+
       - name: Install Godot
         shell: bash
         run: |
           mkdir godot
-          cd godot
 
-          if [ "${{ matrix.godot }}" = "linux" ]; then
-            wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_linux_x86_64.zip
-            unzip -q Godot_v4.7.1-stable_mono_linux_x86_64.zip
-            echo "$PWD" >> "$GITHUB_PATH"
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            curl -L \
+              https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_linux_x86_64.zip \
+              -o godot.zip
+
+            unzip -q godot.zip -d godot
+
+            chmod +x godot/${{ matrix.godot_binary }}
+
           else
-            wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_win64.zip -O godot.zip
-            unzip -q godot.zip
+            curl -L \
+              https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_win64.zip \
+              -o godot.zip
+
+            unzip -q godot.zip -d godot
           fi
 
       - name: Install Export Templates
         shell: bash
         run: |
-          mkdir -p ~/.local/share/godot/export_templates/4.7.1.stable.mono
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            mkdir -p ~/.local/share/godot/export_templates/4.7.1.stable.mono
+            curl -L \
+              https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz \
+              -o templates.tpz
 
-          if [ "${{ matrix.godot }}" = "linux" ]; then
-            wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz -O templates.tpz
+            unzip -q templates.tpz \
+              -d ~/.local/share/godot/export_templates/4.7.1.stable.mono
+
           else
-            curl -L https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz -o templates.tpz
-          fi
+            mkdir -p "$APPDATA/Godot/export_templates/4.7.1.stable.mono"
 
-          unzip -q templates.tpz -d ~/.local/share/godot/export_templates/4.7.1.stable.mono
+            curl -L \
+              https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz \
+              -o templates.tpz
+
+            tar -xf templates.tpz \
+              -C "$APPDATA/Godot/export_templates/4.7.1.stable.mono"
+          fi
 
       - name: Export
         shell: bash
         run: |
-          if [ "${{ matrix.godot }}" = "linux" ]; then
-            godot \
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            godot/godot \
               --headless \
               --export-release "${{ matrix.preset }}"
+
           else
-            ./godot/Godot_v4.7.1-stable_mono_win64.exe \
+            ./godot/${{ matrix.godot_binary }} \
               --headless \
               --export-release "${{ matrix.preset }}"
           fi
 
-      - if: runner.os == 'Linux'
+      - name: Archive
+        shell: bash
         run: |
-          cd ${{ matrix.output }}
-          zip -r ../../Ensemble-${{ matrix.godot }}.zip .
+          if [ "${{ runner.os }}" = "Linux" ]; then
+            cd builds/linux-x86_64
+            zip -r ../../Ensemble-${{ matrix.name }}.zip .
 
-      - if: runner.os == 'Windows'
-        run: Compress-Archive -Path "${{ matrix.output }}\*" -DestinationPath Ensemble-${{ matrix.godot }}.zip
+          else
+            cd builds/win-x86_64
+            powershell Compress-Archive \
+              -Path * \
+              -DestinationPath ../../Ensemble-${{ matrix.name }}.zip
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Ensemble-${{ matrix.godot }}
-          path: Ensemble-${{ matrix.godot }}.zip
+          name: Ensemble-${{ matrix.name }}
+          path: Ensemble-${{ matrix.name }}.zip

@@ -1,5 +1,8 @@
-**/bin
-**/obj
+**/bin/**
+**/obj/**
+
+!**/addons/**/bin/**
+!**/addons/**/obj/**
 
 /.idea
 /.vscode

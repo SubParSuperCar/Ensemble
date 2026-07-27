@@ -13,4 +13,4 @@ A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, 
 future 1.x+ semantic versions. It has been open-sourced early to encourage feedback, discussion, and contributions while
 the project's architecture and implementation continue to evolve.
 
-Click [here](LICENSE.md) to view the license.
+Click [here](/LICENSE.md) to view the license.

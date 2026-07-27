@@ -13,12 +13,12 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            rid: linux-x64
-            preset: Linux\ (x86_64)
+            godot: linux
+            preset: Linux (x86_64)
             output: builds/linux-x86_64
           - os: windows-latest
-            rid: win-x64
-            preset: Windows\ (x86_64)
+            godot: windows
+            preset: Windows (x86_64)
             output: builds/win-x86_64
 
     runs-on: ${{ matrix.os }}
@@ -26,26 +26,56 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-dotnet@v4
+      - name: Install Godot
+        shell: bash
+        run: |
+          mkdir godot
+          cd godot
 
-      - run: dotnet publish Game.csproj -c Release -r ${{ matrix.rid }}
+          if [ "${{ matrix.godot }}" = "linux" ]; then
+            wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_linux_x86_64.zip
+            unzip -q Godot_v4.7.1-stable_mono_linux_x86_64.zip
+            echo "$PWD" >> "$GITHUB_PATH"
+          else
+            wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_win64.zip -O godot.zip
+            unzip -q godot.zip
+          fi
 
-      - uses: firebelley/godot-export@v7
-        with:
-          godot-version: 4.7.1
-          use-dotnet: true
-          relative-project-path: .
-          presets-to-export: ${{ matrix.preset }}
+      - name: Install Export Templates
+        shell: bash
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/4.7.1.stable.mono
+
+          if [ "${{ matrix.godot }}" = "linux" ]; then
+            wget -q https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz -O templates.tpz
+          else
+            curl -L https://github.com/godotengine/godot-builds/releases/download/4.7.1-stable/Godot_v4.7.1-stable_mono_export_templates.tpz -o templates.tpz
+          fi
+
+          unzip -q templates.tpz -d ~/.local/share/godot/export_templates/4.7.1.stable.mono
+
+      - name: Export
+        shell: bash
+        run: |
+          if [ "${{ matrix.godot }}" = "linux" ]; then
+            godot \
+              --headless \
+              --export-release "${{ matrix.preset }}"
+          else
+            ./godot/Godot_v4.7.1-stable_mono_win64.exe \
+              --headless \
+              --export-release "${{ matrix.preset }}"
+          fi
 
       - if: runner.os == 'Linux'
         run: |
           cd ${{ matrix.output }}
-          zip -r ../../Ensemble-${{ matrix.rid }}.zip .
+          zip -r ../../Ensemble-${{ matrix.godot }}.zip .
 
       - if: runner.os == 'Windows'
-        run: Compress-Archive -Path "${{ matrix.output }}\*" -DestinationPath "Ensemble-${{ matrix.rid }}.zip"
+        run: Compress-Archive -Path "${{ matrix.output }}\*" -DestinationPath Ensemble-${{ matrix.godot }}.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Ensemble-${{ matrix.rid }}
-          path: Ensemble-${{ matrix.rid }}.zip
+          name: Ensemble-${{ matrix.godot }}
+          path: Ensemble-${{ matrix.godot }}.zip

@@ -7,7 +7,7 @@
 /.godot
 *.import
 *.uid
-export_presets.cfg
+# export_presets.cfg
 
 *.DotSettings.user
 *.xsd

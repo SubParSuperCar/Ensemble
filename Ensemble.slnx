@@ -4,6 +4,7 @@
     <File Path=".gitattributes"/>
     <File Path=".gitignore"/>
     <File Path="appsettings.json"/>
+    <File Path="export_presets.cfg"/>
     <File Path="FodyWeavers.xml"/>
     <!-- Auto-generated -->
     <File Path="FodyWeavers.xsd"/>

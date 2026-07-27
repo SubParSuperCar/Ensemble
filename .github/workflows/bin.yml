@@ -14,8 +14,12 @@ jobs:
         include:
           - os: ubuntu-latest
             rid: linux-x64
+            preset: Linux\ (x86_64)
+            output: builds/linux-x86_64
           - os: windows-latest
             rid: win-x64
+            preset: Windows\ (x86_64)
+            output: builds/win-x86_64
 
     runs-on: ${{ matrix.os }}
 
@@ -24,15 +28,22 @@ jobs:
 
       - uses: actions/setup-dotnet@v4
 
-      - run: dotnet publish Game.csproj -c Release -r ${{ matrix.rid }} -o publish
+      - run: dotnet publish Game.csproj -c Release -r ${{ matrix.rid }}
+
+      - uses: firebelley/godot-export@v7
+        with:
+          godot-version: 4.7.1
+          use-dotnet: true
+          relative-project-path: .
+          presets-to-export: ${{ matrix.preset }}
 
       - if: runner.os == 'Linux'
         run: |
-          cd publish
-          zip -r ../Ensemble-${{ matrix.rid }}.zip .
+          cd ${{ matrix.output }}
+          zip -r ../../Ensemble-${{ matrix.rid }}.zip .
 
       - if: runner.os == 'Windows'
-        run: Compress-Archive -Path publish\* -DestinationPath Ensemble-${{ matrix.rid }}.zip
+        run: Compress-Archive -Path "${{ matrix.output }}\*" -DestinationPath "Ensemble-${{ matrix.rid }}.zip"
 
       - uses: actions/upload-artifact@v4
         with:

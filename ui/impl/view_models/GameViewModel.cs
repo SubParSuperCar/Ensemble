@@ -28,6 +28,7 @@ public partial class GameViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
+	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public partial ClockViewModel? Clock { get; set; }
 
 	[ObservableProperty]

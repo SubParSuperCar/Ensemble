@@ -2,11 +2,12 @@ using Godot;
 
 namespace Root.Scripts.Game;
 
-// TODO
+// TODO: For testing purposes only
 public partial class Game : Node3D
 {
 	public override void _Ready()
 	{
+#if DEBUG
 		const int plotId = 2;
 		var plot = GPlots.Get(plotId);
 		var instances = plot!.Instances;
@@ -17,6 +18,7 @@ public partial class Game : Node3D
 		instances.Add(assetId, position, rotation);
 
 		GPlayers.Add(string.Empty, "Larpje139");
-		GPlayers.Add(string.Empty, "Pepsi bottle violator");
+		GPlayers.Add(string.Empty, "Pepsi bottle guzzler");
+#endif
 	}
 }

@@ -11,6 +11,7 @@
 
     <li:LoadingIndicator
         Mode="ArcsRing"
+        SpeedRatio="2"
         Width="192" Height="192"
         HorizontalAlignment="Center" VerticalAlignment="Center" />
 

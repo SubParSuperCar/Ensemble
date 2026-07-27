@@ -32,7 +32,7 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
-		var peerId = GSessionManager.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, -1);
+		var peerId = GSessionManager.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, None);
 
 		var player = new Player(gdPlayer.Name, peerId);
 		Players.Add(player);

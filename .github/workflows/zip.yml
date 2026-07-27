@@ -1,16 +1,17 @@
+name: Create Release with Deterministic Source Archive and Its Digest
+
 on:
   push:
     branches:
       - main
       - test
 
+permissions:
+  contents: write
+
 jobs:
   job:
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-
     steps:
       - uses: actions/checkout@v7
 

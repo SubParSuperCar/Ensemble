@@ -34,6 +34,7 @@
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />
         </Style>
 
+        <!-- TODO: Set TextRenderingMode to Antialias -->
         <Style Selector="ToolTip">
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />

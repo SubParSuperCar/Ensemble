@@ -1,6 +1,6 @@
 [gd_resource type="Terrain3DAssets" format=3 uid="uid://b2238ug3evnm2"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qfpt1"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kvpfn"]
 transparency = 4
 cull_mode = 2
 vertex_color_use_as_albedo = true
@@ -10,13 +10,13 @@ distance_fade_mode = 1
 distance_fade_min_distance = 128.0
 distance_fade_max_distance = 96.0
 
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_lp6ho"]
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_dinhu"]
 generated_type = 1
 height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_qfpt1")
+material_override = SubResource("StandardMaterial3D_kvpfn")
 last_lod = 0
 last_shadow_lod = 0
 lod0_range = 128.0
 
 [resource]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_lp6ho")])
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_dinhu")])

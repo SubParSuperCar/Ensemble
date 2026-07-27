@@ -6,7 +6,8 @@
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.StatView"
-    x:DataType="vm:StatViewModel">
+    x:DataType="vm:StatViewModel"
+    TextOptions.TextRenderingMode="Antialias">
 
     <TextBlock
         Text="{Binding Text}"

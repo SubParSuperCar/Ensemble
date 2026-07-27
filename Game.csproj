@@ -14,20 +14,30 @@
     <OutputType>Exe</OutputType>
     <UseAppHost>false</UseAppHost>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+    <SelfContained>true</SelfContained>
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.4.1"/>
-    <PackageReference Include="Avalonia.Themes.Simple" Version="[11.3.18]"/>
-    <PackageReference Include="AvaloniaEdit.TextMate" Version="[11.4.1]"/>
+    <TrimmerRootAssembly Include="$(TargetName)"/>
+    <TrimmerRootAssembly Include="GodotSharp"/>
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="[12.0.0,13.0.0)"/>
+    <PackageReference Include="Avalonia.Themes.Simple" Version="[12.0.0,13.0.0)"/>
+    <PackageReference Include="AvaloniaEdit.TextMate" Version="[12.0.0,13.0.0)"/>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
     <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
-    <PackageReference Include="LoadingIndicators.Avalonia" Version="11.0.11.1"/>
     <PackageReference Include="LuaCSharp" Version="0.5.5"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
     <PackageReference Include="Meziantou.Analyzer" Version="3.0.*">
@@ -36,13 +46,17 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.10"/>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.10"/>
-    <PackageReference Include="Scrutor" Version="7.0.0"/>
+    <PackageReference Include="Optris.LoadingIndicators.Avalonia" Version="[12.0.0,13.0.0)"/>
     <PackageReference Include="Serilog" Version="4.4.0"/>
     <PackageReference Include="Serilog.Expressions" Version="5.0.0"/>
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+    <PackageReference Include="ServiceScan.SourceGenerator" Version="3.1.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Threading.RateLimiting" Version="10.0.10"/>
   </ItemGroup>
 
@@ -50,19 +64,46 @@
     <ProjectReference Include="lib/estragonia/Estragonia.csproj"/>
   </ItemGroup>
 
+  <ItemGroup Condition="'$(Configuration)' == 'Debug'">
+    <!-- For the Avalonia designer -->
+    <Reference Include="Avalonia.Skia">
+      <HintPath>lib/estragonia/lib/Avalonia.Skia.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="GenerateBuildInfo" BeforeTargets="BeforeCompile">
+    <PropertyGroup>
+      <BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC"))</BuildTime>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <BuildInfoLines Include="public static class BuildInfo"/>
+      <BuildInfoLines Include="{"/>
+      <BuildInfoLines Include="&#x9;public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
+      <BuildInfoLines Include="}"/>
+    </ItemGroup>
+
+    <WriteLinesToFile
+      File="$(IntermediateOutputPath)BuildInfo.g.cs"
+      Lines="@(BuildInfoLines)"
+      Overwrite="true"/>
+
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <Content Include="**/*.gd" Exclude=".godot/**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="lib/**"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Remove="lib/**"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Remove="lib/**"/>
   </ItemGroup>
 </Project>

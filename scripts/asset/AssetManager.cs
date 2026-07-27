@@ -47,24 +47,15 @@ public partial class AssetManager : Node
 
 	private void ScanDirectory(string path)
 	{
-		using var directory = DirAccess.Open(path);
-
-		if (directory is null)
-			return;
-
-		directory.ListDirBegin();
-
-		for (var entry = directory.GetNext(); entry != string.Empty; entry = directory.GetNext())
+		foreach (var entry in ResourceLoader.ListDirectory(path))
 		{
 			var entryPath = path.PathJoin(entry);
 
-			if (directory.CurrentIsDir())
+			if (entry.EndsWith('/'))
 				ScanDirectory(entryPath);
 			else if (SceneFileRegex.IsMatch(entryPath))
 				RegisterScene(entryPath);
 		}
-
-		directory.ListDirEnd();
 	}
 
 	private void RegisterScene(string path)

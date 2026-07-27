@@ -21,18 +21,18 @@ boot_splash/minimum_display_time=1000
 
 [autoload]
 
-AvaloniaLoader="uid://chxjmih74cyql"
-SeriLogger="uid://d2qsep2vpj2q1"
-Watchdog="uid://2tmgqp5ocfyh"
-Core="*uid://cw52xu76o1ywe"
-SessionManager="*uid://b0sclnm4uupay"
-SysInfoLogger="uid://bb1bstnkwyamu"
-ExeHasher="uid://dmwu8x8absnoy"
+AvaloniaLoader="uid://nm7jxpbwiydj"
+SeriLogger="uid://dn0wmf1esf74o"
+Watchdog="uid://cf8i8vhvgsrri"
+Core="*uid://chxcanm6o3piw"
+SessionManager="*uid://cjg5254v7pqql"
+SysInfoLogger="uid://b1jtggnbn6gd2"
+ExeHasher="uid://defjcppyvsxus"
 
 [debug]
 
-settings/stdout/print_fps=true
 settings/stdout/verbose_stdout.editor=true
+settings/stdout/print_fps.editor=true
 
 [display]
 
@@ -47,10 +47,11 @@ window/size/mode.editor=0
 [dotnet]
 
 project/assembly_name="Game"
+project/assembly_reload_attempts=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/rider-plugin/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/rider-plugin/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [input]
 

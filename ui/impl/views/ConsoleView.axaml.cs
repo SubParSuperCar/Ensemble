@@ -1,16 +1,17 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
+using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.ViewModels;
 using TextMateSharp.Grammars;
-using InputExtensions = Root.Globals.Input.InputExtensions;
+using InputExtensions = Root.Common.Input.InputExtensions;
 
 namespace Root.Ui.Impl.Views;
 
 // ReSharper disable once UnusedType.Global
-public partial class ConsoleView : UserControl
+public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 {
 	private const string LanguageExtension = ".lua";
 	private new const ThemeName Theme = ThemeName.OneDark;
@@ -75,8 +76,8 @@ public partial class ConsoleView : UserControl
 		}
 	}
 
-	private void OnEditorGotFocus(object? sender, GotFocusEventArgs e) => InputExtensions.Sink.Acquire(this);
-	private void OnEditorLostFocus(object? sender, RoutedEventArgs e) => InputExtensions.Sink.Release(this);
+	private void OnEditorGotFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Acquire(this);
+	private void OnEditorLostFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Release(this);
 
 	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
 	{

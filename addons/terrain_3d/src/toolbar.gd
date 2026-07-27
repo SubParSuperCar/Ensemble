@@ -33,61 +33,61 @@ func _ready() -> void:
 	add_tool_group.pressed.connect(_on_tool_selected)
 	sub_tool_group.pressed.connect(_on_tool_selected)
 
-	add_tool_button({ "tool":Terrain3DEditor.REGION, 
-		"add_text":"Add Region (E)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_REGION_ADD,
-		"sub_text":"Remove Region", "sub_op":Terrain3DEditor.SUBTRACT, "sub_icon":ICON_REGION_REMOVE })
-	
-	add_child(HSeparator.new())
-	
-	add_tool_button({ "tool":Terrain3DEditor.SCULPT, 
-		"add_text":"Raise (R)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_HEIGHT_ADD,
-		"sub_text":"Lower (R)", "sub_op":Terrain3DEditor.SUBTRACT, "sub_icon":ICON_HEIGHT_SUB })
-
-	add_tool_button({ "tool":Terrain3DEditor.SCULPT, 
-		"add_text":"Smooth (Shift)", "add_op":Terrain3DEditor.AVERAGE, "add_icon":ICON_HEIGHT_SMOOTH })
-
-	add_tool_button({ "tool":Terrain3DEditor.HEIGHT, 
-		"add_text":"Height (H)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_HEIGHT_FLAT,
-		"sub_text":"Height (H)", "sub_op":Terrain3DEditor.SUBTRACT, "sub_icon":ICON_HEIGHT_FLAT })
-
-	add_tool_button({ "tool":Terrain3DEditor.SCULPT, 
-		"add_text":"Slope (S)", "add_op":Terrain3DEditor.GRADIENT, "add_icon":ICON_HEIGHT_SLOPE })
+	add_tool_button({"tool": Terrain3DEditor.REGION,
+		"add_text": "Add Region (E)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_REGION_ADD,
+		"sub_text": "Remove Region", "sub_op": Terrain3DEditor.SUBTRACT, "sub_icon": ICON_REGION_REMOVE})
 
 	add_child(HSeparator.new())
 
-	add_tool_button({ "tool":Terrain3DEditor.TEXTURE, 
-		"add_text":"Paint Texture (B)", "add_op":Terrain3DEditor.REPLACE, "add_icon":ICON_PAINT_TEXTURE })
+	add_tool_button({"tool": Terrain3DEditor.SCULPT,
+		"add_text": "Raise (R)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_HEIGHT_ADD,
+		"sub_text": "Lower (R)", "sub_op": Terrain3DEditor.SUBTRACT, "sub_icon": ICON_HEIGHT_SUB})
 
-	add_tool_button({ "tool":Terrain3DEditor.TEXTURE, 
-		"add_text":"Spray Texture (V)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_SPRAY_TEXTURE })
+	add_tool_button({"tool": Terrain3DEditor.SCULPT,
+		"add_text": "Smooth (Shift)", "add_op": Terrain3DEditor.AVERAGE, "add_icon": ICON_HEIGHT_SMOOTH})
 
-	add_tool_button({ "tool":Terrain3DEditor.AUTOSHADER,
-		"add_text":"Paint Autoshader (A)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_AUTOSHADER,
-		"sub_text":"Disable Autoshader (A)", "sub_op":Terrain3DEditor.SUBTRACT })
+	add_tool_button({"tool": Terrain3DEditor.HEIGHT,
+		"add_text": "Height (H)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_HEIGHT_FLAT,
+		"sub_text": "Height (H)", "sub_op": Terrain3DEditor.SUBTRACT, "sub_icon": ICON_HEIGHT_FLAT})
 
-	add_child(HSeparator.new())
-
-	add_tool_button({ "tool":Terrain3DEditor.COLOR,
-		"add_text":"Paint Color (C)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_COLOR,
-		"sub_text":"Remove Color (C)", "sub_op":Terrain3DEditor.SUBTRACT })
-	
-	add_tool_button({ "tool":Terrain3DEditor.ROUGHNESS,
-		"add_text":"Paint Wetness (W)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_WETNESS,
-		"sub_text":"Remove Wetness (W)", "sub_op":Terrain3DEditor.SUBTRACT })
+	add_tool_button({"tool": Terrain3DEditor.SCULPT,
+		"add_text": "Slope (S)", "add_op": Terrain3DEditor.GRADIENT, "add_icon": ICON_HEIGHT_SLOPE})
 
 	add_child(HSeparator.new())
 
-	add_tool_button({ "tool":Terrain3DEditor.HOLES,
-		"add_text":"Add Holes (X)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_HOLES,
-		"sub_text":"Remove Holes (X)", "sub_op":Terrain3DEditor.SUBTRACT })
+	add_tool_button({"tool": Terrain3DEditor.TEXTURE,
+		"add_text": "Paint Texture (B)", "add_op": Terrain3DEditor.REPLACE, "add_icon": ICON_PAINT_TEXTURE})
 
-	add_tool_button({ "tool":Terrain3DEditor.NAVIGATION,
-		"add_text":"Paint Navigable Area (N)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_NAVIGATION,
-		"sub_text":"Remove Navigable Area (N)", "sub_op":Terrain3DEditor.SUBTRACT })
+	add_tool_button({"tool": Terrain3DEditor.TEXTURE,
+		"add_text": "Spray Texture (V)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_SPRAY_TEXTURE})
 
-	add_tool_button({ "tool":Terrain3DEditor.INSTANCER,
-		"add_text":"Instance Meshes (I)", "add_op":Terrain3DEditor.ADD, "add_icon":ICON_INSTANCER,
-		"sub_text":"Remove Meshes (I)", "sub_op":Terrain3DEditor.SUBTRACT })
+	add_tool_button({"tool": Terrain3DEditor.AUTOSHADER,
+		"add_text": "Paint Autoshader (A)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_AUTOSHADER,
+		"sub_text": "Disable Autoshader (A)", "sub_op": Terrain3DEditor.SUBTRACT})
+
+	add_child(HSeparator.new())
+
+	add_tool_button({"tool": Terrain3DEditor.COLOR,
+		"add_text": "Paint Color (C)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_COLOR,
+		"sub_text": "Remove Color (C)", "sub_op": Terrain3DEditor.SUBTRACT})
+
+	add_tool_button({"tool": Terrain3DEditor.ROUGHNESS,
+		"add_text": "Paint Wetness (W)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_WETNESS,
+		"sub_text": "Remove Wetness (W)", "sub_op": Terrain3DEditor.SUBTRACT})
+
+	add_child(HSeparator.new())
+
+	add_tool_button({"tool": Terrain3DEditor.HOLES,
+		"add_text": "Add Holes (X)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_HOLES,
+		"sub_text": "Remove Holes (X)", "sub_op": Terrain3DEditor.SUBTRACT})
+
+	add_tool_button({"tool": Terrain3DEditor.NAVIGATION,
+		"add_text": "Paint Navigable Area (N)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_NAVIGATION,
+		"sub_text": "Remove Navigable Area (N)", "sub_op": Terrain3DEditor.SUBTRACT})
+
+	add_tool_button({"tool": Terrain3DEditor.INSTANCER,
+		"add_text": "Instance Meshes (I)", "add_op": Terrain3DEditor.ADD, "add_icon": ICON_INSTANCER,
+		"sub_text": "Remove Meshes (I)", "sub_op": Terrain3DEditor.SUBTRACT})
 
 	# Select first button
 	var buttons: Array[BaseButton] = add_tool_group.get_buttons()
@@ -141,7 +141,7 @@ func show_add_buttons(p_enable: bool) -> void:
 	for button in add_tool_group.get_buttons():
 		button.visible = p_enable
 	for button in sub_tool_group.get_buttons():
-		button.visible = !p_enable
+		button.visible = ! p_enable
 
 
 func _on_tool_selected(p_button: BaseButton) -> void:
@@ -151,4 +151,5 @@ func _on_tool_selected(p_button: BaseButton) -> void:
 	var id: int = p_button.get_meta("ID", -2)
 	for button in change_group.get_buttons():
 		button.set_pressed_no_signal(button.get_meta("ID", -1) == id)
-	emit_signal("tool_changed", p_button.get_meta("Tool", Terrain3DEditor.TOOL_MAX), p_button.get_meta("Operation", Terrain3DEditor.OP_MAX))
+	emit_signal("tool_changed", p_button.get_meta("Tool", Terrain3DEditor.TOOL_MAX),
+			p_button.get_meta("Operation", Terrain3DEditor.OP_MAX))

@@ -7,7 +7,8 @@
     xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.ConsoleView"
-    x:DataType="vm:ConsoleViewModel">
+    x:DataType="vm:ConsoleViewModel"
+    TextOptions.TextRenderingMode="Antialias">
 
     <Border
         BorderBrush="YellowGreen"
@@ -52,6 +53,7 @@
 
                 <Button
                     Content="Execute"
+                    Command="{Binding ExecuteCommand}"
                     ToolTip.Tip="Executes the entered script source code."
                     Margin="0,0,20,2"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom" />

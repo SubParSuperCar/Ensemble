@@ -173,7 +173,7 @@ public partial class SessionManager : Node
 	{
 		var config = new ConfigFile();
 
-#if RELEASE
+#if !DEBUG
 		if (config.Load(ScriptConstants.UserDataCfgPath) is Error.Ok)
 		{
 			var stored = config.GetValue("player", "id", string.Empty).AsString();

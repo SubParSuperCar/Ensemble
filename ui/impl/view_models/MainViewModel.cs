@@ -32,6 +32,7 @@ public partial class MainViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
+	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public partial ViewModelBase? Main { get; set; }
 
 	[ObservableProperty]

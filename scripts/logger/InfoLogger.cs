@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Godot;
 using Hardware.Info;
-using Root.Globals;
+using Root.Common.Util;
 using Serilog;
 using Environment = System.Environment;
 
@@ -13,110 +13,132 @@ public partial class InfoLogger : Node
 {
 	private const string LinuxKernelVersionFilePath = "/proc/sys/kernel/osrelease";
 
-#pragma warning disable MA0051
 	public override void _Ready()
-#pragma warning restore MA0051
 	{
 		var hw = new HardwareInfo();
-		hw.RefreshAll();
+		hw.RefreshAll(); // TODO: Only refresh used members
 
 		var lines = new List<(string Key, string Value)>();
 
-		var cpu = hw.CpuList.FirstOrDefault();
-		var gpu = hw.VideoControllerList.FirstOrDefault();
-		var board = hw.MotherboardList.FirstOrDefault();
-		var bios = hw.BiosList.FirstOrDefault();
+		AddGeneralInfo(lines);
+		AddHardwareInfo(hw, lines);
 
-		Add("Machine", Environment.MachineName);
-		Add("User", Environment.UserName);
+		Add(lines, "Culture", CultureInfo.CurrentCulture.DisplayName);
+		Add(lines, "Time Zone", TimeZoneInfo.Local.DisplayName);
 
-		Add("OS", RuntimeInformation.OSDescription);
-		Add("OS Arch.", RuntimeInformation.OSArchitecture);
-		Add("Process", RuntimeInformation.ProcessArchitecture);
-		Add(".NET", RuntimeInformation.FrameworkDescription);
+		Log.Information("{SystemInfo}", Environment.NewLine + BuildReport(lines));
+
+		QueueFree();
+	}
+
+	private static void AddGeneralInfo(List<(string Key, string Value)> lines)
+	{
+		Add(lines, "Machine", Environment.MachineName);
+		Add(lines, "User", Environment.UserName);
+
+		Add(lines, "OS", RuntimeInformation.OSDescription);
+		Add(lines, "OS Arch.", RuntimeInformation.OSArchitecture);
+		Add(lines, "Process", RuntimeInformation.ProcessArchitecture);
+		Add(lines, ".NET", RuntimeInformation.FrameworkDescription);
+
+		Add(lines, "Config",
+#if DEBUG
+			"DEBUG"
+#elif RELEASE
+			"RELEASE"
+#else
+			"Unknown"
+#endif
+		);
+
+		Add(lines, "Build Time", BuildInfo.BuildTime);
 
 		if (OperatingSystem.IsLinux())
 		{
 			try
 			{
 				if (File.Exists(LinuxKernelVersionFilePath))
-					Add("Kernel", File.ReadAllText(LinuxKernelVersionFilePath).Trim());
+					Add(lines, "Kernel", File.ReadAllText(LinuxKernelVersionFilePath).Trim());
 			}
 			catch
 			{
 				// Ignore
 			}
 
-			Add("Shell", Environment.GetEnvironmentVariable("SHELL"));
-			Add("Desktop", Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP"));
-			Add("Session", Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"));
+			Add(lines, "Shell", Environment.GetEnvironmentVariable("SHELL"));
+			Add(lines, "Desktop", Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP"));
+			Add(lines, "Session", Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"));
 		}
 
-		Add("Uptime",
+		Add(lines, "Uptime",
 			TimeSpan.FromMilliseconds(Environment.TickCount64)
 				.ToString(@"d\d\ hh\h\ mm\m", CultureInfo.InvariantCulture));
+	}
+
+	private static void AddHardwareInfo(HardwareInfo hw, List<(string Key, string Value)> lines)
+	{
+		var cpu = hw.CpuList.FirstOrDefault();
+		var gpu = hw.VideoControllerList.FirstOrDefault();
+		var board = hw.MotherboardList.FirstOrDefault();
+		var bios = hw.BiosList.FirstOrDefault();
 
 		if (cpu is not null)
 		{
-			Add("CPU", cpu.Name);
-			Add("Topology", $"{cpu.NumberOfCores}C / {cpu.NumberOfLogicalProcessors}T");
+			Add(lines, "CPU", cpu.Name);
+			Add(lines, "Topology", $"{cpu.NumberOfCores}C / {cpu.NumberOfLogicalProcessors}T");
 
 			if (cpu.MaxClockSpeed > 0)
-				Add("Max Clock", string.Create(CultureInfo.InvariantCulture, $"{cpu.MaxClockSpeed / 1000.0:F2} GHz"));
+				Add(lines, "Max Clock",
+					string.Create(CultureInfo.InvariantCulture, $"{cpu.MaxClockSpeed / 1000.0:F2} GHz"));
 		}
 
-		Add("Endianness", BitConverter.IsLittleEndian ? "Little" : "Big");
+		Add(lines, "Endianness", BitConverter.IsLittleEndian ? "Little" : "Big");
 
 		if (gpu is not null)
-			Add("GPU", gpu.Name);
+			Add(lines, "GPU", gpu.Name);
 
-		Add(
-			"Memory",
-			$"{Util.FormatBytes(hw.MemoryStatus.TotalPhysical - hw.MemoryStatus.AvailablePhysical)} / {Util.FormatBytes(hw.MemoryStatus.TotalPhysical)}");
+		Add(lines, "Memory",
+			$"{Formatter.FormatBytes(hw.MemoryStatus.TotalPhysical - hw.MemoryStatus.AvailablePhysical)} / {Formatter.FormatBytes(hw.MemoryStatus.TotalPhysical)}");
 
 		if (board is not null)
-			Add("Board", $"{board.Manufacturer} {board.Product}");
+			Add(lines, "Board", $"{board.Manufacturer} {board.Product}");
 
 		if (bios is not null)
-			Add("BIOS", $"{bios.Manufacturer} {bios.Version}");
+			Add(lines, "BIOS", $"{bios.Manufacturer} {bios.Version}");
 
 		foreach (var drive in hw.DriveList.OrderBy(d => d.Model, StringComparer.OrdinalIgnoreCase))
-			Add("Drive", $"{drive.Model} ({Util.FormatBytes(drive.Size)})");
+			Add(lines, "Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
 
 		foreach (var monitor in hw.MonitorList)
-			Add("Monitor", monitor.Name);
+			Add(lines, "Monitor", monitor.Name);
 
 		foreach (var nic in hw.NetworkAdapterList
 					 .Where(n => !string.IsNullOrWhiteSpace(n.Name) && n.Name is not "lo")
 					 .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
-			Add("Network", nic.Name);
+			Add(lines, "Network", nic.Name);
+	}
 
-		Add("Culture", CultureInfo.CurrentCulture.DisplayName);
-		Add("Time Zone", TimeZoneInfo.Local.DisplayName);
-
-		var width = lines.Max(l => l.Key.Length);
-
+	private static string BuildReport(List<(string Key, string Value)> lines)
+	{
 		var sb = new StringBuilder();
-
 		sb.AppendLine("=== System Information ===");
 
-		foreach (var line in lines)
-			sb.AppendLine(CultureInfo.InvariantCulture, $"{line.Key.PadRight(width)} : {line.Value.Trim()}");
+		var width = lines.Max(line => line.Key.Length);
 
-		Log.Information("{SystemInfo}", Environment.NewLine + sb.ToString().TrimEnd());
+		foreach (var (key, value) in lines)
+			sb.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value.Trim()}");
 
-		QueueFree();
-		return;
+		return sb.ToString().TrimEnd();
+	}
 
-		void Add(string key, object? value)
-		{
-			if (value is null)
-				return;
+	private static void Add(List<(string Key, string Value)> lines, string key, object? value)
+	{
+		if (value is null)
+			return;
 
-			var text = value.ToString();
+		var text = value.ToString();
 
-			if (!string.IsNullOrWhiteSpace(text))
-				lines.Add((key, text));
-		}
+		if (!string.IsNullOrWhiteSpace(text))
+			lines.Add((key, text));
 	}
 }

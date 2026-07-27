@@ -10,12 +10,9 @@ public sealed class LogSink : ILogEventSink
 {
 	public void Emit(LogEvent logEvent)
 	{
-		var message = string.Format(
+		var message = string.Create(
 			CultureInfo.InvariantCulture,
-			"[{0:HH:mm:ss.fff}] [{1:u3}] {2}",
-			logEvent.Timestamp,
-			logEvent.Level,
-			logEvent.RenderMessage(CultureInfo.InvariantCulture));
+			$"[{logEvent.Timestamp:HH:mm:ss.fff}] [{logEvent.Level:u3}] {logEvent.RenderMessage(CultureInfo.InvariantCulture)}");
 
 		if (logEvent.Exception is not null)
 			message = string.Concat(message, Environment.NewLine, logEvent.Exception);

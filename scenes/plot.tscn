@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bctdhk6awxx0r"]
 
-[ext_resource type="Script" uid="uid://bnjkue62rjxtv" path="res://scripts/plot/PlotHandle.cs" id="1_syd1t"]
+[ext_resource type="Script" uid="uid://72uuy3654bdf" path="res://scripts/plot/PlotHandle.cs" id="1_syd1t"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f03gw"]
 size = Vector3(32, 32, 32)
@@ -44,3 +44,12 @@ shape = SubResource("BoxShape3D_sbat0")
 [node name="Mesh" type="MeshInstance3D" parent="Base" unique_id=890436308]
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_f03gw")
+
+[node name="Night Light" type="AreaLight3D" parent="." unique_id=1182533585]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 2, 0)
+light_energy = 0.1
+light_bake_mode = 1
+area_range = 4.0
+area_attenuation = 2.0
+area_normalize_energy = false
+area_size = Vector2(32, 32)

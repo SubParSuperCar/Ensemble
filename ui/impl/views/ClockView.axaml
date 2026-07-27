@@ -6,7 +6,8 @@
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.ClockView"
-    x:DataType="vm:ClockViewModel">
+    x:DataType="vm:ClockViewModel"
+    TextOptions.TextRenderingMode="Antialias">
 
     <TextBlock Text="{Binding Text}"
                ToolTip.Tip="Clock (Real Time - Time Zone - Session Duration)"

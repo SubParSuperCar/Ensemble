@@ -13,7 +13,8 @@ public static class Designer
 	public static AppBuilder BuildAvaloniaApp() =>
 		AppBuilder
 			.Configure<App>()
-			.UseSkia();
+			.UseSkia()
+			.UseHarfBuzz();
 }
 
 #endif

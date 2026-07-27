@@ -94,7 +94,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			closure();
 	}
 
-	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? -1);
+	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? None);
 
 	private bool CanSetPlotToNull() => SelectedPlot is not null;
 }
@@ -103,6 +103,7 @@ public partial class Plot : ObservableObject
 {
 	public int Id { get; init; }
 
+	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string OwnerName { get; set; } = string.Empty;
 	[ObservableProperty] public partial string Occupancy { get; set; } = string.Empty;
 }

@@ -1,5 +1,5 @@
 using Godot;
-using Root.Globals.Input;
+using Root.Common.Input;
 using Serilog;
 
 namespace Root.Scripts.Camera;

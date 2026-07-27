@@ -1,6 +1,4 @@
-// ReSharper disable InconsistentNaming
-
-namespace Estragonia.Input;
+﻿namespace Estragonia.Input;
 
 /// <summary>Represents the type of joypad button event.</summary>
 public enum RawJoypadButtonEventType

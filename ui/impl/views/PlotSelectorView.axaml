@@ -6,7 +6,8 @@
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.PlotSelectorView"
-    x:DataType="vm:PlotSelectorViewModel">
+    x:DataType="vm:PlotSelectorViewModel"
+    TextOptions.TextRenderingMode="Antialias">
 
     <Border
         Padding="2"

@@ -2,11 +2,12 @@ using System.Globalization;
 using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Root.Globals.Log;
+using Root.Common.Logging;
 using Root.Scripts.Globals;
 using Root.Scripts.Logger.Impl;
 using Serilog;
 using Serilog.Templates;
+using FileAccess = Godot.FileAccess;
 
 namespace Root.Scripts.Logger;
 
@@ -14,15 +15,22 @@ public partial class Logger : Node
 {
 	private ILoggerFactory? _loggerFactory;
 
-	public override void _Ready()
+	public override void _EnterTree()
 	{
 		var logDir = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
 		Directory.CreateDirectory(logDir);
 
-		var config = new ConfigurationBuilder()
-			.SetBasePath(ProjectSettings.GlobalizePath(ScriptConstants.ResourceScheme))
-			.AddJsonFile("appsettings.json", true, true)
-			.Build();
+		var configBuilder = new ConfigurationBuilder();
+
+		using var file = FileAccess.Open(ScriptConstants.AppSettingsPath, FileAccess.ModeFlags.Read);
+
+		if (file is not null)
+		{
+			var bytes = file.GetBuffer((long)file.GetLength());
+			configBuilder.AddJsonStream(new MemoryStream(bytes));
+		}
+
+		var config = configBuilder.Build();
 
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Verbose()
@@ -54,14 +62,32 @@ public partial class Logger : Node
 			builder.AddSerilog(Log.Logger);
 		});
 
+		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+		TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+
 		Log.Debug("Created logger. Logging to directory: {Directory}", logDir);
 	}
 
 	public override void _ExitTree()
 	{
-		Log.Debug("Flushing & closing logger...");
+		Log.Debug("Closing & flushing logger...");
+
+		AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
 
 		_loggerFactory?.Dispose();
 		Log.CloseAndFlush();
+	}
+
+	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
+	{
+		Log.Fatal("Unhandled exception:\n{Exception}", e.ExceptionObject as Exception);
+		Log.CloseAndFlush();
+	}
+
+	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
+	{
+		Log.Error<Exception>("Unobserved task exception:\n{Exception}", e.Exception);
+		e.SetObserved();
 	}
 }

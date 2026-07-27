@@ -34,6 +34,13 @@
 
             </TransitioningContentControl>
         </Grid>
+
+        <TextBlock Text="&quot;Ensemble&quot; (In-Dev. Build)&#x0a;By: @SubParSuperCar &amp; Contributors"
+                   Padding="2"
+                   Background="Black" Foreground="Red"
+                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                   IsHitTestVisible="False"
+                   TextOptions.TextRenderingMode="Alias" />
     </Grid>
 
 </UserControl>

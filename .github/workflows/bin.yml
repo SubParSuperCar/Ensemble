@@ -2,7 +2,9 @@ name: Build Release Binaries
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - test
   workflow_dispatch:
 
 env:
@@ -180,4 +182,3 @@ jobs:
         with:
           name: Ensemble-win-x86_64
           path: Ensemble-win-x86_64.zip
-

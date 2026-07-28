@@ -19,6 +19,10 @@ height = 0.5
 script = ExtResource("1_irkkq")
 AssetId = 1
 AssetName = &"Ball"
+Properties = Dictionary[StringName, Variant]({
+&"colorHex": "FFFFFF"
+})
+MaxInstanceCount = 500
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=237803691]
 shape = SubResource("SphereShape3D_irkkq")

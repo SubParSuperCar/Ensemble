@@ -12,7 +12,8 @@ public partial class Hasher : Node
 
 	private async Task OnReady()
 	{
-		if (Environment.ProcessPath is not { } exePath || !File.Exists(exePath))
+		var exePath = Environment.ProcessPath;
+		if (!File.Exists(exePath))
 			return;
 
 		await Task.Delay((int)TimeSpan.MillisecondsPerSecond).ConfigureAwait(false);

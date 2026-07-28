@@ -14,5 +14,5 @@ public partial class AssetHandle : RigidBody3D
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int MaxInstanceCount { get; set; }
 
-	public int InstanceId { get; set; }
+	public int InstanceId { get; internal set; }
 }

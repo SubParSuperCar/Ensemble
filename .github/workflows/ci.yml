@@ -9,7 +9,6 @@ on:
 
 env:
   GODOT_VERSION: 4.7.1
-  GODOT: ${{ github.workspace }}/godot/Godot_v4.7.1-stable_mono_linux.x86_64
 
 jobs:
   linux:
@@ -30,34 +29,54 @@ jobs:
       - name: Install Godot
         run: |
           set -euo pipefail
+
           mkdir -p godot
+
           curl -L \
             -o godot.zip \
             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+
           unzip -q godot.zip -d godot
-          chmod +x "$GODOT"
+
+          GODOT_BIN=$(find godot -maxdepth 2 -type f -name "Godot_v${GODOT_VERSION}-stable_mono_linux*" | head -n1)
+
+          chmod +x "$GODOT_BIN"
+
+          echo "GODOT_BIN=$PWD/$GODOT_BIN" >> "$GITHUB_ENV"
+
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
+
           curl -L \
             -o templates.tpz \
             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+
           unzip -q templates.tpz \
             -d ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
       - name: Import project
         run: |
           set -euo pipefail
-          "$GODOT" --headless --import
+
+          "$GODOT_BIN" \
+            --headless \
+            --import
 
       - name: Build .NET solution
         run: |
           set -euo pipefail
-          "$GODOT" --headless --build-solutions --quit
+
+          "$GODOT_BIN" \
+            --headless \
+            --build-solutions \
+            --quit
 
       - name: Export
         run: |
           set -euo pipefail
+
           mkdir -p builds/linux-x86_64
-          "$GODOT" \
+
+          "$GODOT_BIN" \
             --headless \
             --export-release "Linux (x86_64)" \
             builds/linux-x86_64/Ensemble.x86_64

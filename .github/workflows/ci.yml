@@ -25,7 +25,6 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-          cache: true
 
       - name: Cache Godot
         id: cache-godot

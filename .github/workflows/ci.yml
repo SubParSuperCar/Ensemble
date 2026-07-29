@@ -45,9 +45,7 @@ jobs:
             -o godot.zip \
             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
           unzip -q godot.zip -d ~/godot
-          mv ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64 \
-             ~/godot/godot
-          chmod +x ~/godot/godot
+          chmod +x ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64
 
       - name: Install export templates
         if: steps.cache-godot.outputs.cache-hit != 'true'
@@ -65,20 +63,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ~/godot/godot --headless --import
+          ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 \
+            --headless \
+            --import
 
       - name: Build .NET solution
         shell: bash
         run: |
           set -euo pipefail
-          ~/godot/godot --headless --build-solutions --quit
+          ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 \
+            --headless \
+            --build-solutions \
+            --quit
 
       - name: Export
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p builds/linux-x86_64
-          ~/godot/godot \
+          ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 \
             --headless \
             --export-release "Linux (x86_64)" \
             builds/linux-x86_64/Ensemble.x86_64

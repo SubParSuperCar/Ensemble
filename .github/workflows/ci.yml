@@ -40,7 +40,7 @@ jobs:
 
           unzip -q godot.zip -d godot
 
-          GODOT_BIN=$(find godot -maxdepth 2 -type f -name "Godot_v${GODOT_VERSION}-stable_mono_linux*" | head -n1)
+          GODOT_BIN=$(find godot -type f -name "Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64" | head -n1)
 
           if [ -z "$GODOT_BIN" ]; then
             echo "Godot executable not found"
@@ -70,26 +70,15 @@ jobs:
             templates/templates \
             ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
-      - name: Import project
+      - name: Build .NET (Native AOT)
         shell: bash
         run: |
           set -euo pipefail
 
-          "$GODOT_BIN" \
-            --headless \
-            --import
+          dotnet build \
+            --configuration Release
 
-      - name: Build .NET solution
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          "$GODOT_BIN" \
-            --headless \
-            --build-solutions \
-            --quit
-
-      - name: Export
+      - name: Export Godot
         shell: bash
         run: |
           set -euo pipefail
@@ -98,7 +87,8 @@ jobs:
 
           "$GODOT_BIN" \
             --headless \
-            --export-release "Linux (x86_64)" \
+            --export-release \
+            "Linux (x86_64)" \
             builds/linux-x86_64/Ensemble.x86_64
 
       - name: Move native libraries
@@ -149,7 +139,7 @@ jobs:
           Expand-Archive godot.zip -DestinationPath godot
 
           $godot = Get-ChildItem `
-            -Path godot `
+            godot `
             -Recurse `
             -Filter "Godot_v$env:GODOT_VERSION-stable_mono_win64.exe" |
             Select-Object -First 1
@@ -180,36 +170,17 @@ jobs:
             templates\templates `
             "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
 
-      - name: Import project
+      - name: Build .NET (Native AOT)
         shell: pwsh
         run: |
-          & "$env:GODOT_BIN" `
-            --headless `
-            --import
+          dotnet build `
+            --configuration Release
 
           if ($LASTEXITCODE -ne 0) {
-            throw "Godot project import failed"
+            throw "dotnet build failed"
           }
 
-      - name: Build .NET solution
-        shell: pwsh
-        run: |
-          & "$env:GODOT_BIN" `
-            --headless `
-            --build-solutions `
-            --quit
-
-          if ($LASTEXITCODE -ne 0) {
-            throw "Godot C# build failed"
-          }
-
-      - name: Verify C# build output
-        shell: pwsh
-        run: |
-          Get-ChildItem -Recurse -Filter "*.dll" |
-            Select-Object FullName
-
-      - name: Export
+      - name: Export Godot
         shell: pwsh
         run: |
           New-Item `
@@ -219,21 +190,13 @@ jobs:
 
           & "$env:GODOT_BIN" `
             --headless `
-            --export-release "Microslop Windows (x86_64)" `
+            --export-release `
+            "Microslop Windows (x86_64)" `
             builds\windows-x86_64\Ensemble.exe
 
           if ($LASTEXITCODE -ne 0) {
             throw "Godot export failed"
           }
-
-          if (!(Test-Path "builds\windows-x86_64\Ensemble.exe")) {
-            throw "Ensemble.exe was not created"
-          }
-
-      - name: Inspect Windows export
-        shell: pwsh
-        run: |
-          Get-ChildItem -Recurse builds
 
       - name: Move native libraries
         shell: pwsh
@@ -256,4 +219,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Ensemble-windows-x86_64
-          path: builds/windows-x86_64
+          path: builds\windows-x86_64

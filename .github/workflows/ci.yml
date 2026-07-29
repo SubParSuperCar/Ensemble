@@ -9,6 +9,7 @@ on:
 
 env:
   GODOT_VERSION: 4.7.1
+  GODOT: ${{ github.workspace }}/godot/Godot_v4.7.1-stable_mono_linux.x86_64
 
 jobs:
   linux:
@@ -26,32 +27,15 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Cache Godot
-        id: cache-godot
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/godot
-            ~/.local/share/godot/export_templates
-          key: godot-${{ env.GODOT_VERSION }}-mono-linux
-
       - name: Install Godot
-        if: steps.cache-godot.outputs.cache-hit != 'true'
-        shell: bash
         run: |
           set -euo pipefail
-          mkdir -p ~/godot
+          mkdir -p godot
           curl -L \
             -o godot.zip \
             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
-          unzip -q godot.zip -d ~/godot
-          chmod +x ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64
-
-      - name: Install export templates
-        if: steps.cache-godot.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
+          unzip -q godot.zip -d godot
+          chmod +x "$GODOT"
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
           curl -L \
             -o templates.tpz \
@@ -60,28 +44,20 @@ jobs:
             -d ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
       - name: Import project
-        shell: bash
         run: |
           set -euo pipefail
-          ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 \
-            --headless \
-            --import
+          "$GODOT" --headless --import
 
       - name: Build .NET solution
-        shell: bash
         run: |
           set -euo pipefail
-          ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 \
-            --headless \
-            --build-solutions \
-            --quit
+          "$GODOT" --headless --build-solutions --quit
 
       - name: Export
-        shell: bash
         run: |
           set -euo pipefail
           mkdir -p builds/linux-x86_64
-          ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64 \
+          "$GODOT" \
             --headless \
             --export-release "Linux (x86_64)" \
             builds/linux-x86_64/Ensemble.x86_64

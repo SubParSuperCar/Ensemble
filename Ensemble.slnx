@@ -19,6 +19,7 @@
     <File Path=".github/README.md"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Workflows/">
+    <File Path=".github/workflows/ci.yml"/>
     <File Path=".github/workflows/cloc.yml"/>
     <File Path=".github/workflows/zip.yml"/>
   </Folder>

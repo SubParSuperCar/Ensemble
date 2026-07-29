@@ -1,0 +1,91 @@
+name: Export Release Binaries
+
+on:
+  push:
+    branches:
+      - main
+      - test
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.7.1
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+          cache: true
+
+      - name: Cache Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-mono-linux
+
+      - name: Install Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/godot
+          curl -L \
+            -o godot.zip \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+          unzip -q godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64 \
+             ~/godot/godot
+          chmod +x ~/godot/godot
+
+      - name: Install export templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
+          curl -L \
+            -o templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          unzip -q templates.tpz \
+            -d ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
+
+      - name: Import project
+        shell: bash
+        run: |
+          set -euo pipefail
+          ~/godot/godot --headless --import
+
+      - name: Build .NET solution
+        shell: bash
+        run: |
+          set -euo pipefail
+          ~/godot/godot --headless --build-solutions --quit
+
+      - name: Export
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p builds/linux-x86_64
+          ~/godot/godot \
+            --headless \
+            --export-release "Linux (x86_64)" \
+            builds/linux-x86_64/Ensemble.x86_64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ensemble-linux-x86_64
+          path: builds/linux-x86_64

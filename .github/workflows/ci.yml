@@ -70,15 +70,16 @@ jobs:
             templates/templates \
             ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
-      - name: Build .NET (Native AOT)
+      - name: Build C# project
         shell: bash
         run: |
           set -euo pipefail
 
           dotnet build \
+            Game.csproj \
             --configuration Release
 
-      - name: Export Godot
+      - name: Export Godot project
         shell: bash
         run: |
           set -euo pipefail
@@ -170,17 +171,18 @@ jobs:
             templates\templates `
             "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
 
-      - name: Build .NET (Native AOT)
+      - name: Build C# project
         shell: pwsh
         run: |
           dotnet build `
+            Game.csproj `
             --configuration Release
 
           if ($LASTEXITCODE -ne 0) {
             throw "dotnet build failed"
           }
 
-      - name: Export Godot
+      - name: Export Godot project
         shell: pwsh
         run: |
           New-Item `

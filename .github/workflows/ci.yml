@@ -86,6 +86,16 @@ jobs:
             --export-release "Linux (x86_64)" \
             builds/linux-x86_64/Ensemble.x86_64
 
+      - name: Move native libraries
+        run: |
+          set -euo pipefail
+
+          DATA_DIR=$(find builds/linux-x86_64 -maxdepth 1 -type d -name "data_*" | head -n1)
+
+          mv "$DATA_DIR"/libSkiaSharp.so builds/linux-x86_64/
+          mv "$DATA_DIR"/libHarfBuzzSharp.so builds/linux-x86_64/
+          mv "$DATA_DIR"/libonigwrap.so builds/linux-x86_64/
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

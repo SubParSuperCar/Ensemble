@@ -44,14 +44,19 @@ jobs:
 
           echo "GODOT_BIN=$PWD/$GODOT_BIN" >> "$GITHUB_ENV"
 
-          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
-
+          mkdir templates
+          
           curl -L \
             -o templates.tpz \
             "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
-
-          unzip -q templates.tpz \
-            -d ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
+          
+          unzip -q templates.tpz -d templates
+          
+          mkdir -p ~/.local/share/godot/export_templates
+          
+          mv \
+            templates/templates \
+            ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
       - name: Import project
         run: |

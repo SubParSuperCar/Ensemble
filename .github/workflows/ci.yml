@@ -85,9 +85,12 @@ jobs:
         run: |
           set -euo pipefail
 
+          mkdir -p builds/linux-x86_64
+
           "$GODOT_BIN" \
             --headless \
-            --export-release "Linux (x86_64)"
+            --export-release "Linux (x86_64)" \
+            builds/linux-x86_64/Ensemble.x86_64
 
       - name: Move native libraries
         shell: bash
@@ -96,9 +99,11 @@ jobs:
 
           DATA_DIR=$(find builds/linux-x86_64 -maxdepth 1 -type d -name "data_*" | head -n1)
 
-          mv "$DATA_DIR"/libSkiaSharp.so builds/linux-x86_64/
-          mv "$DATA_DIR"/libHarfBuzzSharp.so builds/linux-x86_64/
-          mv "$DATA_DIR"/libonigwrap.so builds/linux-x86_64/
+          if [ -n "$DATA_DIR" ]; then
+            mv "$DATA_DIR"/libSkiaSharp.so builds/linux-x86_64/
+            mv "$DATA_DIR"/libHarfBuzzSharp.so builds/linux-x86_64/
+            mv "$DATA_DIR"/libonigwrap.so builds/linux-x86_64/
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -174,17 +179,37 @@ jobs:
             --build-solutions `
             --quit
 
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
       - name: Export
         shell: pwsh
         run: |
+          New-Item `
+            -ItemType Directory `
+            -Force `
+            builds\windows-x86_64 | Out-Null
+
           & "$env:GODOT_BIN" `
             --headless `
-            --export-release "Microslop Windows (x86_64)"
+            --export-release "Microslop Windows (x86_64)" `
+            builds\windows-x86_64\Ensemble.exe
+
+          if ($LASTEXITCODE -ne 0) {
+            exit $LASTEXITCODE
+          }
+
+          Get-ChildItem -Recurse builds
 
       - name: Move native libraries
         shell: pwsh
         run: |
           $output = "builds\windows-x86_64"
+
+          if (!(Test-Path $output)) {
+            throw "Windows export directory was not created."
+          }
 
           $dataDir = Get-ChildItem `
             $output `

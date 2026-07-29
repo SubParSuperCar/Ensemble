@@ -41,6 +41,11 @@ jobs:
 
           GODOT_BIN=$(find godot -maxdepth 2 -type f -name "Godot_v${GODOT_VERSION}-stable_mono_linux*" | head -n1)
 
+          if [ -z "$GODOT_BIN" ]; then
+            echo "Godot executable not found"
+            exit 1
+          fi
+
           chmod +x "$GODOT_BIN"
 
           echo "GODOT_BIN=$PWD/$GODOT_BIN" >> "$GITHUB_ENV"
@@ -99,6 +104,7 @@ jobs:
           name: Ensemble-linux-x86_64
           path: builds/linux-x86_64
 
+
   windows:
     name: Windows (x86_64)
     runs-on: windows-latest
@@ -126,8 +132,17 @@ jobs:
 
           Expand-Archive godot.zip -DestinationPath godot
 
-          "GODOT_BIN=$pwd\godot\Godot_v$env:GODOT_VERSION-stable_mono_win64.exe" `
-            | Out-File $env:GITHUB_ENV -Append
+          $godot = Get-ChildItem `
+            -Path godot `
+            -Recurse `
+            -Filter "Godot_v$env:GODOT_VERSION-stable_mono_win64.exe" |
+            Select-Object -First 1
+
+          if ($null -eq $godot) {
+            throw "Godot executable not found"
+          }
+
+          "GODOT_BIN=$($godot.FullName)" | Out-File $env:GITHUB_ENV -Append
 
       - name: Install export templates
         shell: pwsh
@@ -160,7 +175,10 @@ jobs:
       - name: Export
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force builds\windows-x86_64 | Out-Null
+          New-Item `
+            -ItemType Directory `
+            -Force `
+            builds\windows-x86_64 | Out-Null
 
           & "$env:GODOT_BIN" `
             --headless `
@@ -170,7 +188,15 @@ jobs:
       - name: Move native libraries
         shell: pwsh
         run: |
-          $dataDir = Get-ChildItem builds\windows-x86_64 -Directory -Filter "data_*" | Select-Object -First 1
+          $dataDir = Get-ChildItem `
+            builds\windows-x86_64 `
+            -Directory `
+            -Filter "data_*" |
+            Select-Object -First 1
+
+          if ($null -eq $dataDir) {
+            throw "Godot data directory not found"
+          }
 
           Move-Item "$($dataDir.FullName)\SkiaSharp.dll" builds\windows-x86_64
           Move-Item "$($dataDir.FullName)\HarfBuzzSharp.dll" builds\windows-x86_64

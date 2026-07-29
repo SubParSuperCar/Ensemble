@@ -12,17 +12,18 @@ env:
 
 jobs:
   linux:
+    name: Linux (x86_64)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           lfs: true
           submodules: recursive
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
 
@@ -30,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          mkdir -p godot
+          mkdir godot
 
           curl -L \
             -o godot.zip \
@@ -38,33 +39,27 @@ jobs:
 
           unzip -q godot.zip -d godot
 
-          GODOT_BIN=$(find godot -maxdepth 2 -type f -name "Godot_v${GODOT_VERSION}-stable_mono_linux*" | head -n1)
+          chmod +x godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64
 
-          chmod +x "$GODOT_BIN"
+          echo "GODOT_BIN=$PWD/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64" >> "$GITHUB_ENV"
 
-          echo "GODOT_BIN=$PWD/$GODOT_BIN" >> "$GITHUB_ENV"
-
-          mkdir templates
-          
-          curl -L \
-            -o templates.tpz \
-            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
-          
-          unzip -q templates.tpz -d templates
-          
-          mkdir -p ~/.local/share/godot/export_templates
-          
-          mv \
-            templates/templates \
-            ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
-
-      - name: Import project
+      - name: Install export templates
         run: |
           set -euo pipefail
 
-          "$GODOT_BIN" \
-            --headless \
-            --import
+          mkdir templates
+
+          curl -L \
+            -o templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+
+          unzip -q templates.tpz -d templates
+
+          mkdir -p ~/.local/share/godot/export_templates
+
+          mv \
+            templates/templates \
+            ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
       - name: Build .NET solution
         run: |
@@ -101,3 +96,86 @@ jobs:
         with:
           name: Ensemble-linux-x86_64
           path: builds/linux-x86_64
+
+  windows:
+    name: Windows (x86_64)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          lfs: true
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Install Godot
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force godot | Out-Null
+
+          Invoke-WebRequest `
+            -Uri "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-stable/Godot_v$env:GODOT_VERSION-stable_mono_win64.zip" `
+            -OutFile godot.zip
+
+          Expand-Archive godot.zip -DestinationPath godot
+
+          "GODOT_BIN=$pwd\godot\Godot_v$env:GODOT_VERSION-stable_mono_win64.exe" `
+            | Out-File $env:GITHUB_ENV -Append
+
+      - name: Install export templates
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force templates | Out-Null
+
+          Invoke-WebRequest `
+            -Uri "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-stable/Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz" `
+            -OutFile templates.tpz
+
+          Expand-Archive templates.tpz -DestinationPath templates
+
+          New-Item `
+            -ItemType Directory `
+            -Force `
+            "$env:APPDATA\Godot\export_templates" | Out-Null
+
+          Move-Item `
+            templates\templates `
+            "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
+
+      - name: Build .NET solution
+        shell: pwsh
+        run: |
+          & "$env:GODOT_BIN" `
+            --headless `
+            --build-solutions `
+            --quit
+
+      - name: Export
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force builds\windows-x86_64 | Out-Null
+
+          & "$env:GODOT_BIN" `
+            --headless `
+            --export-release "Windows Desktop" `
+            builds\windows-x86_64\Ensemble.exe
+
+      - name: Move native libraries
+        shell: pwsh
+        run: |
+          $dataDir = Get-ChildItem builds\windows-x86_64 -Directory -Filter "data_*" | Select-Object -First 1
+
+          Move-Item "$($dataDir.FullName)\SkiaSharp.dll" builds\windows-x86_64
+          Move-Item "$($dataDir.FullName)\HarfBuzzSharp.dll" builds\windows-x86_64
+          Move-Item "$($dataDir.FullName)\onigwrap.dll" builds\windows-x86_64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Ensemble-windows-x86_64
+          path: builds/windows-x86_64

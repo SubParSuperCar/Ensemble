@@ -21,13 +21,13 @@ public partial class ConsoleViewModel : ViewModelBase
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
 
-	public TextDocument Source { get; } =
+	public static TextDocument Source { get; } =
 		new("--[[\nLua 5.2\n(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\nprint(\"Hello, World!\")\n");
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
 
 	[RelayCommand]
-	private void Execute() => _ = LuaExecutor.Execute(Source.Text);
+	private static void Execute() => _ = LuaExecutor.Execute(Source.Text);
 
 	private void OnLogHistoryUpdated() =>
 		Dispatcher.UIThread.Post(() =>

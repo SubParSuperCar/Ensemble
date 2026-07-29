@@ -188,19 +188,19 @@ jobs:
       - name: Move native libraries
         shell: pwsh
         run: |
+          $output = "builds\windows-x86_64"
+
           $dataDir = Get-ChildItem `
-            builds\windows-x86_64 `
+            $output `
             -Directory `
             -Filter "data_*" |
             Select-Object -First 1
 
-          if ($null -eq $dataDir) {
-            throw "Godot data directory not found"
+          if ($null -ne $dataDir) {
+            Move-Item "$($dataDir.FullName)\SkiaSharp.dll" $output
+            Move-Item "$($dataDir.FullName)\HarfBuzzSharp.dll" $output
+            Move-Item "$($dataDir.FullName)\onigwrap.dll" $output
           }
-
-          Move-Item "$($dataDir.FullName)\SkiaSharp.dll" builds\windows-x86_64
-          Move-Item "$($dataDir.FullName)\HarfBuzzSharp.dll" builds\windows-x86_64
-          Move-Item "$($dataDir.FullName)\onigwrap.dll" builds\windows-x86_64
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

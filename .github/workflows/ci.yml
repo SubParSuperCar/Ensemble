@@ -70,6 +70,15 @@ jobs:
             templates/templates \
             ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
+      - name: Import project
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          "$GODOT_BIN" \
+            --headless \
+            --import
+
       - name: Build .NET solution
         shell: bash
         run: |
@@ -170,6 +179,17 @@ jobs:
           Move-Item `
             templates\templates `
             "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
+
+      - name: Import project
+        shell: pwsh
+        run: |
+          & "$env:GODOT_BIN" `
+            --headless `
+            --import
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Godot project import failed"
+          }
 
       - name: Build .NET solution
         shell: pwsh

@@ -39,9 +39,11 @@ jobs:
 
           unzip -q godot.zip -d godot
 
-          chmod +x godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64
+          GODOT_BIN=$(find godot -maxdepth 2 -type f -name "Godot_v${GODOT_VERSION}-stable_mono_linux*" | head -n1)
 
-          echo "GODOT_BIN=$PWD/godot/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64" >> "$GITHUB_ENV"
+          chmod +x "$GODOT_BIN"
+
+          echo "GODOT_BIN=$PWD/$GODOT_BIN" >> "$GITHUB_ENV"
 
       - name: Install export templates
         run: |

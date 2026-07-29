@@ -24,7 +24,7 @@ public class App : Application
 	private void UpdateTheme(PlatformColorValues colorValues) =>
 		RequestedThemeVariant = colorValues.ThemeVariant switch
 		{
-			PlatformThemeVariant.Dark => ThemeVariant.Dark,
-			_ => ThemeVariant.Light
+			PlatformThemeVariant.Light => ThemeVariant.Light,
+			_ => ThemeVariant.Dark
 		};
 }

@@ -182,7 +182,7 @@ jobs:
 
           & "$env:GODOT_BIN" `
             --headless `
-            --export-release "Windows Desktop" `
+            --export-release "Microslop Windows (x86_64)" `
             builds\windows-x86_64\Ensemble.exe
 
       - name: Move native libraries

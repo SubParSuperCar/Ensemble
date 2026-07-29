@@ -180,8 +180,14 @@ jobs:
             --quit
 
           if ($LASTEXITCODE -ne 0) {
-            exit $LASTEXITCODE
+            throw "Godot C# build failed"
           }
+
+      - name: Verify C# build output
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse -Filter "*.dll" |
+            Select-Object FullName
 
       - name: Export
         shell: pwsh
@@ -193,16 +199,15 @@ jobs:
 
           & "$env:GODOT_BIN" `
             --headless `
-            --verbose `
             --export-release "Microslop Windows (x86_64)" `
             builds\windows-x86_64\Ensemble.exe
 
           if ($LASTEXITCODE -ne 0) {
-            throw "Godot export failed with exit code $LASTEXITCODE"
+            throw "Godot export failed"
           }
 
           if (!(Test-Path "builds\windows-x86_64\Ensemble.exe")) {
-            throw "Export completed but Ensemble.exe was not created"
+            throw "Ensemble.exe was not created"
           }
 
       - name: Inspect Windows export
@@ -226,12 +231,6 @@ jobs:
             Move-Item "$($dataDir.FullName)\HarfBuzzSharp.dll" $output -ErrorAction SilentlyContinue
             Move-Item "$($dataDir.FullName)\onigwrap.dll" $output -ErrorAction SilentlyContinue
           }
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Ensemble-windows-x86_64
-          path: builds/windows-x86_64
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

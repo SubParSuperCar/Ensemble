@@ -28,6 +28,7 @@ jobs:
           global-json-file: global.json
 
       - name: Install Godot
+        shell: bash
         run: |
           set -euo pipefail
 
@@ -51,6 +52,7 @@ jobs:
           echo "GODOT_BIN=$PWD/$GODOT_BIN" >> "$GITHUB_ENV"
 
       - name: Install export templates
+        shell: bash
         run: |
           set -euo pipefail
 
@@ -69,6 +71,7 @@ jobs:
             ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
 
       - name: Build .NET solution
+        shell: bash
         run: |
           set -euo pipefail
 
@@ -78,17 +81,16 @@ jobs:
             --quit
 
       - name: Export
+        shell: bash
         run: |
           set -euo pipefail
 
-          mkdir -p builds/linux-x86_64
-
           "$GODOT_BIN" \
             --headless \
-            --export-release "Linux (x86_64)" \
-            builds/linux-x86_64/Ensemble.x86_64
+            --export-release "Linux (x86_64)"
 
       - name: Move native libraries
+        shell: bash
         run: |
           set -euo pipefail
 
@@ -175,15 +177,9 @@ jobs:
       - name: Export
         shell: pwsh
         run: |
-          New-Item `
-            -ItemType Directory `
-            -Force `
-            builds\windows-x86_64 | Out-Null
-
           & "$env:GODOT_BIN" `
             --headless `
-            --export-release "Microslop Windows (x86_64)" `
-            builds\windows-x86_64\Ensemble.exe
+            --export-release "Microslop Windows (x86_64)"
 
       - name: Move native libraries
         shell: pwsh
@@ -197,9 +193,9 @@ jobs:
             Select-Object -First 1
 
           if ($null -ne $dataDir) {
-            Move-Item "$($dataDir.FullName)\SkiaSharp.dll" $output
-            Move-Item "$($dataDir.FullName)\HarfBuzzSharp.dll" $output
-            Move-Item "$($dataDir.FullName)\onigwrap.dll" $output
+            Move-Item "$($dataDir.FullName)\SkiaSharp.dll" $output -ErrorAction SilentlyContinue
+            Move-Item "$($dataDir.FullName)\HarfBuzzSharp.dll" $output -ErrorAction SilentlyContinue
+            Move-Item "$($dataDir.FullName)\onigwrap.dll" $output -ErrorAction SilentlyContinue
           }
 
       - name: Upload artifact

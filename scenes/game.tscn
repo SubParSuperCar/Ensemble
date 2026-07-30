@@ -72,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.36606038, 0.36606038)
-shader_parameter/cirrus_position2 = Vector2(0.36606038, 0.36606038)
+shader_parameter/cirrus_position1 = Vector2(0.71964306, 0.71964306)
+shader_parameter/cirrus_position2 = Vector2(0.71964306, 0.71964306)
 shader_parameter/cirrus_texture = ExtResource("3_ssvqc")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(91.89455, 91.89455)
+shader_parameter/cumulus_position = Vector2(93.72493, 93.72493)
 shader_parameter/cumulus_texture = ExtResource("4_264po")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -167,7 +167,6 @@ environment = SubResource("Environment_264po")
 camera_attributes = SubResource("CameraAttributesPractical_1kice")
 script = ExtResource("9_e1j6l")
 editor_time_enabled = false
-game_time_enabled = false
 tonemap_exposure = 1.5
 wind_direction = 2.35619451204804
 metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
@@ -193,8 +192,8 @@ wind_direction = 2.35619451204804
 [node name="TimeOfDay" type="Node" parent="Sky" unique_id=1689717495]
 script = ExtResource("11_bhx41")
 editor_time_enabled = false
-game_time_enabled = false
 dome_path = NodePath("../SkyDome")
+system_sync = true
 
 [node name="Terrain" type="Terrain3D" parent="." unique_id=1739292469]
 data_directory = "res://resources/terrain_regions/"

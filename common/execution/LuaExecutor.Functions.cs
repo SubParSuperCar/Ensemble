@@ -59,10 +59,10 @@ public partial class LuaExecutor
 		}
 
 		stopwatch.Stop();
-		Log.Information("Added {Count} instance(s) to plot {PlotId} in {ElapsedMs} msec",
+		Log.Information("Added {Count} instance(s) to plot {PlotId} in {ElapsedMs:F3} msec",
 			count,
 			plotId,
-			stopwatch.ElapsedMilliseconds);
+			stopwatch.Elapsed.TotalMilliseconds);
 
 		context.Return();
 		return default;
@@ -78,10 +78,10 @@ public partial class LuaExecutor
 		instances.Clear();
 
 		stopwatch.Stop();
-		Log.Information("Removed {Count} instance(s) from plot {PlotId} in {ElapsedMs} msec",
+		Log.Information("Removed {Count} instance(s) from plot {PlotId} in {ElapsedMs:F3} msec",
 			count,
 			plotId,
-			stopwatch.ElapsedMilliseconds);
+			stopwatch.Elapsed.TotalMilliseconds);
 
 		context.Return();
 		return default;

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Godot;
 using Lua;
 using Serilog;
+using Environment = System.Environment;
 
 // ReSharper disable InconsistentNaming
 
@@ -22,7 +23,18 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> add_test_assets(LuaFunctionExecutionContext context, CancellationToken ct)
+	private static ValueTask<int> quit(LuaFunctionExecutionContext context, CancellationToken ct)
+	{
+		if (context.ArgumentCount > 0)
+			Environment.Exit(0);
+		else
+			(Engine.GetMainLoop() as SceneTree)?.Quit();
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> add_test_insts(LuaFunctionExecutionContext context, CancellationToken ct)
 	{
 		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgument<int>(1);
@@ -68,7 +80,7 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> clear_assets(LuaFunctionExecutionContext context, CancellationToken ct)
+	private static ValueTask<int> clear_insts(LuaFunctionExecutionContext context, CancellationToken ct)
 	{
 		var plotId = context.GetArgument<int>(0);
 		var instances = GPlots.Get(plotId)!.Instances;

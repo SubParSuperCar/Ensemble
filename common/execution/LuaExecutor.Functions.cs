@@ -14,6 +14,7 @@ public partial class LuaExecutor
 	{
 		env[nameof(print)] = new LuaFunction(print);
 		env[nameof(quit)] = new LuaFunction(quit);
+		env[nameof(help)] = new LuaFunction(help);
 		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
 		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
 	}
@@ -37,6 +38,22 @@ public partial class LuaExecutor
 			Environment.Exit(0);
 		else
 			(Engine.GetMainLoop() as SceneTree)?.Quit();
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> help(LuaFunctionExecutionContext context, CancellationToken ct)
+	{
+		var env = new LuaTable();
+		AddFunctions(env);
+
+		var functions = env
+			.Where(x => x.Value.Type is LuaValueType.Function)
+			.Select(x => x.Key.Read<string>())
+			.Order(StringComparer.Ordinal);
+
+		Log.Information("Functions:\n{Functions}", string.Join('\n', functions));
 
 		context.Return();
 		return default;

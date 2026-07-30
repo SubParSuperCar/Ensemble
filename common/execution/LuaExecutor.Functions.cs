@@ -53,7 +53,7 @@ public partial class LuaExecutor
 			.Select(x => x.Key.Read<string>())
 			.Order(StringComparer.Ordinal);
 
-		Log.Information("Functions:\n{Functions}", string.Join('\n', functions));
+		Log.Information("Functions:\n{Functions}", string.Join(Environment.NewLine, functions));
 
 		context.Return();
 		return default;

@@ -4,7 +4,7 @@ using Serilog;
 
 namespace Root.Common.Execution;
 
-public static class LuaExecutor
+public static partial class LuaExecutor
 {
 	public static async Task<LuaValue[]> Execute(string source)
 	{
@@ -14,24 +14,14 @@ public static class LuaExecutor
 		var state = LuaState.Create();
 		state.OpenStandardLibraries();
 
-		state.Environment["print"] = new LuaFunction(Print);
+		var env = state.Environment;
+		env[nameof(print)] = new LuaFunction(print);
+		env[nameof(add_test_assets)] = new LuaFunction(add_test_assets);
+		env[nameof(clear_assets)] = new LuaFunction(clear_assets);
 
 		var results = await state.DoStringAsync(source).ConfigureAwait(false);
 		Log.Information("< [{Results}]", string.Join(", ", results.Select(v => v.ToString())));
 
 		return results;
-	}
-
-	private static ValueTask<int> Print(LuaFunctionExecutionContext context, CancellationToken ct)
-	{
-		var args = new List<string>(context.ArgumentCount);
-
-		for (var i = 0; i < context.ArgumentCount; i++)
-			args.Add(context.GetArgument<LuaValue>(i).ToString());
-
-		Log.Information("Lua: \"{Message}\"", string.Join(' ', args));
-
-		context.Return();
-		return default;
 	}
 }

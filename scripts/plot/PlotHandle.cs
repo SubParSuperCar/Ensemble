@@ -2,7 +2,8 @@ using Godot;
 using Root.Core.Gd.Asset;
 using Root.Core.Gd.Plot;
 using Root.Scripts.Asset;
-using Serilog;
+
+// using Serilog;
 
 namespace Root.Scripts.Plot;
 
@@ -46,7 +47,7 @@ public partial class PlotHandle : Node3D
 
 	private void OnInstanceAdded(GdInstance instance)
 	{
-		Log.Debug("Core instance added. Adding handle...");
+		// Log.Debug("Core instance added. Adding handle...");
 
 		var packed = GAssetManager.GetPacked(instance.Asset);
 
@@ -62,10 +63,10 @@ public partial class PlotHandle : Node3D
 
 	private void OnInstanceRemoved(GdInstance instance)
 	{
-		Log.Debug("Core instance removed. Removing handle...");
+		// Log.Debug("Core instance removed. Removing handle...");
 
 		if (InstanceHandles.Remove(instance.Id, out var handle))
-			_instances.RemoveChild(handle);
+			handle.QueueFree();
 	}
 
 	private Vector3 CalculateSpawnLocation()

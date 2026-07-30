@@ -1,5 +1,8 @@
 # Ensemble
 
+[![Create Release with Deterministic Source Archive and Its Digest](https://github.com/SubParSuperCar/Ensemble/actions/workflows/zip.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/zip.yml)
+[![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
+
 A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12. This project is
 created, maintained, and owned by **SubParSuperCar** ([GitHub profile](https://github.com/SubParSuperCar)).
 

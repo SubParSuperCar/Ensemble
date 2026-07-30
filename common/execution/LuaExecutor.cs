@@ -21,12 +21,4 @@ public static partial class LuaExecutor
 
 		return results;
 	}
-
-	private static void AddFunctions(LuaTable env)
-	{
-		env[nameof(print)] = new LuaFunction(print);
-		env[nameof(quit)] = new LuaFunction(quit);
-		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
-		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
-	}
 }

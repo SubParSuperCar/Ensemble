@@ -10,6 +10,14 @@ namespace Root.Common.Execution;
 
 public partial class LuaExecutor
 {
+	private static void AddFunctions(LuaTable env)
+	{
+		env[nameof(print)] = new LuaFunction(print);
+		env[nameof(quit)] = new LuaFunction(quit);
+		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
+		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
+	}
+
 	private static ValueTask<int> print(LuaFunctionExecutionContext context, CancellationToken ct)
 	{
 		var args = new List<string>(context.ArgumentCount);

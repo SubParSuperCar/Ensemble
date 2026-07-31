@@ -33,10 +33,7 @@ public partial class StatViewModel : ViewModelBase
 	private void OnProcess(double delta)
 	{
 		var tick = Time.GetTicksMsec();
-
-		if (tick - _lastTick < TimeSpan.MillisecondsPerSecond)
-			return;
-
+		if (tick - _lastTick < TimeSpan.MillisecondsPerSecond) return;
 		_lastTick = tick;
 
 		var fps = Performance.GetMonitor(Performance.Monitor.TimeFps);

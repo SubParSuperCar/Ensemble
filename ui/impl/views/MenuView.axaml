@@ -4,15 +4,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
-    xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.MenuView"
     x:DataType="vm:MenuViewModel">
 
-    <li:LoadingIndicator
-        Mode="ArcsRing"
-        SpeedRatio="2"
-        Width="192" Height="192"
-        HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <TransitioningContentControl
+        Content="{Binding Navigator.Current}"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        ClipToBounds="False">
+
+        <TransitioningContentControl.PageTransition>
+            <CompositePageTransition>
+                <CrossFade Duration="{StaticResource TransitionDuration}" />
+                <PageSlide Duration="{StaticResource TransitionDuration}" Orientation="Horizontal" />
+            </CompositePageTransition>
+        </TransitioningContentControl.PageTransition>
+    </TransitioningContentControl>
 
 </UserControl>

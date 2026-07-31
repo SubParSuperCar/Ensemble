@@ -1,0 +1,13 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.WebBrowserView"
+    x:DataType="vm:WebBrowserViewModel">
+
+    <!-- TODO: <NativeWebView Source="https://www.youtube.com/watch?v=6dMjCa0nqK0" /> -->
+
+</UserControl>

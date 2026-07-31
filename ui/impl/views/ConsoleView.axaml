@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
-    xmlns:ae="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+    xmlns:ae="using:AvaloniaEdit"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.ConsoleView"
     x:DataType="vm:ConsoleViewModel"

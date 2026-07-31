@@ -38,8 +38,8 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
     <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
-    <PackageReference Include="LuaCSharp" Version="0.5.5"/>
-    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
+    <PackageReference Include="LuaCSharp" Version="0.5.*"/>
+    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.*"/>
     <PackageReference Include="Meziantou.Analyzer" Version="3.0.*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -53,7 +53,7 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
-    <PackageReference Include="ServiceScan.SourceGenerator" Version="3.1.4">
+    <PackageReference Include="ServiceScan.SourceGenerator" Version="3.*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

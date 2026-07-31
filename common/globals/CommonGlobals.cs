@@ -6,9 +6,9 @@ using Root.Scripts.Asset;
 using Root.Scripts.Player;
 using Root.Scripts.Plot;
 
-namespace Root.Scripts.Globals;
+namespace Root.Common.Globals;
 
-public static class ScriptGlobals
+public static class CommonGlobals
 {
 	public static GdCore GCore => GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null");
 

@@ -2,8 +2,8 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using Godot;
 using Godot.Collections;
+using Root.Common.Globals;
 using Root.Core.Gd.Asset;
-using Root.Scripts.Globals;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -26,7 +26,7 @@ public partial class AssetManager : Node
 		if (GAssets.IsLocked)
 			return;
 
-		ScanDirectory(ScriptConstants.BuildAssetsDir);
+		ScanDirectory(CommonConstants.BuildAssetsDir);
 		GAssets.Lock();
 	}
 

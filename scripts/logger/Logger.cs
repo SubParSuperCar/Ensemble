@@ -2,8 +2,8 @@ using System.Globalization;
 using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Root.Common.Globals;
 using Root.Common.Logging;
-using Root.Scripts.Globals;
 using Root.Scripts.Logger.Impl;
 using Serilog;
 using Serilog.Templates;
@@ -17,12 +17,12 @@ public partial class Logger : Node
 
 	public override void _EnterTree()
 	{
-		var logDir = ProjectSettings.GlobalizePath(ScriptConstants.LogDir);
+		var logDir = ProjectSettings.GlobalizePath(CommonConstants.LogDir);
 		Directory.CreateDirectory(logDir);
 
 		var configBuilder = new ConfigurationBuilder();
 
-		using var file = FileAccess.Open(ScriptConstants.AppSettingsPath, FileAccess.ModeFlags.Read);
+		using var file = FileAccess.Open(CommonConstants.AppSettingsPath, FileAccess.ModeFlags.Read);
 
 		if (file is not null)
 		{

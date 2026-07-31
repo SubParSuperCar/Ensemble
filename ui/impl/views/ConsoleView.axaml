@@ -46,13 +46,13 @@
                 <ae:TextEditor
                     Name="Editor"
                     Document="{Binding Source}"
-                    Background="{DynamicResource ThemeBackgroundColor}"
+                    Background="{DynamicResource TranslucentBackgroundBrush}"
                     ShowLineNumbers="True"
                     WordWrap="True"
                     FontSize="13" />
 
                 <Border
-                    Margin="0,0,20,2"
+                    Margin="0,0,22,4"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
                     BorderBrush="DodgerBlue"
                     BorderThickness="1">

@@ -3,28 +3,31 @@ using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 
-// ReSharper disable UnusedMember.Global
-
 namespace Root.Ui.Impl.Services;
 
 [INotifyPropertyChanged]
-// ReSharper disable once UnusedType.Global
 public partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
 {
 	private readonly Stack<Type> _history = [];
+	private bool _excludeFromHistory;
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	// ReSharper disable once MemberCanBePrivate.Global
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public partial ViewModelBase? Current { get; set; }
 
 	public bool CanGoBack => _history.Count > 0;
 
-	public void GoTo<T>() where T : ViewModelBase
+	public void GoTo<T>(bool excludeFromHistory = false) where T : ViewModelBase
 	{
-		if (Current is not null)
-			_history.Push(Current.GetType());
+		if (Current is not null && !_excludeFromHistory)
+		{
+			var type = Current.GetType();
+			if (type != typeof(T))
+				_history.Push(type);
+		}
+
+		_excludeFromHistory = excludeFromHistory;
 
 		Current = services.GetRequiredService<T>();
 		OnPropertyChanged(nameof(CanGoBack));
@@ -34,6 +37,8 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 	{
 		if (!CanGoBack)
 			return;
+
+		_excludeFromHistory = false;
 
 		var type = _history.Pop();
 		Current = (ViewModelBase)services.GetRequiredService(type);

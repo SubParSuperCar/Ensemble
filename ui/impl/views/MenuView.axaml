@@ -10,13 +10,14 @@
 
     <TransitioningContentControl
         Content="{Binding Navigator.Current}"
-        HorizontalAlignment="Center" VerticalAlignment="Center"
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+        Background="{DynamicResource TranslucentBackgroundBrush}"
         ClipToBounds="False">
 
         <TransitioningContentControl.PageTransition>
             <CompositePageTransition>
                 <CrossFade Duration="{StaticResource TransitionDuration}" />
-                <PageSlide Duration="{StaticResource TransitionDuration}" Orientation="Horizontal" />
+                <PageSlide Duration="{StaticResource TransitionDuration}" />
             </CompositePageTransition>
         </TransitioningContentControl.PageTransition>
     </TransitioningContentControl>

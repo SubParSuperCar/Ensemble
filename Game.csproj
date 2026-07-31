@@ -39,6 +39,7 @@
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
     <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
     <PackageReference Include="LuaCSharp" Version="0.5.*"/>
+    <PackageReference Include="Markdown.Avalonia.Tight" Version="12.0.0-a3"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.*"/>
     <PackageReference Include="Meziantou.Analyzer" Version="3.0.*">
       <PrivateAssets>all</PrivateAssets>

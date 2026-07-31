@@ -7,22 +7,58 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.MenuRootView"
     x:DataType="vm:MenuRootViewModel"
-    xml:space="preserve">
+    TextOptions.TextRenderingMode="Antialias"
+    FontSize="24" FontWeight="ExtraLight">
 
-    ⣿⣿⣿⣿⣿⣿⡿⠛⣛⣛⣛⣛⣛⣛⣛⣛⣛⣛⡛⠛⠿⠿⢿⣿⣿⣿⣿⣿⣿
-    ⣿⣿⣿⣿⡿⢃⣴⣿⠿⣻⢽⣲⠿⠭⠭⣽⣿⣓⣛⣛⣓⣲⣶⣢⣍⠻⢿⣿⣿
-    ⣿⣿⣿⡿⢁⣾⣿⣵⡫⣪⣷⠿⠿⢿⣷⣹⣿⣿⣿⢲⣾⣿⣾⡽⣿⣷⠈⣿⣿
-    ⣿⣿⠟⠁⣚⣿⣿⠟⡟⠡⠀⠀⠀⠶⣌⠻⣿⣿⠿⠛⠉⠉⠉⢻⣿⣿⠧⡙⢿
-    ⡿⢡⢲⠟⣡⡴⢤⣉⣛⠛⣋⣥⣿⣷⣦⣾⣿⣿⡆⢰⣾⣿⠿⠟⣛⡛⢪⣎⠈
-    ⣧⢸⣸⠐⣛⡁⢦⣍⡛⠿⢿⣛⣿⡍⢩⠽⠿⣿⣿⡦⠉⠻⣷⣶⠇⢻⣟⠟⢀
-    ⣿⣆⠣⢕⣿⣷⡈⠙⠓⠰⣶⣤⣍⠑⠘⠾⠿⠿⣉⣡⡾⠿⠗⡉⡀⠘⣶⢃⣾
-    ⣿⣿⣷⡈⢿⣿⣿⣌⠳⢠⣄⣈⠉⠘⠿⠿⠆⠶⠶⠀⠶⠶⠸⠃⠁⠀⣿⢸⣿
-    ⣿⣿⣿⣷⡌⢻⣿⣿⣧⣌⠻⢿⢃⣷⣶⣤⢀⣀⣀⢀⣀⠀⡀⠀⠀⢸⣿⢸⣿
-    ⣿⣿⣿⣿⣿⣦⡙⠪⣟⠭⣳⢦⣬⣉⣛⠛⠘⠿⠇⠸⠋⠘⣁⣁⣴⣿⣿⢸⣿
-    ⣿⣿⣿⣿⣿⣿⣿⣷⣦⣉⠒⠭⣖⣩⡟⠛⣻⣿⣿⣿⣿⣿⣟⣫⣾⢏⣿⠘⣿
-    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⣍⡛⠿⠿⣶⣶⣿⣿⣿⣿⣿⣾⣿⠟⣰⣿
-    ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣶⣶⣤⣭⣍⣉⣛⣋⣭⣥⣾⣿⣿
+    <Grid RowDefinitions="1*,1*,1*,1*,1*">
+        <Image
+            Grid.Row="1"
+            Source="{Binding Icon}"
+            ToolTip.Tip="Ensemble's Icon (Made w/ Inkscape)"
+            Width="256" Height="256"
+            HorizontalAlignment="Center" VerticalAlignment="Center" />
 
-    Testing Scoped UI Navigator Service for Main Menu View.
+        <StackPanel
+            Grid.Row="3"
+            Spacing="8"
+            HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Border
+                BorderBrush="Yellow"
+                BorderThickness="1">
+
+                <Button
+                    Content="Play"
+                    ToolTip.Tip="Start a new session."
+                    Command="{Binding StartSessionCommand}" />
+            </Border>
+
+            <StackPanel
+                Spacing="8"
+                Orientation="Horizontal"
+                HorizontalAlignment="Center">
+
+                <Button
+                    Content="README.md"
+                    ToolTip.Tip="View the README.md file."
+                    Command="{Binding GoToReadMeCommand}" />
+
+                <Button
+                    Content="Settings"
+                    ToolTip.Tip="Open the settings menu."
+                    IsEnabled="False" />
+            </StackPanel>
+
+            <Border
+                BorderBrush="Red"
+                BorderThickness="1">
+
+                <Button
+                    Content="Quit"
+                    ToolTip.Tip="Shut down the game."
+                    Command="{Binding ShutDownCommand}" />
+            </Border>
+        </StackPanel>
+    </Grid>
 
 </UserControl>

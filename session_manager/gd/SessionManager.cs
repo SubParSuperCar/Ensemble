@@ -1,5 +1,5 @@
 using Godot;
-using Root.Scripts.Globals;
+using Root.Common.Globals;
 using Root.SessionManager.Api;
 using Root.SessionManager.Impl;
 using Serilog;
@@ -174,7 +174,7 @@ public partial class SessionManager : Node
 		var config = new ConfigFile();
 
 #if !DEBUG
-		if (config.Load(ScriptConstants.UserDataCfgPath) is Error.Ok)
+		if (config.Load(CommonConstants.UserDataCfgPath) is Error.Ok)
 		{
 			var stored = config.GetValue("player", "id", string.Empty).AsString();
 
@@ -185,7 +185,7 @@ public partial class SessionManager : Node
 
 		var id = Guid.NewGuid().ToString();
 		config.SetValue("player", "id", id);
-		config.Save(ScriptConstants.UserDataCfgPath);
+		config.Save(CommonConstants.UserDataCfgPath);
 
 		return id;
 	}

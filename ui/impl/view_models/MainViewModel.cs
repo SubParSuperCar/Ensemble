@@ -21,6 +21,8 @@ public partial class MainViewModel : ViewModelBase
 
 		dispatcher.Input += OnInput;
 
+		Stats = services.GetRequiredService<StatViewModel>();
+
 		if (GSessionManager.IsActive)
 			OnSessionStarted();
 		else
@@ -37,6 +39,10 @@ public partial class MainViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
+	public partial StatViewModel? Stats { get; set; }
+
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
 	public partial ConsoleViewModel? Console { get; set; }
 
 	protected override void OnDispose()
@@ -48,6 +54,7 @@ public partial class MainViewModel : ViewModelBase
 		_dispatcher.Input -= OnInput;
 
 		Main = null;
+		Stats = null;
 		Console = null;
 	}
 

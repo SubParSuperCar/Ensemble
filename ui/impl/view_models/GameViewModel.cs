@@ -21,7 +21,6 @@ public partial class GameViewModel : ViewModelBase
 		dispatcher.Input += OnInput;
 
 		Clock = services.GetRequiredService<ClockViewModel>();
-		Stats = services.GetRequiredService<StatViewModel>();
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 		PlotSelector = services.GetRequiredService<PlotSelectorViewModel>();
 	}
@@ -30,10 +29,6 @@ public partial class GameViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public partial ClockViewModel? Clock { get; set; }
-
-	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
-	public partial StatViewModel? Stats { get; set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
@@ -48,7 +43,6 @@ public partial class GameViewModel : ViewModelBase
 		_dispatcher.Input -= OnInput;
 
 		Clock = null;
-		Stats = null;
 		PlayerList = null;
 		PlotSelector = null;
 	}

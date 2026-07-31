@@ -42,7 +42,7 @@ public class MenuViewModel : ViewModelBase
 	{
 		await Task.Delay((int)(TimeSpan.MillisecondsPerSecond * 2.5)).ConfigureAwait(false);
 
-		Navigator.GoTo<MenuRootViewModel>();
+		Navigator.GoTo<WebBrowserViewModel>();
 	}
 
 	protected override void OnDispose()

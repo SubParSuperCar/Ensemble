@@ -8,6 +8,6 @@
     x:Class="Root.Ui.Impl.Views.WebBrowserView"
     x:DataType="vm:WebBrowserViewModel">
 
-    <!-- TODO: <NativeWebView Source="https://www.youtube.com/watch?v=6dMjCa0nqK0" /> -->
+    <NativeWebView Source="https://www.youtube.com/watch?v=6dMjCa0nqK0" />
 
 </UserControl>

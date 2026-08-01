@@ -31,6 +31,8 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 	private void InitializeOutputScroll()
 	{
 		_outputScroll = this.FindControl<ScrollViewer>("OutputScroll")!;
+
+		_outputScroll.ScrollToEnd();
 		_outputScroll.ScrollChanged += OnOutputScrollChanged;
 	}
 

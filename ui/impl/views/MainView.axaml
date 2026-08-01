@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.MainView"
     x:DataType="vm:MainViewModel">
@@ -45,10 +46,20 @@
             </TransitioningContentControl>
         </Grid>
 
+        <Border Effect="{DynamicResource StrokeEffect}">
+            <li:LoadingIndicator
+                Mode="ArcsRing"
+                Foreground="GreenYellow"
+                HorizontalAlignment="Right" VerticalAlignment="Center"
+                Width="56" Height="56"
+                SpeedRatio="2" />
+        </Border>
+
         <TextBlock Text="&quot;Ensemble&quot; (In-Dev. Build)&#x0a;By: @SubParSuperCar &amp; Contributors"
-                   Padding="2"
                    Background="Black" Foreground="Red"
                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                   Padding="2"
+                   FontSize="14"
                    IsHitTestVisible="False"
                    TextOptions.TextRenderingMode="Alias" />
     </Grid>

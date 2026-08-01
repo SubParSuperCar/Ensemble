@@ -5,9 +5,9 @@ using Root.Ui.Impl.ViewModels;
 namespace Root.Ui.Impl.Views;
 
 // ReSharper disable once UnusedType.Global
-public partial class MenuRootView : UserControl, IViewFor<MenuRootViewModel>
+public partial class MenuHomeView : UserControl, IViewFor<MenuHomeViewModel>
 {
-	public MenuRootView()
+	public MenuHomeView()
 	{
 		InitializeComponent();
 	}

@@ -10,8 +10,8 @@
 
     <TransitioningContentControl
         Content="{Binding Navigator.Current}"
-        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
         Background="{DynamicResource TranslucentBackgroundBrush}"
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
         ClipToBounds="False">
 
         <TransitioningContentControl.PageTransition>

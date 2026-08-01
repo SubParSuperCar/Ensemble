@@ -20,7 +20,12 @@
             <SolidColorBrush
                 x:Key="TranslucentBackgroundBrush"
                 Color="{DynamicResource ThemeBackgroundColor}"
-                Opacity="0.5" />
+                Opacity="0.625" />
+
+            <DropShadowEffect
+                x:Key="StrokeEffect"
+                OffsetX="0" OffsetY="0"
+                BlurRadius="0.25" />
         </ResourceDictionary>
     </Application.Resources>
 

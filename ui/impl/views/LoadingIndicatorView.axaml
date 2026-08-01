@@ -10,8 +10,7 @@
     x:DataType="vm:LoadingIndicatorViewModel">
 
     <li:LoadingIndicator
-        Mode="ArcsRing"
-        SpeedRatio="2"
+        Mode="ThreeDots"
         MaxWidth="256" MaxHeight="256" />
 
 </UserControl>

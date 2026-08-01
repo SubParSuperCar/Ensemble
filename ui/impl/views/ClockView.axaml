@@ -9,10 +9,11 @@
     x:DataType="vm:ClockViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <TextBlock Text="{Binding Text}"
-               ToolTip.Tip="Clock (Real Time - Time Zone - Session Duration)"
-               Background="{DynamicResource TranslucentBackgroundBrush}"
-               Padding="2"
-               HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <TextBlock
+        Text="{Binding Text}"
+        ToolTip.Tip="Clock (Real Time - Time Zone - Session Duration)"
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        Padding="2" />
 
 </UserControl>

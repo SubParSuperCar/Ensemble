@@ -1,6 +1,12 @@
+using CommunityToolkit.Mvvm.Input;
 using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public class WebBrowserViewModel : ViewModelBase;
+public partial class WebBrowserViewModel(NavigatorService navigator) : ViewModelBase
+{
+	[RelayCommand]
+	private void GoUpOne() => navigator.GoBack();
+}

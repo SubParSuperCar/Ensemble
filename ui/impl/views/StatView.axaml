@@ -9,10 +9,14 @@
     x:DataType="vm:StatViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <TextBlock
-        Text="{Binding Text}"
-        ToolTip.Tip="Statistics"
-        Padding="2"
-        Background="{DynamicResource TranslucentBackgroundBrush}" />
+    <Border Padding="2" Effect="{DynamicResource StrokeEffect}">
+        <Border Effect="{DynamicResource StrokeEffect}">
+            <TextBlock
+                Text="{Binding Text}"
+                ToolTip.Tip="Statistics"
+                Foreground="White"
+                FontSize="14" />
+        </Border>
+    </Border>
 
 </UserControl>

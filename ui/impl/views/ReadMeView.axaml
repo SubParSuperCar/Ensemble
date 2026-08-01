@@ -23,9 +23,9 @@
         <Button
             Content="&lt;- Back"
             Command="{Binding GoBackCommand}"
-            ToolTip.Tip="Go back. (Bound to Backspace)"
-            FontSize="24"
-            HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+            ToolTip.Tip="Go back (Bound to Backspace)"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+            FontSize="24" />
     </Grid>
 
 </UserControl>

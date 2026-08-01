@@ -27,19 +27,17 @@
 
                 <SelectableTextBlock
                     Text="{Binding Output}"
-                    FontSize="11"
+                    Background="Black" Foreground="White"
+                    SelectionBrush="White" SelectionForegroundBrush="Black"
                     Padding="1"
-                    Background="Black"
-                    Foreground="White"
-                    SelectionBrush="White"
-                    SelectionForegroundBrush="Black"
+                    FontSize="11"
                     TextWrapping="Wrap" />
             </ScrollViewer>
 
             <GridSplitter
                 Grid.Column="1"
-                Width="4"
                 Background="YellowGreen"
+                Width="4"
                 ResizeDirection="Columns" />
 
             <Grid Grid.Column="2">
@@ -47,21 +45,21 @@
                     Name="Editor"
                     Document="{Binding Source}"
                     Background="{DynamicResource TranslucentBackgroundBrush}"
-                    ShowLineNumbers="True"
+                    FontSize="13"
                     WordWrap="True"
-                    FontSize="13" />
+                    ShowLineNumbers="True" />
 
                 <Border
-                    Margin="0,0,22,4"
-                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
                     BorderBrush="DodgerBlue"
-                    BorderThickness="1">
+                    BorderThickness="1"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Margin="0,0,22,4">
 
                     <Button
                         Content="Execute Script"
                         Command="{Binding ExecuteCommand}"
                         ToolTip.Tip="Executes the entered script source code."
-                        Foreground="White" Background="Black" />
+                        Background="Black" Foreground="White" />
                 </Border>
             </Grid>
         </Grid>

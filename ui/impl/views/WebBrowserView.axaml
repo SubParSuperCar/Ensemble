@@ -6,8 +6,42 @@
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.WebBrowserView"
-    x:DataType="vm:WebBrowserViewModel">
+    x:DataType="vm:WebBrowserViewModel"
+    x:Name="Root"
+    TextOptions.TextRenderingMode="Antialias">
 
-    <NativeWebView Source="https://www.youtube.com/watch?v=6dMjCa0nqK0" />
+    <Grid>
+        <NativeWebView
+            Name="WebView"
+            Source="https://github.com/SubParSuperCar/Ensemble" />
+
+        <StackPanel
+            Orientation="Horizontal" Spacing="2"
+            HorizontalAlignment="Center" VerticalAlignment="Top"
+            Margin="2">
+
+            <Button Content="&lt;-" Command="{Binding #Root.GoBackCommand}" ToolTip.Tip="Go back" />
+            <Button Content="-&gt;" Command="{Binding #Root.GoForwardCommand}" ToolTip.Tip="Go forward" />
+
+            <TextBox
+                Name="UrlBox"
+                Text="{Binding #WebView.Source, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
+                PlaceholderText="Type URL here and press enter to navigate"
+                ToolTip.Tip="The current URL. Type into it and press enter to navigate."
+                MinWidth="256" MaxWidth="512"
+                KeyDown="UrlBox_OnKeyDown"
+                GotFocus="UrlBox_GotFocus"
+                LostFocus="UrlBox_LostFocus" />
+        </StackPanel>
+
+        <Button
+            Content="&lt;- Back"
+            Command="{Binding GoUpOneCommand}"
+            ToolTip.Tip="Go back (Bound to Backspace)"
+            Background="{DynamicResource TranslucentBackgroundBrush}"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+            Margin="4"
+            FontSize="24" />
+    </Grid>
 
 </UserControl>

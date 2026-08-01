@@ -10,7 +10,7 @@ using FileAccess = Godot.FileAccess;
 namespace Root.Ui.Impl.ViewModels;
 
 // ReSharper disable once ClassNeverInstantiated.Global
-public partial class MenuRootViewModel(NavigatorService navigator) : ViewModelBase
+public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBase
 {
 	[ObservableProperty]
 	public partial Bitmap? Icon { get; set; } = LoadBitmapFromGodotImage(CommonConstants.GameIconPath);
@@ -20,6 +20,9 @@ public partial class MenuRootViewModel(NavigatorService navigator) : ViewModelBa
 
 	[RelayCommand]
 	private void GoToReadMe() => navigator.GoTo<ReadMeViewModel>();
+
+	[RelayCommand]
+	private void GoToWebBrowser() => navigator.GoTo<WebBrowserViewModel>();
 
 	[RelayCommand]
 	private static void ShutDown() => (Engine.GetMainLoop() as SceneTree)?.Quit();

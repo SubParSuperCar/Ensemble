@@ -88,7 +88,8 @@ public partial class InfoLogger : Node
 			Add(lines, "Topology", $"{cpu.NumberOfCores}C / {cpu.NumberOfLogicalProcessors}T");
 
 			if (cpu.MaxClockSpeed > 0)
-				Add(lines, "Max Clock", string.Create(CultureInfo.InvariantCulture, $"{cpu.MaxClockSpeed / 1000f:F2} GHz"));
+				Add(lines, "Max Clock",
+					string.Create(CultureInfo.InvariantCulture, $"{cpu.MaxClockSpeed / 1000f:F2} GHz"));
 		}
 
 		Add(lines, "Endianness", BitConverter.IsLittleEndian ? "Little" : "Big");

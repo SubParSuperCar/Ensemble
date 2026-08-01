@@ -10,8 +10,8 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Border
-        Padding="2"
-        Background="{DynamicResource TranslucentBackgroundBrush}">
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        Padding="2">
 
         <Grid
             RowDefinitions="Auto,*,2,Auto"

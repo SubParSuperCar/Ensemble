@@ -13,7 +13,7 @@
             Content="{Binding PlayerList}"
             HorizontalAlignment="Right" VerticalAlignment="Top"
             MaxWidth="512" MaxHeight="256"
-            Margin="0,28,0,0"
+            Margin="0,30,0,0"
             ClipToBounds="False">
 
             <TransitioningContentControl.PageTransition>
@@ -32,6 +32,13 @@
             Content="{Binding PlotSelector}"
             HorizontalAlignment="Left" VerticalAlignment="Center"
             MinWidth="384" MaxWidth="512" MaxHeight="256" />
+
+        <Button
+            Content="&lt;- Menu"
+            Command="{Binding StopSessionCommand}"
+            ToolTip.Tip="Stops the current session."
+            Background="{DynamicResource TranslucentBackgroundBrush}"
+            HorizontalAlignment="Left" VerticalAlignment="Top" />
     </Grid>
 
 </UserControl>

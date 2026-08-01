@@ -30,7 +30,7 @@
                 <Button
                     Content="Play"
                     Command="{Binding StartSessionCommand}"
-                    ToolTip.Tip="Start a new session." />
+                    ToolTip.Tip="Starts a new session." />
             </Border>
 
             <StackPanel
@@ -41,18 +41,18 @@
                 <Button
                     Content="README.md"
                     Command="{Binding GoToReadMeCommand}"
-                    ToolTip.Tip="View the README.md file." />
+                    ToolTip.Tip="Opens the README.md file viewer." />
 
                 <Button
                     Content="Settings"
-                    ToolTip.Tip="Open the settings menu."
+                    ToolTip.Tip="Opens the settings menu."
                     IsEnabled="False" />
             </StackPanel>
 
             <Button
                 Content="Web Browser"
                 Command="{Binding GoToWebBrowserCommand}"
-                ToolTip.Tip="Open the web browser." />
+                ToolTip.Tip="Opens the web browser." />
 
             <Border
                 BorderBrush="Red"
@@ -61,7 +61,7 @@
                 <Button
                     Content="Quit"
                     Command="{Binding ShutDownCommand}"
-                    ToolTip.Tip="Shut down the game." />
+                    ToolTip.Tip="Shuts down the game." />
             </Border>
         </StackPanel>
     </Grid>

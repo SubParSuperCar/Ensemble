@@ -19,7 +19,7 @@
         <ContentControl
             Content="{Binding Stats}"
             HorizontalAlignment="Left" VerticalAlignment="Top"
-            Margin="0,28,0,0"
+            Margin="0,30,0,0"
             IsHitTestVisible="False" />
 
         <Grid

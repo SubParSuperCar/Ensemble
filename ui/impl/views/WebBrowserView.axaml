@@ -26,8 +26,8 @@
             <TextBox
                 Name="UrlBox"
                 Text="{Binding #WebView.Source, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
-                PlaceholderText="Type URL here and press enter to navigate"
-                ToolTip.Tip="The current URL. Type and press enter to navigate."
+                PlaceholderText="Type URL here &amp; press Enter to navigate"
+                ToolTip.Tip="The current URL. Type and press Enter to navigate."
                 MinWidth="256" MaxWidth="512"
                 KeyDown="UrlBox_OnKeyDown"
                 GotFocus="UrlBox_GotFocus"

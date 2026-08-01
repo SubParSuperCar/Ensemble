@@ -9,6 +9,7 @@ namespace Root.Ui.Impl.ViewModels;
 // ReSharper disable once ClassNeverInstantiated.Global
 public class MenuViewModel : ViewModelBase
 {
+	private static bool _hasLoaded;
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;
 
@@ -20,9 +21,17 @@ public class MenuViewModel : ViewModelBase
 		dispatcher.Input += OnInput;
 
 		Navigator = _scope.ServiceProvider.GetRequiredService<NavigatorService>();
-		Navigator.GoTo<LoadingIndicatorViewModel>(true);
 
-		_ = GoToRootAfterDelay();
+		if (_hasLoaded)
+		{
+			Navigator.GoTo<MenuHomeViewModel>();
+			return;
+		}
+
+		Navigator.GoTo<LoadingIndicatorViewModel>(true);
+		_ = GoToHomeAfterDelay();
+
+		_hasLoaded = true;
 	}
 
 	public NavigatorService Navigator { get; }
@@ -38,7 +47,7 @@ public class MenuViewModel : ViewModelBase
 		Log.Debug("Went back to {ViewModel}", Navigator.Current?.GetType().Name);
 	}
 
-	private async Task GoToRootAfterDelay()
+	private async Task GoToHomeAfterDelay()
 	{
 		await Task.Delay((int)(TimeSpan.MillisecondsPerSecond * 2.5)).ConfigureAwait(false);
 

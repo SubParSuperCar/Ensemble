@@ -30,8 +30,8 @@
                 ToolTip.Tip="The current URL. Type and press Enter to navigate."
                 MinWidth="256" MaxWidth="512"
                 KeyDown="UrlBox_OnKeyDown"
-                GotFocus="UrlBox_GotFocus"
-                LostFocus="UrlBox_LostFocus" />
+                GotFocus="Control_GotFocus"
+                LostFocus="Control_LostFocus" />
         </StackPanel>
 
         <Button
@@ -41,7 +41,9 @@
             Background="{DynamicResource TranslucentBackgroundBrush}"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"
             Margin="4"
-            FontSize="24" />
+            FontSize="24"
+            GotFocus="Control_GotFocus"
+            LostFocus="Control_LostFocus" />
     </Grid>
 
 </UserControl>

@@ -35,8 +35,8 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 			_urlBoxBinding?.UpdateSource();
 	}
 
-	private void UrlBox_GotFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Acquire(this);
-	private void UrlBox_LostFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Release(this);
+	private void Control_GotFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Acquire(this);
+	private void Control_LostFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Release(this);
 
 	private void OnNavigationStateChanged(object? sender, object e)
 	{

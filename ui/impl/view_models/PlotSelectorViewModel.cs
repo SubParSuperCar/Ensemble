@@ -51,9 +51,16 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		OnOwnerChanged(occupants.Owner);
 		occupants.OwnerChanged += OnOwnerChanged;
 
-		Plots.Add(plot);
-		_plotsById[gdPlot.Id] = plot;
+		var index = Plots
+			.TakeWhile(p => string.Compare(
+				p.Id.ToString(CultureInfo.InvariantCulture),
+				plot.Id.ToString(CultureInfo.InvariantCulture),
+				StringComparison.Ordinal) < 0)
+			.Count();
 
+		Plots.Insert(index, plot);
+
+		_plotsById[gdPlot.Id] = plot;
 		_unsubscribeByPlotId[gdPlot.Id] = Unsubscribe;
 
 		return;

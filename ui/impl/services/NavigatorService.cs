@@ -17,14 +17,16 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 	public bool CanGoBack => _history.Count > 0;
 
+	public void GoTo() => Current = null;
+
 	public void GoTo<T>(bool excludeFromHistory = false) where T : ViewModelBase
 	{
-		if (Current is not null && !_excludeFromHistory)
-		{
-			var type = Current.GetType();
-			if (type != typeof(T))
-				_history.Push(type);
-		}
+		var type = Current?.GetType();
+		if (type == typeof(T))
+			return;
+
+		if (type is not null && !_excludeFromHistory)
+			_history.Push(type);
 
 		_excludeFromHistory = excludeFromHistory;
 

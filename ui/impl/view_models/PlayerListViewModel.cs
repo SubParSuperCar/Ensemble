@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Root.Core.Gd.Player;
 using Root.Ui.Impl.Abstractions;
@@ -33,7 +34,12 @@ public partial class PlayerListViewModel : ViewModelBase
 		var peerId = GSessionManager.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, None);
 
 		var player = new Player(gdPlayer.Name, peerId);
-		Players.Add(player);
+
+		var index = Players
+			.TakeWhile(p => string.Compare(p.Name, player.Name, StringComparison.Ordinal) < 0)
+			.Count();
+
+		Players.Insert(index, player);
 		_playersById[gdPlayer.Id] = player;
 
 		if (ReferenceEquals(gdPlayer, GPlayers.Local))

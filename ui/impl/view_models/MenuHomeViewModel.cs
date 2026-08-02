@@ -23,9 +23,6 @@ public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBa
 	[RelayCommand]
 	private void GoToWebBrowser() => navigator.GoTo<WebBrowserViewModel>();
 
-	[RelayCommand]
-	private static void ShutDown() => (Engine.GetMainLoop() as SceneTree)?.Quit();
-
 	private static Bitmap LoadBitmapFromGodotImage(string path)
 	{
 		using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);

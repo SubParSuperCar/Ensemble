@@ -59,9 +59,9 @@
                 BorderThickness="1">
 
                 <Button
-                    Content="Quit"
-                    Command="{Binding ShutDownCommand}"
-                    ToolTip.Tip="Shuts down the game." />
+                    Content="Quit (2x)"
+                    DoubleTapped="Button_DoubleTapped"
+                    ToolTip.Tip="Shuts down the game. (Double-click)" />
             </Border>
         </StackPanel>
     </Grid>

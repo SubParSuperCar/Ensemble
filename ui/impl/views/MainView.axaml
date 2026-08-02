@@ -51,7 +51,7 @@
                 Mode="ArcsRing"
                 Foreground="GreenYellow"
                 HorizontalAlignment="Right" VerticalAlignment="Center"
-                Width="56" Height="56"
+                Width="64" Height="64"
                 SpeedRatio="2" />
         </Border>
 

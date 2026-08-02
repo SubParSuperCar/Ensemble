@@ -10,6 +10,7 @@ namespace Root.Common.Execution;
 
 public partial class LuaExecutor
 {
+	// TODO: Automatically register functions
 	private static void AddFunctions(LuaTable env)
 	{
 		env[nameof(print)] = new LuaFunction(print);

@@ -14,7 +14,6 @@ public partial class ClockViewModel : ViewModelBase
 	public ClockViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
-
 		dispatcher.Process += OnProcess;
 	}
 

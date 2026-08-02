@@ -15,13 +15,10 @@ public partial class InfoLogger : Node
 
 	public override void _Ready()
 	{
-		var hw = new HardwareInfo();
-		hw.RefreshAll(); // TODO: Only refresh used members
-
 		var lines = new List<(string Key, string Value)>();
 
-		AddGeneralInfo(lines);
-		AddHardwareInfo(hw, lines);
+		AddSoftwareInfo(lines);
+		AddHardwareInfo(lines);
 
 		Add(lines, "Culture", CultureInfo.CurrentCulture.DisplayName);
 		Add(lines, "Time Zone", TimeZoneInfo.Local.DisplayName);
@@ -31,7 +28,7 @@ public partial class InfoLogger : Node
 		QueueFree();
 	}
 
-	private static void AddGeneralInfo(List<(string Key, string Value)> lines)
+	private static void AddSoftwareInfo(List<(string Key, string Value)> lines)
 	{
 		Add(lines, "Machine", Environment.MachineName);
 		Add(lines, "User", Environment.UserName);
@@ -75,8 +72,11 @@ public partial class InfoLogger : Node
 				.ToString(@"d\d\ hh\h\ mm\m", CultureInfo.InvariantCulture));
 	}
 
-	private static void AddHardwareInfo(HardwareInfo hw, List<(string Key, string Value)> lines)
+	private static void AddHardwareInfo(List<(string Key, string Value)> lines)
 	{
+		var hw = new HardwareInfo();
+		hw.RefreshAll(); // TODO: Only refresh used members
+
 		var cpu = hw.CpuList.FirstOrDefault();
 		var gpu = hw.VideoControllerList.FirstOrDefault();
 		var board = hw.MotherboardList.FirstOrDefault();

@@ -33,7 +33,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 			_ => Error.InvalidParameter
 		};
 
-		if (error != Error.Ok)
+		if (error is not Error.Ok)
 		{
 			Failed?.Invoke(error.ToString());
 			return;

@@ -8,5 +8,5 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class WebBrowserViewModel(NavigatorService navigator) : ViewModelBase
 {
 	[RelayCommand]
-	private void GoUpOne() => navigator.GoBack();
+	private void GoBack() => navigator.GoBack();
 }

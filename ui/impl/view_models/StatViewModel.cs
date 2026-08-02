@@ -21,7 +21,6 @@ public partial class StatViewModel : ViewModelBase
 	public StatViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
-
 		dispatcher.Process += OnProcess;
 	}
 

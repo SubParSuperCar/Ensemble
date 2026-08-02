@@ -41,11 +41,11 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 
 	private void OnNavigationStateChanged(object? sender, object e)
 	{
-		GoBackCommand.NotifyCanExecuteChanged();
-		GoForwardCommand.NotifyCanExecuteChanged();
-
 		if (!UrlBox.IsFocused)
 			_urlBoxBinding?.UpdateTarget();
+
+		GoBackCommand.NotifyCanExecuteChanged();
+		GoForwardCommand.NotifyCanExecuteChanged();
 	}
 
 	protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

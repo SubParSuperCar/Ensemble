@@ -36,7 +36,7 @@
 
         <Button
             Content="&lt;- Back"
-            Command="{Binding GoUpOneCommand}"
+            Command="{Binding GoBackCommand}"
             ToolTip.Tip="Go back (Bound to Backspace)"
             Background="{DynamicResource TranslucentBackgroundBrush}"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"

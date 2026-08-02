@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 
 namespace Root.Core.Api.Asset;
@@ -12,7 +13,7 @@ public interface IInstances
 	event Action<IInstance> Added;
 	event Action<IInstance> Removed;
 
-	bool TryGet(int instanceId, out IInstance instance);
+	bool TryGet(int instanceId, [NotNullWhen(true)] out IInstance? instance);
 
 	IInstance Add(int assetId, Vector3 position, Quaternion rotation, int? instanceId = null);
 

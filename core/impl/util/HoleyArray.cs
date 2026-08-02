@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -16,7 +17,7 @@ internal sealed class HoleyArray<T> where T : class
 
 	public IEnumerable<T> GetAll() => _items.OfType<T>();
 
-	public bool TryGet(int index, out T item)
+	public bool TryGet(int index, [NotNullWhen(true)] out T? item)
 	{
 		var items = CollectionsMarshal.AsSpan(_items);
 
@@ -26,7 +27,7 @@ internal sealed class HoleyArray<T> where T : class
 			return true;
 		}
 
-		item = null!;
+		item = null;
 		return false;
 	}
 

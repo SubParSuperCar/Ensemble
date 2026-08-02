@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Root.Core.Api.Player;
 
 namespace Root.Core.Impl.Plot;
@@ -6,8 +7,8 @@ internal sealed class OccupantRegistry
 {
 	private readonly Dictionary<Guid, Occupant> _occupantsByPlayerId = [];
 
-	public bool TryGet(Guid playerId, out Occupant occupant) =>
-		_occupantsByPlayerId.TryGetValue(playerId, out occupant!);
+	public bool TryGet(Guid playerId, [NotNullWhen(true)] out Occupant? occupant) =>
+		_occupantsByPlayerId.TryGetValue(playerId, out occupant);
 
 	public void Add(IPlayer player)
 	{

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using Root.Core.Api.Asset;
@@ -36,11 +37,11 @@ public class Instances : IInstances
 	public event Action<IInstance>? Added;
 	public event Action<IInstance>? Removed;
 
-	public bool TryGet(int instanceId, out IInstance instance)
+	public bool TryGet(int instanceId, [NotNullWhen(true)] out IInstance? instance)
 	{
 		if (!_instancesById.TryGet(instanceId, out var found))
 		{
-			instance = null!;
+			instance = null;
 			return false;
 		}
 

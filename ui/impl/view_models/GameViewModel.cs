@@ -8,7 +8,6 @@ using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class GameViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
@@ -28,7 +27,6 @@ public partial class GameViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public partial ClockViewModel? Clock { get; set; }
 
 	[ObservableProperty]

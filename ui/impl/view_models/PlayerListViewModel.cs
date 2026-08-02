@@ -5,7 +5,6 @@ using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class PlayerListViewModel : ViewModelBase
 {
 	private readonly Dictionary<string, Player> _playersById = [];
@@ -21,7 +20,6 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	public ObservableCollection<Player> Players { get; } = [];
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial Player? SelectedPlayer { get; set; }
 
 	protected override void OnDispose()

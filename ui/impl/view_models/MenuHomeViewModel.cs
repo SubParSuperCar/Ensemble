@@ -9,7 +9,6 @@ using FileAccess = Godot.FileAccess;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBase
 {
 	[ObservableProperty]

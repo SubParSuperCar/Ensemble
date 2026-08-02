@@ -14,5 +14,6 @@ public class Instance(IAsset asset, Vector3 position, Quaternion rotation) : IIn
 	public Quaternion Rotation { get; } = rotation;
 
 	public override string ToString() =>
-		$"Instance(instanceId={Id}, assetId={Asset.Id}, position={Position}, rotation={Rotation}, properties={Properties})";
+		$"Instance(instanceId={Id}, assetId={Asset.Id}, position={Position}, " +
+		$"rotation={Rotation}, properties={Properties})";
 }

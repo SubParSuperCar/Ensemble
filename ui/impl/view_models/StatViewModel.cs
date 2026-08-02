@@ -12,7 +12,6 @@ using Environment = System.Environment;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class StatViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
@@ -24,7 +23,6 @@ public partial class StatViewModel : ViewModelBase
 		dispatcher.Process += OnProcess;
 	}
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
 
 	protected override void OnDispose() => _dispatcher.Process -= OnProcess;
@@ -44,14 +42,19 @@ public partial class StatViewModel : ViewModelBase
 		var dram = (ulong)process.PrivateMemorySize64;
 #endif
 
+		var frameRate = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
+		var processTimeMs = Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond;
+		var physicsTimeMs =
+			Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond;
+
 		List<(string Key, object Value)> stats =
 		[
-			("Frame Rate", string.Create(CultureInfo.InvariantCulture,
-				$"{fps} FPS ({(fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity):F3} mspf)")),
-			("Process Time", string.Create(CultureInfo.InvariantCulture,
-				$"{Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond:F3} msec")),
-			("Physics Time", string.Create(CultureInfo.InvariantCulture,
-				$"{Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond:F3} msec")),
+			("Frame Rate",
+				string.Create(CultureInfo.InvariantCulture, $"{fps} FPS ({frameRate:F3} mspf)")),
+			("Process Time",
+				string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
+			("Physics Time",
+				string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
 			("Used DRAM", Formatter.FormatBytes(dram)),
 			("Used VRAM",
 				Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
@@ -72,7 +75,7 @@ public partial class StatViewModel : ViewModelBase
 				string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():F3} m/s")));
 		}
 
-		var width = stats.Max(s => s.Key.Length);
-		Text = string.Join(Environment.NewLine, stats.Select(s => $"{s.Key.PadRight(width)} = {s.Value}"));
+		var width = stats.Max(stat => stat.Key.Length);
+		Text = string.Join(Environment.NewLine, stats.Select(stat => $"{stat.Key.PadRight(width)} = {stat.Value}"));
 	}
 }

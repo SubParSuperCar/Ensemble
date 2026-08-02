@@ -9,7 +9,6 @@ using InputExtensions = Root.Common.Input.InputExtensions;
 
 namespace Root.Ui.Impl.Views;
 
-// ReSharper disable once UnusedType.Global
 public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 {
 	private readonly BindingExpressionBase? _urlBoxBinding;

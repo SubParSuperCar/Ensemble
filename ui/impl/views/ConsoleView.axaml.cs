@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
@@ -10,7 +9,6 @@ using InputExtensions = Root.Common.Input.InputExtensions;
 
 namespace Root.Ui.Impl.Views;
 
-// ReSharper disable once UnusedType.Global
 public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 {
 	private const string LanguageExtension = ".lua";
@@ -18,7 +16,6 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 	private const int IndentationSize = 2;
 	private const int RulerPosition = 60;
 
-	private ScrollViewer _outputScroll = null!;
 	private bool _shouldScrollToBottom;
 
 	public ConsoleView()
@@ -30,25 +27,21 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 
 	private void InitializeOutputScroll()
 	{
-		_outputScroll = this.FindControl<ScrollViewer>("OutputScroll")!;
-
-		_outputScroll.ScrollToEnd();
-		_outputScroll.ScrollChanged += OnOutputScrollChanged;
+		OutputScroll.ScrollToEnd();
+		OutputScroll.ScrollChanged += OnOutputScrollChanged;
 	}
 
 	private void InitializeEditor()
 	{
-		var editor = this.FindControl<TextEditor>("Editor")!;
-
 		var registryOptions = new RegistryOptions(Theme);
-		var installation = editor.InstallTextMate(registryOptions);
+		var installation = Editor.InstallTextMate(registryOptions);
 
 		var language = registryOptions.GetLanguageByExtension(LanguageExtension);
 		var scope = registryOptions.GetScopeByLanguageId(language.Id);
 
 		installation.SetGrammar(scope);
 
-		var options = editor.Options;
+		var options = Editor.Options;
 		options.ShowSpaces = true;
 		options.ShowTabs = true;
 		options.ShowEndOfLine = true;

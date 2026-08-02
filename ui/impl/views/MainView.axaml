@@ -55,13 +55,14 @@
                 SpeedRatio="2" />
         </Border>
 
-        <TextBlock Text="&quot;Ensemble&quot; (In-Dev. Build)&#x0a;By: @SubParSuperCar &amp; Contributors"
-                   Background="Black" Foreground="Red"
-                   HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                   Padding="2"
-                   FontSize="14"
-                   IsHitTestVisible="False"
-                   TextOptions.TextRenderingMode="Alias" />
+        <TextBlock
+            Text="&quot;Ensemble&quot; (In-Dev. Build)&#x0a;By: @SubParSuperCar &amp; Contributors"
+            Background="Black" Foreground="Red"
+            HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Padding="2"
+            FontSize="14"
+            IsHitTestVisible="False"
+            TextOptions.TextRenderingMode="Alias" />
     </Grid>
 
 </UserControl>

@@ -4,7 +4,6 @@ using Root.Ui.Impl.ViewModels;
 
 namespace Root.Ui.Impl.Views;
 
-// ReSharper disable once UnusedType.Global
 public partial class MainView : UserControl, IViewFor<MainViewModel>
 {
 	public MainView()

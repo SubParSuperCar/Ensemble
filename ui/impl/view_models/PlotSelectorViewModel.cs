@@ -7,11 +7,10 @@ using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class PlotSelectorViewModel : ViewModelBase
 {
-	private readonly Dictionary<int, Action> _closuresByPlotId = [];
 	private readonly Dictionary<int, Plot> _plotsById = [];
+	private readonly Dictionary<int, Action> _unsubscribeByPlotId = [];
 
 	public PlotSelectorViewModel()
 	{
@@ -33,8 +32,8 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		GPlots.Added -= OnPlotAdded;
 		GPlots.Removed -= OnPlotRemoved;
 
-		foreach (var closure in _closuresByPlotId.Values)
-			closure();
+		foreach (var unsubscribe in _unsubscribeByPlotId.Values)
+			unsubscribe();
 	}
 
 	[RelayCommand(CanExecute = nameof(CanSetPlotToNull))]
@@ -55,7 +54,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		Plots.Add(plot);
 		_plotsById[gdPlot.Id] = plot;
 
-		_closuresByPlotId[gdPlot.Id] = Closure;
+		_unsubscribeByPlotId[gdPlot.Id] = Unsubscribe;
 
 		return;
 
@@ -75,7 +74,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 				$"{occupants.Count} / {(occupants.MaxCount is Unlimited ? "<Unlimited>" : occupants.MaxCount)}");
 		}
 
-		void Closure()
+		void Unsubscribe()
 		{
 			occupants.OwnerChanged -= OnOwnerChanged;
 			occupants.Added -= OnOccupantChanged;
@@ -90,8 +89,8 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 		Plots.Remove(plot);
 
-		if (_closuresByPlotId.Remove(gdPlot.Id, out var closure))
-			closure();
+		if (_unsubscribeByPlotId.Remove(gdPlot.Id, out var unsubscribe))
+			unsubscribe();
 	}
 
 	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? None);
@@ -103,7 +102,6 @@ public partial class Plot : ObservableObject
 {
 	public int Id { get; init; }
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string OwnerName { get; set; } = string.Empty;
 	[ObservableProperty] public partial string Occupancy { get; set; } = string.Empty;
 }

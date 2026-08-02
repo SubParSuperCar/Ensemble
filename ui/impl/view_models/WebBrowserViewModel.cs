@@ -4,7 +4,6 @@ using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class WebBrowserViewModel(NavigatorService navigator) : ViewModelBase
 {
 	[RelayCommand]

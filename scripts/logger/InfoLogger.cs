@@ -7,7 +7,7 @@ using Root.Common.Util;
 using Serilog;
 using Environment = System.Environment;
 
-namespace Root.Scripts.Info;
+namespace Root.Scripts.Logger;
 
 public partial class InfoLogger : Node
 {
@@ -55,7 +55,7 @@ public partial class InfoLogger : Node
 			try
 			{
 				if (File.Exists(LinuxKernelVersionFilePath))
-					Add(lines, "Kernel", File.ReadAllText(LinuxKernelVersionFilePath).Trim());
+					Add(lines, "Kernel", File.ReadAllText(LinuxKernelVersionFilePath));
 			}
 			catch
 			{
@@ -74,13 +74,13 @@ public partial class InfoLogger : Node
 
 	private static void AddHardwareInfo(List<(string Key, string Value)> lines)
 	{
-		var hw = new HardwareInfo();
-		hw.RefreshAll(); // TODO: Only refresh used members
+		var hardwareInfo = new HardwareInfo();
+		hardwareInfo.RefreshAll(); // TODO: Only refresh used members
 
-		var cpu = hw.CpuList.FirstOrDefault();
-		var gpu = hw.VideoControllerList.FirstOrDefault();
-		var board = hw.MotherboardList.FirstOrDefault();
-		var bios = hw.BiosList.FirstOrDefault();
+		var cpu = hardwareInfo.CpuList.FirstOrDefault();
+		var gpu = hardwareInfo.VideoControllerList.FirstOrDefault();
+		var board = hardwareInfo.MotherboardList.FirstOrDefault();
+		var bios = hardwareInfo.BiosList.FirstOrDefault();
 
 		if (cpu is not null)
 		{
@@ -97,8 +97,9 @@ public partial class InfoLogger : Node
 		if (gpu is not null)
 			Add(lines, "GPU", gpu.Name);
 
-		Add(lines, "Memory",
-			$"{Formatter.FormatBytes(hw.MemoryStatus.TotalPhysical - hw.MemoryStatus.AvailablePhysical)} / {Formatter.FormatBytes(hw.MemoryStatus.TotalPhysical)}");
+		var totalMemory = hardwareInfo.MemoryStatus.TotalPhysical;
+		var usedMemory = totalMemory - hardwareInfo.MemoryStatus.AvailablePhysical;
+		Add(lines, "Memory", $"{Formatter.FormatBytes(usedMemory)} / {Formatter.FormatBytes(totalMemory)}");
 
 		if (board is not null)
 			Add(lines, "Board", $"{board.Manufacturer} {board.Product}");
@@ -106,37 +107,34 @@ public partial class InfoLogger : Node
 		if (bios is not null)
 			Add(lines, "BIOS", $"{bios.Manufacturer} {bios.Version}");
 
-		foreach (var drive in hw.DriveList.OrderBy(d => d.Model, StringComparer.OrdinalIgnoreCase))
+		foreach (var drive in hardwareInfo.DriveList.OrderBy(d => d.Model, StringComparer.OrdinalIgnoreCase))
 			Add(lines, "Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
 
-		foreach (var monitor in hw.MonitorList)
+		foreach (var monitor in hardwareInfo.MonitorList)
 			Add(lines, "Monitor", monitor.Name);
 
-		foreach (var nic in hw.NetworkAdapterList
-					 .Where(n => !string.IsNullOrWhiteSpace(n.Name) && n.Name is not "lo")
-					 .OrderBy(n => n.Name, StringComparer.OrdinalIgnoreCase))
-			Add(lines, "Network", nic.Name);
+		foreach (var adapter in hardwareInfo.NetworkAdapterList
+					 .Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
+					 .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
+			Add(lines, "Network", adapter.Name);
 	}
 
 	private static string BuildReport(List<(string Key, string Value)> lines)
 	{
-		var sb = new StringBuilder();
-		sb.AppendLine("=== System Information ===");
+		var builder = new StringBuilder();
+		builder.AppendLine("=== System Information ===");
 
 		var width = lines.Max(line => line.Key.Length);
 
 		foreach (var (key, value) in lines)
-			sb.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value.Trim()}");
+			builder.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value.Trim()}");
 
-		return sb.ToString().TrimEnd();
+		return builder.ToString().TrimEnd();
 	}
 
 	private static void Add(List<(string Key, string Value)> lines, string key, object? value)
 	{
-		if (value is null)
-			return;
-
-		var text = value.ToString();
+		var text = value?.ToString();
 
 		if (!string.IsNullOrWhiteSpace(text))
 			lines.Add((key, text));

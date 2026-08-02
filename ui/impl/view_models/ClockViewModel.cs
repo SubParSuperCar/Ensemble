@@ -5,7 +5,6 @@ using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class ClockViewModel : ViewModelBase
 {
 	private static readonly string LocalTimeZone = TimeZoneInfo.Local.DisplayName;
@@ -17,7 +16,6 @@ public partial class ClockViewModel : ViewModelBase
 		dispatcher.Process += OnProcess;
 	}
 
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
 
 	protected override void OnDispose() => _dispatcher.Process -= OnProcess;

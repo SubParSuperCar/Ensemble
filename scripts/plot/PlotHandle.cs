@@ -3,8 +3,6 @@ using Root.Core.Gd.Asset;
 using Root.Core.Gd.Plot;
 using Root.Scripts.Asset;
 
-// using Serilog;
-
 namespace Root.Scripts.Plot;
 
 public partial class PlotHandle : Node3D
@@ -47,8 +45,6 @@ public partial class PlotHandle : Node3D
 
 	private void OnInstanceAdded(GdInstance instance)
 	{
-		// Log.Debug("Core instance added. Adding handle...");
-
 		var packed = GAssetManager.GetPacked(instance.Asset);
 
 		var handle = packed.Instantiate<AssetHandle>();
@@ -63,8 +59,6 @@ public partial class PlotHandle : Node3D
 
 	private void OnInstanceRemoved(GdInstance instance)
 	{
-		// Log.Debug("Core instance removed. Removing handle...");
-
 		if (InstanceHandles.Remove(instance.Id, out var handle))
 			handle.QueueFree();
 	}

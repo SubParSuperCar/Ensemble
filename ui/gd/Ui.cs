@@ -24,8 +24,8 @@ public partial class Ui : AvaloniaControl
 		var locator = services.GetRequiredService<ViewLocatorService>();
 		Application.Current!.DataTemplates.Add(locator);
 
-		var vm = services.GetRequiredService<MainViewModel>();
-		Control = locator.Build(vm);
+		var viewModel = services.GetRequiredService<MainViewModel>();
+		Control = locator.Build(viewModel);
 
 		base._Ready();
 	}

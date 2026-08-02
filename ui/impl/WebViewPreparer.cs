@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace Root.Ui;
+namespace Root.Ui.Impl;
 
 public static class WebViewPreparer
 {

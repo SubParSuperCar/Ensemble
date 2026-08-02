@@ -6,7 +6,6 @@ using Serilog;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public class MenuViewModel : ViewModelBase
 {
 	private static bool _hasLoaded;

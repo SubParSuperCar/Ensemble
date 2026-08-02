@@ -6,7 +6,6 @@ using Root.Ui.Impl.Messages;
 
 namespace Root.Ui.Impl.Services;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public class DispatcherService : DisposableObject, ISingletonObject, IServiceBase
 {
 	public DispatcherService()

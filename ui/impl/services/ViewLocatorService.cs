@@ -4,7 +4,6 @@ using Root.Ui.Impl.Abstractions;
 
 namespace Root.Ui.Impl.Services;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public class ViewLocatorService(IServiceProvider services) : ISingletonObject, IServiceBase, IDataTemplate
 {
 	public Control? Build(object? data)

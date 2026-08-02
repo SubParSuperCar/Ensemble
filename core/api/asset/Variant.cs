@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace Root.Core.Api.Asset;
 
@@ -73,7 +74,6 @@ public readonly struct Variant : IEquatable<Variant>
 	public static explicit operator bool(Variant variant) =>
 		variant.Type is VariantType.Bool ? variant._integer is not 0 : throw new InvalidCastException();
 
-	// ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 	public static explicit operator long(Variant variant) =>
 		variant.Type switch
 		{
@@ -89,7 +89,6 @@ public readonly struct Variant : IEquatable<Variant>
 			VariantType.NumInt => variant._integer,
 			_ => throw new InvalidCastException()
 		};
-	// ReSharper restore SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 	public static explicit operator string(Variant variant) =>
 		variant.Type is VariantType.Str ? variant._string! : throw new InvalidCastException();

@@ -8,7 +8,6 @@ using Serilog;
 
 namespace Root.Ui.Impl.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public partial class MainViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
@@ -34,7 +33,6 @@ public partial class MainViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public partial ViewModelBase? Main { get; set; }
 
 	[ObservableProperty]

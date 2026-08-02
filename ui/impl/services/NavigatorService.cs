@@ -13,7 +13,6 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	// ReSharper disable once MemberCanBeMadeStatic.Global
 	public partial ViewModelBase? Current { get; set; }
 
 	public bool CanGoBack => _history.Count > 0;

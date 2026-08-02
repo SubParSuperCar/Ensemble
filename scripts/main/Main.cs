@@ -21,35 +21,11 @@ public partial class Main : Node
 		GSessionManager.SessionStopped -= OnSessionStopped;
 	}
 
-	// public override void _Ready() => _ = OnReady();
-
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("test_session_reset", @event))
 			GSessionManager.StartSinglePlayer();
 	}
-
-	/*private static async Task OnReady()
-	{
-		await Task.Delay((int)(TimeSpan.MillisecondsPerSecond * 1.5)).ConfigureAwait(false);
-
-		Callable.From(() =>
-		{
-			GSessionManager.StartSinglePlayer();
-
-			Log.Debug($"{nameof(GPlayers)}:");
-			foreach (var player in GPlayers.GetAll())
-				Log.Debug("{$Player}", player.ToDict());
-
-			Log.Debug($"{nameof(GAssets)}:");
-			foreach (var asset in GAssets.GetAll())
-				Log.Debug("{$Asset}", asset.ToDict());
-
-			Log.Debug($"{nameof(GPlots)}:");
-			foreach (var plot in GPlots.GetAll())
-				Log.Debug("{$Plot}", plot.ToDict());
-		}).CallDeferred();
-	}*/
 
 	private void OnSessionStarted()
 	{

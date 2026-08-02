@@ -34,7 +34,6 @@
 
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml" />
 
-        <!-- Avalonia 12.x may have better member-matching style selectors vs. 11.x. Utilize it. -->
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />

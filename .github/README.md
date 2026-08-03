@@ -79,4 +79,4 @@ Any omitted aspects of the codebase are either too niche or too commonplace to w
 
 ## License
 
-This project is licensed under the terms of the license (s) found in [LICENSE.md](/LICENSE.md).
+This project is licensed under the terms of the license(s) found in [LICENSE.md](/LICENSE.md).

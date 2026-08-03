@@ -61,7 +61,8 @@ The structure of this project is described in the high-level overview below:
   on [MrJul's original Estragonia](https://github.com/MrJul/Estragonia) project. The `gd` section contains the entry
   points required to integrate the UI into the game, while the implementation is organized into conventional MVVM
   components such as views, view models, and services for extensibility and maintainability. It also features
-  trimming-compatible compile-time assembly scanning for matching view models to their respective views.
+  trimming-compatible compile-time assembly scanning for DI (Dependency Injection) and matching view models to their
+  respective views.
 
 - **Common**: Contains shared objects and resources used throughout the codebase, such as input extensions, utilities,
   and other reusable components that are essential to the game but do not constitute standalone systems.

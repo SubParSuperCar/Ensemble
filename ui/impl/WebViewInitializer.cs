@@ -2,11 +2,11 @@ using System.Runtime.CompilerServices;
 
 namespace Root.Ui.Impl;
 
-public static class WebViewPreparer
+public static class WebViewInitializer
 {
 	[ModuleInitializer]
 	// TODO: Set experimental environment variables
-	public static void PrepareWebView()
+	public static void InitializeWebView()
 	{
 		// Ignore
 	}

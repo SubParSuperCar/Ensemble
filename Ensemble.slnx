@@ -13,6 +13,7 @@
     <File Path="TrimmerRoots.xml"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/">
+    <File Path=".github/CONTRIBUTING.md"/>
     <File Path=".github/dependabot.yml"/>
     <File Path=".github/LICENSE-ASSETS.txt"/>
     <File Path=".github/LICENSE-CODE.txt"/>

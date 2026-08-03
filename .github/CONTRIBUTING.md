@@ -1,4 +1,4 @@
-## How to Edit / Contribute
+## How to Contribute
 
 1. Download and install **Git** from https://git-scm.com/install/. On many Linux distributions, Git is already installed
    by default.

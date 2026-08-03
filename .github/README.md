@@ -34,7 +34,7 @@ never really resonated with me, and it technically translates to "Below Builders
 
 ## Structure
 
-<details>
+<details open>
   <summary>Click here to expand/collapse the section.</summary>
 
 The structure of this project is described in the high-level overview below:

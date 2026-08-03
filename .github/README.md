@@ -12,7 +12,7 @@ created, maintained, and owned by **SubParSuperCar** ([GitHub profile](https://g
 
 > [!NOTE]
 > - **Ensemble** is the direct successor to **Baja Builders** on Roblox: https://www.roblox.com/games/85484945236913
-> - Code quality may be "sub-par" (pun intended) while the codebase continues to mature.
+> - Code quality may be "sub-par" (pun intended) as the codebase continues to mature.
 
 > [!WARNING]
 > **Ensemble** is in the very early stages of development (pre-release) and should not be considered representative of
@@ -23,8 +23,8 @@ contributions while its architecture, systems, and implementation continue to ev
 
 ## Name
 
-This game was originally called **Baja Builders** when it was on Roblox from approximately 2022–2025. However, the name
-never quite resonated with me, and it technically translates to "Below Builders." I ultimately renamed it to
+This game was originally called **Baja Builders** when it was on Roblox from approximately 2022-2025. However, the name
+never really resonated with me, and it technically translates to "Below Builders." I ultimately renamed it to
 **Ensemble** for two primary reasons:
 
 1. "Ensemble" literally means a group of people, which reflects the game's multiplayer, collaborative nature.
@@ -39,23 +39,24 @@ never quite resonated with me, and it technically translates to "Below Builders.
 
 The structure of this project is described in the high-level overview below:
 
-- **Core**: As the name implies, this is the data model for the entire game. It handles data-related operations such as
-  adding, removing, and updating players, assets, asset instances (or simply "instances"), plots, and plot occupants (or
-  simply "occupants"). It is divided into three distinct sections: `api`, `impl`, and `gd`.
+- **Core**: Contains the data model for the entire game. It handles data-related operations such as adding, removing,
+  and updating players, assets, asset instances (or simply "instances"), plots, and plot occupants (or simply
+  "occupants"). It is divided into three distinct sections: `api`, `impl`, and `gd`.
     - `api` defines the contracts between the `impl` and `gd` layers.
     - `impl` contains the Godot-agnostic logic for the Core system, making it portable to any platform that supports
       .NET.
     - `gd` serves as a bridge for accessing Core from GDScript and other Godot-specific types.
 
-- **Session Manager**: As the name implies, this manages session lifetimes. It supports both single-player and
+- **Session Manager**: Contains the resources for managing session lifetimes. It supports both single-player and
   multiplayer through Godot's Multiplayer API and also contains an RPC partial for network replication. Depending on the
   context, it uses a hybrid of Host <-> Client and Client <-> Client networking. Like Core, it is divided into three
-  sections: `api`, `impl`, and `gd`.
+  sections: `api`, `impl`, and
+  `gd`.
     - `api` contains contracts and interfaces.
     - `gd` contains Godot-facing objects (entry points, etc.).
     - `impl` contains implementation details that Godot should not be aware of.
 
-- **Ui**: As the name implies, this contains the game's user interface. It relies on Avalonia UI through a fork of
+- **UI**: Contains the game's user interface. It relies on Avalonia UI through a fork of
   [youfch's forked Estragonia](https://github.com/youfch/Estragonia), which itself is based
   on [MrJul's original Estragonia](https://github.com/MrJul/Estragonia) project. The `gd` section contains the entry
   points required to integrate the UI into the game, while the implementation is organized into conventional MVVM
@@ -68,8 +69,8 @@ The structure of this project is described in the high-level overview below:
   game. Examples include the hasher, logger, camera, character controller, watchdog, and more. Core would technically
   belong here, but especially large systems have been moved to the project root for better organization.
 
-- **Lib**: Contains third-party resources, such as the Estragonia fork, and can generally be ignored by contributors. It
-  is maintained but should be viewed as an implementation detail rather than a first-class project component.
+- **Lib**: Contains third-party resources, such as the Estragonia fork, and can generally be ignored when contributing.
+  It is maintained but should be viewed as an implementation detail rather than a first-class project component.
 
 Any omitted aspects of the codebase are either too niche or too commonplace to warrant mentioning here.
 </details>

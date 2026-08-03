@@ -5,7 +5,7 @@
 1. Download and install **Git** from https://git-scm.com/install/. On many Linux distributions, Git is already installed
    by default.
 
-2. Clone this repository to a location you'll remember:
+2. Clone this repository into a directory you'll remember:
    ```bash
    git clone https://github.com/SubParSuperCar/Ensemble.git
    ```
@@ -19,9 +19,9 @@
    free for non-commercial use and is the recommended IDE for this project. **Visual Studio Code** is also supported,
    but its C# experience is generally not as comprehensive as Rider's.
 
-6. Open the project in **Godot** and, optionally, your preferred code editor (**JetBrains Rider**, **Visual Studio
-   Code**, etc.), then begin developing. If you use **JetBrains Rider**, it is recommended to add the Godot executable
-   to your system's `PATH` environment variable under one of the following names: `godot`, `godot4`, or `godot-mono`.
-   This allows the **PATH Launcher** Run Configuration to automatically locate your Godot installation without requiring
-   you to configure its path manually. You can also place the Godot executable in `<Project Root>/bin/` using one of the
-   previously stated names.
+6. Open the project in Godot and, optionally, your preferred code editor (JetBrains Rider, Visual Studio Code, etc.),
+   then begin developing. If you use JetBrains Rider, it is recommended that you add the Godot executable to your
+   system's PATH environment variable using one of the following names: godot, godot4, or godot-mono. This allows the
+   PATH Launcher Run Configuration to automatically locate your Godot installation without requiring manual
+   configuration. Alternatively, you can place the executable in <Project Root>/bin/ using one of the previously listed
+   names.

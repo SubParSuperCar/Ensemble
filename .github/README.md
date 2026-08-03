@@ -21,7 +21,7 @@ contributions while its architecture, systems, and implementation continue to ev
 
 ---
 
-## Name
+## Name Rationale
 
 This game was originally called **Baja Builders** when it was on Roblox from approximately 2022-2025. However, the name
 never really resonated with me, and it technically translates to "Below Builders." I ultimately renamed it to
@@ -60,7 +60,8 @@ The structure of this project is described in the high-level overview below:
   [youfch's forked Estragonia](https://github.com/youfch/Estragonia), which itself is based
   on [MrJul's original Estragonia](https://github.com/MrJul/Estragonia) project. The `gd` section contains the entry
   points required to integrate the UI into the game, while the implementation is organized into conventional MVVM
-  components such as views and view models for extensibility and maintainability.
+  components such as views, view models, and services for extensibility and maintainability. It also features
+  trimming-compatible compile-time assembly scanning for matching view models to their respective views.
 
 - **Common**: Contains shared objects and resources used throughout the codebase, such as input extensions, utilities,
   and other reusable components that are essential to the game but do not constitute standalone systems.

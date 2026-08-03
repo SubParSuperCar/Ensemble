@@ -17,7 +17,7 @@
     <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
     <SelfContained>true</SelfContained>
     <PublishAot>true</PublishAot>

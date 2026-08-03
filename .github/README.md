@@ -1,5 +1,4 @@
 # Ensemble
-
 [![Create Release with Deterministic Source Archive and Its Digest](https://github.com/SubParSuperCar/Ensemble/actions/workflows/zip.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/zip.yml)
 [![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
 
@@ -16,11 +15,10 @@ created, maintained, and owned by **SubParSuperCar** ([GitHub profile](https://g
 
 > [!WARNING]
 > **Ensemble** is in the very early stages of development (pre-release) and should not be considered representative of
-future 1.x or later releases. The project has been open-sourced early to encourage feedback, discussion, and
-contributions while its architecture, systems, and implementation continue to evolve.
+> future 1.x or later releases. The project has been open-sourced early to encourage feedback, discussion, and
+> contributions while its architecture, systems, and implementation continue to evolve.
 
 ---
 
 ## License
-
 This project is licensed under the terms of the license(s) found in [LICENSE.md](/LICENSE.md).

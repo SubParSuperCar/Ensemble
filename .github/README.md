@@ -49,7 +49,7 @@ The structure of this project is described in the high-level overview below:
 
 - **Session Manager**: As the name implies, this manages session lifetimes. It supports both single-player and
   multiplayer through Godot's Multiplayer API and also contains an RPC partial for network replication. Depending on the
-  context, it uses a hybrid of Host ↔ Client and Client ↔ Client networking. Like Core, it is divided into three
+  context, it uses a hybrid of Host <-> Client and Client <-> Client networking. Like Core, it is divided into three
   sections: `api`, `impl`, and `gd`.
     - `api` contains contracts and interfaces.
     - `gd` contains Godot-facing objects (entry points, etc.).

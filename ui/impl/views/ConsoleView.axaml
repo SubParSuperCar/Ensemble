@@ -11,12 +11,12 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Border
-        BorderBrush="YellowGreen"
+        BorderBrush="GreenYellow"
         BorderThickness="2">
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.25*" MinWidth="384" />
+                <ColumnDefinition Width="1.0625*" MinWidth="384" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" MinWidth="256" />
             </Grid.ColumnDefinitions>

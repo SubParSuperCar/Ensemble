@@ -20,8 +20,9 @@ public partial class ConsoleViewModel : ViewModelBase
 	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
 
 	public static TextDocument Source { get; } =
-		new("--[[\nLua 5.2\n(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
-			"print(\"Hello, World!\")\n\nhelp()\n");
+		new("--[[\nLua 5.2\nReference Manual: https://www.lua.org/manual/5.2/\n" +
+			"(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
+			"print(\"Hello, World!\")\nhelp()\n");
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
 

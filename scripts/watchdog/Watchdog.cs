@@ -70,7 +70,7 @@ public partial class Watchdog : Node
 				{
 					var elapsedMs = missCount * PollIntervalMs;
 					var message = string.Create(CultureInfo.InvariantCulture,
-						$"Watchdog timeout: Main thread missed {missCount} heartbeats in ~{elapsedMs} msec");
+						$"Watchdog timeout: Main thread missed {missCount} heartbeat(s) in ~{elapsedMs} msec");
 
 					try
 					{

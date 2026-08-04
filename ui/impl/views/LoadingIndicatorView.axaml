@@ -9,10 +9,18 @@
     x:Class="Root.Ui.Impl.Views.LoadingIndicatorView"
     x:DataType="vm:LoadingIndicatorViewModel">
 
-    <li:LoadingIndicator
-        Mode="ThreeDots"
-        Foreground="OrangeRed"
-        MaxWidth="256" MaxHeight="256"
-        SpeedRatio="2" />
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <li:LoadingIndicator
+            Mode="ThreeDots"
+            Foreground="OrangeRed"
+            MaxWidth="256" MaxHeight="256"
+            SpeedRatio="2" />
+
+        <TextBlock
+            Text="Loading&#x2026;"
+            HorizontalAlignment="Center"
+            FontSize="20" FontWeight="Bold"
+            FontStyle="Italic" />
+    </StackPanel>
 
 </UserControl>

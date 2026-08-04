@@ -49,7 +49,7 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 	private void Control_GotFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Acquire(this);
 	private void Control_LostFocus(object? sender, FocusChangedEventArgs e) => InputExtensions.Sink.Release(this);
 
-	private void OnNavigationStateChanged(object? sender, object e)
+	private void OnNavigationStateChanged()
 	{
 		if (!UrlBox.IsFocused)
 			_urlBoxBinding?.UpdateTarget();
@@ -58,19 +58,8 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 		GoForwardCommand.NotifyCanExecuteChanged();
 	}
 
-	protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-	{
-		base.OnAttachedToVisualTree(e);
-
-		WebView.NavigationStarted += OnNavigationStateChanged;
-		WebView.NavigationCompleted += OnNavigationStateChanged;
-	}
-
 	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
 	{
-		WebView.NavigationStarted -= OnNavigationStateChanged;
-		WebView.NavigationCompleted -= OnNavigationStateChanged;
-
 		if (InputExtensions.Sink.IsHeldBy(this))
 			InputExtensions.Sink.Release(this);
 
@@ -79,12 +68,16 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 
 	private void WebView_OnNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
 	{
+		OnNavigationStateChanged();
+
 		_isNavigating = true;
 		LoadingIndicator.SpeedRatio = 2;
 	}
 
 	private void WebView_OnNavigationCompleted(object? sender, WebViewNavigationCompletedEventArgs e)
 	{
+		OnNavigationStateChanged();
+
 		_isNavigating = false;
 
 		LoadingIndicator.IsActive = false;

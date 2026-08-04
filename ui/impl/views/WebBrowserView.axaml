@@ -12,9 +12,17 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Grid>
+        <TextBlock
+            Text="The Web View is not rendering.&#x0a;Do you have WebView2 or WPE WebKit?"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            FontSize="32" FontWeight="Bold"
+            TextAlignment="Center" />
+
         <NativeWebView
             Name="WebView"
-            Source="https://github.com/SubParSuperCar/Ensemble"
+            Source="https://www.bing.com/"
+            GotFocus="Control_GotFocus"
+            LostFocus="Control_LostFocus"
             NavigationStarted="WebView_OnNavigationStarted"
             NavigationCompleted="WebView_OnNavigationCompleted" />
 
@@ -40,8 +48,8 @@
             <TextBox
                 Name="UrlBox"
                 Text="{Binding #WebView.Source, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
-                PlaceholderText="Type URL here &amp; press Enter to navigate"
-                ToolTip.Tip="The current URL. Type and press Enter to navigate."
+                PlaceholderText="Type URI here &amp; press Enter to navigate"
+                ToolTip.Tip="The current URI. Type and press Enter to navigate.&#x0a;Use the 'file://' scheme to browse files."
                 MinWidth="256" MaxWidth="512"
                 KeyDown="UrlBox_OnKeyDown"
                 GotFocus="Control_GotFocus"
@@ -55,9 +63,7 @@
             Background="{DynamicResource TranslucentBackgroundBrush}"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"
             Margin="4"
-            FontSize="24"
-            GotFocus="Control_GotFocus"
-            LostFocus="Control_LostFocus" />
+            FontSize="24" />
     </Grid>
 
 </UserControl>

@@ -24,7 +24,7 @@
             HorizontalAlignment="Center" VerticalAlignment="Center">
 
             <Border
-                BorderBrush="LimeGreen"
+                BorderBrush="DodgerBlue"
                 BorderThickness="1">
 
                 <Button

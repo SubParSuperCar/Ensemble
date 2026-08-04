@@ -11,6 +11,7 @@
 
     <li:LoadingIndicator
         Mode="ThreeDots"
-        MaxWidth="256" MaxHeight="256" />
+        MaxWidth="256" MaxHeight="256"
+        SpeedRatio="2" />
 
 </UserControl>

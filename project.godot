@@ -28,6 +28,7 @@ Core="*uid://chxcanm6o3piw"
 SessionManager="*uid://cjg5254v7pqql"
 SysInfoLogger="uid://b1jtggnbn6gd2"
 ExeHasher="uid://defjcppyvsxus"
+DiscordRpc="uid://dgqr266h0mo27"
 
 [debug]
 

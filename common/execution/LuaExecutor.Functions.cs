@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Godot;
 using Lua;
+using Root.Common.Network;
 using Serilog;
 using Environment = System.Environment;
 
@@ -10,6 +11,8 @@ namespace Root.Common.Execution;
 
 public partial class LuaExecutor
 {
+	private const string PublicIp4AddressSourceUrl = "https://api.ipify.org";
+
 	// TODO: Auto-scan functions
 	private static void AddFunctions(LuaTable env)
 	{
@@ -18,6 +21,7 @@ public partial class LuaExecutor
 		env[nameof(help)] = new LuaFunction(help);
 		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
 		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
+		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 	}
 
 	private static ValueTask<int> print(
@@ -133,5 +137,27 @@ public partial class LuaExecutor
 
 		context.Return();
 		return default;
+	}
+
+	private static async ValueTask<int> get_pub_ip4_addr(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		try
+		{
+			var address = (await Http.Client.GetStringAsync(
+				PublicIp4AddressSourceUrl,
+				cancellationToken).ConfigureAwait(false)).Trim();
+
+			Log.Information("Public IPv4 address: {Address}", address);
+			context.Return(address);
+		}
+		catch (HttpRequestException exception)
+		{
+			Log.Error(exception, "Failed to get public IPv4 address.");
+			context.Return();
+		}
+
+		return 0;
 	}
 }

@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.WebBrowserView"
     x:DataType="vm:WebBrowserViewModel"
@@ -13,7 +14,9 @@
     <Grid>
         <NativeWebView
             Name="WebView"
-            Source="https://github.com/SubParSuperCar/Ensemble" />
+            Source="https://github.com/SubParSuperCar/Ensemble"
+            NavigationStarted="WebView_OnNavigationStarted"
+            NavigationCompleted="WebView_OnNavigationCompleted" />
 
         <StackPanel
             Orientation="Horizontal" Spacing="2"
@@ -22,6 +25,17 @@
 
             <Button Content="&lt;-" Command="{Binding #Root.GoBackCommand}" ToolTip.Tip="Go back (Undo)" />
             <Button Content="-&gt;" Command="{Binding #Root.GoForwardCommand}" ToolTip.Tip="Go forward (Redo)" />
+
+            <Button
+                Command="{Binding #Root.RefreshOrStopCommand}"
+                ToolTip.Tip="Refresh/cancel"
+                Width="32" Height="32">
+
+                <li:LoadingIndicator
+                    Name="LoadingIndicator"
+                    Mode="FlipPlane"
+                    Foreground="LimeGreen" />
+            </Button>
 
             <TextBox
                 Name="UrlBox"

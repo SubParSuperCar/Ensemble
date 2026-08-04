@@ -6,12 +6,14 @@ using CommunityToolkit.Mvvm.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
 using InputExtensions = Root.Common.Input.InputExtensions;
+using Key = Avalonia.Input.Key;
 
 namespace Root.Ui.Impl.Views;
 
 public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 {
 	private readonly BindingExpressionBase? _urlBoxBinding;
+	private bool _isNavigating;
 
 	public WebBrowserView()
 	{
@@ -28,6 +30,15 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 
 	private bool CanGoBack() => WebView.CanGoBack;
 	private bool CanGoForward() => WebView.CanGoForward;
+
+	[RelayCommand]
+	private void RefreshOrStop()
+	{
+		if (_isNavigating)
+			WebView.Stop();
+		else
+			WebView.Refresh();
+	}
 
 	private void UrlBox_OnKeyDown(object? sender, KeyEventArgs e)
 	{
@@ -64,5 +75,20 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 			InputExtensions.Sink.Release(this);
 
 		base.OnDetachedFromVisualTree(e);
+	}
+
+	private void WebView_OnNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
+	{
+		_isNavigating = true;
+		LoadingIndicator.SpeedRatio = 2;
+	}
+
+	private void WebView_OnNavigationCompleted(object? sender, WebViewNavigationCompletedEventArgs e)
+	{
+		_isNavigating = false;
+
+		LoadingIndicator.IsActive = false;
+		LoadingIndicator.SpeedRatio = 0;
+		LoadingIndicator.IsActive = true;
 	}
 }

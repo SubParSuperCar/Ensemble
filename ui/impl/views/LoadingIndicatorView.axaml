@@ -19,7 +19,7 @@
         <TextBlock
             Text="Loading&#x2026;"
             HorizontalAlignment="Center"
-            FontSize="20" FontWeight="Bold"
+            FontSize="20" FontWeight="Medium"
             FontStyle="Italic" />
     </StackPanel>
 

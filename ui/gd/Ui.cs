@@ -28,7 +28,7 @@ public partial class Ui : AvaloniaControl
 		var viewModel = services.GetRequiredService<MainViewModel>();
 		Control = locator.Build(viewModel);
 
-		Log.Debug("Initialized {Class}", nameof(Ui));
+		Log.Debug("Initialized {Class} (Avalonia User Interface)", nameof(Ui));
 
 		base._Ready();
 	}

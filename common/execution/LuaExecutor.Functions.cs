@@ -145,7 +145,7 @@ public partial class LuaExecutor
 	{
 		try
 		{
-			Log.Information("Querying {Url}...", PublicIp4AddressSourceUrl);
+			Log.Debug("Querying {Url}...", PublicIp4AddressSourceUrl);
 
 			var address = (await Http.Client.GetStringAsync(
 				PublicIp4AddressSourceUrl,

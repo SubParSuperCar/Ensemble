@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 using Root.Common.Globals;
 using Root.SessionManager.Api;
@@ -32,7 +33,7 @@ public partial class SessionManager : Node
 		{
 			field = value;
 
-			Log.Debug("Set {Class}.{Member}. Hash code: {Hash}",
+			Log.Debug("{Class}.{Member} set (hash: {Hash})",
 				nameof(SessionManager),
 				nameof(Instance),
 				value?.GetHashCode());
@@ -69,6 +70,8 @@ public partial class SessionManager : Node
 
 	public void StartSinglePlayer()
 	{
+		Log.Debug("Starting single-player session...");
+
 		StopSession();
 
 		_session = new SinglePlayerSession((SceneMultiplayer)Multiplayer);
@@ -80,6 +83,10 @@ public partial class SessionManager : Node
 
 	public void HostMultiPlayer(int port, string password, int maxPlayers)
 	{
+		Log.Debug("Hosting multiplayer session on port {Port} (max players: {MaxPlayers})",
+			port,
+			maxPlayers is Unlimited ? "unlimited" : maxPlayers.ToString(CultureInfo.InvariantCulture));
+
 		StopSession();
 
 		_session = new MultiPlayerSession(
@@ -96,6 +103,8 @@ public partial class SessionManager : Node
 
 	public void JoinMultiPlayer(string address, int port, string password)
 	{
+		Log.Debug("Joining multiplayer session at {Address}:{Port}", address, port);
+
 		StopSession();
 
 		_session = new MultiPlayerSession(
@@ -137,6 +146,8 @@ public partial class SessionManager : Node
 		if (peerId == LocalPeerId)
 			GPlayers.SetLocal(playerId);
 
+		Log.Debug("Peer connected: {PeerId} (player {PlayerId})", peerId, playerId);
+
 		EmitSignal(SignalName.PeerConnected, (int)peerId);
 	}
 
@@ -144,6 +155,8 @@ public partial class SessionManager : Node
 	{
 		if (PlayerIdsByPeerId.TryGetValue((int)peerId, out var playerId))
 			GPlayers.Remove(playerId);
+
+		Log.Debug("Peer disconnected: {PeerId}", peerId);
 
 		EmitSignal(SignalName.PeerDisconnected, (int)peerId);
 	}
@@ -167,7 +180,11 @@ public partial class SessionManager : Node
 		EmitSignal(SignalName.SessionStopped);
 	}
 
-	private void OnSessionFailed(string reason) => EmitSignal(SignalName.SessionFailed, reason);
+	private void OnSessionFailed(string reason)
+	{
+		Log.Warning("Session failed: {Reason}", reason);
+		EmitSignal(SignalName.SessionFailed, reason);
+	}
 
 	private static string LoadOrGeneratePlayerId()
 	{

@@ -159,7 +159,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "");
+			Log.Error(exception, "Unhandled exception in RPC action");
 		}
 	}
 
@@ -177,7 +177,10 @@ public partial class SessionManager
 			: await limiter.AcquireAsync(tokens).ConfigureAwait(false);
 
 		if (lease is { IsAcquired: false })
+		{
+			Log.Debug("Rate limit exceeded for peer {SenderId}; dropping RPC action", senderId);
 			return;
+		}
 
 		_rpcQueue.Enqueue(action);
 	}

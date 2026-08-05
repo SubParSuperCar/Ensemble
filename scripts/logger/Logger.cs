@@ -65,12 +65,12 @@ public partial class Logger : Node
 		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 		TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
-		Log.Debug("Created logger. Logging to {Variable}: {Directory}", nameof(logDir), logDir);
+		Log.Debug("Logger initialized; writing logs to {LogDir}", logDir);
 	}
 
 	public override void _ExitTree()
 	{
-		Log.Debug("Closing & flushing logger...");
+		Log.Debug("Closing and flushing logger...");
 
 		AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
 		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
@@ -81,13 +81,17 @@ public partial class Logger : Node
 
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
-		Log.Fatal("Unhandled exception:\n{Exception}", e.ExceptionObject as Exception);
+		if (e.ExceptionObject is Exception exception)
+			Log.Fatal(exception, "Unhandled exception");
+		else
+			Log.Fatal("Unhandled exception: {ExceptionObject}", e.ExceptionObject);
+
 		Log.CloseAndFlush();
 	}
 
 	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
 	{
-		Log.Error<Exception>("Unobserved task exception:\n{Exception}", e.Exception);
+		Log.Error(e.Exception, "Unobserved task exception");
 		e.SetObserved();
 	}
 }

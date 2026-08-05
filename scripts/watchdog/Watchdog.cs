@@ -99,7 +99,15 @@ public partial class Watchdog : Node
 		}
 		catch (Exception exception) when (exception is not OperationCanceledException)
 		{
-			Environment.FailFast(exception.ToString(), exception);
+			try
+			{
+				Log.Fatal(exception, "Unhandled exception in watchdog poll loop");
+				Log.CloseAndFlush();
+			}
+			finally
+			{
+				Environment.FailFast(exception.ToString(), exception);
+			}
 		}
 	}
 }

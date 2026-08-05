@@ -26,13 +26,13 @@ public partial class Main : Node
 		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event))
 			return;
 
-		Log.Information("Resetting session...");
+		Log.Information("Restarting session as single-player (test action)...");
 		GSessionManager.StartSinglePlayer();
 	}
 
 	private void OnSessionStarted()
 	{
-		Log.Information("Session started with mode: {Mode}", GSessionManager.Mode);
+		Log.Information("Session started (mode: {Mode})", GSessionManager.Mode);
 
 		if (_gameScene is not null)
 			return;

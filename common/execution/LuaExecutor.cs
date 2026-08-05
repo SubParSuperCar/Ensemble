@@ -9,7 +9,7 @@ public static partial class LuaExecutor
 	public static async Task<LuaValue[]> Execute(string source)
 	{
 		source = source.Trim();
-		Log.Information(">\n{Source}\n", source);
+		Log.Information(">\n{Source}", source);
 
 		var state = LuaState.Create();
 		state.OpenStandardLibraries();

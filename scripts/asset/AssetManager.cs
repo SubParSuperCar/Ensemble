@@ -26,18 +26,16 @@ public partial class AssetManager : Node
 
 		if (GAssets.IsLocked)
 		{
-			Log.Warning("{Class}.{Member} is true", nameof(GAssets), nameof(GAssets.IsLocked));
+			Log.Warning("{Class} is already locked; skipping asset scan", nameof(GAssets));
 			return;
 		}
 
-		Log.Debug("Scanning & registering {Member}: {Directory}",
-			nameof(CommonConstants.BuildAssetsDir),
-			CommonConstants.BuildAssetsDir);
+		Log.Debug("Scanning and registering assets from {Directory}", CommonConstants.BuildAssetsDir);
 
 		ScanDirectory(CommonConstants.BuildAssetsDir);
 		GAssets.Lock();
 
-		Log.Debug("Finished scanning & registering");
+		Log.Debug("Finished scanning and registering assets");
 	}
 
 	public override void _ExitTree()
@@ -91,7 +89,10 @@ public partial class AssetManager : Node
 		instance.Free();
 
 		if (!Scenes.TryAdd(id, scene))
+		{
+			Log.Warning("Duplicate asset id {AssetId} at {Path}; skipping registration", id, path);
 			return;
+		}
 
 		var converted = new Dictionary();
 

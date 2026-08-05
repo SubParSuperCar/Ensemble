@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Root.Core.Gd.Player;
 using Root.Ui.Impl.Abstractions;

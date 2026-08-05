@@ -11,7 +11,7 @@ public partial class DiscordRichPresence : Node
 
 	public override void _EnterTree()
 	{
-		Log.Debug("Discord {Member}: {AppId}", nameof(AppId), AppId);
+		Log.Debug("Initializing {Class} (App ID: {AppId})", nameof(DiscordRichPresence), AppId);
 		_client = new DiscordRpcClient(AppId);
 
 		_client.SetPresence(new RichPresence
@@ -20,12 +20,12 @@ public partial class DiscordRichPresence : Node
 		});
 
 		_client.Initialize();
-		Log.Debug("Initialized {Class}", nameof(DiscordRpcClient));
+		Log.Debug("Initialized {Class}", nameof(DiscordRichPresence));
 	}
 
 	public override void _ExitTree()
 	{
 		_client.Dispose();
-		Log.Debug("Terminated {Class}", nameof(DiscordRpcClient));
+		Log.Debug("Terminated {Class}", nameof(DiscordRichPresence));
 	}
 }

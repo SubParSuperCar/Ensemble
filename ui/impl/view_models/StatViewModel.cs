@@ -20,7 +20,7 @@ public partial class StatViewModel : ViewModelBase
 	private readonly DispatcherService _dispatcher;
 	private readonly Queue<double> _frameTimes = [];
 
-	private double _refreshAccumulator;
+	private double _sinceLastRefresh;
 
 	public StatViewModel(DispatcherService dispatcher)
 	{
@@ -40,12 +40,12 @@ public partial class StatViewModel : ViewModelBase
 		while (_frameTimes.Count > 0 && now - _frameTimes.Peek() > SampleWindow)
 			_frameTimes.Dequeue();
 
-		_refreshAccumulator += delta;
-		if (_refreshAccumulator < RefreshInterval) return;
-		_refreshAccumulator -= RefreshInterval;
+		_sinceLastRefresh += delta;
+		if (_sinceLastRefresh < RefreshInterval) return;
+		_sinceLastRefresh -= RefreshInterval;
 
-		var span = _frameTimes.Count > 1 ? now - _frameTimes.Peek() : 0;
-		var fps = span > 0 ? (_frameTimes.Count - 1) / span : 0;
+		var sampleDuration = _frameTimes.Count > 1 ? now - _frameTimes.Peek() : 0;
+		var fps = sampleDuration > 0 ? (_frameTimes.Count - 1) / sampleDuration : 0;
 		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 
 #if DEBUG

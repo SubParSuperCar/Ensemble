@@ -19,10 +19,10 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 	public void GoTo() => Current = null;
 
-	public void GoTo<T>(bool excludeFromHistory = false) where T : ViewModelBase
+	public void GoTo<TViewModel>(bool excludeFromHistory = false) where TViewModel : ViewModelBase
 	{
 		var type = Current?.GetType();
-		if (type == typeof(T))
+		if (type == typeof(TViewModel))
 			return;
 
 		if (type is not null && !_excludeFromHistory)
@@ -30,7 +30,7 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 		_excludeFromHistory = excludeFromHistory;
 
-		Current = services.GetRequiredService<T>();
+		Current = services.GetRequiredService<TViewModel>();
 		OnPropertyChanged(nameof(CanGoBack));
 	}
 

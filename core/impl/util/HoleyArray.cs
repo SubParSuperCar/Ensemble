@@ -4,20 +4,20 @@ using System.Runtime.InteropServices;
 
 namespace Root.Core.Impl.Util;
 
-internal sealed class HoleyArray<T> where T : class
+internal sealed class HoleyArray<TValue> where TValue : class
 {
-	private readonly List<T?> _items = [];
+	private readonly List<TValue?> _items = [];
 	private int _nextFreeIndex;
 
 	// ReSharper disable once MemberCanBePrivate.Global
 	public int Count { get; private set; }
 
-	public event Action<int, T>? Added;
-	public event Action<int, T>? Removed;
+	public event Action<int, TValue>? Added;
+	public event Action<int, TValue>? Removed;
 
-	public IEnumerable<T> GetAll() => _items.OfType<T>();
+	public IEnumerable<TValue> GetAll() => _items.OfType<TValue>();
 
-	public bool TryGet(int index, [NotNullWhen(true)] out T? item)
+	public bool TryGet(int index, [NotNullWhen(true)] out TValue? item)
 	{
 		var items = CollectionsMarshal.AsSpan(_items);
 
@@ -31,7 +31,7 @@ internal sealed class HoleyArray<T> where T : class
 		return false;
 	}
 
-	public void Add(T item)
+	public void Add(TValue item)
 	{
 		var index = _nextFreeIndex;
 		Place(item, index);
@@ -40,7 +40,7 @@ internal sealed class HoleyArray<T> where T : class
 		Added?.Invoke(index, item);
 	}
 
-	public void AddAt(T item, int index)
+	public void AddAt(TValue item, int index)
 	{
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
 
@@ -71,7 +71,7 @@ internal sealed class HoleyArray<T> where T : class
 		Removed?.Invoke(index, item);
 	}
 
-	private void Place(T item, int index)
+	private void Place(TValue item, int index)
 	{
 		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, ushort.MaxValue);
 

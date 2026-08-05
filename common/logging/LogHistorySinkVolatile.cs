@@ -30,5 +30,11 @@ public sealed class LogHistorySinkVolatile : ILogEventSink
 		Updated?.Invoke();
 	}
 
+	public static void Clear()
+	{
+		HistoryQueue.Clear();
+		Updated?.Invoke();
+	}
+
 	public static event Action? Updated;
 }

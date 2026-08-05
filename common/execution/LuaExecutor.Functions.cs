@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Godot;
 using Lua;
+using Root.Common.Logging;
 using Root.Common.Network;
 using Serilog;
 using Environment = System.Environment;
@@ -22,6 +23,7 @@ public partial class LuaExecutor
 		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
 		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
+		env[nameof(wipe_log)] = new LuaFunction(wipe_log);
 	}
 
 	private static ValueTask<int> print(
@@ -161,5 +163,15 @@ public partial class LuaExecutor
 		}
 
 		return 0;
+	}
+
+	private static ValueTask<int> wipe_log(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		LogHistorySinkVolatile.Clear();
+
+		context.Return();
+		return default;
 	}
 }

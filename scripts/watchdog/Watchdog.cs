@@ -35,23 +35,32 @@ public partial class Watchdog : Node
 		};
 
 		_pollThread.Start();
+
+		Log.Debug("Initialized {Class}", nameof(Watchdog));
 	}
 
 	public override void _ExitTree()
 	{
+		Log.Debug("Terminating {Class}...", nameof(Watchdog));
+
 		_cts.Cancel();
 		_pollThread.Join(PollIntervalMs);
 
 		if (ReferenceEquals(Instance, this))
 			Instance = null;
+
+		Log.Debug("Terminated {Class}", nameof(Watchdog));
 	}
 
 	public override void _Process(double delta) => Heartbeat();
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressedByEvent("test_hang", @event))
-			Thread.Sleep(int.MaxValue);
+		if (!Input.IsActionJustPressedByEvent("test_hang", @event))
+			return;
+
+		Log.Warning("Hanging process...");
+		Thread.Sleep(int.MaxValue);
 	}
 
 	public static void Heartbeat() => Volatile.Write(ref _heartbeat, 1);

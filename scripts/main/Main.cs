@@ -23,8 +23,11 @@ public partial class Main : Node
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressedByEvent("test_session_reset", @event))
-			GSessionManager.StartSinglePlayer();
+		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event))
+			return;
+
+		Log.Information("Resetting session...");
+		GSessionManager.StartSinglePlayer();
 	}
 
 	private void OnSessionStarted()

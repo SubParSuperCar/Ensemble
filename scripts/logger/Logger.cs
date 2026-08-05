@@ -47,7 +47,7 @@ public partial class Logger : Node
 					"{ {@t: @t, @l: @l, @m: @m, @x: @x, ..@p} }\n",
 					CultureInfo.InvariantCulture
 				),
-				Path.Combine(logDir, "serilog-.json"),
+				Path.Combine(logDir, "log-.json"),
 				shared: true,
 				flushToDiskInterval: TimeSpan.FromSeconds(2),
 				rollingInterval: RollingInterval.Day,
@@ -65,7 +65,7 @@ public partial class Logger : Node
 		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 		TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
-		Log.Debug("Created logger. Logging to directory: {Directory}", logDir);
+		Log.Debug("Created logger. Logging to {Variable}: {Directory}", nameof(logDir), logDir);
 	}
 
 	public override void _ExitTree()

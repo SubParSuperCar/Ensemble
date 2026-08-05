@@ -1,5 +1,6 @@
 using DiscordRPC;
 using Godot;
+using Serilog;
 
 namespace Root.Scripts.DiscordRpc;
 
@@ -10,6 +11,7 @@ public partial class DiscordRichPresence : Node
 
 	public override void _EnterTree()
 	{
+		Log.Debug("Discord {Member}: {AppId}", nameof(AppId), AppId);
 		_client = new DiscordRpcClient(AppId);
 
 		_client.SetPresence(new RichPresence
@@ -18,7 +20,12 @@ public partial class DiscordRichPresence : Node
 		});
 
 		_client.Initialize();
+		Log.Debug("Initialized {Class}", nameof(DiscordRpcClient));
 	}
 
-	public override void _ExitTree() => _client.Dispose();
+	public override void _ExitTree()
+	{
+		_client.Dispose();
+		Log.Debug("Terminated {Class}", nameof(DiscordRpcClient));
+	}
 }

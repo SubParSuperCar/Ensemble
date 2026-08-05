@@ -40,10 +40,10 @@ public class MenuViewModel : ViewModelBase
 		if (!@event.IsActionPressed("ui_back") || !Navigator.CanGoBack)
 			return;
 
-		Log.Debug("Going back from {ViewModel}...", Navigator.Current?.GetType().Name);
+		Log.Debug("Navigating back from {ViewModel}...", Navigator.Current?.GetType().Name);
 		Navigator.GoBack();
 
-		Log.Debug("Went back to {ViewModel}", Navigator.Current?.GetType().Name);
+		Log.Debug("Navigated back to {ViewModel}", Navigator.Current?.GetType().Name);
 	}
 
 	private async Task GoToHomeAfterDelay()

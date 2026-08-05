@@ -23,7 +23,7 @@ public partial class InfoLogger : Node
 		Add(lines, "Culture", CultureInfo.CurrentCulture.DisplayName);
 		Add(lines, "Time Zone", TimeZoneInfo.Local.DisplayName);
 
-		Log.Information("{SystemInfo}", Environment.NewLine + BuildReport(lines));
+		Log.Information("{SysInfo}", Environment.NewLine + BuildReport(lines));
 
 		QueueFree();
 	}

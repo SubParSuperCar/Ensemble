@@ -4,6 +4,7 @@ using Godot;
 using Godot.Collections;
 using Root.Common.Globals;
 using Root.Core.Gd.Asset;
+using Serilog;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -24,10 +25,19 @@ public partial class AssetManager : Node
 		GAssetManager = this;
 
 		if (GAssets.IsLocked)
+		{
+			Log.Warning("{Class}.{Member} is true", nameof(GAssets), nameof(GAssets.IsLocked));
 			return;
+		}
+
+		Log.Debug("Scanning & registering {Member}: {Directory}",
+			nameof(CommonConstants.BuildAssetsDir),
+			CommonConstants.BuildAssetsDir);
 
 		ScanDirectory(CommonConstants.BuildAssetsDir);
 		GAssets.Lock();
+
+		Log.Debug("Finished scanning & registering");
 	}
 
 	public override void _ExitTree()

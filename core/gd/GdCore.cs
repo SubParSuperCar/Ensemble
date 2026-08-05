@@ -18,7 +18,7 @@ public partial class GdCore : Node
 		{
 			field = value;
 
-			Log.Debug("{Class}.{Property} set. Hash code: {Hash}",
+			Log.Debug("Set {Class}.{Member}. Hash code: {Hash}",
 				nameof(GdCore),
 				nameof(Instance),
 				value?.GetHashCode());
@@ -52,8 +52,8 @@ public partial class GdCore : Node
 #if DEBUG
 		stopwatch.Stop();
 
-		Log.Information(
-			"{Class} init time: {Elapsed} ({ElapsedMs:F3} msec)",
+		Log.Debug(
+			"{Class} init. time: {Elapsed} ({ElapsedMs:F3} msec)",
 			nameof(Impl.Core),
 			stopwatch.Elapsed,
 			stopwatch.Elapsed.TotalMilliseconds);

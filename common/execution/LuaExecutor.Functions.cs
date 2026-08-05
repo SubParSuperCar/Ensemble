@@ -64,7 +64,7 @@ public partial class LuaExecutor
 			.Select(entry => entry.Key.Read<string>())
 			.Order(StringComparer.Ordinal);
 
-		Log.Information("Functions:\n{Functions}", string.Join(Environment.NewLine, functions));
+		Log.Information("Custom functions in _ENV:\n{Functions}", string.Join(Environment.NewLine, functions));
 
 		context.Return();
 		return default;
@@ -145,6 +145,8 @@ public partial class LuaExecutor
 	{
 		try
 		{
+			Log.Information("Querying {Url}...", PublicIp4AddressSourceUrl);
+
 			var address = (await Http.Client.GetStringAsync(
 				PublicIp4AddressSourceUrl,
 				cancellationToken).ConfigureAwait(false)).Trim();
@@ -154,7 +156,7 @@ public partial class LuaExecutor
 		}
 		catch (HttpRequestException exception)
 		{
-			Log.Error(exception, "Failed to get public IPv4 address.");
+			Log.Error(exception, "Failed to get public IPv4 address");
 			context.Return();
 		}
 

@@ -7,6 +7,7 @@ using Root.Ui.Impl.Extensions;
 using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 using Root.Ui.Impl.ViewModels;
+using Serilog;
 
 namespace Root.Ui.Gd;
 
@@ -26,6 +27,8 @@ public partial class Ui : AvaloniaControl
 
 		var viewModel = services.GetRequiredService<MainViewModel>();
 		Control = locator.Build(viewModel);
+
+		Log.Debug("Initialized {Class}", nameof(Ui));
 
 		base._Ready();
 	}

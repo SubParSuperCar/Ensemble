@@ -32,7 +32,7 @@ public partial class SessionManager : Node
 		{
 			field = value;
 
-			Log.Debug("{Class}.{Property} set. Hash code: {Hash}",
+			Log.Debug("Set {Class}.{Member}. Hash code: {Hash}",
 				nameof(SessionManager),
 				nameof(Instance),
 				value?.GetHashCode());

@@ -15,7 +15,7 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class StatViewModel : ViewModelBase
 {
 	private const double RefreshInterval = 1 / 3d;
-	private const double SampleWindow = 0.5;
+	private const double SampleWindow = 3 / 4d;
 
 	private readonly DispatcherService _dispatcher;
 	private readonly Queue<double> _frameTimes = [];

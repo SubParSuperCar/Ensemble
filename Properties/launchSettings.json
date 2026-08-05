@@ -5,13 +5,13 @@
       "commandName": "Executable",
       "executablePath": "Properties/launch.$(LaunchScriptExt)",
       "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "--verbose --path \"$(ProjectDir)\""
+      "commandLineArgs": "--verbose --path \"$(ProjectDir)"
     },
     "Editor (PATH Launcher)": {
       "commandName": "Executable",
       "executablePath": "Properties/launch.$(LaunchScriptExt)",
       "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "--editor --path \"$(ProjectDir)\""
+      "commandLineArgs": "--editor --path \"$(ProjectDir)"
     }
   }
 }

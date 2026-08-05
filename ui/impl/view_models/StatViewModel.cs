@@ -14,8 +14,13 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class StatViewModel : ViewModelBase
 {
+	private const double RefreshInterval = 1 / 3d;
+	private const double SampleWindow = 0.5;
+
 	private readonly DispatcherService _dispatcher;
-	private ulong _lastTick;
+	private readonly Queue<double> _frameTimes = [];
+
+	private double _refreshAccumulator;
 
 	public StatViewModel(DispatcherService dispatcher)
 	{
@@ -29,11 +34,19 @@ public partial class StatViewModel : ViewModelBase
 
 	private void OnProcess(double delta)
 	{
-		var tick = Time.GetTicksMsec();
-		if (tick - _lastTick < TimeSpan.MillisecondsPerSecond) return;
-		_lastTick = tick;
+		var now = Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
+		_frameTimes.Enqueue(now);
 
-		var fps = Performance.GetMonitor(Performance.Monitor.TimeFps);
+		while (_frameTimes.Count > 0 && now - _frameTimes.Peek() > SampleWindow)
+			_frameTimes.Dequeue();
+
+		_refreshAccumulator += delta;
+		if (_refreshAccumulator < RefreshInterval) return;
+		_refreshAccumulator -= RefreshInterval;
+
+		var span = _frameTimes.Count > 1 ? now - _frameTimes.Peek() : 0;
+		var fps = span > 0 ? (_frameTimes.Count - 1) / span : 0;
+		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 
 #if DEBUG
 		var dram = OS.GetStaticMemoryUsage();
@@ -42,22 +55,17 @@ public partial class StatViewModel : ViewModelBase
 		var dram = (ulong)process.PrivateMemorySize64;
 #endif
 
-		var frameRate = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 		var processTimeMs = Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond;
 		var physicsTimeMs =
 			Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond;
 
 		List<(string Key, object Value)> stats =
 		[
-			("Frame Rate",
-				string.Create(CultureInfo.InvariantCulture, $"{fps} FPS ({frameRate:F3} mspf)")),
-			("Process Time",
-				string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
-			("Physics Time",
-				string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
+			("Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps:F2} FPS ({frameTimeMs:F3} mspf)")),
+			("Process Time", string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
+			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
 			("Used DRAM", Formatter.FormatBytes(dram)),
-			("Used VRAM",
-				Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
+			("Used VRAM", Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
 			("Objects", Performance.GetMonitor(Performance.Monitor.ObjectCount)),
 			("Nodes", Performance.GetMonitor(Performance.Monitor.ObjectNodeCount)),
 			("Orphan Nodes", Performance.GetMonitor(Performance.Monitor.ObjectOrphanNodeCount)),

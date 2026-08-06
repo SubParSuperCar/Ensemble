@@ -30,7 +30,7 @@
                         Name="Output"
                         Text="{Binding Output}"
                         Background="Black" Foreground="White"
-                        SelectionBrush="White" SelectionForegroundBrush="Black"
+                        SelectionBrush="Cyan" SelectionForegroundBrush="Black"
                         Padding="1"
                         FontSize="10" FontWeight="UltraLight"
                         TextWrapping="Wrap" />

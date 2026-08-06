@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Godot;
 using Serilog;
+using TinyDialogsNet;
 using Environment = System.Environment;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -77,6 +78,8 @@ public partial class Watchdog : Node
 					missCount = 0;
 				else if (++missCount >= TimeoutMissCount)
 				{
+					TinyDialogs.Beep();
+
 					var elapsedMs = missCount * PollIntervalMs;
 					var message = string.Create(CultureInfo.InvariantCulture,
 						$"Watchdog timeout: Main thread missed {missCount} heartbeat(s) in ~{elapsedMs} msec");
@@ -85,6 +88,8 @@ public partial class Watchdog : Node
 					{
 						Log.Fatal("{Message}", message);
 						Log.CloseAndFlush();
+
+						TinyDialogs.NotifyPopup(NotificationIconType.Error, "Ensemble Crashed", message);
 					}
 					finally
 					{

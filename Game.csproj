@@ -64,6 +64,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Threading.RateLimiting" Version="10.0.10"/>
+    <PackageReference Include="TinyDialogsNet" Version="2.0.0"/>
   </ItemGroup>
 
   <ItemGroup>

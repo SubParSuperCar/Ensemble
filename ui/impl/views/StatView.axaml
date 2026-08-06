@@ -13,7 +13,6 @@
         <Border Effect="{DynamicResource StrokeEffect}">
             <TextBlock
                 Text="{Binding Text}"
-                ToolTip.Tip="Statistics"
                 Foreground="White"
                 FontSize="14" FontWeight="Light" />
         </Border>

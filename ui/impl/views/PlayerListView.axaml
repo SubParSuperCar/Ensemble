@@ -13,10 +13,7 @@
         Background="{DynamicResource TranslucentBackgroundBrush}"
         Padding="2">
 
-        <Grid
-            RowDefinitions="Auto,*"
-            ToolTip.Tip="Player List">
-
+        <Grid RowDefinitions="Auto,*">
             <Grid ColumnDefinitions="*,*,Auto">
                 <TextBlock Text="Name&#x0a; &#x2198;" />
                 <TextBlock Grid.Column="1" Text="Player List" />

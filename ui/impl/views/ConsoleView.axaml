@@ -32,7 +32,7 @@
                         Background="Black" Foreground="White"
                         SelectionBrush="White" SelectionForegroundBrush="Black"
                         Padding="1"
-                        FontSize="10"
+                        FontSize="10" FontWeight="UltraLight"
                         TextWrapping="Wrap" />
                 </ScrollViewer>
 

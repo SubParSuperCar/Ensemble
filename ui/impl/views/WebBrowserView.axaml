@@ -15,7 +15,7 @@
         <TextBlock
             Text="The Web View is not rendering.&#x0a;Do you have WebView2 or WPE WebKit?"
             HorizontalAlignment="Center" VerticalAlignment="Center"
-            FontSize="32" FontWeight="Bold"
+            FontSize="32" FontWeight="SemiBold"
             TextAlignment="Center" />
 
         <NativeWebView

@@ -15,7 +15,7 @@
                 Text="{Binding Text}"
                 ToolTip.Tip="Statistics"
                 Foreground="White"
-                FontSize="14" />
+                FontSize="14" FontWeight="Light" />
         </Border>
     </Border>
 

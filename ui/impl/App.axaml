@@ -11,6 +11,8 @@
             </FontFamily>
 
             <x:Double x:Key="FontSize">16</x:Double>
+            <FontWeight x:Key="FontWeight">SemiLight</FontWeight>
+
             <x:TimeSpan x:Key="TransitionDuration">0.2</x:TimeSpan>
 
             <ResourceDictionary.MergedDictionaries>
@@ -37,12 +39,14 @@
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeight}" />
         </Style>
 
         <!-- TODO: Set TextRenderingMode to Antialias -->
         <Style Selector="ToolTip">
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />
+            <Setter Property="FontWeight" Value="{StaticResource FontWeight}" />
             <Setter Property="Background" Value="{StaticResource TranslucentBackgroundBrush}" />
         </Style>
 

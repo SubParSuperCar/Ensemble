@@ -21,18 +21,29 @@
                 <ColumnDefinition Width="*" MinWidth="256" />
             </Grid.ColumnDefinitions>
 
-            <ScrollViewer
-                x:Name="OutputScroll"
-                HorizontalScrollBarVisibility="Disabled">
+            <Grid>
+                <ScrollViewer
+                    x:Name="OutputScroll"
+                    HorizontalScrollBarVisibility="Disabled">
 
-                <SelectableTextBlock
-                    Text="{Binding Output}"
-                    Background="Black" Foreground="White"
-                    SelectionBrush="White" SelectionForegroundBrush="Black"
-                    Padding="1"
-                    FontSize="11"
-                    TextWrapping="Wrap" />
-            </ScrollViewer>
+                    <SelectableTextBlock
+                        Name="Output"
+                        Text="{Binding Output}"
+                        Background="Black" Foreground="White"
+                        SelectionBrush="White" SelectionForegroundBrush="Black"
+                        Padding="1"
+                        FontSize="10"
+                        TextWrapping="Wrap" />
+                </ScrollViewer>
+
+                <NumericUpDown
+                    Value="{Binding #Output.FontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                    PlaceholderText="&lt;Font Size&gt;"
+                    ToolTip.Tip="Font Size (Pixels)"
+                    Background="{DynamicResource TranslucentBackgroundBrush}"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Margin="0,0,22,4" />
+            </Grid>
 
             <GridSplitter
                 Grid.Column="1"

@@ -102,6 +102,9 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 			case GtkWebViewEnvironmentRequestedEventArgs args:
 				args.EphemeralDataManager = true;
 				break;
+			/* TODO: case LinuxWpeWebViewEnvironmentRequestedEventArgs args:
+				args.PreferWebKitGtkInstead = true;
+				break; */
 		}
 	}
 

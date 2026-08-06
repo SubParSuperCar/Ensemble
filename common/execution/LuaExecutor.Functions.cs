@@ -24,6 +24,7 @@ public partial class LuaExecutor
 		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 		env[nameof(wipe_log)] = new LuaFunction(wipe_log);
+		env[nameof(dump_env)] = new LuaFunction(dump_env);
 	}
 
 	private static ValueTask<int> print(
@@ -174,4 +175,79 @@ public partial class LuaExecutor
 		context.Return();
 		return default;
 	}
+
+	private static ValueTask<int> dump_env(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		Log.Information("Contents of _ENV:");
+		DumpTable(context.State.Environment, "_ENV", []);
+
+		context.Return();
+		return default;
+	}
+
+	private static void DumpTable(
+		LuaTable table,
+		string path,
+		HashSet<LuaTable> visited)
+	{
+		if (!visited.Add(table))
+		{
+			Log.Information("{Path} = <already visited>", path);
+			return;
+		}
+
+		foreach (var (luaKey, luaValue) in table.OrderBy(e => e.Key.ToString(), StringComparer.Ordinal))
+		{
+			var childPath = luaKey.Type is LuaValueType.Number
+				? $"{path}[{luaKey}]"
+				: $"{path}.{luaKey}";
+
+			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+			switch (luaValue.Type)
+			{
+				case LuaValueType.Table:
+					{
+						var childTable = luaValue.Read<LuaTable>();
+
+						if (visited.Contains(childTable))
+							Log.Information("{Path} = <already visited>", childPath);
+						else
+						{
+							Log.Information("{Path} = <table>", childPath);
+							DumpTable(childTable, childPath, visited);
+						}
+
+						break;
+					}
+
+				case LuaValueType.Function:
+					Log.Information("{Path} = <function>", childPath);
+					break;
+
+				case LuaValueType.UserData:
+					Log.Information("{Path} = <userdata>", childPath);
+					break;
+
+				case LuaValueType.Thread:
+					Log.Information("{Path} = <thread>", childPath);
+					break;
+
+				case LuaValueType.String:
+					Log.Information("{Path} = \"{Value}\"", childPath, EscapeString(luaValue.Read<string>()));
+					break;
+
+				default:
+					Log.Information("{Path} = {Value}", childPath, luaValue);
+					break;
+			}
+		}
+	}
+
+	private static string EscapeString(string value) =>
+		value
+			.Replace("\\", @"\\", StringComparison.Ordinal)
+			.Replace("\r", "\\r", StringComparison.Ordinal)
+			.Replace("\n", "\\n", StringComparison.Ordinal);
 }

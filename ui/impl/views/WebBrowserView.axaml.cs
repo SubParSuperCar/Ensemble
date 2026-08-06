@@ -2,9 +2,11 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
+using Avalonia.Platform;
 using CommunityToolkit.Mvvm.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
+using Serilog;
 using InputExtensions = Root.Common.Input.InputExtensions;
 using Key = Avalonia.Input.Key;
 
@@ -84,4 +86,35 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 		LoadingIndicator.SpeedRatio = 0;
 		LoadingIndicator.IsActive = true;
 	}
+
+	private void WebView_OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e)
+	{
+		e.EnableDevTools = true;
+
+		switch (e)
+		{
+			case WindowsWebView2EnvironmentRequestedEventArgs args:
+				args.IsInPrivateModeEnabled = true;
+				break;
+			case AppleWKWebViewEnvironmentRequestedEventArgs args:
+				args.NonPersistentDataStore = true;
+				break;
+			case GtkWebViewEnvironmentRequestedEventArgs args:
+				args.EphemeralDataManager = true;
+				break;
+		}
+	}
+
+	private void WebView_OnAdapterCreated(object? sender, WebViewAdapterEventArgs e)
+	{
+		if (WebView.AdapterInfo is { } info)
+			Log.Debug(
+				"WebView adapter created: Engine={Engine}, Type={Type}, Version={Version}",
+				info.Engine,
+				info.Type,
+				info.Version);
+	}
+
+	private void WebView_OnAdapterDestroyed(object? sender, WebViewAdapterEventArgs e) =>
+		Log.Debug("WebView adapter destroyed");
 }

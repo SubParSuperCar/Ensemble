@@ -25,6 +25,7 @@ public partial class LuaExecutor
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 		env[nameof(wipe_log)] = new LuaFunction(wipe_log);
 		env[nameof(dump_env)] = new LuaFunction(dump_env);
+		env[nameof(dump_input_map)] = new LuaFunction(dump_input_map);
 	}
 
 	private static ValueTask<int> print(
@@ -243,6 +244,27 @@ public partial class LuaExecutor
 					break;
 			}
 		}
+	}
+
+	private static ValueTask<int> dump_input_map(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		Log.Information("Contents of InputMap:");
+
+		foreach (var action in InputMap.GetActions()
+					 .Select(a => a.ToString())
+					 .Order(StringComparer.Ordinal))
+		{
+			Log.Information("{Action}:", action);
+
+			var index = 1;
+			foreach (var @event in InputMap.ActionGetEvents(action))
+				Log.Information("{Index}. {Event}", index++, @event.AsText());
+		}
+
+		context.Return();
+		return default;
 	}
 
 	private static string EscapeString(string value) =>

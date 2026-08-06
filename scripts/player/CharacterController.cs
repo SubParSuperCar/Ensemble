@@ -17,12 +17,17 @@ public partial class CharacterController : CharacterBody3D
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
 	public float TurnRate { get; set; } = 11.25f;
 
-	[Export] public Node3D Camera { get; set; } = null!;
+	[Export(PropertyHint.Range, "-1,0,or_greater,hide_slider")]
+	public float FirstPersonDistance { get; set; } = 1;
+
+	[Export] public Camera3D Camera { get; set; } = null!;
 
 	public override void _Ready() => PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
 
 	public override void _PhysicsProcess(double delta)
 	{
+		Visible = Camera.GlobalPosition.DistanceTo(GlobalPosition) > FirstPersonDistance;
+
 		var gravity = GetGravity();
 
 		if (!IsOnFloor())

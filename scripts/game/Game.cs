@@ -17,8 +17,8 @@ public partial class Game : Node3D
 		var rotation = Quaternion.Identity;
 		instances.Add(assetId, position, rotation);
 
-		GPlayers.Add(string.Empty, "Larpje139");
-		GPlayers.Add(string.Empty, "Pepsi bottle guzzler");
+		GPlayers.Add(string.Empty, "Larpje139 (Test)");
+		GPlayers.Add(string.Empty, "Pepsi bottle guzzler (Test)");
 #endif
 	}
 }

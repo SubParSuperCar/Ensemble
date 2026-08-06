@@ -53,7 +53,7 @@ public partial class PlayerHandle : Node
 		Camera.Focus = Controller;
 		AddChild(Camera);
 
-		Controller.Camera = Camera;
+		Controller.Camera = Camera.GetNode<Camera3D>("Camera");
 	}
 
 	private void OnPlotChanged(GdPlot? plot)

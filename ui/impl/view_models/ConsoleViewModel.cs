@@ -22,7 +22,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	public static TextDocument Source { get; } =
 		new("--[[\nLua 5.2\nReference Manual: https://www.lua.org/manual/5.2/\n" +
 			"(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
-			"print(\"Hello, World!\")\nhelp()\n");
+			"print(string.format(\"Hello, %s!\", _VERSION))\nhelp()\n");
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
 

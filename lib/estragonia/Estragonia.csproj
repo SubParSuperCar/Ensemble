@@ -28,7 +28,7 @@
   <ItemGroup>
     <!--
       Patched Avalonia.Skia.dll with ISkiaGpu made public
-      Built against Avalonia 12.1.1 (.NET 10.0.110)
+      Built against Avalonia 12.1.1 (.NET 10)
     -->
     <Reference Include="Avalonia.Skia">
       <HintPath>lib/Avalonia.Skia.dll</HintPath>

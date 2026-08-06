@@ -20,7 +20,7 @@
 
         <NativeWebView
             Name="WebView"
-            Source="https://www.bing.com/"
+            Source="https://www.google.com/"
             GotFocus="Control_GotFocus"
             LostFocus="Control_LostFocus"
             NavigationStarted="WebView_OnNavigationStarted"

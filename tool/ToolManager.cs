@@ -2,7 +2,7 @@ using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Root.Tools;
+namespace Root.Tool;
 
 // TODO
 [GlobalClass]

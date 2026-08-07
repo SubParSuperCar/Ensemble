@@ -3,7 +3,7 @@ using Godot;
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable VirtualMemberNeverOverridden.Global
 
-namespace Root.Tools;
+namespace Root.Tool;
 
 public abstract partial class ToolBase : Node
 {

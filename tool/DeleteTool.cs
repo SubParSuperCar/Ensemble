@@ -1,3 +1,3 @@
-namespace Root.Tools;
+namespace Root.Tool;
 
 public partial class DeleteTool : ToolBase;

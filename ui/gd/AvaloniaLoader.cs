@@ -6,6 +6,7 @@ using Root.Ui.Impl;
 
 namespace Root.Ui.Gd;
 
+[GlobalClass]
 public partial class AvaloniaLoader : Node
 {
 	public override void _Ready()

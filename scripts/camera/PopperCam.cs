@@ -4,6 +4,7 @@ using Serilog;
 
 namespace Root.Scripts.Camera;
 
+[GlobalClass]
 public partial class PopperCam : SpringArm3D
 {
 	private Vector2 _capturedMousePosition;

@@ -10,6 +10,7 @@ using Serilog;
 
 namespace Root.Scripts.Asset;
 
+[GlobalClass]
 public partial class AssetManager : Node
 {
 	public Godot.Collections.Dictionary<int, PackedScene> Scenes { get; } = [];

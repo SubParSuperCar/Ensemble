@@ -7,6 +7,7 @@ using Serilog;
 
 namespace Root.SessionManager.Gd;
 
+[GlobalClass]
 public partial class SessionManager : Node
 {
 	[Signal]

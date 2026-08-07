@@ -6,7 +6,8 @@ using FileAccess = System.IO.FileAccess;
 
 namespace Root.Scripts.Hasher;
 
-public partial class Hasher : Node
+[GlobalClass]
+public partial class ExeHasher : Node
 {
 	public override void _Ready() => _ = OnReady();
 

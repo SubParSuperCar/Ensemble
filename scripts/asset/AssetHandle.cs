@@ -2,6 +2,7 @@ using Godot;
 
 namespace Root.Scripts.Asset;
 
+[GlobalClass]
 public partial class AssetHandle : RigidBody3D
 {
 	[Export(PropertyHint.Range, "0,0,1,or_greater,hide_slider")]

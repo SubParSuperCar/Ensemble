@@ -11,6 +11,7 @@ using Serilog;
 
 namespace Root.Ui.Gd;
 
+[GlobalClass]
 public partial class Ui : AvaloniaControl
 {
 	public override void _Ready()

@@ -3,6 +3,7 @@ using Root.Common.Input;
 
 namespace Root.Scripts.Player;
 
+[GlobalClass]
 public partial class CharacterController : CharacterBody3D
 {
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]

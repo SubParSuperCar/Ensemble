@@ -6,6 +6,7 @@ using Root.Core.Gd.Plot;
 
 namespace Root.Scripts.Plot;
 
+[GlobalClass]
 public partial class PlotManager : Node
 {
 	public Godot.Collections.Dictionary<int, PlotHandle> Handles { get; } = [];

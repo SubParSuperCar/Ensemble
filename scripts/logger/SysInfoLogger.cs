@@ -9,7 +9,8 @@ using Environment = System.Environment;
 
 namespace Root.Scripts.Logger;
 
-public partial class InfoLogger : Node
+[GlobalClass]
+public partial class SysInfoLogger : Node
 {
 	private const string LinuxKernelVersionFilePath = "/proc/sys/kernel/osrelease";
 

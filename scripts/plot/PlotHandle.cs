@@ -5,6 +5,7 @@ using Root.Scripts.Asset;
 
 namespace Root.Scripts.Plot;
 
+[GlobalClass]
 public partial class PlotHandle : Node3D
 {
 	private Basis _boundaryBasis;

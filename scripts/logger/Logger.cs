@@ -11,6 +11,7 @@ using FileAccess = Godot.FileAccess;
 
 namespace Root.Scripts.Logger;
 
+[GlobalClass]
 public partial class Logger : Node
 {
 	private ILoggerFactory? _loggerFactory;

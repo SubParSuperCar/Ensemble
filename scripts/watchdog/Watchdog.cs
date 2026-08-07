@@ -9,6 +9,7 @@ using Environment = System.Environment;
 
 namespace Root.Scripts.Watchdog;
 
+[GlobalClass]
 public partial class Watchdog : Node
 {
 	private const int PollIntervalMs = (int)TimeSpan.MillisecondsPerSecond;

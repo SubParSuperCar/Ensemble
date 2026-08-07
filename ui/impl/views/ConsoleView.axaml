@@ -10,6 +10,26 @@
     x:DataType="vm:ConsoleViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
+    <UserControl.Styles>
+        <Style Selector="SelectableTextBlock#Output">
+            <Style.Animations>
+                <Animation
+                    Duration="{StaticResource TransitionDuration}"
+                    IterationCount="Infinite"
+                    PlaybackDirection="Alternate">
+
+                    <KeyFrame Cue="0%">
+                        <Setter Property="SelectionBrush" Value="Yellow" />
+                    </KeyFrame>
+
+                    <KeyFrame Cue="100%">
+                        <Setter Property="SelectionBrush" Value="Orange" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+
     <Border
         BorderBrush="GreenYellow"
         BorderThickness="2">
@@ -30,7 +50,7 @@
                         Name="Output"
                         Text="{Binding Output}"
                         Background="Black" Foreground="White"
-                        SelectionBrush="Cyan" SelectionForegroundBrush="Black"
+                        SelectionForegroundBrush="Black"
                         Padding="1"
                         FontSize="10" FontWeight="UltraLight"
                         TextWrapping="Wrap" />

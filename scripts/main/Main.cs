@@ -3,6 +3,7 @@ using Serilog;
 
 namespace Root.Scripts.Main;
 
+[GlobalClass]
 public partial class Main : Node
 {
 	private Node? _gameScene;

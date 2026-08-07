@@ -3,6 +3,7 @@ using Godot;
 namespace Root.Scripts.Game;
 
 // TODO: For testing purposes only
+[GlobalClass]
 public partial class Game : Node3D
 {
 	public override void _Ready()

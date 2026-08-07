@@ -5,6 +5,7 @@ using Root.Core.Gd.Player;
 
 namespace Root.Scripts.Player;
 
+[GlobalClass]
 public partial class PlayerManager : Node
 {
 	public Godot.Collections.Dictionary<string, PlayerHandle> Handles { get; } = [];

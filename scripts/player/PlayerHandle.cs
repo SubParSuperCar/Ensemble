@@ -6,7 +6,8 @@ using Root.Scripts.Camera;
 
 namespace Root.Scripts.Player;
 
-public partial class PlayerHandle : Node
+[GlobalClass]
+public partial class PlayerHandle : Node3D
 {
 	private GdOccupant _occupant = null!;
 	private Vector3? _spawnOffset;

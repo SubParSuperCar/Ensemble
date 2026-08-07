@@ -20,7 +20,7 @@ script = ExtResource("1_qxhqx")
 AssetId = null
 AssetName = &"Block"
 Properties = Dictionary[StringName, Variant]({
-&"colorHex": "FFFFFF"
+&"_colorHex": "FFFFFF"
 })
 MaxInstanceCount = 1000
 

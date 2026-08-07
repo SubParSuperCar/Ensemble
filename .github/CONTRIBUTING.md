@@ -21,7 +21,7 @@
 
 6. Open the project in Godot and, optionally, your preferred code editor (JetBrains Rider, Visual Studio Code, etc.),
    then begin developing. If you use JetBrains Rider, it is recommended that you add the Godot executable to your
-   system's `PATH` environment variable using one of the following names: `godot`, `godot4`, or `godot-mono`. This allows the
-   **PATH Launcher** Run Configuration to automatically locate your Godot installation without requiring manual
-   configuration. Alternatively, you can place the executable in `<Project Root>/bin/` using one of the previously listed
-   names.
+   system's `PATH` environment variable using one of the following names: `godot`, `godot4`, or `godot-mono`. This
+   allows the **PATH Launcher** Run Configuration to automatically locate your Godot installation without requiring
+   manual configuration. Alternatively, you can place the executable in `<Project Root>/bin/` using one of the
+   previously listed names.

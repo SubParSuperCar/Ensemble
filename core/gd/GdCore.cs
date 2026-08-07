@@ -9,7 +9,8 @@ namespace Root.Core.Gd;
 
 public partial class GdCore : Node
 {
-	private Impl.Core _core = null!;
+	// ReSharper disable once MemberCanBePrivate.Global
+	public Impl.Core Core { get; private set; } = null!;
 
 	public static GdCore? Instance
 	{
@@ -43,11 +44,11 @@ public partial class GdCore : Node
 		var stopwatch = Stopwatch.StartNew();
 #endif
 
-		_core = new Impl.Core();
+		Core = new Impl.Core();
 
-		Players = GdPlayers.From(_core.Players);
-		Assets = GdAssets.From(_core.Assets);
-		Plots = GdPlots.From(_core.Plots);
+		Players = GdPlayers.From(Core.Players);
+		Assets = GdAssets.From(Core.Assets);
+		Plots = GdPlots.From(Core.Plots);
 
 #if DEBUG
 		stopwatch.Stop();
@@ -60,5 +61,5 @@ public partial class GdCore : Node
 #endif
 	}
 
-	public void Reset() => _core.Reset();
+	public void Reset() => Core.Reset();
 }

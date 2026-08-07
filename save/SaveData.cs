@@ -1,4 +1,5 @@
 using System.Numerics;
+using Root.Core.Api.Asset;
 
 namespace Root.Save;
 
@@ -22,6 +23,6 @@ public sealed class SaveInstance
 	// ReSharper disable once CollectionNeverUpdated.Global
 	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 #pragma warning disable MA0016
-	public Dictionary<string, object>? Properties { get; init; }
+	public Dictionary<string, Variant>? Properties { get; init; }
 #pragma warning restore MA0016
 }

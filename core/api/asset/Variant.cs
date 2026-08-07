@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace Root.Core.Api.Asset;
@@ -61,7 +63,17 @@ public readonly struct Variant : IEquatable<Variant>
 		_string = value;
 	}
 
-	// ReSharper disable once UnusedMember.Global
+	public object? Value =>
+		Type switch
+		{
+			VariantType.Null => null,
+			VariantType.Bool => (bool)this,
+			VariantType.NumInt => (long)this,
+			VariantType.NumDouble => (double)this,
+			VariantType.Str => (string)this,
+			_ => throw new UnreachableException()
+		};
+
 	public bool IsNull => Type is VariantType.Null;
 
 	public static implicit operator Variant(bool value) => new(value);

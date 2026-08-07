@@ -1,5 +1,6 @@
 using System.Numerics;
 using System.Text;
+using Root.Core.Api.Asset;
 
 namespace Root.Save;
 
@@ -34,11 +35,23 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			writer.Write(instance.Rotation.Z);
 			writer.Write(instance.Rotation.W);
 
-			writer.Write(instance.Properties?.Count ?? 0);
+			var properties = instance.Properties;
+			writer.Write(properties?.Count ?? 0);
+
+			if (properties is null)
+				continue;
+
+			foreach (var (key, value) in properties)
+			{
+				writer.Write(key);
+				VariantSerializer.Write(writer, value);
+			}
 		}
 	}
 
+#pragma warning disable MA0051
 	public SaveData Deserialize(Stream stream)
+#pragma warning restore MA0051
 	{
 		using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
@@ -57,35 +70,55 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			CreatedAt = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero)
 		};
 
+		// Signed counts make corruption easier to detect.
+		// For example, FF FF FF FF becomes -1 instead of 4,294,967,295.
 		var instanceCount = reader.ReadInt32();
-		if (instanceCount < 0)
+		if (instanceCount is < 0 or > ushort.MaxValue)
 			throw new InvalidDataException("Invalid instance count.");
 
 		save.Instances.Capacity = instanceCount;
 
 		for (var i = 0; i < instanceCount; i++)
 		{
-			var instance = new SaveInstance
-			{
-				AssetId = reader.ReadUInt16(),
+			var assetId = reader.ReadUInt16();
 
-				Position = new Vector3(
-					reader.ReadSingle(),
-					reader.ReadSingle(),
-					reader.ReadSingle()),
+			var position = new Vector3(
+				reader.ReadSingle(),
+				reader.ReadSingle(),
+				reader.ReadSingle());
 
-				Rotation = new Quaternion(
-					reader.ReadSingle(),
-					reader.ReadSingle(),
-					reader.ReadSingle(),
-					reader.ReadSingle())
-			};
+			var rotation = new Quaternion(
+				reader.ReadSingle(),
+				reader.ReadSingle(),
+				reader.ReadSingle(),
+				reader.ReadSingle());
 
 			var propertyCount = reader.ReadInt32();
-			if (propertyCount < 0)
+			if (propertyCount is < 0 or > ushort.MaxValue)
 				throw new InvalidDataException("Invalid property count.");
 
-			save.Instances.Add(instance);
+			Dictionary<string, Variant>? properties = null;
+
+			if (propertyCount > 0)
+			{
+				properties = new Dictionary<string, Variant>(propertyCount, StringComparer.Ordinal);
+
+				for (var j = 0; j < propertyCount; j++)
+				{
+					var key = reader.ReadString();
+					var value = VariantSerializer.Read(reader);
+
+					properties.Add(key, value);
+				}
+			}
+
+			save.Instances.Add(new SaveInstance
+			{
+				AssetId = assetId,
+				Position = position,
+				Rotation = rotation,
+				Properties = properties
+			});
 		}
 
 		return save;

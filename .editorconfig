@@ -4,7 +4,7 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 
-[*.{csproj,props,slnx,xml}]
+[*.{slnx,csproj,props,xml}]
 indent_size = 2
 
 [*.cs]

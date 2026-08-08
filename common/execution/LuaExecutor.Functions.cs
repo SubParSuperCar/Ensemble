@@ -23,7 +23,7 @@ public partial class LuaExecutor
 		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
 		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
-		env[nameof(wipe_log)] = new LuaFunction(wipe_log);
+		env[nameof(clear_log)] = new LuaFunction(clear_log);
 		env[nameof(dump_env)] = new LuaFunction(dump_env);
 		env[nameof(dump_input_map)] = new LuaFunction(dump_input_map);
 	}
@@ -167,7 +167,7 @@ public partial class LuaExecutor
 		return 0;
 	}
 
-	private static ValueTask<int> wipe_log(
+	private static ValueTask<int> clear_log(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{

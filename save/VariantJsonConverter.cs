@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Root.Core.Api.Asset;
@@ -36,7 +37,7 @@ internal sealed class VariantJsonConverter : JsonConverter<Variant>
 				break;
 
 			case VariantType.NumDouble:
-				writer.WriteNumberValue((double)value);
+				WriteDouble(writer, (double)value);
 				break;
 
 			case VariantType.Str:
@@ -46,5 +47,18 @@ internal sealed class VariantJsonConverter : JsonConverter<Variant>
 			default:
 				throw new JsonException($"Unsupported variant type: {value.Type}");
 		}
+	}
+
+	private static void WriteDouble(Utf8JsonWriter writer, double value)
+	{
+		if (double.IsNaN(value) || double.IsInfinity(value))
+			throw new JsonException($"Cannot represent {value.ToString(CultureInfo.InvariantCulture)} in JSON.");
+
+		var text = value.ToString(CultureInfo.InvariantCulture);
+
+		if (!text.Contains('.', StringComparison.Ordinal) && !text.Contains('E', StringComparison.Ordinal))
+			text = string.Concat(text, ".0");
+
+		writer.WriteRawValue(text);
 	}
 }

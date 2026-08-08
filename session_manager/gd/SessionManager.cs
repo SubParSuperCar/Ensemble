@@ -141,13 +141,17 @@ public partial class SessionManager : Node
 
 	private void OnPeerConnected(long peerId)
 	{
-		var playerId = PlayerIdsByPeerId[(int)peerId];
-		GPlayers.Add(playerId);
+		if (PlayerIdsByPeerId.TryGetValue((int)peerId, out var playerId))
+		{
+			GPlayers.Add(playerId);
 
-		if (peerId == LocalPeerId)
-			GPlayers.SetLocal(playerId);
+			if (peerId == LocalPeerId)
+				GPlayers.SetLocal(playerId);
 
-		Log.Debug("Peer connected: {PeerId} (player {PlayerId})", peerId, playerId);
+			Log.Debug("Peer connected: {PeerId} (player {PlayerId})", peerId, playerId);
+		}
+		else
+			Log.Debug("Peer connected: {PeerId}", peerId);
 
 		EmitSignal(SignalName.PeerConnected, (int)peerId);
 	}

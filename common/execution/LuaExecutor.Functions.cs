@@ -107,7 +107,7 @@ public partial class LuaExecutor
 
 			var rotation = new Quaternion(
 				axis,
-				(float)(random.NextDouble() - 0.5 * Math.PI));
+				(float)((random.NextDouble() - 0.5) * Math.Tau));
 
 			instances.Add(assetId, position, rotation);
 		}

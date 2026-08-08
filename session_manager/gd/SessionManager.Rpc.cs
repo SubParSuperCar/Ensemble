@@ -98,7 +98,7 @@ public partial class SessionManager
 			});
 	}
 
-	[Rpc(CallLocal = true)]
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
 	private void RpcSyncPlayerAdded(int peerId, string playerId, string displayName) =>
 		RunSafely(() =>
 		{

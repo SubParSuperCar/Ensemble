@@ -52,7 +52,7 @@ public partial class PlotHandle : Node3D
 		handle.InstanceId = instance.Id;
 
 		handle.Position = instance.Position;
-		handle.SetQuaternion(instance.Rotation);
+		handle.Quaternion = instance.Rotation;
 
 		InstanceHandles.Add(instance.Id, handle);
 		_instances.AddChild(handle);

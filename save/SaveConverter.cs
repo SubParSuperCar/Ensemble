@@ -1,6 +1,8 @@
 using Root.Core.Api.Asset;
 using Root.Core.Impl.Asset;
 
+// ReSharper disable UnusedMember.Global
+
 namespace Root.Save;
 
 // ReSharper disable once UnusedType.Global

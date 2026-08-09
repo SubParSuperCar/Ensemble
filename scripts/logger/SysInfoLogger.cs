@@ -78,12 +78,7 @@ public partial class SysInfoLogger : Node
 		var hardwareInfo = new HardwareInfo();
 		hardwareInfo.RefreshAll(); // TODO: Only refresh used members
 
-		var cpu = hardwareInfo.CpuList.FirstOrDefault();
-		var gpu = hardwareInfo.VideoControllerList.FirstOrDefault();
-		var board = hardwareInfo.MotherboardList.FirstOrDefault();
-		var bios = hardwareInfo.BiosList.FirstOrDefault();
-
-		if (cpu is not null)
+		foreach (var cpu in hardwareInfo.CpuList)
 		{
 			Add(lines, "CPU", cpu.Name);
 			Add(lines, "Topology", $"{cpu.NumberOfCores}C / {cpu.NumberOfLogicalProcessors}T");
@@ -95,17 +90,17 @@ public partial class SysInfoLogger : Node
 
 		Add(lines, "Endianness", BitConverter.IsLittleEndian ? "Little" : "Big");
 
-		if (gpu is not null)
+		foreach (var gpu in hardwareInfo.VideoControllerList)
 			Add(lines, "GPU", gpu.Name);
 
 		var totalMemory = hardwareInfo.MemoryStatus.TotalPhysical;
 		var usedMemory = totalMemory - hardwareInfo.MemoryStatus.AvailablePhysical;
 		Add(lines, "Memory", $"{Formatter.FormatBytes(usedMemory)} / {Formatter.FormatBytes(totalMemory)}");
 
-		if (board is not null)
+		if (hardwareInfo.MotherboardList.FirstOrDefault() is { } board)
 			Add(lines, "Board", $"{board.Manufacturer} {board.Product}");
 
-		if (bios is not null)
+		if (hardwareInfo.BiosList.FirstOrDefault() is { } bios)
 			Add(lines, "BIOS", $"{bios.Manufacturer} {bios.Version}");
 
 		foreach (var drive in hardwareInfo.DriveList.OrderBy(d => d.Model, StringComparer.OrdinalIgnoreCase))

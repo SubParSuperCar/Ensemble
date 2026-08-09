@@ -61,7 +61,7 @@ public partial class Watchdog : Node
 		if (!Input.IsActionJustPressedByEvent("test_hang", @event))
 			return;
 
-		Log.Warning("Hanging process...");
+		Log.Warning("Hanging process (test action)...");
 		Thread.Sleep(int.MaxValue);
 	}
 

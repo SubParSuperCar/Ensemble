@@ -29,7 +29,7 @@ public class Plot : IPlot
 			return;
 
 		IsSpawned = true;
-		IsSpawnedChanged?.Invoke(true);
+		IsSpawnedChanged?.Invoke(IsSpawned);
 	}
 
 	public void Despawn()
@@ -38,7 +38,7 @@ public class Plot : IPlot
 			return;
 
 		IsSpawned = false;
-		IsSpawnedChanged?.Invoke(false);
+		IsSpawnedChanged?.Invoke(IsSpawned);
 	}
 
 	public void Reset()

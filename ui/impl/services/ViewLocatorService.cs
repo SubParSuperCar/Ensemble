@@ -21,7 +21,6 @@ public class ViewLocatorService(IServiceProvider services) : ISingletonObject, I
 			return new TextBlock { Text = $"View for {type.Name} not found" };
 
 		view.DataContext = data;
-
 		return view;
 	}
 

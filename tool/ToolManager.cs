@@ -8,7 +8,7 @@ namespace Root.Tool;
 [GlobalClass]
 public partial class ToolManager : Node
 {
-	// TODO: Implement a mechanism that prevents tools from being enabled under certain conditions
+	// TODO: Implement a mechanism preventing tools from enabling under certain conditions
 	public PlaceTool Place => field ??= CreateTool<PlaceTool>();
 	public DeleteTool Delete => field ??= CreateTool<DeleteTool>();
 

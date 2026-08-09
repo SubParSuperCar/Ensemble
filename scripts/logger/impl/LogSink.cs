@@ -24,9 +24,11 @@ public sealed class LogSink : ILogEventSink
 			case LogEventLevel.Error or LogEventLevel.Fatal:
 				GD.PushError(message);
 				break;
+
 			case LogEventLevel.Warning:
 				GD.PushWarning(message);
 				break;
+
 			default:
 				GD.Print(message);
 				break;

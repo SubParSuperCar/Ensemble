@@ -6,7 +6,6 @@ using Root.Core.Gd.Player;
 
 namespace Root.Core.Gd.Plot;
 
-[GlobalClass]
 public partial class GdOccupant : RefCounted
 {
 	[Signal]

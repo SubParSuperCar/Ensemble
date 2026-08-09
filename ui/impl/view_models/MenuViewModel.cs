@@ -17,9 +17,9 @@ public class MenuViewModel : ViewModelBase
 		_scope = services.CreateScope();
 		_dispatcher = dispatcher;
 
-		dispatcher.Input += OnInput;
-
 		Navigator = _scope.ServiceProvider.GetRequiredService<NavigatorService>();
+
+		dispatcher.Input += OnInput;
 
 		if (_hasLoaded)
 		{
@@ -27,10 +27,10 @@ public class MenuViewModel : ViewModelBase
 			return;
 		}
 
+		_hasLoaded = true;
+
 		Navigator.GoTo<LoadingIndicatorViewModel>(true);
 		_ = GoToHomeAfterDelay();
-
-		_hasLoaded = true;
 	}
 
 	public NavigatorService Navigator { get; }

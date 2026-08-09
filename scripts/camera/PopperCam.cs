@@ -73,6 +73,7 @@ public partial class PopperCam : SpringArm3D
 						case MouseButton.WheelUp:
 							ApplyDollyDelta(-DollyStep);
 							break;
+
 						case MouseButton.WheelDown:
 							ApplyDollyDelta(DollyStep);
 							break;

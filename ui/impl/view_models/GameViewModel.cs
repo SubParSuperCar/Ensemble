@@ -18,11 +18,11 @@ public partial class GameViewModel : ViewModelBase
 		_services = services;
 		_dispatcher = dispatcher;
 
-		dispatcher.Input += OnInput;
-
 		Clock = services.GetRequiredService<ClockViewModel>();
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 		PlotSelector = services.GetRequiredService<PlotSelectorViewModel>();
+
+		dispatcher.Input += OnInput;
 	}
 
 	[ObservableProperty]

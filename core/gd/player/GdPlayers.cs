@@ -5,7 +5,6 @@ using Root.Core.Api.Player;
 
 namespace Root.Core.Gd.Player;
 
-[GlobalClass]
 public partial class GdPlayers : RefCounted
 {
 	[Signal]

@@ -18,9 +18,9 @@ public partial class MainViewModel : ViewModelBase
 		_services = services;
 		_dispatcher = dispatcher;
 
-		dispatcher.Input += OnInput;
-
 		Stats = services.GetRequiredService<StatViewModel>();
+
+		dispatcher.Input += OnInput;
 
 		if (GSessionManager.IsActive)
 			OnSessionStarted();

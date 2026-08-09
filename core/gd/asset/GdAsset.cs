@@ -8,7 +8,6 @@ using Root.Core.Gd.Util;
 
 namespace Root.Core.Gd.Asset;
 
-[GlobalClass]
 public partial class GdAsset : RefCounted
 {
 	private static readonly ConditionalWeakTable<IAsset, GdAsset> Wrappers = [];

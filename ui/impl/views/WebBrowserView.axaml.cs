@@ -96,12 +96,15 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 			case WindowsWebView2EnvironmentRequestedEventArgs args:
 				args.IsInPrivateModeEnabled = true;
 				break;
+
 			case AppleWKWebViewEnvironmentRequestedEventArgs args:
 				args.NonPersistentDataStore = true;
 				break;
+
 			case GtkWebViewEnvironmentRequestedEventArgs args:
 				args.EphemeralDataManager = true;
 				break;
+
 			/* TODO: case LinuxWpeWebViewEnvironmentRequestedEventArgs args:
 				args.PreferWebKitGtkInstead = true;
 				break; */

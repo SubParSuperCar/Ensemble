@@ -22,10 +22,10 @@ public partial class LuaExecutor
 		env[nameof(help)] = new LuaFunction(help);
 		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
 		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
-		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 		env[nameof(clear_log)] = new LuaFunction(clear_log);
 		env[nameof(dump_env)] = new LuaFunction(dump_env);
 		env[nameof(dump_input_map)] = new LuaFunction(dump_input_map);
+		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 	}
 
 	private static ValueTask<int> print(
@@ -143,30 +143,6 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static async ValueTask<int> get_pub_ip4_addr(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		try
-		{
-			Log.Debug("Querying {Url}...", PublicIp4AddressSourceUrl);
-
-			var address = (await Http.Client.GetStringAsync(
-				PublicIp4AddressSourceUrl,
-				cancellationToken).ConfigureAwait(false)).Trim();
-
-			Log.Information("Public IPv4 address: {Address}", address);
-			context.Return(address);
-		}
-		catch (HttpRequestException exception)
-		{
-			Log.Error(exception, "Failed to get public IPv4 address");
-			context.Return();
-		}
-
-		return 0;
-	}
-
 	private static ValueTask<int> clear_log(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -272,4 +248,28 @@ public partial class LuaExecutor
 			.Replace("\\", @"\\", StringComparison.Ordinal)
 			.Replace("\r", "\\r", StringComparison.Ordinal)
 			.Replace("\n", "\\n", StringComparison.Ordinal);
+
+	private static async ValueTask<int> get_pub_ip4_addr(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		try
+		{
+			Log.Debug("Querying {Url}...", PublicIp4AddressSourceUrl);
+
+			var address = (await Http.Client.GetStringAsync(
+				PublicIp4AddressSourceUrl,
+				cancellationToken).ConfigureAwait(false)).Trim();
+
+			Log.Information("Public IPv4 address: {Address}", address);
+			context.Return(address);
+		}
+		catch (HttpRequestException exception)
+		{
+			Log.Error(exception, "Failed to get public IPv4 address");
+			context.Return();
+		}
+
+		return 0;
+	}
 }

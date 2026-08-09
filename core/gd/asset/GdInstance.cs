@@ -6,7 +6,6 @@ using Root.Core.Gd.Util;
 
 namespace Root.Core.Gd.Asset;
 
-[GlobalClass]
 public partial class GdInstance : RefCounted
 {
 	private static readonly ConditionalWeakTable<IInstance, GdInstance> Wrappers = [];

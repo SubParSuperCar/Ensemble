@@ -5,7 +5,6 @@ using Root.Core.Api.Plot;
 
 namespace Root.Core.Gd.Plot;
 
-[GlobalClass]
 public partial class GdPlots : RefCounted
 {
 	[Signal]

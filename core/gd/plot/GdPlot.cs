@@ -6,7 +6,6 @@ using Root.Core.Gd.Asset;
 
 namespace Root.Core.Gd.Plot;
 
-[GlobalClass]
 public partial class GdPlot : RefCounted
 {
 	[Signal]

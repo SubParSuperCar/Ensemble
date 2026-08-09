@@ -123,7 +123,7 @@ public partial class SysInfoLogger : Node
 		var width = lines.Max(line => line.Key.Length);
 
 		foreach (var (key, value) in lines)
-			builder.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value.Trim()}");
+			builder.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value}");
 
 		return builder.ToString().TrimEnd();
 	}
@@ -133,6 +133,6 @@ public partial class SysInfoLogger : Node
 		var text = value?.ToString();
 
 		if (!string.IsNullOrWhiteSpace(text))
-			lines.Add((key, text));
+			lines.Add((key, text.Trim()));
 	}
 }

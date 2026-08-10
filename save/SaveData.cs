@@ -20,8 +20,6 @@ public sealed class SaveInstance
 	public Vector3 Position { get; init; }
 	public Quaternion Rotation { get; init; }
 
-	// ReSharper disable once CollectionNeverUpdated.Global
-	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 #pragma warning disable MA0016
 	public Dictionary<string, Variant>? Properties { get; init; }
 #pragma warning restore MA0016

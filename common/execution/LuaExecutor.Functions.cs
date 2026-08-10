@@ -3,6 +3,7 @@ using Godot;
 using Lua;
 using Root.Common.Logging;
 using Root.Common.Network;
+using Root.Scripts.Main;
 using Serilog;
 using Environment = System.Environment;
 
@@ -18,13 +19,14 @@ public partial class LuaExecutor
 	private static void AddFunctions(LuaTable env)
 	{
 		env[nameof(print)] = new LuaFunction(print);
-		env[nameof(quit)] = new LuaFunction(quit);
 		env[nameof(help)] = new LuaFunction(help);
+		env[nameof(quit)] = new LuaFunction(quit);
 		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
-		env[nameof(clear_insts)] = new LuaFunction(clear_insts);
-		env[nameof(clear_log)] = new LuaFunction(clear_log);
-		env[nameof(dump_env)] = new LuaFunction(dump_env);
-		env[nameof(dump_input_map)] = new LuaFunction(dump_input_map);
+		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
+		env[nameof(clr_log)] = new LuaFunction(clr_log);
+		env[nameof(set_time)] = new LuaFunction(set_time);
+		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
+		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 	}
 
@@ -43,19 +45,6 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> quit(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		if (context.ArgumentCount > 0)
-			Environment.Exit(0);
-		else
-			(Engine.GetMainLoop() as SceneTree)?.Quit();
-
-		context.Return();
-		return default;
-	}
-
 	private static ValueTask<int> help(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -69,6 +58,19 @@ public partial class LuaExecutor
 			.Order(StringComparer.Ordinal);
 
 		Log.Information("Custom functions in _ENV:\n{Functions}", string.Join(Environment.NewLine, functions));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> quit(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		if (context.ArgumentCount > 0)
+			Environment.Exit(0);
+		else
+			(Engine.GetMainLoop() as SceneTree)?.Quit();
 
 		context.Return();
 		return default;
@@ -122,7 +124,7 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> clear_insts(
+	private static ValueTask<int> clr_insts(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
@@ -143,7 +145,7 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> clear_log(
+	private static ValueTask<int> clr_log(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
@@ -153,7 +155,33 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> dump_env(
+	private static ValueTask<int> set_time(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var timeOfDay = Main.Game?.GetNode("Sky/TimeOfDay");
+		if (timeOfDay is null)
+			goto Return;
+
+		if (context.ArgumentCount is 0)
+		{
+			timeOfDay.Set("game_time_enabled", true);
+			timeOfDay.Set("system_sync", true);
+
+			goto Return;
+		}
+
+		var time = context.GetArgument<float>(0) % 24;
+		timeOfDay.Set("game_time_enabled", false);
+		timeOfDay.Set("system_sync", false);
+		timeOfDay.Set("current_time", time);
+
+		Return:
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> dmp_env(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
@@ -185,19 +213,19 @@ public partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
+				{
+					var childTable = luaValue.Read<LuaTable>();
+
+					if (visited.Contains(childTable))
+						Log.Information("{Path} = <already visited>", childPath);
+					else
 					{
-						var childTable = luaValue.Read<LuaTable>();
-
-						if (visited.Contains(childTable))
-							Log.Information("{Path} = <already visited>", childPath);
-						else
-						{
-							Log.Information("{Path} = <table>", childPath);
-							DumpTable(childTable, childPath, visited);
-						}
-
-						break;
+						Log.Information("{Path} = <table>", childPath);
+						DumpTable(childTable, childPath, visited);
 					}
+
+					break;
+				}
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -222,15 +250,15 @@ public partial class LuaExecutor
 		}
 	}
 
-	private static ValueTask<int> dump_input_map(
+	private static ValueTask<int> dmp_inp_map(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
 		Log.Information("Contents of InputMap:");
 
 		foreach (var action in InputMap.GetActions()
-					 .Select(a => a.ToString())
-					 .Order(StringComparer.Ordinal))
+			         .Select(a => a.ToString())
+			         .Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
 

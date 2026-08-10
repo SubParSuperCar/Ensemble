@@ -6,7 +6,9 @@ namespace Root.Scripts.Main;
 [GlobalClass]
 public partial class Main : Node
 {
-	private Node? _gameScene;
+	private Node? _game;
+
+	public static Node? Game { get; private set; }
 
 	[Export] public PackedScene GameScene { get; set; } = null!;
 
@@ -35,11 +37,13 @@ public partial class Main : Node
 	{
 		Log.Information("Session started (mode: {Mode})", GSessionManager.Mode);
 
-		if (_gameScene is not null)
+		if (_game is not null)
 			return;
 
-		_gameScene = GameScene.Instantiate();
-		AddChild(_gameScene);
+		_game = GameScene.Instantiate();
+		AddChild(_game);
+
+		Game = _game;
 	}
 
 	private void OnSessionStopped()
@@ -48,10 +52,10 @@ public partial class Main : Node
 
 		GCore.Reset();
 
-		if (_gameScene is null)
+		if (_game is null)
 			return;
 
-		_gameScene.QueueFree();
-		_gameScene = null;
+		_game.QueueFree();
+		_game = null;
 	}
 }

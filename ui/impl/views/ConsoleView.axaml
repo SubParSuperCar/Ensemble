@@ -80,7 +80,7 @@
                     ShowLineNumbers="True">
 
                     <ae:TextEditor.Background>
-                        <SolidColorBrush Color="Black" Opacity="0.1875" />
+                        <SolidColorBrush Color="Black" Opacity="0.21875" />
                     </ae:TextEditor.Background>
                 </ae:TextEditor>
 

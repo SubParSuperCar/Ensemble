@@ -8,11 +8,9 @@ namespace Root.Scripts.Plot;
 [GlobalClass]
 public partial class PlotHandle : Node3D
 {
-	private const float GridScale = 0.5f;
+	private const float GridToWorldScale = 0.5f;
 
-	private Basis _boundaryBasis;
-	private Vector3 _boundarySize;
-	private Node3D _instances = null!;
+	private Node3D _staticInstances = null!;
 	private Vector3? _originPosition;
 	private GdPlot _plot = null!;
 
@@ -30,14 +28,18 @@ public partial class PlotHandle : Node3D
 
 	public Vector3 OriginPosition => _originPosition ??= CalculateOriginPosition();
 
+	// ReSharper disable once MemberCanBePrivate.Global
+	public Basis BoundaryBasis { get; private set; }
+	public Vector3 BoundarySize { get; private set; }
+
 	public override void _Ready()
 	{
 		_plot = GPlots.Get(Id)!;
-		_instances = GetNode<Node3D>("Instances/Static");
+		_staticInstances = GetNode<Node3D>("Instances/Static");
 
 		var boundary = GetNode<CollisionShape3D>("Boundary/Definition");
-		_boundaryBasis = boundary.GlobalBasis;
-		_boundarySize = boundary.Shape.GetDebugMesh().GetAabb().Size;
+		BoundaryBasis = boundary.GlobalBasis;
+		BoundarySize = boundary.Shape.GetDebugMesh().GetAabb().Size / GridToWorldScale;
 
 		foreach (var instance in _plot.Instances.GetAll())
 			OnInstanceAdded(instance);
@@ -53,9 +55,9 @@ public partial class PlotHandle : Node3D
 		var handle = packed.Instantiate<AssetHandle>();
 		handle.InstanceId = instance.Id;
 
-		_instances.AddChild(handle);
+		_staticInstances.AddChild(handle);
 
-		handle.GlobalPosition = OriginPosition + instance.Position * GridScale;
+		handle.GlobalPosition = OriginPosition + instance.Position * GridToWorldScale;
 		handle.Quaternion = instance.Rotation;
 
 		InstanceHandles.Add(instance.Id, handle);

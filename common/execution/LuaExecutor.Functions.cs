@@ -80,9 +80,9 @@ public partial class LuaExecutor
 	{
 		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgument<int>(1);
-		const int positionMinMax = 31;
+		var positionRange = GPlotManager.GetHandle(plotId).BoundarySize / 2 - Vector3.One;
 
-		var instances = GPlots.Get(plotId)!.Instances;
+		var instances = GPlots.Get(plotId)!.Instances; // TODO: Rename 'Get'
 		var assetIds = GAssets.GetAll().Select(a => a.Id).ToArray();
 		var random = Random.Shared;
 
@@ -98,9 +98,9 @@ public partial class LuaExecutor
 			do
 			{
 				position = new Vector3(
-					random.Next(-positionMinMax, positionMinMax),
-					random.Next(-positionMinMax, positionMinMax) + 32,
-					random.Next(-positionMinMax, positionMinMax));
+					random.Next(-(int)positionRange.X, (int)positionRange.X),
+					random.Next(1, (int)positionRange.Y * 2 + 1),
+					random.Next(-(int)positionRange.Z, (int)positionRange.Z));
 
 				axis = position.Normalized();
 			} while (!axis.IsNormalized());

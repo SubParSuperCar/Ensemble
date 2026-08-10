@@ -12,13 +12,31 @@ public partial class Game : Node3D
 #if DEBUG
 		{
 			const int plotId = 2;
+
 			var plot = GPlots.Get(plotId);
 			var instances = plot!.Instances;
 
-			const int assetId = 0;
-			var position = Vector3.Down * 15;
-			var rotation = Quaternion.Identity;
-			instances.Add(assetId, position, rotation);
+			var assets = GAssets.GetAll();
+			var count = assets.Count;
+
+			if (count > 0)
+			{
+				for (var i = 0; i < count; i++)
+				{
+					const float radius = 5f;
+					const float y = -15f;
+
+					var asset = assets[i];
+					var angle = i * Mathf.Tau / count;
+
+					var position = new Vector3(
+						Mathf.Cos(angle) * radius,
+						y,
+						Mathf.Sin(angle) * radius);
+
+					instances.Add(asset.Id, position, Quaternion.Identity);
+				}
+			}
 
 			GPlayers.Add(string.Empty, "Larpje139 (Test)");
 			GPlayers.Add(string.Empty, "Pepsi bottle guzzler (Test)");

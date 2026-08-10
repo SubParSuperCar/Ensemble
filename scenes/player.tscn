@@ -47,7 +47,7 @@ mesh = SubResource("PrismMesh_fjrip")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
 visibility_range_end = 32.0
 pixel_size = 0.001
-offset = Vector2(0, 48)
+offset = Vector2(0, 32)
 billboard = 1
 double_sided = false
 no_depth_test = true
@@ -56,6 +56,7 @@ render_priority = 1
 text = "\"<Player Name>\"
 (<Player ID>)
 ↓"
+font_size = 24
 
 [node name="Flashlight" type="SpotLight3D" parent="Character" unique_id=1841905227]
 transform = Transform3D(-1, 1.6980506e-08, -8.5757826e-08, 0, 0.9809552, 0.19423436, 8.742278e-08, 0.19423436, -0.9809552, 0, -0.5, 0.5)

@@ -18,7 +18,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		writer.Write(FormatVersion);
 
 		writer.Write(data.Version);
-		writer.Write(data.CreatedAt.UtcTicks);
+		writer.Write(data.UtcCreatedAt.UtcTicks);
 
 		writer.Write(data.Instances.Count);
 
@@ -67,7 +67,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		var save = new SaveData
 		{
 			Version = reader.ReadUInt16(),
-			CreatedAt = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero)
+			UtcCreatedAt = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero)
 		};
 
 		// Signed counts make corruption easier to detect.

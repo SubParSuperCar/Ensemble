@@ -6,7 +6,7 @@ namespace Root.Save;
 public sealed class SaveData
 {
 	public ushort Version { get; init; } = 1;
-	public DateTimeOffset CreatedAt { get; init; } = DateTimeOffset.UtcNow;
+	public DateTimeOffset UtcCreatedAt { get; init; } = DateTimeOffset.UtcNow;
 
 #pragma warning disable MA0016
 	public List<SaveInstance> Instances { get; } = [];

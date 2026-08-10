@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
@@ -36,9 +35,6 @@ public partial class GameViewModel : ViewModelBase
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
 	public partial PlotSelectorViewModel? PlotSelector { get; set; }
-
-	[RelayCommand]
-	private static void StopSession() => GSessionManager.StopSession();
 
 	protected override void OnDispose()
 	{

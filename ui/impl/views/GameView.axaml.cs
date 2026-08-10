@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
 
@@ -10,4 +11,6 @@ public partial class GameView : UserControl, IViewFor<GameViewModel>
 	{
 		InitializeComponent();
 	}
+
+	private void Button_DoubleTapped(object? sender, TappedEventArgs e) => GSessionManager.StopSession();
 }

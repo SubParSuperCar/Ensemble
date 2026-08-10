@@ -35,9 +35,9 @@
             MinWidth="256" MaxWidth="384" MaxHeight="256" />
 
         <Button
-            Content="&lt;- Menu"
-            Command="{Binding StopSessionCommand}"
-            ToolTip.Tip="Stops the current session."
+            Content="&lt;- Menu (2x)"
+            DoubleTapped="Button_DoubleTapped"
+            ToolTip.Tip="Stops the current session. (Double-click)"
             Background="{DynamicResource TranslucentBackgroundBrush}"
             HorizontalAlignment="Left" VerticalAlignment="Top" />
     </Grid>

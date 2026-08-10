@@ -56,13 +56,24 @@
                         TextWrapping="Wrap" />
                 </ScrollViewer>
 
-                <NumericUpDown
-                    Value="{Binding #Output.FontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                    PlaceholderText="&lt;Font Size&gt;"
-                    ToolTip.Tip="Font Size (Pixels)"
-                    Background="{DynamicResource TranslucentBackgroundBrush}"
+                <StackPanel
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Margin="0,0,22,4" />
+                    Margin="0,0,22,4"
+                    Spacing="4"
+                    Orientation="Horizontal">
+
+                    <Button
+                        Content="Open User Data Dir"
+                        Command="{Binding OpenUserDataDirCommand}"
+                        ToolTip.Tip="Opens the directory where user data are stored."
+                        Background="{DynamicResource TranslucentBackgroundBrush}" />
+
+                    <NumericUpDown
+                        Value="{Binding #Output.FontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                        PlaceholderText="&lt;Font Size&gt;"
+                        ToolTip.Tip="Font Size (Pixels)"
+                        Background="{DynamicResource TranslucentBackgroundBrush}" />
+                </StackPanel>
             </Grid>
 
             <GridSplitter

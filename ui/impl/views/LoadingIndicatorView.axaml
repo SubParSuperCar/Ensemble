@@ -14,7 +14,7 @@
             Mode="ThreeDots"
             Foreground="OrangeRed"
             MaxWidth="256" MaxHeight="256"
-            SpeedRatio="2" />
+            SpeedRatio="3" />
 
         <TextBlock
             Text="Loading&#x2026;"

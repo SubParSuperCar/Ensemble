@@ -1,11 +1,14 @@
 using System.Text;
-using Avalonia.Threading;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Godot;
 using Root.Common.Execution;
+using Root.Common.Globals;
 using Root.Common.Logging;
 using Root.Ui.Impl.Abstractions;
+using Dispatcher = Avalonia.Threading.Dispatcher;
+using Environment = System.Environment;
 
 namespace Root.Ui.Impl.ViewModels;
 
@@ -25,6 +28,9 @@ public partial class ConsoleViewModel : ViewModelBase
 			"print(string.format(\"Hello, %s!\", _VERSION))\nhelp()\n");
 
 	protected override void OnDispose() => LogHistorySinkVolatile.Updated -= OnLogHistoryUpdated;
+
+	[RelayCommand]
+	private static void OpenUserDataDir() => OS.ShellOpen(ProjectSettings.GlobalizePath(CommonConstants.UserScheme));
 
 	[RelayCommand]
 	private static void Execute() => _ = LuaExecutor.Execute(Source.Text);

@@ -67,7 +67,7 @@ public partial class SessionManager
 			RunSafely(() =>
 			{
 				var plotId = plot["plotId"].As<int>();
-				var gdPlot = GPlots.Get(plotId);
+				var gdPlot = GPlots.GetPlot(plotId);
 
 				if (gdPlot is null)
 					return;
@@ -122,7 +122,7 @@ public partial class SessionManager
 	private static void RpcSyncOwnerChanged(int plotId, string playerId) =>
 		RunSafely(() =>
 		{
-			var plot = GPlots.Get(plotId);
+			var plot = GPlots.GetPlot(plotId);
 			plot!.Occupants.SetOwner(playerId);
 		});
 

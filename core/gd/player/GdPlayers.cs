@@ -37,7 +37,7 @@ public partial class GdPlayers : RefCounted
 				return wrapper;
 			});
 
-	public GdPlayer? Get(string id) =>
+	public GdPlayer? GetPlayer(string id) =>
 		Guid.TryParse(id, out var guid) && _source.All.TryGetValue(guid, out var player)
 			? GdPlayer.From(player)
 			: null;

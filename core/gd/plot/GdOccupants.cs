@@ -41,7 +41,7 @@ public partial class GdOccupants : RefCounted
 				return wrapper;
 			});
 
-	public GdOccupant? Get(string playerId) =>
+	public GdOccupant? GetOccupant(string playerId) =>
 		Guid.TryParse(playerId, out var guid) && _source.All.TryGetValue(guid, out var occupant)
 			? GdOccupant.From(occupant)
 			: null;

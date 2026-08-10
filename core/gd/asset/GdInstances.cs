@@ -32,7 +32,7 @@ public partial class GdInstances : RefCounted
 				return wrapper;
 			});
 
-	public GdInstance? Get(int id) => _source.TryGet(id, out var instance) ? GdInstance.From(instance) : null;
+	public GdInstance? GetInstance(int id) => _source.TryGet(id, out var instance) ? GdInstance.From(instance) : null;
 
 	public Array<GdInstance> GetAll()
 	{

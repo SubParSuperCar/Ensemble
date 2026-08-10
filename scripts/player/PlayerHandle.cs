@@ -31,7 +31,7 @@ public partial class PlayerHandle : Node3D
 
 	public override void _EnterTree()
 	{
-		_player = GPlayers.Get(Id)!;
+		_player = GPlayers.GetPlayer(Id)!;
 
 		_occupant = GPlots.GetOccupant(Id)!;
 		_occupant.PlotChanged += OnPlotChanged;

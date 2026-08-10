@@ -31,7 +31,7 @@ public partial class GdPlots : RefCounted
 				return wrapper;
 			});
 
-	public GdPlot? Get(int id) => _source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
+	public GdPlot? GetPlot(int id) => _source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
 
 	public Array<GdPlot> GetAll()
 	{

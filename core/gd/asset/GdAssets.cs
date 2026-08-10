@@ -32,7 +32,7 @@ public partial class GdAssets : RefCounted
 				return wrapper;
 			});
 
-	public GdAsset? Get(int id) => _source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
+	public GdAsset? GetAsset(int id) => _source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
 
 	public Array<GdAsset> GetAll()
 	{

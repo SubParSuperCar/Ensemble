@@ -84,7 +84,7 @@ public partial class LuaExecutor
 		var count = context.GetArgument<int>(1);
 		var positionRange = GPlotManager.GetHandle(plotId).BoundarySize / 2 - Vector3.One;
 
-		var instances = GPlots.Get(plotId)!.Instances; // TODO: Rename 'Get'
+		var instances = GPlots.GetPlot(plotId)!.Instances;
 		var assetIds = GAssets.GetAll().Select(a => a.Id).ToArray();
 		var random = Random.Shared;
 
@@ -129,7 +129,7 @@ public partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var plotId = context.GetArgument<int>(0);
-		var instances = GPlots.Get(plotId)!.Instances;
+		var instances = GPlots.GetPlot(plotId)!.Instances;
 		var count = instances.Count;
 
 		var stopwatch = Stopwatch.StartNew();
@@ -168,6 +168,8 @@ public partial class LuaExecutor
 			timeOfDay.Set("game_time_enabled", true);
 			timeOfDay.Set("system_sync", true);
 
+			Log.Information("Synced lighting time to system clock");
+
 			goto Return;
 		}
 
@@ -176,7 +178,9 @@ public partial class LuaExecutor
 		timeOfDay.Set("system_sync", false);
 		timeOfDay.Set("current_time", time);
 
-		Return:
+		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
+
+	Return:
 		context.Return();
 		return default;
 	}
@@ -213,19 +217,19 @@ public partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
-				{
-					var childTable = luaValue.Read<LuaTable>();
-
-					if (visited.Contains(childTable))
-						Log.Information("{Path} = <already visited>", childPath);
-					else
 					{
-						Log.Information("{Path} = <table>", childPath);
-						DumpTable(childTable, childPath, visited);
-					}
+						var childTable = luaValue.Read<LuaTable>();
 
-					break;
-				}
+						if (visited.Contains(childTable))
+							Log.Information("{Path} = <already visited>", childPath);
+						else
+						{
+							Log.Information("{Path} = <table>", childPath);
+							DumpTable(childTable, childPath, visited);
+						}
+
+						break;
+					}
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -257,8 +261,8 @@ public partial class LuaExecutor
 		Log.Information("Contents of InputMap:");
 
 		foreach (var action in InputMap.GetActions()
-			         .Select(a => a.ToString())
-			         .Order(StringComparer.Ordinal))
+					 .Select(a => a.ToString())
+					 .Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
 

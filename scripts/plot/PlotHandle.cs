@@ -9,10 +9,10 @@ namespace Root.Scripts.Plot;
 public partial class PlotHandle : Node3D
 {
 	private const float GridToWorldScale = 0.5f;
-
-	private Node3D _staticInstances = null!;
 	private Vector3? _originPosition;
 	private GdPlot _plot = null!;
+
+	private Node3D _staticInstances = null!;
 
 	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
@@ -34,7 +34,7 @@ public partial class PlotHandle : Node3D
 
 	public override void _Ready()
 	{
-		_plot = GPlots.Get(Id)!;
+		_plot = GPlots.GetPlot(Id)!;
 		_staticInstances = GetNode<Node3D>("Instances/Static");
 
 		var boundary = GetNode<CollisionShape3D>("Boundary/Definition");

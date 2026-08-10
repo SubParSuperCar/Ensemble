@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://dvplsppjl2g8p"]
+
+[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_3jc1b"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3jc1b"]
+points = PackedVector3Array(0, 0.25, 0, 0.048747063, -0.25, -0.2452036, 0, -0.25, -0.25, -0.048796013, -0.25, -0.2452036, -0.09568325, -0.25, -0.23101018, -0.13889977, -0.25, -0.20790917, -0.17678152, -0.25, -0.17678152, -0.20790917, -0.25, -0.13889977, -0.23101018, -0.25, -0.09568325, -0.2452036, -0.25, -0.048796013, -0.25, -0.25, 0, -0.2452036, -0.25, 0.048747063, -0.23101018, -0.25, 0.09563431, -0.20790917, -0.25, 0.13885081, -0.17678152, -0.25, 0.17673257, -0.13889977, -0.25, 0.20786023, -0.09568325, -0.25, 0.23096123, -0.048796013, -0.25, 0.24515465, 0, -0.25, 0.25, 0.048747063, -0.25, 0.24515465, 0.09563431, -0.25, 0.23096123, 0.13885081, -0.25, 0.20786023, 0.17673257, -0.25, 0.17673257, 0.20786023, -0.25, 0.13885081, 0.23096123, -0.25, 0.09563431, 0.24515465, -0.25, 0.048747063, 0.25, -0.25, 0, 0.24515465, -0.25, -0.048796013, 0.23096123, -0.25, -0.09568325, 0.20786023, -0.25, -0.13889977, 0.17673257, -0.25, -0.17678152, 0.13885081, -0.25, -0.20790917, 0.09563431, -0.25, -0.23101018)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_gee14"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3jc1b"]
+shading_mode = 0
+albedo_texture = SubResource("PlaceholderTexture2D_gee14")
+uv1_triplanar = true
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_dvw24"]
+material = SubResource("StandardMaterial3D_3jc1b")
+top_radius = 0.0
+bottom_radius = 0.25
+height = 0.5
+radial_segments = 32
+rings = 0
+
+[node name="Cone" type="RigidBody3D" unique_id=726135581]
+script = ExtResource("1_3jc1b")
+AssetId = 3
+AssetName = &"Cone"
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF"
+})
+MaxInstanceCount = 750
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=2123749390]
+shape = SubResource("ConvexPolygonShape3D_3jc1b")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
+mesh = SubResource("CylinderMesh_dvw24")

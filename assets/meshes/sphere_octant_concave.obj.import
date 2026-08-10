@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ccsjuas4ol5au"
+path="res://.godot/imported/sphere_octant_concave.obj-26069c7753508a937df1b01e6b9608ca.mesh"
+
+[deps]
+
+files=["res://.godot/imported/sphere_octant_concave.obj-26069c7753508a937df1b01e6b9608ca.mesh"]
+
+source_file="res://assets/meshes/sphere_octant_concave.obj"
+dest_files=["res://.godot/imported/sphere_octant_concave.obj-26069c7753508a937df1b01e6b9608ca.mesh", "res://.godot/imported/sphere_octant_concave.obj-26069c7753508a937df1b01e6b9608ca.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

@@ -1,27 +1,29 @@
 [gd_scene format=3 uid="uid://oyvwnup33swu"]
 
-[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_irkkq"]
+[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_hyqjw"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_irkkq"]
 radius = 0.25
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_vtaks"]
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_gee14"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0tnpc"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hyqjw"]
 shading_mode = 0
-albedo_texture = SubResource("PlaceholderTexture2D_vtaks")
+albedo_color = Color(0, 0, 1, 1)
+albedo_texture = SubResource("PlaceholderTexture2D_gee14")
+uv1_triplanar = true
 
 [sub_resource type="SphereMesh" id="SphereMesh_ruqy6"]
-material = SubResource("StandardMaterial3D_0tnpc")
+material = SubResource("StandardMaterial3D_hyqjw")
 radius = 0.25
 height = 0.5
 radial_segments = 32
 rings = 16
 
-[node name="Ball" type="RigidBody3D" unique_id=726135581]
-script = ExtResource("1_irkkq")
+[node name="Sphere" type="RigidBody3D" unique_id=726135581]
+script = ExtResource("1_hyqjw")
 AssetId = 1
-AssetName = &"Ball"
+AssetName = &"Sphere"
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF"
 })

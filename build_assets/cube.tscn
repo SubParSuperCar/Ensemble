@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d1dlsgrbbr71y"]
 
-[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_qxhqx"]
+[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_gvw6i"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(0.5, 0.5, 0.5)
@@ -9,16 +9,18 @@ size = Vector3(0.5, 0.5, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u5sy4"]
 shading_mode = 0
+albedo_color = Color(1, 0, 0, 1)
 albedo_texture = SubResource("PlaceholderTexture2D_gee14")
+uv1_triplanar = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
 material = SubResource("StandardMaterial3D_u5sy4")
 size = Vector3(0.5, 0.5, 0.5)
 
-[node name="Block" type="RigidBody3D" unique_id=726135581]
-script = ExtResource("1_qxhqx")
+[node name="Cube" type="RigidBody3D" unique_id=726135581]
+script = ExtResource("1_gvw6i")
 AssetId = null
-AssetName = &"Block"
+AssetName = &"Cube"
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF"
 })

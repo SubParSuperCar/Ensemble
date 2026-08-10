@@ -21,6 +21,7 @@ public partial class LuaExecutor
 		env[nameof(print)] = new LuaFunction(print);
 		env[nameof(help)] = new LuaFunction(help);
 		env[nameof(quit)] = new LuaFunction(quit);
+		env[nameof(wait)] = new LuaFunction(wait);
 		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
 		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
 		env[nameof(clr_log)] = new LuaFunction(clr_log);
@@ -74,6 +75,17 @@ public partial class LuaExecutor
 
 		context.Return();
 		return default;
+	}
+
+	private static async ValueTask<int> wait(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var time = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 60;
+		await Task.Delay(time, cancellationToken).ConfigureAwait(false);
+
+		context.Return();
+		return 0;
 	}
 
 	private static ValueTask<int> add_test_insts(
@@ -180,7 +192,7 @@ public partial class LuaExecutor
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
 
-	Return:
+		Return:
 		context.Return();
 		return default;
 	}
@@ -217,19 +229,19 @@ public partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
+				{
+					var childTable = luaValue.Read<LuaTable>();
+
+					if (visited.Contains(childTable))
+						Log.Information("{Path} = <already visited>", childPath);
+					else
 					{
-						var childTable = luaValue.Read<LuaTable>();
-
-						if (visited.Contains(childTable))
-							Log.Information("{Path} = <already visited>", childPath);
-						else
-						{
-							Log.Information("{Path} = <table>", childPath);
-							DumpTable(childTable, childPath, visited);
-						}
-
-						break;
+						Log.Information("{Path} = <table>", childPath);
+						DumpTable(childTable, childPath, visited);
 					}
+
+					break;
+				}
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -261,8 +273,8 @@ public partial class LuaExecutor
 		Log.Information("Contents of InputMap:");
 
 		foreach (var action in InputMap.GetActions()
-					 .Select(a => a.ToString())
-					 .Order(StringComparer.Ordinal))
+			         .Select(a => a.ToString())
+			         .Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
 

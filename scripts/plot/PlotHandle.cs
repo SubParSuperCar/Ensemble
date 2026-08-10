@@ -8,11 +8,13 @@ namespace Root.Scripts.Plot;
 [GlobalClass]
 public partial class PlotHandle : Node3D
 {
+	private const float GridScale = 0.5f;
+
 	private Basis _boundaryBasis;
 	private Vector3 _boundarySize;
 	private Node3D _instances = null!;
+	private Vector3? _originPosition;
 	private GdPlot _plot = null!;
-	private Vector3? _spawnLocation;
 
 	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
@@ -26,7 +28,7 @@ public partial class PlotHandle : Node3D
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int MaxTotalInstanceCount { get; set; }
 
-	public Vector3 SpawnLocation => _spawnLocation ??= CalculateSpawnLocation();
+	public Vector3 OriginPosition => _originPosition ??= CalculateOriginPosition();
 
 	public override void _Ready()
 	{
@@ -51,11 +53,12 @@ public partial class PlotHandle : Node3D
 		var handle = packed.Instantiate<AssetHandle>();
 		handle.InstanceId = instance.Id;
 
-		handle.Position = instance.Position;
+		_instances.AddChild(handle);
+
+		handle.GlobalPosition = OriginPosition + instance.Position * GridScale;
 		handle.Quaternion = instance.Rotation;
 
 		InstanceHandles.Add(instance.Id, handle);
-		_instances.AddChild(handle);
 	}
 
 	private void OnInstanceRemoved(GdInstance instance)
@@ -64,7 +67,7 @@ public partial class PlotHandle : Node3D
 			handle.QueueFree();
 	}
 
-	private Vector3 CalculateSpawnLocation()
+	private Vector3 CalculateOriginPosition()
 	{
 		var baseCollider = GetNode<CollisionShape3D>("Base/Collider");
 

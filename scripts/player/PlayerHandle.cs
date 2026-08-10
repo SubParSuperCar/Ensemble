@@ -70,7 +70,7 @@ public partial class PlayerHandle : Node3D
 			return;
 
 		var handle = GPlotManager.GetHandle(plot);
-		(Character ?? Controller)!.GlobalPosition = handle.SpawnLocation + SpawnOffset;
+		(Character ?? Controller)!.GlobalPosition = handle.OriginPosition + SpawnOffset;
 	}
 
 	private Vector3 CalculateSpawnOffset()

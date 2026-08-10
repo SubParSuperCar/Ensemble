@@ -23,8 +23,8 @@ public partial class Game : Node3D
 			{
 				for (var i = 0; i < count; i++)
 				{
-					const float radius = 5f;
-					const float y = -15f;
+					const float radius = 5;
+					const float y = 1;
 
 					var asset = assets[i];
 					var angle = i * Mathf.Tau / count;

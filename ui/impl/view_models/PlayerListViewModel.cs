@@ -31,7 +31,7 @@ public partial class PlayerListViewModel : ViewModelBase
 	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
 		var peerId = GSessionManager.PeerIdsByPlayerId.GetValueOrDefault(gdPlayer.Id, None);
-		var player = new Player(gdPlayer.Name, peerId);
+		var player = new Player(gdPlayer.Name, gdPlayer.Id, peerId);
 
 		var index = Players
 			.TakeWhile(p => string.Compare(p.Name, player.Name, StringComparison.Ordinal) < 0)
@@ -54,4 +54,4 @@ public partial class PlayerListViewModel : ViewModelBase
 	}
 }
 
-public record Player(string Name, int PeerId);
+public record Player(string Name, string Id, int PeerId);

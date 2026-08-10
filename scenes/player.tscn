@@ -17,7 +17,11 @@ material = SubResource("StandardMaterial3D_8p2pg")
 radial_segments = 4
 rings = 0
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qhqgy"]
+shading_mode = 0
+
 [sub_resource type="PrismMesh" id="PrismMesh_fjrip"]
+material = SubResource("StandardMaterial3D_qhqgy")
 size = Vector3(0.2, 0.2, 0.1)
 
 [node name="Player" type="Node3D" unique_id=1257470157]
@@ -38,3 +42,25 @@ mesh = SubResource("CapsuleMesh_agfs1")
 [node name="Forward Indicator" type="MeshInstance3D" parent="Character" unique_id=171823704]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0.5)
 mesh = SubResource("PrismMesh_fjrip")
+
+[node name="Nametag" type="Label3D" parent="Character" unique_id=1802129844]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+visibility_range_end = 32.0
+pixel_size = 0.001
+offset = Vector2(0, 48)
+billboard = 1
+double_sided = false
+no_depth_test = true
+fixed_size = true
+render_priority = 1
+text = "\"<Player Name>\"
+(<Player ID>)
+↓"
+
+[node name="Flashlight" type="SpotLight3D" parent="Character" unique_id=1841905227]
+transform = Transform3D(-1, 1.6980506e-08, -8.5757826e-08, 0, 0.9809552, 0.19423436, 8.742278e-08, 0.19423436, -0.9809552, 0, -0.5, 0.5)
+light_intensity_lumens = 375000.0
+light_temperature = 5000.0
+shadow_enabled = true
+spot_range = 10.0
+spot_attenuation = 0.0

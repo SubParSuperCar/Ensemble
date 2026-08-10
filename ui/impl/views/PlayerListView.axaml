@@ -24,12 +24,14 @@
                 Grid.Row="1"
                 ItemsSource="{Binding Players}"
                 SelectedItem="{Binding SelectedPlayer}"
-                IsHitTestVisible="False"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled">
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid ColumnDefinitions="*,16,Auto">
+                        <Grid
+                            ColumnDefinitions="*,16,Auto"
+                            ToolTip.Tip="{Binding Id}">
+
                             <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
                             <TextBlock Grid.Column="2" Text="{Binding PeerId, StringFormat='{}{0:000}'}" />
                         </Grid>

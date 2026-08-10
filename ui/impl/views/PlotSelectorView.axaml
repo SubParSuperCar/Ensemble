@@ -37,7 +37,12 @@
                             Background="Transparent">
 
                             <TextBlock Text="{Binding Id, StringFormat='{}{0:000}'}" />
-                            <TextBlock Grid.Column="2" Text="{Binding OwnerName}" TextTrimming="CharacterEllipsis" />
+
+                            <TextBlock
+                                Grid.Column="2" Text="{Binding OwnerName}"
+                                ToolTip.Tip="{Binding OwnerName}"
+                                TextTrimming="CharacterEllipsis" />
+
                             <TextBlock Grid.Column="4" Text="{Binding Occupancy}" />
                         </Grid>
                     </DataTemplate>

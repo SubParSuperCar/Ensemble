@@ -1,4 +1,5 @@
 using Godot;
+using Root.Core.Gd.Player;
 using Root.Core.Gd.Plot;
 using Root.Scripts.Camera;
 
@@ -10,6 +11,7 @@ namespace Root.Scripts.Player;
 public partial class PlayerHandle : Node3D
 {
 	private GdOccupant _occupant = null!;
+	private GdPlayer _player = null!;
 	private Vector3? _spawnOffset;
 
 	[Export] public Script CharacterControllerScript { get; set; } = null!;
@@ -29,6 +31,8 @@ public partial class PlayerHandle : Node3D
 
 	public override void _EnterTree()
 	{
+		_player = GPlayers.Get(Id)!;
+
 		_occupant = GPlots.GetOccupant(Id)!;
 		_occupant.PlotChanged += OnPlotChanged;
 	}
@@ -39,6 +43,9 @@ public partial class PlayerHandle : Node3D
 	{
 		Character = GetNode<CharacterBody3D>("Character");
 		Character.GlobalPosition = SpawnLocation;
+
+		var nametag = Character.GetNode<Label3D>("Nametag");
+		nametag.Text = $"\"{_player.Name}\"\n({Id})\n\u2193";
 
 		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
 			return;

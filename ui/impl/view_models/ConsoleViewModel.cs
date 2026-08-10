@@ -14,6 +14,8 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class ConsoleViewModel : ViewModelBase
 {
+	private static CancellationTokenSource _cts = new();
+
 	public ConsoleViewModel()
 	{
 		OnLogHistoryUpdated();
@@ -33,7 +35,14 @@ public partial class ConsoleViewModel : ViewModelBase
 	private static void OpenUserDataDir() => OS.ShellOpen(ProjectSettings.GlobalizePath(CommonConstants.UserScheme));
 
 	[RelayCommand]
-	private static void Execute() => _ = LuaExecutor.Execute(Source.Text);
+	private static void Execute() => _ = LuaExecutor.Execute(Source.Text, _cts.Token);
+
+	[RelayCommand]
+	private static async Task CancelAsync()
+	{
+		using var cts = Interlocked.Exchange(ref _cts, new CancellationTokenSource());
+		await cts.CancelAsync().ConfigureAwait(false);
+	}
 
 	private void OnLogHistoryUpdated() =>
 		Dispatcher.UIThread.Post(() =>

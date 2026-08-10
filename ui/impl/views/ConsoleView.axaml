@@ -53,14 +53,15 @@
                         SelectionForegroundBrush="Black"
                         Padding="1"
                         FontSize="10" FontWeight="UltraLight"
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap"
+                        LineSpacing="2" />
                 </ScrollViewer>
 
                 <StackPanel
+                    Orientation="Horizontal"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
                     Margin="0,0,22,4"
-                    Spacing="4"
-                    Orientation="Horizontal">
+                    Spacing="4">
 
                     <Button
                         Content="Open User Data Dir"
@@ -95,18 +96,34 @@
                     </ae:TextEditor.Background>
                 </ae:TextEditor>
 
-                <Border
-                    BorderBrush="DodgerBlue"
-                    BorderThickness="1"
+                <StackPanel
+                    Orientation="Horizontal"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Margin="0,0,22,4">
+                    Margin="0,0,22,4"
+                    Spacing="4">
 
-                    <Button
-                        Content="Execute Script"
-                        Command="{Binding ExecuteCommand}"
-                        ToolTip.Tip="Executes the entered script source code."
-                        Background="Black" Foreground="White" />
-                </Border>
+                    <Border
+                        BorderBrush="Red"
+                        BorderThickness="1">
+
+                        <Button
+                            Content="Cancel Runners"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="Stops all currently running Lua scripts."
+                            Background="Black" Foreground="White" />
+                    </Border>
+
+                    <Border
+                        BorderBrush="DodgerBlue"
+                        BorderThickness="1">
+
+                        <Button
+                            Content="Execute Script"
+                            Command="{Binding ExecuteCommand}"
+                            ToolTip.Tip="Executes the entered script source code."
+                            Background="Black" Foreground="White" />
+                    </Border>
+                </StackPanel>
             </Grid>
         </Grid>
     </Border>

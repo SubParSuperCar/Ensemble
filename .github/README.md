@@ -79,6 +79,13 @@ Any omitted aspects of the codebase are either too niche or too commonplace to w
 
 ---
 
+## Credits
+
+All `OBJ` files under `/assets/meshes/` except for `plots_base.obj` are created by "Shrimp Fried Koishi." Other
+third-party resources, such as NuGet packages and files under `/addons/` and `/lib/`, belong to their owners.
+
+---
+
 ## License
 
 This project is licensed under the terms of the license(s) found in [LICENSE.md](/LICENSE.md).

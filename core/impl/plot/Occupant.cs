@@ -12,7 +12,7 @@ public class Occupant(IPlayer player) : IOccupant
 
 	public event Action<IPlot?>? PlotChanged;
 
-	public void SetPlot(Plot? plot)
+	internal void SetPlot(Plot? plot)
 	{
 		if (ReferenceEquals(plot, Plot))
 			return;

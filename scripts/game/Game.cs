@@ -13,8 +13,8 @@ public partial class Game : Node3D
 		{
 			const int plotId = 2;
 
-			var plot = GPlots.GetPlot(plotId);
-			var instances = plot!.Instances;
+			var plot = GPlots.GetPlot(plotId)!;
+			var instances = plot.Instances;
 
 			var assets = GAssets.GetAll();
 			var count = assets.Count;

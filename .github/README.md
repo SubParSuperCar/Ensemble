@@ -47,29 +47,38 @@ The structure of this project is described in the high-level overview below:
       .NET.
     - `gd` serves as a bridge for accessing Core from GDScript and other Godot-specific types.
 
-- **Session Manager**: Contains the resources for managing session lifetimes. It supports both single-player and
-  multiplayer through Godot's Multiplayer API and also contains an RPC partial for network replication. Depending on the
-  context, it uses a hybrid of Host <-> Client and Client <-> Client networking. Like Core, it is divided into three
-  sections: `api`, `impl`, and
-  `gd`.
+- **Session Manager**: Manages session lifetimes. It supports both single-player and multiplayer through Godot's
+  Multiplayer API and also contains an RPC partial for network replication (W.I.P.). Depending on the context, it uses a
+  hybrid of Host <-> Client and Client <-> Client networking. Like Core, it is divided into three sections: `api`,
+  `impl`, and `gd`.
     - `api` contains contracts and interfaces.
     - `gd` contains Godot-facing objects (entry points, etc.).
-    - `impl` contains implementation details that Godot should not be aware of.
+    - `impl` contains implementation details that are independent of Godot.
 
-- **UI**: Contains the game's user interface. It relies on Avalonia UI through a fork of
-  [youfch's forked Estragonia](https://github.com/youfch/Estragonia), which itself is based
-  on [MrJul's original Estragonia](https://github.com/MrJul/Estragonia) project. The `gd` section contains the entry
-  points required to integrate the UI into the game, while the implementation is organized into conventional MVVM
-  components such as views, view models, and services for extensibility and maintainability. It also features
-  trimming-compatible compile-time assembly scanning for DI (Dependency Injection) and matching view models to their
-  respective views.
+- **Save Manager**: (W.I.P.) Contains the resources for saving and loading creations to/from disk. Currently supports
+  both binary and `JSON` formats, along with Zstandard (Zstd) compression. SHA-256 hash checking and AES-256 encryption
+  may be supported in the future.
 
-- **Common**: Contains shared objects and resources used throughout the codebase, such as input extensions, utilities,
-  and other reusable components that are essential to the game but do not constitute standalone systems.
+- **Tool Manager**: (W.I.P.) Contains the building tools for modifying creations.
+
+- **Common**: Contains shared objects and resources used throughout the codebase, such as input extensions, `HttpClient`
+  objects, utilities, and other reusable components that are essential to the game but do not constitute standalone
+  systems.
+
+- **Common/Lua Executor**: Provides **Lua 5.2** script execution through the Lua-CSharp NuGet package, with custom
+  functions for debugging and runtime inspection. It is used by the Console UI component for runtime scripting and
+  testing.
 
 - **Scripts**: Contains classes and other objects used for subsystems (autoloads) and Godot node scripts throughout the
   game. Examples include the hasher, logger, camera, character controller, watchdog, and more. Core would technically
   belong here, but especially large systems have been moved to the project root for better organization.
+
+- **UI**: Contains the game's user interface. It relies on Avalonia UI through a fork of
+  [youfch's forked Estragonia](https://github.com/youfch/Estragonia), which itself is based
+  on [MrJul's original Estragonia](https://github.com/MrJul/Estragonia) project. The `gd` section contains the entry
+  points required to integrate the UI with Godot, while the implementation follows a conventional MVVM structure such as
+  views, view models, and services for extensibility and maintainability. It also features trimming-compatible
+  compile-time assembly scanning for DI (Dependency Injection) and matching view models to their respective views.
 
 - **Lib**: Contains third-party resources, such as the Estragonia fork, and can generally be ignored when contributing.
   It is maintained but should be viewed as an implementation detail rather than a first-class project component.
@@ -88,4 +97,4 @@ third-party resources, such as NuGet packages and files under `/addons/` and `/l
 
 ## License
 
-This project is licensed under the terms of the license(s) found in [LICENSE.md](/LICENSE.md).
+This project is licensed under the terms of the licenses found in [LICENSE.md](/LICENSE.md).

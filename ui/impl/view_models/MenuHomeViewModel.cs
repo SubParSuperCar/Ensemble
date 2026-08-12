@@ -6,6 +6,7 @@ using Root.Ui.Impl.Services;
 using Serilog;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using FileAccess = Godot.FileAccess;
+using OS = Godot.OS;
 
 namespace Root.Ui.Impl.ViewModels;
 
@@ -13,6 +14,9 @@ public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBa
 {
 	[ObservableProperty]
 	public partial Bitmap? Icon { get; set; } = LoadBitmapFromGodotImage(CommonConstants.GameIconPath);
+
+	[RelayCommand]
+	private static void OpenGitHubPage() => OS.ShellOpen("https://github.com/SubParSuperCar/Ensemble");
 
 	[RelayCommand]
 	private static void StartSession() => GSessionManager.StartSinglePlayer();

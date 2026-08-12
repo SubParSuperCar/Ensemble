@@ -1,9 +1,12 @@
 using System.Diagnostics;
+using Avalonia.Styling;
+using CommunityToolkit.Mvvm.Messaging;
 using Godot;
 using Lua;
 using Root.Common.Logging;
 using Root.Common.Network;
 using Root.Scripts.Main;
+using Root.Ui.Impl.Messages;
 using Serilog;
 using Environment = System.Environment;
 
@@ -29,6 +32,7 @@ public partial class LuaExecutor
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
+		env[nameof(set_ui_dark_theme)] = new LuaFunction(set_ui_dark_theme);
 	}
 
 	private static ValueTask<int> print(
@@ -192,7 +196,7 @@ public partial class LuaExecutor
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
 
-		Return:
+	Return:
 		context.Return();
 		return default;
 	}
@@ -229,19 +233,19 @@ public partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
-				{
-					var childTable = luaValue.Read<LuaTable>();
-
-					if (visited.Contains(childTable))
-						Log.Information("{Path} = <already visited>", childPath);
-					else
 					{
-						Log.Information("{Path} = <table>", childPath);
-						DumpTable(childTable, childPath, visited);
-					}
+						var childTable = luaValue.Read<LuaTable>();
 
-					break;
-				}
+						if (visited.Contains(childTable))
+							Log.Information("{Path} = <already visited>", childPath);
+						else
+						{
+							Log.Information("{Path} = <table>", childPath);
+							DumpTable(childTable, childPath, visited);
+						}
+
+						break;
+					}
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -273,8 +277,8 @@ public partial class LuaExecutor
 		Log.Information("Contents of InputMap:");
 
 		foreach (var action in InputMap.GetActions()
-			         .Select(a => a.ToString())
-			         .Order(StringComparer.Ordinal))
+					 .Select(a => a.ToString())
+					 .Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
 
@@ -315,5 +319,24 @@ public partial class LuaExecutor
 		}
 
 		return 0;
+	}
+
+	private static ValueTask<int> set_ui_dark_theme(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		bool? useDarkTheme = context.ArgumentCount > 0 ? context.GetArgument<bool>(0) : null;
+
+		var theme = useDarkTheme switch
+		{
+			true => ThemeVariant.Dark,
+			false => ThemeVariant.Light,
+			_ => ThemeVariant.Default
+		};
+
+		WeakReferenceMessenger.Default.Send(new SetThemeMessage(theme));
+
+		context.Return();
+		return default;
 	}
 }

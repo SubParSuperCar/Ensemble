@@ -87,14 +87,10 @@
                 <ae:TextEditor
                     Name="Editor"
                     Document="{Binding Source}"
+                    Background="{DynamicResource TranslucentBackgroundBrush}"
                     FontSize="13"
                     WordWrap="True"
-                    ShowLineNumbers="True">
-
-                    <ae:TextEditor.Background>
-                        <SolidColorBrush Color="Black" Opacity="0.21875" />
-                    </ae:TextEditor.Background>
-                </ae:TextEditor>
+                    ShowLineNumbers="True" />
 
                 <StackPanel
                     Orientation="Horizontal"

@@ -2,6 +2,8 @@ using Avalonia;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Styling;
+using CommunityToolkit.Mvvm.Messaging;
+using Root.Ui.Impl.Messages;
 
 namespace Root.Ui.Impl;
 
@@ -14,14 +16,17 @@ public class App : Application
 	{
 		if (RequestedThemeVariant == ThemeVariant.Default && PlatformSettings is not null)
 		{
-			UpdateTheme(PlatformSettings.GetColorValues());
-			PlatformSettings.ColorValuesChanged += (_, colorValues) => UpdateTheme(colorValues);
+			OnColorValuesChanged(PlatformSettings.GetColorValues());
+			PlatformSettings.ColorValuesChanged += (_, colorValues) => OnColorValuesChanged(colorValues);
 		}
+
+		WeakReferenceMessenger.Default.Register<SetThemeMessage>(this,
+			(_, message) => RequestedThemeVariant = message.Value);
 
 		base.OnFrameworkInitializationCompleted();
 	}
 
-	private void UpdateTheme(PlatformColorValues colorValues) =>
+	private void OnColorValuesChanged(PlatformColorValues colorValues) =>
 		RequestedThemeVariant = colorValues.ThemeVariant switch
 		{
 			PlatformThemeVariant.Light => ThemeVariant.Light,

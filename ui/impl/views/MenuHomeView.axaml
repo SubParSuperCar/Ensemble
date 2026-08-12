@@ -11,12 +11,22 @@
     FontSize="24" FontWeight="ExtraLight">
 
     <Grid RowDefinitions="1*,1*,1*,1*,1*">
-        <Image
+        <StackPanel
             Grid.Row="1"
-            Source="{Binding Icon}"
-            ToolTip.Tip="Ensemble's Icon (Made w/ Inkscape)"
-            HorizontalAlignment="Center" VerticalAlignment="Center"
-            Width="256" Height="256" />
+            Spacing="8"
+            HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Image
+                Source="{Binding Icon}"
+                ToolTip.Tip="Ensemble's Icon (Made w/ Inkscape)"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                Width="256" Height="256" />
+
+            <HyperlinkButton
+                Content="Ensemble - GitHub Page&#x0a;github.com/SubParSuperCar/Ensemble"
+                Command="{Binding OpenGitHubPageCommand}"
+                ToolTip.Tip="Opens Ensemble's official GitHub repository page." />
+        </StackPanel>
 
         <StackPanel
             Grid.Row="3"

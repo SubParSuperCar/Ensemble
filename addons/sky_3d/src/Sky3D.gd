@@ -197,12 +197,12 @@ func _start_sky_contrib_tween(daytime: bool=is_day()) -> void:
 
 	if daytime:
 		_contrib_tween.tween_property(environment, "ambient_light_sky_contribution", sky_contribution,
-				contribution_tween_time)
+			contribution_tween_time)
 	else:
 		var night_contrib: float = minf(night_sky_contribution,
-				sky_contribution) if night_ambient_boost else sky_contribution
+			sky_contribution) if night_ambient_boost else sky_contribution
 		_contrib_tween.tween_property(environment, "ambient_light_sky_contribution", night_contrib,
-				contribution_tween_time)
+			contribution_tween_time)
 
 
 #####################

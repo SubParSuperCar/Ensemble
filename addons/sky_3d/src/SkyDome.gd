@@ -353,7 +353,7 @@ func _update_sun_light_energy() -> void:
 
 ## XYZ rotation angles for orienting the moon surface features
 @export_custom(PROPERTY_HINT_RANGE, "-180,180,0.1,radians_as_degrees") var moon_texture_alignment := Vector3(7.0, 1.4,
-		4.8):
+	4.8):
 	set(value):
 		moon_texture_alignment = value
 		_update_moon_texture()
@@ -602,9 +602,9 @@ func _update_moon_light_energy() -> void:
 		atm_moon_mie_intensity = value
 		if is_scene_built:
 			sky_material.set_shader_parameter("atm_moon_mie_intensity",
-					atm_moon_mie_intensity * _atm_moon_phases_mult())
+				atm_moon_mie_intensity * _atm_moon_phases_mult())
 			fog_material.set_shader_parameter("atm_moon_mie_intensity",
-					atm_moon_mie_intensity * _atm_moon_phases_mult())
+				atm_moon_mie_intensity * _atm_moon_phases_mult())
 
 ## Controls the directional bias (shape) of the Mie scattering around the moon.
 @export_range(0.0, 0.9999999, 0.0000001) var atm_moon_mie_anisotropy: float = 0.8:
@@ -803,7 +803,7 @@ const WIND_DIRECTION_OFFSET: float = deg_to_rad(-90)
 		# but it won't be if someone else directly changed it in the sky dome, so only
 		# use the value from the sky dome if it's different.
 		return wind_direction if is_zero_approx(
-				wrapf(wind_direction - real_wind_direction, 0, TAU)) else real_wind_direction
+			wrapf(wind_direction - real_wind_direction, 0, TAU)) else real_wind_direction
 
 ## * Set [0, <1] to make the cirrus clouds appear higher than the cummulus clouds via a parallax effect.[br]
 ## * Set >= 1 to make them appear at the same level or lower.[br]

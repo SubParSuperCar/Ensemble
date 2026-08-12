@@ -35,7 +35,7 @@ func _redraw() -> void:
 	if show_rect:
 		var modulate: Color = main_color if ! use_secondary_color else secondary_color
 		if abs(region_position.x) > Terrain3DData.REGION_MAP_SIZE * .5 or abs(
-				region_position.y) > Terrain3DData.REGION_MAP_SIZE * .5:
+			region_position.y) > Terrain3DData.REGION_MAP_SIZE * .5:
 			modulate = Color.GRAY
 		draw_rect(Vector2(region_size, region_size) * .5 + rect_position, region_size, selection_material, modulate)
 
@@ -66,4 +66,3 @@ func draw_rect(p_pos: Vector2, p_size: float, p_material: StandardMaterial3D, p_
 		lines[i] = ((lines[i] / 2.0) * p_size) + Vector3(p_pos.x, 0, p_pos.y)
 
 	add_lines(lines, p_material, false, p_modulate)
-		

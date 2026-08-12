@@ -139,8 +139,8 @@ func _ready() -> void:
 
 	rotation_list = create_submenu(main_list, "Rotation", Layout.VERTICAL)
 	add_setting(
-			{"name": "fixed_spin", "label": "Fixed Spin (Around Y)", "type": SettingType.SLIDER, "list": rotation_list,
-				"default": 0, "unit": "°", "range": Vector3(0, 360, 1)})
+		{"name": "fixed_spin", "label": "Fixed Spin (Around Y)", "type": SettingType.SLIDER, "list": rotation_list,
+			"default": 0, "unit": "°", "range": Vector3(0, 360, 1)})
 	add_setting({"name": "random_spin", "type": SettingType.SLIDER, "list": rotation_list, "default": 360,
 		"unit": "°", "range": Vector3(0, 360, 1)})
 	add_setting({"name": "fixed_tilt", "label": "Fixed Tilt", "type": SettingType.SLIDER, "list": rotation_list,
@@ -161,8 +161,8 @@ func _ready() -> void:
 
 	if DisplayServer.is_touchscreen_available():
 		add_setting(
-				{"name": "invert", "label": "Invert", "type": SettingType.CHECKBOX, "list": main_list, "default": false,
-					"flags": ADD_SEPARATOR})
+			{"name": "invert", "label": "Invert", "type": SettingType.CHECKBOX, "list": main_list, "default": false,
+				"flags": ADD_SEPARATOR})
 
 	var spacer: Control = Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -357,7 +357,7 @@ func _on_picked(p_type: Terrain3DEditor.Tool, p_color: Color, p_global_position:
 			# This converts 0,1 to -100,100
 			# It also quantizes explicitly so picked values matches painted values
 			settings["roughness"].value = round(200. * float(int(p_color.a * 255.) / 255. - .5)) if not is_nan(
-					p_color.r) else 0.
+				p_color.r) else 0.
 		Terrain3DEditor.ANGLE:
 			settings["angle"].value = p_color.r
 		Terrain3DEditor.SCALE:
@@ -575,7 +575,7 @@ func get_setting(p_setting: String) -> Variant:
 		# Adjust widths of all sliders on update of values
 		var digits: float = count_digits(value)
 		var width: float = clamp((1 + count_digits(value)) * 19., 50, 80) * clamp(EditorInterface.get_editor_scale(),
-				.9, 2)
+			.9, 2)
 		object.set_custom_minimum_size(Vector2(width, 0))
 	elif object is DoubleSlider:
 		value = object.get_value()
@@ -696,4 +696,3 @@ func count_digits(p_value: float) -> int:
 	if p_value < 0:
 		count += 1
 	return count
-	

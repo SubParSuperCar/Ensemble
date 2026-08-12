@@ -46,7 +46,7 @@ func get_terrain() -> Terrain3D:
 	var terrain := instance_from_id(_terrain_id) as Terrain3D
 	if not terrain or terrain.is_queued_for_deletion() or not terrain.is_inside_tree():
 		var terrains: Array[Node] = Engine.get_singleton(&"EditorInterface").get_edited_scene_root().find_children("",
-				"Terrain3D")
+			"Terrain3D")
 		if terrains.size() > 0:
 			terrain = terrains[0]
 		_terrain_id = terrain.get_instance_id() if terrain else 0

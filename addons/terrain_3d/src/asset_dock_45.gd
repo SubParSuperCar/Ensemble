@@ -128,11 +128,14 @@ func _ready() -> void:
 	add_child(confirm_dialog)
 	confirm_dialog.hide()
 	confirm_dialog.confirmed.connect(func(): _confirmed = true; \
-		emit_signal("confirmation_closed"); \
-		emit_signal("confirmation_confirmed") )
-	confirm_dialog.canceled.connect(func(): _confirmed = false; \
-		emit_signal("confirmation_closed"); \
-		emit_signal("confirmation_canceled") )
+		emit_signal("confirmation_closed") ; \
+	emit_signal("confirmation_confirmed")
+)
+confirm_dialog.canceled.connect(
+func (
+	): _confirmed = false; \
+	emit_signal("confirmation_closed"); \
+	emit_signal("confirmation_canceled") )
 
 
 func get_current_list() -> ListContainer:
@@ -239,7 +242,7 @@ func update_thumbnails() -> void:
 	if not is_instance_valid(plugin.terrain):
 		return
 	if current_list.type == Terrain3DAssets.TYPE_MESH and \
-			Time.get_ticks_msec() - _last_thumb_update_time > MAX_UPDATE_TIME:
+		Time.get_ticks_msec() - _last_thumb_update_time > MAX_UPDATE_TIME:
 		plugin.terrain.assets.create_mesh_thumbnails()
 		_last_thumb_update_time = Time.get_ticks_msec()
 		for mesh_asset in mesh_list.entries:
@@ -522,8 +525,8 @@ class ListContainer extends Container:
 
 		# Select Paint tool if clicking a texture
 		if type == Terrain3DAssets.TYPE_TEXTURE and \
-				not plugin.editor.get_tool() in [Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR,
-					Terrain3DEditor.ROUGHNESS]:
+			not plugin.editor.get_tool() in [Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR,
+				Terrain3DEditor.ROUGHNESS]:
 			var paint_btn: Button = plugin.ui.toolbar.get_node_or_null("PaintTexture")
 			if paint_btn:
 				paint_btn.set_pressed(true)
@@ -602,7 +605,7 @@ class ListContainer extends Container:
 			if is_instance_valid(c):
 				c.size = Vector2(width, width) - Vector2(separation, separation)
 				c.position = Vector2(id % columns, id / columns) * width + \
-						Vector2(separation / columns, separation / columns)
+					Vector2(separation / columns, separation / columns)
 				height = max(height, c.position.y + width)
 				id += 1
 
@@ -621,10 +624,10 @@ class ListContainer extends Container:
 
 
 class ListEntry extends VBoxContainer:
-	signal hovered()
-	signal selected()
-	signal changed(resource: Resource)
-	signal inspected(resource: Resource)
+signal hovered()
+signal selected()
+signal changed(resource: Resource)
+signal inspected(resource: Resource)
 
 	var resource: Resource
 	var type := Terrain3DAssets.TYPE_TEXTURE
@@ -634,20 +637,20 @@ class ListEntry extends VBoxContainer:
 	var is_selected: bool = false
 	var asset_list: Terrain3DAssets
 
-	@onready var button_row := HBoxContainer.new()
-	@onready var button_clear := TextureButton.new()
-	@onready var button_edit := TextureButton.new()
-	@onready var spacer := Control.new()
-	@onready var button_enabled := TextureButton.new()
-	@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
-	@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
-	@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
-	@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
+@onready var button_row := HBoxContainer.new()
+@onready var button_clear := TextureButton.new()
+@onready var button_edit := TextureButton.new()
+@onready var spacer := Control.new()
+@onready var button_enabled := TextureButton.new()
+@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
+@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
+@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
+@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
 
 	var name_label: Label
-	@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
-	@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
-	@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
+@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
+@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
+@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
 
 	func _ready() -> void:
 		setup_buttons()

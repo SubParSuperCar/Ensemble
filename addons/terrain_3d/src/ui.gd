@@ -326,11 +326,11 @@ func update_decal() -> void:
 
 	# If not a state that should show the decal, hide everything and return
 	if not visible or \
-			plugin._input_mode < 0 or \
-			# After moving camera, wait for mouse cursor to update before revealing
-			# See https://github.com/godotengine/godot/issues/70098
-			Time.get_ticks_msec() - plugin.rmb_release_time <= 100 or \
-			(plugin._input_mode > 0 and not brush_data["show_cursor_while_painting"]):
+		plugin._input_mode < 0 or \
+		# After moving camera, wait for mouse cursor to update before revealing
+		# See https://github.com/godotengine/godot/issues/70098
+		Time.get_ticks_msec() - plugin.rmb_release_time <= 100 or \
+		(plugin._input_mode > 0 and not brush_data["show_cursor_while_painting"]):
 		hide_decal()
 		return
 
@@ -344,7 +344,7 @@ func update_decal() -> void:
 		var map_size: int = plugin.terrain.data.REGION_MAP_SIZE
 		var half_r_size: float = r_size * 0.5
 		var pos: Vector2 = (Vector2(plugin.mouse_global_position.x, plugin.mouse_global_position.z) +
-				Vector2(half_r_size, half_r_size)).snappedf(r_size) - Vector2(half_r_size, half_r_size)
+			Vector2(half_r_size, half_r_size)).snappedf(r_size) - Vector2(half_r_size, half_r_size)
 		editor_brush_texture_rid = region_texture.get_rid()
 		editor_decal_position[0] = pos
 		editor_decal_size[0] = r_size
@@ -486,7 +486,7 @@ func update_decal() -> void:
 		RenderingServer.material_set_param(mat_rid, "_editor_decal_color", editor_decal_color)
 		RenderingServer.material_set_param(mat_rid, "_editor_decal_visible", editor_decal_visible)
 		RenderingServer.material_set_param(mat_rid, "_editor_crosshair_threshold",
-				brush_data["crosshair_threshold"] + 0.1)
+			brush_data["crosshair_threshold"] + 0.1)
 		RenderingServer.material_set_param(mat_rid, "_region_map", r_map)
 
 

@@ -65,7 +65,7 @@ func resume() -> void:
 		# Assume resuming from a pause, so timer only gets one tick
 		_last_update = Time.get_ticks_msec() - update_interval
 		if (Engine.is_editor_hint() and editor_time_enabled) or \
-				(not Engine.is_editor_hint() and game_time_enabled):
+			(not Engine.is_editor_hint() and game_time_enabled):
 			_update_timer.start()
 
 
@@ -264,7 +264,7 @@ func get_unix_timestamp() -> int:
 
 func _progress_time(delta: float) -> void:
 	var hours_per_real_second: float = 0. if is_zero_approx(
-			minutes_per_day) else HOURS_PER_DAY / (minutes_per_day * 60.0)
+		minutes_per_day) else HOURS_PER_DAY / (minutes_per_day * 60.0)
 	current_time += delta * hours_per_real_second
 
 
@@ -419,7 +419,7 @@ func _compute_realistic_sun_coords() -> void:
 
 	# Eccentric Anomaly
 	var E: float = _sun_orbital_elements.M + rad_to_deg(
-			_sun_orbital_elements.e * sin(MRad) * (1 + _sun_orbital_elements.e * cos(MRad)))
+		_sun_orbital_elements.e * sin(MRad) * (1 + _sun_orbital_elements.e * cos(MRad)))
 
 	var ERad: float = deg_to_rad(E)
 
@@ -502,7 +502,7 @@ func _compute_realistic_moon_coords() -> void:
 
 	# Eccentric anomaly
 	var E: float = _moon_orbital_elements.M + rad_to_deg(
-			_moon_orbital_elements.e * sin(MRad) * (1 + _moon_orbital_elements.e * cos(MRad)))
+		_moon_orbital_elements.e * sin(MRad) * (1 + _moon_orbital_elements.e * cos(MRad)))
 	var ERad: float = deg_to_rad(E)
 
 	# See: https://stjarnhimlen.se/comp/ppcomp.html#6

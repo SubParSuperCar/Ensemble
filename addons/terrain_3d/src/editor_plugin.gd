@@ -205,7 +205,7 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 		if _input_mode != -1:  # Not cam rotation
 			## Update region highlight
 			var region_position: Vector2 = (Vector2(mouse_global_position.x, mouse_global_position.z) \
-					/ (terrain.get_region_size() * terrain.get_vertex_spacing())).floor()
+				/ (terrain.get_region_size() * terrain.get_vertex_spacing())).floor()
 			if current_region_position != region_position:
 				current_region_position = region_position
 				update_region_grid()
@@ -238,7 +238,7 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 				var has_region: bool = terrain.data.has_regionp(mouse_global_position)
 				var op: int = editor.get_operation()
 				if (has_region and op == Terrain3DEditor.ADD) or \
-						(not has_region and op == Terrain3DEditor.SUBTRACT):
+					(not has_region and op == Terrain3DEditor.SUBTRACT):
 					return AFTER_GUI_INPUT_STOP
 
 			# If an automatic operation is ready to go (e.g. gradient)
@@ -262,8 +262,8 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 func _read_input(p_event: InputEvent=null) -> AfterGUIInput:
 	## Determine if user is moving camera or applying
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) or \
-			p_event is InputEventMouseButton and p_event.is_released() and \
-			p_event.get_button_index() == MOUSE_BUTTON_LEFT:
+		p_event is InputEventMouseButton and p_event.is_released() and \
+		p_event.get_button_index() == MOUSE_BUTTON_LEFT:
 		_input_mode = 1
 	else:
 		_input_mode = 0
@@ -271,19 +271,19 @@ func _read_input(p_event: InputEvent=null) -> AfterGUIInput:
 	match get_setting("editors/3d/navigation/navigation_scheme", 0):
 		2, 1:  # Modo, Maya
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) or \
-					(Input.is_key_pressed(KEY_ALT) and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)):
+				(Input.is_key_pressed(KEY_ALT) and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)):
 				_input_mode = -1
 			if p_event is InputEventMouseButton and p_event.is_released() and \
-					(p_event.get_button_index() == MOUSE_BUTTON_RIGHT or \
-							(Input.is_key_pressed(KEY_ALT) and p_event.get_button_index() == MOUSE_BUTTON_LEFT)):
+				(p_event.get_button_index() == MOUSE_BUTTON_RIGHT or \
+					(Input.is_key_pressed(KEY_ALT) and p_event.get_button_index() == MOUSE_BUTTON_LEFT)):
 				rmb_release_time = Time.get_ticks_msec()
 		0, _:  # Godot
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) or \
-					Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
+				Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
 				_input_mode = -1
 			if p_event is InputEventMouseButton and p_event.is_released() and \
-					(p_event.get_button_index() == MOUSE_BUTTON_RIGHT or \
-							p_event.get_button_index() == MOUSE_BUTTON_MIDDLE):
+				(p_event.get_button_index() == MOUSE_BUTTON_RIGHT or \
+					p_event.get_button_index() == MOUSE_BUTTON_MIDDLE):
 				rmb_release_time = Time.get_ticks_msec()
 	if _input_mode < 0:
 		# Camera is moving, skip input
@@ -310,10 +310,10 @@ func _read_input(p_event: InputEvent=null) -> AfterGUIInput:
 
 	## Process Hotkeys
 	if p_event is InputEventKey and \
-			current_mods == 0 and \
-			p_event.is_pressed() and \
-			not p_event.is_echo() and \
-			consume_hotkey(p_event.keycode):
+		current_mods == 0 and \
+		p_event.is_pressed() and \
+		not p_event.is_echo() and \
+		consume_hotkey(p_event.keycode):
 		# Hotkey found, consume event, and stop input processing
 		EditorInterface.get_editor_viewport_3d().set_input_as_handled()
 		return AFTER_GUI_INPUT_STOP
@@ -427,7 +427,7 @@ func is_selected() -> bool:
 	var selected: Array[Node] = EditorInterface.get_selection().get_selected_nodes()
 	for node in selected:
 		if (is_instance_valid(_last_terrain) and node.get_instance_id() == _last_terrain.get_instance_id()) or \
-				node is Terrain3D:
+			node is Terrain3D:
 			return true
 	return false
 

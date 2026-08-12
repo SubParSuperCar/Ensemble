@@ -137,7 +137,7 @@ func _init_file_dialogs() -> void:
 
 	open_file_dialog = EditorFileDialog.new()
 	open_file_dialog.set_filters(PackedStringArray(
-			["*.png", "*.bmp", "*.exr", "*.hdr", "*.jpg", "*.jpeg", "*.tga", "*.svg", "*.webp", "*.ktx", "*.dds"]))
+		["*.png", "*.bmp", "*.exr", "*.hdr", "*.jpg", "*.jpeg", "*.tga", "*.svg", "*.webp", "*.ktx", "*.dds"]))
 	open_file_dialog.set_file_mode(EditorFileDialog.FILE_MODE_OPEN_FILE)
 	open_file_dialog.access = EditorFileDialog.ACCESS_FILESYSTEM
 	open_file_dialog.ok_button_text = "Open"
@@ -316,9 +316,9 @@ func _create_import_file(png_path: String) -> void:
 	var template_content: String = file.get_as_text()
 	file.close()
 	template_content = template_content.replace(
-			"$SOURCE_FILE", png_path).replace(
-			"$HIGH_QUALITY", str(high_quality_checkbox.button_pressed)).replace(
-			"$GENERATE_MIPMAPS", str(generate_mipmaps_checkbox.button_pressed)
+		"$SOURCE_FILE", png_path).replace(
+		"$HIGH_QUALITY", str(high_quality_checkbox.button_pressed)).replace(
+		"$GENERATE_MIPMAPS", str(generate_mipmaps_checkbox.button_pressed)
 	)
 	var import_content: String = template_content
 	file = FileAccess.open(dst_import_path, FileAccess.WRITE)
@@ -351,12 +351,12 @@ func _on_save_file_selected(p_dst_path) -> void:
 	var error: int
 	if packing_albedo:
 		error = _pack_textures(images[IMAGE_ALBEDO], images[IMAGE_HEIGHT], p_dst_path, false,
-				invert_height_checkbox.button_pressed, false, normalize_height_checkbox.button_pressed,
-				height_channel_selected)
+			invert_height_checkbox.button_pressed, false, normalize_height_checkbox.button_pressed,
+			height_channel_selected)
 	else:
 		error = _pack_textures(images[IMAGE_NORMAL], images[IMAGE_ROUGHNESS], p_dst_path,
-				invert_green_checkbox.button_pressed, invert_smooth_checkbox.button_pressed,
-				align_normals_checkbox.button_pressed, false, roughness_channel_selected)
+			invert_green_checkbox.button_pressed, invert_smooth_checkbox.button_pressed,
+			align_normals_checkbox.button_pressed, false, roughness_channel_selected)
 
 	if error == OK:
 		EditorInterface.get_resource_filesystem().scan()
@@ -388,8 +388,8 @@ func _alignment_basis(normal: Vector3) -> Basis:
 	var vyz: float = v.y * v.z * k
 
 	return Basis(Vector3(v.x * v.x * k + c, vxy - v.z, vxz + v.y),
-			Vector3(vxy + v.z, v.y * v.y * k + c, vyz - v.x),
-			Vector3(vxz - v.y, vyz + v.x, v.z * v.z * k + c)
+		Vector3(vxy + v.z, v.y * v.y * k + c, vyz - v.x),
+		Vector3(vxz - v.y, vyz + v.x, v.z * v.z * k + c)
 	)
 
 
@@ -407,7 +407,7 @@ func _set_normal_vector(source: Image, quiet: bool=false) -> void:
 	normal_vector = Vector3(sum.r, sum.g, sum.b).normalized()
 	if normal_vector.dot(Vector3(0.0, 0.0, 1.0)) < 0.999 && ! quiet:
 		_show_message(WARN,
-				"Normal Texture Not Orthoganol to UV plane.\nFor Compatability with Detiling and Rotation, Select Orthoganolize Normals")
+			"Normal Texture Not Orthoganol to UV plane.\nFor Compatability with Detiling and Rotation, Select Orthoganolize Normals")
 
 
 func _align_normals(source: Image, iteration: int=0) -> void:
@@ -429,11 +429,11 @@ func _align_normals(source: Image, iteration: int=0) -> void:
 	_set_normal_vector(source, true)
 	if normal_vector.dot(Vector3(0.0, 0.0, 1.0)) < 0.999 && iteration < 3:
 		++ iteration
-	_align_normals(source, iteration)
+_align_normals(source, iteration)
 
 
 func _pack_textures(p_rgb_image: Image, p_a_image: Image, p_dst_path: String, p_invert_green: bool,
-		p_invert_smooth: bool, p_align_normals: bool, p_normalize_height: bool, p_alpha_channel: int) -> Error:
+	p_invert_smooth: bool, p_align_normals: bool, p_normalize_height: bool, p_alpha_channel: int) -> Error:
 	if p_rgb_image and p_a_image:
 		if p_rgb_image.get_size() != p_a_image.get_size() and ! resize_toggle_checkbox.button_pressed:
 			_show_message(ERROR, "Textures must be the same size.\nEnable resize to override image dimensions")
@@ -450,7 +450,7 @@ func _pack_textures(p_rgb_image: Image, p_a_image: Image, p_dst_path: String, p_
 			_show_message(INFO, "Alignment OK, skipping Normal Orthogonalization")
 
 		var output_image: Image = Terrain3DUtil.pack_image(p_rgb_image, p_a_image,
-				p_invert_green, p_invert_smooth, p_normalize_height, p_alpha_channel)
+			p_invert_green, p_invert_smooth, p_normalize_height, p_alpha_channel)
 
 		if not output_image:
 			_show_message(ERROR, "Failed to pack textures")

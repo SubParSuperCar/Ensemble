@@ -110,23 +110,26 @@ func initialize(p_plugin: EditorPlugin) -> void:
 	add_child(confirm_dialog, true)
 	confirm_dialog.hide()
 	confirm_dialog.confirmed.connect(func(): _confirmed = true; \
-		confirmation_closed.emit(); \
-		confirmation_confirmed.emit() )
-	confirm_dialog.canceled.connect(func(): _confirmed = false; \
-		confirmation_closed.emit(); \
-		confirmation_canceled.emit() )
+		confirmation_closed.emit() ; \
+	confirmation_confirmed.emit()
+)
+confirm_dialog.canceled.connect(
+func (
+	): _confirmed = false; \
+	confirmation_closed.emit(); \
+	confirmation_canceled.emit() )
 
-	# Setup styles
-	set("theme_override_styles/panel", get_theme_stylebox("panel", "Panel"))
-	# Avoid saving icon resources in tscn when editing w/ a tool script
-	if EditorInterface.get_edited_scene_root() != self:
+# Setup styles
+set("theme_override_styles/panel", get_theme_stylebox("panel", "Panel"))
+# Avoid saving icon resources in tscn when editing w/ a tool script
+if EditorInterface.get_edited_scene_root() != self:
 		pinned_btn.icon = get_theme_icon("Pin", "EditorIcons")
-		pinned_btn.text = ""
-		search_button.icon = get_theme_icon("Search", "EditorIcons")
+pinned_btn.text = ""
+search_button.icon = get_theme_icon("Search", "EditorIcons")
 
-	_initialized = true
-	update_dock()
-	update_layout()
+_initialized = true
+update_dock()
+update_layout()
 
 
 func _gui_input(p_event: InputEvent) -> void:
@@ -437,8 +440,8 @@ class ListContainer extends Container:
 		# Select Tool if clicking an asset
 		plugin.select_terrain()
 		if type == Terrain3DAssets.TYPE_TEXTURE and \
-				not plugin.editor.get_tool() in [Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR,
-					Terrain3DEditor.ROUGHNESS]:
+			not plugin.editor.get_tool() in [Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR,
+				Terrain3DEditor.ROUGHNESS]:
 			var paint_btn: Button = plugin.ui.toolbar.get_node_or_null("PaintTexture")
 			if paint_btn:
 				paint_btn.set_pressed(true)
@@ -467,7 +470,7 @@ class ListContainer extends Container:
 		var id: int = clamp(selected_id, 0, max_id)
 		if plugin.debug:
 			print("Terrain3DListContainer ", name, ": get_selected_asset_id: selected_id: ", selected_id, ", clamped: ",
-					id, ", entries: ", entries.size())
+				id, ", entries: ", entries.size())
 		if id >= entries.size():
 			return 0
 		var res: Resource = entries[id].resource
@@ -536,7 +539,7 @@ class ListContainer extends Container:
 			if is_instance_valid(c):
 				c.size = tile_size
 				c.position = Vector2(id % columns, id / columns) * width + \
-						Vector2(separation / columns, separation / columns)
+					Vector2(separation / columns, separation / columns)
 				height = max(height, c.position.y + width)
 				id += 1
 				c.name_label.add_theme_font_size_override("font_size", name_font_size)
@@ -556,10 +559,10 @@ class ListContainer extends Container:
 
 
 class ListEntry extends MarginContainer:
-	signal hovered()
-	signal clicked()
-	signal changed(resource: Resource)
-	signal inspected(resource: Resource)
+signal hovered()
+signal clicked()
+signal changed(resource: Resource)
+signal inspected(resource: Resource)
 
 	var resource: Resource
 	var type := Terrain3DAssets.TYPE_TEXTURE
@@ -575,13 +578,13 @@ class ListEntry extends MarginContainer:
 	var spacer: Control
 	var button_clear: TextureButton
 
-	@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
-	@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
-	@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
-	@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
-	@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
-	@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
-	@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
+@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
+@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
+@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
+@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
+@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
+@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
+@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
 
 	func _ready() -> void:
 		name = "ListEntry"

@@ -22,11 +22,11 @@ public partial class Main : Node
 
 	public override void _ExitTree()
 	{
-		if (ReferenceEquals(Instance, this))
-			Instance = null;
-
 		GSessionManager.SessionStarted -= OnSessionStarted;
 		GSessionManager.SessionStopped -= OnSessionStopped;
+
+		if (ReferenceEquals(Instance, this))
+			Instance = null;
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)

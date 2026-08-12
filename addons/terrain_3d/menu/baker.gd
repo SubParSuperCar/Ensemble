@@ -150,7 +150,7 @@ func find_nav_region_terrains(p_nav_region: NavigationRegion3D) -> Array[Terrain
 		return result
 
 	var group_nodes: Array = p_nav_region.get_tree().get_nodes_in_group(
-			p_nav_region.navigation_mesh.geometry_source_group_name)
+		p_nav_region.navigation_mesh.geometry_source_group_name)
 	for node in group_nodes:
 		if node is Terrain3D:
 			result.push_back(node)
@@ -261,7 +261,7 @@ func _postprocess_nav_mesh_round_vertices(p_nav_mesh: NavigationMesh) -> PackedV
 
 
 func _postprocess_nav_mesh_remove_empty_polygons(p_nav_mesh: NavigationMesh,
-		p_vertices: PackedVector3Array) -> Array[PackedInt32Array]:
+	p_vertices: PackedVector3Array) -> Array[PackedInt32Array]:
 	var polygons: Array[PackedInt32Array] = []
 
 	for i in range(p_nav_mesh.get_polygon_count()):
@@ -286,7 +286,7 @@ func _postprocess_nav_mesh_remove_empty_polygons(p_nav_mesh: NavigationMesh,
 
 
 func _postprocess_nav_mesh_remove_overlapping_polygons(p_nav_mesh: NavigationMesh, p_vertices: PackedVector3Array,
-		p_polygons: Array[PackedInt32Array]) -> void:
+	p_polygons: Array[PackedInt32Array]) -> void:
 	# Occasionally, a baked nav mesh comes out with overlapping polygons:
 	# https://github.com/godotengine/godot/issues/85548#issuecomment-1839341071
 	# Until the bug is fixed in the engine, this function attempts to detect and remove overlapping

@@ -185,9 +185,9 @@ func _set_offsets() -> void:
 	for x in range(-half_grid, half_grid + 1):
 		for z in range(-half_grid, half_grid + 1):
 			var offset := Vector3(
-					float(x * rows) * instance_spacing,
-					0.0,
-					float(z * rows) * instance_spacing
+				float(x * rows) * instance_spacing,
+				0.0,
+				float(z * rows) * instance_spacing
 			)
 			offsets.append(offset)
 

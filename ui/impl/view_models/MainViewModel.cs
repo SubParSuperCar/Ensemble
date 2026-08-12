@@ -84,7 +84,7 @@ public partial class MainViewModel : ViewModelBase
 		if (Console is null)
 		{
 			Console = _services.GetRequiredService<ConsoleViewModel>();
-			Log.Debug("Opened console");
+			Callable.From(() => Log.Debug("Opened console")).CallDeferred();
 		}
 		else
 		{

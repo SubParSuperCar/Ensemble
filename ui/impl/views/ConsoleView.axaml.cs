@@ -67,7 +67,7 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 		else
 		{
 			var distanceToBottom = OutputScroll.Extent.Height - OutputScroll.Offset.Y - OutputScroll.Viewport.Height;
-			_shouldScrollToBottom = distanceToBottom <= double.Epsilon;
+			_shouldScrollToBottom = distanceToBottom <= Output.FontSize;
 		}
 	}
 

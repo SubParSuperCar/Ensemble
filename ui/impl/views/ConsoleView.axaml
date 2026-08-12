@@ -72,7 +72,7 @@
                     <NumericUpDown
                         Value="{Binding #Output.FontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                         PlaceholderText="&lt;Font Size&gt;"
-                        ToolTip.Tip="Font Size (Pixels)"
+                        ToolTip.Tip="Font Size (Points)"
                         Background="{DynamicResource TranslucentBackgroundBrush}" />
                 </StackPanel>
             </Grid>

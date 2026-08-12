@@ -52,7 +52,8 @@ billboard = 1
 double_sided = false
 no_depth_test = true
 fixed_size = true
-render_priority = 1
+render_priority = 127
+outline_render_priority = 126
 text = "\"<Player Name>\"
 (<Player ID>)
 ↓"

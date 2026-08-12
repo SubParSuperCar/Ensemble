@@ -7,7 +7,7 @@ namespace Root.Scripts.Player;
 public partial class CharacterController : CharacterBody3D
 {
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]
-	public float WalkSpeed { get; set; } = 6;
+	public float WalkSpeed { get; set; } = 4;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]
 	public float RunSpeed { get; set; } = 16;

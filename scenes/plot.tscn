@@ -1,12 +1,21 @@
 [gd_scene format=3 uid="uid://bctdhk6awxx0r"]
 
 [ext_resource type="Script" uid="uid://72uuy3654bdf" path="res://scripts/plot/PlotHandle.cs" id="1_syd1t"]
+[ext_resource type="Texture2D" uid="uid://c8bkxta71mkfs" path="res://assets/images/cartesian_grid.png" id="2_cyvgl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f03gw"]
 size = Vector3(32, 32, 32)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sbat0"]
 size = Vector3(32, 0.001, 32)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_syd1t"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.8, 1, 0, 0.5019608)
+albedo_texture = ExtResource("2_cyvgl")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_72cjw"]
 albedo_color = Color(0.25, 0.25, 0.25, 1)
@@ -45,6 +54,7 @@ top_level = true
 shape = SubResource("BoxShape3D_sbat0")
 
 [node name="Mesh" type="MeshInstance3D" parent="Base" unique_id=890436308]
+material_overlay = SubResource("StandardMaterial3D_syd1t")
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_f03gw")
 

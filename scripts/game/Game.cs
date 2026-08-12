@@ -23,16 +23,13 @@ public partial class Game : Node3D
 			{
 				for (var i = 0; i < count; i++)
 				{
-					const float radius = 5;
-					const float y = 1;
+					const float y = 0.5f;
 
 					var asset = assets[i];
 					var angle = i * Mathf.Tau / count;
 
-					var position = new Vector3(
-						Mathf.Cos(angle) * radius,
-						y,
-						Mathf.Sin(angle) * radius);
+					var position = new Vector3(Mathf.Cos(angle) * count, y, Mathf.Sin(angle) * count);
+					position = (position - Vector3.One * 0.5f).Round() + Vector3.One * 0.5f;
 
 					instances.Add(asset.Id, position, Quaternion.Identity);
 				}

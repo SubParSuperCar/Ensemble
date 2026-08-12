@@ -11,6 +11,7 @@ points = PackedVector3Array(0, 0.25, 0, 0.048747063, -0.25, -0.2452036, 0, -0.25
 shading_mode = 0
 albedo_texture = SubResource("PlaceholderTexture2D_gee14")
 uv1_triplanar = true
+texture_filter = 0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_dvw24"]
 material = SubResource("StandardMaterial3D_3jc1b")

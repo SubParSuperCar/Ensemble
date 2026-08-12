@@ -54,6 +54,7 @@ public partial class PlotHandle : Node3D
 
 		var handle = packed.Instantiate<AssetHandle>();
 		handle.InstanceId = instance.Id;
+		handle.Freeze = true;
 
 		_staticInstances.AddChild(handle);
 

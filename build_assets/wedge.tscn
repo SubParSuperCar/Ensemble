@@ -11,6 +11,7 @@ points = PackedVector3Array(0.25, 0.25, 0.25, 0.25, 0.25, -0.25, -0.25, -0.25, 0
 shading_mode = 0
 albedo_texture = SubResource("PlaceholderTexture2D_gee14")
 uv1_triplanar = true
+texture_filter = 0
 
 [sub_resource type="PrismMesh" id="PrismMesh_7fd65"]
 material = SubResource("StandardMaterial3D_8fm6w")

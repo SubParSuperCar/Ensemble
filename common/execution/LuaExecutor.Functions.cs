@@ -117,7 +117,7 @@ public partial class LuaExecutor
 			{
 				position = new Vector3(
 					random.Next(-(int)positionRange.X, (int)positionRange.X),
-					random.Next(1, (int)positionRange.Y * 2 + 1),
+					random.Next(0, (int)positionRange.Y * 2 - 1) + 0.5f,
 					random.Next(-(int)positionRange.Z, (int)positionRange.Z));
 
 				axis = position.Normalized();

@@ -9,9 +9,9 @@ size = Vector3(0.5, 0.5, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u5sy4"]
 shading_mode = 0
-albedo_color = Color(1, 0, 0, 1)
 albedo_texture = SubResource("PlaceholderTexture2D_gee14")
 uv1_triplanar = true
+texture_filter = 0
 
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
 material = SubResource("StandardMaterial3D_u5sy4")

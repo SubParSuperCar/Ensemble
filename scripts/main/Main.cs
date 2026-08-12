@@ -6,20 +6,25 @@ namespace Root.Scripts.Main;
 [GlobalClass]
 public partial class Main : Node
 {
-	private Node? _game;
+	public Game.Game? Game { get; private set; }
 
-	public static Node? Game { get; private set; }
+	public static Main? Instance { get; private set; }
 
 	[Export] public PackedScene GameScene { get; set; } = null!;
 
 	public override void _EnterTree()
 	{
+		Instance = this;
+
 		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
 	}
 
 	public override void _ExitTree()
 	{
+		if (ReferenceEquals(Instance, this))
+			Instance = null;
+
 		GSessionManager.SessionStarted -= OnSessionStarted;
 		GSessionManager.SessionStopped -= OnSessionStopped;
 	}
@@ -37,13 +42,11 @@ public partial class Main : Node
 	{
 		Log.Information("Session started (mode: {Mode})", GSessionManager.Mode);
 
-		if (_game is not null)
+		if (Game is not null)
 			return;
 
-		_game = GameScene.Instantiate();
-		AddChild(_game);
-
-		Game = _game;
+		Game = GameScene.Instantiate() as Game.Game;
+		AddChild(Game);
 	}
 
 	private void OnSessionStopped()
@@ -52,10 +55,10 @@ public partial class Main : Node
 
 		GCore.Reset();
 
-		if (_game is null)
+		if (Game is null)
 			return;
 
-		_game.QueueFree();
-		_game = null;
+		Game.QueueFree();
+		Game = null;
 	}
 }

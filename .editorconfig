@@ -7,11 +7,12 @@ insert_final_newline = true
 [*.{slnx,csproj,props,xml}]
 indent_size = 2
 
-[*.cs]
+[*.{cs,gd,gdscript}]
 indent_style = tab
 indent_size = 4
 max_line_length = 120
 
+[*.cs]
 csharp_prefer_braces = false
 csharp_preserve_single_line_blocks = true
 csharp_style_expression_bodied_methods = true:suggestion

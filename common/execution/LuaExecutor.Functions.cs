@@ -32,7 +32,8 @@ public partial class LuaExecutor
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
-		env[nameof(set_ui_dark_theme)] = new LuaFunction(set_ui_dark_theme);
+		env[nameof(set_ui_dark_theme_enabled)] = new LuaFunction(set_ui_dark_theme_enabled);
+		env[nameof(set_static_shader_enabled)] = new LuaFunction(set_static_shader_enabled);
 	}
 
 	private static ValueTask<int> print(
@@ -175,7 +176,7 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var timeOfDay = Main.Game?.GetNode("Sky/TimeOfDay");
+		var timeOfDay = Main.Instance?.Game?.GetNode("Sky/TimeOfDay");
 		if (timeOfDay is null)
 			goto Return;
 
@@ -321,7 +322,7 @@ public partial class LuaExecutor
 		return 0;
 	}
 
-	private static ValueTask<int> set_ui_dark_theme(
+	private static ValueTask<int> set_ui_dark_theme_enabled(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
@@ -335,8 +336,21 @@ public partial class LuaExecutor
 		};
 
 		Log.Information("Setting UI theme variant to: {$Theme}", theme);
-
 		WeakReferenceMessenger.Default.Send(new SetThemeMessage(theme));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> set_static_shader_enabled(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var isVisible = context.GetArgument<bool>(0);
+		Log.Information("Setting temporal static shader visibility to: {IsVisible}", isVisible);
+
+		var temporalShader = Main.Instance?.GetNode<CanvasLayer>("Temporal Static");
+		temporalShader?.Visible = isVisible;
 
 		context.Return();
 		return default;

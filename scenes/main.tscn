@@ -3,6 +3,17 @@
 [ext_resource type="Script" uid="uid://ddbov7od314yl" path="res://scripts/main/Main.cs" id="1_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://csyba8yjabf7y" path="res://scenes/game.tscn" id="2_0wfyh"]
 [ext_resource type="Script" uid="uid://crew3b1qn75fh" path="res://ui/gd/Ui.cs" id="3_8gbba"]
+[ext_resource type="Shader" uid="uid://b40ts4rmsiyhu" path="res://shaders/temporal_static.gdshader" id="4_jyhfs"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u064k"]
+shader = ExtResource("4_jyhfs")
+shader_parameter/highlight_threshold = 0.62
+shader_parameter/highlight_softness = 0.1
+shader_parameter/motion_strength = 1.0
+shader_parameter/motion_variation = 0.25
+shader_parameter/static_contrast = 1.5
+shader_parameter/static_brightness = 0.5
+shader_parameter/scroll_speed = 60.0
 
 [node name="Main" type="Node" unique_id=1548621583]
 script = ExtResource("1_0wfyh")
@@ -18,3 +29,16 @@ grow_vertical = 2
 focus_mode = 2
 mouse_force_pass_scroll_events = false
 script = ExtResource("3_8gbba")
+
+[node name="Temporal Static" type="CanvasLayer" parent="." unique_id=659768098]
+layer = -1
+visible = false
+
+[node name="Bitmap" type="ColorRect" parent="Temporal Static" unique_id=1099106225]
+material = SubResource("ShaderMaterial_u064k")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

@@ -85,8 +85,8 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var time = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 60;
-		await Task.Delay(time, cancellationToken).ConfigureAwait(false);
+		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 60;
+		await Task.Delay(timeMs, cancellationToken).ConfigureAwait(false);
 
 		context.Return();
 		return 0;
@@ -333,6 +333,8 @@ public partial class LuaExecutor
 			false => ThemeVariant.Light,
 			_ => ThemeVariant.Default
 		};
+
+		Log.Information("Setting UI theme variant to: {$Theme}", theme);
 
 		WeakReferenceMessenger.Default.Send(new SetThemeMessage(theme));
 

@@ -100,7 +100,11 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			unsubscribe();
 	}
 
-	partial void OnSelectedPlotChanging(Plot? value) => GPlots.SetPlot(GPlayers.Local!.Id, value?.Id ?? None);
+	partial void OnSelectedPlotChanging(Plot? value)
+	{
+		if (GPlayers.Local is { } local)
+			GPlots.SetPlot(local.Id, value?.Id ?? None);
+	}
 
 	private bool CanSetPlotToNull() => SelectedPlot is not null;
 }

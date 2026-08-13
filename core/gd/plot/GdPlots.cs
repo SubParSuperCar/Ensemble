@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Godot;
 using Godot.Collections;
@@ -53,27 +54,39 @@ public partial class GdPlots : RefCounted
 			maxInstanceCount is Default ? null : maxInstanceCount));
 
 	public void SetPlot(string playerId) => SetPlot(playerId, None);
+	public void SetPlot(string playerId, int plotId) => SetPlot(playerId, plotId, true);
 
-	public void SetPlot(string playerId, int plotId)
-	{
-		if (Guid.TryParse(playerId, out var guid))
-			_source.SetPlot(guid, plotId is None ? null : plotId);
-	}
+	public void SetPlot(string playerId, int plotId, bool resolveOwnerIfNullOrRelinquishing) =>
+		SetPlot(playerId, plotId, resolveOwnerIfNullOrRelinquishing, true);
 
-	public GdOccupant? GetOccupant(string playerId)
+	public void SetPlot(
+		string playerId, int plotId,
+		bool resolveOwnerIfNullOrRelinquishing,
+		bool despawnAndClearInstancesIfLastToLeave)
 	{
 		if (!Guid.TryParse(playerId, out var guid))
-			return null;
+			return;
 
-		try
+		if (despawnAndClearInstancesIfLastToLeave)
 		{
-			return GdOccupant.From(_source.GetOccupant(guid));
+			if (!TryGetOccupant(guid, out var occupant))
+				return;
+
+			if (occupant.Plot is { Occupants.Count: < 2 } current)
+			{
+				if (current.Id == plotId)
+					return;
+
+				current.Despawn();
+				current.Instances.Clear();
+			}
 		}
-		catch (InvalidOperationException)
-		{
-			return null;
-		}
+
+		_source.SetPlot(guid, plotId is None ? null : plotId, resolveOwnerIfNullOrRelinquishing);
 	}
+
+	public GdOccupant? GetOccupant(string playerId) =>
+		Guid.TryParse(playerId, out var guid) && TryGetOccupant(guid, out var occupant) ? occupant : null;
 
 	public void Lock() => _source.Lock();
 
@@ -85,5 +98,19 @@ public partial class GdPlots : RefCounted
 			result.Add(GdPlot.From(plot).ToDict());
 
 		return result;
+	}
+
+	private bool TryGetOccupant(Guid guid, [NotNullWhen(true)] out GdOccupant? occupant)
+	{
+		try
+		{
+			occupant = GdOccupant.From(_source.GetOccupant(guid));
+			return true;
+		}
+		catch (InvalidOperationException)
+		{
+			occupant = null;
+			return false;
+		}
 	}
 }

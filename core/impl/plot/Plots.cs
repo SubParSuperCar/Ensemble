@@ -69,7 +69,7 @@ public class Plots : IPlots
 		return plot;
 	}
 
-	public void SetPlot(Guid playerId, int? plotId = null)
+	public void SetPlot(Guid playerId, int? plotId = null, bool resolveOwnerIfNullOrRelinquishing = false)
 	{
 		if (!Occupants.TryGet(playerId, out var occupant))
 			throw new InvalidOperationException($"Occupant with player id {playerId} not found");
@@ -86,10 +86,10 @@ public class Plots : IPlots
 			if (ReferenceEquals(plot, current))
 				return;
 
-			current.Occupants.Remove(occupant);
+			current.Occupants.Remove(occupant, resolveOwnerIfNullOrRelinquishing, plot is not null);
 		}
 
-		(plot as Plot)?.Occupants.Add(occupant);
+		(plot as Plot)?.Occupants.Add(occupant, resolveOwnerIfNullOrRelinquishing);
 	}
 
 	public IOccupant GetOccupant(Guid playerId) =>

@@ -45,26 +45,28 @@ public class Occupants : IOccupants
 			Remove((Occupant)occupant);
 	}
 
-	internal void Add(Occupant occupant, bool setOwner = true)
+	internal void Add(Occupant occupant, bool resolveOwnerIfNull = false)
 	{
 		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
 		occupant.SetPlot(_plot);
 
-		if (Owner is null && setOwner)
+		if (Owner is null && resolveOwnerIfNull)
 			SetOwner(occupant.Player.Id);
 
 		Added?.Invoke(occupant);
 	}
 
-	internal void Remove(Occupant occupant, bool setOwner = true)
+	internal void Remove(Occupant occupant, bool resolveOwnerIfRelinquishing = false, bool isExchanging = false)
 	{
 		if (ReferenceEquals(occupant, Owner))
-			SetOwner(_occupantsByPlayerId.Count > 1 && setOwner
+			SetOwner(_occupantsByPlayerId.Count > 1 && resolveOwnerIfRelinquishing
 				? _occupantsByPlayerId.Values.First(other => !ReferenceEquals(other, occupant)).Player.Id
 				: null);
 
 		_occupantsByPlayerId.Remove(occupant.Player.Id);
-		occupant.SetPlot(null);
+
+		if (!isExchanging)
+			occupant.SetPlot(null);
 
 		Removed?.Invoke(occupant);
 	}

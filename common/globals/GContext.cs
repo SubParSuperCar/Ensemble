@@ -34,15 +34,11 @@ public static class GContext
 		if (ReferenceEquals(_occupant, occupant))
 			return;
 
-		if (_occupant is not null)
-			_occupant.PlotChanged -= OnPlotChanged;
-
+		_occupant?.PlotChanged -= OnPlotChanged;
 		_occupant = occupant;
 
 		OnPlotChanged(occupant?.Plot);
-
-		if (occupant is not null)
-			occupant.PlotChanged += OnPlotChanged;
+		occupant?.PlotChanged += OnPlotChanged;
 	}
 
 	private static void OnPlotChanged(GdPlot? plot)

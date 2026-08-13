@@ -201,11 +201,11 @@ API's full capabilities; additional functionality and usage patterns are availab
     // Modify an instance property. Here, the block's color is changed
     // from white to bright red.
     //
-    // GdProperties.Updated is emitted when the property changes.
+    // GdProperties.Changed is emitted when the property changes.
     properties.Update("_colorHex", "FF0000");
 
 
-    // Spawn the plot to weld and unanchor instances, etc.
+    // Spawn the plot to weld and unfreeze instances, etc.
     //
     // GdPlot.IsSpawnedChanged is emitted if the plot was not already spawned.
     plot.Spawn();

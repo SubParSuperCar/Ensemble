@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Godot;
 using Godot.Collections;
@@ -53,56 +54,36 @@ public partial class GdPlots : RefCounted
 			maxInstanceCount is Default ? null : maxInstanceCount));
 
 	public void SetPlot(string playerId) => SetPlot(playerId, None);
+	public void SetPlot(string playerId, int plotId) => SetPlot(playerId, plotId, true);
 
-	public void SetPlot(string playerId, int plotId)
-	{
-		if (Guid.TryParse(playerId, out var guid))
-			_source.SetPlot(guid, plotId is None ? null : plotId);
-	}
+	public void SetPlot(string playerId, int plotId, bool resolveOwnerIfNullOrRelinquishing) =>
+		SetPlot(playerId, plotId, resolveOwnerIfNullOrRelinquishing, true);
 
-	// I'd like to add this new overload that'll become the main method for setting plots via the wrapper.
-	// The problem is that internally, performing these exhange ops individually causes there to be a time where
-	// events are fired that makes it look like another operation is running. For example, attempting to set a plot
-	// to another causes there to be a brief moment where PlotChanged is emitted with null, even though it shouldn't.
-	// This is a bad setup that is logically flawed and could be prevented by maybe adding additional args for skipping
-	// event firing, etc., or dedicated exhange methods. I'd like to keep it as lightweight as possible, though.
-	//
-	// My goal here is to make the wrapper is responsible for complex ops like resolving Owner instead of the inner Core.
-	// Right now, you have to access Core to disable automatic owner setting, and also there's no capability for
-	// resetting the plot when the last occupent leaves, which is what I'm trying to accomplish here. All together,
-	// the Core should just feature the correct logic and we need to dig through other parts of the code to ensure
-	// that there are no logical flaws as well, mostly exhange issues. When switching plots, we don't want a moment where
-	// it's null, we just want from one plot to another, and everything should happen in the right order.
-	//
-	// For the reset op, the reset call should probably occur before the owner relinquishes, because they lose authority
-	// then.
-	//
-	// This method is W.I.P.
-	// We should probably trace the logic flow of every possible case and make sure it's 100% logical across
-	// the entire Core system, not just Plots/Occupants but Players and Instances too, just everything.
 	public void SetPlot(
 		string playerId, int plotId,
-		bool setOwnerIfFirstToJoinOrRelinquishing = true, // If we're the first to join or are the owner leaving, update owner accordingly
-		bool resetIfLastToLeave = true) // If we're the last to leave, reset the plot (despawn, clear instances, etc.)
-	{
-		if (Guid.TryParse(playerId, out var guid))
-			_source.SetPlot(guid, plotId is None ? null : plotId);
-	}
-
-	public GdOccupant? GetOccupant(string playerId)
+		bool resolveOwnerIfNullOrRelinquishing,
+		bool despawnAndClearInstancesIfLastToLeave)
 	{
 		if (!Guid.TryParse(playerId, out var guid))
-			return null;
+			return;
 
-		try
+		if (despawnAndClearInstancesIfLastToLeave)
 		{
-			return GdOccupant.From(_source.GetOccupant(guid));
+			if (!TryGetOccupant(guid, out var occupant))
+				return;
+
+			if (occupant.Plot is { Occupants.Count: < 2 } current)
+			{
+				current.Despawn();
+				current.Instances.Clear();
+			}
 		}
-		catch (InvalidOperationException)
-		{
-			return null;
-		}
+
+		_source.SetPlot(guid, plotId is None ? null : plotId, resolveOwnerIfNullOrRelinquishing);
 	}
+
+	public GdOccupant? GetOccupant(string playerId) =>
+		Guid.TryParse(playerId, out var guid) && TryGetOccupant(guid, out var occupant) ? occupant : null;
 
 	public void Lock() => _source.Lock();
 
@@ -114,5 +95,19 @@ public partial class GdPlots : RefCounted
 			result.Add(GdPlot.From(plot).ToDict());
 
 		return result;
+	}
+
+	private bool TryGetOccupant(Guid guid, [NotNullWhen(true)] out GdOccupant? occupant)
+	{
+		try
+		{
+			occupant = GdOccupant.From(_source.GetOccupant(guid));
+			return true;
+		}
+		catch (InvalidOperationException)
+		{
+			occupant = null;
+			return false;
+		}
 	}
 }

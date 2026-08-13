@@ -45,34 +45,29 @@ public class Occupants : IOccupants
 			Remove((Occupant)occupant);
 	}
 
-	// We might want to remove setOwner args? But this also helps make sure the event fires at maybe a better time
-	// We may have to update API for some of this? Maybe? But also probably not because these are internal concerns.
-	internal void Add(Occupant occupant, bool setOwner = true)
+	internal void Add(Occupant occupant, bool resolveOwnerIfNull = false)
 	{
 		_occupantsByPlayerId.Add(occupant.Player.Id, occupant);
 		occupant.SetPlot(_plot);
 
-		// This should be moved to GdCore as per comment.
-		if (Owner is null && setOwner)
+		if (Owner is null && resolveOwnerIfNull)
 			SetOwner(occupant.Player.Id);
 
 		Added?.Invoke(occupant);
 	}
 
-	internal void Remove(Occupant occupant, bool setOwner = true)
+	internal void Remove(Occupant occupant, bool resolveOwnerIfRelinquishing = false, bool isExchanging = false)
 	{
-		// This should only set owner to null, never to another unless GdCore is exchanging for another
-		// occupant to take over (relinquishing ownership) as per logical.
 		if (ReferenceEquals(occupant, Owner))
-			SetOwner(_occupantsByPlayerId.Count > 1 && setOwner
+			SetOwner(_occupantsByPlayerId.Count > 1 && resolveOwnerIfRelinquishing
 				? _occupantsByPlayerId.Values.First(other => !ReferenceEquals(other, occupant)).Player.Id
 				: null);
 
 		_occupantsByPlayerId.Remove(occupant.Player.Id);
-		occupant.SetPlot(null);
-		// (Above ^) Is there some way to only call this if it's actually being set to null, not an exchange?
 
-		// This can stay because obviously it's going to be removed from *this* plot nonetheless.
+		if (!isExchanging)
+			occupant.SetPlot(null);
+
 		Removed?.Invoke(occupant);
 	}
 }

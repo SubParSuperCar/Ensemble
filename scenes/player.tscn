@@ -6,11 +6,26 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_agfs1"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dqkch"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+grow = true
+grow_amount = 0.01
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8p2pg"]
+next_pass = SubResource("StandardMaterial3D_dqkch")
 transparency = 4
 cull_mode = 2
 albedo_color = Color(1, 0.25, 0.25, 0.625)
 roughness = 0.6
+stencil_mode = 1
+stencil_flags = 2
+stencil_color = Color(1, 1, 1, 1)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_agfs1"]
 material = SubResource("StandardMaterial3D_8p2pg")

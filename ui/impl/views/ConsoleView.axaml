@@ -63,7 +63,7 @@
                     Margin="0,0,22,4">
 
                     <Button
-                        Content="Open User Data Dir"
+                        Content="Open User Data Dir."
                         Command="{Binding OpenUserDataDirCommand}"
                         ToolTip.Tip="Opens the directory where user data are stored."
                         Background="{DynamicResource TranslucentBackgroundBrush}" />

@@ -4,10 +4,19 @@
     x:Class="Root.Ui.Impl.Views.ToolBarView"
     FontSize="20" FontWeight="ExtraLight">
 
-    <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="4">
+    <Border
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        Padding="4"
+        CornerRadius="4">
+
         <StackPanel Orientation="Horizontal" Spacing="4">
-            <ToggleButton Content="Place Tool (1)" ToolTip.Tip="Toggles the build tool. (Bound to One)" />
-            <ToggleButton Content="Delete Tool (2)" ToolTip.Tip="Toggles the delete tool. (Bound to Two)" />
+            <Border BorderBrush="DodgerBlue" BorderThickness="1">
+                <ToggleButton Content="Place Tool (1)" ToolTip.Tip="Toggles the build tool. (Bound to One)" />
+            </Border>
+
+            <Border BorderBrush="Red" BorderThickness="1">
+                <ToggleButton Content="Delete Tool (2)" ToolTip.Tip="Toggles the delete tool. (Bound to Two)" />
+            </Border>
 
             <CheckBox
                 Content="MutEx"

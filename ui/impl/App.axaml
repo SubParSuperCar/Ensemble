@@ -48,6 +48,7 @@
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />
             <Setter Property="FontWeight" Value="{StaticResource FontWeight}" />
             <Setter Property="Background" Value="{StaticResource TranslucentBackgroundBrush}" />
+            <Setter Property="IsHitTestVisible" Value="False" />
         </Style>
 
         <Style Selector="ToolTip /template/ ContentPresenter#PART_ContentPresenter">

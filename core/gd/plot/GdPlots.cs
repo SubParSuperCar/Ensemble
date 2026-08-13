@@ -74,6 +74,9 @@ public partial class GdPlots : RefCounted
 
 			if (occupant.Plot is { Occupants.Count: < 2 } current)
 			{
+				if (current.Id == plotId)
+					return;
+
 				current.Despawn();
 				current.Instances.Clear();
 			}

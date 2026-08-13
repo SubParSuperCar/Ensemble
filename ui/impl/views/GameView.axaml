@@ -34,6 +34,10 @@
             HorizontalAlignment="Left" VerticalAlignment="Center"
             MinWidth="256" MaxWidth="384" MaxHeight="256" />
 
+        <ContentControl
+            Content="{Binding ToolBar}"
+            HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+
         <Button
             Content="&lt;- Menu (2x)"
             DoubleTapped="Button_DoubleTapped"

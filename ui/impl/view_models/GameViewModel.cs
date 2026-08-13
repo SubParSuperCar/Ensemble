@@ -17,12 +17,17 @@ public partial class GameViewModel : ViewModelBase
 		_services = services;
 		_dispatcher = dispatcher;
 
+		ToolBar = services.GetRequiredService<ToolBarViewModel>();
 		Clock = services.GetRequiredService<ClockViewModel>();
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 		PlotSelector = services.GetRequiredService<PlotSelectorViewModel>();
 
 		dispatcher.Input += OnInput;
 	}
+
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial ToolBarViewModel? ToolBar { get; set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
@@ -40,6 +45,7 @@ public partial class GameViewModel : ViewModelBase
 	{
 		_dispatcher.Input -= OnInput;
 
+		ToolBar = null;
 		Clock = null;
 		PlayerList = null;
 		PlotSelector = null;

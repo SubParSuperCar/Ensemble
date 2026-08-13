@@ -58,10 +58,9 @@
                 </ScrollViewer>
 
                 <StackPanel
-                    Orientation="Horizontal"
+                    Orientation="Horizontal" Spacing="4"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Margin="0,0,22,4"
-                    Spacing="4">
+                    Margin="0,0,22,4">
 
                     <Button
                         Content="Open User Data Dir"
@@ -93,10 +92,9 @@
                     ShowLineNumbers="True" />
 
                 <StackPanel
-                    Orientation="Horizontal"
+                    Orientation="Horizontal" Spacing="4"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Margin="0,0,22,4"
-                    Spacing="4">
+                    Margin="0,0,22,4">
 
                     <Border
                         BorderBrush="Red"

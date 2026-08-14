@@ -429,7 +429,7 @@ func _align_normals(source: Image, iteration: int=0) -> void:
 	_set_normal_vector(source, true)
 	if normal_vector.dot(Vector3(0.0, 0.0, 1.0)) < 0.999 && iteration < 3:
 		++ iteration
-_align_normals(source, iteration)
+		_align_normals(source, iteration)
 
 
 func _pack_textures(p_rgb_image: Image, p_a_image: Image, p_dst_path: String, p_invert_green: bool,

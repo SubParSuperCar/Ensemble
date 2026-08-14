@@ -109,27 +109,27 @@ func initialize(p_plugin: EditorPlugin) -> void:
 	confirm_dialog = ConfirmationDialog.new()
 	add_child(confirm_dialog, true)
 	confirm_dialog.hide()
-	confirm_dialog.confirmed.connect(func(): _confirmed = true; \
+	confirm_dialog.confirmed.connect(func():
+		_confirmed = true; \
 		confirmation_closed.emit() ; \
-	confirmation_confirmed.emit()
-)
-confirm_dialog.canceled.connect(
-func (
-	): _confirmed = false; \
-	confirmation_closed.emit(); \
-	confirmation_canceled.emit() )
+		confirmation_confirmed.emit() )
 
-# Setup styles
-set("theme_override_styles/panel", get_theme_stylebox("panel", "Panel"))
-# Avoid saving icon resources in tscn when editing w/ a tool script
-if EditorInterface.get_edited_scene_root() != self:
+	confirm_dialog.canceled.connect(func ():
+		_confirmed = false; \
+		confirmation_closed.emit(); \
+		confirmation_canceled.emit() )
+
+	# Setup styles
+	set("theme_override_styles/panel", get_theme_stylebox("panel", "Panel"))
+	# Avoid saving icon resources in tscn when editing w/ a tool script
+	if EditorInterface.get_edited_scene_root() != self:
 		pinned_btn.icon = get_theme_icon("Pin", "EditorIcons")
-pinned_btn.text = ""
-search_button.icon = get_theme_icon("Search", "EditorIcons")
+	pinned_btn.text = ""
+	search_button.icon = get_theme_icon("Search", "EditorIcons")
 
-_initialized = true
-update_dock()
-update_layout()
+	_initialized = true
+	update_dock()
+	update_layout()
 
 
 func _gui_input(p_event: InputEvent) -> void:
@@ -559,10 +559,10 @@ class ListContainer extends Container:
 
 
 class ListEntry extends MarginContainer:
-signal hovered()
-signal clicked()
-signal changed(resource: Resource)
-signal inspected(resource: Resource)
+	signal hovered()
+	signal clicked()
+	signal changed(resource: Resource)
+	signal inspected(resource: Resource)
 
 	var resource: Resource
 	var type := Terrain3DAssets.TYPE_TEXTURE
@@ -578,13 +578,13 @@ signal inspected(resource: Resource)
 	var spacer: Control
 	var button_clear: TextureButton
 
-@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
-@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
-@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
-@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
-@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
-@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
-@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
+	@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
+	@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
+	@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
+	@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
+	@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
+	@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
+	@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
 
 	func _ready() -> void:
 		name = "ListEntry"

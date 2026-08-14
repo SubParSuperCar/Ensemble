@@ -127,15 +127,15 @@ func _ready() -> void:
 	confirm_dialog = ConfirmationDialog.new()
 	add_child(confirm_dialog)
 	confirm_dialog.hide()
-	confirm_dialog.confirmed.connect(func(): _confirmed = true; \
+	confirm_dialog.confirmed.connect(func():
+		_confirmed = true; \
 		emit_signal("confirmation_closed") ; \
-	emit_signal("confirmation_confirmed")
-)
-confirm_dialog.canceled.connect(
-func (
-	): _confirmed = false; \
-	emit_signal("confirmation_closed"); \
-	emit_signal("confirmation_canceled") )
+		emit_signal("confirmation_confirmed") )
+
+	confirm_dialog.canceled.connect(func ():
+		_confirmed = false; \
+		emit_signal("confirmation_closed"); \
+		emit_signal("confirmation_canceled") )
 
 
 func get_current_list() -> ListContainer:
@@ -624,10 +624,10 @@ class ListContainer extends Container:
 
 
 class ListEntry extends VBoxContainer:
-signal hovered()
-signal selected()
-signal changed(resource: Resource)
-signal inspected(resource: Resource)
+	signal hovered()
+	signal selected()
+	signal changed(resource: Resource)
+	signal inspected(resource: Resource)
 
 	var resource: Resource
 	var type := Terrain3DAssets.TYPE_TEXTURE
@@ -637,20 +637,20 @@ signal inspected(resource: Resource)
 	var is_selected: bool = false
 	var asset_list: Terrain3DAssets
 
-@onready var button_row := HBoxContainer.new()
-@onready var button_clear := TextureButton.new()
-@onready var button_edit := TextureButton.new()
-@onready var spacer := Control.new()
-@onready var button_enabled := TextureButton.new()
-@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
-@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
-@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
-@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
+	@onready var button_row := HBoxContainer.new()
+	@onready var button_clear := TextureButton.new()
+	@onready var button_edit := TextureButton.new()
+	@onready var spacer := Control.new()
+	@onready var button_enabled := TextureButton.new()
+	@onready var clear_icon: Texture2D = get_theme_icon("Close", "EditorIcons")
+	@onready var edit_icon: Texture2D = get_theme_icon("Edit", "EditorIcons")
+	@onready var enabled_icon: Texture2D = get_theme_icon("GuiVisibilityVisible", "EditorIcons")
+	@onready var disabled_icon: Texture2D = get_theme_icon("GuiVisibilityHidden", "EditorIcons")
 
 	var name_label: Label
-@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
-@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
-@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
+	@onready var add_icon: Texture2D = get_theme_icon("Add", "EditorIcons")
+	@onready var background: StyleBox = get_theme_stylebox("pressed", "Button")
+	@onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
 
 	func _ready() -> void:
 		setup_buttons()

@@ -39,13 +39,13 @@ public partial class ToolBarViewModel : ViewModelBase
 
 	private void OnPlaceToolIsEnabledChanged(bool isEnabled)
 	{
-		Log.Verbose("Place tool toggled");
+		Log.Verbose("Place tool IsEnabled set to: {IsEnabled}", isEnabled);
 		IsPlaceToolEnabled = isEnabled;
 	}
 
 	private void OnDeleteToolIsEnabledChanged(bool isEnabled)
 	{
-		Log.Verbose("Delete tool toggled");
+		Log.Verbose("Delete tool IsEnabled set to: {IsEnabled}", isEnabled);
 		IsDeleteToolEnabled = isEnabled;
 	}
 }

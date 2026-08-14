@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
+using Root.Common.Globals;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 using Root.Ui.Impl.Services;
@@ -17,17 +18,15 @@ public partial class GameViewModel : ViewModelBase
 		_services = services;
 		_dispatcher = dispatcher;
 
-		ToolBar = services.GetRequiredService<ToolBarViewModel>();
 		Clock = services.GetRequiredService<ClockViewModel>();
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
 		PlotSelector = services.GetRequiredService<PlotSelectorViewModel>();
 
 		dispatcher.Input += OnInput;
-	}
 
-	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
-	public partial ToolBarViewModel? ToolBar { get; set; }
+		OnIsPlotSpawnedChanged(GContext.IsPlotSpawned);
+		GContext.IsPlotSpawnedChanged += OnIsPlotSpawnedChanged;
+	}
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
@@ -41,14 +40,19 @@ public partial class GameViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	public partial PlotSelectorViewModel? PlotSelector { get; set; }
 
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial ToolBarViewModel? ToolBar { get; set; }
+
 	protected override void OnDispose()
 	{
+		GContext.IsPlotSpawnedChanged -= OnIsPlotSpawnedChanged;
 		_dispatcher.Input -= OnInput;
 
-		ToolBar = null;
 		Clock = null;
 		PlayerList = null;
 		PlotSelector = null;
+		ToolBar = null;
 	}
 
 	private void OnInput(InputEvent @event)
@@ -56,4 +60,7 @@ public partial class GameViewModel : ViewModelBase
 		if (Input.IsActionJustPressedByEvent("ui_toggle_player_list", @event))
 			PlayerList = PlayerList is null ? _services.GetRequiredService<PlayerListViewModel>() : null;
 	}
+
+	private void OnIsPlotSpawnedChanged(bool? isSpawned) =>
+		ToolBar = isSpawned is false ? _services.GetRequiredService<ToolBarViewModel>() : null;
 }

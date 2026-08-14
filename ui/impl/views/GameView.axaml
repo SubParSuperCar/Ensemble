@@ -34,9 +34,15 @@
             HorizontalAlignment="Left" VerticalAlignment="Center"
             MinWidth="256" MaxWidth="384" MaxHeight="256" />
 
-        <ContentControl
+        <TransitioningContentControl
             Content="{Binding ToolBar}"
-            HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+            HorizontalAlignment="Center" VerticalAlignment="Bottom"
+            Margin="0,0,0,4">
+
+            <TransitioningContentControl.PageTransition>
+                <CrossFade Duration="{StaticResource TransitionDuration}" />
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
 
         <Button
             Content="&lt;- Menu (2x)"

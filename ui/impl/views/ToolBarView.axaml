@@ -7,7 +7,7 @@
     <Border
         Background="{DynamicResource TranslucentBackgroundBrush}"
         Padding="4"
-        CornerRadius="4">
+        CornerRadius="6">
 
         <StackPanel Orientation="Horizontal" Spacing="4">
             <Border BorderBrush="DodgerBlue" BorderThickness="1">

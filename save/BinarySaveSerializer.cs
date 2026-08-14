@@ -73,7 +73,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		// Signed counts make corruption easier to detect.
 		// For example, FF FF FF FF becomes -1 instead of 4,294,967,295.
 		var instanceCount = reader.ReadInt32();
-		if (instanceCount is < 0 or > ushort.MaxValue)
+		if (instanceCount is < 0 or int.MaxValue)
 			throw new InvalidDataException("Invalid instance count.");
 
 		save.Instances.Capacity = instanceCount;
@@ -94,7 +94,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 				reader.ReadSingle());
 
 			var propertyCount = reader.ReadInt32();
-			if (propertyCount is < 0 or > ushort.MaxValue)
+			if (propertyCount is < 0 or int.MaxValue)
 				throw new InvalidDataException("Invalid property count.");
 
 			Dictionary<string, Variant>? properties = null;

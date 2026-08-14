@@ -29,9 +29,9 @@ public abstract partial class ToolBase : Node
 	public void Toggle()
 	{
 		if (IsEnabled)
-			Enable();
-		else
 			Disable();
+		else
+			Enable();
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)

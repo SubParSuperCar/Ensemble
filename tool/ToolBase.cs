@@ -29,22 +29,15 @@ public abstract partial class ToolBase : Node
 	public void Toggle()
 	{
 		if (IsEnabled)
-			_control.RequestDisable();
+			Enable();
 		else
-			_control.RequestEnable();
+			Disable();
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (ToggleAction is null || !@event.IsActionPressed(ToggleAction))
-			return;
-
-		if (IsEnabled)
-			Disable();
-		else
-			Enable();
-
-		GetViewport().SetInputAsHandled();
+		if (ToggleAction is not null && @event.IsActionPressed(ToggleAction))
+			Toggle();
 	}
 
 	internal void EnableInternal()

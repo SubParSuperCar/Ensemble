@@ -16,7 +16,7 @@ public partial class ToolBarViewModel : ViewModelBase
 	[ObservableProperty] public partial bool IsPlaceToolEnabled { get; set; }
 	[ObservableProperty] public partial bool IsDeleteToolEnabled { get; set; }
 
-	[ObservableProperty] public partial bool IsMutexEnabled { get; set; } = GToolManager.UseMutex;
+	[ObservableProperty] public partial bool IsMutexEnforced { get; set; } = GToolManager.UseMutex;
 
 	protected override void OnDispose()
 	{
@@ -25,16 +25,16 @@ public partial class ToolBarViewModel : ViewModelBase
 	}
 
 	[RelayCommand]
-	private static void TogglePlaceToolEnabled() => GToolManager.Place.Toggle();
+	private static void TogglePlaceTool() => GToolManager.Place.Toggle();
 
 	[RelayCommand]
-	private static void ToggleDeleteToolEnabled() => GToolManager.Delete.Toggle();
+	private static void ToggleDeleteTool() => GToolManager.Delete.Toggle();
 
 	[RelayCommand]
-	private void ToggleMutexEnabled()
+	private void ToggleMutexEnforced()
 	{
 		GToolManager.UseMutex = !GToolManager.UseMutex;
-		IsMutexEnabled = GToolManager.UseMutex;
+		IsMutexEnforced = GToolManager.UseMutex;
 	}
 
 	private void OnPlaceToolIsEnabledChanged(bool isEnabled)

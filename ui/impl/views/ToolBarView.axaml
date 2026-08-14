@@ -15,7 +15,7 @@
             <Border BorderBrush="DodgerBlue" BorderThickness="1">
                 <ToggleButton
                     Content="Place Tool (1)"
-                    Command="{Binding TogglePlaceToolEnabledCommand}"
+                    Command="{Binding TogglePlaceToolCommand}"
                     IsChecked="{Binding IsPlaceToolEnabled}"
                     ToolTip.Tip="Toggles the build tool. (Bound to One)" />
             </Border>
@@ -23,15 +23,15 @@
             <Border BorderBrush="Red" BorderThickness="1">
                 <ToggleButton
                     Content="Delete Tool (2)"
-                    Command="{Binding ToggleDeleteToolEnabledCommand}"
+                    Command="{Binding ToggleDeleteToolCommand}"
                     IsChecked="{Binding IsDeleteToolEnabled}"
                     ToolTip.Tip="Toggles the delete tool. (Bound to Two)" />
             </Border>
 
             <CheckBox
                 Content="MutEx"
-                Command="{Binding ToggleMutexEnabledCommand}"
-                IsChecked="{Binding IsMutexEnabled}"
+                Command="{Binding ToggleMutexEnforcedCommand}"
+                IsChecked="{Binding IsMutexEnforced}"
                 ToolTip.Tip="Mutual Exclusion: Toggles whether multiple tools can't be enabled at the same time."
                 Margin="4,0" />
         </StackPanel>

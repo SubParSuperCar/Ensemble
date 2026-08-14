@@ -17,7 +17,7 @@
                     Content="Place Tool (1)"
                     Command="{Binding TogglePlaceToolCommand}"
                     IsChecked="{Binding IsPlaceToolEnabled}"
-                    ToolTip.Tip="Toggles the build tool. (Bound to One)" />
+                    ToolTip.Tip="Toggles the place tool. (Bound to One)" />
             </Border>
 
             <Border BorderBrush="Red" BorderThickness="1">

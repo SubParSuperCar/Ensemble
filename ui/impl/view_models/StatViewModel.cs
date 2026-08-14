@@ -66,6 +66,7 @@ public partial class StatViewModel : ViewModelBase
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
 			("Used DRAM", Formatter.FormatBytes(dram)),
 			("Used VRAM", Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
+			("C# Heap Size", Formatter.FormatBytes((ulong)GC.GetTotalMemory(false))),
 			("Objects", Performance.GetMonitor(Performance.Monitor.ObjectCount)),
 			("Nodes", Performance.GetMonitor(Performance.Monitor.ObjectNodeCount)),
 			("Orphan Nodes", Performance.GetMonitor(Performance.Monitor.ObjectOrphanNodeCount)),

@@ -1,4 +1,7 @@
 using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Styling;
@@ -9,7 +12,13 @@ namespace Root.Ui.Impl;
 
 public class App : Application
 {
-	public override void Initialize() => AvaloniaXamlLoader.Load(this);
+	public override void Initialize()
+	{
+		AvaloniaXamlLoader.Load(this);
+
+		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
+		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
+	}
 
 	// TODO
 	public override void OnFrameworkInitializationCompleted()
@@ -24,6 +33,13 @@ public class App : Application
 			(_, message) => RequestedThemeVariant = message.Value);
 
 		base.OnFrameworkInitializationCompleted();
+	}
+
+	// TODO
+	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs e)
+	{
+		if (e.Key is Key.Space && topLevel.FocusManager.GetFocusedElement() is not TextBox)
+			e.Handled = true;
 	}
 
 	private void OnColorValuesChanged(PlatformColorValues colorValues) =>

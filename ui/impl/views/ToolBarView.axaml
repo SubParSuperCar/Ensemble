@@ -1,7 +1,9 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     x:Class="Root.Ui.Impl.Views.ToolBarView"
+    x:DataType="vm:ToolBarViewModel"
     FontSize="20" FontWeight="ExtraLight">
 
     <Border
@@ -11,15 +13,25 @@
 
         <StackPanel Orientation="Horizontal" Spacing="4">
             <Border BorderBrush="DodgerBlue" BorderThickness="1">
-                <ToggleButton Content="Place Tool (1)" ToolTip.Tip="Toggles the build tool. (Bound to One)" />
+                <ToggleButton
+                    Content="Place Tool (1)"
+                    Command="{Binding TogglePlaceToolEnabledCommand}"
+                    IsChecked="{Binding IsPlaceToolEnabled}"
+                    ToolTip.Tip="Toggles the build tool. (Bound to One)" />
             </Border>
 
             <Border BorderBrush="Red" BorderThickness="1">
-                <ToggleButton Content="Delete Tool (2)" ToolTip.Tip="Toggles the delete tool. (Bound to Two)" />
+                <ToggleButton
+                    Content="Delete Tool (2)"
+                    Command="{Binding ToggleDeleteToolEnabledCommand}"
+                    IsChecked="{Binding IsDeleteToolEnabled}"
+                    ToolTip.Tip="Toggles the delete tool. (Bound to Two)" />
             </Border>
 
             <CheckBox
                 Content="MutEx"
+                Command="{Binding ToggleMutexEnabledCommand}"
+                IsChecked="{Binding IsMutexEnabled}"
                 ToolTip.Tip="Mutual Exclusion: Toggles whether multiple tools can't be enabled at the same time."
                 Margin="4,0" />
         </StackPanel>

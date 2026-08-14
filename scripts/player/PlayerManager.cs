@@ -12,16 +12,7 @@ public partial class PlayerManager : Node
 
 	[Export] public PackedScene PlayerScene { get; set; } = null!;
 
-	public override void _EnterTree()
-	{
-		GPlayerManager = this;
-
-		foreach (var player in GPlayers.GetAll())
-			OnPlayerAdded(player);
-
-		GPlayers.Added += OnPlayerAdded;
-		GPlayers.Removed += OnPlayerRemoved;
-	}
+	public override void _EnterTree() => GPlayerManager = this;
 
 	public override void _ExitTree()
 	{
@@ -30,6 +21,15 @@ public partial class PlayerManager : Node
 
 		if (ReferenceEquals(GPlayerManager, this))
 			GPlayerManager = null!;
+	}
+
+	public override void _Ready()
+	{
+		foreach (var player in GPlayers.GetAll())
+			OnPlayerAdded(player);
+
+		GPlayers.Added += OnPlayerAdded;
+		GPlayers.Removed += OnPlayerRemoved;
 	}
 
 	public PlayerHandle GetHandle(GdPlayer player) => GetHandle(player.Id);

@@ -1,35 +1,70 @@
 using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable VirtualMemberNeverOverridden.Global
 
 namespace Root.Tool;
 
 public abstract partial class ToolBase : Node
 {
+	private ToolControl _control = null!;
+
 	public bool IsEnabled { get; private set; }
+
+	protected virtual StringName? ToggleAction => null;
 
 	// ReSharper disable once EventNeverSubscribedTo.Global
 	public event Action<bool>? IsEnabledChanged;
 
-	public void Enable()
+	internal void Initialize(ToolControl control)
+	{
+		if (_control is not null)
+			throw new InvalidOperationException("Tool has already been initialized.");
+
+		_control = control;
+	}
+
+	public void Enable() => _control.RequestEnable();
+	public void Disable() => _control.RequestDisable();
+
+	public void Toggle()
+	{
+		if (IsEnabled)
+			_control.RequestDisable();
+		else
+			_control.RequestEnable();
+	}
+
+	public override void _UnhandledKeyInput(InputEvent @event)
+	{
+		if (ToggleAction is null || !@event.IsActionPressed(ToggleAction))
+			return;
+
+		if (IsEnabled)
+			Disable();
+		else
+			Enable();
+
+		GetViewport().SetInputAsHandled();
+	}
+
+	internal void EnableInternal()
 	{
 		if (IsEnabled)
 			return;
 
 		IsEnabled = true;
-		IsEnabledChanged?.Invoke(IsEnabled);
+		IsEnabledChanged?.Invoke(true);
 
 		OnEnable();
 	}
 
-	public void Disable()
+	internal void DisableInternal()
 	{
 		if (!IsEnabled)
 			return;
 
 		IsEnabled = false;
-		IsEnabledChanged?.Invoke(IsEnabled);
+		IsEnabledChanged?.Invoke(false);
 
 		OnDisable();
 	}

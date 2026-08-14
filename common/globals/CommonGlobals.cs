@@ -5,6 +5,7 @@ using Root.Core.Gd.Plot;
 using Root.Scripts.Asset;
 using Root.Scripts.Player;
 using Root.Scripts.Plot;
+using Root.Tool;
 
 namespace Root.Common.Globals;
 
@@ -42,4 +43,8 @@ public static class CommonGlobals
 		get => field ?? throw new InvalidOperationException($"{nameof(PlotManager)} is null");
 		set;
 	} = null!;
+
+	// ReSharper disable once UnusedMember.Global
+	public static ToolManager GToolManager =>
+		ToolManager.Instance ?? throw new InvalidOperationException($"{nameof(ToolManager)} is null");
 }

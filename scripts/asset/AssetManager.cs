@@ -21,10 +21,16 @@ public partial class AssetManager : Node
 	[GeneratedRegex(@"\.t?scn$", RegexOptions.Compiled, (int)TimeSpan.MillisecondsPerSecond)]
 	private static partial Regex SceneFileRegex { get; }
 
-	public override void _EnterTree()
-	{
-		GAssetManager = this;
+	public override void _EnterTree() => GAssetManager = this;
 
+	public override void _ExitTree()
+	{
+		if (ReferenceEquals(GAssetManager, this))
+			GAssetManager = null!;
+	}
+
+	public override void _Ready()
+	{
 		if (GAssets.IsLocked)
 		{
 			Log.Warning("{Class} is already locked; skipping asset scan", nameof(GAssets));
@@ -37,12 +43,6 @@ public partial class AssetManager : Node
 		GAssets.Lock();
 
 		Log.Debug("Finished scanning and registering assets");
-	}
-
-	public override void _ExitTree()
-	{
-		if (ReferenceEquals(GAssetManager, this))
-			GAssetManager = null!;
 	}
 
 	public PackedScene GetPacked(GdAsset asset) => GetPacked(asset.Id);

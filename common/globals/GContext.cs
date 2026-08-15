@@ -17,7 +17,6 @@ public static class GContext
 		OnLocalChanged(GPlayers.Local);
 	}
 
-	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 	public static GdPlot? Plot { get; private set; }
 	public static bool? IsPlotOwner { get; private set; }
 	public static bool? IsPlotSpawned { get; private set; }

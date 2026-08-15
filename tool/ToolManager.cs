@@ -2,8 +2,6 @@ using Godot;
 using Root.Common.Globals;
 using Serilog;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Root.Tool;
 
 [GlobalClass]

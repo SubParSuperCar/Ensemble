@@ -6,7 +6,6 @@ using Root.Core.Gd.Plot;
 
 namespace Root.Common.Globals;
 
-// ReSharper disable once UnusedType.Global
 public static class GContext
 {
 	private static GdOccupant? _occupant;

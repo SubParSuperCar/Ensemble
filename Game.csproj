@@ -131,45 +131,5 @@
     <Content Remove="lib/**"/>
     <Compile Remove="lib/**"/>
     <EmbeddedResource Remove="lib/**"/>
-    <Compile Update="ui\impl\views\menu\LoadingIndicatorView.axaml.cs">
-      <DependentUpon>LoadingIndicatorView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\menu\MenuHomeView.axaml.cs">
-      <DependentUpon>MenuHomeView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\menu\MenuView.axaml.cs">
-      <DependentUpon>MenuView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\menu\ReadMeView.axaml.cs">
-      <DependentUpon>ReadMeView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\menu\WebBrowserView.axaml.cs">
-      <DependentUpon>WebBrowserView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\game\ClockView.axaml.cs">
-      <DependentUpon>ClockView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\game\GameView.axaml.cs">
-      <DependentUpon>GameView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\game\PlayerListView.axaml.cs">
-      <DependentUpon>PlayerListView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\game\PlotSelectorView.axaml.cs">
-      <DependentUpon>PlotSelectorView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="ui\impl\views\game\ToolBarView.axaml.cs">
-      <DependentUpon>ToolBarView.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
 </Project>

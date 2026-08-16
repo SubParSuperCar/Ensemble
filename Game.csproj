@@ -119,6 +119,16 @@
       CopyToPublishDirectory="PreserveNewest"/>
   </ItemGroup>
 
+  <Target Name="CreateExportDirs" BeforeTargets="Build">
+    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
+    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
+
+    <WriteLinesToFile
+      File="$(MSBuildProjectDirectory)/bin/.gdignore"
+      Lines=""
+      Overwrite="false"/>
+  </Target>
+
   <ItemGroup>
     <Content Include="**/*.gd;**/*.gdshader" Exclude=".godot/**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>

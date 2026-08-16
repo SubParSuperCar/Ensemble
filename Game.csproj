@@ -19,10 +19,11 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-    <SelfContained>true</SelfContained>
+    <OptimizationPreference>Speed</OptimizationPreference>
     <PublishAot>true</PublishAot>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
+    <StripSymbols>true</StripSymbols>
   </PropertyGroup>
 
   <ItemGroup>

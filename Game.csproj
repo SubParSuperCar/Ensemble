@@ -17,12 +17,21 @@
     <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_DEBUG</DefineConstants>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
     <OptimizationPreference>Speed</OptimizationPreference>
     <PublishAot>true</PublishAot>
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
+    <PublishSelfContained>true</PublishSelfContained>
     <StripSymbols>true</StripSymbols>
   </PropertyGroup>
 
@@ -142,5 +151,14 @@
     <Content Remove="lib/**"/>
     <Compile Remove="lib/**"/>
     <EmbeddedResource Remove="lib/**"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="bin/**"/>
+    <Compile Remove="bin/**"/>
+    <EmbeddedResource Remove="bin/**"/>
+    <AvaloniaXaml Remove="bin/**"/>
+    <AdditionalFiles Remove="bin/**"/>
+    <AvaloniaResource Remove="bin/**"/>
   </ItemGroup>
 </Project>

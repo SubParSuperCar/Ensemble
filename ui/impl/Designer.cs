@@ -1,4 +1,4 @@
-#if DEBUG
+#if ENSEMBLE_DEBUG
 
 using Avalonia;
 

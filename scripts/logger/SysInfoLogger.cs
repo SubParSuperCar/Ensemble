@@ -42,8 +42,12 @@ public partial class SysInfoLogger : Node
 		Add(lines, "Config",
 #if DEBUG
 			"DEBUG"
+#elif ENSEMBLE_DEBUG
+			"EXPORT DEBUG"
 #elif RELEASE
 			"RELEASE"
+#elif ENSEMBLE_RELEASE
+			"EXPORT RELEASE"
 #else
 			"Unknown"
 #endif
@@ -110,8 +114,8 @@ public partial class SysInfoLogger : Node
 			Add(lines, "Monitor", monitor.Name);
 
 		foreach (var adapter in hardwareInfo.NetworkAdapterList
-					 .Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
-					 .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
+			         .Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
+			         .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
 			Add(lines, "Network", adapter.Name);
 	}
 

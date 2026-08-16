@@ -40,7 +40,7 @@ public partial class GdCore : Node
 
 	public override void _Ready()
 	{
-#if DEBUG
+#if ENSEMBLE_DEBUG
 		var stopwatch = Stopwatch.StartNew();
 #endif
 
@@ -50,7 +50,7 @@ public partial class GdCore : Node
 		Assets = GdAssets.From(Core.Assets);
 		Plots = GdPlots.From(Core.Plots);
 
-#if DEBUG
+#if ENSEMBLE_DEBUG
 		stopwatch.Stop();
 
 		Log.Debug(

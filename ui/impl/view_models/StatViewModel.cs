@@ -1,4 +1,4 @@
-#if !DEBUG
+#if !ENSEMBLE_DEBUG
 using System.Diagnostics;
 #endif
 using System.Globalization;
@@ -48,7 +48,7 @@ public partial class StatViewModel : ViewModelBase
 		var fps = sampleDuration > 0 ? (_frameTimes.Count - 1) / sampleDuration : 0;
 		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 
-#if DEBUG
+#if ENSEMBLE_DEBUG
 		var dram = OS.GetStaticMemoryUsage();
 #else
 		using var process = Process.GetCurrentProcess();

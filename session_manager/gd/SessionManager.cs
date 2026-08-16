@@ -195,7 +195,7 @@ public partial class SessionManager : Node
 	{
 		var config = new ConfigFile();
 
-#if RELEASE
+#if ENSEMBLE_RELEASE
 		if (config.Load(CommonConstants.UserDataCfgPath) is Error.Ok)
 		{
 			var stored = config.GetValue("player", "id", string.Empty).AsString();

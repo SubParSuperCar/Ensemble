@@ -9,7 +9,7 @@ public partial class Game : Node3D
 {
 	public override void _Ready()
 	{
-#if DEBUG
+#if ENSEMBLE_DEBUG
 		{
 			const int plotId = 2;
 

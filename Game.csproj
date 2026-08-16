@@ -34,6 +34,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.*"/>
     <PackageReference Include="Avalonia.Controls.WebView" Version="12.*"/>
+    <!-- Pin Avalonia.Skia to the patched 12.1.1 build -->
     <PackageReference Include="Avalonia.Skia" Version="[12.1.1]" IncludeAssets="none"/>
     <PackageReference Include="Avalonia.Themes.Simple" Version="12.*"/>
     <PackageReference Include="Avalonia.Wayland" Version="12.*"/>
@@ -73,7 +74,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- For the Avalonia designer & WebView -->
+    <!-- Required by the Avalonia designer and WebView -->
     <Reference Include="Avalonia.Skia">
       <HintPath>lib/estragonia/lib/Avalonia.Skia.dll</HintPath>
       <Private>true</Private>
@@ -111,10 +112,18 @@
   </Target>
 
   <ItemGroup>
+    <None
+      Include="$(MSBuildThisFileDirectory)LICENSE.md"
+      CopyToOutputDirectory="PreserveNewest"
+      CopyToPublishDirectory="PreserveNewest"/>
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="**/*.gd;**/*.gdshader" Exclude=".godot/**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Directory.Build.props"/>
     <Content Include="Properties/**" Exclude="**/*.gdignore"/>
   </ItemGroup>
 
@@ -122,5 +131,45 @@
     <Content Remove="lib/**"/>
     <Compile Remove="lib/**"/>
     <EmbeddedResource Remove="lib/**"/>
+    <Compile Update="ui\impl\views\menu\LoadingIndicatorView.axaml.cs">
+      <DependentUpon>LoadingIndicatorView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\menu\MenuHomeView.axaml.cs">
+      <DependentUpon>MenuHomeView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\menu\MenuView.axaml.cs">
+      <DependentUpon>MenuView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\menu\ReadMeView.axaml.cs">
+      <DependentUpon>ReadMeView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\menu\WebBrowserView.axaml.cs">
+      <DependentUpon>WebBrowserView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\game\ClockView.axaml.cs">
+      <DependentUpon>ClockView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\game\GameView.axaml.cs">
+      <DependentUpon>GameView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\game\PlayerListView.axaml.cs">
+      <DependentUpon>PlayerListView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\game\PlotSelectorView.axaml.cs">
+      <DependentUpon>PlotSelectorView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ui\impl\views\game\ToolBarView.axaml.cs">
+      <DependentUpon>ToolBarView.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

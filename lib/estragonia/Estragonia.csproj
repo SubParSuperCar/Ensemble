@@ -28,6 +28,7 @@
   <ItemGroup>
     <!--
       Patched Avalonia.Skia.dll with ISkiaGpu made public
+      ("Thanks, Avalonia UI!" - SubParSuperCar)
       Built against Avalonia 12.1.1 (.NET 10)
     -->
     <Reference Include="Avalonia.Skia">

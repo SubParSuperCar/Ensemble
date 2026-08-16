@@ -35,7 +35,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	private static void OpenUserDataDir() => OS.ShellOpen(ProjectSettings.GlobalizePath(CommonConstants.UserScheme));
 
 	[RelayCommand]
-	private static void Execute() => _ = LuaExecutor.Execute(Source.Text, _cts.Token);
+	private static void Execute() => _ = LuaExecutor.ExecuteAsync(Source.Text, _cts.Token);
 
 	[RelayCommand]
 	private static async Task CancelAsync()

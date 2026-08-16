@@ -30,7 +30,7 @@ public class MenuViewModel : ViewModelBase
 		_hasLoaded = true;
 
 		Navigator.GoTo<LoadingIndicatorViewModel>(true);
-		_ = GoToHomeAfterDelay();
+		_ = GoToHomeAfterDelayAsync();
 	}
 
 	public NavigatorService Navigator { get; }
@@ -46,7 +46,7 @@ public class MenuViewModel : ViewModelBase
 		Log.Debug("Navigated back to {ViewModel}", Navigator.Current?.GetType().Name);
 	}
 
-	private async Task GoToHomeAfterDelay()
+	private async Task GoToHomeAfterDelayAsync()
 	{
 		await Task.Delay((int)(TimeSpan.MillisecondsPerSecond * 2.5)).ConfigureAwait(false);
 

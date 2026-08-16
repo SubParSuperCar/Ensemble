@@ -6,7 +6,7 @@ namespace Root.Common.Execution;
 
 public static partial class LuaExecutor
 {
-	public static async Task<LuaValue[]> Execute(
+	public static async Task<LuaValue[]> ExecuteAsync(
 		string source,
 		CancellationToken cancellationToken = default)
 	{
@@ -16,7 +16,7 @@ public static partial class LuaExecutor
 		var state = LuaState.Create();
 		state.OpenStandardLibraries();
 
-		AddFunctions(state.Environment);
+		InjectCustomFunctions(state.Environment);
 
 		var results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
 		Log.Information("< [{Results}]", string.Join(", ", results.Select(v => v.ToString())));

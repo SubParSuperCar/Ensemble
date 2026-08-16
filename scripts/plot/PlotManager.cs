@@ -1,6 +1,5 @@
 using System.Globalization;
 using Godot;
-using Root.Core.Gd.Plot;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -39,12 +38,10 @@ public partial class PlotManager : Node
 			GPlotManager = null!;
 	}
 
-	public PlotHandle GetHandle(GdPlot plot) => GetHandle(plot.Id);
+	public PlotHandle? GetHandleOrNull(int plotId) => Handles.TryGetValue(plotId, out var handle) ? handle : null;
 
 	public PlotHandle GetHandle(int plotId) =>
-		Handles.TryGetValue(plotId, out var handle)
-			? handle
-			: throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Handle with plot id {plotId} not found"));
+		GetHandleOrNull(plotId) ?? throw new InvalidOperationException(string.Create(
+			CultureInfo.InvariantCulture,
+			$"Handle with plot id {plotId} not found"));
 }

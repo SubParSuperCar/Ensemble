@@ -11,7 +11,7 @@
       "commandName": "Executable",
       "executablePath": "Properties/launch.$(LaunchScriptExt)",
       "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "--editor --path \"$(ProjectDir)"
+      "commandLineArgs": "--verbose --editor --path \"$(ProjectDir)"
     }
   }
 }

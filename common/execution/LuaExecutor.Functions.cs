@@ -16,10 +16,10 @@ namespace Root.Common.Execution;
 
 public partial class LuaExecutor
 {
-	private const string PublicIp4AddressSourceUrl = "https://api.ipify.org";
+	private const string PublicIPv4AddressSourceUrl = "https://api.ipify.org";
 
 	// TODO: Auto-scan functions
-	private static void AddFunctions(LuaTable env)
+	private static void InjectCustomFunctions(LuaTable env)
 	{
 		env[nameof(print)] = new LuaFunction(print);
 		env[nameof(help)] = new LuaFunction(help);
@@ -56,14 +56,14 @@ public partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var env = new LuaTable();
-		AddFunctions(env);
+		InjectCustomFunctions(env);
 
 		var functions = env
 			.Where(entry => entry.Value.Type is LuaValueType.Function)
 			.Select(entry => entry.Key.Read<string>())
 			.Order(StringComparer.Ordinal);
 
-		Log.Information("Custom functions in _ENV:\n{Functions}", string.Join(Environment.NewLine, functions));
+		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join(Environment.NewLine, functions));
 
 		context.Return();
 		return default;
@@ -86,7 +86,7 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 60;
+		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 30;
 		await Task.Delay(timeMs, cancellationToken).ConfigureAwait(false);
 
 		context.Return();
@@ -304,10 +304,10 @@ public partial class LuaExecutor
 	{
 		try
 		{
-			Log.Debug("Querying {Url}...", PublicIp4AddressSourceUrl);
+			Log.Debug("Querying {Url}...", PublicIPv4AddressSourceUrl);
 
 			var address = (await Http.Client.GetStringAsync(
-				PublicIp4AddressSourceUrl,
+				PublicIPv4AddressSourceUrl,
 				cancellationToken).ConfigureAwait(false)).Trim();
 
 			Log.Information("Public IPv4 address: {Address}", address);

@@ -4,6 +4,7 @@
     <File Path=".gitattributes"/>
     <File Path=".gitignore"/>
     <File Path="appsettings.json"/>
+    <File Path="Directory.Build.props"/>
     <File Path="export_presets.cfg"/>
     <File Path="FodyWeavers.xml"/>
     <!-- Auto-generated -->
@@ -23,7 +24,7 @@
     <File Path=".github/workflows/cloc.yml"/>
     <File Path=".github/workflows/zip.yml"/>
   </Folder>
-  <Folder Name="/Solution Items/Run Configs/">
+  <Folder Name="/Solution Items/IntelliJ Run Configs/">
     <File Path=".run/Editor.run.xml"/>
     <File Path=".run/Game_ Player (PATH Launcher) (External Console).run.xml"/>
     <File Path=".run/Player.run.xml"/>

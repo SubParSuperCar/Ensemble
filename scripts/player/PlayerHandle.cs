@@ -69,7 +69,7 @@ public partial class PlayerHandle : Node3D
 		if (plot is null)
 			return;
 
-		var handle = GPlotManager.GetHandle(plot);
+		var handle = GPlotManager.GetHandle(plot.Id);
 		(Character ?? Controller)!.GlobalPosition = handle.OriginPosition + SpawnOffset;
 	}
 

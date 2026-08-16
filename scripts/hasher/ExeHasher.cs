@@ -9,9 +9,9 @@ namespace Root.Scripts.Hasher;
 [GlobalClass]
 public partial class ExeHasher : Node
 {
-	public override void _Ready() => _ = OnReady();
+	public override void _Ready() => _ = OnReadyAsync();
 
-	private async Task OnReady()
+	private async Task OnReadyAsync()
 	{
 		try
 		{

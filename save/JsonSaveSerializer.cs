@@ -8,10 +8,7 @@ public sealed class JsonSaveSerializer : ISaveSerializer
 	private static readonly JsonSerializerOptions Options = new()
 	{
 		WriteIndented = true,
-		Converters =
-		{
-			new VariantJsonConverter()
-		}
+		Converters = { new VariantJsonConverter() }
 	};
 
 	public void Serialize(Stream stream, SaveData data) => JsonSerializer.Serialize(stream, data, Options);

@@ -44,7 +44,6 @@ public static class CommonGlobals
 		set;
 	} = null!;
 
-	// ReSharper disable once UnusedMember.Global
 	public static ToolManager GToolManager =>
 		ToolManager.Instance ?? throw new InvalidOperationException($"{nameof(ToolManager)} is null");
 }

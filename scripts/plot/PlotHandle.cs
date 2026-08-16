@@ -9,9 +9,9 @@ namespace Root.Scripts.Plot;
 public partial class PlotHandle : Node3D
 {
 	private const float GridToWorldScale = 0.5f;
+
 	private Vector3? _originPosition;
 	private GdPlot _plot = null!;
-
 	private Node3D _staticInstances = null!;
 
 	// ReSharper disable once MemberCanBePrivate.Global
@@ -50,7 +50,7 @@ public partial class PlotHandle : Node3D
 
 	private void OnInstanceAdded(GdInstance instance)
 	{
-		var packed = GAssetManager.GetPacked(instance.Asset);
+		var packed = GAssetManager.GetPacked(instance.Asset.Id);
 
 		var handle = packed.Instantiate<AssetHandle>();
 		handle.InstanceId = instance.Id;

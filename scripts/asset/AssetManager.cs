@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 using Godot;
 using Godot.Collections;
 using Root.Common.Globals;
-using Root.Core.Gd.Asset;
 using Serilog;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -45,14 +44,12 @@ public partial class AssetManager : Node
 		Log.Debug("Finished scanning and registering assets");
 	}
 
-	public PackedScene GetPacked(GdAsset asset) => GetPacked(asset.Id);
+	public PackedScene? GetPackedOrNull(int assetId) => Scenes.TryGetValue(assetId, out var packed) ? packed : null;
 
 	public PackedScene GetPacked(int assetId) =>
-		Scenes.TryGetValue(assetId, out var packed)
-			? packed
-			: throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Packed scene with asset id {assetId} not found"));
+		GetPackedOrNull(assetId) ?? throw new InvalidOperationException(string.Create(
+			CultureInfo.InvariantCulture,
+			$"Packed scene with asset id {assetId} not found"));
 
 	private void ScanDirectory(string path)
 	{

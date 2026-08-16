@@ -13,7 +13,7 @@
 3. Download and install **Godot Mono 4.7.1 or newer** from https://godotengine.org/download/archive/4.7.1-stable/. Be
    sure to download the **.NET (Mono)** version for your operating system and system architecture.
 
-4. Download and install the **.NET SDK 10.0.110 or newer**
+4. Download and install the **.NET SDK 10.0.304 or newer**
    from https://dotnet.microsoft.com/en-us/download/dotnet/10.0/. This is required to build and run the project's C#
    code.
 

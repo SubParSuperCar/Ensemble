@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Godot;
 using Root.Common.Globals;
 using Root.Common.Input;
-using Root.Core.Gd.Asset;
 using Root.Scripts.Asset;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -18,7 +17,6 @@ public partial class PlaceTool : ToolBase
 	private readonly StringName _rotateZAction = "tool_place_rotate_z";
 	private readonly StringName _triggerAction = "tool_place_trigger";
 
-	private GdAsset? _asset;
 	private bool _canPlace;
 	private AssetHandle? _handle;
 	private bool _isActive;
@@ -57,6 +55,15 @@ public partial class PlaceTool : ToolBase
 			GContext.Plot?.Instances.Add(AssetId, _position, _rotation);
 	}
 
+	public void SetAsset(int id)
+	{
+		if (AssetId == id)
+			return;
+
+		AssetId = id;
+		AssetIdChanged?.Invoke(id);
+	}
+
 	private void Activate()
 	{
 		if (_isActive)
@@ -72,6 +79,19 @@ public partial class PlaceTool : ToolBase
 
 		_isActive = false;
 	}
+
+	/*private void ActivateAsset()
+	{
+		if (!GAssetManager.Scenes.TryGetValue(AssetId, out var packed))
+			return;
+
+		_handle = packed.Instantiate<AssetHandle>();
+
+		var collider = _handle.GetNode<CollisionShape3D>("Collider");
+		_size = collider.Shape.GetDebugMesh().GetAabb().Size;
+	}*/
+
+	// private void DeactivateAsset() { }
 
 	private void Rotate(Vector3 axis)
 	{

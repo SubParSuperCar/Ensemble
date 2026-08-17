@@ -14,7 +14,7 @@
             Content="{Binding PlayerList}"
             HorizontalAlignment="Right" VerticalAlignment="Top"
             MinWidth="256" MaxWidth="512" MaxHeight="256"
-            Margin="0,30,0,0"
+            Margin="0,36,0,0"
             ClipToBounds="False">
 
             <TransitioningContentControl.PageTransition>

@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
@@ -78,9 +79,13 @@ public partial class MainViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
-		if (!Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
-			return;
+		if (Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
+			ToggleConsole();
+	}
 
+	[RelayCommand]
+	private void ToggleConsole()
+	{
 		if (Console is null)
 		{
 			Console = _services.GetRequiredService<ConsoleViewModel>();

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Godot;
 using Serilog;
 
@@ -45,8 +46,18 @@ public partial class Main : Node
 		if (Game is not null)
 			return;
 
+		Log.Debug("Instantiating and adding {Node}", nameof(Scripts.Game.Game));
+		var stopwatch = Stopwatch.StartNew();
+
 		Game = GameScene.Instantiate() as Game.Game;
 		AddChild(Game);
+
+		stopwatch.Stop();
+		Log.Debug(
+			"{Node} instantiated and added in {Elapsed} ({ElapsedMs:F3} msec)",
+			nameof(Scripts.Game.Game),
+			stopwatch.Elapsed,
+			stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private void OnSessionStopped()

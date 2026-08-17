@@ -9,7 +9,7 @@ using Root.Scripts.Asset;
 
 namespace Root.Tool;
 
-// TODO
+// TODO: Very early W.I.P.
 public partial class PlaceTool : ToolBase
 {
 	private readonly StringName _rotateXAction = "tool_place_rotate_x";

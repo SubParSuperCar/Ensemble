@@ -26,7 +26,7 @@ public partial class Ui : AvaloniaControl
 	{
 		try
 		{
-			Log.Debug("Initializing {Class} (Avalonia User Interface)...", nameof(Ui));
+			Log.Debug("Initializing {Class} (Avalonia User Interface)", nameof(Ui));
 
 			var stopwatch = Stopwatch.StartNew();
 

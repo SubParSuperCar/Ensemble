@@ -60,10 +60,13 @@ public partial class Ui : AvaloniaControl
 		{
 			TinyDialogs.Beep();
 
+			const string message = $"{nameof(Ui)} (Avalonia User Interface) initialization failed";
+			Log.Error(exception, message);
+
 			new Thread(() =>
 			{
 				TinyDialogs.MessageBox(
-					$"{nameof(Ui)} (Avalonia User Interface) Initialization Failed",
+					message,
 					exception.ToString().Replace('"', '\''),
 					MessageBoxDialogType.Ok,
 					MessageBoxIconType.Error,
@@ -72,6 +75,8 @@ public partial class Ui : AvaloniaControl
 			{
 				IsBackground = true
 			}.Start();
+
+			throw;
 		}
 	}
 

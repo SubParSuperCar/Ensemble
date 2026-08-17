@@ -61,6 +61,7 @@ public partial class Ui : AvaloniaControl
 		catch (Exception exception)
 		{
 			const string message = $"{nameof(Ui)} (Avalonia User Interface) initialization failed";
+			var exceptionText = exception.ToString();
 
 			try
 			{
@@ -69,13 +70,16 @@ public partial class Ui : AvaloniaControl
 			finally
 			{
 				Log.Error(exception, message);
+
+				var label = new Label { Text = $"{message}:\n\n{exceptionText}" };
+				AddChild(label);
 			}
 
 			new Thread(() =>
 			{
 				TinyDialogs.MessageBox(
 					message,
-					exception.ToString().Replace('"', '\''),
+					exceptionText.Replace('"', '\''),
 					MessageBoxDialogType.Ok,
 					MessageBoxIconType.Error,
 					MessageBoxButton.Ok);

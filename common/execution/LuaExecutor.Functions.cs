@@ -347,7 +347,7 @@ public partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var isVisible = context.GetArgument<bool>(0);
-		Log.Information("Setting temporal static shader visibility to: {IsVisible}", isVisible);
+		Log.Information("Setting Temporal Static shader visibility to: {IsVisible}", isVisible);
 
 		var temporalShader = Main.Instance?.GetNode<CanvasLayer>("Temporal Static");
 		temporalShader?.Visible = isVisible;

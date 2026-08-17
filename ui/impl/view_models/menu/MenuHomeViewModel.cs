@@ -33,7 +33,7 @@ public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBa
 
 		if (file is null)
 		{
-			Log.Warning("Failed to open {Path} for the menu icon: {Error}", path, FileAccess.GetOpenError());
+			Log.Warning("Failed to open {Path}: {Error}", path, FileAccess.GetOpenError());
 			return null;
 		}
 

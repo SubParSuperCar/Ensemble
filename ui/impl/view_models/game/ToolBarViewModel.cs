@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Root.Tool;
 using Root.Ui.Impl.Abstractions;
 using Serilog;
 
@@ -39,13 +40,13 @@ public partial class ToolBarViewModel : ViewModelBase
 
 	private void OnPlaceToolIsEnabledChanged(bool isEnabled)
 	{
-		Log.Verbose("Place tool IsEnabled set to: {IsEnabled}", isEnabled);
+		Log.Verbose("{Tool}.{Member} set to: {Value}", nameof(PlaceTool), nameof(ToolBase.IsEnabled), isEnabled);
 		IsPlaceToolEnabled = isEnabled;
 	}
 
 	private void OnDeleteToolIsEnabledChanged(bool isEnabled)
 	{
-		Log.Verbose("Delete tool IsEnabled set to: {IsEnabled}", isEnabled);
+		Log.Verbose("{Tool}.{Member} set to: {Value}", nameof(DeleteTool), nameof(ToolBase.IsEnabled), isEnabled);
 		IsDeleteToolEnabled = isEnabled;
 	}
 }

@@ -107,7 +107,7 @@ public partial class Watchdog : Node
 		{
 			try
 			{
-				Log.Fatal(exception, "Unhandled exception in watchdog poll loop");
+				Log.Fatal(exception, "Unhandled exception");
 				Log.CloseAndFlush();
 			}
 			finally

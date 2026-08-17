@@ -20,7 +20,9 @@ public partial class Ui : AvaloniaControl
 
 	private double _processTime;
 
+#pragma warning disable MA0051
 	public override void _Ready()
+#pragma warning restore MA0051
 	{
 		try
 		{
@@ -58,10 +60,16 @@ public partial class Ui : AvaloniaControl
 		}
 		catch (Exception exception)
 		{
-			TinyDialogs.Beep();
-
 			const string message = $"{nameof(Ui)} (Avalonia User Interface) initialization failed";
-			Log.Error(exception, message);
+
+			try
+			{
+				TinyDialogs.Beep();
+			}
+			finally
+			{
+				Log.Error(exception, message);
+			}
 
 			new Thread(() =>
 			{

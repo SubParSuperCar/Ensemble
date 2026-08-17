@@ -40,9 +40,7 @@ public partial class GdCore : Node
 
 	public override void _Ready()
 	{
-#if ENSEMBLE_DEBUG
 		var stopwatch = Stopwatch.StartNew();
-#endif
 
 		Core = new Impl.Core();
 
@@ -50,15 +48,12 @@ public partial class GdCore : Node
 		Assets = GdAssets.From(Core.Assets);
 		Plots = GdPlots.From(Core.Plots);
 
-#if ENSEMBLE_DEBUG
 		stopwatch.Stop();
-
 		Log.Debug(
 			"{Class} initialized in {Elapsed} ({ElapsedMs:F3} msec)",
 			nameof(Impl.Core),
 			stopwatch.Elapsed,
 			stopwatch.Elapsed.TotalMilliseconds);
-#endif
 	}
 
 	public void Reset() => Core.Reset();

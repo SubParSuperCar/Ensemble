@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using CommunityToolkit.Mvvm.Messaging;
 using Estragonia;
@@ -8,43 +9,93 @@ using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 using Root.Ui.Impl.ViewModels;
 using Serilog;
+using TinyDialogsNet;
 
 namespace Root.Ui.Gd;
 
 [GlobalClass]
 public partial class Ui : AvaloniaControl
 {
+	public static readonly StringName ProcessTimeMonitor = "Ensemble/Time/UIProcess";
+
+	private double _processTime;
+
 	public override void _Ready()
 	{
-		GetWindow().SetImeActive(true);
+		try
+		{
+			Log.Debug("Initializing {Class} (Avalonia User Interface)...", nameof(Ui));
 
-		var collection = new ServiceCollection();
-		collection.AddServices();
+			var stopwatch = Stopwatch.StartNew();
 
-		var services = collection.BuildServiceProvider();
+			GetWindow().SetImeActive(true);
 
-		var locator = services.GetRequiredService<ViewLocatorService>();
-		Application.Current!.DataTemplates.Add(locator);
+			var collection = new ServiceCollection();
+			collection.AddServices();
 
-		var viewModel = services.GetRequiredService<MainViewModel>();
-		Control = locator.Build(viewModel);
+			var services = collection.BuildServiceProvider();
 
-		Log.Debug("Initialized {Class} (Avalonia User Interface)", nameof(Ui));
+			var locator = services.GetRequiredService<ViewLocatorService>();
+			Application.Current!.DataTemplates.Add(locator);
 
-		base._Ready();
+			Performance.AddCustomMonitor(
+				ProcessTimeMonitor,
+				Callable.From(() => _processTime),
+				[],
+				Performance.MonitorType.Time);
+
+			var viewModel = services.GetRequiredService<MainViewModel>();
+			Control = locator.Build(viewModel);
+
+			base._Ready();
+
+			stopwatch.Stop();
+			Log.Debug(
+				"{Class} (Avalonia User Interface) initialized in {Elapsed} ({ElapsedMs:F3} msec)",
+				nameof(Ui),
+				stopwatch.Elapsed,
+				stopwatch.Elapsed.TotalMilliseconds);
+		}
+		catch (Exception exception)
+		{
+			TinyDialogs.Beep();
+
+			new Thread(() =>
+			{
+				TinyDialogs.MessageBox(
+					$"{nameof(Ui)} (Avalonia User Interface) Initialization Failed",
+					exception.ToString().Replace('"', '\''),
+					MessageBoxDialogType.Ok,
+					MessageBoxIconType.Error,
+					MessageBoxButton.Ok);
+			})
+			{
+				IsBackground = true
+			}.Start();
+		}
+	}
+
+	public override void _ExitTree()
+	{
+		if (Performance.HasCustomMonitor(ProcessTimeMonitor))
+			Performance.RemoveCustomMonitor(ProcessTimeMonitor);
+
+		base._ExitTree();
 	}
 
 	public override void _Process(double delta)
 	{
-		WeakReferenceMessenger.Default.Send(new ProcessMessage(delta));
+		var start = Time.GetTicksUsec();
 
+		WeakReferenceMessenger.Default.Send(new ProcessMessage(delta));
 		base._Process(delta);
+
+		_processTime = (Time.GetTicksUsec() - start) / (double)TimeSpan.MicrosecondsPerSecond;
 	}
 
 	public override void _Input(InputEvent @event)
 	{
 		WeakReferenceMessenger.Default.Send(new InputMessage(@event));
-
 		base._Input(@event);
 	}
 }

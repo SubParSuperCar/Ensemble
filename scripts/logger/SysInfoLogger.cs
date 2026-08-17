@@ -114,8 +114,8 @@ public partial class SysInfoLogger : Node
 			Add(lines, "Monitor", monitor.Name);
 
 		foreach (var adapter in hardwareInfo.NetworkAdapterList
-			         .Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
-			         .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
+					 .Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
+					 .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
 			Add(lines, "Network", adapter.Name);
 	}
 

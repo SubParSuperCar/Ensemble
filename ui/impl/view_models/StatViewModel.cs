@@ -17,6 +17,10 @@ public partial class StatViewModel : ViewModelBase
 	private const double RefreshInterval = 1 / 3d;
 	private const double SampleWindow = 3 / 4d;
 
+#if !ENSEMBLE_DEBUG
+	private readonly Process _process = Process.GetCurrentProcess();
+#endif
+
 	private readonly DispatcherService _dispatcher;
 	private readonly Queue<double> _frameTimes = [];
 
@@ -51,19 +55,24 @@ public partial class StatViewModel : ViewModelBase
 #if ENSEMBLE_DEBUG
 		var dram = OS.GetStaticMemoryUsage();
 #else
-		using var process = Process.GetCurrentProcess();
-		var dram = (ulong)process.PrivateMemorySize64;
+		_process.Refresh();
+		var dram = (ulong)_process.PrivateMemorySize64;
 #endif
 
 		var processTimeMs = Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond;
 		var physicsTimeMs =
 			Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond;
 
+		var uiProcessTimeMs = Performance.HasCustomMonitor(Gd.Ui.ProcessTimeMonitor)
+			? Performance.GetCustomMonitor(Gd.Ui.ProcessTimeMonitor).AsDouble() * TimeSpan.MillisecondsPerSecond
+			: 0;
+
 		List<(string Key, object Value)> stats =
 		[
 			("Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps:F2} FPS ({frameTimeMs:F3} mspf)")),
 			("Process Time", string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
+			("UI Process Time", string.Create(CultureInfo.InvariantCulture, $"{uiProcessTimeMs:F3} msec")),
 			("Used DRAM", Formatter.FormatBytes(dram)),
 			("Used VRAM", Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
 			("C# Heap Size", Formatter.FormatBytes((ulong)GC.GetTotalMemory(false))),

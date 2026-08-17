@@ -33,7 +33,7 @@
                 Command="{Binding ToggleMutexEnforcedCommand}"
                 IsChecked="{Binding IsMutexEnforced}"
                 ToolTip.Tip="Mutual Exclusion: Toggles whether multiple tools can't be enabled at the same time."
-                Margin="4,0" />
+                Margin="4,0,0,0" />
         </StackPanel>
     </Border>
 

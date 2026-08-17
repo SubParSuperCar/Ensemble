@@ -66,7 +66,7 @@ public partial class Logger : Node
 		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 		TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
-		Log.Debug("{Class} initialized; writing logs to {LogDir}", nameof(Logger), logDir);
+		Log.Debug("{Class} (Serilog) initialized; writing logs to {LogDir}", nameof(Logger), logDir);
 	}
 
 	public override void _ExitTree()

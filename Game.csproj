@@ -50,6 +50,7 @@
     <PackageReference Include="Avalonia.Wayland" Version="12.*"/>
     <PackageReference Include="Avalonia.X11" Version="12.*"/>
     <PackageReference Include="AvaloniaEdit.TextMate" Version="12.*"/>
+    <PackageReference Include="BogaNet.TTS" Version="1.4.0"/>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
     <PackageReference Include="DiscordRichPresence" Version="1.6.1.70"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>

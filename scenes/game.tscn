@@ -72,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.29898825, 0.29898825)
-shader_parameter/cirrus_position2 = Vector2(0.29898825, 0.29898825)
+shader_parameter/cirrus_position1 = Vector2(0.82268244, 0.82268244)
+shader_parameter/cirrus_position2 = Vector2(0.82268244, 0.82268244)
 shader_parameter/cirrus_texture = ExtResource("3_ssvqc")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(1.4949151, 1.4949151)
+shader_parameter/cumulus_position = Vector2(14.140843, 14.140843)
 shader_parameter/cumulus_texture = ExtResource("4_264po")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -219,36 +219,33 @@ PlayerScene = ExtResource("2_i6g32")
 
 [node name="Assets" type="Node" parent="." unique_id=633918342]
 script = ExtResource("2_3dryh")
+DefaultMaxInstanceCount = null
 
 [node name="Plots" type="Node" parent="." unique_id=795146723]
 script = ExtResource("3_wowpa")
+DefaultMaxOccupantCount = null
+DefaultMaxTotalInstanceCount = null
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 1, 0)
-Id = 0
 MaxOccupantCount = 4
-MaxTotalInstanceCount = 0
 metadata/_edit_lock_ = true
 
 [node name="Plot 2" parent="Plots" unique_id=1688772583 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, 0)
 Id = 1
 MaxOccupantCount = 8
-MaxTotalInstanceCount = 0
 metadata/_edit_lock_ = true
 
 [node name="Plot 3" parent="Plots" unique_id=819557585 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 0)
 Id = 2
-MaxOccupantCount = 0
-MaxTotalInstanceCount = 0
 metadata/_edit_lock_ = true
 
 [node name="Plot 4" parent="Plots" unique_id=18388373 instance=ExtResource("3_lnu2h")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 1, 0)
 Id = 3
 MaxOccupantCount = 2
-MaxTotalInstanceCount = 0
 metadata/_edit_lock_ = true
 
 [node name="World" type="Node3D" parent="." unique_id=125306369]

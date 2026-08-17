@@ -7,6 +7,7 @@ using Avalonia.Platform;
 using Avalonia.Styling;
 using CommunityToolkit.Mvvm.Messaging;
 using Root.Ui.Impl.Messages;
+using InputExtensions = Root.Common.Input.InputExtensions;
 
 namespace Root.Ui.Impl;
 
@@ -38,7 +39,7 @@ public class App : Application
 	// TODO
 	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs e)
 	{
-		if (e.Key is Key.Space && topLevel.FocusManager.GetFocusedElement() is not TextBox)
+		if (e.Key is Key.Space && topLevel.FocusManager.GetFocusedElement() is not TextBox && !InputExtensions.IsSunk)
 			e.Handled = true;
 	}
 

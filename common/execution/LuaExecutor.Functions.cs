@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Avalonia.Styling;
+using BogaNet.TTS;
 using CommunityToolkit.Mvvm.Messaging;
 using Godot;
 using Lua;
@@ -34,6 +35,7 @@ public partial class LuaExecutor
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 		env[nameof(set_ui_dark_theme_enabled)] = new LuaFunction(set_ui_dark_theme_enabled);
 		env[nameof(set_static_shader_enabled)] = new LuaFunction(set_static_shader_enabled);
+		env[nameof(tts)] = new LuaFunction(tts);
 	}
 
 	private static ValueTask<int> print(
@@ -197,7 +199,7 @@ public partial class LuaExecutor
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
 
-	Return:
+		Return:
 		context.Return();
 		return default;
 	}
@@ -234,19 +236,19 @@ public partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
+				{
+					var childTable = luaValue.Read<LuaTable>();
+
+					if (visited.Contains(childTable))
+						Log.Information("{Path} = <already visited>", childPath);
+					else
 					{
-						var childTable = luaValue.Read<LuaTable>();
-
-						if (visited.Contains(childTable))
-							Log.Information("{Path} = <already visited>", childPath);
-						else
-						{
-							Log.Information("{Path} = <table>", childPath);
-							DumpTable(childTable, childPath, visited);
-						}
-
-						break;
+						Log.Information("{Path} = <table>", childPath);
+						DumpTable(childTable, childPath, visited);
 					}
+
+					break;
+				}
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -278,8 +280,8 @@ public partial class LuaExecutor
 		Log.Information("Contents of InputMap:");
 
 		foreach (var action in InputMap.GetActions()
-					 .Select(a => a.ToString())
-					 .Order(StringComparer.Ordinal))
+			         .Select(a => a.ToString())
+			         .Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
 
@@ -351,6 +353,29 @@ public partial class LuaExecutor
 
 		var temporalShader = Main.Instance?.GetNode<CanvasLayer>("Temporal Static");
 		temporalShader?.Visible = isVisible;
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> tts(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var text = context.GetArgument<string>(0);
+		var culture = context.ArgumentCount > 1 ? context.GetArgument<string>(1) : "en";
+		var rate = context.ArgumentCount > 2 ? context.GetArgument<float>(2) : 1;
+		var pitch = context.ArgumentCount > 3 ? context.GetArgument<float>(3) : 1;
+		var volume = context.ArgumentCount > 4 ? context.GetArgument<float>(4) : 1;
+
+		var voice = Speaker.Instance.VoiceForCulture(culture);
+
+		_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
+			.ContinueWith(
+				task => Log.Error(task.Exception, "TTS failed"),
+				CancellationToken.None,
+				TaskContinuationOptions.OnlyOnFaulted,
+				TaskScheduler.Default);
 
 		context.Return();
 		return default;

@@ -14,15 +14,9 @@ public partial class ExeHasher : Node, IAutoload
 {
 	private readonly CancellationTokenSource _cts = new();
 
-	public void Initialize()
-	{
-		_ = InitializeAsync();
-	}
+	public void Initialize() => _ = InitializeAsync();
 
-	public override void _ExitTree()
-	{
-		_cts.Cancel();
-	}
+	public override void _ExitTree() => _cts.Cancel();
 
 	private async Task InitializeAsync()
 	{

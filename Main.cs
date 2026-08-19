@@ -26,10 +26,7 @@ public partial class Main : Node
 		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
 	}
 
-	public override void _Ready()
-	{
-		LoadAutoloads(AutoloadRegistry.GetAll());
-	}
+	public override void _Ready() => LoadAutoloads(AutoloadRegistry.GetAll());
 
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
@@ -120,9 +117,9 @@ public partial class Main : Node
 
 			case AutoloadFailurePolicyEnum.AskUser:
 				if (!AskUser(
-					    "Autoload Initialization Failed",
-					    $"{exception}\n\nContinue anyway?\n" +
-					    "The program may be left in an unstable or partially initialized state."))
+						"Autoload Initialization Failed",
+						$"{exception}\n\nContinue anyway?\n" +
+						"The program may be left in an unstable or partially initialized state."))
 					OnFailFast();
 				break;
 

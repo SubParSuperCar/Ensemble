@@ -2,7 +2,5 @@ namespace Root.Autoloading;
 
 public interface IAutoload
 {
-	void Initialize()
-	{
-	}
+	void Initialize() { }
 }

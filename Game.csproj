@@ -31,14 +31,21 @@
 
     <ItemGroup>
         <ProjectReference Include="AutoloadGenerator\AutoloadGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+        <ProjectReference Include="Core\Core.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
         <Compile Remove="AutoloadGenerator\**"/>
+        <Compile Remove="Core\**"/>
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Remove="AutoloadGenerator\**"/>
+        <EmbeddedResource Remove="Core\**"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="GdCore\"/>
     </ItemGroup>
 
 </Project>

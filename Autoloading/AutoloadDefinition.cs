@@ -4,7 +4,7 @@ namespace Root.Autoloading;
 
 public readonly record struct AutoloadDefinition(
 	Type Type,
-	AutoloadScopeFlag Scope,
+	AutoloadScope Scope,
 	sbyte Order,
-	AutoloadFailurePolicyEnum FailurePolicy,
+	AutoloadFailurePolicy FailurePolicy,
 	Func<Node> Factory);

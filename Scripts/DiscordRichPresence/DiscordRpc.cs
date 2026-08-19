@@ -6,7 +6,7 @@ using Serilog;
 namespace Root.Scripts.DiscordRichPresence;
 
 [GlobalClass]
-[Autoload(FailurePolicy = AutoloadFailurePolicyEnum.LogAndContinue)]
+[Autoload(FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class DiscordRpc : Node, IAutoload
 {
 	private const string AppId = "1534319171079504002";

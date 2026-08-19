@@ -1,7 +1,7 @@
 namespace Root.Autoloading;
 
 [Flags]
-public enum AutoloadScopeFlag
+public enum AutoloadScope : byte
 {
 	// ReSharper disable once UnusedMember.Global
 	None = 0,

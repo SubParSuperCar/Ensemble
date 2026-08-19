@@ -70,9 +70,9 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 	private static string GetScope(AttributeData attribute)
 	{
 		foreach (var argument in attribute.NamedArguments.Where(argument => argument.Key is ScopePropertyName))
-			return $"(AutoloadScopeFlag){Convert.ToInt32(argument.Value.Value)}";
+			return $"(AutoloadScope){Convert.ToInt32(argument.Value.Value)}";
 
-		return "AutoloadScopeFlag.Client | AutoloadScopeFlag.Server";
+		return "AutoloadScope.Client | AutoloadScope.Server";
 	}
 
 	private static string GetOrder(AttributeData attribute)
@@ -86,8 +86,8 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 	private static string GetFailurePolicy(AttributeData attribute)
 	{
 		foreach (var argument in attribute.NamedArguments.Where(argument => argument.Key is FailurePolicyPropertyName))
-			return $"(AutoloadFailurePolicyEnum){Convert.ToInt32(argument.Value.Value)}";
+			return $"(AutoloadFailurePolicy){Convert.ToInt32(argument.Value.Value)}";
 
-		return "AutoloadFailurePolicyEnum.AskUser";
+		return "AutoloadFailurePolicy.AskUser";
 	}
 }

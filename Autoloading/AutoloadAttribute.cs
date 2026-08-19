@@ -6,7 +6,7 @@ namespace Root.Autoloading;
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class AutoloadAttribute : Attribute
 {
-	public AutoloadScopeFlag Scope { get; init; } = AutoloadScopeFlag.Client | AutoloadScopeFlag.Server;
+	public AutoloadScope Scope { get; init; } = AutoloadScope.Client | AutoloadScope.Server;
 	public sbyte Order { get; init; }
-	public AutoloadFailurePolicyEnum FailurePolicy { get; init; } = AutoloadFailurePolicyEnum.AskUser;
+	public AutoloadFailurePolicy FailurePolicy { get; init; } = AutoloadFailurePolicy.AskUser;
 }

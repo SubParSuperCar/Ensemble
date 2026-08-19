@@ -1,6 +1,6 @@
 namespace Root.Autoloading;
 
-public enum AutoloadFailurePolicyEnum
+public enum AutoloadFailurePolicy : byte
 {
 	LogAndContinue,
 	FailFast,

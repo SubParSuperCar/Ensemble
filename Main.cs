@@ -9,8 +9,7 @@ namespace Root;
 
 public partial class Main : Node
 {
-	private static AutoloadScopeFlag CurrentScope =>
-		IsHeadlessServer ? AutoloadScopeFlag.Server : AutoloadScopeFlag.Client;
+	private static AutoloadScope CurrentScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
 
 	private static bool IsHeadlessServer => DisplayServer.GetName() is "headless";
 
@@ -108,18 +107,18 @@ public partial class Main : Node
 		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 		switch (definition.FailurePolicy)
 		{
-			case AutoloadFailurePolicyEnum.LogAndContinue:
+			case AutoloadFailurePolicy.LogAndContinue:
 				break;
 
-			case AutoloadFailurePolicyEnum.FailFast:
+			case AutoloadFailurePolicy.FailFast:
 				OnFailFast();
 				break;
 
-			case AutoloadFailurePolicyEnum.AskUser:
+			case AutoloadFailurePolicy.AskUser:
 				if (!AskUser(
-						"Autoload Initialization Failed",
-						$"{exception}\n\nContinue anyway?\n" +
-						"The program may be left in an unstable or partially initialized state."))
+					    "Autoload Initialization Failed",
+					    $"{exception}\n\nContinue anyway?\n" +
+					    "The program may be left in an unstable or partially initialized state."))
 					OnFailFast();
 				break;
 
@@ -160,7 +159,7 @@ public partial class Main : Node
 		}
 	}
 
-	private enum AutoloadLoadStageEnum
+	private enum AutoloadLoadStageEnum : byte
 	{
 		Factory,
 		AddChild,

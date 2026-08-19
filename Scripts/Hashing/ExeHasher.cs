@@ -9,16 +9,16 @@ using FileAccess = System.IO.FileAccess;
 namespace Root.Scripts.Hashing;
 
 [GlobalClass]
-[Autoload(FailurePolicy = AutoloadFailurePolicyEnum.LogAndContinue)]
+[Autoload(FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class ExeHasher : Node, IAutoload
 {
 	private readonly CancellationTokenSource _cts = new();
 
-	public void Initialize() => _ = InitializeAsync();
+	public void Initialize() => _ = HashProcessExecutableAsync();
 
 	public override void _ExitTree() => _cts.Cancel();
 
-	private async Task InitializeAsync()
+	private async Task HashProcessExecutableAsync()
 	{
 		try
 		{

@@ -55,7 +55,7 @@ public partial class Main : Node
 			.Count(definition => LoadAutoload(definition, loadStopwatch));
 
 		totalStopwatch.Stop();
-		Log.Debug("Loaded {Count} autoload(s) in {ElapsedMs} ms.", loadedCount,
+		Log.Debug("Loaded {Count} autoload(s) in {ElapsedMs:F3} ms.", loadedCount,
 			totalStopwatch.Elapsed.TotalMilliseconds);
 	}
 

@@ -10,7 +10,7 @@ using FileAccess = System.IO.FileAccess;
 namespace Root.Scripts.Hashing;
 
 [GlobalClass]
-[Autoload(FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
+[Autoload(FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ExeHasher : Node, IAutoload
 {
 	private readonly CancellationTokenSource _cts = new();

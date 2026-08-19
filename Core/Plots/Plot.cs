@@ -1,8 +1,8 @@
 using CoreRoot.Api.Assets;
 using CoreRoot.Api.Plots;
-using CoreRoot.Impl.Assets;
+using CoreRoot.Assets;
 
-namespace CoreRoot.Impl.Plots;
+namespace CoreRoot.Plots;
 
 public class Plot : IPlot
 {

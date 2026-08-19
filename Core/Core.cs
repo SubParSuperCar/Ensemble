@@ -2,9 +2,9 @@ using CoreRoot.Api;
 using CoreRoot.Api.Assets;
 using CoreRoot.Api.Players;
 using CoreRoot.Api.Plots;
-using CoreRoot.Impl.Plots;
+using CoreRoot.Plots;
 
-namespace CoreRoot.Impl;
+namespace CoreRoot;
 
 public class Core : ICore
 {

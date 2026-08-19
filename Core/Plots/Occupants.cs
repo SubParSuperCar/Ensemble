@@ -1,6 +1,6 @@
 using CoreRoot.Api.Plots;
 
-namespace CoreRoot.Impl.Plots;
+namespace CoreRoot.Plots;
 
 public class Occupants : IOccupants
 {

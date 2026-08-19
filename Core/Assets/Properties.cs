@@ -1,7 +1,7 @@
 using System.Text;
 using CoreRoot.Api.Assets;
 
-namespace CoreRoot.Impl.Assets;
+namespace CoreRoot.Assets;
 
 public class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties
 {

@@ -1,7 +1,7 @@
 using System.Globalization;
 using CoreRoot.Api.Assets;
 
-namespace CoreRoot.Impl.Assets;
+namespace CoreRoot.Assets;
 
 public class Asset(
 	int id,

@@ -1,7 +1,7 @@
 using CoreRoot.Api.Players;
 using CoreRoot.Api.Plots;
 
-namespace CoreRoot.Impl.Plots;
+namespace CoreRoot.Plots;
 
 public class Occupant(IPlayer player) : IOccupant
 {

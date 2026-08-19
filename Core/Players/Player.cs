@@ -1,6 +1,6 @@
 using CoreRoot.Api.Players;
 
-namespace CoreRoot.Impl.Players;
+namespace CoreRoot.Players;
 
 public class Player(Guid id, string? name = null) : IPlayer
 {

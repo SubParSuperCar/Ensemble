@@ -2,9 +2,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
 using CoreRoot.Api.Assets;
-using CoreRoot.Impl.Utils;
+using CoreRoot.Utils;
 
-namespace CoreRoot.Impl.Assets;
+namespace CoreRoot.Assets;
 
 public class Instances : IInstances
 {

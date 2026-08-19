@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using CoreRoot.Api.Players;
 
-namespace CoreRoot.Impl.Plots;
+namespace CoreRoot.Plots;
 
 internal sealed class OccupantRegistry
 {

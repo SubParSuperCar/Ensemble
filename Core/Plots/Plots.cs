@@ -2,7 +2,7 @@ using System.Globalization;
 using CoreRoot.Api.Assets;
 using CoreRoot.Api.Plots;
 
-namespace CoreRoot.Impl.Plots;
+namespace CoreRoot.Plots;
 
 public class Plots : IPlots
 {

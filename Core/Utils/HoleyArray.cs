@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-namespace CoreRoot.Impl.Utils;
+namespace CoreRoot.Utils;
 
 internal sealed class HoleyArray<TValue> where TValue : class
 {

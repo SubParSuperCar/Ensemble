@@ -1,7 +1,7 @@
 using System.Numerics;
 using CoreRoot.Api.Assets;
 
-namespace CoreRoot.Impl.Assets;
+namespace CoreRoot.Assets;
 
 public class Instance(IAsset asset, Vector3 position, Quaternion rotation) : IInstance
 {

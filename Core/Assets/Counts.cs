@@ -1,7 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace CoreRoot.Impl.Assets;
+namespace CoreRoot.Assets;
 
 internal sealed class Counts<TKey> where TKey : notnull
 {

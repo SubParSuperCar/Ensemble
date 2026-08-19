@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using Godot;
 using Root.Autoloading;
+using Root.Common.Utils;
 using Serilog;
 using Environment = System.Environment;
 using FileAccess = System.IO.FileAccess;
@@ -30,6 +31,9 @@ public partial class ExeHasher : Node, IAutoload
 				Log.Warning("Process executable not found.");
 				return;
 			}
+
+			var fileInfo = new FileInfo(exePath);
+			Log.Debug("Process executable size: {Size}", Formatter.FormatBytes((ulong)fileInfo.Length));
 
 			Log.Debug("Hashing process executable...");
 			var stopwatch = Stopwatch.StartNew();

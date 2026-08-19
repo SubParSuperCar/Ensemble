@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace CoreRoot.Api.Assets;

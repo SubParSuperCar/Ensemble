@@ -11,7 +11,8 @@ public partial class Main : Node
 {
 	private static AutoloadScope CurrentScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
 
-	private static bool IsHeadlessServer => DisplayServer.GetName() is "headless";
+	private static bool IsHeadlessServer =>
+		string.Equals(DisplayServer.GetName(), "headless", StringComparison.Ordinal);
 
 	public override void _EnterTree()
 	{
@@ -49,7 +50,7 @@ public partial class Main : Node
 		var totalStopwatch = Stopwatch.StartNew();
 
 		var loadedCount = definitions
-			.Where(definition => (definition.Scope & CurrentScope) is not 0)
+			.Where(definition => (definition.Scope & CurrentScope) is not AutoloadScope.None)
 			.OrderBy(definition => definition.Order)
 			.Count(definition => LoadAutoload(definition, loadStopwatch));
 

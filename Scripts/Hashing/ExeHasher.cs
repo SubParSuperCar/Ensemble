@@ -53,7 +53,7 @@ public partial class ExeHasher : Node, IAutoload
 				stopwatch.Stop();
 				Log.Debug("Hashed process executable in {ElapsedMs:F3} ms.", stopwatch.Elapsed.TotalMilliseconds);
 
-				var hashHex = Convert.ToHexString(hashBytes).ToLower();
+				var hashHex = Convert.ToHexString(hashBytes).ToLowerInvariant();
 				Log.Information("Process executable SHA-256 digest: {Digest}", hashHex);
 			}
 		}

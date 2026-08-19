@@ -33,7 +33,7 @@ public partial class ExeHasher : Node, IAutoload
 			}
 
 			var fileInfo = new FileInfo(exePath);
-			Log.Debug("Process executable size: {Size}", Formatter.FormatBytes((ulong)fileInfo.Length));
+			Log.Information("Process executable size: {Size}", Formatter.FormatBytes((ulong)fileInfo.Length));
 
 			Log.Debug("Hashing process executable...");
 			var stopwatch = Stopwatch.StartNew();

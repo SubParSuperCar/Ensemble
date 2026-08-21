@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 using Root.Autoloading;
 using Root.SessionManager.Api;
@@ -31,6 +32,8 @@ public partial class SessionManager : Node, IAutoload
 
 	[Signal]
 	public delegate void SessionStoppedEventHandler();
+
+	private string _pendingDisplayName = string.Empty;
 
 	private ISession? _session;
 
@@ -74,20 +77,39 @@ public partial class SessionManager : Node, IAutoload
 			Instance = null;
 	}
 
-	public void StartSinglePlayer()
+	public void StartSinglePlayer() => StartSinglePlayer(string.Empty);
+
+	public void StartSinglePlayer(string displayName)
 	{
+		Log.Debug("Starting single-player session...");
+
 		StopSession();
 
+		_pendingDisplayName = displayName;
 		_session = new SinglePlayerSession((SceneMultiplayer)Multiplayer);
+
 		StartSession();
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
 	public void HostMultiPlayer(int port, string password) => HostMultiPlayer(port, password, -1);
 
-	public void HostMultiPlayer(int port, string password, int maxPlayers)
+	public void HostMultiPlayer(int port, string password, int maxPlayers) =>
+		HostMultiPlayer(port, password, string.Empty, maxPlayers);
+
+	public void HostMultiPlayer(int port, string password, string displayName) =>
+		HostMultiPlayer(port, password, displayName, -1);
+
+	public void HostMultiPlayer(int port, string password, string displayName, int maxPlayers)
 	{
+		Log.Debug("Hosting multiplayer session... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
+			port,
+			maxPlayers is -1 ? "Unlimited" : maxPlayers.ToString(CultureInfo.InvariantCulture),
+			!string.IsNullOrEmpty(password));
+
 		StopSession();
+
+		_pendingDisplayName = displayName;
 
 		_session = new MultiPlayerSession(
 			(SceneMultiplayer)Multiplayer,
@@ -101,9 +123,17 @@ public partial class SessionManager : Node, IAutoload
 
 	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
 
-	public void JoinMultiPlayer(string address, int port, string password)
+	public void JoinMultiPlayer(string address, int port, string password) =>
+		JoinMultiPlayer(address, port, password, string.Empty);
+
+	public void JoinMultiPlayer(string address, int port, string password, string displayName)
 	{
+		Log.Debug("Joining multiplayer session... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
+			address, port, !string.IsNullOrEmpty(password));
+
 		StopSession();
+
+		_pendingDisplayName = displayName;
 
 		_session = new MultiPlayerSession(
 			(SceneMultiplayer)Multiplayer,
@@ -136,13 +166,18 @@ public partial class SessionManager : Node, IAutoload
 		_session.StartSession();
 	}
 
-	private void OnPeerConnected(long peerId) => EmitSignal(SignalName.PeerConnected, (int)peerId);
+	private void OnPeerConnected(long peerId)
+	{
+		Log.Debug("Peer connected: {PeerId}", peerId);
+		EmitSignal(SignalName.PeerConnected, (int)peerId);
+	}
 
 	private void OnPeerDisconnected(long peerId)
 	{
+		Log.Debug("Peer disconnected: {PeerId}", peerId);
+
 		OnPeerDisconnectedDisposeRateLimiter(peerId);
 
-		// Is register/unregister the correct term for the code base? Keep it because it's distinct?
 		if (IsServer)
 			BroadcastUnregister((int)peerId);
 
@@ -153,27 +188,8 @@ public partial class SessionManager : Node, IAutoload
 	{
 		LocalPeerId = Multiplayer.GetUniqueId();
 
-		// Eventually, when peers/local player are added/removed, a call to GPlayers.Add/Remove/SetLocal should be made.
-		// We probably shouldn't make GPlayers or SessionManager dependant upon each other, though.
-		// We might want to add a separate sync Autoload w/ Order -125 to keep peers and players in sync, but make
-		// sure it runs first so that external entities comparing the two don't see sync issues.
-
-		// The question is though: How would SessionManager be "agnostic" to GPlayers if it must provide the GUID
-		// of the associated player/peer, which is a GPlayers concern? While it doesn't directly use GPlayers, that's
-		// still basically being dependent in some way, but it's still better to use a sync Autoload, probably.
-		// We could probably just put it under Scripts or somewhere that makes sense under a logical name. Remember
-		// that it must be able to handle things first so that another resource also listening to peers doesn't see one
-		// getting added and not having an associated player yet because the syncer wasn't notified yet.
-
-		// I'd almost say that display names are unnecessary, but it's actually a good idea because it's what
-		// lets users choose their names in-game. However, it should be made sure that the API actually exposes a member
-		// for being able to pick your name. Right now, none of the "Join" or "Host" methods let you choose your
-		// display name, so it's pretty much useless, because it'll ultimately fall back to GPlayer default (GUID).
-
-		// Perhaps we could add optional predicate actions/methods called "OnPeerAdded" or "OnPeerRemoved" or something
-		// like that that makes sense for syncing players and then pass the Peer ID and/or Player ID as necessary.
-		var playerId = LoadOrCreatePlayerId();
-		RegisterLocalPlayer(playerId, string.Empty);
+		var playerId = LoadOrGeneratePlayerId();
+		RegisterLocalPlayer(playerId, _pendingDisplayName);
 
 		EmitSignal(SignalName.SessionStarted);
 	}
@@ -184,22 +200,30 @@ public partial class SessionManager : Node, IAutoload
 		EmitSignal(SignalName.SessionStopped);
 	}
 
-	private void OnSessionFailed(string reason) => EmitSignal(SignalName.SessionFailed, reason);
+	private void OnSessionFailed(string reason)
+	{
+		Log.Warning("Session failed: {Reason}", reason);
+		EmitSignal(SignalName.SessionFailed, reason);
+	}
 
-	private static string LoadOrCreatePlayerId()
+	private static string LoadOrGeneratePlayerId()
 	{
 		var config = new ConfigFile();
 
-		// TODO: Log actual errors w/ Log.Warning(...)
-		// Also re-implement some of the original useful logging elsewhere in SessionManager with consistent messages.
 #if ENSEMBLE_RELEASE
-		if (config.Load(UserDataCfgPath) is Error.Ok)
+		var result = config.Load(UserDataCfgPath);
+
+		if (result is Error.Ok)
 		{
 			var stored = config.GetValue("player", "id", string.Empty).AsString();
 
 			if (Guid.TryParse(stored, out _))
 				return stored;
+
+			Log.Warning("Stored player ID is not a valid GUID: {Value}", stored);
 		}
+		else if (result is not Error.FileNotFound)
+			Log.Warning("Failed to load player data: {Error}", result);
 #endif
 
 		var id = Guid.CreateVersion7().ToString();

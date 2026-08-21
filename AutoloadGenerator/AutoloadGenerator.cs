@@ -8,8 +8,7 @@ namespace AutoloadGenerator;
 [Generator]
 public sealed class AutoloadGenerator : IIncrementalGenerator
 {
-	private const string AttributeMetadataName =
-		"Root.Autoloading.AutoloadAttribute";
+	private const string AttributeMetadataName = "Root.Autoloading.AutoloadAttribute";
 
 	private const string ScopePropertyName = "Scope";
 	private const string OrderPropertyName = "Order";
@@ -45,8 +44,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 
 		foreach (var (type, attribute) in autoloads)
 		{
-			var typeName = type.ToDisplayString(
-				SymbolDisplayFormat.FullyQualifiedFormat);
+			var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
 			source.AppendLine(
 				$"\t\t\t\tnew(" +

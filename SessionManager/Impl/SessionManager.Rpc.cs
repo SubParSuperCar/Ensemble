@@ -4,10 +4,6 @@ using Serilog;
 
 namespace Root.SessionManager;
 
-// I don't plan on adding any RPCs immediately; this is mostly just to test singleplayer for now,
-// but I presume this is where main RPCs would go when the time comes. For example, when I want to add a block,
-// I'd call here, but I feel like this would become too huge when I start adding EVERY RPC, so maybe put it in more
-// partials? I'm not sure. Maybe they can be in other classes entirely, but how would they access the rate limiters etc.
 public partial class SessionManager
 {
 	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
@@ -37,7 +33,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "");
+			Log.Error(exception, "Unhandled exception while running a deferred RPC action.");
 		}
 	}
 
@@ -45,7 +41,7 @@ public partial class SessionManager
 
 	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action)
 	{
-		var limiter = senderId == 1
+		var limiter = senderId is 1
 			? null
 			: RateLimitersByPeerId.GetOrAdd(senderId, _ => new TokenBucketRateLimiter(RateLimiterOptions));
 

@@ -1,19 +1,10 @@
 using Godot;
 using Godot.Collections;
 using Root.SessionManager.Actions;
+using Serilog;
 
 namespace Root.SessionManager;
 
-// Would this support a case where instead of Host being authority for an op, it were say, a Plot owner?
-// For instance, if we wanted to optimize by letting plot owners have network authority over their plots,
-// we'd treat them as the sanity checker for that area. Like, if someone wants to place a block, it goes through the
-// owner instead of the session host. Also, we may also want to perform sanity checks as listeners too, even if we're a
-// client. For example, if the host says to do something that's impossible, or they'd deny themselves, we deny it too.
-// If they say to add more than the maximum number allowed blocks, deny it, even as a client. That sort of thing.
-// This may be a worthwhile improvement but not urgently necessary. It's probably fine if Host is the pure authority,
-// but if possible, we could treat plot owners as authorities while still making calls as authority distinct. Such as
-// not sending a request and rather just telling other clients to sync up when the Plot owner decides to place a block.
-// Even though the API call to place a block looks the same with or without being owner/authority.
 public partial class SessionManager
 {
 	// ReSharper disable once MemberCanBePrivate.Global
@@ -47,6 +38,9 @@ public partial class SessionManager
 
 		if (!result.IsValid)
 		{
+			Log.Debug("Rejected action {ActionId} from peer {PeerId}: {Reason}",
+				actionId, sourcePeerId, result.Reason);
+
 			if (notifyRejection)
 				RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, result.Reason ?? string.Empty);
 

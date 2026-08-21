@@ -12,11 +12,9 @@ public sealed class NetworkActionRegistry
 		var actionId = TAction.ActionId;
 
 		if (!_entries.TryAdd(actionId, new Entry(
-			    (payload, senderId) => handler.Validate(TAction.FromPayload(payload), senderId),
-			    (payload, senderId) => handler.Apply(TAction.FromPayload(payload), senderId))))
-		{
-			throw new InvalidOperationException();
-		}
+				(payload, senderId) => handler.Validate(TAction.FromPayload(payload), senderId),
+				(payload, senderId) => handler.Apply(TAction.FromPayload(payload), senderId))))
+			throw new InvalidOperationException($"A handler is already registered for the '{actionId}' action.");
 	}
 
 	public ActionValidation ValidateRaw(string actionId, GDictionary payload, int sourcePeerId) =>

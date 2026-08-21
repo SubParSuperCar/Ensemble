@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Godot;
 using Root.SessionManager.Api;
+using Serilog;
 using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 
 namespace Root.SessionManager.Auth;
@@ -20,7 +21,7 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 
 	public event Action<long, string>? AuthenticationFailed;
 
-	public void Start(SceneMultiplayer multiplayer, bool isServer)
+	public void StartAuth(SceneMultiplayer multiplayer, bool isServer)
 	{
 		_multiplayer = multiplayer;
 		_isServer = isServer;
@@ -32,7 +33,7 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 		multiplayer.PeerAuthenticationFailed += OnPeerAuthenticationFailed;
 	}
 
-	public void Stop(SceneMultiplayer multiplayer)
+	public void StopAuth(SceneMultiplayer multiplayer)
 	{
 		multiplayer.PeerAuthenticating -= OnPeerAuthenticating;
 		multiplayer.PeerAuthenticationFailed -= OnPeerAuthenticationFailed;
@@ -71,7 +72,9 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 
 		if (data.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(data, expected))
 		{
+			Log.Warning("Peer {PeerId} failed password authentication.", peerId);
 			_multiplayer!.DisconnectPeer((int)peerId);
+
 			return;
 		}
 

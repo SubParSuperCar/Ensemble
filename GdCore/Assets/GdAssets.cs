@@ -45,9 +45,7 @@ public partial class GdAssets : RefCounted
 	}
 
 	public GdAsset Add(int id) => Add(id, string.Empty);
-
 	public GdAsset Add(int id, string name) => Add(id, name, null, 0);
-
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, 0);
 
 	public GdAsset Add(int id, string name, Dictionary? properties, int maxInstanceCount) =>

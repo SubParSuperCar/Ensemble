@@ -1,5 +1,6 @@
 using Godot;
 using Root.SessionManager.Api;
+using Serilog;
 
 namespace Root.SessionManager.Impl;
 
@@ -42,7 +43,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 		if (config.Authenticator is { } authenticator)
 		{
 			authenticator.AuthenticationFailed += OnAuthenticationFailed;
-			authenticator.Start(multiplayer, config is HostConfig);
+			authenticator.StartAuth(multiplayer, config is HostConfig);
 		}
 
 		multiplayer.MultiplayerPeer = peer;
@@ -72,7 +73,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 		if (config.Authenticator is { } authenticator)
 		{
 			authenticator.AuthenticationFailed -= OnAuthenticationFailed;
-			authenticator.Stop(multiplayer);
+			authenticator.StopAuth(multiplayer);
 		}
 
 		multiplayer.MultiplayerPeer?.Close();
@@ -103,6 +104,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 		multiplayer.MultiplayerPeer?.Close();
 		multiplayer.MultiplayerPeer = null;
 
+		Log.Warning("Connection to server failed.");
 		Failed?.Invoke("Connection failed.");
 	}
 
@@ -120,7 +122,12 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 	private void OnAuthenticationFailed(long peerId, string reason)
 	{
 		if (config is HostConfig)
+		{
+			Log.Warning("Peer {PeerId} rejected during authentication: {Reason}", peerId, reason);
 			return;
+		}
+
+		Log.Warning("Authentication with server failed: {Reason}", reason);
 
 		StopSession();
 		Failed?.Invoke(reason);

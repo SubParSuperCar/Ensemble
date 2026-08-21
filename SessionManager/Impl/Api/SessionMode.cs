@@ -1,6 +1,6 @@
 namespace Root.SessionManager.Api;
 
-public enum SessionMode
+public enum SessionMode : byte
 {
 	Inactive,
 	SinglePlayer,

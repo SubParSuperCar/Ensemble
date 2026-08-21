@@ -1,4 +1,5 @@
 using Godot;
+using Serilog;
 
 // ReSharper disable UnusedMember.Global
 
@@ -59,6 +60,8 @@ public partial class SessionManager
 			return;
 
 		_peerIdsByPlayerId[playerId] = peerId;
+
+		Log.Debug("Registered player {PlayerId} for peer {PeerId}.", playerId, peerId);
 		EmitSignal(SignalName.PlayerRegistered, peerId, playerId, displayName);
 	}
 
@@ -68,6 +71,8 @@ public partial class SessionManager
 			return false;
 
 		_peerIdsByPlayerId.Remove(info.PlayerId);
+
+		Log.Debug("Unregistered player {PlayerId} for peer {PeerId}.", info.PlayerId, peerId);
 		EmitSignal(SignalName.PlayerUnregistered, peerId, info.PlayerId);
 
 		return true;

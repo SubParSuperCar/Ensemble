@@ -117,9 +117,9 @@ public partial class Main : Node
 
 			case AutoloadFailurePolicy.AskUser:
 				if (!AskUser(
-					    "Autoload Initialization Failed",
-					    $"{exception}\n\nContinue anyway?\n" +
-					    "The program may be left in an unstable or partially initialized state."))
+						"Autoload Initialization Failed",
+						$"{exception}\n\nContinue anyway?\n" +
+						"The program may be left in an unstable or partially initialized state."))
 					OnFailFast();
 				break;
 

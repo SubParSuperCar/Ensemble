@@ -18,6 +18,8 @@ public partial class Logger : Node, IAutoload
 
 	public void Initialize()
 	{
+		Thread.Sleep(1000);
+
 		var logDir = ProjectSettings.GlobalizePath(LogDir);
 		Directory.CreateDirectory(logDir);
 

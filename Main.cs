@@ -11,8 +11,10 @@ public partial class Main : Node
 {
 	private static AutoloadScope CurrentScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
 
-	private static bool IsHeadlessServer =>
-		string.Equals(DisplayServer.GetName(), "headless", StringComparison.Ordinal);
+	public static bool IsHeadlessServer => string.Equals(DisplayServer.GetName(), "headless", StringComparison.Ordinal);
+	public static bool AutoloadsLoaded { get; private set; }
+
+	public static event Action? AutoloadsReady;
 
 	public override void _EnterTree()
 	{
@@ -26,7 +28,31 @@ public partial class Main : Node
 		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
 	}
 
-	public override void _Ready() => LoadAutoloads(AutoloadRegistry.GetAll());
+	public override void _Ready()
+	{
+		Console.WriteLine($"Starting {nameof(Main)}... (IsHeadlessServer={IsHeadlessServer})");
+
+		if (IsHeadlessServer)
+			Load();
+		else
+			_ = LoadDeferredAsync();
+	}
+
+	private async Task LoadDeferredAsync()
+	{
+		RenderingServer.ForceDraw();
+		await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+
+		CallDeferred(nameof(Load));
+	}
+
+	private void Load()
+	{
+		LoadAutoloads(AutoloadRegistry.GetAll());
+
+		AutoloadsLoaded = true;
+		AutoloadsReady?.Invoke();
+	}
 
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
@@ -61,14 +87,16 @@ public partial class Main : Node
 
 	private bool LoadAutoload(AutoloadDefinition definition, Stopwatch stopwatch)
 	{
-		var stage = AutoloadLoadStageEnum.Factory;
+		var stage = AutoloadLoadStage.Factory;
 		Node? instance = null;
 
 		try
 		{
+			var fullName = definition.Type.FullName;
+
 			Log.Debug(
 				"Loading {Type}... (Scope={Scope}, Order={Order}, FailurePolicy={FailurePolicy})",
-				definition.Type.FullName,
+				fullName,
 				definition.Scope,
 				definition.Order,
 				definition.FailurePolicy);
@@ -76,16 +104,19 @@ public partial class Main : Node
 			stopwatch.Restart();
 			instance = definition.Factory();
 
-			stage = AutoloadLoadStageEnum.AddChild;
+			if (fullName is not null)
+				instance.Name = fullName.Replace('.', '-');
+
+			stage = AutoloadLoadStage.AddChild;
 			AddChild(instance);
 
-			stage = AutoloadLoadStageEnum.Initialize;
+			stage = AutoloadLoadStage.Initialize;
 			if (instance is IAutoload autoload)
 				autoload.Initialize();
 
 			stopwatch.Stop();
-			Log.Debug("Loaded {Type} in {ElapsedMs:F3} ms.", definition.Type.FullName,
-				stopwatch.Elapsed.TotalMilliseconds);
+			Log.Debug("Loaded {Type} in {ElapsedMs:F3} ms.",
+				fullName, stopwatch.Elapsed.TotalMilliseconds);
 
 			return true;
 		}
@@ -100,7 +131,7 @@ public partial class Main : Node
 
 	private static void OnAutoloadFailed(
 		AutoloadDefinition definition,
-		AutoloadLoadStageEnum stage,
+		AutoloadLoadStage stage,
 		Exception exception)
 	{
 		Log.Error(exception, "Failed to load {Type} during {Stage} stage.", definition.Type.FullName, stage);
@@ -118,8 +149,10 @@ public partial class Main : Node
 			case AutoloadFailurePolicy.AskUser:
 				if (!AskUser(
 						"Autoload Initialization Failed",
-						$"{exception}\n\nContinue anyway?\n" +
-						"The program may be left in an unstable or partially initialized state."))
+#pragma warning disable MA0001
+						$"{exception.ToString().Replace("\"", "").Replace("'", "").Replace("`", "")}\n\n" +
+#pragma warning restore MA0001
+						"Continue anyway?\nThe program may be left in an unstable or partially initialized state."))
 					OnFailFast();
 				break;
 
@@ -160,7 +193,7 @@ public partial class Main : Node
 		}
 	}
 
-	private enum AutoloadLoadStageEnum : byte
+	private enum AutoloadLoadStage : byte
 	{
 		Factory,
 		AddChild,

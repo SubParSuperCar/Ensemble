@@ -8,11 +8,12 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <AssemblyName>Game</AssemblyName>
         <RootNamespace>Root</RootNamespace>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <!--<OutputType>Exe</OutputType>
-        <UseAppHost>false</UseAppHost>-->
+        <OutputType>Exe</OutputType>
+        <UseAppHost>false</UseAppHost>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     </PropertyGroup>
 
@@ -38,8 +39,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Avalonia.Themes.Simple" Version="12.1.1"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
         <PackageReference Include="DiscordRichPresence" Version="1.6.1.70"/>
-        <PackageReference Include="Meziantou.Analyzer" Version="3.0.169">
+        <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
+        <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
+        <PackageReference Include="Meziantou.Analyzer" Version="3.0.176">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -51,6 +56,10 @@
         <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
         <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
         <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+        <PackageReference Include="ServiceScan.SourceGenerator" Version="3.2.2">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="System.Threading.RateLimiting" Version="10.0.11"/>
         <PackageReference Include="TinyDialogsNet" Version="2.0.0"/>
     </ItemGroup>
@@ -58,20 +67,31 @@
     <ItemGroup>
         <ProjectReference Include="AutoloadGenerator\AutoloadGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
         <ProjectReference Include="Core\Core.csproj"/>
+        <ProjectReference Include="Estragonia\Estragonia.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="Avalonia.Skia">
+            <HintPath>Estragonia\Lib\Avalonia.Skia.dll</HintPath>
+            <Private>true</Private>
+        </Reference>
     </ItemGroup>
 
     <ItemGroup>
         <Compile Remove="AutoloadGenerator\**"/>
         <Compile Remove="Core\**"/>
+        <Compile Remove="Estragonia\**"/>
     </ItemGroup>
 
     <ItemGroup>
         <EmbeddedResource Remove="AutoloadGenerator\**"/>
         <EmbeddedResource Remove="Core\**"/>
+        <EmbeddedResource Remove="Estragonia\**"/>
     </ItemGroup>
 
     <ItemGroup>
         <Folder Include="GdCore\"/>
+        <Folder Include="Ui\Impl\"/>
     </ItemGroup>
 
 </Project>

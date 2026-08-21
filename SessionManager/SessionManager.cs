@@ -60,10 +60,10 @@ public partial class SessionManager : Node, IAutoload
 
 	public int LocalPeerId { get; private set; }
 
-	public void Initialize()
-	{
-		Instance = this;
+	public void Initialize() => Instance = this;
 
+	public override void _EnterTree()
+	{
 		Multiplayer.PeerConnected += OnPeerConnected;
 		Multiplayer.PeerDisconnected += OnPeerDisconnected;
 	}

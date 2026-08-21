@@ -1,3 +1,19 @@
 [gd_scene format=3 uid="uid://ddgi4ajn3rnnq"]
 
+[ext_resource type="Script" uid="uid://dyffxytf1id1l" path="res://Main.cs" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://0hf0xbvnk1kd" path="res://Ui/Ui.cs" id="2_0wfyh"]
+
 [node name="Main" type="Node" unique_id=338286369]
+script = ExtResource("1_o5qli")
+
+[node name="Ui" type="Control" parent="." unique_id=1284555271]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+mouse_force_pass_scroll_events = false
+script = ExtResource("2_0wfyh")
+metadata/_custom_type_script = "uid://0hf0xbvnk1kd"

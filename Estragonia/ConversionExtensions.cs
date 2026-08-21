@@ -1,0 +1,341 @@
+using System.Collections.Generic;
+using Avalonia;
+using Avalonia.Input;
+using Godot;
+using AvColor = Avalonia.Media.Color;
+using AvKey = Avalonia.Input.Key;
+using GdCursorShape = Godot.Control.CursorShape;
+using GdColor = Godot.Color;
+using GdKey = Godot.Key;
+
+// ReSharper disable InconsistentNaming
+
+namespace Estragonia;
+
+/// <summary>Contains extensions methods to convert between Godot and Avalonia types.</summary>
+#pragma warning disable CA1708
+public static class ConversionExtensions
+{
+	// Reference: https://github.com/godotengine/godot/blob/master/platform/windows/key_mapping_windows.cpp
+	private static readonly Dictionary<GdKey, AvKey> s_keyMap = new()
+	{
+		[GdKey.Backspace] = AvKey.Back,
+		[GdKey.Tab] = AvKey.Tab, // Godot maps Tab and CrSel to the same key
+		[GdKey.Clear] = AvKey.Clear, // Godot maps both Clear and OEM Clear to the same key
+		[GdKey.Enter] = AvKey.Return,
+		[GdKey.Shift] = AvKey.LeftShift, // Godot maps Left Shift and Right Shift keys to the same key
+		[GdKey.Ctrl] = AvKey.LeftCtrl, // Godot maps Left Ctrl and Right Ctrl keys to the same key
+		[GdKey.Alt] = AvKey.LeftAlt, // Godot maps Left Alt and Right Alt keys to the same key
+		[GdKey.Pause] = AvKey.Pause,
+		[GdKey.Capslock] = AvKey.CapsLock,
+		[GdKey.Escape] = AvKey.Escape, // Godot maps Escape and Attn keys to the same key
+		[GdKey.Space] = AvKey.Space,
+		[GdKey.Pageup] = AvKey.PageUp,
+		[GdKey.Pagedown] = AvKey.PageDown,
+		[GdKey.End] = AvKey.End,
+		[GdKey.Home] = AvKey.Home,
+		[GdKey.Left] = AvKey.Left,
+		[GdKey.Up] = AvKey.Up,
+		[GdKey.Right] = AvKey.Right,
+		[GdKey.Down] = AvKey.Down,
+		[GdKey.Print] = AvKey.Snapshot, // Godot maps Print and Snapshot keys to the same key
+		[GdKey.Insert] = AvKey.Insert,
+		[GdKey.Delete] = AvKey.Delete,
+		[GdKey.Help] = AvKey.Help,
+		[GdKey.Key1] = AvKey.D1,
+		[GdKey.Key2] = AvKey.D2,
+		[GdKey.Key3] = AvKey.D3,
+		[GdKey.Key4] = AvKey.D4,
+		[GdKey.Key5] = AvKey.D5,
+		[GdKey.Key6] = AvKey.D6,
+		[GdKey.Key7] = AvKey.D7,
+		[GdKey.Key8] = AvKey.D8,
+		[GdKey.Key9] = AvKey.D9,
+		[GdKey.Key0] = AvKey.D0,
+		[GdKey.A] = AvKey.A,
+		[GdKey.B] = AvKey.B,
+		[GdKey.C] = AvKey.C,
+		[GdKey.D] = AvKey.D,
+		[GdKey.E] = AvKey.E,
+		[GdKey.F] = AvKey.F,
+		[GdKey.G] = AvKey.G,
+		[GdKey.H] = AvKey.H,
+		[GdKey.I] = AvKey.I,
+		[GdKey.J] = AvKey.J,
+		[GdKey.K] = AvKey.K,
+		[GdKey.L] = AvKey.L,
+		[GdKey.M] = AvKey.M,
+		[GdKey.N] = AvKey.N,
+		[GdKey.O] = AvKey.O,
+		[GdKey.P] = AvKey.P,
+		[GdKey.Q] = AvKey.Q,
+		[GdKey.R] = AvKey.R,
+		[GdKey.S] = AvKey.S,
+		[GdKey.T] = AvKey.T,
+		[GdKey.U] = AvKey.U,
+		[GdKey.V] = AvKey.V,
+		[GdKey.W] = AvKey.W,
+		[GdKey.X] = AvKey.X,
+		[GdKey.Y] = AvKey.Y,
+		[GdKey.Z] = AvKey.Z,
+		[GdKey.Meta] = AvKey.LWin, // Godot maps Left Win and Right Win keys to the same key
+		[GdKey.Menu] = AvKey.Apps, // Godot maps Left Menu and Right Menu keys to the same key
+		[GdKey.Standby] = AvKey.Sleep,
+		[GdKey.Kp0] = AvKey.NumPad0,
+		[GdKey.Kp1] = AvKey.NumPad1,
+		[GdKey.Kp2] = AvKey.NumPad2,
+		[GdKey.Kp3] = AvKey.NumPad3,
+		[GdKey.Kp4] = AvKey.NumPad4,
+		[GdKey.Kp5] = AvKey.NumPad5,
+		[GdKey.Kp6] = AvKey.NumPad6,
+		[GdKey.Kp7] = AvKey.NumPad7,
+		[GdKey.Kp8] = AvKey.NumPad8,
+		[GdKey.Kp9] = AvKey.NumPad9,
+		[GdKey.KpMultiply] = AvKey.Multiply,
+		[GdKey.KpAdd] = AvKey.Add,
+		[GdKey.KpSubtract] = AvKey.Subtract,
+		[GdKey.KpPeriod] = AvKey.Decimal, // Godot maps Separator and Decimal keys to the same key
+		[GdKey.KpDivide] = AvKey.Divide,
+		[GdKey.F1] = AvKey.F1,
+		[GdKey.F2] = AvKey.F2,
+		[GdKey.F3] = AvKey.F3,
+		[GdKey.F4] = AvKey.F4,
+		[GdKey.F5] = AvKey.F5,
+		[GdKey.F6] = AvKey.F6,
+		[GdKey.F7] = AvKey.F7,
+		[GdKey.F8] = AvKey.F8,
+		[GdKey.F9] = AvKey.F9,
+		[GdKey.F10] = AvKey.F10,
+		[GdKey.F11] = AvKey.F11,
+		[GdKey.F12] = AvKey.F12,
+		[GdKey.F13] = AvKey.F13,
+		[GdKey.F14] = AvKey.F14,
+		[GdKey.F15] = AvKey.F15,
+		[GdKey.F16] = AvKey.F16,
+		[GdKey.F17] = AvKey.F17,
+		[GdKey.F18] = AvKey.F18,
+		[GdKey.F19] = AvKey.F19,
+		[GdKey.F20] = AvKey.F20,
+		[GdKey.F21] = AvKey.F21,
+		[GdKey.F22] = AvKey.F22,
+		[GdKey.F23] = AvKey.F23,
+		[GdKey.F24] = AvKey.F24,
+		[GdKey.Numlock] = AvKey.NumLock,
+		[GdKey.Scrolllock] = AvKey.Scroll,
+		[GdKey.Back] = AvKey.BrowserBack,
+		[GdKey.Forward] = AvKey.BrowserForward,
+		[GdKey.Refresh] = AvKey.BrowserRefresh,
+		[GdKey.Stop] = AvKey.BrowserStop,
+		[GdKey.Search] = AvKey.BrowserSearch,
+		[GdKey.Favorites] = AvKey.BrowserFavorites,
+		[GdKey.Homepage] = AvKey.Home,
+		[GdKey.Volumemute] = AvKey.VolumeMute,
+		[GdKey.Volumedown] = AvKey.VolumeDown,
+		[GdKey.Volumeup] = AvKey.VolumeUp,
+		[GdKey.Medianext] = AvKey.MediaNextTrack,
+		[GdKey.Mediaprevious] = AvKey.MediaPreviousTrack,
+		[GdKey.Mediastop] = AvKey.MediaStop,
+		[GdKey.Mediaplay] = AvKey.MediaPlayPause, // Godot maps bot Media Play/Pause and Play keys to the same key
+		[GdKey.Launchmail] = AvKey.LaunchMail,
+		[GdKey.Launchmedia] = AvKey.SelectMedia,
+		[GdKey.Launch0] = AvKey.LaunchApplication1,
+		[GdKey.Launch1] = AvKey.LaunchApplication2,
+		[GdKey.Semicolon] = AvKey.Oem1,
+		[GdKey.Equal] = AvKey.OemPlus,
+		[GdKey.Comma] = AvKey.OemComma,
+		[GdKey.Minus] = AvKey.OemMinus,
+		[GdKey.Period] = AvKey.OemPeriod,
+		[GdKey.Slash] = AvKey.Oem2,
+		[GdKey.Quoteleft] = AvKey.Oem3,
+		[GdKey.Bracketleft] = AvKey.Oem4,
+		[GdKey.Backslash] = AvKey.Oem5,
+		[GdKey.Bracketright] = AvKey.Oem6,
+		[GdKey.Apostrophe] = AvKey.Oem7,
+		[GdKey.Bar] = AvKey.Oem102
+	};
+
+	private static readonly Dictionary<GdKey, PhysicalKey> s_physicalKeyMap = new()
+	{
+		[GdKey.Backspace] = PhysicalKey.Backspace,
+		[GdKey.Tab] = PhysicalKey.Tab, // Godot maps Tab and CrSel to the same key
+		[GdKey.Clear] = PhysicalKey.NumPadClear, // Godot maps both Clear and OEM Clear to the same key
+		[GdKey.Enter] = PhysicalKey.Enter,
+		[GdKey.Shift] = PhysicalKey.ShiftLeft, // Godot maps Left Shift and Right Shift keys to the same key
+		[GdKey.Ctrl] = PhysicalKey.ControlLeft, // Godot maps Left Ctrl and Right Ctrl keys to the same key
+		[GdKey.Alt] = PhysicalKey.AltLeft, // Godot maps Left Alt and Right Alt keys to the same key
+		[GdKey.Pause] = PhysicalKey.Pause,
+		[GdKey.Capslock] = PhysicalKey.CapsLock,
+		[GdKey.Escape] = PhysicalKey.Escape, // Godot maps Escape and Attn keys to the same key
+		[GdKey.Space] = PhysicalKey.Space,
+		[GdKey.Pageup] = PhysicalKey.PageUp,
+		[GdKey.Pagedown] = PhysicalKey.PageDown,
+		[GdKey.End] = PhysicalKey.End,
+		[GdKey.Home] = PhysicalKey.Home,
+		[GdKey.Left] = PhysicalKey.ArrowLeft,
+		[GdKey.Up] = PhysicalKey.ArrowUp,
+		[GdKey.Right] = PhysicalKey.ArrowRight,
+		[GdKey.Down] = PhysicalKey.ArrowDown,
+		[GdKey.Print] = PhysicalKey.PrintScreen, // Godot maps Print and Snapshot keys to the same key
+		[GdKey.Insert] = PhysicalKey.Insert,
+		[GdKey.Delete] = PhysicalKey.Delete,
+		[GdKey.Help] = PhysicalKey.Help,
+		[GdKey.Key1] = PhysicalKey.Digit1,
+		[GdKey.Key2] = PhysicalKey.Digit2,
+		[GdKey.Key3] = PhysicalKey.Digit3,
+		[GdKey.Key4] = PhysicalKey.Digit4,
+		[GdKey.Key5] = PhysicalKey.Digit5,
+		[GdKey.Key6] = PhysicalKey.Digit6,
+		[GdKey.Key7] = PhysicalKey.Digit7,
+		[GdKey.Key8] = PhysicalKey.Digit8,
+		[GdKey.Key9] = PhysicalKey.Digit9,
+		[GdKey.Key0] = PhysicalKey.Digit0,
+		[GdKey.A] = PhysicalKey.A,
+		[GdKey.B] = PhysicalKey.B,
+		[GdKey.C] = PhysicalKey.C,
+		[GdKey.D] = PhysicalKey.D,
+		[GdKey.E] = PhysicalKey.E,
+		[GdKey.F] = PhysicalKey.F,
+		[GdKey.G] = PhysicalKey.G,
+		[GdKey.H] = PhysicalKey.H,
+		[GdKey.I] = PhysicalKey.I,
+		[GdKey.J] = PhysicalKey.J,
+		[GdKey.K] = PhysicalKey.K,
+		[GdKey.L] = PhysicalKey.L,
+		[GdKey.M] = PhysicalKey.M,
+		[GdKey.N] = PhysicalKey.N,
+		[GdKey.O] = PhysicalKey.O,
+		[GdKey.P] = PhysicalKey.P,
+		[GdKey.Q] = PhysicalKey.Q,
+		[GdKey.R] = PhysicalKey.R,
+		[GdKey.S] = PhysicalKey.S,
+		[GdKey.T] = PhysicalKey.T,
+		[GdKey.U] = PhysicalKey.U,
+		[GdKey.V] = PhysicalKey.V,
+		[GdKey.W] = PhysicalKey.W,
+		[GdKey.X] = PhysicalKey.X,
+		[GdKey.Y] = PhysicalKey.Y,
+		[GdKey.Z] = PhysicalKey.Z,
+		[GdKey.Meta] = PhysicalKey.MetaLeft, // Godot maps Left Win and Right Win keys to the same key
+		[GdKey.Menu] = PhysicalKey.ContextMenu, // Godot maps Left Menu and Right Menu keys to the same key
+		[GdKey.Standby] = PhysicalKey.Sleep,
+		[GdKey.Kp0] = PhysicalKey.NumPad0,
+		[GdKey.Kp1] = PhysicalKey.NumPad1,
+		[GdKey.Kp2] = PhysicalKey.NumPad2,
+		[GdKey.Kp3] = PhysicalKey.NumPad3,
+		[GdKey.Kp4] = PhysicalKey.NumPad4,
+		[GdKey.Kp5] = PhysicalKey.NumPad5,
+		[GdKey.Kp6] = PhysicalKey.NumPad6,
+		[GdKey.Kp7] = PhysicalKey.NumPad7,
+		[GdKey.Kp8] = PhysicalKey.NumPad8,
+		[GdKey.Kp9] = PhysicalKey.NumPad9,
+		[GdKey.KpMultiply] = PhysicalKey.NumPadMultiply,
+		[GdKey.KpAdd] = PhysicalKey.NumPadAdd,
+		[GdKey.KpSubtract] = PhysicalKey.NumPadSubtract,
+		[GdKey.KpPeriod] = PhysicalKey.NumPadDecimal, // Godot maps Separator and Decimal keys to the same key
+		[GdKey.KpDivide] = PhysicalKey.NumPadDivide,
+		[GdKey.F1] = PhysicalKey.F1,
+		[GdKey.F2] = PhysicalKey.F2,
+		[GdKey.F3] = PhysicalKey.F3,
+		[GdKey.F4] = PhysicalKey.F4,
+		[GdKey.F5] = PhysicalKey.F5,
+		[GdKey.F6] = PhysicalKey.F6,
+		[GdKey.F7] = PhysicalKey.F7,
+		[GdKey.F8] = PhysicalKey.F8,
+		[GdKey.F9] = PhysicalKey.F9,
+		[GdKey.F10] = PhysicalKey.F10,
+		[GdKey.F11] = PhysicalKey.F11,
+		[GdKey.F12] = PhysicalKey.F12,
+		[GdKey.F13] = PhysicalKey.F13,
+		[GdKey.F14] = PhysicalKey.F14,
+		[GdKey.F15] = PhysicalKey.F15,
+		[GdKey.F16] = PhysicalKey.F16,
+		[GdKey.F17] = PhysicalKey.F17,
+		[GdKey.F18] = PhysicalKey.F18,
+		[GdKey.F19] = PhysicalKey.F19,
+		[GdKey.F20] = PhysicalKey.F20,
+		[GdKey.F21] = PhysicalKey.F21,
+		[GdKey.F22] = PhysicalKey.F22,
+		[GdKey.F23] = PhysicalKey.F23,
+		[GdKey.F24] = PhysicalKey.F24,
+		[GdKey.Numlock] = PhysicalKey.NumLock,
+		[GdKey.Scrolllock] = PhysicalKey.ScrollLock,
+		[GdKey.Back] = PhysicalKey.BrowserBack,
+		[GdKey.Forward] = PhysicalKey.BrowserForward,
+		[GdKey.Refresh] = PhysicalKey.BrowserRefresh,
+		[GdKey.Stop] = PhysicalKey.BrowserStop,
+		[GdKey.Search] = PhysicalKey.BrowserSearch,
+		[GdKey.Favorites] = PhysicalKey.BrowserFavorites,
+		[GdKey.Homepage] = PhysicalKey.Home,
+		[GdKey.Volumemute] = PhysicalKey.AudioVolumeMute,
+		[GdKey.Volumedown] = PhysicalKey.AudioVolumeDown,
+		[GdKey.Volumeup] = PhysicalKey.AudioVolumeUp,
+		[GdKey.Medianext] = PhysicalKey.MediaTrackNext,
+		[GdKey.Mediaprevious] = PhysicalKey.MediaTrackPrevious,
+		[GdKey.Mediastop] = PhysicalKey.MediaStop,
+		[GdKey.Mediaplay] = PhysicalKey.MediaPlayPause, // Godot maps bot Media Play/Pause and Play keys to the same key
+		[GdKey.Launchmail] = PhysicalKey.LaunchMail,
+		[GdKey.Launchmedia] = PhysicalKey.MediaSelect,
+		[GdKey.Launch0] = PhysicalKey.LaunchApp1,
+		[GdKey.Launch1] = PhysicalKey.LaunchApp2,
+		[GdKey.Semicolon] = PhysicalKey.Semicolon,
+		[GdKey.Equal] = PhysicalKey.Equal,
+		[GdKey.Comma] = PhysicalKey.Comma,
+		[GdKey.Minus] = PhysicalKey.Minus,
+		[GdKey.Period] = PhysicalKey.Period,
+		[GdKey.Slash] = PhysicalKey.Slash,
+		[GdKey.Quoteleft] = PhysicalKey.Backquote,
+		[GdKey.Bracketleft] = PhysicalKey.BracketLeft,
+		[GdKey.Backslash] = PhysicalKey.Backslash,
+		[GdKey.Bracketright] = PhysicalKey.BracketRight,
+		[GdKey.Apostrophe] = PhysicalKey.Quote,
+		[GdKey.Bar] = PhysicalKey.IntlBackslash
+	};
+
+	private static readonly Dictionary<StandardCursorType, GdCursorShape> s_cursorMap = new()
+	{
+		[StandardCursorType.Arrow] = GdCursorShape.Arrow,
+		[StandardCursorType.Ibeam] = GdCursorShape.Ibeam,
+		[StandardCursorType.Wait] = GdCursorShape.Wait,
+		[StandardCursorType.Cross] = GdCursorShape.Cross,
+		[StandardCursorType.UpArrow] = GdCursorShape.Arrow,
+		[StandardCursorType.SizeWestEast] = GdCursorShape.Hsize,
+		[StandardCursorType.SizeNorthSouth] = GdCursorShape.Vsize,
+		[StandardCursorType.SizeAll] = GdCursorShape.Drag,
+		[StandardCursorType.No] = GdCursorShape.Forbidden,
+		[StandardCursorType.Hand] = GdCursorShape.PointingHand,
+		[StandardCursorType.AppStarting] = GdCursorShape.Busy,
+		[StandardCursorType.Help] = GdCursorShape.Help,
+		[StandardCursorType.TopSide] = GdCursorShape.Vsize,
+		[StandardCursorType.BottomSide] = GdCursorShape.Vsize,
+		[StandardCursorType.LeftSide] = GdCursorShape.Hsize,
+		[StandardCursorType.RightSide] = GdCursorShape.Hsize,
+		[StandardCursorType.TopLeftCorner] = GdCursorShape.Fdiagsize,
+		[StandardCursorType.TopRightCorner] = GdCursorShape.Bdiagsize,
+		[StandardCursorType.BottomLeftCorner] = GdCursorShape.Bdiagsize,
+		[StandardCursorType.BottomRightCorner] = GdCursorShape.Fdiagsize,
+		[StandardCursorType.DragMove] = GdCursorShape.Drag,
+		[StandardCursorType.DragCopy] = GdCursorShape.Drag,
+		[StandardCursorType.DragLink] = GdCursorShape.Drag
+	};
+
+	public static AvColor ToAvaloniaColor(this GdColor source) =>
+		new((byte)source.A8, (byte)source.R8, (byte)source.G8, (byte)source.B8);
+
+	public static GdCursorShape ToGodotCursorShape(this StandardCursorType source) =>
+		s_cursorMap.GetValueOrDefault(source, GdCursorShape.Arrow);
+
+	extension(GdKey source)
+	{
+		public AvKey ToAvaloniaKey() => s_keyMap.GetValueOrDefault(source, AvKey.None);
+
+		public PhysicalKey ToAvaloniaPhysicalKey() => s_physicalKeyMap.GetValueOrDefault(source, PhysicalKey.None);
+	}
+
+	extension(Vector2 source)
+	{
+		public Size ToAvaloniaSize() => new(source.X, source.Y);
+
+		public Point ToAvaloniaPoint() => new(source.X, source.Y);
+	}
+#pragma warning restore CA1708
+}

@@ -4,5 +4,6 @@
     </Folder>
     <Project Path="AutoloadGenerator/AutoloadGenerator.csproj"/>
     <Project Path="Core/Core.csproj"/>
+    <Project Path="Estragonia/Estragonia.csproj"/>
     <Project Path="Game.csproj"/>
 </Solution>

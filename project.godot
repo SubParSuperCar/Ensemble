@@ -16,7 +16,7 @@ config/features=PackedStringArray("4.7", "C#", "Mobile")
 
 [autoload]
 
-Main="uid://dyffxytf1id1l"
+AvaloniaLoader="uid://bvmhyw4rgjd4t"
 
 [display]
 

@@ -110,7 +110,6 @@ public partial class SessionManager : Node, IAutoload
 		StopSession();
 
 		_pendingDisplayName = displayName;
-
 		_session = new MultiPlayerSession(
 			(SceneMultiplayer)Multiplayer,
 			new HostConfig(
@@ -134,7 +133,6 @@ public partial class SessionManager : Node, IAutoload
 		StopSession();
 
 		_pendingDisplayName = displayName;
-
 		_session = new MultiPlayerSession(
 			(SceneMultiplayer)Multiplayer,
 			new JoinConfig(address, port, Authenticators.Password(password)));
@@ -178,10 +176,11 @@ public partial class SessionManager : Node, IAutoload
 
 		OnPeerDisconnectedDisposeRateLimiter(peerId);
 
+		var id = (int)peerId;
 		if (IsServer)
-			BroadcastUnregister((int)peerId);
+			BroadcastUnregister(id);
 
-		EmitSignal(SignalName.PeerDisconnected, (int)peerId);
+		EmitSignal(SignalName.PeerDisconnected, id);
 	}
 
 	private void OnSessionStarted()

@@ -33,7 +33,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "Unhandled exception while running a deferred RPC action.");
+			Log.Error(exception, "Unhandled exception in RPC action.");
 		}
 	}
 

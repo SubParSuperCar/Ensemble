@@ -3,7 +3,7 @@ using CoreRoot.Api.Players;
 using Godot;
 using Godot.Collections;
 
-namespace Root.Systems.GdCore.Players;
+namespace Root.GdCore.Players;
 
 public partial class GdPlayers : RefCounted
 {

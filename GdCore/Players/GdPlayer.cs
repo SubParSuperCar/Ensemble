@@ -5,7 +5,7 @@ using Godot.Collections;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Root.Systems.GdCore.Players;
+namespace Root.GdCore.Players;
 
 public partial class GdPlayer : RefCounted
 {

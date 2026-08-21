@@ -2,9 +2,9 @@ using System.Runtime.CompilerServices;
 using CoreRoot.Api.Plots;
 using Godot;
 using Godot.Collections;
-using Root.Systems.GdCore.Assets;
+using Root.GdCore.Assets;
 
-namespace Root.Systems.GdCore.Plots;
+namespace Root.GdCore.Plots;
 
 public partial class GdPlot : RefCounted
 {

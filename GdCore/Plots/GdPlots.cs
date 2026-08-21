@@ -4,7 +4,7 @@ using CoreRoot.Api.Plots;
 using Godot;
 using Godot.Collections;
 
-namespace Root.Systems.GdCore.Plots;
+namespace Root.GdCore.Plots;
 
 public partial class GdPlots : RefCounted
 {

@@ -9,4 +9,8 @@
         <RootNamespace>CoreRoot</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Remove=".gdignore"/>
+    </ItemGroup>
+
 </Project>

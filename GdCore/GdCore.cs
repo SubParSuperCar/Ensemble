@@ -1,14 +1,14 @@
 using CoreRoot;
 using Godot;
 using Root.Autoloading;
-using Root.Systems.GdCore.Assets;
-using Root.Systems.GdCore.Players;
-using Root.Systems.GdCore.Plots;
+using Root.GdCore.Assets;
+using Root.GdCore.Players;
+using Root.GdCore.Plots;
 using Serilog;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Root.Systems.GdCore;
+namespace Root.GdCore;
 
 [GlobalClass]
 [Autoload(Order = sbyte.MinValue + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]

@@ -2,11 +2,11 @@ using System.Runtime.CompilerServices;
 using CoreRoot.Api.Assets;
 using Godot;
 using Godot.Collections;
-using Root.Systems.GdCore.Utils;
+using Root.GdCore.Utils;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Root.Systems.GdCore.Assets;
+namespace Root.GdCore.Assets;
 
 public partial class GdAsset : RefCounted
 {

@@ -3,7 +3,7 @@ using Godot;
 using Godot.Collections;
 using Variant = Godot.Variant;
 
-namespace Root.Systems.GdCore.Utils;
+namespace Root.GdCore.Utils;
 
 public static class Converter
 {

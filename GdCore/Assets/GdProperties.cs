@@ -2,10 +2,10 @@ using System.Runtime.CompilerServices;
 using CoreRoot.Api.Assets;
 using Godot;
 using Godot.Collections;
-using Root.Systems.GdCore.Utils;
+using Root.GdCore.Utils;
 using Variant = Godot.Variant;
 
-namespace Root.Systems.GdCore.Assets;
+namespace Root.GdCore.Assets;
 
 public partial class GdProperties : RefCounted
 {

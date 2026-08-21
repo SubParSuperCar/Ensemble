@@ -225,7 +225,9 @@ public partial class SessionManager : Node, IAutoload
 			Log.Warning("Failed to load player data: {Error}", result);
 #endif
 
-		var id = Guid.CreateVersion7().ToString();
+		// Don't use UUIDv7 because it contains trackable millisecond-level precision timestamp data; use UUIDv4 instead
+		// Unless we want to be able to determine when a player ID was first saved; but we value privacy :)
+		var id = Guid.NewGuid().ToString();
 		config.SetValue("player", "id", id);
 		config.Save(UserDataCfgPath);
 

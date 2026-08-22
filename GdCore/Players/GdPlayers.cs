@@ -52,6 +52,7 @@ public partial class GdPlayers : RefCounted
 		return result;
 	}
 
+	// Use explicit overloads on purpose because GDScript cannot consume traditional C# overloads; I've tried.
 	public GdPlayer Add() => Add(string.Empty);
 	public GdPlayer Add(string id) => Add(id, string.Empty);
 

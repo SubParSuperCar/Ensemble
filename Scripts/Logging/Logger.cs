@@ -18,13 +18,12 @@ public partial class Logger : Node, IAutoload
 
 	public void Initialize()
 	{
-		Thread.Sleep(1000);
-
 		var logDir = ProjectSettings.GlobalizePath(LogDir);
 		Directory.CreateDirectory(logDir);
 
 		var configBuilder = new ConfigurationBuilder();
 
+		// Use Godot's FileAccess.
 		using var file = FileAccess.Open(AppSettingsPath, FileAccess.ModeFlags.Read);
 
 		if (file is not null)
@@ -37,7 +36,7 @@ public partial class Logger : Node, IAutoload
 
 		Log.Logger = new LoggerConfiguration()
 			.MinimumLevel.Verbose()
-			.ReadFrom.Configuration(config)
+			.ReadFrom.Configuration(config) // Allow the user to specify their own min. level, but default to Verbose.
 			.Enrich.With(new LogEnricher())
 			.WriteTo.Sink(new LogSink())
 			.WriteTo.Console(

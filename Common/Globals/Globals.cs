@@ -6,6 +6,9 @@ using Root.GdCore.Plots;
 
 namespace Root.Common.Globals;
 
+// This is essentially the hub that links everything together. It lets us easily reference major game components.
+// Super nice because we can just type "GPlayers.Add" and is super concise and clean.
+// The only potential problem is that since this is static we can only have one instance. This is a singleton.
 public static class Globals
 {
 	// ReSharper disable once MemberCanBePrivate.Global

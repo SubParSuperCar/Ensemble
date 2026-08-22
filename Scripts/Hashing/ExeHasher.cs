@@ -17,6 +17,7 @@ public partial class ExeHasher : Node, IAutoload
 
 	public void Initialize() => _ = HashProcessExecutableAsync();
 
+	// This lets us cancel the operation if the node is somehow removed right after being created.
 	public override void _ExitTree() => _cts.Cancel();
 
 	private async Task HashProcessExecutableAsync()
@@ -59,6 +60,7 @@ public partial class ExeHasher : Node, IAutoload
 		}
 		finally
 		{
+			// Dispose the node to save memory. No reason to keep it alive after it's served its purpose.
 			QueueFree();
 		}
 	}

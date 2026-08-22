@@ -30,4 +30,8 @@
             <Private>true</Private>
         </Reference>
     </ItemGroup>
+
+    <ItemGroup>
+        <None Remove=".gdignore"/>
+    </ItemGroup>
 </Project>

@@ -1,5 +1,8 @@
 namespace Root.Common.Globals;
 
+// Generic codebase-wide constant information such as Godot path schemes, etc.
+// We could consider enumerating the game's name (Ensemble) here, but it's not that important.
+// We'll ultimately not be able to use it everywhere like in AXAML, license texts, docs, etc.
 public static class Constants
 {
 	// ReSharper disable once UnusedMember.Local

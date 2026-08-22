@@ -57,7 +57,7 @@ public class Instances : IInstances
 		if (!_assets.All.TryGetValue(assetId, out var asset))
 			throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Asset with id {assetId} not found"));
+				$"Asset with id {assetId} not found")); // Should we end exception messages with a period like in some other parts of the codebase?
 
 		var instance = new Instance(asset, position, rotation);
 

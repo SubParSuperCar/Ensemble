@@ -6,6 +6,8 @@ namespace Root.Ui.Impl.Extensions;
 
 public static partial class ServiceCollectionExtensions
 {
+	// Automatically looks up and registers services at compile time. Super clean and fast and leagues better
+	// than manually enumerating everything. I love this.
 	[GenerateServiceRegistrations(
 		AssignableTo = typeof(ITransientObject),
 		Lifetime = ServiceLifetime.Transient,

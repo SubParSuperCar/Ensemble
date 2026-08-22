@@ -27,6 +27,7 @@ public partial class GdProperties : RefCounted
 				return wrapper;
 			});
 
+	// I would naturally call this method "Get," but it clashes with keywords and results in warnings.
 	public Variant GetValue(string key) => _source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
 	public Dictionary GetAll() => Converter.ToGodotProperties(_source.All);
 

@@ -3,6 +3,7 @@ using Root.SessionManager.Api;
 
 namespace Root.SessionManager.Impl;
 
+// Same as multi-player but for single player sessions. Highly modular.
 public class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 {
 	public SessionMode Mode => SessionMode.SinglePlayer;
@@ -16,7 +17,8 @@ public class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 	public event Action? Stopped;
 
 #pragma warning disable CS0067
-	public event Action<string>? Failed;
+	public event Action<string>?
+		Failed; // A single player session can essentially never fail, so this event is never actually used.
 #pragma warning restore CS0067
 
 	public void StartSession()
@@ -24,6 +26,7 @@ public class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 		if (IsActive)
 			return;
 
+		// I love Godot's Multiplayer API. This is too easy.
 		multiplayer.MultiplayerPeer = new OfflineMultiplayerPeer();
 
 		IsActive = true;

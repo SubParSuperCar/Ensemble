@@ -2,6 +2,7 @@ using System.Globalization;
 
 namespace Root.Common.Utils;
 
+// Useful formatting utilities used around the codebase.
 public static class Formatter
 {
 	public static string FormatBytes(ulong bytes)

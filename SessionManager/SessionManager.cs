@@ -18,6 +18,7 @@ public partial class SessionManager : Node, IAutoload
 	[Signal]
 	public delegate void PeerDisconnectedEventHandler(int peerId);
 
+	// Hooks for outside resources to handle when players are added/removed. Distinct by design from peers.
 	[Signal]
 	public delegate void PlayerRegisteredEventHandler(int peerId, string playerId, string displayName);
 
@@ -33,6 +34,7 @@ public partial class SessionManager : Node, IAutoload
 	[Signal]
 	public delegate void SessionStoppedEventHandler();
 
+	// This is kind of just lying around, but it's necessary for the code below.
 	private string _pendingDisplayName = string.Empty;
 
 	private ISession? _session;
@@ -51,15 +53,20 @@ public partial class SessionManager : Node, IAutoload
 		}
 	}
 
+	// If there's no session, the Mode is inactive.
 	public SessionMode Mode => _session?.Mode ?? SessionMode.Inactive;
 
+	// Should IsServer be on top or bottom?
 	public bool IsServer => _session?.IsServer ?? false;
 	public bool IsActive => _session?.IsActive ?? false;
 
+	// If there's no session, the timestamp is simply 0.
 	public double UtcStartedAtUnix => _session?.UtcStartedAt.ToUnixTimeSeconds() ?? 0;
 
 	public int LocalPeerId { get; private set; }
 
+	// Almost no point in using Initialize if it's just one single variable assignment, lol.
+	// We might as well remove IAutoload from this and just use _Ready.
 	public void Initialize() => Instance = this;
 
 	public override void _EnterTree()
@@ -176,6 +183,7 @@ public partial class SessionManager : Node, IAutoload
 
 		OnPeerDisconnectedDisposeRateLimiter(peerId);
 
+		// Cache this even though it's a tiny op. It was annoying me.
 		var id = (int)peerId;
 		if (IsServer)
 			BroadcastUnregister(id);
@@ -209,6 +217,7 @@ public partial class SessionManager : Node, IAutoload
 	{
 		var config = new ConfigFile();
 
+		// Only save IDs in release builds. Dev builds should get a fresh ID every time.
 #if ENSEMBLE_RELEASE
 		var result = config.Load(UserDataCfgPath);
 

@@ -110,7 +110,7 @@ public partial class GdPlots : RefCounted
 		catch (InvalidOperationException)
 		{
 			occupant = null;
-			return false;
+			return false; // Should this be here? It seems like this is the only plausible alt. execution path.
 		}
 	}
 }

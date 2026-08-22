@@ -10,6 +10,8 @@ public partial class SessionManager
 	private readonly Dictionary<string, int> _peerIdsByPlayerId = [];
 	private readonly Dictionary<int, PeerInfo> _peersById = [];
 
+	// The surface for accessing peers from C# and (probably?) GDScript. Not sure if GDScript supports this,
+	// but it'd be preferable if it did.
 	public IReadOnlyDictionary<int, PeerInfo> Peers => _peersById;
 
 	public bool TryGetPeerId(string playerId, out int peerId) => _peerIdsByPlayerId.TryGetValue(playerId, out peerId);
@@ -84,5 +86,6 @@ public partial class SessionManager
 			RemovePeer(peerId);
 	}
 
+	// Display Name is essentially just the name that a connecting peer/host chooses that will be used for GPlayers.
 	public readonly record struct PeerInfo(string PlayerId, string DisplayName);
 }

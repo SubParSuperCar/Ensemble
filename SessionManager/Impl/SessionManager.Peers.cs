@@ -1,4 +1,5 @@
 using Godot;
+using Godot.Collections;
 using Serilog;
 
 // ReSharper disable UnusedMember.Global
@@ -7,11 +8,9 @@ namespace Root.SessionManager;
 
 public partial class SessionManager
 {
-	private readonly Dictionary<string, int> _peerIdsByPlayerId = [];
-	private readonly Dictionary<int, PeerInfo> _peersById = [];
+	private readonly System.Collections.Generic.Dictionary<string, int> _peerIdsByPlayerId = [];
+	private readonly System.Collections.Generic.Dictionary<int, PeerInfo> _peersById = [];
 
-	// The surface for accessing peers from C# and (probably?) GDScript. Not sure if GDScript supports this,
-	// but it'd be preferable if it did.
 	public IReadOnlyDictionary<int, PeerInfo> Peers => _peersById;
 
 	public bool TryGetPeerId(string playerId, out int peerId) => _peerIdsByPlayerId.TryGetValue(playerId, out peerId);
@@ -86,6 +85,20 @@ public partial class SessionManager
 			RemovePeer(peerId);
 	}
 
-	// Display Name is essentially just the name that a connecting peer/host chooses that will be used for GPlayers.
+	// ReSharper disable once MemberCanBePrivate.Global
+	public Godot.Collections.Dictionary<int, Dictionary> GetAllPeerDicts()
+	{
+		var result = new Godot.Collections.Dictionary<int, Dictionary>();
+
+		foreach (var (peerId, info) in _peersById)
+			result[peerId] = new Dictionary
+			{
+				["playerId"] = info.PlayerId,
+				["displayName"] = info.DisplayName
+			};
+
+		return result;
+	}
+
 	public readonly record struct PeerInfo(string PlayerId, string DisplayName);
 }

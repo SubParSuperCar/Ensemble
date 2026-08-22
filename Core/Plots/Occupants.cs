@@ -30,7 +30,7 @@ public class Occupants : IOccupants
 		IOccupant? occupant = null;
 
 		if (playerId is { } id && !_occupantsByPlayerId.TryGetValue(id, out occupant))
-			throw new KeyNotFoundException($"Occupant with player id {playerId} not found");
+			throw new KeyNotFoundException($"Occupant with player id {playerId} not found.");
 
 		if (ReferenceEquals(occupant, Owner))
 			return;

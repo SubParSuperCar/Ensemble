@@ -15,7 +15,6 @@ public partial class GdPlayer : RefCounted
 	public string Id => _source.Id.ToString();
 	public string Name => _source.Name;
 
-	// Doubles for unix timestamps can be consumed by GDScript. We should support both C# (obviously) and GDScript.
 	public double UtcCreatedAtUnix => _source.UtcCreatedAt.ToUnixTimeSeconds();
 
 	public static GdPlayer From(IPlayer player) =>

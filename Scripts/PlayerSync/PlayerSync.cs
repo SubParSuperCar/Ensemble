@@ -20,7 +20,6 @@ public partial class PlayerSync : Node, IAutoload
 		GSessionManager.PlayerUnregistered -= OnPlayerUnregistered;
 	}
 
-	// We sync GSessionManager Players and GPlayers this way so SessionManager has zero Core deps.
 	private static void OnPlayerRegistered(int peerId, string playerId, string displayName)
 	{
 		if (peerId == GSessionManager.LocalPeerId)
@@ -28,7 +27,6 @@ public partial class PlayerSync : Node, IAutoload
 		else
 			GPlayers.Add(playerId, displayName);
 
-		// We probably don't need this logging, but it's here.
 		Log.Debug("Synced player {PlayerId} for peer {PeerId}.", playerId, peerId);
 	}
 

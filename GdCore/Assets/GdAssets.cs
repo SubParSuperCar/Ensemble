@@ -44,7 +44,6 @@ public partial class GdAssets : RefCounted
 		return result;
 	}
 
-	// We might want to make a global class for sentinel values, like None = 0, Unlimited/Default = -1, etc.
 	public GdAsset Add(int id) => Add(id, string.Empty);
 	public GdAsset Add(int id, string name) => Add(id, name, null, 0);
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, 0);

@@ -57,7 +57,7 @@ public class Instances : IInstances
 		if (!_assets.All.TryGetValue(assetId, out var asset))
 			throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Asset with id {assetId} not found")); // Should we end exception messages with a period like in some other parts of the codebase?
+				$"Asset with id {assetId} not found."));
 
 		var instance = new Instance(asset, position, rotation);
 
@@ -75,7 +75,7 @@ public class Instances : IInstances
 		if (!TryGet(instanceId, out var instance))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Instance with id {instanceId} not found"));
+				$"Instance with id {instanceId} not found."));
 
 		_instancesById.Remove(instanceId);
 		_countsByAssetId.Decrement(instance.Asset.Id);
@@ -92,7 +92,7 @@ public class Instances : IInstances
 			? (_countsByAssetId.Get(assetId), asset.MaxInstanceCount)
 			: throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Asset with id {assetId} not found"));
+				$"Asset with id {assetId} not found."));
 
 	public IReadOnlyDictionary<int, (int Count, int MaxCount)> GetAllCounts()
 	{

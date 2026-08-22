@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using CoreRoot.Api.Assets;
 using CoreRoot.Api.Plots;
@@ -42,7 +43,7 @@ public class Plots : IPlots
 	public IPlot Add(int id, int? maxOccupantCount = null, int? maxInstanceCount = null)
 	{
 		if (IsLocked)
-			throw new InvalidOperationException("Plots registry is locked");
+			throw new InvalidOperationException("Plots registry is locked.");
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
 
@@ -55,7 +56,7 @@ public class Plots : IPlots
 		if (_plotsById.ContainsKey(id))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Plot with id {id} already exists"));
+				$"Plot with id {id} already exists."));
 
 		var plot = new Plot(
 			id,
@@ -72,14 +73,14 @@ public class Plots : IPlots
 	public void SetPlot(Guid playerId, int? plotId = null, bool resolveOwnerIfNullOrRelinquishing = false)
 	{
 		if (!Occupants.TryGet(playerId, out var occupant))
-			throw new InvalidOperationException($"Occupant with player id {playerId} not found");
+			throw new InvalidOperationException($"Occupant with player id {playerId} not found.");
 
 		IPlot? plot = null;
 
 		if (plotId is { } id && !_plotsById.TryGetValue(id, out plot))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Plot with id {plotId} not found"));
+				$"Plot with id {plotId} not found."));
 
 		if (occupant.Plot is { } current)
 		{
@@ -92,10 +93,17 @@ public class Plots : IPlots
 		(plot as Plot)?.Occupants.Add(occupant, resolveOwnerIfNullOrRelinquishing);
 	}
 
-	public IOccupant GetOccupant(Guid playerId) =>
-		Occupants.TryGet(playerId, out var occupant)
-			? occupant
-			: throw new InvalidOperationException($"Occupant with player id {playerId} not found");
+	public bool TryGetOccupant(Guid playerId, [NotNullWhen(true)] out IOccupant? occupant)
+	{
+		if (Occupants.TryGet(playerId, out var found))
+		{
+			occupant = found;
+			return true;
+		}
+
+		occupant = null;
+		return false;
+	}
 
 	public void Lock() => IsLocked = true;
 

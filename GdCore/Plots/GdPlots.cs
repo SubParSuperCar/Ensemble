@@ -102,15 +102,13 @@ public partial class GdPlots : RefCounted
 
 	private bool TryGetOccupant(Guid guid, [NotNullWhen(true)] out GdOccupant? occupant)
 	{
-		try
-		{
-			occupant = GdOccupant.From(_source.GetOccupant(guid));
-			return true;
-		}
-		catch (InvalidOperationException)
+		if (!_source.TryGetOccupant(guid, out var found))
 		{
 			occupant = null;
-			return false; // Should this be here? It seems like this is the only plausible alt. execution path.
+			return false;
 		}
+
+		occupant = GdOccupant.From(found);
+		return true;
 	}
 }

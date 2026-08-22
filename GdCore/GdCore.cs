@@ -14,7 +14,6 @@ namespace Root.GdCore;
 [Autoload(Order = sbyte.MinValue + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class GdCore : Node, IAutoload
 {
-	// Provide access to the backend agnostic Core object. Required for the Persistence system later on.
 	public Core Core { get; private set; } = null!;
 
 	public static GdCore? Instance
@@ -35,7 +34,6 @@ public partial class GdCore : Node, IAutoload
 	public GdAssets Assets { get; private set; } = null!;
 	public GdPlots Plots { get; private set; } = null!;
 
-	// Should Initialize be above or below _Enter/ExitTree? Should this be normalized?
 	public void Initialize()
 	{
 		Core = new Core();

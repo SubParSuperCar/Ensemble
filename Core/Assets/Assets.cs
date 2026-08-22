@@ -20,7 +20,7 @@ public class Assets : IAssets
 		int? maxInstanceCount = null)
 	{
 		if (IsLocked)
-			throw new InvalidOperationException("Assets registry is locked");
+			throw new InvalidOperationException("Assets registry is locked.");
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
 
@@ -30,7 +30,7 @@ public class Assets : IAssets
 		if (_assetsById.ContainsKey(id))
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Asset with id {id} already exists"));
+				$"Asset with id {id} already exists."));
 
 		var asset = new Asset(id, name, properties, maxInstanceCount);
 		_assetsById.Add(id, asset);

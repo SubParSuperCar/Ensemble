@@ -15,10 +15,10 @@ public class Players : IPlayers
 
 	public IPlayer Add(Guid? id = null, string? name = null)
 	{
-		var playerId = id ?? Guid.CreateVersion7();
+		var playerId = id ?? Guid.NewGuid();
 
 		if (_playersById.ContainsKey(playerId))
-			throw new InvalidOperationException($"Player with id {playerId} already exists");
+			throw new InvalidOperationException($"Player with id {playerId} already exists.");
 
 		var player = new Player(playerId, name);
 		_playersById.Add(playerId, player);
@@ -30,7 +30,7 @@ public class Players : IPlayers
 	public void Remove(Guid id)
 	{
 		if (!_playersById.Remove(id, out var player))
-			throw new KeyNotFoundException($"Player with id {id} not found");
+			throw new KeyNotFoundException($"Player with id {id} not found.");
 
 		if (ReferenceEquals(player, Local))
 			SetLocal();
@@ -43,7 +43,7 @@ public class Players : IPlayers
 		IPlayer? player = null;
 
 		if (id is { } playerId && !_playersById.TryGetValue(playerId, out player))
-			throw new KeyNotFoundException($"Player with id {id} not found");
+			throw new KeyNotFoundException($"Player with id {id} not found.");
 
 		if (ReferenceEquals(player, Local))
 			return;

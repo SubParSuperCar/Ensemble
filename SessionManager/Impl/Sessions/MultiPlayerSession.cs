@@ -4,7 +4,6 @@ using Serilog;
 
 namespace Root.SessionManager.Impl;
 
-// The modular ISession for multi-player sessions. I love this setup. Super simple.
 public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig config) : ISession
 {
 	public SessionMode Mode => SessionMode.MultiPlayer;
@@ -37,7 +36,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 
 		if (error is not Error.Ok)
 		{
-			Failed?.Invoke(error.ToString());
+			Failed?.Invoke($"Failed to start session: {error}.");
 			return;
 		}
 
@@ -105,8 +104,6 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 		multiplayer.MultiplayerPeer?.Close();
 		multiplayer.MultiplayerPeer = null;
 
-		// Doesn't this log twice: once here and once in SessionManager's main partial?
-		Log.Warning("Connection to server failed.");
 		Failed?.Invoke("Connection failed.");
 	}
 

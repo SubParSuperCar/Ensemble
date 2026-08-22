@@ -7,7 +7,6 @@ using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator
 
 namespace Root.SessionManager.Auth;
 
-// This class might benefit from a little bit of cleanup/refinement to make it look prettier, but it's alright.
 public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 {
 	private const int NonceSize = 16;

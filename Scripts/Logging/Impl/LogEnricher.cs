@@ -7,7 +7,6 @@ namespace Root.Scripts.Logging.Impl;
 
 public sealed class LogEnricher : ILogEventEnricher
 {
-	// Add some random enrichment data to the logs. I believe there's a NuGet package for this, but whatever.
 	public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
 	{
 		logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(

@@ -15,7 +15,7 @@ public class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null)
 	public void Update(string key, CoreVariant value)
 	{
 		if (!_valuesByKey.TryGetValue(key, out var current))
-			throw new KeyNotFoundException($"Property with key {key} not found");
+			throw new KeyNotFoundException($"Property with key {key} not found.");
 
 		if (current == value)
 			return;

@@ -13,7 +13,7 @@ internal sealed class OccupantRegistry
 	public void Add(IPlayer player)
 	{
 		if (_occupantsByPlayerId.ContainsKey(player.Id))
-			throw new InvalidOperationException($"Occupant for player with id {player.Id} already exists");
+			throw new InvalidOperationException($"Occupant for player with id {player.Id} already exists.");
 
 		_occupantsByPlayerId.Add(player.Id, new Occupant(player));
 	}

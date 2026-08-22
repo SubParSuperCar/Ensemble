@@ -7,7 +7,6 @@ using Root.Ui.Impl.Messages;
 
 namespace Root.Ui.Impl.Services;
 
-// Lets resources in the UI react to Godot input and new frames, since normally only Ui.cs could (inherits Node).
 public class DispatcherService : DisposableObject, ISingletonObject, IServiceBase
 {
 	public DispatcherService()
@@ -19,7 +18,6 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 			(_, message) => Input?.Invoke(message.Value));
 	}
 
-	// Explicitly unregister even though the messenger is weak.
 	protected override void OnDispose() => WeakReferenceMessenger.Default.UnregisterAll(this);
 
 	public event Action<double>? Process;

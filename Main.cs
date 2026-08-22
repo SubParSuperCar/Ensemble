@@ -7,22 +7,19 @@ using Environment = System.Environment;
 
 namespace Root;
 
-// Loads everything. Essentially our root of everything that happens.
 public partial class Main : Node
 {
 	private static AutoloadScope RuntimeScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
 
-	// Use a getter prop.
 	public static bool IsHeadlessServer { get; } =
 		string.Equals(DisplayServer.GetName(), "headless", StringComparison.Ordinal);
 
 	public static bool AutoloadsLoaded { get; private set; }
 
-	public static event Action? AutoloadsReady; // Let outsiders be notified when all loading is done, mainly UI.
+	public static event Action? AutoloadsReady;
 
 	public override void _EnterTree()
 	{
-		// Handle exceptions.
 		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 		TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 	}
@@ -37,7 +34,6 @@ public partial class Main : Node
 	{
 		Console.WriteLine($"Starting {nameof(Main)}... (IsHeadlessServer={IsHeadlessServer})");
 
-		// If it's a client, wait a frame to let the Loading text render, even though it doesn't work for some reason.
 		if (IsHeadlessServer)
 			Load();
 		else
@@ -48,7 +44,7 @@ public partial class Main : Node
 	{
 		try
 		{
-			TinyDialogs.Beep(); // Terminal bell?
+			TinyDialogs.Beep();
 
 			TinyDialogs.NotifyPopup(
 				NotificationIconType.Error,
@@ -61,19 +57,17 @@ public partial class Main : Node
 		}
 		finally
 		{
-			// I like FailFast's default message, but we could override it.
 			Environment.FailFast(null);
 		}
 	}
 
-	// Mainly used for asking the user if they want to proceed after some semi-important system component failed.
 	public static bool AskUser(string title, string message)
 	{
 		try
 		{
 			var response = TinyDialogs.MessageBox(
 				title,
-				SanitizeMessageBoxBody(message), // Tiny dialogs requires NO quotes in the body: ", ', `
+				SanitizeMessageBoxBody(message),
 				MessageBoxDialogType.YesNo,
 				MessageBoxIconType.Error,
 				MessageBoxButton.No);
@@ -82,12 +76,13 @@ public partial class Main : Node
 		}
 		catch (Exception exception)
 		{
-			// It's possible that displaying fails if a DLL is missing.
-			// Use "show" term because that's what TinyDialogs uses.
 			Log.Error(exception, "Failed to show dialog.");
 			return false;
 		}
 	}
+
+	public static string FormatFailureMessage(string action, Exception exception, string consequence) =>
+		$"{action}:\n\n{exception}\n\nContinue anyway?\n{consequence}";
 
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
@@ -98,22 +93,24 @@ public partial class Main : Node
 				e.IsTerminating,
 				e.ExceptionObject);
 
-		// Should we call FailFast to show a notif or just drop it immediately?
+		if (e.IsTerminating)
+			FailFast();
 	}
 
 	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
 	{
 		Log.Error(e.Exception, "Unobserved task exception.");
-		e.SetObserved(); // Save the program if we can.
+		e.SetObserved();
 	}
 
 	private async Task LoadDeferredAsync()
 	{
-		// Get UI "Loading" to show if possible; doesn't really work, lol.
-		RenderingServer.ForceDraw();
-		await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+		for (var i = 0; i < 3; i++)
+		{
+			RenderingServer.ForceDraw();
+			await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+		}
 
-		// Ensure Load runs on the right Godot thread context. This might be redundant.
 		CallDeferred(nameof(Load));
 	}
 
@@ -127,25 +124,23 @@ public partial class Main : Node
 
 	private void LoadAutoloads(AutoloadDefinition[] definitions)
 	{
-		// Per = for this autoload, Net = for all autoloads.
-		var perStopwatch = new Stopwatch();
-		var netStopwatch = Stopwatch.StartNew();
+		var perAutoloadStopwatch = new Stopwatch();
+		var totalStopwatch = Stopwatch.StartNew();
 
-		// Fancy LINQ. Could specify "static," but Rider isn't telling me to.
 		var loadedCount = definitions
-			.Where(definition => (definition.Scope & RuntimeScope) is not AutoloadScope.None)
-			.OrderBy(definition => definition.Order)
-			.Count(definition => LoadAutoload(definition, perStopwatch));
+			.Where(static definition => (definition.Scope & RuntimeScope) is not AutoloadScope.None)
+			.OrderBy(static definition => definition.Order)
+			.Count(definition => LoadAutoload(definition, perAutoloadStopwatch));
 
-		netStopwatch.Stop();
+		totalStopwatch.Stop();
 		Log.Debug("Loaded {Count} autoload(s) in {ElapsedMs:F3} ms.",
-			loadedCount, netStopwatch.Elapsed.TotalMilliseconds);
+			loadedCount, totalStopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private bool LoadAutoload(AutoloadDefinition definition, Stopwatch stopwatch)
 	{
-		var stage = AutoloadLoadStage.Factory; // Track the stage in-case an error occurs.
-		Node? instance = null; // Track the instance to queue it free if it fails.
+		var stage = AutoloadLoadStage.Factory;
+		Node? instance = null;
 
 		try
 		{
@@ -178,7 +173,7 @@ public partial class Main : Node
 		}
 		catch (Exception exception)
 		{
-			instance?.QueueFree(); // Get rid of it. It's most likely dysfunctional.
+			instance?.QueueFree();
 			OnAutoloadFailed(definition, stage, exception);
 
 			return false;
@@ -190,9 +185,6 @@ public partial class Main : Node
 		AutoloadLoadStage stage,
 		Exception exception)
 	{
-		// We could consider adding a new failure policy that simply prevents all descending autoloads from loading.
-		// This could, for example, make it so if Session Manager fails, Core and other heavier-duty components stay alive.
-		// The proc. would probably not be usable though regardless.
 		Log.Error(exception, "Failed to load {Type} during {Stage} stage.", definition.Type.FullName, stage);
 
 		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
@@ -208,20 +200,21 @@ public partial class Main : Node
 			case AutoloadFailurePolicy.AskUser:
 				if (!AskUser(
 						"Autoload Init Failed",
-						$"Failed to load the {definition.Type.Name} autoload during the {stage} stage:\n\n" +
-						$"{exception}\n\nContinue anyway?\n" +
-						"Ensemble may be left in an unstable or partially initialized state."))
+						FormatFailureMessage(
+							$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
+							exception,
+							"Ensemble may be left in an unstable or partially initialized state.")))
 					FailFast();
 				break;
 
 			default:
-				throw new UnreachableException(); // This exception is probably right.
+				throw new UnreachableException();
 		}
 	}
 
 	private static string SanitizeMessageBoxBody(string message) =>
 		message
-			.Replace("\"", "", StringComparison.Ordinal) // View comment above.
+			.Replace("\"", "", StringComparison.Ordinal)
 			.Replace("'", "", StringComparison.Ordinal)
 			.Replace("`", "", StringComparison.Ordinal);
 

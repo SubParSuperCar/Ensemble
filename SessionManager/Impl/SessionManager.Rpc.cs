@@ -4,8 +4,6 @@ using Serilog;
 
 namespace Root.SessionManager;
 
-// RPC infra. Rate limited. Should be mostly fine for now for being resilient against exploiters
-// (even though the host must willingly provide PW/connect into to friends, but still).
 public partial class SessionManager
 {
 	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
@@ -39,8 +37,6 @@ public partial class SessionManager
 		}
 	}
 
-	// Tokens are essentially the price of the operation: bigger/more expensive ops should use more tokens.
-	// The host should probably never be rate limited, as seen below.
 	private void EnqueueRpc(int senderId, int tokens, Action action) => _ = EnqueueRpcAsync(senderId, tokens, action);
 
 	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action)
@@ -53,14 +49,17 @@ public partial class SessionManager
 			? null
 			: await limiter.AcquireAsync(tokens).ConfigureAwait(false);
 
-		// We might want to log when a peer hits the rate limit so the user is notified of potential spam.
-		if (lease is not { IsAcquired: false })
-			_pendingRpcs.Enqueue(action);
+		if (lease is { IsAcquired: false })
+		{
+			Log.Debug("Peer {PeerId} hit the RPC rate limit.", senderId);
+			return;
+		}
+
+		_pendingRpcs.Enqueue(action);
 	}
 
 	private static void OnPeerDisconnectedDisposeRateLimiter(long peerId)
 	{
-		// Get rid of the rate limiter object when a peer disconnects.
 		if (RateLimitersByPeerId.TryRemove((int)peerId, out var limiter))
 			limiter.Dispose();
 	}

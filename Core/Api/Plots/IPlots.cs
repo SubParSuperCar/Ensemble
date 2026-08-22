@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace CoreRoot.Api.Plots;
 
 public interface IPlots
@@ -14,7 +16,7 @@ public interface IPlots
 		int? maxInstanceCount = null);
 
 	void SetPlot(Guid playerId, int? plotId = null, bool resolveOwnerIfNullOrRelinquishing = false);
-	IOccupant GetOccupant(Guid playerId);
+	bool TryGetOccupant(Guid playerId, [NotNullWhen(true)] out IOccupant? occupant);
 
 	void Lock();
 }

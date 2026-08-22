@@ -14,14 +14,13 @@ public sealed class NetworkActionRegistry
 		if (!_entries.TryAdd(actionId, new Entry(
 				(payload, senderId) => handler.Validate(TAction.FromPayload(payload), senderId),
 				(payload, senderId) => handler.Apply(TAction.FromPayload(payload), senderId))))
-			throw new InvalidOperationException(
-				$"A handler is already registered for the '{actionId}' action."); // These messages may not be consistent.
+			throw new InvalidOperationException($"A handler for action id {actionId} already exists.");
 	}
 
 	public ActionValidation ValidateRaw(string actionId, GDictionary payload, int sourcePeerId) =>
 		_entries.TryGetValue(actionId, out var entry)
 			? entry.Validate(payload, sourcePeerId)
-			: ActionValidation.Reject("Unknown action."); // Same for this one.
+			: ActionValidation.Reject($"Action with id {actionId} not found.");
 
 	public void ApplyRaw(string actionId, GDictionary payload, int sourcePeerId)
 	{

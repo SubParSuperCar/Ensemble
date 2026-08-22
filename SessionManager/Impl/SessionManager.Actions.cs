@@ -5,7 +5,6 @@ using Serilog;
 
 namespace Root.SessionManager;
 
-// Actions infra. Looks mostly fine to me.
 public partial class SessionManager
 {
 	// ReSharper disable once MemberCanBePrivate.Global

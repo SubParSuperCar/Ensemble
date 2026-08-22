@@ -10,7 +10,6 @@ public sealed class LogSink : ILogEventSink
 {
 	public void Emit(LogEvent logEvent)
 	{
-		// Pull this variable out so the next one isn't so long.
 		var renderedMessage = logEvent.RenderMessage(CultureInfo.InvariantCulture);
 
 		var message = string.Create(
@@ -20,10 +19,9 @@ public sealed class LogSink : ILogEventSink
 		if (logEvent.Exception is not null)
 			message = string.Concat(message, Environment.NewLine, logEvent.Exception);
 
-		// Push the logs to Godot too so they are visible in Godot's output window.
 		switch (logEvent.Level)
 		{
-			case LogEventLevel.Error or LogEventLevel.Fatal: // Error/Fatal both go to PushError.
+			case LogEventLevel.Error or LogEventLevel.Fatal:
 				GD.PushError(message);
 				break;
 

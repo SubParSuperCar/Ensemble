@@ -46,7 +46,7 @@ internal sealed class HoleyArray<TValue> where TValue : class
 
 		if (TryGet(index, out _))
 			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
-				$"Item at index {index} already exists"));
+				$"Item at index {index} already exists."));
 
 		Place(item, index);
 
@@ -60,7 +60,7 @@ internal sealed class HoleyArray<TValue> where TValue : class
 	{
 		if (!TryGet(index, out var item))
 			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
-				$"Item at index {index} not found"));
+				$"Item at index {index} not found."));
 
 		_items[index] = null;
 		Count--;

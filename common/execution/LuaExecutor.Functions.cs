@@ -199,7 +199,7 @@ public partial class LuaExecutor
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
 
-		Return:
+	Return:
 		context.Return();
 		return default;
 	}
@@ -236,19 +236,19 @@ public partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
-				{
-					var childTable = luaValue.Read<LuaTable>();
-
-					if (visited.Contains(childTable))
-						Log.Information("{Path} = <already visited>", childPath);
-					else
 					{
-						Log.Information("{Path} = <table>", childPath);
-						DumpTable(childTable, childPath, visited);
-					}
+						var childTable = luaValue.Read<LuaTable>();
 
-					break;
-				}
+						if (visited.Contains(childTable))
+							Log.Information("{Path} = <already visited>", childPath);
+						else
+						{
+							Log.Information("{Path} = <table>", childPath);
+							DumpTable(childTable, childPath, visited);
+						}
+
+						break;
+					}
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -280,8 +280,8 @@ public partial class LuaExecutor
 		Log.Information("Contents of InputMap:");
 
 		foreach (var action in InputMap.GetActions()
-			         .Select(a => a.ToString())
-			         .Order(StringComparer.Ordinal))
+					 .Select(a => a.ToString())
+					 .Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
 

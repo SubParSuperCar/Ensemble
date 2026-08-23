@@ -1,4 +1,4 @@
-<Project Sdk="Godot.NET.Sdk/4.7.1">
+<Project Sdk="Godot.NET.Sdk/4.7.2">
   <PropertyGroup>
     <AssemblyName>Game</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
@@ -108,14 +108,11 @@
     <ItemGroup>
       <BuildInfoLines Include="public static class BuildInfo"/>
       <BuildInfoLines Include="{"/>
-      <BuildInfoLines Include="&#x9;public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
+      <BuildInfoLines Include="	public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
       <BuildInfoLines Include="}"/>
     </ItemGroup>
 
-    <WriteLinesToFile
-      File="$(IntermediateOutputPath)BuildInfo.g.cs"
-      Lines="@(BuildInfoLines)"
-      Overwrite="true"/>
+    <WriteLinesToFile File="$(IntermediateOutputPath)BuildInfo.g.cs" Lines="@(BuildInfoLines)" Overwrite="true"/>
 
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
@@ -123,20 +120,14 @@
   </Target>
 
   <ItemGroup>
-    <None
-      Include="$(MSBuildThisFileDirectory)LICENSE.md"
-      CopyToOutputDirectory="PreserveNewest"
-      CopyToPublishDirectory="PreserveNewest"/>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"/>
   </ItemGroup>
 
   <Target Name="CreateExportDirs" BeforeTargets="Build">
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
 
-    <WriteLinesToFile
-      File="$(MSBuildProjectDirectory)/bin/.gdignore"
-      Lines=""
-      Overwrite="false"/>
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)/bin/.gdignore" Lines="" Overwrite="false"/>
   </Target>
 
   <ItemGroup>

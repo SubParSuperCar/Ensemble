@@ -7,7 +7,8 @@
     xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.MainView"
-    x:DataType="vm:MainViewModel">
+    x:DataType="vm:MainViewModel"
+    TextOptions.TextRenderingMode="Antialias">
 
     <Grid>
         <TransitioningContentControl Content="{Binding Main}">

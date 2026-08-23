@@ -116,7 +116,11 @@ public partial class Main : Node
 
 	private void Load()
 	{
+		Console.WriteLine($"Starting {nameof(Main)} loading sequence...");
+
 		LoadAutoloads(AutoloadRegistry.GetAll());
+
+		Log.Debug("Finished {Class} loading sequence. Emitting {Event}.", nameof(Main), nameof(AutoloadsReady));
 
 		AutoloadsLoaded = true;
 		AutoloadsReady?.Invoke();

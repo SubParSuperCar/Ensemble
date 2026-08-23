@@ -111,8 +111,8 @@ public partial class Ui : AvaloniaControl
 			Control = locator.Build(viewModel);
 
 			stopwatch.Stop();
-			Log.Debug("Swapped {Class} to real UI in {ElapsedMs:F3} ms.", nameof(Ui),
-				stopwatch.Elapsed.TotalMilliseconds);
+			Log.Debug("Swapped {Class} to real UI in {ElapsedMs:F3} ms.",
+				nameof(Ui), stopwatch.Elapsed.TotalMilliseconds);
 		}
 		catch (Exception exception)
 		{

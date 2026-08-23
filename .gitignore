@@ -1,5 +1,16 @@
-bin/
-obj/
+**/bin/**
+**/obj/**
 
-.godot/
-.idea/
+!**/addons/**/bin/**
+!**/addons/**/obj/**
+
+/.godot
+# *.import
+# *.uid
+# export_presets.cfg
+
+/.idea
+/.vscode
+
+*.DotSettings.user
+*.xsd

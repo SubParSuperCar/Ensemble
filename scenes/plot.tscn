@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://bctdhk6awxx0r"]
+
+[ext_resource type="Script" uid="uid://72uuy3654bdf" path="res://scripts/plot/PlotHandle.cs" id="1_syd1t"]
+[ext_resource type="Texture2D" uid="uid://d3grw53v0y6b8" path="res://assets/images/cartesian_grid.png" id="2_cyvgl"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f03gw"]
+size = Vector3(32, 32, 32)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sbat0"]
+size = Vector3(32, 0.001, 32)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_syd1t"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.79999995, 1, 0, 1)
+albedo_texture = ExtResource("2_cyvgl")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
+texture_filter = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_72cjw"]
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_f03gw"]
+material = SubResource("StandardMaterial3D_72cjw")
+size = Vector2(32, 32)
+
+[node name="Plot" type="Node3D" unique_id=1176841675]
+script = ExtResource("1_syd1t")
+Id = null
+MaxOccupantCount = null
+MaxTotalInstanceCount = null
+
+[node name="Boundary" type="Area3D" parent="." unique_id=989283433]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)
+monitoring = false
+
+[node name="Definition" type="CollisionShape3D" parent="Boundary" unique_id=80230571]
+shape = SubResource("BoxShape3D_f03gw")
+
+[node name="Instances" type="Node3D" parent="." unique_id=814835998]
+
+[node name="Static" type="Node3D" parent="Instances" unique_id=703515400]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)
+
+[node name="Dynamic" type="Node3D" parent="Instances" unique_id=658314032]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)
+top_level = true
+
+[node name="Base" type="StaticBody3D" parent="." unique_id=1335038975]
+
+[node name="Collider" type="CollisionShape3D" parent="Base" unique_id=1890228800]
+shape = SubResource("BoxShape3D_sbat0")
+
+[node name="Mesh" type="MeshInstance3D" parent="Base" unique_id=890436308]
+material_overlay = SubResource("StandardMaterial3D_syd1t")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_f03gw")
+
+[node name="Night Light" type="AreaLight3D" parent="." unique_id=1182533585]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 2, 0)
+light_intensity_lumens = 37500.0
+light_bake_mode = 1
+area_range = 3.0
+area_normalize_energy = false
+area_size = Vector2(32, 32)

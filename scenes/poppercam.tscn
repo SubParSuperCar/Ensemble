@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://y6i76a7yj2rd"]
+
+[ext_resource type="Script" uid="uid://bt86v8caap1lv" path="res://scripts/camera/PopperCam.cs" id="1_375tr"]
+
+[node name="Boom" type="SpringArm3D" unique_id=920130265]
+transform = Transform3D(-1, 3.345525e-08, -8.076811e-08, 0, 0.9238795, 0.38268346, 8.742278e-08, 0.38268346, -0.9238795, 0, 0, 0)
+top_level = true
+spring_length = 4.0
+script = ExtResource("1_375tr")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=229170312]
+fov = 90.0

@@ -1,117 +1,145 @@
 ﻿<Project Sdk="Godot.NET.Sdk/4.7.2">
 
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>14</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <AssemblyName>Game</AssemblyName>
+    <RootNamespace>Root</RootNamespace>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputType>Exe</OutputType>
+    <UseAppHost>false</UseAppHost>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
+    <OptimizationPreference>Speed</OptimizationPreference>
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimMode>full</TrimMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <LaunchScriptExt>cmd</LaunchScriptExt>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+    <LaunchScriptExt>sh</LaunchScriptExt>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <TrimmerRootAssembly Include="$(TargetName)"/>
+    <TrimmerRootAssembly Include="GodotSharp"/>
+    <TrimmerRootDescriptor Include="TrimmerRoots.xml"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Themes.Simple" Version="12.*"/>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
+    <PackageReference Include="DiscordRichPresence" Version="1.6.1.*"/>
+    <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
+    <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
+    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.*"/>
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.177">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.*"/>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.*"/>
+    <PackageReference Include="Serilog" Version="4.4.0"/>
+    <PackageReference Include="Serilog.Expressions" Version="5.0.0"/>
+    <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
+    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
+    <PackageReference Include="ServiceScan.SourceGenerator" Version="3.2.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Threading.RateLimiting" Version="10.*"/>
+    <PackageReference Include="TinyDialogsNet" Version="2.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="AutoloadGenerator\AutoloadGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="Core\Core.csproj"/>
+    <ProjectReference Include="Estragonia\Estragonia.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Avalonia.Skia">
+      <HintPath>Estragonia\Lib\Avalonia.Skia.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="GenerateBuildInfo" BeforeTargets="BeforeCompile">
     <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <LangVersion>14</LangVersion>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <InvariantGlobalization>true</InvariantGlobalization>
-        <AssemblyName>Game</AssemblyName>
-        <RootNamespace>Root</RootNamespace>
-        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-        <OutputType>Exe</OutputType>
-        <UseAppHost>false</UseAppHost>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
-        <DefineConstants>$(DefineConstants);ENSEMBLE_DEBUG</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-        <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
-        <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
-        <OptimizationPreference>Speed</OptimizationPreference>
-        <PublishAot>true</PublishAot>
-        <PublishTrimmed>true</PublishTrimmed>
-        <TrimMode>full</TrimMode>
+      <BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC"))</BuildTime>
     </PropertyGroup>
 
     <ItemGroup>
-        <TrimmerRootAssembly Include="$(TargetName)"/>
-        <TrimmerRootAssembly Include="GodotSharp"/>
-        <TrimmerRootDescriptor Include="TrimmerRoots.xml"/>
+      <BuildInfoLines Include="public static class BuildInfo"/>
+      <BuildInfoLines Include="{"/>
+      <BuildInfoLines Include="	public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
+      <BuildInfoLines Include="}"/>
     </ItemGroup>
+
+    <WriteLinesToFile File="$(IntermediateOutputPath)BuildInfo.g.cs" Lines="@(BuildInfoLines)" Overwrite="true"/>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia.Themes.Simple" Version="12.*"/>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
-        <PackageReference Include="DiscordRichPresence" Version="1.6.1.*"/>
-        <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
-        <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
-        <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.*"/>
-        <PackageReference Include="Meziantou.Analyzer" Version="3.0.177">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.*"/>
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="10.*"/>
-        <PackageReference Include="Serilog" Version="4.4.0"/>
-        <PackageReference Include="Serilog.Expressions" Version="5.0.0"/>
-        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
-        <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
-        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
-        <PackageReference Include="ServiceScan.SourceGenerator" Version="3.2.2">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="System.Threading.RateLimiting" Version="10.*"/>
-        <PackageReference Include="TinyDialogsNet" Version="2.0.0"/>
+      <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
     </ItemGroup>
+  </Target>
 
-    <ItemGroup>
-        <ProjectReference Include="AutoloadGenerator\AutoloadGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-        <ProjectReference Include="Core\Core.csproj"/>
-        <ProjectReference Include="Estragonia\Estragonia.csproj"/>
-    </ItemGroup>
+  <PropertyGroup>
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <Reference Include="Avalonia.Skia">
-            <HintPath>Estragonia\Lib\Avalonia.Skia.dll</HintPath>
-            <Private>true</Private>
-        </Reference>
-    </ItemGroup>
+  <Target Name="MakeExportDirs" BeforeTargets="Build">
+    <MakeDir Directories="$(MSBuildProjectDirectory)\bin\linux"/>
+    <MakeDir Directories="$(MSBuildProjectDirectory)\bin\windows"/>
 
-    <Target Name="GenerateBuildInfo" BeforeTargets="BeforeCompile">
-        <PropertyGroup>
-            <BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC"))</BuildTime>
-        </PropertyGroup>
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)\bin\.gdignore" Lines="" Overwrite="false"/>
+  </Target>
 
-        <ItemGroup>
-            <BuildInfoLines Include="public static class BuildInfo"/>
-            <BuildInfoLines Include="{"/>
-            <BuildInfoLines Include="	public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
-            <BuildInfoLines Include="}"/>
-        </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"/>
+  </ItemGroup>
 
-        <WriteLinesToFile File="$(IntermediateOutputPath)BuildInfo.g.cs" Lines="@(BuildInfoLines)" Overwrite="true"/>
+  <ItemGroup>
+    <Content Include="**\*.gd;**\*.gdshader" Exclude=".godot/**">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Directory.Build.props"/>
+    <Content Include="Properties\**" Exclude="**\*.gdignore"/>
+  </ItemGroup>
 
-        <ItemGroup>
-            <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
-        </ItemGroup>
-    </Target>
+  <ItemGroup>
+    <Compile Remove="AutoloadGenerator\**"/>
+    <Compile Remove="Core\**"/>
+    <Compile Remove="Estragonia\**"/>
+  </ItemGroup>
 
-    <PropertyGroup>
-        <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
-    </PropertyGroup>
-
-    <ItemGroup>
-        <Compile Remove="AutoloadGenerator\**"/>
-        <Compile Remove="Core\**"/>
-        <Compile Remove="Estragonia\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Remove="AutoloadGenerator\**"/>
-        <EmbeddedResource Remove="Core\**"/>
-        <EmbeddedResource Remove="Estragonia\**"/>
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="AutoloadGenerator\**"/>
+    <EmbeddedResource Remove="Core\**"/>
+    <EmbeddedResource Remove="Estragonia\**"/>
+  </ItemGroup>
 
 </Project>

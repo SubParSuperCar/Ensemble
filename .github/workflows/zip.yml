@@ -1,0 +1,45 @@
+name: Create Release with Deterministic Source Archive and Its Digest
+
+on:
+  push:
+    branches:
+      - main
+      - test
+
+permissions:
+  contents: write
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - shell: bash
+        run: |
+          set -euo pipefail
+          mkdir src
+          rsync -a . src/ \
+            --exclude=.git \
+            --exclude=src
+
+      - uses: timo-reymann/deterministic-zip-gh-action@v1
+        with:
+          source: src
+          target: src.zip
+          args: -i
+
+      - run: sha256sum src.zip > src.zip.sha256
+
+      - shell: bash
+        run: |
+          set -euo pipefail
+          TAG="src-${{ github.run_id }}"
+          gh release create "$TAG" \
+            --target "${{ github.sha }}" \
+            --prerelease \
+            --generate-notes \
+            src.zip \
+            src.zip.sha256
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

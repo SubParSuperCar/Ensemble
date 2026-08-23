@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://fd8y1hu0pera"]
+
+[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_8fm6w"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8fm6w"]
+points = PackedVector3Array(0.25, 0.25, 0.25, 0.25, 0.25, -0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, -0.25, -0.25, -0.25)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_gee14"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8fm6w"]
+shading_mode = 0
+albedo_texture = SubResource("PlaceholderTexture2D_gee14")
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="PrismMesh" id="PrismMesh_7fd65"]
+material = SubResource("StandardMaterial3D_8fm6w")
+left_to_right = 1.0
+size = Vector3(0.5, 0.5, 0.5)
+
+[node name="Wedge" type="RigidBody3D" unique_id=726135581]
+script = ExtResource("1_8fm6w")
+AssetId = 4
+AssetName = &"Wedge"
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF"
+})
+MaxInstanceCount = 1250
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=116151683]
+shape = SubResource("ConvexPolygonShape3D_8fm6w")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
+mesh = SubResource("PrismMesh_7fd65")

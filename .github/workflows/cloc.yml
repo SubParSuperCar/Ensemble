@@ -1,0 +1,25 @@
+name: Upload Source Lines of Code
+
+on:
+  push:
+    branches:
+      - main
+      - test
+
+permissions:
+  contents: read
+
+jobs:
+  job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: djdefi/cloc-action@6
+        with:
+          options: --exclude-lang=YAML --md --report-file=cloc.md
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cloc
+          path: cloc.md

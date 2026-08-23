@@ -43,8 +43,9 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
         <PackageReference Include="DiscordRichPresence" Version="1.6.1.*"/>
         <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
+        <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
         <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.*"/>
-        <PackageReference Include="Meziantou.Analyzer" Version="3.0.*">
+        <PackageReference Include="Meziantou.Analyzer" Version="3.0.177">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -76,6 +77,29 @@
             <Private>true</Private>
         </Reference>
     </ItemGroup>
+
+    <Target Name="GenerateBuildInfo" BeforeTargets="BeforeCompile">
+        <PropertyGroup>
+            <BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC"))</BuildTime>
+        </PropertyGroup>
+
+        <ItemGroup>
+            <BuildInfoLines Include="public static class BuildInfo"/>
+            <BuildInfoLines Include="{"/>
+            <BuildInfoLines Include="	public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
+            <BuildInfoLines Include="}"/>
+        </ItemGroup>
+
+        <WriteLinesToFile File="$(IntermediateOutputPath)BuildInfo.g.cs" Lines="@(BuildInfoLines)" Overwrite="true"/>
+
+        <ItemGroup>
+            <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
+        </ItemGroup>
+    </Target>
+
+    <PropertyGroup>
+        <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+    </PropertyGroup>
 
     <ItemGroup>
         <Compile Remove="AutoloadGenerator\**"/>

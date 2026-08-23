@@ -27,6 +27,7 @@
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
         <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
+        <OptimizationPreference>Speed</OptimizationPreference>
         <PublishAot>true</PublishAot>
         <PublishTrimmed>true</PublishTrimmed>
         <TrimMode>full</TrimMode>

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using CommunityToolkit.Mvvm.Messaging;
 using Estragonia;
 using Godot;
@@ -11,6 +12,8 @@ using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 using Root.Ui.Impl.ViewModels;
 using Serilog;
+using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
+using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
 namespace Root.Ui;
 
@@ -37,7 +40,15 @@ public partial class Ui : AvaloniaControl
 		{
 			GetWindow().SetImeActive(true);
 
-			Control = new TextBlock { Text = "Loading\u2026" };
+			Control = new TextBlock
+			{
+				Text = "Loading Autoloads\u2026",
+				FontSize = 48,
+				HorizontalAlignment = HorizontalAlignment.Center,
+				VerticalAlignment = VerticalAlignment.Center
+			};
+			TextOptions.SetTextRenderingMode(Control, TextRenderingMode.Antialias);
+
 			base._Ready();
 
 			stopwatch.Stop();

@@ -9,6 +9,6 @@
     x:DataType="vm:MainViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    Hello, World!
+    <TextBlock Text="Hello, World!&#x0a;Welcome to Ensemble!" ToolTip.Tip="This is a tooltip." />
 
 </UserControl>

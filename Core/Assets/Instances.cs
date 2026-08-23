@@ -18,7 +18,7 @@ public class Instances : IInstances
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
 		_assets = assets;
-		MaxCount = maxCount ?? -1;
+		MaxCount = maxCount ?? Unlimited;
 
 		_instancesById.Added += (id, instance) =>
 		{
@@ -87,16 +87,16 @@ public class Instances : IInstances
 			Remove(instance.Id);
 	}
 
-	public (int Count, int MaxCount) GetCount(int assetId) =>
+	public Quota GetCount(int assetId) =>
 		_assets.All.TryGetValue(assetId, out var asset)
 			? (_countsByAssetId.Get(assetId), asset.MaxInstanceCount)
 			: throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Asset with id {assetId} not found."));
 
-	public IReadOnlyDictionary<int, (int Count, int MaxCount)> GetAllCounts()
+	public IReadOnlyDictionary<int, Quota> GetAllCounts()
 	{
-		var counts = new Dictionary<int, (int Count, int MaxCount)>();
+		var counts = new Dictionary<int, Quota>();
 
 		foreach (var assetId in _assets.All.Keys)
 			counts[assetId] = GetCount(assetId);

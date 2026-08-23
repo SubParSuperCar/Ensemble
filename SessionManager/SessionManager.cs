@@ -92,19 +92,19 @@ public partial class SessionManager : Node
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
-	public void HostMultiPlayer(int port, string password) => HostMultiPlayer(port, password, -1);
+	public void HostMultiPlayer(int port, string password) => HostMultiPlayer(port, password, Unlimited);
 
 	public void HostMultiPlayer(int port, string password, int maxPlayers) =>
 		HostMultiPlayer(port, password, string.Empty, maxPlayers);
 
 	public void HostMultiPlayer(int port, string password, string displayName) =>
-		HostMultiPlayer(port, password, displayName, -1);
+		HostMultiPlayer(port, password, displayName, Unlimited);
 
 	public void HostMultiPlayer(int port, string password, string displayName, int maxPlayers)
 	{
 		Log.Debug("Hosting multiplayer session... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
 			port,
-			maxPlayers is -1 ? "Unlimited" : maxPlayers.ToString(CultureInfo.InvariantCulture),
+			maxPlayers is Unlimited ? "Unlimited" : maxPlayers.ToString(CultureInfo.InvariantCulture),
 			!string.IsNullOrEmpty(password));
 
 		StopSession();
@@ -115,7 +115,7 @@ public partial class SessionManager : Node
 			new HostConfig(
 				port,
 				Authenticators.Password(password),
-				maxPlayers is -1 ? null : maxPlayers));
+				maxPlayers is Unlimited ? null : maxPlayers));
 
 		StartSession();
 	}

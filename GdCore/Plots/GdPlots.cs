@@ -44,16 +44,16 @@ public partial class GdPlots : RefCounted
 		return result;
 	}
 
-	public GdPlot Add(int id) => Add(id, 0);
-	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, 0);
+	public GdPlot Add(int id) => Add(id, Default);
+	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, Default);
 
 	public GdPlot Add(int id, int maxOccupantCount, int maxInstanceCount) =>
 		GdPlot.From(_source.Add(
 			id,
-			maxOccupantCount is 0 ? null : maxOccupantCount,
-			maxInstanceCount is 0 ? null : maxInstanceCount));
+			maxOccupantCount is Default ? null : maxOccupantCount,
+			maxInstanceCount is Default ? null : maxInstanceCount));
 
-	public void SetPlot(string playerId) => SetPlot(playerId, 0);
+	public void SetPlot(string playerId) => SetPlot(playerId, None);
 	public void SetPlot(string playerId, int plotId) => SetPlot(playerId, plotId, true);
 
 	public void SetPlot(string playerId, int plotId, bool resolveOwnerIfNullOrRelinquishing) =>
@@ -82,7 +82,7 @@ public partial class GdPlots : RefCounted
 			}
 		}
 
-		_source.SetPlot(guid, plotId is 0 ? null : plotId, resolveOwnerIfNullOrRelinquishing);
+		_source.SetPlot(guid, plotId is None ? null : plotId, resolveOwnerIfNullOrRelinquishing);
 	}
 
 	public GdOccupant? GetOccupant(string playerId) =>

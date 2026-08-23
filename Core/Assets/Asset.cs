@@ -15,7 +15,7 @@ public class Asset(
 	public int Id { get; } = id;
 	public string Name { get; } = name ?? string.Create(CultureInfo.InvariantCulture, $"Asset {id}");
 
-	public int MaxInstanceCount { get; } = maxInstanceCount ?? -1;
+	public int MaxInstanceCount { get; } = maxInstanceCount ?? Unlimited;
 
 	public IReadOnlyDictionary<string, CoreVariant> Properties => _properties.All;
 

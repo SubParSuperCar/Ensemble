@@ -13,7 +13,7 @@ public class Occupants : IOccupants
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
 		_plot = plot;
-		MaxCount = maxCount ?? -1;
+		MaxCount = maxCount ?? Unlimited;
 	}
 
 	public IReadOnlyDictionary<Guid, IOccupant> All => _occupantsByPlayerId;

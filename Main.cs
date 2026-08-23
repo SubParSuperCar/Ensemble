@@ -61,13 +61,13 @@ public partial class Main : Node
 		}
 	}
 
-	public static bool AskUser(string title, string message)
+	public static bool AskUser(string topic, string prompt)
 	{
 		try
 		{
 			var response = TinyDialogs.MessageBox(
-				title,
-				SanitizeMessageBoxBody(message),
+				topic,
+				SanitizeMessageBoxBody(prompt),
 				MessageBoxDialogType.YesNo,
 				MessageBoxIconType.Error,
 				MessageBoxButton.No);

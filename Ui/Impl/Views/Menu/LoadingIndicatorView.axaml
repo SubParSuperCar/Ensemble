@@ -1,0 +1,26 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:li="using:LoadingIndicators.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.LoadingIndicatorView"
+    x:DataType="vm:LoadingIndicatorViewModel">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+        <li:LoadingIndicator
+            Mode="ThreeDots"
+            Foreground="OrangeRed"
+            MaxWidth="256" MaxHeight="256"
+            SpeedRatio="3" />
+
+        <TextBlock
+            Text="Loading&#x2026;"
+            HorizontalAlignment="Center"
+            FontSize="20" FontWeight="Medium"
+            FontStyle="Italic" />
+    </StackPanel>
+
+</UserControl>

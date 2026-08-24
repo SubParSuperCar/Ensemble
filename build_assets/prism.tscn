@@ -19,6 +19,12 @@ size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Wedge" type="RigidBody3D" unique_id=726135581]
 script = ExtResource("1_s1ixw")
+AssetId = 3
+AssetName = &"Prism"
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF"
+})
+MaxInstanceCount = 1250
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=841263352]
 shape = SubResource("ConvexPolygonShape3D_s1ixw")

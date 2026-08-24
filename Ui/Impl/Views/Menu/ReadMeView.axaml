@@ -1,0 +1,31 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="using:Markdown.Avalonia"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.ReadMeView"
+    x:DataType="vm:ReadMeViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <Grid Margin="4">
+        <Grid
+            ColumnDefinitions="1*,3*,1*"
+            VerticalAlignment="Center">
+
+            <md:MarkdownScrollViewer
+                Grid.Column="1"
+                Source="https://raw.githubusercontent.com/SubParSuperCar/Ensemble/refs/heads/main/.github/README.md" />
+        </Grid>
+
+        <Button
+            Content="&lt;- Back"
+            Command="{Binding GoBackCommand}"
+            ToolTip.Tip="Go back (Bound to Backspace)"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+            FontSize="24" />
+    </Grid>
+
+</UserControl>

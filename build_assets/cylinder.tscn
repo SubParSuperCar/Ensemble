@@ -24,6 +24,12 @@ rings = 0
 
 [node name="Cylinder" type="RigidBody3D" unique_id=726135581]
 script = ExtResource("1_l6qjb")
+AssetId = 4
+AssetName = &"Cylinder"
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF"
+})
+MaxInstanceCount = 750
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=262735334]
 shape = SubResource("CylinderShape3D_gflwd")

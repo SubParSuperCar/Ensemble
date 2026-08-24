@@ -1,0 +1,55 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.GameView"
+    x:DataType="vm:GameViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <Grid>
+        <TransitioningContentControl
+            Content="{Binding PlayerList}"
+            HorizontalAlignment="Right" VerticalAlignment="Top"
+            MinWidth="256" MaxWidth="512" MaxHeight="256"
+            Margin="0,36,0,0"
+            ClipToBounds="False">
+
+            <TransitioningContentControl.PageTransition>
+                <CompositePageTransition>
+                    <CrossFade Duration="{StaticResource TransitionDuration}" />
+                    <Rotate3DTransition Duration="{StaticResource TransitionDuration}" Orientation="Vertical" />
+                </CompositePageTransition>
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
+
+        <ContentControl
+            Content="{Binding Clock}"
+            HorizontalAlignment="Center" VerticalAlignment="Top" />
+
+        <ContentControl
+            Content="{Binding PlotSelector}"
+            HorizontalAlignment="Left" VerticalAlignment="Center"
+            MinWidth="256" MaxWidth="384" MaxHeight="256" />
+
+        <!--<TransitioningContentControl
+            Content="{Binding ToolBar}"
+            HorizontalAlignment="Center" VerticalAlignment="Bottom"
+            Margin="0,0,0,4">
+
+            <TransitioningContentControl.PageTransition>
+                <CrossFade Duration="{StaticResource TransitionDuration}" />
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>-->
+
+        <Button
+            Content="&lt;- Menu (2x)"
+            DoubleTapped="Button_DoubleTapped"
+            ToolTip.Tip="Stops the current session. (Double-click)"
+            Background="{DynamicResource TranslucentBackgroundBrush}"
+            HorizontalAlignment="Left" VerticalAlignment="Top" />
+    </Grid>
+
+</UserControl>

@@ -43,7 +43,7 @@ size = Vector3(0.2, 0.2, 0.1)
 script = ExtResource("1_3vyb7")
 CharacterControllerScript = ExtResource("2_qhqgy")
 CameraScene = ExtResource("3_dqkch")
-SpawnLocation = Vector3(0, 2, 0)
+SpawnLocation = Vector3(0, 4, 0)
 
 [node name="Character" type="CharacterBody3D" parent="." unique_id=989463391]
 collision_layer = 2

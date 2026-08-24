@@ -1,0 +1,68 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:li="using:LoadingIndicators.Avalonia"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.WebBrowserView"
+    x:DataType="vm:WebBrowserViewModel"
+    x:Name="Root"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <Grid>
+        <TextBlock
+            Text="The Web View is not rendering.&#x0a;Do you have WebView2, WebKitGTK, or WPE WebKit?"
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            FontSize="32" FontWeight="SemiBold"
+            TextAlignment="Center" />
+
+        <NativeWebView
+            Name="WebView"
+            Source="https://www.google.com/"
+            NavigationStarted="WebView_OnNavigationStarted"
+            NavigationCompleted="WebView_OnNavigationCompleted"
+            EnvironmentRequested="WebView_OnEnvironmentRequested"
+            AdapterCreated="WebView_OnAdapterCreated"
+            AdapterDestroyed="WebView_OnAdapterDestroyed" />
+
+        <StackPanel
+            Orientation="Horizontal" Spacing="2"
+            HorizontalAlignment="Center" VerticalAlignment="Top"
+            Margin="2">
+
+            <Button Content="&lt;-" Command="{Binding #Root.GoBackCommand}" ToolTip.Tip="Go back (Undo)" />
+            <Button Content="-&gt;" Command="{Binding #Root.GoForwardCommand}" ToolTip.Tip="Go forward (Redo)" />
+
+            <Button
+                Command="{Binding #Root.RefreshOrStopCommand}"
+                ToolTip.Tip="Refresh/cancel"
+                Width="32" Height="32">
+
+                <li:LoadingIndicator
+                    Name="LoadingIndicator"
+                    Mode="FlipPlane"
+                    Foreground="LimeGreen" />
+            </Button>
+
+            <TextBox
+                Name="UrlBox"
+                Text="{Binding #WebView.Source, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
+                PlaceholderText="Type URI here &amp; press Enter to navigate"
+                ToolTip.Tip="The current URI. Type and press Enter to navigate.&#x0a;Use the 'file://' scheme to browse files."
+                MinWidth="256" MaxWidth="512"
+                KeyDown="UrlBox_OnKeyDown" />
+        </StackPanel>
+
+        <Button
+            Content="&lt;- Back"
+            Command="{Binding GoBackCommand}"
+            ToolTip.Tip="Go back (Bound to Backspace)"
+            Background="{DynamicResource TranslucentBackgroundBrush}"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+            Margin="4"
+            FontSize="24" />
+    </Grid>
+
+</UserControl>

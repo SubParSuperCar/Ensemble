@@ -21,8 +21,6 @@ public partial class WorldManager : Node, IAutoload
 
 		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
-
-		GSessionManager.StartSinglePlayer();
 	}
 
 	public override void _ExitTree()

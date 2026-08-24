@@ -7,9 +7,9 @@ namespace Root.Scripts.Plots;
 [GlobalClass]
 public partial class PlotHandle : Node3D
 {
-	private Node3D _staticInstances = null!;
 	private Transform3D? _originTransform;
 	private GdPlot _plot = null!;
+	private Node3D _staticInstances = null!;
 
 	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
 

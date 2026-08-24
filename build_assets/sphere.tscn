@@ -22,6 +22,12 @@ rings = 16
 
 [node name="Sphere" type="RigidBody3D" unique_id=726135581]
 script = ExtResource("1_hyqjw")
+AssetId = 1
+AssetName = &"Sphere"
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF"
+})
+MaxInstanceCount = 500
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=237803691]
 shape = SubResource("SphereShape3D_irkkq")

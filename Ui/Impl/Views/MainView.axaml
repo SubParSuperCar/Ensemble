@@ -4,11 +4,73 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.MainView"
     x:DataType="vm:MainViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <TextBlock Text="Hello, World!&#x0a;Welcome to Ensemble!" ToolTip.Tip="This is a tooltip." />
+    <Grid>
+        <TransitioningContentControl Content="{Binding Main}">
+            <TransitioningContentControl.PageTransition>
+                <CrossFade Duration="{StaticResource TransitionDuration}" />
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
+
+        <ContentControl
+            Content="{Binding Stats}"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            Margin="0,30,0,0"
+            IsHitTestVisible="False" />
+
+        <Grid
+            ColumnDefinitions="5*,14*,5*"
+            RowDefinitions="5*,14*,5*">
+
+            <TransitioningContentControl
+                Grid.Column="1" Grid.Row="1"
+                Content="{Binding Console}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                ClipToBounds="False">
+
+                <TransitioningContentControl.Effect>
+                    <DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="24" />
+                </TransitioningContentControl.Effect>
+
+                <TransitioningContentControl.PageTransition>
+                    <CompositePageTransition>
+                        <CrossFade Duration="{StaticResource TransitionDuration}" />
+                        <Rotate3DTransition Duration="{StaticResource TransitionDuration}" Orientation="Vertical" />
+                    </CompositePageTransition>
+                </TransitioningContentControl.PageTransition>
+
+            </TransitioningContentControl>
+        </Grid>
+
+        <Border Effect="{DynamicResource StrokeEffect}">
+            <li:LoadingIndicator
+                Mode="ArcsRing"
+                Foreground="GreenYellow"
+                HorizontalAlignment="Right" VerticalAlignment="Center"
+                Width="64" Height="64"
+                SpeedRatio="2" />
+        </Border>
+
+        <Button
+            Content="Toggle Console (` / F9)"
+            Command="{Binding ToggleConsoleCommand}"
+            ToolTip.Tip="Toggles the console UI. (Bound to ` and F9)"
+            Background="{DynamicResource TranslucentBackgroundBrush}"
+            HorizontalAlignment="Right" VerticalAlignment="Top" />
+
+        <TextBlock
+            Text="&quot;Ensemble&quot; (In-Dev. Build)&#x0a;By: @SubParSuperCar &amp; Contributors"
+            Background="Black" Foreground="Red"
+            HorizontalAlignment="Right" VerticalAlignment="Bottom"
+            Padding="2"
+            FontSize="14"
+            IsHitTestVisible="False"
+            TextOptions.TextRenderingMode="Alias" />
+    </Grid>
 
 </UserControl>

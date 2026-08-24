@@ -1,0 +1,44 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.PlayerListView"
+    x:DataType="vm:PlayerListViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <Border
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        Padding="2">
+
+        <Grid RowDefinitions="Auto,*">
+            <Grid ColumnDefinitions="*,*,Auto">
+                <TextBlock Text="Name&#x0a; &#x2198;" />
+                <TextBlock Grid.Column="1" Text="Player List" />
+                <TextBlock Grid.Column="2" Text="Peer ID&#x0a;&#x2193; " TextAlignment="Right" />
+            </Grid>
+
+            <ListBox
+                Grid.Row="1"
+                ItemsSource="{Binding Players}"
+                SelectedItem="{Binding SelectedPlayer}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            ColumnDefinitions="*,16,Auto"
+                            ToolTip.Tip="{Binding Id}">
+
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="2" Text="{Binding PeerId, StringFormat='{}{0:000}'}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Grid>
+    </Border>
+
+</UserControl>

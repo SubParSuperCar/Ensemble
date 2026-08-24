@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
+using AvaloniaEdit.Editing;
 
 namespace Root.Common.Input;
 
@@ -18,6 +19,6 @@ public static class InputSink
 	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)
 	{
 		if (value.Args is FocusChangedEventArgs focus)
-			IsSunk = focus.NewFocusedElement is TextBox;
+			IsSunk = focus.NewFocusedElement is TextBox or TextArea or NativeWebView;
 	}
 }

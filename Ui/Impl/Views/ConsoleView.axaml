@@ -1,0 +1,125 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    xmlns:ae="using:AvaloniaEdit"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.ConsoleView"
+    x:DataType="vm:ConsoleViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <UserControl.Styles>
+        <Style Selector="SelectableTextBlock#Output">
+            <Style.Animations>
+                <Animation
+                    Duration="{StaticResource TransitionDuration}"
+                    IterationCount="Infinite"
+                    PlaybackDirection="Alternate">
+
+                    <KeyFrame Cue="0%">
+                        <Setter Property="SelectionBrush" Value="Yellow" />
+                    </KeyFrame>
+
+                    <KeyFrame Cue="100%">
+                        <Setter Property="SelectionBrush" Value="Orange" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+
+    <Border
+        BorderBrush="GreenYellow"
+        BorderThickness="2">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.0625*" MinWidth="384" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MinWidth="384" />
+            </Grid.ColumnDefinitions>
+
+            <Grid>
+                <ScrollViewer
+                    x:Name="OutputScroll"
+                    HorizontalScrollBarVisibility="Disabled">
+
+                    <SelectableTextBlock
+                        Name="Output"
+                        Text="{Binding Output}"
+                        Background="Black" Foreground="White"
+                        SelectionForegroundBrush="Black"
+                        Padding="1"
+                        FontSize="10" FontWeight="UltraLight"
+                        TextWrapping="Wrap"
+                        LineSpacing="2" />
+                </ScrollViewer>
+
+                <StackPanel
+                    Orientation="Horizontal" Spacing="4"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Margin="0,0,22,4">
+
+                    <Button
+                        Content="Open User Data Dir."
+                        Command="{Binding OpenUserDataDirCommand}"
+                        ToolTip.Tip="Opens the directory where user data are stored."
+                        Background="{DynamicResource TranslucentBackgroundBrush}" />
+
+                    <NumericUpDown
+                        Value="{Binding #Output.FontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                        PlaceholderText="&lt;Font Size&gt;"
+                        ToolTip.Tip="Font Size (Points)"
+                        Background="{DynamicResource TranslucentBackgroundBrush}" />
+                </StackPanel>
+            </Grid>
+
+            <GridSplitter
+                Grid.Column="1"
+                Background="YellowGreen"
+                Width="4"
+                ResizeDirection="Columns" />
+
+            <Grid Grid.Column="2">
+                <ae:TextEditor
+                    Name="Editor"
+                    Document="{Binding Source}"
+                    Background="{DynamicResource TranslucentBackgroundBrush}"
+                    FontSize="13"
+                    WordWrap="True"
+                    ShowLineNumbers="True" />
+
+                <StackPanel
+                    Orientation="Horizontal" Spacing="4"
+                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                    Margin="0,0,22,4">
+
+                    <Border
+                        BorderBrush="Red"
+                        BorderThickness="1">
+
+                        <Button
+                            Content="Cancel Runners"
+                            Command="{Binding CancelCommand}"
+                            ToolTip.Tip="Stops all currently running Lua scripts."
+                            Background="Black" Foreground="White" />
+                    </Border>
+
+                    <Border
+                        BorderBrush="DodgerBlue"
+                        BorderThickness="1">
+
+                        <Button
+                            Content="Execute Script"
+                            Command="{Binding ExecuteCommand}"
+                            ToolTip.Tip="Executes the entered script source code."
+                            Background="Black" Foreground="White" />
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+
+</UserControl>

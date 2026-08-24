@@ -1,0 +1,61 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.PlotSelectorView"
+    x:DataType="vm:PlotSelectorViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <Border
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        Padding="2">
+
+        <Grid
+            RowDefinitions="Auto,*,2,Auto"
+            ToolTip.Tip="Plot Selector">
+
+            <Grid ColumnDefinitions="Auto,32,*,Auto">
+                <TextBlock Text="ID&#x0a; &#x2193;" />
+                <TextBlock Grid.Column="2" Text="Owner Name&#x0a; &#x2198;" HorizontalAlignment="Left" />
+                <TextBlock Grid.Column="3" Text="Occupancy&#x0a;&#x2199; " TextAlignment="Right" />
+            </Grid>
+
+            <ListBox
+                Grid.Row="1"
+                ItemsSource="{Binding Plots}"
+                SelectedItem="{Binding SelectedPlot, Mode=TwoWay}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid
+                            ColumnDefinitions="Auto,16,*,16,Auto"
+                            ToolTip.Tip="Requests that you occupy this plot.&#x0a;If no other player occupies the plot,&#x0a;ownership may be assigned to you."
+                            Background="Transparent">
+
+                            <TextBlock Text="{Binding Id, StringFormat='{}{0:000}'}" />
+
+                            <TextBlock
+                                Grid.Column="2" Text="{Binding OwnerName}"
+                                ToolTip.Tip="{Binding OwnerName}"
+                                TextTrimming="CharacterEllipsis" />
+
+                            <TextBlock Grid.Column="4" Text="{Binding Occupancy}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Button
+                Grid.Row="3"
+                Content="Set Plot to Null"
+                Command="{Binding SetPlotToNullCommand}"
+                ToolTip.Tip="Requests that you relinquish your occupancy of the current plot.&#x0a;If you own the plot and another player occupies it,&#x0a;ownership may be reassigned to the second oldest occupant."
+                HorizontalAlignment="Center" />
+        </Grid>
+    </Border>
+
+</UserControl>

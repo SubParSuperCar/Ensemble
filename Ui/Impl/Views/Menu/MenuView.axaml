@@ -1,0 +1,22 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    x:Class="Root.Ui.Impl.Views.MenuView"
+    x:DataType="vm:MenuViewModel">
+
+    <TransitioningContentControl
+        Content="{Binding Navigator.Current}"
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+        ClipToBounds="False">
+
+        <TransitioningContentControl.PageTransition>
+            <CompositePageTransition>
+                <CrossFade Duration="{StaticResource TransitionDuration}" />
+                <PageSlide Duration="{StaticResource TransitionDuration}" />
+            </CompositePageTransition>
+        </TransitioningContentControl.PageTransition>
+    </TransitioningContentControl>
+
+</UserControl>

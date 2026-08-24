@@ -7,11 +7,11 @@ namespace Root.Scripts.Plots;
 [GlobalClass]
 public partial class PlotHandle : Node3D
 {
-	private Node3D _instances = null!;
+	private Node3D _staticInstances = null!;
 	private Transform3D? _originTransform;
 	private GdPlot _plot = null!;
 
-	public Godot.Collections.Dictionary<int, AssetHandle> Instances { get; } = [];
+	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
 
 	[Export(PropertyHint.Range, "0,0,1,or_greater,hide_slider")]
 	public int Id { get; set; }
@@ -30,7 +30,7 @@ public partial class PlotHandle : Node3D
 	public override void _Ready()
 	{
 		_plot = GPlots.GetPlot(Id)!;
-		_instances = GetNode<Node3D>("Instances/Static");
+		_staticInstances = GetNode<Node3D>("Instances/Static");
 
 		var boundary = GetNode<CollisionShape3D>("Boundary/Definition");
 		BoundaryBasis = boundary.GlobalBasis;
@@ -39,12 +39,12 @@ public partial class PlotHandle : Node3D
 
 	private Transform3D CalculateOriginTransform()
 	{
-		var collider = GetNode<CollisionShape3D>("Base/Collider");
+		var baseCollider = GetNode<CollisionShape3D>("Base/Collider");
 
-		var position = collider.GlobalPosition;
-		var aabb = collider.Shape.GetDebugMesh().GetAabb();
+		var position = baseCollider.GlobalPosition;
+		var aabb = baseCollider.Shape.GetDebugMesh().GetAabb();
 		position.Y += aabb.Size.Y / 2;
 
-		return new Transform3D(collider.GlobalBasis, position);
+		return new Transform3D(baseCollider.GlobalBasis, position);
 	}
 }

@@ -3,8 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 
-// ReSharper disable UnusedMember.Global
-
 namespace Root.Ui.Impl.Services;
 
 [INotifyPropertyChanged]
@@ -15,7 +13,6 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	// ReSharper disable once MemberCanBePrivate.Global
 	public partial ViewModelBase? Current { get; set; }
 
 	public bool CanGoBack => _history.Count > 0;

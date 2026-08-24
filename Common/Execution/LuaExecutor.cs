@@ -1,3 +1,24 @@
+using Lua;
+using Lua.Standard;
+using Serilog;
+
 namespace Root.Common.Execution;
 
-public partial class LuaExecutor;
+public static partial class LuaExecutor
+{
+	public static async Task<LuaValue[]> ExecuteAsync(
+		string source,
+		CancellationToken cancellationToken = default)
+	{
+		source = source.Trim();
+		Log.Information(">\n{Source}", source);
+
+		var state = LuaState.Create();
+		state.OpenStandardLibraries();
+
+		var results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
+		Log.Information("< [{Results}]", string.Join(", ", results.Select(v => v.ToString())));
+
+		return results;
+	}
+}

@@ -2,13 +2,10 @@ using Root.GdCore.Assets;
 using Root.GdCore.Players;
 using Root.GdCore.Plots;
 
-// ReSharper disable UnusedMember.Global
-
 namespace Root.Common.Globals;
 
 public static class Globals
 {
-	// ReSharper disable once MemberCanBePrivate.Global
 	public static GdCore.GdCore GCore =>
 		GdCore.GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null.");
 

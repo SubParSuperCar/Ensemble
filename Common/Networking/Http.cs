@@ -1,3 +1,6 @@
 namespace Root.Common.Networking;
 
-public class Http;
+public static class Http
+{
+	public static readonly HttpClient Client = new();
+}

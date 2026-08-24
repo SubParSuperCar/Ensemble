@@ -8,9 +8,6 @@ namespace Estragonia;
 
 internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 {
-	// ReSharper disable once ReplaceWithFieldKeyword
-	private Uri? _path;
-
 	// ReSharper disable once MemberCanBePrivate.Global
 	public FileInfo FileInfo { get; } = fileInfo;
 
@@ -18,7 +15,7 @@ internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 
 	public bool CanBookmark => true;
 
-	public Uri Path => _path ??= BuildPath();
+	public Uri Path => field ??= BuildPath();
 
 	public Task<StorageItemProperties> GetBasicPropertiesAsync()
 	{

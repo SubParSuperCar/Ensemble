@@ -15,34 +15,29 @@ using GdInput = Godot.Input;
 using GdKey = Godot.Key;
 using Window = Godot.Window;
 
-// ReSharper disable ReplaceWithFieldKeyword
-// ReSharper disable MemberCanBeProtected.Global
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
+// ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
 namespace Estragonia;
 
 /// <summary>Renders an Avalonia control and forwards input to it.</summary>
-// ReSharper disable once UnusedType.Global
 public class AvaloniaControl : GdControl
 {
 	private Window? _connectedWindow;
-
-	private AvControl? _control;
-	private double _renderScaling = 1.0;
 	private GodotTopLevel? _topLevel;
 
 	/// <summary>Gets or sets the underlying Avalonia control that will be rendered.</summary>
-	public AvControl? Control
+	protected AvControl? Control
 	{
-		get => _control;
+		get;
 		set
 		{
-			if (ReferenceEquals(_control, value))
+			if (ReferenceEquals(field, value))
 				return;
 
-			_control = value;
-			_topLevel?.Content = _control;
+			field = value;
+			_topLevel?.Content = field;
 		}
 	}
 
@@ -50,18 +45,18 @@ public class AvaloniaControl : GdControl
 	[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Doesn't affect correctness")]
 	public double RenderScaling
 	{
-		get => _renderScaling;
-		// ReSharper disable once UnusedMember.Global
+		get;
+		// ReSharper disable once PropertyCanBeMadeInitOnly.Global
 		set
 		{
-			if (_renderScaling == value)
+			if (field == value)
 				return;
 
-			_renderScaling = value;
+			field = value;
 			OnResized();
 			QueueRedraw();
 		}
-	}
+	} = 1.0;
 
 	/// <summary>
 	///     Gets or sets whether some Godot UI actions will be automatically mapped to an
@@ -215,7 +210,6 @@ public class AvaloniaControl : GdControl
 
 		_topLevel.Focus();
 
-		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		if (_topLevel.FocusManager?.FindFirstFocusableElement() is not { } inputElement)
 			return;
 
@@ -289,7 +283,6 @@ public class AvaloniaControl : GdControl
 		if (inputEvent is InputEventKey inputEventKey && inputEventKey.Keycode == key)
 			return false;
 
-		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		if (_topLevel?.FocusManager?.GetFocusedElement() is not { } currentElement)
 			return false;
 

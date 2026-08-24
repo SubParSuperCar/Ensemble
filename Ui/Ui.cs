@@ -20,7 +20,6 @@ namespace Root.Ui;
 [GlobalClass]
 public partial class Ui : AvaloniaControl
 {
-	// ReSharper disable once MemberCanBePrivate.Global
 	public static readonly StringName ProcessTimeMonitor = "Ensemble/Time/UIProcess";
 
 	private double _processTime;

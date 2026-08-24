@@ -3,8 +3,6 @@ using Godot;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Messages;
 
-// ReSharper disable EventNeverSubscribedTo.Global
-
 namespace Root.Ui.Impl.Services;
 
 public class DispatcherService : DisposableObject, ISingletonObject, IServiceBase

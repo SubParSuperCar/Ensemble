@@ -2,8 +2,6 @@ using Godot;
 using Godot.Collections;
 using Serilog;
 
-// ReSharper disable UnusedMember.Global
-
 namespace Root.SessionManager;
 
 public partial class SessionManager
@@ -85,7 +83,6 @@ public partial class SessionManager
 			RemovePeer(peerId);
 	}
 
-	// ReSharper disable once MemberCanBePrivate.Global
 	public Godot.Collections.Dictionary<int, Dictionary> GetAllPeerDicts()
 	{
 		var result = new Godot.Collections.Dictionary<int, Dictionary>();

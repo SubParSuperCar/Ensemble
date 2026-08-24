@@ -3,8 +3,6 @@ using CoreRoot.Api.Players;
 using Godot;
 using Godot.Collections;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Root.GdCore.Players;
 
 public partial class GdPlayer : RefCounted

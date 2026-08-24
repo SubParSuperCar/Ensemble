@@ -4,8 +4,6 @@ using Godot;
 using Godot.Collections;
 using Root.GdCore.Utils;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Root.GdCore.Assets;
 
 public partial class GdAsset : RefCounted

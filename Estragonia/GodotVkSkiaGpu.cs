@@ -12,6 +12,8 @@ using Godot;
 using SkiaSharp;
 using Environment = System.Environment;
 
+// ReSharper disable ReturnTypeCanBeNotNullable
+
 namespace Estragonia;
 
 /// <summary>Bridges the Godot Vulkan renderer with a Skia context used by Avalonia.</summary>
@@ -105,7 +107,6 @@ internal sealed class GodotVkSkiaGpu : ISkiaGpu
 
 	IDisposable IPlatformGraphicsContext.EnsureCurrent() => EmptyDisposable.Instance;
 
-	// ReSharper disable once ReturnTypeCanBeNotNullable
 	public IPlatformGraphicsContext? PlatformGraphicsContext => this;
 
 #pragma warning disable CA1822
@@ -119,7 +120,6 @@ internal sealed class GodotVkSkiaGpu : ISkiaGpu
 			? new GodotSkiaRenderTarget(surface, _grContext, _barrierHelper)
 			: null;
 
-	// ReSharper disable once ReturnTypeCanBeNotNullable
 	public IScopedResource<GRContext>? TryGetGrContext() =>
 		ScopedResource<GRContext>.Create(_grContext, static () => { });
 

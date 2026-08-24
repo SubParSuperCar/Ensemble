@@ -10,16 +10,13 @@ namespace Estragonia;
 
 internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBookmarkFolder
 {
-	// ReSharper disable once ReplaceWithFieldKeyword
-	private Uri? _path;
-
 	public DirectoryInfo DirectoryInfo { get; } = directoryInfo;
 
 	public string Name => DirectoryInfo.Name;
 
 	public bool CanBookmark => true;
 
-	public Uri Path => _path ??= BuildPath();
+	public Uri Path => field ??= BuildPath();
 
 	public Task<StorageItemProperties> GetBasicPropertiesAsync() =>
 		Task.FromResult(new StorageItemProperties(

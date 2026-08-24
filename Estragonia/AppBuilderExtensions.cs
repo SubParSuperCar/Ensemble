@@ -8,7 +8,6 @@ using Avalonia.Input.Platform;
 namespace Estragonia;
 
 /// <summary>Contains extensions methods for <see cref="AppBuilder" /> related to Godot.</summary>
-// ReSharper disable once UnusedType.Global
 public static class AppBuilderExtensions
 {
 	extension(AppBuilder builder)
@@ -18,7 +17,6 @@ public static class AppBuilderExtensions
 		///     Call <see cref="SetupWithGodot" /> instead of <see cref="AppBuilder.SetupWithoutStarting" />
 		///     to enable <see cref="IClassicDesktopStyleApplicationLifetime" /> support.
 		/// </summary>
-		// ReSharper disable once UnusedMember.Global
 		public AppBuilder UseGodot()
 		{
 			// Register PlatformHotkeyConfiguration early so it's available

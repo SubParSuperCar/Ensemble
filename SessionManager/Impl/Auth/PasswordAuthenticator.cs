@@ -16,7 +16,6 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 
 	private SceneMultiplayer? _multiplayer;
 
-	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
 	public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(5);
 
 	public event Action<long, string>? AuthenticationFailed;

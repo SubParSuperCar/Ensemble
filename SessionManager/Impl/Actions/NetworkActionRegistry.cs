@@ -6,7 +6,6 @@ public sealed class NetworkActionRegistry
 {
 	private readonly Dictionary<string, Entry> _entries = [];
 
-	// ReSharper disable once UnusedMember.Global
 	public void Register<TAction>(INetworkActionHandler<TAction> handler) where TAction : INetworkAction<TAction>
 	{
 		var actionId = TAction.ActionId;

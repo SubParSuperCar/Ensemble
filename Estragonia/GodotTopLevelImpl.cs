@@ -34,9 +34,6 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	private GodotSkiaSurface? _surface;
 
-	// ReSharper disable once ReplaceWithFieldKeyword
-	private WindowTransparencyLevel _transparencyLevel = WindowTransparencyLevel.Transparent;
-
 	public GodotTopLevelImpl(GodotVkPlatformGraphics platformGraphics, IClipboard clipboard, AvCompositor compositor)
 	{
 		_platformGraphics = platformGraphics;
@@ -66,16 +63,16 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public WindowTransparencyLevel TransparencyLevel
 	{
-		get => _transparencyLevel;
+		get;
 		private set
 		{
-			if (_transparencyLevel.Equals(value))
+			if (field.Equals(value))
 				return;
 
-			_transparencyLevel = value;
+			field = value;
 			TransparencyLevelChanged?.Invoke(value);
 		}
-	}
+	} = WindowTransparencyLevel.Transparent;
 
 	public Action<Rect>? Paint { get; set; }
 

@@ -7,13 +7,10 @@ namespace Root.SessionManager;
 
 public partial class SessionManager
 {
-	// ReSharper disable once MemberCanBePrivate.Global
 	public NetworkActionRegistry Actions { get; } = new();
 
-	// ReSharper disable once EventNeverSubscribedTo.Global
 	public event Action<string, string>? ActionRejected;
 
-	// ReSharper disable once UnusedMember.Global
 	public void Submit<TAction>(TAction action) where TAction : INetworkAction<TAction>
 	{
 		var payload = action.ToPayload();

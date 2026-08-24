@@ -20,6 +20,6 @@ public interface IInstances
 	void Remove(int instanceId);
 	void Clear();
 
-	(int Count, int MaxCount) GetCount(int assetId);
-	IReadOnlyDictionary<int, (int Count, int MaxCount)> GetAllCounts();
+	Quota GetCount(int assetId);
+	IReadOnlyDictionary<int, Quota> GetAllCounts();
 }

@@ -6,8 +6,6 @@ using Root.GdCore.Players;
 using Root.GdCore.Plots;
 using Serilog;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Root.GdCore;
 
 [GlobalClass]

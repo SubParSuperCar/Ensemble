@@ -6,7 +6,7 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 namespace Root.Scripts.World;
 
 [GlobalClass]
-[Autoload(Order = sbyte.MaxValue, FailurePolicy = AutoloadFailurePolicy.AskUser)]
+[Autoload(Order = sbyte.MaxValue - 1, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class WorldManager : Node, IAutoload
 {
 	public WorldHandle? World { get; private set; }
@@ -21,10 +21,6 @@ public partial class WorldManager : Node, IAutoload
 
 		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
-
-		GSessionManager.StartSinglePlayer();
-		GSessionManager.StopSession();
-		GSessionManager.StartSinglePlayer();
 	}
 
 	public override void _ExitTree()
@@ -53,13 +49,13 @@ public partial class WorldManager : Node, IAutoload
 
 	private void OnSessionStopped()
 	{
-		Log.Debug("Resetting {Class}...", nameof(GCore));
+		Log.Debug("Resetting {Member}...", nameof(GCore));
 		var stopwatch = Stopwatch.StartNew();
 
 		GCore.Reset();
 
 		stopwatch.Stop();
-		Log.Debug("Reset {Class} in {ElapsedMs:F3} ms.", nameof(GCore), stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug("Reset {Member} in {ElapsedMs:F3} ms.", nameof(GCore), stopwatch.Elapsed.TotalMilliseconds);
 
 		if (World is null)
 			return;

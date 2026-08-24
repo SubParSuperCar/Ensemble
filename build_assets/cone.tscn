@@ -26,7 +26,8 @@ script = ExtResource("1_3jc1b")
 AssetId = 5
 AssetName = &"Cone"
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF"
+&"_colorHex": "FFFFFF",
+&"_materialId": 0
 })
 MaxInstanceCount = 750
 

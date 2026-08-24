@@ -22,7 +22,8 @@ script = ExtResource("1_s1ixw")
 AssetId = 3
 AssetName = &"Prism"
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF"
+&"_colorHex": "FFFFFF",
+&"_materialId": 0
 })
 MaxInstanceCount = 1250
 

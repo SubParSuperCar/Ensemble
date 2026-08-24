@@ -14,7 +14,7 @@ public class Instances : IInstances
 
 	public Instances(IAssets assets, int? maxCount = null)
 	{
-		if (maxCount is { } count)
+		if (maxCount is { } count and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
 		_assets = assets;

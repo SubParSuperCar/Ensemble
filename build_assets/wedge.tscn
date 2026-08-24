@@ -23,7 +23,8 @@ script = ExtResource("1_8fm6w")
 AssetId = 2
 AssetName = &"Wedge"
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF"
+&"_colorHex": "FFFFFF",
+&"_materialId": 0
 })
 MaxInstanceCount = 1250
 

@@ -9,7 +9,7 @@ public class Occupants : IOccupants
 
 	public Occupants(Plot plot, int? maxCount = null)
 	{
-		if (maxCount is { } count)
+		if (maxCount is { } count and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
 		_plot = plot;

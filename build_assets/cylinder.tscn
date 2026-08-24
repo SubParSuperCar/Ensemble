@@ -27,7 +27,8 @@ script = ExtResource("1_l6qjb")
 AssetId = 4
 AssetName = &"Cylinder"
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF"
+&"_colorHex": "FFFFFF",
+&"_materialId": 0
 })
 MaxInstanceCount = 750
 

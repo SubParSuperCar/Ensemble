@@ -17,10 +17,10 @@ public class Plots : IPlots
 		int? defaultMaxOccupantCount = null,
 		int? defaultMaxInstanceCount = null)
 	{
-		if (defaultMaxOccupantCount is { } occupantCount)
+		if (defaultMaxOccupantCount is { } occupantCount and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount);
 
-		if (defaultMaxInstanceCount is { } instanceCount)
+		if (defaultMaxInstanceCount is { } instanceCount and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount);
 
 		_assets = assets;
@@ -47,10 +47,10 @@ public class Plots : IPlots
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
 
-		if (maxOccupantCount is { } occupantCount)
+		if (maxOccupantCount is { } occupantCount and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount);
 
-		if (maxInstanceCount is { } instanceCount)
+		if (maxInstanceCount is { } instanceCount and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount);
 
 		if (_plotsById.ContainsKey(id))

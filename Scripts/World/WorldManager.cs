@@ -13,7 +13,7 @@ public partial class WorldManager : Node, IAutoload
 
 	public static WorldManager? Instance { get; private set; }
 
-	[Export] public PackedScene WorldScene { get; set; } = ResourceLoader.Load<PackedScene>("res://scenes/world.tscn");
+	[Export] public PackedScene WorldScene { get; set; } = GD.Load<PackedScene>(ScenesDir + "/world.tscn");
 
 	public void Initialize()
 	{
@@ -21,6 +21,8 @@ public partial class WorldManager : Node, IAutoload
 
 		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
+
+		GSessionManager.StartSinglePlayer();
 	}
 
 	public override void _ExitTree()

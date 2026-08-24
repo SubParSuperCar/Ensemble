@@ -5,9 +5,9 @@ using Avalonia.Reactive;
 
 namespace Root.Common.Input;
 
-public static class Sink
+public static class InputSink
 {
-	static Sink()
+	static InputSink()
 	{
 		InputElement.GotFocusEvent.Raised.Subscribe(new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged));
 		InputElement.LostFocusEvent.Raised.Subscribe(new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged));

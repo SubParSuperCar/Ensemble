@@ -14,7 +14,7 @@ public partial class DiscordRpc : Node, IAutoload
 
 	public void Initialize()
 	{
-		Log.Debug("Discord RPC App ID: {AppId}", AppId);
+		Log.Debug("Discord RPC app ID: {AppId}", AppId);
 		_client = new DiscordRpcClient(AppId);
 
 		_client.SetPresence(new RichPresence

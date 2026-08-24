@@ -1,8 +1,6 @@
 [gd_scene format=3 uid="uid://boypbgb8eumkh"]
 
-[ext_resource type="Script" uid="uid://bcp3k2lr7xc5u" path="res://scripts/player/PlayerHandle.cs" id="1_3vyb7"]
-[ext_resource type="Script" uid="uid://daka0fgmkrcsq" path="res://scripts/player/CharacterController.cs" id="2_g2els"]
-[ext_resource type="PackedScene" uid="uid://y6i76a7yj2rd" path="res://scenes/poppercam.tscn" id="3_6t5aa"]
+[ext_resource type="Script" uid="uid://cirhl88h2keyr" path="res://Scripts/Players/PlayerHandle.cs" id="1_3vyb7"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_agfs1"]
 
@@ -41,9 +39,6 @@ size = Vector3(0.2, 0.2, 0.1)
 
 [node name="Player" type="Node3D" unique_id=1257470157]
 script = ExtResource("1_3vyb7")
-CharacterControllerScript = ExtResource("2_g2els")
-CameraScene = ExtResource("3_6t5aa")
-SpawnLocation = Vector3(0, 4, 0)
 
 [node name="Character" type="CharacterBody3D" parent="." unique_id=989463391]
 collision_layer = 2

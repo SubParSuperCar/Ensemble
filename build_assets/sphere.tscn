@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://oyvwnup33swu"]
 
-[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_hyqjw"]
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_hyqjw"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_irkkq"]
 radius = 0.25
@@ -22,12 +22,6 @@ rings = 16
 
 [node name="Sphere" type="RigidBody3D" unique_id=726135581]
 script = ExtResource("1_hyqjw")
-AssetId = 1
-AssetName = &"Sphere"
-Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF"
-})
-MaxInstanceCount = 500
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=237803691]
 shape = SubResource("SphereShape3D_irkkq")

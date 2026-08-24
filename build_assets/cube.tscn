@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://d1dlsgrbbr71y"]
 
-[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_gvw6i"]
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_gvw6i"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(0.5, 0.5, 0.5)
@@ -19,12 +19,6 @@ size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Cube" type="RigidBody3D" unique_id=726135581]
 script = ExtResource("1_gvw6i")
-AssetId = null
-AssetName = &"Cube"
-Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF"
-})
-MaxInstanceCount = 1000
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=237803691]
 shape = SubResource("BoxShape3D_8kdi2")

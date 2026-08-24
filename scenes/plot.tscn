@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bctdhk6awxx0r"]
 
-[ext_resource type="Script" uid="uid://72uuy3654bdf" path="res://scripts/plot/PlotHandle.cs" id="1_syd1t"]
+[ext_resource type="Script" uid="uid://bifs2ecg5a883" path="res://Scripts/Plots/PlotHandle.cs" id="1_cyvgl"]
 [ext_resource type="Texture2D" uid="uid://d3grw53v0y6b8" path="res://assets/images/cartesian_grid.png" id="2_cyvgl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f03gw"]
@@ -27,10 +27,7 @@ material = SubResource("StandardMaterial3D_72cjw")
 size = Vector2(32, 32)
 
 [node name="Plot" type="Node3D" unique_id=1176841675]
-script = ExtResource("1_syd1t")
-Id = null
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
+script = ExtResource("1_cyvgl")
 
 [node name="Boundary" type="Area3D" parent="." unique_id=989283433]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)

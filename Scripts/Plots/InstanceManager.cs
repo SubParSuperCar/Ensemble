@@ -1,3 +1,6 @@
+using Godot;
+
 namespace Root.Scripts.Plots;
 
-public class InstanceManager;
+[GlobalClass]
+public partial class InstanceManager : Node;

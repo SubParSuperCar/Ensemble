@@ -12,9 +12,9 @@ namespace Root.Scripts.Watchdog;
 public partial class Watchdog : Node, IAutoload
 {
 	private const int PollIntervalMs = (int)TimeSpan.MillisecondsPerSecond;
-	private const int TimeoutMissCount = 20;
+	private const int TimeoutMissCountThreshold = 20;
 
-	private static byte _heartbeat;
+	private static byte _heartbeatFlag;
 
 	private CancellationTokenSource _cts = null!;
 	private Thread _pollThread = null!;
@@ -48,7 +48,7 @@ public partial class Watchdog : Node, IAutoload
 
 	public override void _Process(double delta) => Heartbeat();
 
-	public static void Heartbeat() => Volatile.Write(ref _heartbeat, 1);
+	public static void Heartbeat() => Volatile.Write(ref _heartbeatFlag, 1);
 
 	private void WatchdogPollLoop()
 	{
@@ -58,12 +58,12 @@ public partial class Watchdog : Node, IAutoload
 
 			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
 			{
-				if (Debugger.IsAttached || Volatile.Read(ref _heartbeat) is 1)
+				if (Debugger.IsAttached || Volatile.Read(ref _heartbeatFlag) is 1)
 					missCount = 0;
 				else
 					OnMissed(++missCount);
 
-				Volatile.Write(ref _heartbeat, 0);
+				Volatile.Write(ref _heartbeatFlag, 0);
 			}
 		}
 		catch (Exception exception) when (exception is not OperationCanceledException)
@@ -74,9 +74,10 @@ public partial class Watchdog : Node, IAutoload
 
 	private static void OnMissed(int missCount)
 	{
-		Log.Warning("{Class} heartbeat missed: {Count} / {MaxCount}", nameof(Watchdog), missCount, TimeoutMissCount);
+		Log.Warning("{Class} heartbeat missed: {Count} / {MaxCount}",
+			nameof(Watchdog), missCount, TimeoutMissCountThreshold);
 
-		if (missCount < TimeoutMissCount)
+		if (missCount < TimeoutMissCountThreshold)
 			return;
 
 		var elapsedMs = missCount * PollIntervalMs;

@@ -61,6 +61,8 @@ public partial class Logger : Node, IAutoload
 			builder.ClearProviders();
 			builder.AddSerilog(Log.Logger);
 		});
+
+		Log.Debug("Writing logs to: {Directory}", logDir);
 	}
 
 	public override void _ExitTree()

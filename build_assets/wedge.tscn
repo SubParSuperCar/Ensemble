@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://fd8y1hu0pera"]
 
-[ext_resource type="Script" uid="uid://k2a5cfodwjje" path="res://scripts/asset/AssetHandle.cs" id="1_8fm6w"]
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_8fm6w"]
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8fm6w"]
 points = PackedVector3Array(0.25, 0.25, 0.25, 0.25, 0.25, -0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, -0.25, -0.25, -0.25)
@@ -20,12 +20,6 @@ size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Wedge" type="RigidBody3D" unique_id=726135581]
 script = ExtResource("1_8fm6w")
-AssetId = 4
-AssetName = &"Wedge"
-Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF"
-})
-MaxInstanceCount = 1250
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=116151683]
 shape = SubResource("ConvexPolygonShape3D_8fm6w")

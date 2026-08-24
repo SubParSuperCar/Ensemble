@@ -56,7 +56,8 @@ public partial class SessionManager : Node
 	public bool IsServer => _session?.IsServer ?? false;
 	public bool IsActive => _session?.IsActive ?? false;
 
-	public double UtcStartedAtUnix => _session?.UtcStartedAt.ToUnixTimeSeconds() ?? 0;
+	public DateTimeOffset UtcStartedAt => _session?.UtcStartedAt ?? default;
+	public double UtcStartedAtUnix => UtcStartedAt.ToUnixTimeSeconds();
 
 	public int LocalPeerId { get; private set; }
 
@@ -81,7 +82,7 @@ public partial class SessionManager : Node
 
 	public void StartSinglePlayer(string displayName)
 	{
-		Log.Debug("Starting single-player session...");
+		Log.Debug("Starting {Class}...", nameof(SinglePlayerSession));
 
 		StopSession();
 
@@ -102,7 +103,8 @@ public partial class SessionManager : Node
 
 	public void HostMultiPlayer(int port, string password, string displayName, int maxPlayers)
 	{
-		Log.Debug("Hosting multiplayer session... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
+		Log.Debug("Hosting {Class}... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
+			nameof(MultiPlayerSession),
 			port,
 			maxPlayers is Unlimited ? "Unlimited" : maxPlayers.ToString(CultureInfo.InvariantCulture),
 			!string.IsNullOrEmpty(password));
@@ -127,8 +129,8 @@ public partial class SessionManager : Node
 
 	public void JoinMultiPlayer(string address, int port, string password, string displayName)
 	{
-		Log.Debug("Joining multiplayer session... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
-			address, port, !string.IsNullOrEmpty(password));
+		Log.Debug("Joining {Class}... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
+			nameof(MultiPlayerSession), address, port, !string.IsNullOrEmpty(password));
 
 		StopSession();
 
@@ -144,6 +146,8 @@ public partial class SessionManager : Node
 	{
 		if (_session is null)
 			return;
+
+		Log.Debug("Stopping {SessionMode} after {Elapsed}...", Mode, DateTimeOffset.UtcNow - UtcStartedAt);
 
 		var session = _session;
 		_session = null;

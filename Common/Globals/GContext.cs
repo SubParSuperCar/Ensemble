@@ -41,8 +41,11 @@ public static class GContext
 		if (ReferenceEquals(_plot, plot))
 			return;
 
-		_plot?.Occupants.OwnerChanged -= OnOwnerChanged;
-		_plot?.IsSpawnedChanged -= OnIsLocalSpawnedChanged;
+		if (_plot is not null)
+		{
+			_plot.Occupants.OwnerChanged -= OnOwnerChanged;
+			_plot.IsSpawnedChanged -= OnIsLocalSpawnedChanged;
+		}
 
 		_plot = plot;
 
@@ -52,8 +55,11 @@ public static class GContext
 		OnOwnerChanged(plot?.Occupants.Owner);
 		SetIsLocalPlotSpawned(plot?.IsSpawned);
 
-		plot?.Occupants.OwnerChanged += OnOwnerChanged;
-		plot?.IsSpawnedChanged += OnIsLocalSpawnedChanged;
+		if (plot is null)
+			return;
+
+		plot.Occupants.OwnerChanged += OnOwnerChanged;
+		plot.IsSpawnedChanged += OnIsLocalSpawnedChanged;
 	}
 
 	private static void OnOwnerChanged(GdOccupant? owner) =>

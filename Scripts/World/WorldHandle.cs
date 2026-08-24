@@ -1,3 +1,6 @@
+using Godot;
+
 namespace Root.Scripts.World;
 
-public class WorldHandle;
+[GlobalClass]
+public partial class WorldHandle : Node3D;

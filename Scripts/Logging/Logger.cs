@@ -3,6 +3,7 @@ using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Root.Autoloading;
+using Root.Common.Logging;
 using Root.Scripts.Logging.Impl;
 using Serilog;
 using Serilog.Templates;
@@ -38,6 +39,7 @@ public partial class Logger : Node, IAutoload
 			.ReadFrom.Configuration(config)
 			.Enrich.With(new LogEnricher())
 			.WriteTo.Sink(new LogSink())
+			.WriteTo.Sink(new VolatileLogHistorySink())
 			.WriteTo.Console(
 				outputTemplate: "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
 				formatProvider: CultureInfo.InvariantCulture)

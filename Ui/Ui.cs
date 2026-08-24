@@ -32,7 +32,7 @@ public partial class Ui : AvaloniaControl
 			return;
 		}
 
-		Console.WriteLine($"Starting {nameof(Ui)}...");
+		Console.WriteLine($"Starting {nameof(Ui)} (loading screen)...");
 		var stopwatch = Stopwatch.StartNew();
 
 		try

@@ -218,9 +218,9 @@ public partial class Main : Node
 
 	private static string SanitizeMessageBoxBody(string message) =>
 		message
-			.Replace("\"", "", StringComparison.Ordinal)
-			.Replace("'", "", StringComparison.Ordinal)
-			.Replace("`", "", StringComparison.Ordinal);
+			.Replace("\"", string.Empty, StringComparison.Ordinal)
+			.Replace("'", string.Empty, StringComparison.Ordinal)
+			.Replace("`", string.Empty, StringComparison.Ordinal);
 
 	private enum AutoloadLoadStage : byte
 	{

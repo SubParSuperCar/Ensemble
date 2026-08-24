@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://bctdhk6awxx0r" path="res://scenes/plot.tscn" id="13_munwf"]
 [ext_resource type="Script" uid="uid://blhq1e3hqp2sl" path="res://Scripts/Players/PlayerManager.cs" id="13_xo05s"]
 [ext_resource type="Script" uid="uid://biyfk56yseq2l" path="res://Scripts/Assets/AssetManager.cs" id="14_dss4m"]
+[ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://scenes/player.tscn" id="14_lakw3"]
 [ext_resource type="ArrayMesh" uid="uid://brgrd3hjktrcx" path="res://assets/meshes/plots_base.obj" id="14_ts3gi"]
 [ext_resource type="Script" uid="uid://deifgknfa4son" path="res://Scripts/Plots/PlotManager.cs" id="15_7t5mc"]
 
@@ -71,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.15546325, 0.15546325)
-shader_parameter/cirrus_position2 = Vector2(0.15546325, 0.15546325)
+shader_parameter/cirrus_position1 = Vector2(0.10228113, 0.10228113)
+shader_parameter/cirrus_position2 = Vector2(0.10228113, 0.10228113)
 shader_parameter/cirrus_texture = ExtResource("3_dss4m")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -82,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.7772994, 0.7772994)
+shader_parameter/cumulus_position = Vector2(0.51132154, 0.51132154)
 shader_parameter/cumulus_texture = ExtResource("4_7t5mc")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -214,42 +215,31 @@ metadata/_edit_lock_ = true
 
 [node name="Players" type="Node" parent="." unique_id=677572147]
 script = ExtResource("13_xo05s")
+PlayerScene = ExtResource("14_lakw3")
 
 [node name="Assets" type="Node" parent="." unique_id=633918342]
 script = ExtResource("14_dss4m")
-DefaultMaxInstanceCount = null
 
 [node name="Plots" type="Node" parent="." unique_id=795146723]
 script = ExtResource("15_7t5mc")
-DefaultMaxOccupantCount = null
-DefaultMaxTotalInstanceCount = null
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 1, 0)
-Id = null
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Plot 2" parent="Plots" unique_id=1688772583 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, 0)
-Id = null
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
+Id = 1
 metadata/_edit_lock_ = true
 
 [node name="Plot 3" parent="Plots" unique_id=819557585 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 0)
-Id = null
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
+Id = 2
 metadata/_edit_lock_ = true
 
 [node name="Plot 4" parent="Plots" unique_id=18388373 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 1, 0)
-Id = null
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
+Id = 3
 metadata/_edit_lock_ = true
 
 [node name="Map" type="Node3D" parent="." unique_id=125306369]

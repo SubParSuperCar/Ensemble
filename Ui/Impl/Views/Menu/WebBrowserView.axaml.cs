@@ -18,7 +18,6 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 	public WebBrowserView()
 	{
 		InitializeComponent();
-
 		_urlBoxBinding = BindingOperations.GetBindingExpressionBase(UrlBox, TextBox.TextProperty);
 	}
 
@@ -96,12 +95,14 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 
 	private void WebView_OnAdapterCreated(object? sender, WebViewAdapterEventArgs e)
 	{
-		if (WebView.AdapterInfo is { } info)
-			Log.Debug(
-				"WebView adapter created. (Engine={Engine}, Type={Type}, Version={Version})",
-				info.Engine,
-				info.Type,
-				info.Version);
+		if (WebView.AdapterInfo is not { } info)
+			return;
+
+		Log.Debug(
+			"WebView adapter created. (Engine={Engine}, Type={Type}, Version={Version})",
+			info.Engine,
+			info.Type,
+			info.Version);
 	}
 
 	private void WebView_OnAdapterDestroyed(object? sender, WebViewAdapterEventArgs e) =>

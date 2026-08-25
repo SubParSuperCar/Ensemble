@@ -20,12 +20,12 @@
         <ContentControl
             Content="{Binding Stats}"
             HorizontalAlignment="Left" VerticalAlignment="Top"
-            Margin="0,30,0,0"
+            Margin="4,32,0,0"
             IsHitTestVisible="False" />
 
         <Grid
-            ColumnDefinitions="5*,14*,5*"
-            RowDefinitions="5*,14*,5*">
+            ColumnDefinitions="1*,4*,1*"
+            RowDefinitions="1*,4*,1*">
 
             <TransitioningContentControl
                 Grid.Column="1" Grid.Row="1"
@@ -56,9 +56,9 @@
                 SpeedRatio="2" />
         </Border>
 
-        <Button
+        <ToggleButton
             Content="Toggle Console (` / F9)"
-            Command="{Binding ToggleConsoleCommand}"
+            IsChecked="{Binding IsConsoleVisible, Mode=TwoWay}"
             ToolTip.Tip="Toggles the console UI. (Bound to ` and F9)"
             Background="{DynamicResource TranslucentBackgroundBrush}"
             HorizontalAlignment="Right" VerticalAlignment="Top" />

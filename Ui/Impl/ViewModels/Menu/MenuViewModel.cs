@@ -8,7 +8,6 @@ namespace Root.Ui.Impl.ViewModels;
 
 public class MenuViewModel : ViewModelBase
 {
-	private static bool _hasLoaded;
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;
 
@@ -21,16 +20,7 @@ public class MenuViewModel : ViewModelBase
 
 		dispatcher.Input += OnInput;
 
-		if (_hasLoaded)
-		{
-			Navigator.GoTo<MenuHomeViewModel>();
-			return;
-		}
-
-		_hasLoaded = true;
-
-		Navigator.GoTo<LoadingIndicatorViewModel>(true);
-		_ = GoToHomeAfterDelayAsync();
+		Navigator.GoTo<MenuHomeViewModel>();
 	}
 
 	public NavigatorService Navigator { get; }
@@ -44,13 +34,6 @@ public class MenuViewModel : ViewModelBase
 		Navigator.GoBack();
 
 		Log.Debug("Navigated back to {ViewModel}.", Navigator.Current?.GetType().Name);
-	}
-
-	private async Task GoToHomeAfterDelayAsync()
-	{
-		await Task.Delay((int)(TimeSpan.MillisecondsPerSecond * 2.5)).ConfigureAwait(false);
-
-		Navigator.GoTo<MenuHomeViewModel>();
 	}
 
 	protected override void OnDispose()

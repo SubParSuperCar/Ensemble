@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
@@ -44,6 +43,8 @@ public partial class MainViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	public partial ConsoleViewModel? Console { get; set; }
 
+	[ObservableProperty] public partial bool IsConsoleVisible { get; set; }
+
 	protected override void OnDispose()
 	{
 		GSessionManager.SessionStarted -= OnSessionStarted;
@@ -54,7 +55,7 @@ public partial class MainViewModel : ViewModelBase
 
 		Main = null;
 		Stats = null;
-		Console = null;
+		IsConsoleVisible = false;
 	}
 
 	private void OnSessionStarted()
@@ -80,13 +81,12 @@ public partial class MainViewModel : ViewModelBase
 	private void OnInput(InputEvent @event)
 	{
 		if (Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
-			ToggleConsole();
+			IsConsoleVisible = !IsConsoleVisible;
 	}
 
-	[RelayCommand]
-	private void ToggleConsole()
+	partial void OnIsConsoleVisibleChanging(bool value)
 	{
-		if (Console is null)
+		if (value)
 		{
 			Console = _services.GetRequiredService<ConsoleViewModel>();
 			Callable.From(() => Log.Debug("Opened {Control}.", nameof(ConsoleViewModel))).CallDeferred();

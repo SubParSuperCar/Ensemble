@@ -62,7 +62,7 @@ public partial class Logger : Node, IAutoload
 			builder.AddSerilog(Log.Logger);
 		});
 
-		Log.Debug("Writing logs to: {Directory}", logDir);
+		Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
 	}
 
 	public override void _ExitTree()

@@ -16,85 +16,72 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid>
-        <TextBlock
-            VerticalAlignment="Center"
-            Margin="8,0,0,0"
-            FontSize="{DynamicResource FontSize}"
-            xml:space="preserve">Tip:
+    <Grid RowDefinitions="1*,1*,1*,1*,1*">
+        <StackPanel
+            Grid.Row="1" Spacing="8"
+            HorizontalAlignment="Center" VerticalAlignment="Center">
 
-Press ` or F9 to toggle the console.
+            <Border
+                Width="256" Height="256"
+                CornerRadius="8" ClipToBounds="True">
 
-Use it to view logs, run Lua 5.2
-scripts, set the time and UI theme, etc.</TextBlock>
+                <Image
+                    Source="{Binding Icon}"
+                    ToolTip.Tip="Ensemble's Icon (Made w/ Inkscape)"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Stretch="UniformToFill" />
+            </Border>
 
-        <Grid RowDefinitions="1*,1*,1*,1*,1*">
-            <StackPanel
-                Grid.Row="1" Spacing="8"
-                HorizontalAlignment="Center" VerticalAlignment="Center">
+            <HyperlinkButton
+                Content="Ensemble - GitHub Page&#x0a;github.com/SubParSuperCar/Ensemble"
+                Command="{Binding OpenGitHubPageCommand}"
+                ToolTip.Tip="Opens Ensemble's official GitHub repository page.&#x0a;Feel free to star it and/or contribute! :)" />
+        </StackPanel>
 
-                <Border
-                    Width="256" Height="256"
-                    CornerRadius="8" ClipToBounds="True">
+        <StackPanel
+            Grid.Row="3" Spacing="8"
+            HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                    <Image
-                        Source="{Binding Icon}"
-                        ToolTip.Tip="Ensemble's Icon (Made w/ Inkscape)"
-                        HorizontalAlignment="Center" VerticalAlignment="Center"
-                        Stretch="UniformToFill" />
-                </Border>
-
-                <HyperlinkButton
-                    Content="Ensemble - GitHub Page&#x0a;github.com/SubParSuperCar/Ensemble"
-                    Command="{Binding OpenGitHubPageCommand}"
-                    ToolTip.Tip="Opens Ensemble's official GitHub repository page.&#x0a;Feel free to star it and/or contribute! :)" />
-            </StackPanel>
-
-            <StackPanel
-                Grid.Row="3" Spacing="8"
-                HorizontalAlignment="Center" VerticalAlignment="Center">
-
-                <Border
-                    BorderBrush="DodgerBlue" BorderThickness="1"
-                    CornerRadius="8" ClipToBounds="True">
-
-                    <Button
-                        Content="Play"
-                        Command="{Binding StartSessionCommand}"
-                        ToolTip.Tip="Starts a new session." />
-                </Border>
-
-                <StackPanel
-                    Orientation="Horizontal" Spacing="8"
-                    HorizontalAlignment="Center">
-
-                    <Button
-                        Content="README.md"
-                        Command="{Binding GoToReadMeCommand}"
-                        ToolTip.Tip="Opens the README.md file viewer." />
-
-                    <Button
-                        Content="Settings"
-                        ToolTip.Tip="Opens the settings menu."
-                        IsEnabled="False" />
-                </StackPanel>
+            <Border
+                BorderBrush="DodgerBlue" BorderThickness="1"
+                CornerRadius="8" ClipToBounds="True">
 
                 <Button
-                    Content="Web Browser"
-                    Command="{Binding GoToWebBrowserCommand}"
-                    ToolTip.Tip="Opens the web browser." />
+                    Content="Play"
+                    Command="{Binding StartSessionCommand}"
+                    ToolTip.Tip="Starts a new session." />
+            </Border>
 
-                <Border
-                    BorderBrush="Red" BorderThickness="1"
-                    CornerRadius="8" ClipToBounds="True">
+            <StackPanel
+                Orientation="Horizontal" Spacing="8"
+                HorizontalAlignment="Center">
 
-                    <Button
-                        Content="Quit (2x)"
-                        DoubleTapped="Button_DoubleTapped"
-                        ToolTip.Tip="Shuts down the game. (Double-click)" />
-                </Border>
+                <Button
+                    Content="README.md"
+                    Command="{Binding GoToReadMeCommand}"
+                    ToolTip.Tip="Opens the README.md file viewer." />
+
+                <Button
+                    Content="Settings"
+                    ToolTip.Tip="Opens the settings menu."
+                    IsEnabled="False" />
             </StackPanel>
-        </Grid>
+
+            <Button
+                Content="Web Browser"
+                Command="{Binding GoToWebBrowserCommand}"
+                ToolTip.Tip="Opens the web browser." />
+
+            <Border
+                BorderBrush="Red" BorderThickness="1"
+                CornerRadius="8" ClipToBounds="True">
+
+                <Button
+                    Content="Quit (2x)"
+                    DoubleTapped="Button_DoubleTapped"
+                    ToolTip.Tip="Shuts down the game. (Double-click)" />
+            </Border>
+        </StackPanel>
     </Grid>
 
 </UserControl>

@@ -9,7 +9,7 @@
     x:DataType="vm:StatViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <Border Padding="4" Effect="{DynamicResource StrokeEffect}">
+    <Border Effect="{DynamicResource StrokeEffect}">
         <Border Effect="{DynamicResource StrokeEffect}">
             <TextBlock
                 Text="{Binding Text}"

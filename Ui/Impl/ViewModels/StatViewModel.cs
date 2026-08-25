@@ -15,7 +15,7 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class StatViewModel : ViewModelBase
 {
 	private const double RefreshInterval = 1 / 3d;
-	private const double SampleWindow = 3 / 4d;
+	private const double SampleWindow = 1;
 
 #if !ENSEMBLE_DEBUG
 	private readonly Process _process = Process.GetCurrentProcess();
@@ -72,7 +72,7 @@ public partial class StatViewModel : ViewModelBase
 			("Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps:F2} FPS ({frameTimeMs:F3} mspf)")),
 			("Process Time", string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
-			("UI Process Time", string.Create(CultureInfo.InvariantCulture, $"{uiProcessTimeMs:F3} msec")),
+			("UI Proc. Time", string.Create(CultureInfo.InvariantCulture, $"{uiProcessTimeMs:F3} msec")),
 			("Used DRAM", Formatter.FormatBytes(dram)),
 			("Used VRAM", Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
 			("C# Heap Size", Formatter.FormatBytes((ulong)GC.GetTotalMemory(false))),

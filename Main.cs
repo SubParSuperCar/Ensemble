@@ -120,7 +120,7 @@ public partial class Main : Node
 
 		LoadAutoloads(AutoloadRegistry.GetAll());
 
-		Log.Debug("Finished {Class} loading sequence. Emitting {Event}.", nameof(Main), nameof(AutoloadsReady));
+		Log.Debug("Finished {Class} loading sequence. Emitting {Event}...", nameof(Main), nameof(AutoloadsReady));
 
 		AutoloadsLoaded = true;
 		AutoloadsReady?.Invoke();

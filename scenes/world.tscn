@@ -72,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.19024615, 0.19024615)
-shader_parameter/cirrus_position2 = Vector2(0.19024615, 0.19024615)
+shader_parameter/cirrus_position1 = Vector2(0.027753634, 0.027753634)
+shader_parameter/cirrus_position2 = Vector2(0.027753634, 0.027753634)
 shader_parameter/cirrus_texture = ExtResource("3_dss4m")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.9512579, 0.9512579)
+shader_parameter/cumulus_position = Vector2(0.13876975, 0.13876975)
 shader_parameter/cumulus_texture = ExtResource("4_7t5mc")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -171,39 +171,30 @@ PlayerScene = ExtResource("14_lakw3")
 
 [node name="Assets" type="Node" parent="." unique_id=633918342]
 script = ExtResource("14_dss4m")
-DefaultMaxInstanceCount = null
 
 [node name="Plots" type="Node" parent="." unique_id=795146723]
 script = ExtResource("15_7t5mc")
-DefaultMaxOccupantCount = null
-DefaultMaxTotalInstanceCount = null
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 1, 0)
-Id = null
 MaxOccupantCount = 4
-MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Plot 2" parent="Plots" unique_id=1688772583 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 1, 0)
 Id = 1
 MaxOccupantCount = 8
-MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Plot 3" parent="Plots" unique_id=819557585 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1, 0)
 Id = 2
 MaxOccupantCount = -1
-MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Plot 4" parent="Plots" unique_id=18388373 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 1, 0)
 Id = 3
-MaxOccupantCount = null
-MaxTotalInstanceCount = null
 metadata/_edit_lock_ = true
 
 [node name="Sky" type="WorldEnvironment" parent="." unique_id=1085309007]

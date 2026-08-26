@@ -9,6 +9,8 @@ namespace Root;
 
 public partial class Main : Node
 {
+	public static Main Instance { get; private set; } = null!;
+
 	private static AutoloadScope RuntimeScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
 
 	public static bool IsHeadlessServer { get; } =
@@ -20,6 +22,8 @@ public partial class Main : Node
 
 	public override void _EnterTree()
 	{
+		Instance = this;
+
 		AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 		TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 	}
@@ -28,6 +32,9 @@ public partial class Main : Node
 	{
 		AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
 		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
+
+		if (ReferenceEquals(Instance, this))
+			Instance = null!;
 	}
 
 	public override void _Ready()

@@ -51,5 +51,3 @@ public partial class ToolBarViewModel : ViewModelBase
 	}
 }
 */
-
-

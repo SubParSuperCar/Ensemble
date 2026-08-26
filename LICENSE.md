@@ -1,6 +1,6 @@
 Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.
 
-Copyright (c) 2026-present Elliot Grimm, also known as SubParSuperCar and NoodleSnake.
+Copyright (c) 2026–present Elliot Grimm, also known as SubParSuperCar and NoodleSnake.
 
 This software is provided "as is", without warranty of any kind. See the applicable license texts for details.
 

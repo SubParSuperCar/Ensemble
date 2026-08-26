@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <AssemblyTitle>Estragonia</AssemblyTitle>
 
@@ -26,7 +27,7 @@
 
   <ItemGroup>
     <Reference Include="Avalonia.Skia">
-      <HintPath>lib\Avalonia.Skia.dll</HintPath>
+      <HintPath>lib/Avalonia.Skia.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>
@@ -34,4 +35,5 @@
   <ItemGroup>
     <None Remove=".gdignore"/>
   </ItemGroup>
+
 </Project>

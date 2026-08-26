@@ -1,3 +1,11 @@
+using Godot;
+
 namespace Root.Tooling;
 
-public class ConstructTool;
+public partial class ConstructTool : ToolBase
+{
+	protected override StringName ToggleAction => "tool_construct_toggle";
+
+	protected override void OnEnable() { }
+	protected override void OnDisable() { }
+}

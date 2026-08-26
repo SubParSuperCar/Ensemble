@@ -2,24 +2,28 @@ name: Upload Source Lines of Code
 
 on:
   push:
-    branches:
-      - main
-      - test
+    branches-ignore:
+      - 'dependabot/**'
 
 permissions:
   contents: read
 
 jobs:
-  job:
+  cloc:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
 
-      - uses: djdefi/cloc-action@6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Count Source LoC
+        uses: djdefi/cloc-action@6
         with:
           options: --exclude-lang=YAML --md --report-file=cloc.md
 
-      - uses: actions/upload-artifact@v7
+      - name: Upload LoC Artifact
+        uses: actions/upload-artifact@v7
         with:
-          name: cloc
+          name: source-loc
           path: cloc.md
+          if-no-files-found: error

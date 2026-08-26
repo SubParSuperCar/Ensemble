@@ -24,7 +24,7 @@ public class Assets : IAssets
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
 
-		if (maxInstanceCount is { } count)
+		if (maxInstanceCount is { } count and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(count);
 
 		if (_assetsById.ContainsKey(id))

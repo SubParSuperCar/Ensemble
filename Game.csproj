@@ -11,18 +11,13 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <OutputType>Exe</OutputType>
-    <UseAppHost>false</UseAppHost>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
-    <DefineConstants>$(DefineConstants);ENSEMBLE_DEBUG</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <OutputType>Exe</OutputType>
+    <UseAppHost>false</UseAppHost>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
@@ -33,6 +28,18 @@
     <TrimMode>full</TrimMode>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_DEBUG</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'ExportDebug' Or '$(Configuration)' == 'ExportRelease'">
+    <DefineConstants>$(DefineConstants);EXPORT</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <TrimmerRootAssembly Include="$(TargetName)"/>
     <TrimmerRootAssembly Include="GodotSharp"/>
@@ -40,27 +47,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.*"/>
-    <PackageReference Include="Avalonia.Controls.WebView" Version="12.*"/>
+    <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0"/>
+    <PackageReference Include="Avalonia.Controls.WebView" Version="12.1.0"/>
     <PackageReference Include="Avalonia.Skia" Version="[12.1.1]" IncludeAssets="none"/>
-    <PackageReference Include="Avalonia.Themes.Simple" Version="12.*"/>
-    <PackageReference Include="Avalonia.Wayland" Version="12.*"/>
-    <PackageReference Include="Avalonia.X11" Version="12.*"/>
-    <PackageReference Include="AvaloniaEdit.TextMate" Version="12.*"/>
+    <PackageReference Include="Avalonia.Themes.Simple" Version="12.1.1"/>
+    <PackageReference Include="Avalonia.Wayland" Version="12.1.1"/>
+    <PackageReference Include="Avalonia.X11" Version="12.1.1"/>
+    <PackageReference Include="AvaloniaEdit.TextMate" Version="12.0.0"/>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
-    <PackageReference Include="DiscordRichPresence" Version="1.6.1.*"/>
+    <PackageReference Include="DiscordRichPresence" Version="1.6.1.70"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono" Version="0.14.0"/>
     <PackageReference Include="Hardware.Info" Version="110.0.0.1"/>
     <PackageReference Include="LuaCSharp" Version="0.5.6"/>
     <PackageReference Include="Markdown.Avalonia.Tight" Version="12.0.0-a3"/>
-    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.*"/>
+    <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
     <PackageReference Include="Meziantou.Analyzer" Version="3.0.177">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.*"/>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.*"/>
-    <PackageReference Include="Optris.LoadingIndicators.Avalonia" Version="12.*"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.11"/>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.11"/>
+    <PackageReference Include="Optris.LoadingIndicators.Avalonia" Version="12.0.4"/>
     <PackageReference Include="Serilog" Version="4.4.0"/>
     <PackageReference Include="Serilog.Expressions" Version="5.0.0"/>
     <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0"/>
@@ -71,19 +78,21 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Threading.RateLimiting" Version="10.*"/>
+    <PackageReference Include="System.Threading.RateLimiting" Version="10.0.11"/>
     <PackageReference Include="TinyDialogsNet" Version="2.0.0"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="AutoloadGenerator\AutoloadGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
-    <ProjectReference Include="Core\Core.csproj"/>
-    <ProjectReference Include="Estragonia\Estragonia.csproj"/>
+    <ProjectReference Include="AutoloadGenerator/AutoloadGenerator.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="Core/Core.csproj"/>
+    <ProjectReference Include="Estragonia/Estragonia.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Avalonia.Skia">
-      <HintPath>Estragonia\Lib\Avalonia.Skia.dll</HintPath>
+      <HintPath>Estragonia/Lib/Avalonia.Skia.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>
@@ -100,7 +109,10 @@
       <BuildInfoLines Include="}"/>
     </ItemGroup>
 
-    <WriteLinesToFile File="$(IntermediateOutputPath)BuildInfo.g.cs" Lines="@(BuildInfoLines)" Overwrite="true"/>
+    <WriteLinesToFile
+      File="$(IntermediateOutputPath)BuildInfo.g.cs"
+      Lines="@(BuildInfoLines)"
+      Overwrite="true"/>
 
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
@@ -119,36 +131,41 @@
     <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
   </PropertyGroup>
 
-  <Target Name="MakeExportDirs" BeforeTargets="Build">
-    <MakeDir Directories="$(MSBuildProjectDirectory)\bin\linux"/>
-    <MakeDir Directories="$(MSBuildProjectDirectory)\bin\windows"/>
+  <Target Name="PrepareGodotOutput" BeforeTargets="Build">
+    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
+    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
 
-    <WriteLinesToFile File="$(MSBuildProjectDirectory)\bin\.gdignore" Lines="" Overwrite="false"/>
+    <WriteLinesToFile
+      File="$(MSBuildProjectDirectory)/bin/.gdignore"
+      Lines=""
+      Overwrite="false"/>
   </Target>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"/>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.md"
+          CopyToOutputDirectory="PreserveNewest"
+          CopyToPublishDirectory="PreserveNewest"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="**\*.gd;**\*.gdshader" Exclude=".godot\**">
+    <Content Include="**/*.gd;**/*.gdshader" Exclude=".godot/**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Directory.Build.props"/>
-    <Content Include="Properties\**" Exclude="**\*.gdignore"/>
+    <Content Include="Properties/**" Exclude="**/*.gdignore"/>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="AutoloadGenerator\**"/>
-    <Compile Remove="Core\**"/>
-    <Compile Remove="Estragonia\**"/>
+    <Compile Remove="AutoloadGenerator/**"/>
+    <Compile Remove="Core/**"/>
+    <Compile Remove="Estragonia/**"/>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Remove="AutoloadGenerator\**"/>
-    <EmbeddedResource Remove="Core\**"/>
-    <EmbeddedResource Remove="Estragonia\**"/>
+    <EmbeddedResource Remove="AutoloadGenerator/**"/>
+    <EmbeddedResource Remove="Core/**"/>
+    <EmbeddedResource Remove="Estragonia/**"/>
   </ItemGroup>
 
 </Project>

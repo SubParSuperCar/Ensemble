@@ -70,8 +70,6 @@ public class BinarySaveSerializer
 			UtcCreatedAt = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero)
 		};
 
-		// Signed counts make corruption easier to detect.
-		// For example, FF FF FF FF becomes -1 instead of 4,294,967,295.
 		var instanceCount = reader.ReadInt32();
 		if (instanceCount is < 0 or int.MaxValue)
 			throw new InvalidDataException("Invalid instance count.");

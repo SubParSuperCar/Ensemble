@@ -1,4 +1,5 @@
 using Godot;
+using Root.GdCore.Assets;
 using Root.GdCore.Plots;
 using Root.Scripts.Assets;
 
@@ -7,6 +8,8 @@ namespace Root.Scripts.Plots;
 [GlobalClass]
 public partial class PlotHandle : Node3D
 {
+	public const float GridToWorldScale = 0.5f;
+
 	private Transform3D? _originTransform;
 	private GdPlot _plot = null!;
 	private Node3D _staticInstances = null!;
@@ -34,7 +37,38 @@ public partial class PlotHandle : Node3D
 
 		var boundary = GetNode<CollisionShape3D>("Boundary/Definition");
 		BoundaryBasis = boundary.GlobalBasis;
-		BoundarySize = boundary.Shape.GetDebugMesh().GetAabb().Size;
+		BoundarySize = boundary.Shape.GetDebugMesh().GetAabb().Size / GridToWorldScale;
+
+		foreach (var instance in _plot.Instances.GetAll())
+			OnInstanceAdded(instance);
+
+		_plot.Instances.Added += OnInstanceAdded;
+		_plot.Instances.Removed += OnInstanceRemoved;
+	}
+
+	private void OnInstanceAdded(GdInstance instance)
+	{
+		var packed = GAssetManager.GetPacked(instance.Asset.Id);
+
+		var handle = packed.Instantiate<AssetHandle>();
+		handle.InstanceId = instance.Id;
+		handle.Freeze = true;
+
+		_staticInstances.AddChild(handle);
+
+		var transform = new Transform3D(
+			new Basis(instance.Rotation),
+			instance.Position * GridToWorldScale
+		);
+
+		handle.GlobalTransform = OriginTransform * transform;
+		InstanceHandles.Add(instance.Id, handle);
+	}
+
+	private void OnInstanceRemoved(GdInstance instance)
+	{
+		if (InstanceHandles.Remove(instance.Id, out var handle))
+			handle.QueueFree();
 	}
 
 	private Transform3D CalculateOriginTransform()

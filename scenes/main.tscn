@@ -2,6 +2,17 @@
 
 [ext_resource type="Script" uid="uid://dyffxytf1id1l" path="res://Main.cs" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://0hf0xbvnk1kd" path="res://Ui/Ui.cs" id="2_0wfyh"]
+[ext_resource type="Shader" uid="uid://b40ts4rmsiyhu" path="res://shaders/temporal_static.gdshader" id="3_sugp2"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0wfyh"]
+shader = ExtResource("3_sugp2")
+shader_parameter/highlight_threshold = 0.62
+shader_parameter/highlight_softness = 0.1
+shader_parameter/motion_strength = 1.0
+shader_parameter/motion_variation = 0.25
+shader_parameter/static_contrast = 1.5
+shader_parameter/static_brightness = 0.5
+shader_parameter/scroll_speed = 60.0
 
 [node name="Main" type="Node" unique_id=338286369]
 script = ExtResource("1_o5qli")
@@ -17,3 +28,16 @@ focus_mode = 2
 mouse_force_pass_scroll_events = false
 script = ExtResource("2_0wfyh")
 metadata/_custom_type_script = "uid://0hf0xbvnk1kd"
+
+[node name="Temporal Static" type="CanvasLayer" parent="." unique_id=1153175403]
+layer = -1
+visible = false
+
+[node name="Bitmap" type="ColorRect" parent="Temporal Static" unique_id=1343037542]
+material = SubResource("ShaderMaterial_0wfyh")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

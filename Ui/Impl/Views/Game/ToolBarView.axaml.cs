@@ -1,4 +1,3 @@
-/*
 using Avalonia.Controls;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
@@ -12,4 +11,3 @@ public partial class ToolBarView : UserControl, IViewFor<ToolBarViewModel>
 		InitializeComponent();
 	}
 }
-*/

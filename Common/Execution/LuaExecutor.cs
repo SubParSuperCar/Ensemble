@@ -16,6 +16,8 @@ public static partial class LuaExecutor
 		var state = LuaState.Create();
 		state.OpenStandardLibraries();
 
+		InjectCustomFunctions(state.Environment);
+
 		var results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
 		Log.Information("< [{Results}]", string.Join(", ", results.Select(v => v.ToString())));
 

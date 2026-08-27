@@ -4,6 +4,7 @@ using Root.GdCore.Plots;
 using Root.Scripts.Assets;
 using Root.Scripts.Players;
 using Root.Scripts.Plots;
+using Root.Tooling;
 
 namespace Root.Common.Globals;
 
@@ -42,4 +43,7 @@ public static class Globals
 		get => field ?? throw new InvalidOperationException($"{nameof(PlotManager)} is null.");
 		set;
 	} = null!;
+
+	public static ToolManager GToolManager =>
+		ToolManager.Instance ?? throw new InvalidOperationException($"{nameof(ToolManager)} is null.");
 }

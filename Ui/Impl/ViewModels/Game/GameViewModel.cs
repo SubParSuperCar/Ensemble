@@ -23,8 +23,8 @@ public partial class GameViewModel : ViewModelBase
 
 		dispatcher.Input += OnInput;
 
-		/*OnIsLocalPlotSpawnedChanged(IsLocalPlotSpawned);
-		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;*/
+		OnIsLocalPlotSpawnedChanged(IsLocalPlotSpawned);
+		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
 	}
 
 	[ObservableProperty]
@@ -39,19 +39,19 @@ public partial class GameViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	public partial PlotSelectorViewModel? PlotSelector { get; set; }
 
-	/*[ObservableProperty]
+	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ToolBarViewModel? ToolBar { get; set; }*/
+	public partial ToolBarViewModel? ToolBar { get; set; }
 
 	protected override void OnDispose()
 	{
-		// IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
+		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 		_dispatcher.Input -= OnInput;
 
 		Clock = null;
 		PlayerList = null;
 		PlotSelector = null;
-		// ToolBar = null;
+		ToolBar = null;
 	}
 
 	private void OnInput(InputEvent @event)
@@ -60,6 +60,6 @@ public partial class GameViewModel : ViewModelBase
 			PlayerList = PlayerList is null ? _services.GetRequiredService<PlayerListViewModel>() : null;
 	}
 
-	/*private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) =>
-		ToolBar = isSpawned is false ? _services.GetRequiredService<ToolBarViewModel>() : null;*/
+	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) =>
+		ToolBar = isSpawned is false ? _services.GetRequiredService<ToolBarViewModel>() : null;
 }

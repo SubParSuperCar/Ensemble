@@ -15,8 +15,8 @@ run/main_scene="uid://ddgi4ajn3rnnq"
 config/features=PackedStringArray("4.7", "C#", "Mobile")
 boot_splash/bg_color=Color(0.043137256, 0.09019608, 0.15686275, 1)
 boot_splash/stretch_mode=0
-boot_splash/image="uid://k13r5j8hdurp"
-config/icon="uid://k13r5j8hdurp"
+boot_splash/image="uid://wm30e5juwv1l"
+config/icon="uid://wm30e5juwv1l"
 boot_splash/minimum_display_time=250
 
 [autoload]

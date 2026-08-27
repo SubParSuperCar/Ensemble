@@ -134,7 +134,7 @@ public partial class LuaExecutor
 		}
 
 		stopwatch.Stop();
-		Log.Information("Added {Count} instance(s) to plot {PlotId} in {ElapsedMs:F3} msec",
+		Log.Information("Added {Count} instance(s) to plot id {PlotId} in {ElapsedMs:F3} ms.",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
@@ -155,7 +155,7 @@ public partial class LuaExecutor
 		instances.Clear();
 
 		stopwatch.Stop();
-		Log.Information("Removed {Count} instance(s) from plot {PlotId} in {ElapsedMs:F3} msec",
+		Log.Information("Removed {Count} instance(s) from plot id {PlotId} in {ElapsedMs:F3} ms.",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
@@ -187,7 +187,7 @@ public partial class LuaExecutor
 			timeOfDay.Set("game_time_enabled", true);
 			timeOfDay.Set("system_sync", true);
 
-			Log.Information("Synced lighting time to system clock");
+			Log.Information("Synced lighting time to system clock.");
 
 			goto Return;
 		}
@@ -197,7 +197,7 @@ public partial class LuaExecutor
 		timeOfDay.Set("system_sync", false);
 		timeOfDay.Set("current_time", time);
 
-		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
+		Log.Information("Set lighting time to {Hours} hour(s) after midnight.", time);
 
 	Return:
 		context.Return();
@@ -317,7 +317,7 @@ public partial class LuaExecutor
 		}
 		catch (HttpRequestException exception)
 		{
-			Log.Error(exception, "Failed to get public IPv4 address");
+			Log.Error(exception, "Failed to get public IPv4 address.");
 			context.Return();
 		}
 
@@ -373,7 +373,7 @@ public partial class LuaExecutor
 
 		_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
 			.ContinueWith(
-				task => Log.Error(task.Exception, "TTS failed"),
+				task => Log.Error(task.Exception, "TTS failed."),
 				CancellationToken.None,
 				TaskContinuationOptions.OnlyOnFaulted,
 				TaskScheduler.Default);

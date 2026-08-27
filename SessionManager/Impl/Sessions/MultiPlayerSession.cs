@@ -36,7 +36,7 @@ public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig con
 
 		if (error is not Error.Ok)
 		{
-			Failed?.Invoke($"Failed to start session: {error}.");
+			Failed?.Invoke($"Failed to start session: {error}");
 			return;
 		}
 

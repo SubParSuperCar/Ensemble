@@ -1,5 +1,6 @@
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
+using Root.Common.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Services;
 using Serilog;
@@ -27,7 +28,7 @@ public class MenuViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
-		if (!@event.IsActionPressed("ui_back") || !Navigator.CanGoBack)
+		if (!@event.IsActionPressed("ui_back") || !Navigator.CanGoBack || InputSink.IsSunk)
 			return;
 
 		Log.Debug("Navigating back from {ViewModel}...", Navigator.Current?.GetType().Name);

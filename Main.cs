@@ -94,9 +94,9 @@ public partial class Main : Node
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
 		if (e.ExceptionObject is Exception exception)
-			Log.Fatal(exception, "Unhandled exception (IsTerminating={IsTerminating})", e.IsTerminating);
+			Log.Fatal(exception, "Unhandled exception. (IsTerminating={IsTerminating})", e.IsTerminating);
 		else
-			Log.Fatal("Unhandled exception (IsTerminating={IsTerminating}):\n{Exception}",
+			Log.Fatal("Unhandled exception. (IsTerminating={IsTerminating}):\n{Exception}",
 				e.IsTerminating,
 				e.ExceptionObject);
 

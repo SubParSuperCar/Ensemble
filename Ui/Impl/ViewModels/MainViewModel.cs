@@ -89,7 +89,7 @@ public partial class MainViewModel : ViewModelBase
 		if (value)
 		{
 			Console = _services.GetRequiredService<ConsoleViewModel>();
-			Callable.From(() => Log.Debug("Opened {Control}.", nameof(ConsoleViewModel))).CallDeferred();
+			Log.Debug("Opened {Control}.", nameof(ConsoleViewModel));
 		}
 		else
 		{

@@ -106,5 +106,5 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 	}
 
 	private void WebView_OnAdapterDestroyed(object? sender, WebViewAdapterEventArgs e) =>
-		Log.Debug("WebView adapter destroyed");
+		Log.Debug("WebView adapter destroyed.");
 }

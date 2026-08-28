@@ -12,5 +12,5 @@ public partial class GameView : UserControl, IViewFor<GameViewModel>
 		InitializeComponent();
 	}
 
-	private void Button_DoubleTapped(object? sender, TappedEventArgs e) => GSessionManager.StopSession();
+	private void OnMenuButtonDoubleTapped(object? sender, TappedEventArgs e) => GSessionManager.StopSession();
 }

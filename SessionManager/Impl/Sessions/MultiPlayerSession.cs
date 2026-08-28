@@ -2,9 +2,9 @@ using Godot;
 using Root.SessionManager.Api;
 using Serilog;
 
-namespace Root.SessionManager.Impl;
+namespace Root.SessionManager.Sessions;
 
-public class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig config) : ISession
+public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig config) : ISession
 {
 	public SessionMode Mode => SessionMode.MultiPlayer;
 

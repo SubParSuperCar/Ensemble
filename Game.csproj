@@ -1,4 +1,4 @@
-﻿<Project Sdk="Godot.NET.Sdk/4.7.2">
+<Project Sdk="Godot.NET.Sdk/4.7.2">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -107,7 +107,7 @@
     <ItemGroup>
       <BuildInfoLines Include="public static class BuildInfo"/>
       <BuildInfoLines Include="{"/>
-      <BuildInfoLines Include="	public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
+      <BuildInfoLines Include="&#9;public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
       <BuildInfoLines Include="}"/>
     </ItemGroup>
 

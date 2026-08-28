@@ -4,7 +4,7 @@
     <Authors>Julien Lebosquain; youfch; SubParSuperCar</Authors>
     <Product>Estragonia</Product>
     <Description>Estragonia - A bridge allowing the use of the powerful Avalonia UI framework in the no less powerful Godot game engine.</Description>
-    <Copyright>Copyright © 2023–2024 Julien Lebosquain; Copyright © 2026 youfch; Copyright © 2026–$([System.DateTime]::Now.ToString('yyyy')) SubParSuperCar</Copyright>
+    <Copyright>Copyright (c) 2023-2024 Julien Lebosquain; Copyright (c) 2026 youfch; Copyright (c) 2026-$([System.DateTime]::Now.ToString('yyyy')) SubParSuperCar</Copyright>
     <Version>2.0.0</Version>
   </PropertyGroup>
 

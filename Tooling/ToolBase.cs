@@ -10,7 +10,6 @@ public abstract partial class ToolBase : Node
 
 	protected virtual StringName? ToggleAction => null;
 
-	// ReSharper disable once EventNeverSubscribedTo.Global
 	public event Action<bool>? IsEnabledChanged;
 
 	internal void Initialize(ToolControl control)

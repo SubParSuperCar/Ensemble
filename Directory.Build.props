@@ -3,6 +3,6 @@
     <Authors>SubParSuperCar</Authors>
     <Product>Ensemble</Product>
     <Description>Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.</Description>
-    <Copyright>Copyright © 2026–$([System.DateTime]::Now.ToString('yyyy')) $(Authors)</Copyright>
+    <Copyright>Copyright (c) 2026-$([System.DateTime]::Now.ToString('yyyy')) $(Authors)</Copyright>
   </PropertyGroup>
 </Project>

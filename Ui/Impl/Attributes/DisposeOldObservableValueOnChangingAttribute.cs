@@ -4,7 +4,7 @@ namespace Root.Ui.Impl.Attributes;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 [Serializable]
-public class DisposeOldObservableValueOnChangingAttribute : OnMethodBoundaryAspect
+public sealed class DisposeOldObservableValueOnChangingAttribute : OnMethodBoundaryAspect
 {
 	public override void OnEntry(MethodExecutionArgs arg)
 	{

@@ -14,5 +14,5 @@ public static class Constants
 	public const string ScenesDir = ResourceScheme + "scenes/";
 	public const string BuildAssetsDir = ResourceScheme + "build_assets/";
 
-	public const string GameIconPath = AssetsDir + "/images/ensemble_icon_square_colored.png";
+	public const string GameIconPath = AssetsDir + "images/ensemble_icon_square_colored.png";
 }

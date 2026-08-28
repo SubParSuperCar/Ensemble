@@ -7,9 +7,14 @@
 
     <TransitioningContentControl
         Content="{Binding Navigator.Current}"
-        Background="{DynamicResource TranslucentBackgroundBrush}"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
         ClipToBounds="False">
+
+        <TransitioningContentControl.Background>
+            <SolidColorBrush
+                Color="{DynamicResource ThemeBackgroundColor}"
+                Opacity="0.75" />
+        </TransitioningContentControl.Background>
 
         <TransitioningContentControl.PageTransition>
             <CompositePageTransition>

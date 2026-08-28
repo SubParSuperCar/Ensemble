@@ -1,9 +1,9 @@
 using Godot;
 using Root.SessionManager.Api;
 
-namespace Root.SessionManager.Impl;
+namespace Root.SessionManager.Sessions;
 
-public class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
+public sealed class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 {
 	public SessionMode Mode => SessionMode.SinglePlayer;
 

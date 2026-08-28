@@ -5,7 +5,7 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace Root.Persistence;
 
-public class BinarySaveSerializer
+public sealed class BinarySaveSerializer : ISaveSerializer
 {
 	private const ushort FormatVersion = 1;
 	private static ReadOnlySpan<byte> Magic => "ENSB"u8;
@@ -44,7 +44,7 @@ public class BinarySaveSerializer
 			foreach (var (key, value) in properties)
 			{
 				writer.Write(key);
-				VariantSerializer.Write(writer, value);
+				CoreVariantSerializer.Write(writer, value);
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class BinarySaveSerializer
 				for (var j = 0; j < propertyCount; j++)
 				{
 					var key = reader.ReadString();
-					var value = VariantSerializer.Read(reader);
+					var value = CoreVariantSerializer.Read(reader);
 
 					properties.Add(key, value);
 				}

@@ -8,10 +8,12 @@ namespace Root.Common.Input;
 
 public static class InputSink
 {
+	private static readonly AnonymousObserver<(object, RoutedEventArgs)> FocusObserver = new(OnFocusChanged);
+
 	static InputSink()
 	{
-		InputElement.GotFocusEvent.Raised.Subscribe(new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged));
-		InputElement.LostFocusEvent.Raised.Subscribe(new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged));
+		InputElement.GotFocusEvent.Raised.Subscribe(FocusObserver);
+		InputElement.LostFocusEvent.Raised.Subscribe(FocusObserver);
 	}
 
 	public static bool IsSunk { get; private set; }

@@ -11,9 +11,8 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 
 	private static readonly ConcurrentQueue<string> HistoryQueue = [];
 
-	private static readonly MessageTemplateTextFormatter Formatter = new(
-		"[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"
-	);
+	private static readonly MessageTemplateTextFormatter Formatter =
+		new("[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
 
 	public static IReadOnlyCollection<string> History => [.. HistoryQueue];
 

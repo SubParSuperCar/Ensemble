@@ -78,7 +78,7 @@
 
                 <Button
                     Content="Quit (2x)"
-                    DoubleTapped="Button_DoubleTapped"
+                    DoubleTapped="OnQuitButtonDoubleTapped"
                     ToolTip.Tip="Shuts down the game. (Double-click)" />
             </Border>
         </StackPanel>

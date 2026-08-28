@@ -8,7 +8,7 @@ created, maintained, and owned by **SubParSuperCar** ([GitHub profile](https://g
 
 <img align="left" width="256" src="/assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made w/ Inkscape)">
 
-*“Nothing is Arbitrary; Everything is Relative.”*
+*"Nothing is Arbitrary; Everything is Relative."*
 <br clear="left"/>
 
 ---
@@ -26,7 +26,7 @@ while its architecture, systems, and implementation continue to evolve.
 
 ## Name Rationale
 
-This game was originally called **Baja Builders** on Roblox from approximately 2022–2025. However, the name never really
+This game was originally called **Baja Builders** on Roblox from approximately 2022-2025. However, the name never really
 resonated with me, and it technically translates to "Below Builders." I ultimately renamed it to **Ensemble** for two
 primary reasons:
 

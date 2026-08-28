@@ -3,7 +3,7 @@ using Godot;
 using Root.Autoloading;
 using Root.SessionManager.Api;
 using Root.SessionManager.Auth;
-using Root.SessionManager.Impl;
+using Root.SessionManager.Sessions;
 using Serilog;
 
 namespace Root.SessionManager;

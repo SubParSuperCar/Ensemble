@@ -46,7 +46,7 @@
 
         <Button
             Content="&lt;- Menu (2x)"
-            DoubleTapped="Button_DoubleTapped"
+            DoubleTapped="OnMenuButtonDoubleTapped"
             ToolTip.Tip="Stops the current session. (Double-click)"
             Background="{DynamicResource TranslucentBackgroundBrush}"
             HorizontalAlignment="Left" VerticalAlignment="Top" />

@@ -4,7 +4,7 @@ using CoreRoot.Api.Assets;
 
 namespace Root.Persistence;
 
-internal static class VariantSerializer
+internal static class CoreVariantSerializer
 {
 	public static CoreVariant Read(BinaryReader reader)
 	{

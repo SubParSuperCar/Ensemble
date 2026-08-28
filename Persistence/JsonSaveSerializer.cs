@@ -2,7 +2,6 @@ using System.Text.Json;
 
 namespace Root.Persistence;
 
-// ReSharper disable once UnusedType.Global
 public sealed class JsonSaveSerializer : ISaveSerializer
 {
 	private static readonly JsonSerializerOptions Options = new()

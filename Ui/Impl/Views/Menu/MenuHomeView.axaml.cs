@@ -13,5 +13,6 @@ public partial class MenuHomeView : UserControl, IViewFor<MenuHomeViewModel>
 		InitializeComponent();
 	}
 
-	private void Button_DoubleTapped(object? sender, TappedEventArgs e) => (Engine.GetMainLoop() as SceneTree)?.Quit();
+	private void OnQuitButtonDoubleTapped(object? sender, TappedEventArgs e) =>
+		(Engine.GetMainLoop() as SceneTree)?.Quit();
 }

@@ -33,6 +33,7 @@ settings/stdout/print_fps.editor=true
 window/size/viewport_width=1600
 window/size/viewport_height=900
 window/size/mode=2
+window/size/sharp_corners=true
 window/stretch/aspect="expand"
 window/stretch/scale_mode="integer"
 window/vsync/vsync_mode=3

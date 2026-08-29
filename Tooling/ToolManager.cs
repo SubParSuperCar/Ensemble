@@ -46,6 +46,7 @@ public partial class ToolManager : Node, IAutoload
 	private T CreateTool<T>() where T : ToolBase, new()
 	{
 		var tool = new T();
+		tool.Name = typeof(T).Name;
 		tool.Initialize(new ToolControl(this, tool));
 
 		_tools.Add(tool);

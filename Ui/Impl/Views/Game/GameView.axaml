@@ -13,7 +13,7 @@
         <TransitioningContentControl
             Content="{Binding PlayerList}"
             HorizontalAlignment="Right" VerticalAlignment="Top"
-            MinWidth="256" MaxWidth="512" MaxHeight="256"
+            MinWidth="288" MaxWidth="512" MaxHeight="384"
             Margin="0,36,0,0"
             ClipToBounds="False">
 
@@ -32,7 +32,7 @@
         <ContentControl
             Content="{Binding PlotSelector}"
             HorizontalAlignment="Left" VerticalAlignment="Center"
-            MinWidth="256" MaxWidth="384" MaxHeight="256" />
+            MinWidth="288" MaxWidth="416" MaxHeight="256" />
 
         <TransitioningContentControl
             Content="{Binding ToolBar}"

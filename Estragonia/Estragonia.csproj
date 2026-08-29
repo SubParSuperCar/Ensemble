@@ -32,14 +32,6 @@
     </Reference>
   </ItemGroup>
 
-  <Target Name="RemoveAvaloniaSkiaRelatedFiles" AfterTargets="ResolveAssemblyReferences">
-    <ItemGroup>
-      <ReferenceCopyLocalPaths
-        Remove="@(ReferenceCopyLocalPaths)"
-        Condition="'%(Filename)' == 'Avalonia.Skia' and ('%(Extension)' == '.pdb' or '%(Extension)' == '.xml')"/>
-    </ItemGroup>
-  </Target>
-
   <ItemGroup>
     <None Remove=".gdignore"/>
     <None Remove="Lib/Avalonia.Skia.pdb"/>

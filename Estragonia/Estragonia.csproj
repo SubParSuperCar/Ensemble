@@ -34,6 +34,8 @@
 
   <ItemGroup>
     <None Remove=".gdignore"/>
+    <None Remove="Lib/Avalonia.Skia.pdb"/>
+    <None Remove="Lib/Avalonia.Skia.xml"/>
   </ItemGroup>
 
 </Project>

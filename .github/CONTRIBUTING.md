@@ -10,7 +10,7 @@
    git clone https://github.com/SubParSuperCar/Ensemble.git
    ```
 
-3. Download and install **Godot Mono 4.7.2 or newer** from https://godotengine.org/download/archive/4.7.1-stable/. Be
+3. Download and install **Godot Mono 4.7.2 or newer** from https://godotengine.org/download/archive/4.7.2-stable/. Be
    sure to download the **.NET (Mono)** version for your operating system and system architecture.
 
 4. Download and install the **.NET SDK 10.0.100 or newer**

@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
 using AvaloniaEdit.TextMate;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
@@ -24,7 +25,10 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 
 	private void InitializeOutputScroll()
 	{
-		OutputScroll.ScrollToEnd();
+		Dispatcher.UIThread.Post(
+			() => OutputScroll.ScrollToEnd(),
+			DispatcherPriority.Render);
+
 		OutputScroll.ScrollChanged += OnOutputScrollChanged;
 	}
 

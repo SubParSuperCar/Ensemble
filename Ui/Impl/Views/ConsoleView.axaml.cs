@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using AvaloniaEdit.TextMate;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
+using Serilog;
 using TextMateSharp.Grammars;
 
 namespace Root.Ui.Impl.Views;
@@ -20,7 +22,10 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 	{
 		InitializeComponent();
 		InitializeOutputScroll();
-		InitializeEditor();
+
+		Dispatcher.UIThread.Post(
+			InitializeEditor,
+			DispatcherPriority.Background);
 	}
 
 	private void InitializeOutputScroll()
@@ -34,6 +39,9 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 
 	private void InitializeEditor()
 	{
+		Log.Debug("Initializing {Control}...", nameof(Editor));
+		var stopwatch = Stopwatch.StartNew();
+
 		var registryOptions = new RegistryOptions(Theme);
 		var installation = Editor.InstallTextMate(registryOptions);
 
@@ -53,6 +61,9 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 		options.IndentationSize = IndentationSize;
 		options.ShowColumnRulers = true;
 		options.ColumnRulerPositions = [RulerPosition];
+
+		stopwatch.Stop();
+		Log.Debug("Initialized {Control} in {ElapsedMs:F3} ms.", nameof(Editor), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private void OnOutputScrollChanged(object? sender, ScrollChangedEventArgs e)

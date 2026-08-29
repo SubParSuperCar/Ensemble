@@ -4,9 +4,9 @@ using Root.Ui.Impl.ViewModels;
 
 namespace Root.Ui.Impl.Views;
 
-public partial class ReadMeView : UserControl, IViewFor<ReadMeViewModel>
+public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 {
-	public ReadMeView()
+	public DocFileView()
 	{
 		InitializeComponent();
 	}

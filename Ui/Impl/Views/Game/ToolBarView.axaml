@@ -17,7 +17,7 @@
                     Content="Construct Tool (1)"
                     Command="{Binding ToggleConstructToolCommand}"
                     IsChecked="{Binding IsConstructToolEnabled}"
-                    ToolTip.Tip="Toggles the construct (placement) tool. (Bound to One)" />
+                    ToolTip.Tip="Toggles the construct (placement) tool. (Bound to 1 / One)" />
             </Border>
 
             <Border BorderBrush="Red" BorderThickness="1">
@@ -25,7 +25,7 @@
                     Content="Destruct Tool (2)"
                     Command="{Binding ToggleDestructToolCommand}"
                     IsChecked="{Binding IsDestructToolEnabled}"
-                    ToolTip.Tip="Toggles the destruct (deletion) tool. (Bound to Two)" />
+                    ToolTip.Tip="Toggles the destruct (deletion) tool. (Bound to 2 / Two)" />
             </Border>
 
             <CheckBox

@@ -58,7 +58,7 @@
                 <Button
                     Content="Play"
                     Command="{Binding StartSessionCommand}"
-                    ToolTip.Tip="Starts a new session." />
+                    ToolTip.Tip="Starts a new [single player] session. (Bound to Escape)" />
             </Border>
 
             <StackPanel
@@ -66,9 +66,9 @@
                 HorizontalAlignment="Center">
 
                 <Button
-                    Content="README.md"
-                    Command="{Binding GoToReadMeCommand}"
-                    ToolTip.Tip="Opens the README.md file viewer." />
+                    Content="Doc-Files"
+                    Command="{Binding GoToDocFileViewerCommand}"
+                    ToolTip.Tip="Opens the documentation viewer, including README.md, licenses, etc." />
 
                 <Button
                     Content="Settings"
@@ -79,7 +79,7 @@
             <Button
                 Content="Web Browser"
                 Command="{Binding GoToWebBrowserCommand}"
-                ToolTip.Tip="Opens the web browser." />
+                ToolTip.Tip="Opens the web browser.&#x0a;Requires a compatible web rendering component.&#x0a;On Windows, WebView2 should already be installed.&#x0a;On Linux, you may need to install WebKitGTK or WPE WebKit." />
 
             <Border
                 BorderBrush="Red" BorderThickness="1"

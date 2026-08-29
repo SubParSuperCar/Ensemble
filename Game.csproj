@@ -112,10 +112,7 @@
       <BuildInfoLines Include="}"/>
     </ItemGroup>
 
-    <WriteLinesToFile
-      File="$(IntermediateOutputPath)BuildInfo.g.cs"
-      Lines="@(BuildInfoLines)"
-      Overwrite="true"/>
+    <WriteLinesToFile File="$(IntermediateOutputPath)BuildInfo.g.cs" Lines="@(BuildInfoLines)" Overwrite="true"/>
 
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
@@ -138,20 +135,15 @@
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
 
-    <WriteLinesToFile
-      File="$(MSBuildProjectDirectory)/bin/.gdignore"
-      Lines=""
-      Overwrite="false"/>
+    <WriteLinesToFile File="$(MSBuildProjectDirectory)/bin/.gdignore" Lines="" Overwrite="false"/>
   </Target>
 
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)LICENSE.md"
-          CopyToPublishDirectory="PreserveNewest"/>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToPublishDirectory="PreserveNewest"/>
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="**/*.gd;**/*.gdshader"
-          Exclude=".godot/**;bin/**">
+    <None Include="**/*.gd;**/*.gdshader" Exclude=".godot/**;bin/**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
     <None Include="Directory.Build.props"/>

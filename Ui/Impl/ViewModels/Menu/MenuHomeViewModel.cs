@@ -20,7 +20,7 @@ public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBa
 	private static void StartSession() => GSessionManager.StartSinglePlayer();
 
 	[RelayCommand]
-	private void GoToReadMe() => navigator.GoTo<ReadMeViewModel>();
+	private void GoToDocFileViewer() => navigator.GoTo<DocFileViewModel>();
 
 	[RelayCommand]
 	private void GoToWebBrowser() => navigator.GoTo<WebBrowserViewModel>();

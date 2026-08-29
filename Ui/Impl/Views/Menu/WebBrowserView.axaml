@@ -21,6 +21,8 @@
         <NativeWebView
             Name="WebView"
             Source="https://www.google.com/"
+            GotFocus="WebView_GotFocus"
+            LostFocus="WebView_LostFocus"
             NavigationStarted="WebView_OnNavigationStarted"
             NavigationCompleted="WebView_OnNavigationCompleted"
             EnvironmentRequested="WebView_OnEnvironmentRequested"

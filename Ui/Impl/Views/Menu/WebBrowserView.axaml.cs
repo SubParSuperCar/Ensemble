@@ -1,8 +1,10 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Platform;
 using CommunityToolkit.Mvvm.Input;
+using Root.Common.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
 using Serilog;
@@ -43,6 +45,15 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 	{
 		if (e.Key is Key.Enter)
 			_urlBoxBinding?.UpdateSource();
+	}
+
+	private void WebView_GotFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Acquire(this);
+	private void WebView_LostFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Release(this);
+
+	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+	{
+		InputSink.Sink.Release(this);
+		base.OnDetachedFromVisualTree(e);
 	}
 
 	private void OnNavigationStateChanged()

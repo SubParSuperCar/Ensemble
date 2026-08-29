@@ -8,6 +8,7 @@ namespace Root.Common.Input;
 
 public static class InputSink
 {
+	private static readonly object Token = new();
 	private static readonly AnonymousObserver<(object, RoutedEventArgs)> FocusObserver = new(OnFocusChanged);
 
 	static InputSink()
@@ -16,11 +17,17 @@ public static class InputSink
 		InputElement.LostFocusEvent.Raised.Subscribe(FocusObserver);
 	}
 
-	public static bool IsSunk { get; private set; }
+	public static OwnershipFlag Sink { get; } = new();
+	public static bool IsSunk => Sink.IsSet;
 
 	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)
 	{
-		if (value.Args is FocusChangedEventArgs focus)
-			IsSunk = focus.NewFocusedElement is TextBox or TextArea or NativeWebView;
+		if (value.Args is not FocusChangedEventArgs focus)
+			return;
+
+		if (focus.NewFocusedElement is TextBox or TextArea)
+			Sink.Acquire(Token);
+		else
+			Sink.Release(Token);
 	}
 }

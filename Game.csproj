@@ -133,7 +133,7 @@
     <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
   </PropertyGroup>
 
-  <Target Name="PrepareGodotOutput" BeforeTargets="Build">
+  <Target Name="PrepareGodotExport" BeforeTargets="Build">
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
 

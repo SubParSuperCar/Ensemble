@@ -22,10 +22,11 @@ public partial class LuaExecutor
 	private static void InjectCustomFunctions(LuaTable env)
 	{
 		env[nameof(print)] = new LuaFunction(print);
+		env[nameof(wait)] = new LuaFunction(wait);
 		env[nameof(help)] = new LuaFunction(help);
 		env[nameof(quit)] = new LuaFunction(quit);
-		env[nameof(wait)] = new LuaFunction(wait);
-		env[nameof(add_test_insts)] = new LuaFunction(add_test_insts);
+		env[nameof(restart)] = new LuaFunction(restart);
+		env[nameof(add_rand_insts)] = new LuaFunction(add_rand_insts);
 		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
 		env[nameof(clr_log)] = new LuaFunction(clr_log);
 		env[nameof(set_time)] = new LuaFunction(set_time);
@@ -50,6 +51,17 @@ public partial class LuaExecutor
 
 		context.Return();
 		return default;
+	}
+
+	private static async ValueTask<int> wait(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 30;
+		await Task.Delay(timeMs, cancellationToken).ConfigureAwait(false);
+
+		context.Return();
+		return 0;
 	}
 
 	private static ValueTask<int> help(
@@ -84,18 +96,18 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static async ValueTask<int> wait(
+	private static ValueTask<int> restart(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 30;
-		await Task.Delay(timeMs, cancellationToken).ConfigureAwait(false);
+		OS.SetRestartOnExit(true, OS.GetCmdlineArgs());
+		(Engine.GetMainLoop() as SceneTree)?.Quit();
 
 		context.Return();
-		return 0;
+		return default;
 	}
 
-	private static ValueTask<int> add_test_insts(
+	private static ValueTask<int> add_rand_insts(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
@@ -134,7 +146,7 @@ public partial class LuaExecutor
 		}
 
 		stopwatch.Stop();
-		Log.Information("Added {Count} instance(s) to plot id {PlotId} in {ElapsedMs:F3} ms.",
+		Log.Information("Added {Count} instance(s) to plot with id {PlotId} in {ElapsedMs:F3} ms.",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
@@ -155,7 +167,7 @@ public partial class LuaExecutor
 		instances.Clear();
 
 		stopwatch.Stop();
-		Log.Information("Removed {Count} instance(s) from plot id {PlotId} in {ElapsedMs:F3} ms.",
+		Log.Information("Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms.",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);

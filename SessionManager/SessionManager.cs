@@ -78,6 +78,16 @@ public partial class SessionManager : Node
 			Instance = null;
 	}
 
+	public override void _UnhandledKeyInput(InputEvent @event)
+	{
+		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event))
+			return;
+
+		Log.Information("Restarting session as single-player (test action)...");
+		StopSession();
+		StartSinglePlayer();
+	}
+
 	public void StartSinglePlayer() => StartSinglePlayer(string.Empty);
 
 	public void StartSinglePlayer(string displayName)

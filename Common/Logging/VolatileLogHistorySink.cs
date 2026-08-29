@@ -7,7 +7,7 @@ namespace Root.Common.Logging;
 
 public sealed class VolatileLogHistorySink : ILogEventSink
 {
-	private const ushort MaxEntries = 200;
+	private const ushort MaxEntries = 250;
 
 	private static readonly ConcurrentQueue<string> HistoryQueue = [];
 

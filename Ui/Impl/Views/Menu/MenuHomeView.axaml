@@ -27,9 +27,18 @@
 
                 <Image
                     Source="{Binding Icon}"
-                    ToolTip.Tip="Ensemble's Icon (Made w/ Inkscape)"
                     HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Stretch="UniformToFill" />
+                    Stretch="UniformToFill">
+
+                    <ToolTip.Tip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock Text="Ensemble's Icon (Made w/ Inkscape)" />
+                                <Image Source="{Binding Icon}" Stretch="None" />
+                            </StackPanel>
+                        </ToolTip>
+                    </ToolTip.Tip>
+                </Image>
             </Border>
 
             <HyperlinkButton

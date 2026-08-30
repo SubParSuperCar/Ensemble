@@ -20,6 +20,7 @@ public class App : Application
 		var registry = AvaloniaPropertyRegistry.Instance;
 		var tooltipStyle = new Style(x => x.OfType<ToolTip>());
 
+		// ?
 		if (registry.FindRegistered(typeof(TextOptions), "TextRenderingMode") is { } property)
 			tooltipStyle.Setters.Add(new Setter(property, TextRenderingMode.Antialias));
 

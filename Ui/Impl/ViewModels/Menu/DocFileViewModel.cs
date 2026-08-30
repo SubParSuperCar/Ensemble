@@ -8,7 +8,7 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class DocFileViewModel : ViewModelBase
 {
-	private const string MainHeadPath = "https://raw.githubusercontent.com/SubParSuperCar/Ensemble/refs/heads/main/";
+	private const string GhMainHeadPath = "https://raw.githubusercontent.com/SubParSuperCar/Ensemble/refs/heads/main/";
 	private readonly NavigatorService _navigator;
 
 	public DocFileViewModel(NavigatorService navigator)
@@ -17,19 +17,19 @@ public partial class DocFileViewModel : ViewModelBase
 		SelectedFile = Files[0];
 	}
 
-	public ObservableCollection<File> Files { get; } =
+	public ObservableCollection<DocFile> Files { get; } =
 	[
-		new("README.md", MainHeadPath + ".github/README.md"),
-		new("CONTRIBUTING.md", MainHeadPath + ".github/CONTRIBUTING.md"),
-		new("LICENSE.md", MainHeadPath + "LICENSE.md"),
-		new("LICENSE-ASSETS.txt", MainHeadPath + ".github/LICENSE-ASSETS.txt"),
-		new("LICENSE-CODE.txt", MainHeadPath + ".github/LICENSE-CODE.txt")
+		new("README.md", GhMainHeadPath + ".github/README.md"),
+		new("CONTRIBUTING.md", GhMainHeadPath + ".github/CONTRIBUTING.md"),
+		new("LICENSE.md", GhMainHeadPath + "LICENSE.md"),
+		new("LICENSE-ASSETS.txt", GhMainHeadPath + ".github/LICENSE-ASSETS.txt"),
+		new("LICENSE-CODE.txt", GhMainHeadPath + ".github/LICENSE-CODE.txt")
 	];
 
-	[ObservableProperty] public partial File SelectedFile { get; set; }
+	[ObservableProperty] public partial DocFile SelectedFile { get; set; }
 
 	[RelayCommand]
 	private void GoBack() => _navigator.GoBack();
 }
 
-public record File(string Name, string Uri);
+public record DocFile(string Name, string Uri);

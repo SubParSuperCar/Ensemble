@@ -1,3 +1,4 @@
+using Root.Common.Time;
 using Root.GdCore.Assets;
 using Root.GdCore.Players;
 using Root.GdCore.Plots;
@@ -5,6 +6,7 @@ using Root.Scripts.Assets;
 using Root.Scripts.Players;
 using Root.Scripts.Plots;
 using Root.Tooling;
+using DateTime = Root.Common.Time.DateTime;
 
 namespace Root.Common.Globals;
 
@@ -46,4 +48,6 @@ public static class Globals
 
 	public static ToolManager GToolManager =>
 		ToolManager.Instance ?? throw new InvalidOperationException($"{nameof(ToolManager)} is null.");
+
+	public static WrappedTimeProvider GTimeProvider => DateTime.TimeProvider;
 }

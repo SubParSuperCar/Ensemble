@@ -2,7 +2,7 @@ using CoreRoot.Api.Players;
 
 namespace CoreRoot.Players;
 
-public class Players : IPlayers
+public class Players(TimeProvider? timeProvider = null) : IPlayers
 {
 	private readonly Dictionary<Guid, IPlayer> _playersById = [];
 
@@ -20,7 +20,7 @@ public class Players : IPlayers
 		if (_playersById.ContainsKey(playerId))
 			throw new InvalidOperationException($"Player with id {playerId} already exists.");
 
-		var player = new Player(playerId, name);
+		var player = new Player(playerId, name, timeProvider);
 		_playersById.Add(playerId, player);
 		Added?.Invoke(player);
 

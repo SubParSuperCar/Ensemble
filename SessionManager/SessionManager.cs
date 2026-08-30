@@ -157,7 +157,7 @@ public partial class SessionManager : Node
 		if (_session is null)
 			return;
 
-		Log.Debug("Stopping {SessionMode} after {Elapsed}...", Mode, DateTimeOffset.UtcNow - UtcStartedAt);
+		Log.Debug("Stopping {SessionMode} after {Elapsed}...", Mode, GTimeProvider.GetUtcNow() - UtcStartedAt);
 
 		var session = _session;
 		_session = null;

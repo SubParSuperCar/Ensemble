@@ -34,7 +34,7 @@ public partial class GdCore : Node, IAutoload
 
 	public void Initialize()
 	{
-		Core = new Core();
+		Core = new Core(timeProvider: GTimeProvider);
 
 		Players = GdPlayers.From(Core.Players);
 		Assets = GdAssets.From(Core.Assets);

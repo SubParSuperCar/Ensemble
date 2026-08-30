@@ -22,5 +22,5 @@ public partial class ClockViewModel : ViewModelBase
 
 	private void OnProcess(double delta) =>
 		Text = string.Create(CultureInfo.CurrentCulture,
-			$"{DateTime.Now:F} - {LocalTimeZone} - {DateTimeOffset.UtcNow - GSessionManager.UtcStartedAt:G}");
+			$"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt:G}");
 }

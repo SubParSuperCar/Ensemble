@@ -16,9 +16,10 @@ public class Core : ICore
 		Guid? localPlayerId = null,
 		string? localPlayerName = null,
 		int? defaultMaxOccupantCount = null,
-		int? defaultMaxInstanceCount = null)
+		int? defaultMaxInstanceCount = null,
+		TimeProvider? timeProvider = null)
 	{
-		_players = new Players.Players();
+		_players = new Players.Players(timeProvider);
 		_assets = new Assets.Assets();
 
 		var occupants = new OccupantRegistry();

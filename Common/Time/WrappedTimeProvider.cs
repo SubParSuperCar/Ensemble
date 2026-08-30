@@ -1,6 +1,6 @@
 namespace Root.Common.Time;
 
-public class WrappedTimeProvider : TimeProvider
+public sealed class WrappedTimeProvider : TimeProvider
 {
 	public TimeProvider Source { get; set; } = System;
 

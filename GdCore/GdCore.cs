@@ -8,6 +8,7 @@ using Serilog;
 
 namespace Root.GdCore;
 
+/// <inheritdoc cref="CoreRoot.Api.ICore" />
 [GlobalClass]
 [Autoload(Order = sbyte.MinValue + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class GdCore : Node, IAutoload

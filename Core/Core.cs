@@ -6,6 +6,7 @@ using CoreRoot.Plots;
 
 namespace CoreRoot;
 
+/// <inheritdoc />
 public class Core : ICore
 {
 	private readonly Assets.Assets _assets;

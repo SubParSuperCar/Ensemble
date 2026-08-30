@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using Avalonia.Styling;
 using BogaNet.TTS;
 using CommunityToolkit.Mvvm.Messaging;
@@ -36,6 +37,7 @@ public partial class LuaExecutor
 		env[nameof(set_ui_dark_theme_enabled)] = new LuaFunction(set_ui_dark_theme_enabled);
 		env[nameof(set_static_shader_enabled)] = new LuaFunction(set_static_shader_enabled);
 		env[nameof(tts)] = new LuaFunction(tts);
+		env[nameof(get_vsync_modes)] = new LuaFunction(get_vsync_modes);
 		env[nameof(set_vsync_mode)] = new LuaFunction(set_vsync_mode);
 	}
 
@@ -390,6 +392,20 @@ public partial class LuaExecutor
 				CancellationToken.None,
 				TaskContinuationOptions.OnlyOnFaulted,
 				TaskScheduler.Default);
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> get_vsync_modes(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
+
+		Log.Information("Available VSync modes:\n{Modes}",
+			string.Join('\n',
+				modes.Select(static m => string.Create(CultureInfo.InvariantCulture, $"{m} ({(int)m})"))));
 
 		context.Return();
 		return default;

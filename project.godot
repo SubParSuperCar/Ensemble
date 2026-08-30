@@ -11,7 +11,10 @@ config_version=5
 [application]
 
 config/name="Ensemble"
+config/description="Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.
+https://github.com/SubParSuperCar/Ensemble"
 run/main_scene="uid://ddgi4ajn3rnnq"
+config/use_custom_user_dir=true
 config/features=PackedStringArray("4.7", "C#", "Mobile")
 boot_splash/bg_color=Color(0.043137256, 0.09019608, 0.15686275, 1)
 boot_splash/stretch_mode=0

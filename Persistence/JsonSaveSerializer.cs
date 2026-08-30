@@ -4,15 +4,10 @@ namespace Root.Persistence;
 
 public sealed class JsonSaveSerializer : ISaveSerializer
 {
-	private static readonly JsonSerializerOptions Options = new()
-	{
-		WriteIndented = true,
-		Converters = { new CoreVariantJsonConverter() }
-	};
-
-	public void Serialize(Stream stream, CreationSaveData data) => JsonSerializer.Serialize(stream, data, Options);
+	public void Serialize(Stream stream, CreationSaveData data) =>
+		JsonSerializer.Serialize(stream, data, SaveJsonContext.Instance.CreationSaveData);
 
 	public CreationSaveData Deserialize(Stream stream) =>
-		JsonSerializer.Deserialize<CreationSaveData>(stream, Options)
+		JsonSerializer.Deserialize(stream, SaveJsonContext.Instance.CreationSaveData)
 		?? throw new InvalidDataException("Failed to deserialize save data.");
 }

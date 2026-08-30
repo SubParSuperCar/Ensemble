@@ -42,6 +42,8 @@ public partial class Ui : AvaloniaControl
 			Control = new TextBlock
 			{
 				Text = "Loading Autoloads\u2026",
+				FontFamily = new FontFamily("sans-serif"),
+				FontWeight = FontWeight.Regular,
 				FontSize = 48,
 				HorizontalAlignment = HorizontalAlignment.Center,
 				VerticalAlignment = VerticalAlignment.Center
@@ -65,7 +67,7 @@ public partial class Ui : AvaloniaControl
 					"UI Load Failed",
 					Main.FormatFailureMessage(
 						"Ensemble UI failed to load", exception, "Ensemble UI may not appear.")))
-				Main.FailFast();
+				Main.FailFast(exception);
 
 			QueueFree();
 		}
@@ -132,7 +134,7 @@ public partial class Ui : AvaloniaControl
 						"Ensemble UI failed to swap to the real UI",
 						exception,
 						"Ensemble UI may not appear as the real UI.")))
-				Main.FailFast();
+				Main.FailFast(exception);
 
 			QueueFree();
 		}

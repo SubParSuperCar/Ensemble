@@ -6,7 +6,7 @@ namespace Root.Persistence;
 public sealed class CreationSaveData
 {
 	public ushort Version { get; init; } = 1;
-	public DateTimeOffset UtcCreatedAt { get; init; } = DateTimeOffset.UtcNow;
+	public DateTimeOffset UtcCreatedAt { get; init; } = GTimeProvider.GetUtcNow();
 
 #pragma warning disable MA0016
 	public List<SaveInstance> Instances { get; } = [];

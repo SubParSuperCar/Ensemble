@@ -35,7 +35,7 @@ public partial class AvaloniaLoader : Node
 						"Avalonia UI Load Failed",
 						Main.FormatFailureMessage(
 							"Avalonia UI failed to load", exception, "Ensemble UI may not appear.")))
-					Main.FailFast();
+					Main.FailFast(exception);
 			}
 		}
 

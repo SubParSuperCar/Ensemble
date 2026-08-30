@@ -14,7 +14,7 @@
             <TextBlock
                 Text="{Binding Text}"
                 Foreground="White"
-                FontSize="14" FontWeight="Light" />
+                FontSize="14" FontWeight="ExtraLight" />
         </Border>
     </Border>
 

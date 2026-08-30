@@ -24,7 +24,6 @@
     <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
     <OptimizationPreference>Speed</OptimizationPreference>
     <PublishAot>true</PublishAot>
-    <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>full</TrimMode>
   </PropertyGroup>
 
@@ -146,7 +145,6 @@
     <None Include="**/*.gd;**/*.gdshader" Exclude=".godot/**;bin/**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
-    <None Include="Directory.Build.props"/>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>
   </ItemGroup>
 

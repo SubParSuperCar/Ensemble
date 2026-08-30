@@ -11,7 +11,7 @@
             </FontFamily>
 
             <x:Double x:Key="FontSize">16</x:Double>
-            <FontWeight x:Key="FontWeight">SemiLight</FontWeight>
+            <FontWeight x:Key="FontWeight">Light</FontWeight>
 
             <x:TimeSpan x:Key="TransitionDuration">0.2</x:TimeSpan>
 

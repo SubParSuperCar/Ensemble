@@ -48,7 +48,7 @@ public partial class Logger : Node, IAutoload
 					"{ {@t: @t, @l: @l, @m: @m, @x: @x, ..@p} }\n",
 					CultureInfo.InvariantCulture
 				),
-				Path.Combine(logDir, "log-.json"),
+				Path.Combine(logDir, "serilog-.json"),
 				flushToDiskInterval: TimeSpan.FromSeconds(2),
 				rollingInterval: RollingInterval.Day,
 				rollOnFileSizeLimit: true,

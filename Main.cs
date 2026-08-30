@@ -47,7 +47,7 @@ public partial class Main : Node
 			_ = LoadDeferredAsync();
 	}
 
-	public static void FailFast()
+	public static void FailFast(Exception? exception = null)
 	{
 		try
 		{
@@ -56,15 +56,16 @@ public partial class Main : Node
 			TinyDialogs.NotifyPopup(
 				NotificationIconType.Error,
 				"Ensemble Crashed",
-				"Ensemble crashed. Please contact the developer(s) or review the logs.");
+				"Ensemble crashed. Please contact the developer(s) or review the logs. " +
+				"Run the game in a console (Cmd Prompt, PowerShell, Terminal, etc.) to view stdout/stderr.");
 		}
-		catch (Exception exception)
+		catch (Exception notifyException)
 		{
-			Log.Error(exception, "Failed to show crash popup.");
+			Log.Error(notifyException, "Failed to show crash popup.");
 		}
 		finally
 		{
-			Environment.FailFast(null);
+			Environment.FailFast(null, exception);
 		}
 	}
 

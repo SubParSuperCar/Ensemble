@@ -34,8 +34,9 @@ public partial class LuaExecutor
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
-		env[nameof(set_ui_dark_theme_enabled)] = new LuaFunction(set_ui_dark_theme_enabled);
-		env[nameof(set_static_shader_enabled)] = new LuaFunction(set_static_shader_enabled);
+		env[nameof(set_ui_dark_theme_on)] = new LuaFunction(set_ui_dark_theme_on);
+		env[nameof(set_ui_scale)] = new LuaFunction(set_ui_scale);
+		env[nameof(set_static_shader_on)] = new LuaFunction(set_static_shader_on);
 		env[nameof(tts)] = new LuaFunction(tts);
 		env[nameof(get_vsync_modes)] = new LuaFunction(get_vsync_modes);
 		env[nameof(set_vsync_mode)] = new LuaFunction(set_vsync_mode);
@@ -339,7 +340,7 @@ public partial class LuaExecutor
 		return 0;
 	}
 
-	private static ValueTask<int> set_ui_dark_theme_enabled(
+	private static ValueTask<int> set_ui_dark_theme_on(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
@@ -353,13 +354,26 @@ public partial class LuaExecutor
 		};
 
 		Log.Information("Setting UI theme variant to: {$Theme}", theme);
-		WeakReferenceMessenger.Default.Send(new SetThemeMessage(theme));
+		WeakReferenceMessenger.Default.Send(new SetUiThemeMessage(theme));
 
 		context.Return();
 		return default;
 	}
 
-	private static ValueTask<int> set_static_shader_enabled(
+	private static ValueTask<int> set_ui_scale(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var scale = context.GetArgument<double>(0);
+
+		Log.Information("Setting UI render scale to: {Scale}", scale);
+		WeakReferenceMessenger.Default.Send(new SetUiRenderScaleMessage(scale));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> set_static_shader_on(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{

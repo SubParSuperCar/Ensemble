@@ -28,7 +28,7 @@ public class App : Application
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 
-		WeakReferenceMessenger.Default.Register<SetThemeMessage>(this,
+		WeakReferenceMessenger.Default.Register<SetUiThemeMessage>(this,
 			(_, message) => RequestedThemeVariant = message.Value);
 
 		base.OnFrameworkInitializationCompleted();

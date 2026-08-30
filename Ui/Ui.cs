@@ -56,6 +56,9 @@ public partial class Ui : AvaloniaControl
 			Console.WriteLine(string.Create(CultureInfo.InvariantCulture,
 				$"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms."));
 
+			WeakReferenceMessenger.Default.Register<SetUiRenderScaleMessage>(this,
+				(_, message) => RenderScaling = message.Value);
+
 			if (Main.AutoloadsLoaded)
 				SwapToRealUi();
 			else
@@ -77,6 +80,8 @@ public partial class Ui : AvaloniaControl
 	{
 		if (Performance.HasCustomMonitor(ProcessTimeMonitor))
 			Performance.RemoveCustomMonitor(ProcessTimeMonitor);
+
+		WeakReferenceMessenger.Default.Unregister<SetUiRenderScaleMessage>(this);
 	}
 
 	public override void _Process(double delta)

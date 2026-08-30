@@ -2,7 +2,7 @@ using ZstdSharp;
 
 namespace Root.Persistence;
 
-public enum CompressionType
+public enum CompressionType : byte
 {
 	None,
 	Zstd

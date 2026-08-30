@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 using Root.GdCore.Assets;
 using Root.GdCore.Plots;
@@ -51,6 +52,7 @@ public partial class PlotHandle : Node3D
 		var packed = GAssetManager.GetPacked(instance.Asset.Id);
 
 		var handle = packed.Instantiate<AssetHandle>();
+		handle.Name = string.Create(CultureInfo.InvariantCulture, $"{instance.Id}-{instance.Asset.Name}");
 		handle.InstanceId = instance.Id;
 		handle.Freeze = true;
 

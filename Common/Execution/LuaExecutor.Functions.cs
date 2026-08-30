@@ -36,6 +36,7 @@ public partial class LuaExecutor
 		env[nameof(set_ui_dark_theme_enabled)] = new LuaFunction(set_ui_dark_theme_enabled);
 		env[nameof(set_static_shader_enabled)] = new LuaFunction(set_static_shader_enabled);
 		env[nameof(tts)] = new LuaFunction(tts);
+		env[nameof(set_vsync_mode)] = new LuaFunction(set_vsync_mode);
 	}
 
 	private static ValueTask<int> print(
@@ -389,6 +390,24 @@ public partial class LuaExecutor
 				CancellationToken.None,
 				TaskContinuationOptions.OnlyOnFaulted,
 				TaskScheduler.Default);
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> set_vsync_mode(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var mode = context.GetArgument<string>(0);
+
+		if (Enum.TryParse<DisplayServer.VSyncMode>(mode, true, out var result))
+		{
+			DisplayServer.WindowSetVsyncMode(result);
+			Log.Debug("Set VSync mode to: {Mode}", result);
+		}
+		else
+			Log.Error("Failed to set VSync mode to: {Mode}", mode);
 
 		context.Return();
 		return default;

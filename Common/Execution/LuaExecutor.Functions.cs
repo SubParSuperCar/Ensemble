@@ -444,9 +444,7 @@ public partial class LuaExecutor
 			Log.Debug("Set VSync mode to: {Mode}", result);
 		}
 		else
-		{
 			Log.Error("Invalid VSync mode: {Mode}", arg);
-		}
 
 		context.Return();
 		return default;

@@ -415,15 +415,38 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var mode = context.GetArgument<string>(0);
+		var arg = context.GetArgument<LuaValue>(0);
 
-		if (Enum.TryParse<DisplayServer.VSyncMode>(mode, true, out var result))
+		DisplayServer.VSyncMode? mode = null;
+
+		// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+		switch (arg.Type)
+		{
+			case LuaValueType.String:
+				{
+					if (Enum.TryParse<DisplayServer.VSyncMode>(arg.Read<string>(), true, out var parsed))
+						mode = parsed;
+					break;
+				}
+			case LuaValueType.Number:
+				{
+					var value = (long)arg.Read<double>();
+
+					if (Enum.IsDefined(typeof(DisplayServer.VSyncMode), value))
+						mode = (DisplayServer.VSyncMode)value;
+					break;
+				}
+		}
+
+		if (mode is { } result)
 		{
 			DisplayServer.WindowSetVsyncMode(result);
 			Log.Debug("Set VSync mode to: {Mode}", result);
 		}
 		else
-			Log.Error("Failed to set VSync mode to: {Mode}", mode);
+		{
+			Log.Error("Invalid VSync mode: {Mode}", arg);
+		}
 
 		context.Return();
 		return default;

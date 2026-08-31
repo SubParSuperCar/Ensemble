@@ -101,13 +101,13 @@ public partial class Ui : AvaloniaControl
 	{
 		Log.Debug("Window resolution: {Size}", size);
 
-		var diagonal = MathF.Sqrt(size.X * size.X + size.Y * size.Y);
+		var diagonal = Math.Sqrt(size.X * size.X + size.Y * size.Y);
 		Log.Debug("Window diagonal: {Diagonal:F2}", diagonal);
 
 		return diagonal switch
 		{
-			< 2570.06f => 1,
-			< 3671.51f => 1.25f,
+			< 2570.06d => 1,
+			< 3671.51d => 1.25f,
 			_ => 1.5f
 		};
 	}

@@ -56,7 +56,7 @@
                 CornerRadius="8" ClipToBounds="True">
 
                 <Button
-                    Content="Play"
+                    Content="Play (Esc)"
                     Command="{Binding StartSessionCommand}"
                     ToolTip.Tip="Starts a new [single player] session. (Bound to Escape)" />
             </Border>

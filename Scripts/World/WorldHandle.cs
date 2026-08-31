@@ -31,8 +31,9 @@ public partial class WorldHandle : Node3D
 				instances.Add(asset.Id, position, Quaternion.Identity);
 			}
 
-			GPlayers.Add(string.Empty, "Larpje139 (Test)");
-			GPlayers.Add(string.Empty, "Pepsi bottle guzzler (Test)");
+			GPlayers.Add(string.Empty, "Foo - Larpje139 (Test)");
+			GPlayers.Add(string.Empty, "Bar - Dr. Thunder Enjoyer (Test)");
+			GPlayers.Add(string.Empty, "Baz - Dr. Jr. (Test)");
 		}
 #endif
 

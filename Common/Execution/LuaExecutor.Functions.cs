@@ -48,7 +48,7 @@ public partial class LuaExecutor
 	{
 		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgument<int>(1);
-		var positionRange = GPlotManager.GetHandle(plotId).BoundarySize / 2;
+		var positionRange = GPlotManager.GetHandle(plotId).GridBoundarySize / 2;
 
 		var instances = GPlots.GetPlot(plotId)!.Instances;
 		var assetIds = GAssets.GetAll().Select(a => a.Id).ToArray();

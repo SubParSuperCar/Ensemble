@@ -137,7 +137,7 @@ public partial class PopperCam : SpringArm3D
 		_capturedMousePosition = GetViewport().GetMousePosition();
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 
-		Log.Verbose("Moise captured at: {$Position}", _capturedMousePosition);
+		Log.Verbose("Mouse captured at: {$Position}", _capturedMousePosition);
 	}
 
 	private void ReleaseMouse()

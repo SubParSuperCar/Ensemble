@@ -62,7 +62,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		_dispatcher.Process -= OnProcess;
 
-		Log.Debug("Stopped force render drawing.");
+		Log.Debug("Stopped forced render drawing.");
 
 		Main = _services.GetRequiredService<GameViewModel>();
 	}
@@ -71,7 +71,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		_dispatcher.Process += OnProcess;
 
-		Log.Debug("Started force render drawing...");
+		Log.Debug("Started forced render drawing...");
 
 		Main = _services.GetRequiredService<MenuViewModel>();
 	}

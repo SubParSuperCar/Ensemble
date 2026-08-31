@@ -120,7 +120,7 @@ public partial class Ui : AvaloniaControl
 
 	private void SwapToRealUi()
 	{
-		Log.Debug("Swapping {Class} to real UI...", nameof(Ui));
+		Log.Debug("Swapping loading UI to real UI...");
 		var stopwatch = Stopwatch.StartNew();
 
 		try
@@ -143,13 +143,12 @@ public partial class Ui : AvaloniaControl
 			Control = locator.Build(viewModel);
 
 			stopwatch.Stop();
-			Log.Debug("Swapped {Class} to real UI in {ElapsedMs:F3} ms.",
-				nameof(Ui), stopwatch.Elapsed.TotalMilliseconds);
+			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms.", stopwatch.Elapsed.TotalMilliseconds);
 
 			var windowSize = GetWindow().Size;
 			RenderScaling = GetRenderScale(windowSize);
 
-			Log.Debug("Set initial {Class} render scale to: {Scale}", nameof(Ui), RenderScaling);
+			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), RenderScaling);
 		}
 		catch (Exception exception)
 		{

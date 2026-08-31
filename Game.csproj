@@ -139,6 +139,7 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToPublishDirectory="PreserveNewest"/>
+    <None Include="$(MSBuildThisFileDirectory)appsettings.json" CopyToPublishDirectory="PreserveNewest"/>
   </ItemGroup>
 
   <ItemGroup>

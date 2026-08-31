@@ -3,6 +3,7 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using Estragonia;
 using Godot;
@@ -12,6 +13,7 @@ using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 using Root.Ui.Impl.ViewModels;
 using Serilog;
+using Dispatcher = Avalonia.Threading.Dispatcher;
 using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
@@ -31,6 +33,8 @@ public partial class Ui : AvaloniaControl
 			QueueFree();
 			return;
 		}
+
+		Dispatcher.UIThread.UnhandledException += OnAvaloniaUnhandledException;
 
 		Console.WriteLine($"Starting {nameof(Ui)} (loading screen)...");
 		var stopwatch = Stopwatch.StartNew();
@@ -82,6 +86,7 @@ public partial class Ui : AvaloniaControl
 			Performance.RemoveCustomMonitor(ProcessTimeMonitor);
 
 		WeakReferenceMessenger.Default.Unregister<SetUiRenderScaleMessage>(this);
+		Dispatcher.UIThread.UnhandledException -= OnAvaloniaUnhandledException;
 	}
 
 	public override void _Process(double delta)
@@ -162,5 +167,11 @@ public partial class Ui : AvaloniaControl
 
 			QueueFree();
 		}
+	}
+
+	private static void OnAvaloniaUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+	{
+		args.Handled = true;
+		Log.Error(args.Exception, "Unhandled exception in Avalonia.");
 	}
 }

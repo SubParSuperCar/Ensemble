@@ -99,10 +99,10 @@ public partial class Ui : AvaloniaControl
 
 	private static float GetRenderScale(Vector2I size)
 	{
-		Log.Verbose("Window resolution: {Size}", size);
+		Log.Debug("Window resolution: {Size}", size);
 
 		var diagonal = MathF.Sqrt(size.X * size.X + size.Y * size.Y);
-		Log.Verbose("Window diagonal: {Diagonal:F2}", diagonal);
+		Log.Debug("Window diagonal: {Diagonal:F2}", diagonal);
 
 		return diagonal switch
 		{

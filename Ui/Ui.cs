@@ -97,6 +97,21 @@ public partial class Ui : AvaloniaControl
 
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 
+	private static float GetRenderScale(Vector2I size)
+	{
+		Log.Verbose("Window resolution: {Size}", size);
+
+		var diagonal = MathF.Sqrt(size.X * size.X + size.Y * size.Y);
+		Log.Verbose("Window diagonal: {Diagonal:F2}", diagonal);
+
+		return diagonal switch
+		{
+			< 2570.06f => 1,
+			< 3671.51f => 1.25f,
+			_ => 1.5f
+		};
+	}
+
 	private void OnAutoloadsReady()
 	{
 		Main.AutoloadsReady -= OnAutoloadsReady;
@@ -130,6 +145,11 @@ public partial class Ui : AvaloniaControl
 			stopwatch.Stop();
 			Log.Debug("Swapped {Class} to real UI in {ElapsedMs:F3} ms.",
 				nameof(Ui), stopwatch.Elapsed.TotalMilliseconds);
+
+			var windowSize = GetWindow().Size;
+			RenderScaling = GetRenderScale(windowSize);
+
+			Log.Debug("Render scale: {Scale}", RenderScaling);
 		}
 		catch (Exception exception)
 		{

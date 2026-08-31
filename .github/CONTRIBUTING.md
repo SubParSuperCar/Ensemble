@@ -17,13 +17,13 @@
    from https://dotnet.microsoft.com/en-us/download/dotnet/10.0/. The .NET SDK is required to build and run the
    project's C# code.
 
-5. Download and install **JetBrains Rider 2025.3 or newer** from https://www.jetbrains.com/rider/download/. Rider is
-   free for non-commercial use (as of the last update of this document) and is the recommended IDE for this project.
-   **Visual Studio Code** is also supported, but its C# tooling is generally less comprehensive than Rider's. **Visual
-   Studio 2026** can also be used, but only on Windows.
+5. (Optional) Download and install **JetBrains Rider 2025.3 or newer** from https://www.jetbrains.com/rider/download/.
+   Rider is free for non-commercial use (as of the last update of this document) and is the recommended IDE for this
+   project. **Visual Studio Code** is also supported, but its C# tooling is generally less comprehensive than Rider's.
+   **Visual Studio 2026** can also be used, but only on Windows.
 
-6. Open the project in Godot and, optionally, in your preferred code editor (JetBrains Rider, Visual Studio Code, etc.),
-   then begin developing.
+6. Open the project in Godot (to import it) and, optionally, in your preferred code editor (JetBrains Rider, Visual
+   Studio Code, etc.), then begin developing.
 
    If you use JetBrains Rider, it is recommended that you add the Godot executable to your system's `PATH` using one of
    the following names: `godot`, `godot4`, or `godot-mono`. This allows the **PATH Launcher** run configuration to

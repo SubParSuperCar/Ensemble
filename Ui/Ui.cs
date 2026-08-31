@@ -149,7 +149,7 @@ public partial class Ui : AvaloniaControl
 			var windowSize = GetWindow().Size;
 			RenderScaling = GetRenderScale(windowSize);
 
-			Log.Debug("Render scale: {Scale}", RenderScaling);
+			Log.Debug("Set initial {Class} render scale to: {Scale}", nameof(Ui), RenderScaling);
 		}
 		catch (Exception exception)
 		{

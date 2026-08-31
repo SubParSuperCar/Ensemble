@@ -5,7 +5,7 @@
       "commandName": "Executable",
       "executablePath": "Properties/launch.$(LaunchScriptExt)",
       "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "--path \"$(ProjectDir)"
+      "commandLineArgs": "-m --path \"$(ProjectDir)"
     },
     "Editor (PATH Launcher)": {
       "commandName": "Executable",

@@ -12,6 +12,7 @@ namespace Root.Common.Globals;
 
 public static class Globals
 {
+	/// <inheritdoc cref="CoreRoot.Api.ICore" />
 	public static GdCore.GdCore GCore =>
 		GdCore.GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null.");
 
@@ -24,6 +25,7 @@ public static class Globals
 	public static GdPlots GPlots =>
 		GCore.Plots ?? throw new InvalidOperationException($"{nameof(GdCore.Plots)} is null.");
 
+	/// <inheritdoc cref="Root.SessionManager.SessionManager" />
 	public static SessionManager.SessionManager GSessionManager =>
 		SessionManager.SessionManager.Instance ??
 		throw new InvalidOperationException($"{nameof(SessionManager.SessionManager)} is null.");

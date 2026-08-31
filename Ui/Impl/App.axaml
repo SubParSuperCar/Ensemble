@@ -13,7 +13,7 @@
             <FontWeight x:Key="FontWeight">Light</FontWeight>
             <x:Double x:Key="FontSize">16</x:Double>
 
-            <x:TimeSpan x:Key="TransitionDuration">0.2</x:TimeSpan>
+            <x:TimeSpan x:Key="TransitionDuration">0.1875</x:TimeSpan>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />

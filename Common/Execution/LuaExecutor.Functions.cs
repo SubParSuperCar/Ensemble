@@ -22,93 +22,24 @@ public partial class LuaExecutor
 
 	private static void InjectCustomFunctions(LuaTable env)
 	{
-		env[nameof(print)] = new LuaFunction(print);
-		env[nameof(wait)] = new LuaFunction(wait);
-		env[nameof(help)] = new LuaFunction(help);
-		env[nameof(quit)] = new LuaFunction(quit);
-		env[nameof(restart)] = new LuaFunction(restart);
 		env[nameof(add_rand_insts)] = new LuaFunction(add_rand_insts);
 		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
 		env[nameof(clr_log)] = new LuaFunction(clr_log);
-		env[nameof(set_time)] = new LuaFunction(set_time);
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
+		env[nameof(get_vsync_modes)] = new LuaFunction(get_vsync_modes);
+		env[nameof(help)] = new LuaFunction(help);
+		env[nameof(print)] = new LuaFunction(print);
+		env[nameof(quit)] = new LuaFunction(quit);
+		env[nameof(restart)] = new LuaFunction(restart);
+		env[nameof(set_static_shader_on)] = new LuaFunction(set_static_shader_on);
+		env[nameof(set_time)] = new LuaFunction(set_time);
 		env[nameof(set_ui_dark_theme_on)] = new LuaFunction(set_ui_dark_theme_on);
 		env[nameof(set_ui_scale)] = new LuaFunction(set_ui_scale);
-		env[nameof(set_static_shader_on)] = new LuaFunction(set_static_shader_on);
-		env[nameof(tts)] = new LuaFunction(tts);
-		env[nameof(get_vsync_modes)] = new LuaFunction(get_vsync_modes);
 		env[nameof(set_vsync_mode)] = new LuaFunction(set_vsync_mode);
-	}
-
-	private static ValueTask<int> print(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var arguments = new List<string>(context.ArgumentCount);
-
-		for (var i = 0; i < context.ArgumentCount; i++)
-			arguments.Add(context.GetArgument<LuaValue>(i).ToString());
-
-		Log.Information("Lua: \"{Message}\"", string.Join(' ', arguments));
-
-		context.Return();
-		return default;
-	}
-
-	private static async ValueTask<int> wait(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 30;
-		await Task.Delay(timeMs, cancellationToken).ConfigureAwait(false);
-
-		context.Return();
-		return 0;
-	}
-
-	private static ValueTask<int> help(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var env = new LuaTable();
-		InjectCustomFunctions(env);
-
-		var functions = env
-			.Where(entry => entry.Value.Type is LuaValueType.Function)
-			.Select(entry => entry.Key.Read<string>())
-			.Order(StringComparer.Ordinal);
-
-		Log.Information("Custom injected functions in _ENV:\n{Functions}",
-			string.Join((string?)Environment.NewLine, functions));
-
-		context.Return();
-		return default;
-	}
-
-	private static ValueTask<int> quit(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		if (context.ArgumentCount > 0)
-			Environment.Exit(0);
-		else
-			(Engine.GetMainLoop() as SceneTree)?.Quit();
-
-		context.Return();
-		return default;
-	}
-
-	private static ValueTask<int> restart(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		OS.SetRestartOnExit(true, OS.GetCmdlineArgs());
-		(Engine.GetMainLoop() as SceneTree)?.Quit();
-
-		context.Return();
-		return default;
+		env[nameof(tts)] = new LuaFunction(tts);
+		env[nameof(wait)] = new LuaFunction(wait);
 	}
 
 	private static ValueTask<int> add_rand_insts(
@@ -190,42 +121,33 @@ public partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> set_time(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var timeOfDay = WorldManager.Instance?.World?.GetNode("Sky/TimeOfDay");
-		if (timeOfDay is null)
-			goto Return;
-
-		if (context.ArgumentCount is 0)
-		{
-			timeOfDay.Set("game_time_enabled", true);
-			timeOfDay.Set("system_sync", true);
-
-			Log.Information("Synced lighting time to system clock.");
-
-			goto Return;
-		}
-
-		var time = context.GetArgument<float>(0) % 24;
-		timeOfDay.Set("game_time_enabled", false);
-		timeOfDay.Set("system_sync", false);
-		timeOfDay.Set("current_time", time);
-
-		Log.Information("Set lighting time to {Hours} hour(s) after midnight.", time);
-
-	Return:
-		context.Return();
-		return default;
-	}
-
 	private static ValueTask<int> dmp_env(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
 		Log.Information("Contents of _ENV:");
 		DumpTable(context.State.Environment, "_ENV", []);
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> dmp_inp_map(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		Log.Information("Contents of InputMap:");
+
+		foreach (var action in InputMap.GetActions()
+					 .Select(a => a.ToString())
+					 .Order(StringComparer.Ordinal))
+		{
+			Log.Information("{Action}:", action);
+
+			var index = 1;
+			foreach (var @event in InputMap.ActionGetEvents(action))
+				Log.Information("{Index}. {Event}", index++, @event.AsText());
+		}
 
 		context.Return();
 		return default;
@@ -289,27 +211,6 @@ public partial class LuaExecutor
 		}
 	}
 
-	private static ValueTask<int> dmp_inp_map(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		Log.Information("Contents of InputMap:");
-
-		foreach (var action in InputMap.GetActions()
-					 .Select(a => a.ToString())
-					 .Order(StringComparer.Ordinal))
-		{
-			Log.Information("{Action}:", action);
-
-			var index = 1;
-			foreach (var @event in InputMap.ActionGetEvents(action))
-				Log.Information("{Index}. {Event}", index++, @event.AsText());
-		}
-
-		context.Return();
-		return default;
-	}
-
 	private static string EscapeString(string value) =>
 		value
 			.Replace("\\", @"\\", StringComparison.Ordinal)
@@ -340,6 +241,123 @@ public partial class LuaExecutor
 		return 0;
 	}
 
+	private static ValueTask<int> get_vsync_modes(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
+
+		Log.Information("Available VSync modes:\n{Modes}",
+			string.Join('\n',
+				modes.Select(static m => string.Create(CultureInfo.InvariantCulture, $"{m} ({(int)m})"))));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> help(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var env = new LuaTable();
+		InjectCustomFunctions(env);
+
+		var functions = env
+			.Where(entry => entry.Value.Type is LuaValueType.Function)
+			.Select(entry => entry.Key.Read<string>())
+			.Order(StringComparer.Ordinal);
+
+		Log.Information("Custom injected functions in _ENV:\n{Functions}",
+			string.Join((string?)Environment.NewLine, functions));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> print(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var arguments = new List<string>(context.ArgumentCount);
+
+		for (var i = 0; i < context.ArgumentCount; i++)
+			arguments.Add(context.GetArgument<LuaValue>(i).ToString());
+
+		Log.Information("Lua: \"{Message}\"", string.Join(' ', arguments));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> quit(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		if (context.ArgumentCount > 0)
+			Environment.Exit(0);
+		else
+			(Engine.GetMainLoop() as SceneTree)?.Quit();
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> restart(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		OS.SetRestartOnExit(true, OS.GetCmdlineArgs());
+		(Engine.GetMainLoop() as SceneTree)?.Quit();
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> set_static_shader_on(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var isVisible = context.GetArgument<bool>(0);
+		Log.Information("Setting Temporal Static shader visibility to: {IsVisible}", isVisible);
+
+		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+		var temporalShader = Main.Instance?.GetNode<CanvasLayer>("Temporal Static");
+		temporalShader?.Visible = isVisible;
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> set_time(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var timeOfDay = WorldManager.Instance?.World?.GetNode("Sky/TimeOfDay");
+		if (timeOfDay is null)
+			goto Return;
+
+		if (context.ArgumentCount is 0)
+		{
+			timeOfDay.Set("game_time_enabled", true);
+			timeOfDay.Set("system_sync", true);
+
+			Log.Information("Synced lighting time to system clock.");
+
+			goto Return;
+		}
+
+		var time = context.GetArgument<float>(0) % 24;
+		timeOfDay.Set("game_time_enabled", false);
+		timeOfDay.Set("system_sync", false);
+		timeOfDay.Set("current_time", time);
+
+		Log.Information("Set lighting time to {Hours} hour(s) after midnight.", time);
+
+	Return:
+		context.Return();
+		return default;
+	}
+
 	private static ValueTask<int> set_ui_dark_theme_on(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -368,58 +386,6 @@ public partial class LuaExecutor
 
 		Log.Information("Setting UI render scale to: {Scale}", scale);
 		WeakReferenceMessenger.Default.Send(new SetUiRenderScaleMessage(scale));
-
-		context.Return();
-		return default;
-	}
-
-	private static ValueTask<int> set_static_shader_on(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var isVisible = context.GetArgument<bool>(0);
-		Log.Information("Setting Temporal Static shader visibility to: {IsVisible}", isVisible);
-
-		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
-		var temporalShader = Main.Instance?.GetNode<CanvasLayer>("Temporal Static");
-		temporalShader?.Visible = isVisible;
-
-		context.Return();
-		return default;
-	}
-
-	private static ValueTask<int> tts(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var text = context.GetArgument<string>(0);
-		var culture = context.ArgumentCount > 1 ? context.GetArgument<string>(1) : "en";
-		var rate = context.ArgumentCount > 2 ? context.GetArgument<float>(2) : 1;
-		var pitch = context.ArgumentCount > 3 ? context.GetArgument<float>(3) : 1;
-		var volume = context.ArgumentCount > 4 ? context.GetArgument<float>(4) : 1;
-
-		var voice = Speaker.Instance.VoiceForCulture(culture);
-
-		_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
-			.ContinueWith(
-				task => Log.Error(task.Exception, "TTS failed."),
-				CancellationToken.None,
-				TaskContinuationOptions.OnlyOnFaulted,
-				TaskScheduler.Default);
-
-		context.Return();
-		return default;
-	}
-
-	private static ValueTask<int> get_vsync_modes(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
-
-		Log.Information("Available VSync modes:\n{Modes}",
-			string.Join('\n',
-				modes.Select(static m => string.Create(CultureInfo.InvariantCulture, $"{m} ({(int)m})"))));
 
 		context.Return();
 		return default;
@@ -462,5 +428,39 @@ public partial class LuaExecutor
 
 		context.Return();
 		return default;
+	}
+
+	private static ValueTask<int> tts(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var text = context.GetArgument<string>(0);
+		var culture = context.ArgumentCount > 1 ? context.GetArgument<string>(1) : "en";
+		var rate = context.ArgumentCount > 2 ? context.GetArgument<float>(2) : 1;
+		var pitch = context.ArgumentCount > 3 ? context.GetArgument<float>(3) : 1;
+		var volume = context.ArgumentCount > 4 ? context.GetArgument<float>(4) : 1;
+
+		var voice = Speaker.Instance.VoiceForCulture(culture);
+
+		_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
+			.ContinueWith(
+				task => Log.Error(task.Exception, "TTS failed."),
+				CancellationToken.None,
+				TaskContinuationOptions.OnlyOnFaulted,
+				TaskScheduler.Default);
+
+		context.Return();
+		return default;
+	}
+
+	private static async ValueTask<int> wait(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 30;
+		await Task.Delay(timeMs, cancellationToken).ConfigureAwait(false);
+
+		context.Return();
+		return 0;
 	}
 }

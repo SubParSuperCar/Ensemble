@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Formatting.Display;
+using Serilog.Templates;
 
 namespace Root.Common.Logging;
 
@@ -10,9 +10,7 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 	private const ushort MaxEntries = 250;
 
 	private static readonly ConcurrentQueue<string> HistoryQueue = [];
-
-	private static readonly MessageTemplateTextFormatter Formatter =
-		new("[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+	private static readonly ExpressionTemplate Formatter = new("[{@t:HH:mm:ss} {@l:u3}] {@m:lj}{@x}");
 
 	public static IReadOnlyCollection<string> History => [.. HistoryQueue];
 

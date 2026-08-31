@@ -68,7 +68,7 @@ public partial class Watchdog : Node, IAutoload
 		}
 		catch (Exception exception) when (exception is not OperationCanceledException)
 		{
-			Main.FailFast();
+			Main.FailFast(exception);
 		}
 	}
 

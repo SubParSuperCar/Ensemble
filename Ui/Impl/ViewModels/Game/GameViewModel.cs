@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
+using Root.Common.Input;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 using Root.Ui.Impl.Services;
@@ -56,7 +57,7 @@ public partial class GameViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressedByEvent("ui_toggle_player_list", @event))
+		if (!InputSink.IsSunk && Input.IsActionJustPressedByEvent("ui_toggle_player_list", @event))
 			PlayerList = PlayerList is null ? _services.GetRequiredService<PlayerListViewModel>() : null;
 	}
 

@@ -1,4 +1,3 @@
-using System.Globalization;
 using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -6,7 +5,6 @@ using Root.Autoloading;
 using Root.Common.Logging;
 using Root.Scripts.Logging.Impl;
 using Serilog;
-using Serilog.Templates;
 using FileAccess = Godot.FileAccess;
 
 namespace Root.Scripts.Logging;
@@ -23,13 +21,22 @@ public partial class Logger : Node, IAutoload
 		Directory.CreateDirectory(logDir);
 
 		var configBuilder = new ConfigurationBuilder();
+		var configFileLoaded = false;
 
-		using var file = FileAccess.Open(AppSettingsPath, FileAccess.ModeFlags.Read);
-
-		if (file is not null)
+		if (FileAccess.FileExists(AppSettingsPath))
 		{
-			var bytes = file.GetBuffer((long)file.GetLength());
-			configBuilder.AddJsonStream(new MemoryStream(bytes));
+			using var file = FileAccess.Open(AppSettingsPath, FileAccess.ModeFlags.Read);
+
+			if (file is not null)
+			{
+				var bytes = file.GetBuffer((long)file.GetLength());
+				configBuilder.AddJsonStream(new MemoryStream(bytes));
+
+				configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
+				{ ["Serilog:WriteTo:1:Args:path"] = Path.Combine(logDir, "serilog-.json") });
+
+				configFileLoaded = true;
+			}
 		}
 
 		var config = configBuilder.Build();
@@ -40,20 +47,6 @@ public partial class Logger : Node, IAutoload
 			.Enrich.With(new LogEnricher())
 			.WriteTo.Sink(new LogSink())
 			.WriteTo.Sink(new VolatileLogHistorySink())
-			.WriteTo.Console(
-				outputTemplate: "[{Timestamp:HH:mm:ss.fff}] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
-				formatProvider: CultureInfo.InvariantCulture)
-			.WriteTo.File(
-				new ExpressionTemplate(
-					"{ {@t: @t, @l: @l, @m: @m, @x: @x, ..@p} }\n",
-					CultureInfo.InvariantCulture
-				),
-				Path.Combine(logDir, "serilog-.json"),
-				flushToDiskInterval: TimeSpan.FromSeconds(2),
-				rollingInterval: RollingInterval.Day,
-				rollOnFileSizeLimit: true,
-				retainedFileCountLimit: 30,
-				retainedFileTimeLimit: TimeSpan.FromDays(30))
 			.CreateLogger();
 
 		_loggerFactory = LoggerFactory.Create(builder =>
@@ -62,12 +55,15 @@ public partial class Logger : Node, IAutoload
 			builder.AddSerilog(Log.Logger);
 		});
 
-		Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
+		if (configFileLoaded)
+			Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
+		else
+			Log.Warning("{Class} config file not loaded from: {Path}", nameof(Serilog), AppSettingsPath);
 	}
 
 	public override void _ExitTree()
 	{
-		Log.Debug("Closing and flushing {Logger}...", Log.Logger);
+		Log.Debug("Closing and flushing logger...");
 
 		_loggerFactory?.Dispose();
 		Log.CloseAndFlush();

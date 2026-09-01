@@ -25,7 +25,7 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 
 		var peer = new ENetMultiplayerPeer();
 
-		var error = config switch
+		var result = config switch
 		{
 			HostConfig host => host.MaxPlayerCount is null
 				? peer.CreateServer(host.Port)
@@ -34,9 +34,9 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 			_ => Error.InvalidParameter
 		};
 
-		if (error is not Error.Ok)
+		if (result is not Error.Ok)
 		{
-			Failed?.Invoke($"Failed to start session: {error}");
+			Failed?.Invoke($"Failed to start session: {result}");
 			return;
 		}
 

@@ -25,6 +25,7 @@ public partial class LuaExecutor
 		env[nameof(add_rand_insts)] = new LuaFunction(add_rand_insts);
 		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
 		env[nameof(clr_log)] = new LuaFunction(clr_log);
+		env[nameof(dmp_asm_info)] = new LuaFunction(dmp_asm_info);
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
@@ -116,6 +117,21 @@ public partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		VolatileLogHistorySink.Clear();
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> dmp_asm_info(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+			.Select(a => a.GetName())
+			.ToList();
+
+		foreach (var assembly in loadedAssemblies)
+			Log.Information("{Assembly}", assembly.FullName);
 
 		context.Return();
 		return default;

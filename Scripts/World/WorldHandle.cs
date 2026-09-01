@@ -32,7 +32,7 @@ public partial class WorldHandle : Node3D
 			}
 
 			GPlayers.Add(string.Empty, "Foo - Larpje139 (Test)");
-			GPlayers.Add(string.Empty, "Bar - Dr. Thunder Enjoyer (Test)");
+			GPlayers.Add(string.Empty, "Bar - Diet Dr. Thunder Enjoyer (Test)");
 			GPlayers.Add(string.Empty, "Baz - Dr. Jr. (Test)");
 		}
 #endif

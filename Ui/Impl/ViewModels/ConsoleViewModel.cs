@@ -6,6 +6,7 @@ using Godot;
 using Root.Common.Execution;
 using Root.Common.Logging;
 using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Services;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 using Environment = System.Environment;
 
@@ -14,9 +15,15 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class ConsoleViewModel : ViewModelBase
 {
 	private static CancellationTokenSource _cts = new();
+	private readonly DispatcherService _dispatcher;
 
-	public ConsoleViewModel()
+	private byte _updateLogHistoryFlag;
+
+	public ConsoleViewModel(DispatcherService dispatcher)
 	{
+		_dispatcher = dispatcher;
+		dispatcher.Process += OnProcess;
+
 		OnLogHistoryUpdated();
 		VolatileLogHistorySink.Updated += OnLogHistoryUpdated;
 	}
@@ -28,7 +35,11 @@ public partial class ConsoleViewModel : ViewModelBase
 		"(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
 		"print(string.format(\"Hello, %s!\", _VERSION))\nhelp()\n");
 
-	protected override void OnDispose() => VolatileLogHistorySink.Updated -= OnLogHistoryUpdated;
+	protected override void OnDispose()
+	{
+		VolatileLogHistorySink.Updated -= OnLogHistoryUpdated;
+		_dispatcher.Process -= OnProcess;
+	}
 
 	[RelayCommand]
 	private static void OpenUserDataDir() => OS.ShellOpen(ProjectSettings.GlobalizePath(UserScheme));
@@ -43,18 +54,25 @@ public partial class ConsoleViewModel : ViewModelBase
 		await cts.CancelAsync().ConfigureAwait(false);
 	}
 
-	private void OnLogHistoryUpdated() =>
-		Dispatcher.UIThread.Post(() =>
-		{
-			var history = VolatileLogHistorySink.History;
-			var builder = new StringBuilder(history.Count * 128);
+	private void OnLogHistoryUpdated() => Volatile.Write(ref _updateLogHistoryFlag, 1);
 
-			foreach (var line in history)
-				builder.AppendLine(line);
+	private void OnProcess(double delta)
+	{
+		if (Interlocked.Exchange(ref _updateLogHistoryFlag, 0) is 1)
+			Dispatcher.UIThread.Post(UpdateOutput);
+	}
 
-			if (builder.Length > 0)
-				builder.Length -= Environment.NewLine.Length;
+	private void UpdateOutput()
+	{
+		var history = VolatileLogHistorySink.History;
+		var builder = new StringBuilder(history.Count * 128);
 
-			Output = builder.ToString();
-		});
+		foreach (var line in history)
+			builder.AppendLine(line);
+
+		if (builder.Length > 0)
+			builder.Length -= Environment.NewLine.Length;
+
+		Output = builder.ToString();
+	}
 }

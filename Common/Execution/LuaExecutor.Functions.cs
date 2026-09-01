@@ -241,12 +241,16 @@ public partial class LuaExecutor
 		try
 		{
 			Log.Debug("Querying {Url}...", PublicIPv4AddressSourceUrl);
+			var stopwatch = Stopwatch.StartNew();
 
 			var address = (await Http.Client.GetStringAsync(
 				PublicIPv4AddressSourceUrl,
 				cancellationToken).ConfigureAwait(false)).Trim();
 
-			Log.Information("Public IPv4 address: {Address}", address);
+			stopwatch.Stop();
+			Log.Information("Public IPv4 address: {Address} (PingMs={PingMs:F3})",
+				address, stopwatch.Elapsed.TotalMilliseconds);
+
 			context.Return(address);
 		}
 		catch (HttpRequestException exception)

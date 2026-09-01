@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using Godot;
 using Root.Autoloading;
@@ -89,7 +90,6 @@ public partial class SessionManager : Node
 			return;
 
 		Log.Information("Restarting session as single-player (test action)...");
-		StopSession();
 		StartSinglePlayer();
 	}
 
@@ -100,11 +100,16 @@ public partial class SessionManager : Node
 		Log.Debug("Starting {Class}...", nameof(SinglePlayerSession));
 
 		StopSession();
+		var stopwatch = Stopwatch.StartNew();
 
 		_pendingDisplayName = displayName;
 		_session = new SinglePlayerSession((SceneMultiplayer)Multiplayer);
 
 		StartSession();
+
+		stopwatch.Stop();
+		Log.Debug("Started {Class} in {ElapsedMs} ms.",
+			nameof(SinglePlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
@@ -125,6 +130,7 @@ public partial class SessionManager : Node
 			!string.IsNullOrEmpty(password));
 
 		StopSession();
+		var stopwatch = Stopwatch.StartNew();
 
 		_pendingDisplayName = displayName;
 		_session = new MultiPlayerSession(
@@ -135,6 +141,10 @@ public partial class SessionManager : Node
 				maxPlayers is Unlimited ? null : maxPlayers));
 
 		StartSession();
+
+		stopwatch.Stop();
+		Log.Debug("Started {Class} (Host) in {ElapsedMs} ms.",
+			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
@@ -148,6 +158,7 @@ public partial class SessionManager : Node
 			nameof(MultiPlayerSession), address, port, !string.IsNullOrEmpty(password));
 
 		StopSession();
+		var stopwatch = Stopwatch.StartNew();
 
 		_pendingDisplayName = displayName;
 		_session = new MultiPlayerSession(
@@ -155,6 +166,10 @@ public partial class SessionManager : Node
 			new JoinConfig(address, port, Authenticators.Password(password)));
 
 		StartSession();
+
+		stopwatch.Stop();
+		Log.Debug("Started {Class} (Join) in {ElapsedMs} ms.",
+			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	public void StopSession()
@@ -162,7 +177,9 @@ public partial class SessionManager : Node
 		if (_session is null)
 			return;
 
-		Log.Debug("Stopping {SessionMode} after {Elapsed}...", Mode, GTimeProvider.GetUtcNow() - UtcStartedAt);
+		var mode = Mode;
+		Log.Debug("Stopping {SessionMode} after {Elapsed}...", mode, GTimeProvider.GetUtcNow() - UtcStartedAt);
+		var stopwatch = Stopwatch.StartNew();
 
 		var session = _session;
 		_session = null;
@@ -172,6 +189,9 @@ public partial class SessionManager : Node
 		session.Started -= OnSessionStarted;
 		session.Stopped -= OnSessionStopped;
 		session.Failed -= OnSessionFailed;
+
+		stopwatch.Stop();
+		Log.Debug("Stopped {SessionMode} in {ElapsedMs} ms.", mode, stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private void StartSession()

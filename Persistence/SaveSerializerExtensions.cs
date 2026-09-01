@@ -27,14 +27,14 @@ public static class SaveSerializerExtensions
 					break;
 
 				case CompressionType.Zstd:
-					{
-						using var stream = compressionLevel is { } level
-							? new CompressionStream(file, level)
-							: new CompressionStream(file);
+				{
+					using var stream = compressionLevel is { } level
+						? new CompressionStream(file, level)
+						: new CompressionStream(file);
 
-						serializer.Serialize(stream, data);
-						break;
-					}
+					serializer.Serialize(stream, data);
+					break;
+				}
 
 				default:
 					throw new ArgumentOutOfRangeException(nameof(compressionType));

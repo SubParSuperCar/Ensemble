@@ -191,19 +191,19 @@ public partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
+				{
+					var childTable = luaValue.Read<LuaTable>();
+
+					if (visited.Contains(childTable))
+						Log.Information("{Path} = <already visited>", childPath);
+					else
 					{
-						var childTable = luaValue.Read<LuaTable>();
-
-						if (visited.Contains(childTable))
-							Log.Information("{Path} = <already visited>", childPath);
-						else
-						{
-							Log.Information("{Path} = <table>", childPath);
-							DumpTable(childTable, childPath, visited);
-						}
-
-						break;
+						Log.Information("{Path} = <table>", childPath);
+						DumpTable(childTable, childPath, visited);
 					}
+
+					break;
+				}
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -370,7 +370,7 @@ public partial class LuaExecutor
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight.", time);
 
-	Return:
+		Return:
 		context.Return();
 		return default;
 	}
@@ -420,19 +420,19 @@ public partial class LuaExecutor
 		switch (arg.Type)
 		{
 			case LuaValueType.String:
-				{
-					if (Enum.TryParse<DisplayServer.VSyncMode>(arg.Read<string>(), true, out var parsed))
-						mode = parsed;
-					break;
-				}
+			{
+				if (Enum.TryParse<DisplayServer.VSyncMode>(arg.Read<string>(), true, out var parsed))
+					mode = parsed;
+				break;
+			}
 			case LuaValueType.Number:
-				{
-					var value = (long)arg.Read<double>();
+			{
+				var value = (long)arg.Read<double>();
 
-					if (Enum.IsDefined(typeof(DisplayServer.VSyncMode), value))
-						mode = (DisplayServer.VSyncMode)value;
-					break;
-				}
+				if (Enum.IsDefined(typeof(DisplayServer.VSyncMode), value))
+					mode = (DisplayServer.VSyncMode)value;
+				break;
+			}
 		}
 
 		if (mode is { } result)

@@ -70,7 +70,8 @@ public partial class Ui : AvaloniaControl
 		}
 		catch (Exception exception)
 		{
-			if (!Main.AskUser(
+			if (
+				!Main.AskUser(
 					"UI Load Failed",
 					Main.FormatFailureMessage(
 						"Ensemble UI failed to load", exception, "Ensemble UI may not appear.")))
@@ -157,7 +158,8 @@ public partial class Ui : AvaloniaControl
 		}
 		catch (Exception exception)
 		{
-			if (!Main.AskUser(
+			if (
+				!Main.AskUser(
 					"UI Swap Failed",
 					Main.FormatFailureMessage(
 						"Ensemble UI failed to swap to the real UI",

@@ -39,7 +39,8 @@ public partial class DestructTool : ToolBase
 
 	private void OnPhysicsProcess()
 	{
-		if (CastRay() is { } result &&
+		if (
+			CastRay() is { } result &&
 			FindInHierarchy<AssetHandle>(result) is { } handle &&
 			IsHandleLocal(handle))
 			SetSelected(handle);

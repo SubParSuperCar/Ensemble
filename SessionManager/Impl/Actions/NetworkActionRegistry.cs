@@ -10,7 +10,8 @@ public sealed class NetworkActionRegistry
 	{
 		var actionId = TAction.ActionId;
 
-		if (!_entries.TryAdd(actionId, new Entry(
+		if (
+			!_entries.TryAdd(actionId, new Entry(
 				(payload, senderId) => handler.Validate(TAction.FromPayload(payload), senderId),
 				(payload, senderId) => handler.Apply(TAction.FromPayload(payload), senderId))))
 			throw new InvalidOperationException($"A handler for action id {actionId} already exists.");

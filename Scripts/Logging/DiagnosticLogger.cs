@@ -125,9 +125,10 @@ public partial class DiagnosticLogger : Node, IAutoload
 			Add(lines, "Monitor", monitor.Name);
 
 		hwInfo.RefreshNetworkAdapterList();
-		foreach (var nic in hwInfo.NetworkAdapterList
-					 .Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
-					 .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
+		foreach (
+			var nic in hwInfo.NetworkAdapterList
+				.Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
+				.OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
 			Add(lines, "NIC", nic.Name);
 	}
 

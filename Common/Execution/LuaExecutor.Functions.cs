@@ -154,9 +154,10 @@ public partial class LuaExecutor
 	{
 		Log.Information("Contents of InputMap:");
 
-		foreach (var action in InputMap.GetActions()
-					 .Select(a => a.ToString())
-					 .Order(StringComparer.Ordinal))
+		foreach (
+			var action in InputMap.GetActions()
+				.Select(a => a.ToString())
+				.Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
 

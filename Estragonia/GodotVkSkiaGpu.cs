@@ -142,17 +142,20 @@ internal sealed class GodotVkSkiaGpu : ISkiaGpu
 			return TryLoadByName("vulkan-1.dll", out handle);
 
 		if (OperatingSystem.IsMacOS() || OperatingSystem.IsIOS())
-			return TryLoadByName("libvulkan.dylib", out handle)
-				   || TryLoadByName("libvulkan.1.dylib", out handle)
-				   || TryLoadByName("libMoltenVK.dylib", out handle)
-				   || TryLoadByPath("vulkan.framework/vulkan", out handle)
-				   || TryLoadByPath("MoltenVK.framework/MoltenVK", out handle)
-				   || (Environment.GetEnvironmentVariable("DYLD_FALLBACK_LIBRARY_PATH") is null
-					   && TryLoadByPath("/usr/local/lib/libvulkan.dylib", out handle)
-				   );
+			return
+				TryLoadByName("libvulkan.dylib", out handle)
+				|| TryLoadByName("libvulkan.1.dylib", out handle)
+				|| TryLoadByName("libMoltenVK.dylib", out handle)
+				|| TryLoadByPath("vulkan.framework/vulkan", out handle)
+				|| TryLoadByPath("MoltenVK.framework/MoltenVK", out handle)
+				|| (
+					Environment.GetEnvironmentVariable("DYLD_FALLBACK_LIBRARY_PATH") is null
+					&& TryLoadByPath("/usr/local/lib/libvulkan.dylib", out handle)
+				);
 
-		return TryLoadByName("libvulkan.so.1", out handle)
-			   || TryLoadByName("libvulkan.so", out handle);
+		return
+			TryLoadByName("libvulkan.so.1", out handle)
+			|| TryLoadByName("libvulkan.so", out handle);
 
 		static bool TryLoadByName(string libraryName, out IntPtr handle)
 		{
@@ -179,10 +182,11 @@ internal sealed class GodotVkSkiaGpu : ISkiaGpu
 			ArrayLayers = 1,
 			Mipmaps = 1,
 			Samples = RenderingDevice.TextureSamples.Samples1,
-			UsageBits = RenderingDevice.TextureUsageBits.SamplingBit
-						| RenderingDevice.TextureUsageBits.CanCopyFromBit
-						| RenderingDevice.TextureUsageBits.CanCopyToBit
-						| RenderingDevice.TextureUsageBits.ColorAttachmentBit
+			UsageBits =
+				RenderingDevice.TextureUsageBits.SamplingBit
+				| RenderingDevice.TextureUsageBits.CanCopyFromBit
+				| RenderingDevice.TextureUsageBits.CanCopyToBit
+				| RenderingDevice.TextureUsageBits.ColorAttachmentBit
 		};
 
 		var gdRdTexture = _renderingDevice.TextureCreate(gdRdTextureFormat, new RDTextureView());

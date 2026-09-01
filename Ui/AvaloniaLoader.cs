@@ -31,7 +31,8 @@ public partial class AvaloniaLoader : Node
 			}
 			catch (Exception exception)
 			{
-				if (!Main.AskUser(
+				if (
+					!Main.AskUser(
 						"Avalonia UI Load Failed",
 						Main.FormatFailureMessage(
 							"Avalonia UI failed to load", exception, "Ensemble UI may not appear.")))

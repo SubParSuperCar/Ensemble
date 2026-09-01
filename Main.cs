@@ -210,7 +210,8 @@ public partial class Main : Node
 				break;
 
 			case AutoloadFailurePolicy.AskUser:
-				if (!AskUser(
+				if (
+					!AskUser(
 						"Autoload Init Failed",
 						FormatFailureMessage(
 							$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",

@@ -215,7 +215,8 @@ public class AvaloniaControl : GdControl
 
 		NavigationMethod navigationMethod;
 
-		if (GdInput.IsActionPressed(GodotBuiltInActions.UIFocusNext) ||
+		if (
+			GdInput.IsActionPressed(GodotBuiltInActions.UIFocusNext) ||
 			GdInput.IsActionPressed(GodotBuiltInActions.UIFocusPrev))
 			navigationMethod = NavigationMethod.Tab;
 		else if (GdInput.GetMouseButtonMask() != 0)
@@ -273,8 +274,9 @@ public class AvaloniaControl : GdControl
 		if (inputEvent.IsActionPressed(GodotBuiltInActions.UIAccept, true, true))
 			return SimulateKeyDownFromAction(inputEvent, GdKey.Enter);
 
-		return inputEvent.IsActionPressed(GodotBuiltInActions.UICancel, true, true) &&
-			   SimulateKeyDownFromAction(inputEvent, GdKey.Escape);
+		return
+			inputEvent.IsActionPressed(GodotBuiltInActions.UICancel, true, true) &&
+			SimulateKeyDownFromAction(inputEvent, GdKey.Escape);
 	}
 
 	private bool SimulateKeyDownFromAction(InputEvent inputEvent, GdKey key)

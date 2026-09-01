@@ -126,12 +126,8 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
-			.Select(a => a.GetName())
-			.ToList();
-
-		foreach (var assembly in loadedAssemblies)
-			Log.Information("{Assembly}", assembly.FullName);
+		var assemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetName());
+		Log.Information("\n{Assemblies}", string.Join('\n', assemblies));
 
 		context.Return();
 		return default;

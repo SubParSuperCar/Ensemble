@@ -17,37 +17,29 @@ public partial class Logger : Node, IAutoload
 
 	public void Initialize()
 	{
-		var logDir = ProjectSettings.GlobalizePath(LogDir);
-		Directory.CreateDirectory(logDir);
-
-		var configBuilder = new ConfigurationBuilder();
-		var configFileLoaded = false;
-
-		if (FileAccess.FileExists(AppSettingsPath))
-		{
-			using var file = FileAccess.Open(AppSettingsPath, FileAccess.ModeFlags.Read);
-
-			if (file is not null)
-			{
-				var bytes = file.GetBuffer((long)file.GetLength());
-				configBuilder.AddJsonStream(new MemoryStream(bytes));
-
-				configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
-				{ ["Serilog:WriteTo:1:Args:path"] = Path.Combine(logDir, "serilog-.json") });
-
-				configFileLoaded = true;
-			}
-		}
-
-		var config = configBuilder.Build();
-
-		Log.Logger = new LoggerConfiguration()
+		var loggerConfig = new LoggerConfiguration()
 			.MinimumLevel.Verbose()
-			.ReadFrom.Configuration(config)
 			.Enrich.With(new LogEnricher())
 			.WriteTo.Sink(new LogSink())
-			.WriteTo.Sink(new VolatileLogHistorySink())
-			.CreateLogger();
+			.WriteTo.Sink(new VolatileLogHistorySink());
+
+		string? logDir = null;
+		Exception? exception = null;
+
+		try
+		{
+			logDir = ProjectSettings.GlobalizePath(LogDir);
+			Directory.CreateDirectory(logDir);
+
+			var config = BuildConfiguration(logDir);
+			loggerConfig = loggerConfig.ReadFrom.Configuration(config);
+		}
+		catch (Exception ex)
+		{
+			exception = ex;
+		}
+
+		Log.Logger = loggerConfig.CreateLogger();
 
 		_loggerFactory = LoggerFactory.Create(builder =>
 		{
@@ -55,10 +47,11 @@ public partial class Logger : Node, IAutoload
 			builder.AddSerilog(Log.Logger);
 		});
 
-		if (configFileLoaded)
+		if (exception is null)
 			Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
 		else
-			Log.Warning("{Class} config file not loaded from: {Path}", nameof(Serilog), AppSettingsPath);
+			Log.Warning(exception, "Could not get {Class} configuration from: {Path}",
+				nameof(Serilog), AppSettingsPath);
 	}
 
 	public override void _ExitTree()
@@ -67,5 +60,36 @@ public partial class Logger : Node, IAutoload
 
 		_loggerFactory?.Dispose();
 		Log.CloseAndFlush();
+	}
+
+	private static IConfiguration BuildConfiguration(string logDir)
+	{
+		EnsureUserAppSettingsExists();
+
+		using var file = OpenOrThrow(UserAppSettingsPath, FileAccess.ModeFlags.Read);
+		var bytes = file.GetBuffer((long)file.GetLength());
+
+		var configBuilder = new ConfigurationBuilder();
+		configBuilder.AddJsonStream(new MemoryStream(bytes));
+		configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
+		{ ["Serilog:WriteTo:1:Args:path"] = Path.Combine(logDir, "serilog-.json") });
+
+		return configBuilder.Build();
+	}
+
+	private static void EnsureUserAppSettingsExists()
+	{
+		if (FileAccess.FileExists(UserAppSettingsPath))
+			return;
+
+		var result = DirAccess.CopyAbsolute(AppSettingsPath, UserAppSettingsPath);
+		if (result is not Error.Ok)
+			throw new IOException($"Could not copy {AppSettingsPath} to {UserAppSettingsPath} ({result})");
+	}
+
+	private static FileAccess OpenOrThrow(string path, FileAccess.ModeFlags mode)
+	{
+		var file = FileAccess.Open(path, mode);
+		return file ?? throw new IOException($"Could not open: {path} ({FileAccess.GetOpenError()})");
 	}
 }

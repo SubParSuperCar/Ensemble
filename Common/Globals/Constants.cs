@@ -5,7 +5,10 @@ public static class Constants
 	public const string ResourceScheme = "res://";
 	public const string UserScheme = "user://";
 
-	public const string AppSettingsPath = UserScheme + "appsettings.json";
+	public const string AppSettingsJson = "appsettings.json";
+	public const string AppSettingsPath = ResourceScheme + AppSettingsJson;
+	public const string UserAppSettingsPath = UserScheme + AppSettingsJson;
+
 	public const string UserDataCfgPath = UserScheme + "user_data.cfg";
 
 	public const string LogDir = UserScheme + "ensemble_logs/";

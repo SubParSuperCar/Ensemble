@@ -33,14 +33,15 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 	{
 		var source = new StringBuilder();
 
-		source.AppendLine("""
-		                  namespace Root.Autoloading;
+		source.AppendLine(
+			"""
+			namespace Root.Autoloading;
 
-		                  public static partial class AutoloadRegistry
-		                  {
-		                  	public static partial AutoloadDefinition[] GetAll() =>
-		                  	[
-		                  """);
+			public static partial class AutoloadRegistry
+			{
+				public static partial AutoloadDefinition[] GetAll() =>
+				[
+			""");
 
 		foreach (var (type, attribute) in autoloads)
 		{
@@ -55,10 +56,11 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 				$"static () => new {typeName}()),");
 		}
 
-		source.AppendLine("""
-		                  	];
-		                  }
-		                  """);
+		source.AppendLine(
+			"""
+				];
+			}
+			""");
 
 		context.AddSource(
 			"AutoloadRegistry.g.cs",

@@ -69,12 +69,12 @@ public partial class Logger : Node, IAutoload
 		{
 			MakeUserAppSettingsIfMissing();
 
-			using var file = OpenOrThrow(UserAppSettingsPath, FileAccess.ModeFlags.Read);
+			using var file = OpenReadOrThrow(UserAppSettingsPath);
 			bytes = file.GetBuffer((long)file.GetLength());
 		}
 		catch
 		{
-			using var file = OpenOrThrow(AppSettingsPath, FileAccess.ModeFlags.Read);
+			using var file = OpenReadOrThrow(AppSettingsPath);
 			bytes = file.GetBuffer((long)file.GetLength());
 		}
 
@@ -96,9 +96,9 @@ public partial class Logger : Node, IAutoload
 			throw new IOException($"Could not copy {AppSettingsPath} to {UserAppSettingsPath} ({result})");
 	}
 
-	private static FileAccess OpenOrThrow(string path, FileAccess.ModeFlags mode)
+	private static FileAccess OpenReadOrThrow(string path)
 	{
-		var file = FileAccess.Open(path, mode);
-		return file ?? throw new IOException($"Could not open: {path} ({FileAccess.GetOpenError()})");
+		var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
+		return file ?? throw new IOException($"Could not open for reading: {path} ({FileAccess.GetOpenError()})");
 	}
 }

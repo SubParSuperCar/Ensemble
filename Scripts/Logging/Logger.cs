@@ -50,8 +50,7 @@ public partial class Logger : Node, IAutoload
 		if (exception is null)
 			Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
 		else
-			Log.Warning(exception, "Could not get {Class} configuration from: {Path}",
-				nameof(Serilog), AppSettingsPath);
+			Log.Warning(exception, "Could not build {Class} configuration.", nameof(Serilog));
 	}
 
 	public override void _ExitTree()
@@ -64,10 +63,20 @@ public partial class Logger : Node, IAutoload
 
 	private static IConfiguration BuildConfiguration(string logDir)
 	{
-		EnsureUserAppSettingsExists();
+		byte[] bytes;
 
-		using var file = OpenOrThrow(UserAppSettingsPath, FileAccess.ModeFlags.Read);
-		var bytes = file.GetBuffer((long)file.GetLength());
+		try
+		{
+			MakeUserAppSettingsIfMissing();
+
+			using var file = OpenOrThrow(UserAppSettingsPath, FileAccess.ModeFlags.Read);
+			bytes = file.GetBuffer((long)file.GetLength());
+		}
+		catch
+		{
+			using var file = OpenOrThrow(AppSettingsPath, FileAccess.ModeFlags.Read);
+			bytes = file.GetBuffer((long)file.GetLength());
+		}
 
 		var configBuilder = new ConfigurationBuilder();
 		configBuilder.AddJsonStream(new MemoryStream(bytes));
@@ -77,7 +86,7 @@ public partial class Logger : Node, IAutoload
 		return configBuilder.Build();
 	}
 
-	private static void EnsureUserAppSettingsExists()
+	private static void MakeUserAppSettingsIfMissing()
 	{
 		if (FileAccess.FileExists(UserAppSettingsPath))
 			return;

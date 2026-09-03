@@ -4,6 +4,7 @@ using Godot;
 using Root.Autoloading;
 using Serilog;
 using TinyDialogsNet;
+using Environment = System.Environment;
 
 namespace Root.Scripts.Watchdog;
 
@@ -53,7 +54,7 @@ public partial class Watchdog : Node, IAutoload
 		if (!Input.IsActionJustPressedByEvent("test_hang", @event))
 			return;
 
-		Log.Warning("Hanging process (test action)...");
+		Log.Warning("Hanging thread with id {ThreadId} (test action)...", Environment.CurrentManagedThreadId);
 		Thread.Sleep(int.MaxValue);
 	}
 

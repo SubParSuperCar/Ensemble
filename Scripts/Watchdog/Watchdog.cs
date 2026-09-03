@@ -48,6 +48,15 @@ public partial class Watchdog : Node, IAutoload
 
 	public override void _Process(double delta) => Heartbeat();
 
+	public override void _UnhandledKeyInput(InputEvent @event)
+	{
+		if (!Input.IsActionJustPressedByEvent("test_hang", @event))
+			return;
+
+		Log.Warning("Hanging process (test action)...");
+		Thread.Sleep(int.MaxValue);
+	}
+
 	public static void Heartbeat() => Volatile.Write(ref _heartbeatFlag, 1);
 
 	private void WatchdogPollLoop()

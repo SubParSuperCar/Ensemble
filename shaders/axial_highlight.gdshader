@@ -2,8 +2,10 @@ shader_type spatial;
 
 render_mode unshaded, cull_disabled, blend_mix, depth_draw_never, depth_test_disabled;
 
-uniform float edge_thickness;
 uniform vec3 box_size;
+
+uniform float edge_thickness;
+uniform float face_alpha = 0.1;
 
 varying vec3 local_position;
 
@@ -41,29 +43,35 @@ void fragment()
 	float y_line = edge_mask(max(dx, dz));
 	float z_line = edge_mask(max(dx, dy));
 
-	float x_position = (local_position.x + half_size.x) / box_size.x;
-	float y_position = (local_position.y + half_size.y) / box_size.y;
-	float z_position = (local_position.z + half_size.z) / box_size.z;
+	vec3 face_color;
 
-	vec3 x_color = axis_color(x_position, vec3(1.0, 0.0, 0.0));
-	vec3 y_color = axis_color(y_position, vec3(0.0, 1.0, 0.0));
-	vec3 z_color = axis_color(z_position, vec3(0.0, 0.0, 1.0));
+	if (dx <= dy && dx <= dz)
+	{
+		face_color = vec3(1.0, 0.0, 0.0);
+	} else if (dy <= dz) {
+		face_color = vec3(0.0, 1.0, 0.0);
+	} else {
+		face_color = vec3(0.0, 0.0, 1.0);
+	}
 
-	vec3 color;
-	float alpha;
+	vec3 edge_color;
+	float line;
 
 	if (x_line >= y_line && x_line >= z_line)
 	{
-		color = x_color;
-		alpha = x_line;
+		float position = (local_position.x + half_size.x) / box_size.x;
+		edge_color = axis_color(position, vec3(1.0, 0.0, 0.0));
+		line = x_line;
 	} else if (y_line >= z_line) {
-		color = y_color;
-		alpha = y_line;
+		float position = (local_position.y + half_size.y) / box_size.y;
+		edge_color = axis_color(position, vec3(0.0, 1.0, 0.0));
+		line = y_line;
 	} else {
-		color = z_color;
-		alpha = z_line;
+		float position = (local_position.z + half_size.z) / box_size.z;
+		edge_color = axis_color(position, vec3(0.0, 0.0, 1.0));
+		line = z_line;
 	}
 
-	ALBEDO = color;
-	ALPHA = alpha;
+	ALBEDO = mix(face_color, edge_color, line);
+	ALPHA = FRONT_FACING ? mix(face_alpha, 1.0, line) : line;
 }

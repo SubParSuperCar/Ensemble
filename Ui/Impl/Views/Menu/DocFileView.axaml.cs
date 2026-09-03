@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -39,16 +40,16 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 
 	private void OnDataContextChanged(object? sender, EventArgs e)
 	{
-		if (_viewModel is not null)
-			OnDetached();
+		if (ReferenceEquals(_viewModel, DataContext))
+			return;
 
-		if (DataContext is DocFileViewModel)
-			OnAttached();
+		OnDetached();
+		OnAttached();
 	}
 
 	private void OnAttached()
 	{
-		if (DataContext is not DocFileViewModel vm)
+		if (DataContext is not DocFileViewModel vm || ReferenceEquals(_viewModel, vm))
 			return;
 
 		_viewModel = vm;
@@ -76,6 +77,9 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 
 	private async Task LoadFileAsync(DocFile file)
 	{
+		Log.Debug("Loading {FileName}...", file.Name);
+		var stopwatch = Stopwatch.StartNew();
+
 		var cts = new CancellationTokenSource();
 		var oldCts = Interlocked.Exchange(ref _cts, cts);
 
@@ -98,6 +102,9 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 
 				MarkdownRenderer.ImageBasePath = new Uri(new Uri(file.Uri), ".").ToString();
 				MarkdownRenderer.DocumentUpdate = new MarkdownDocumentUpdate.Full(document);
+
+				stopwatch.Stop();
+				Log.Debug("Loaded {FileName} in {ElapsedMs:F3} ms.", file.Name, stopwatch.Elapsed.TotalMilliseconds);
 			});
 		}
 		catch (OperationCanceledException)
@@ -112,14 +119,13 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 
 #pragma warning disable MA0040
 			// ReSharper disable once MethodSupportsCancellation
-			_ = Task.Run(() =>
+			_ = Task.Run(() => TinyDialogs.MessageBox(
 #pragma warning restore MA0040
-				TinyDialogs.MessageBox(
-					"HTTP Request Failed",
-					Main.SanitizeMessageBoxBody($"Failed to load {file.Name} at:\n{file.Uri}\n\n{exception}"),
-					MessageBoxDialogType.Ok,
-					MessageBoxIconType.Warning,
-					MessageBoxButton.Ok));
+				"HTTP Request Failed",
+				Main.SanitizeMessageBoxBody($"Failed to load {file.Name} at:\n{file.Uri}\n\n{exception}"),
+				MessageBoxDialogType.Ok,
+				MessageBoxIconType.Warning,
+				MessageBoxButton.Ok));
 		}
 		finally
 		{

@@ -17,6 +17,7 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
+                <ResourceInclude Source="avares://LiveMarkdown.Avalonia/Defaults.axaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <SolidColorBrush
@@ -35,6 +36,7 @@
         <SimpleTheme />
 
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml" />
+        <StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml" />
 
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="{StaticResource Font}" />

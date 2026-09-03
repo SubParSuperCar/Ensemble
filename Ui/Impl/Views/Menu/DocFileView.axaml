@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:md="using:Markdown.Avalonia"
+    xmlns:md="using:LiveMarkdown.Avalonia"
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="Root.Ui.Impl.Views.DocFileView"
@@ -32,10 +32,11 @@
                     </TabStrip>
                 </ScrollViewer>
 
-                <md:MarkdownScrollViewer
+                <md:MarkdownRenderer
+                    Name="MarkdownRenderer"
                     Grid.Row="2"
                     VerticalAlignment="Center"
-                    Source="{Binding SelectedFile.Uri}" />
+                    ImageBasePath="https://raw.githubusercontent.com/SubParSuperCar/Ensemble/refs/heads/main/" />
             </Grid>
         </Grid>
 

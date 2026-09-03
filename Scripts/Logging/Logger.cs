@@ -50,7 +50,7 @@ public partial class Logger : Node, IAutoload
 		if (exception is null)
 			Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
 		else
-			Log.Warning(exception, "Could not build {Class} configuration.", nameof(Serilog));
+			Log.Error(exception, "Could not build {Class} configuration.\n", nameof(Serilog));
 	}
 
 	public override void _ExitTree()

@@ -56,14 +56,10 @@ void fragment()
 	{
 		color = x_color;
 		alpha = x_line;
-	}
-	else if (y_line >= z_line)
-	{
+	} else if (y_line >= z_line) {
 		color = y_color;
 		alpha = y_line;
-	}
-	else
-	{
+	} else {
 		color = z_color;
 		alpha = z_line;
 	}

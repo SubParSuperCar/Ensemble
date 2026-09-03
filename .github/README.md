@@ -37,6 +37,7 @@ for two primary reasons:
 
 1. "Ensemble" literally means a group of people, which reflects the game's multiplayer and collaborative nature.
 2. It also sounds like "assemble," making it a fitting name for a building game.
+
 </details>
 
 ---

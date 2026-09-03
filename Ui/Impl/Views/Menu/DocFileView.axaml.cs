@@ -7,6 +7,7 @@ using Markdig;
 using Root.Common.Networking;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
+using Serilog;
 using TinyDialogsNet;
 
 namespace Root.Ui.Impl.Views;
@@ -112,6 +113,8 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 			_ = Task.Run(() =>
 #pragma warning restore MA0040
 			{
+				Log.Error(exception, "HTTP request failed.");
+
 				TinyDialogs.MessageBox(
 					"HTTP Request Failed",
 					Main.SanitizeMessageBoxBody($"Failed to load {file.Name} at:\n{file.Uri}\n\n{exception}"),

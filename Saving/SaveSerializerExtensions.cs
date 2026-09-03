@@ -1,6 +1,6 @@
 using ZstdSharp;
 
-namespace Root.Persistence;
+namespace Root.Saving;
 
 public enum CompressionType : byte
 {

@@ -1,7 +1,7 @@
 using CoreRoot.Api.Assets;
 using CoreRoot.Assets;
 
-namespace Root.Persistence;
+namespace Root.Saving;
 
 public sealed class SaveConverter
 {

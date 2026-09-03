@@ -9,6 +9,7 @@ height = 0.5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l6qjb"]
 shading_mode = 0
+albedo_color = Color(1, 0, 0, 1)
 albedo_texture = SubResource("PlaceholderTexture2D_gee14")
 uv1_triplanar = true
 texture_filter = 0
@@ -28,6 +29,7 @@ Properties = Dictionary[StringName, Variant]({
 &"_materialId": 0
 })
 MaxInstanceCount = 750
+BoundaryAabb = null
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=262735334]
 shape = SubResource("CylinderShape3D_gflwd")

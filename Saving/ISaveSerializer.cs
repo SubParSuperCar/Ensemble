@@ -1,4 +1,4 @@
-namespace Root.Persistence;
+namespace Root.Saving;
 
 public interface ISaveSerializer
 {

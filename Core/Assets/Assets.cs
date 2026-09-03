@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Globalization;
 using CoreRoot.Api.Assets;
 
@@ -32,7 +33,7 @@ public class Assets : IAssets
 				CultureInfo.InvariantCulture,
 				$"Asset with id {id} already exists."));
 
-		var asset = new Asset(id, name, properties, maxInstanceCount);
+		var asset = new Asset(id, name, properties?.ToFrozenDictionary(), maxInstanceCount);
 		_assetsById.Add(id, asset);
 		Added?.Invoke(asset);
 

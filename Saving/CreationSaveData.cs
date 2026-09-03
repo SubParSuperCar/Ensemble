@@ -1,7 +1,7 @@
 using System.Numerics;
 using CoreRoot.Api.Assets;
 
-namespace Root.Persistence;
+namespace Root.Saving;
 
 public sealed class CreationSaveData
 {

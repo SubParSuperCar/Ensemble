@@ -1,5 +1,6 @@
 using Godot;
 using Root.Common.Input;
+using Root.Scripts.Adornments;
 using Root.Scripts.Assets;
 using Root.Scripts.Plots;
 using Serilog;
@@ -12,8 +13,16 @@ public partial class DestructTool : ToolBase
 
 	private static readonly StringName TriggerAction = "tool_trigger";
 
+	private AxialHighlight _highlight = new();
 	private AssetHandle? _selected;
+
 	protected override StringName ToggleAction => "tool_destruct_toggle";
+
+	public override void _Ready()
+	{
+		AddChild(_highlight);
+		_highlight.Visible = false;
+	}
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -97,6 +106,15 @@ public partial class DestructTool : ToolBase
 		_selected = handle;
 		Log.Verbose("Selected: {Handle}", handle?.Name);
 
-		// ...
+		if (handle is null)
+		{
+			_highlight.Reparent(this);
+			_highlight.Visible = false;
+			return;
+		}
+
+		_highlight.Reparent(handle);
+		_highlight.Aabb = handle.BoundaryAabb;
+		_highlight.Visible = true;
 	}
 }

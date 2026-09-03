@@ -114,14 +114,12 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 			// ReSharper disable once MethodSupportsCancellation
 			_ = Task.Run(() =>
 #pragma warning restore MA0040
-			{
 				TinyDialogs.MessageBox(
 					"HTTP Request Failed",
 					Main.SanitizeMessageBoxBody($"Failed to load {file.Name} at:\n{file.Uri}\n\n{exception}"),
 					MessageBoxDialogType.Ok,
 					MessageBoxIconType.Warning,
-					MessageBoxButton.Ok);
-			});
+					MessageBoxButton.Ok));
 		}
 		finally
 		{

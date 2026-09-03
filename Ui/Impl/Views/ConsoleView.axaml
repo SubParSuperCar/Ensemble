@@ -52,7 +52,7 @@
                         Background="Black" Foreground="White"
                         SelectionForegroundBrush="Black"
                         Padding="1"
-                        FontSize="10" FontWeight="ExtraLight"
+                        FontSize="13" FontWeight="ExtraLight"
                         TextWrapping="Wrap"
                         LineSpacing="2" />
                 </ScrollViewer>

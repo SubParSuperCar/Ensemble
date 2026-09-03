@@ -92,6 +92,12 @@ public partial class Main : Node
 	public static string FormatFailureMessage(string action, Exception exception, string consequence) =>
 		$"{action}:\n\n{exception}\n\nContinue anyway?\n{consequence}";
 
+	public static string SanitizeMessageBoxBody(string message) =>
+		message
+			.Replace("\"", string.Empty, StringComparison.Ordinal)
+			.Replace("'", string.Empty, StringComparison.Ordinal)
+			.Replace("`", string.Empty, StringComparison.Ordinal);
+
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
 		if (e.ExceptionObject is Exception exception)
@@ -224,12 +230,6 @@ public partial class Main : Node
 				throw new UnreachableException();
 		}
 	}
-
-	private static string SanitizeMessageBoxBody(string message) =>
-		message
-			.Replace("\"", string.Empty, StringComparison.Ordinal)
-			.Replace("'", string.Empty, StringComparison.Ordinal)
-			.Replace("`", string.Empty, StringComparison.Ordinal);
 
 	private enum AutoloadLoadStage : byte
 	{

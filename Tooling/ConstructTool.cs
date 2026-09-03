@@ -10,9 +10,9 @@ public partial class ConstructTool : ToolBase
 {
 	private static readonly StringName TriggerAction = "tool_trigger";
 
-	private static readonly StringName RotateXAction = "tool_construct_rotate_x";
-	private static readonly StringName RotateYAction = "tool_construct_rotate_y";
-	private static readonly StringName RotateZAction = "tool_construct_rotate_z";
+	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
+	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
+	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
 
 	private bool _canPlace;
 	private AssetHandle? _handle;

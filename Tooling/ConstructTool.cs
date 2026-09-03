@@ -91,7 +91,7 @@ public partial class ConstructTool : ToolBase
 	}
 }
 
-public enum RotationSpace
+public enum RotationSpace : byte
 {
 	Global,
 	Local

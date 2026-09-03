@@ -20,7 +20,7 @@ public partial class DestructTool : ToolBase
 
 	public override void _Ready()
 	{
-		_highlight.Name = $"{nameof(DestructTool)} Selection Highlight";
+		_highlight.Name = "Selection Highlight";
 		_highlight.Visible = false;
 
 		AddChild(_highlight);

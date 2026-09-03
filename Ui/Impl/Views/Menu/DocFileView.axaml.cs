@@ -108,13 +108,13 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 			if (!ReferenceEquals(_cts, cts))
 				return;
 
+			Log.Error(exception, "HTTP request failed.");
+
 #pragma warning disable MA0040
 			// ReSharper disable once MethodSupportsCancellation
 			_ = Task.Run(() =>
 #pragma warning restore MA0040
 			{
-				Log.Error(exception, "HTTP request failed.");
-
 				TinyDialogs.MessageBox(
 					"HTTP Request Failed",
 					Main.SanitizeMessageBoxBody($"Failed to load {file.Name} at:\n{file.Uri}\n\n{exception}"),

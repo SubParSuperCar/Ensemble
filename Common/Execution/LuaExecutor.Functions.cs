@@ -457,14 +457,21 @@ public partial class LuaExecutor
 		var pitch = context.ArgumentCount > 3 ? context.GetArgument<float>(3) : 1;
 		var volume = context.ArgumentCount > 4 ? context.GetArgument<float>(4) : 1;
 
-		var voice = Speaker.Instance.VoiceForCulture(culture);
+		try
+		{
+			var voice = Speaker.Instance.VoiceForCulture(culture);
 
-		_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
-			.ContinueWith(
-				task => Log.Error(task.Exception, "TTS failed."),
-				CancellationToken.None,
-				TaskContinuationOptions.OnlyOnFaulted,
-				TaskScheduler.Default);
+			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
+				.ContinueWith(
+					task => Log.Error(task.Exception, "TTS failed while playback."),
+					CancellationToken.None,
+					TaskContinuationOptions.OnlyOnFaulted,
+					TaskScheduler.Default);
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "TTS failed during setup.");
+		}
 
 		context.Return();
 		return default;

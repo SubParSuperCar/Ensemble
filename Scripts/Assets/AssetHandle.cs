@@ -37,6 +37,6 @@ public partial class AssetHandle : RigidBody3D
 			return default;
 
 		var size = collider.Shape.GetDebugMesh().GetAabb().Size;
-		return new Aabb(-size * 0.5f, size);
+		return new Aabb(size / -2, size);
 	}
 }

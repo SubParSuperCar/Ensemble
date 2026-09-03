@@ -32,10 +32,9 @@
                     </TabStrip>
                 </ScrollViewer>
 
-                <md:MarkdownRenderer
-                    Name="MarkdownRenderer"
-                    Grid.Row="2"
-                    VerticalAlignment="Center" />
+                <ScrollViewer Grid.Row="2" VerticalAlignment="Center">
+                    <md:MarkdownRenderer Name="MarkdownRenderer" />
+                </ScrollViewer>
             </Grid>
         </Grid>
 

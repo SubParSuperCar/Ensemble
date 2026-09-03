@@ -92,8 +92,11 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 			{
 				cts.Token.ThrowIfCancellationRequested();
 
-				if (ReferenceEquals(_cts, cts))
-					MarkdownRenderer.DocumentUpdate = new MarkdownDocumentUpdate.Full(document);
+				if (!ReferenceEquals(_cts, cts))
+					return;
+
+				MarkdownRenderer.ImageBasePath = new Uri(new Uri(file.Uri), ".").ToString();
+				MarkdownRenderer.DocumentUpdate = new MarkdownDocumentUpdate.Full(document);
 			});
 		}
 		catch (OperationCanceledException)

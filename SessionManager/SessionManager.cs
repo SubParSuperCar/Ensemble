@@ -115,13 +115,13 @@ public partial class SessionManager : Node
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
 	public void HostMultiPlayer(int port, string password) => HostMultiPlayer(port, password, Unlimited);
 
-	public void HostMultiPlayer(int port, string password, int maxPlayers) =>
+	public void HostMultiPlayer(int port, string? password, int maxPlayers) =>
 		HostMultiPlayer(port, password, string.Empty, maxPlayers);
 
-	public void HostMultiPlayer(int port, string password, string displayName) =>
+	public void HostMultiPlayer(int port, string? password, string displayName) =>
 		HostMultiPlayer(port, password, displayName, Unlimited);
 
-	public void HostMultiPlayer(int port, string password, string displayName, int maxPlayers)
+	public void HostMultiPlayer(int port, string? password, string? displayName, int maxPlayers)
 	{
 		Log.Debug("Hosting {Class}... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
 			nameof(MultiPlayerSession),
@@ -132,7 +132,7 @@ public partial class SessionManager : Node
 		StopSession();
 		var stopwatch = Stopwatch.StartNew();
 
-		_pendingDisplayName = displayName;
+		_pendingDisplayName = displayName ?? string.Empty;
 		_session = new MultiPlayerSession(
 			(SceneMultiplayer)Multiplayer,
 			new HostConfig(
@@ -152,7 +152,7 @@ public partial class SessionManager : Node
 	public void JoinMultiPlayer(string address, int port, string password) =>
 		JoinMultiPlayer(address, port, password, string.Empty);
 
-	public void JoinMultiPlayer(string address, int port, string password, string displayName)
+	public void JoinMultiPlayer(string address, int port, string? password, string displayName)
 	{
 		Log.Debug("Joining {Class}... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
 			nameof(MultiPlayerSession), address, port, !string.IsNullOrEmpty(password));

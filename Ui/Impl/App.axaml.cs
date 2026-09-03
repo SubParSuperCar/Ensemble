@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Messaging;
+using LiveMarkdown.Avalonia;
 using Root.Common.Input;
 using Root.Ui.Impl.Messages;
 
@@ -15,6 +16,12 @@ public class App : Application
 
 	public override void OnFrameworkInitializationCompleted()
 	{
+		AsyncImageLoader.DefaultDecoders =
+		[
+			SvgImageDecoder.Shared,
+			DefaultBitmapDecoder.Shared
+		];
+
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 

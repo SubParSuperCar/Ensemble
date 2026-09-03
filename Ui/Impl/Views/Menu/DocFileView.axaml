@@ -35,8 +35,7 @@
                 <md:MarkdownRenderer
                     Name="MarkdownRenderer"
                     Grid.Row="2"
-                    VerticalAlignment="Center"
-                    ImageBasePath="https://raw.githubusercontent.com/SubParSuperCar/Ensemble/refs/heads/main/" />
+                    VerticalAlignment="Center" />
             </Grid>
         </Grid>
 

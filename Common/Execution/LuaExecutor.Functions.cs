@@ -463,7 +463,7 @@ public partial class LuaExecutor
 
 			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
 				.ContinueWith(
-					task => Log.Error(task.Exception, "TTS failed while playback."),
+					task => Log.Error(task.Exception, "TTS failed during playback."),
 					CancellationToken.None,
 					TaskContinuationOptions.OnlyOnFaulted,
 					TaskScheduler.Default);

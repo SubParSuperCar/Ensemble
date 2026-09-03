@@ -54,7 +54,7 @@ public partial class Watchdog : Node, IAutoload
 		if (!Input.IsActionJustPressedByEvent("test_hang", @event))
 			return;
 
-		Log.Warning("Hanging thread with id {ThreadId} (test action)...", Environment.CurrentManagedThreadId);
+		Log.Warning("Hanging main thread (test action)...");
 		Thread.Sleep(int.MaxValue);
 	}
 

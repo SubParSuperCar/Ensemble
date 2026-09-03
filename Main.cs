@@ -61,7 +61,7 @@ public partial class Main : Node
 		}
 		catch (Exception notifyException)
 		{
-			Log.Error(notifyException, "Failed to show crash popup.");
+			Log.Error(notifyException, "Failed to show crash popup.\n");
 		}
 		finally
 		{
@@ -84,7 +84,7 @@ public partial class Main : Node
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "Failed to show dialog.");
+			Log.Error(exception, "Failed to show dialog.\n");
 			return false;
 		}
 	}
@@ -101,7 +101,7 @@ public partial class Main : Node
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
 		if (e.ExceptionObject is Exception exception)
-			Log.Fatal(exception, "Unhandled exception. (IsTerminating={IsTerminating})", e.IsTerminating);
+			Log.Fatal(exception, "Unhandled exception. (IsTerminating={IsTerminating})\n", e.IsTerminating);
 		else
 			Log.Fatal("Unhandled exception. (IsTerminating={IsTerminating}):\n{Exception}",
 				e.IsTerminating,
@@ -113,7 +113,7 @@ public partial class Main : Node
 
 	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
 	{
-		Log.Error(e.Exception, "Unobserved task exception.");
+		Log.Error(e.Exception, "Unobserved task exception.\n");
 		e.SetObserved();
 	}
 
@@ -203,7 +203,7 @@ public partial class Main : Node
 		AutoloadLoadStage stage,
 		Exception exception)
 	{
-		Log.Error(exception, "Failed to load {Type} during {Stage} stage.", definition.Type.FullName, stage);
+		Log.Error(exception, "Failed to load {Type} during {Stage} stage.\n", definition.Type.FullName, stage);
 
 		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 		switch (definition.FailurePolicy)

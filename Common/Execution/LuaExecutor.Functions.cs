@@ -251,7 +251,7 @@ public partial class LuaExecutor
 		}
 		catch (HttpRequestException exception)
 		{
-			Log.Error(exception, "Failed to get public IPv4 address.");
+			Log.Error(exception, "Failed to get public IPv4 address.\n");
 			context.Return();
 		}
 
@@ -463,14 +463,14 @@ public partial class LuaExecutor
 
 			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
 				.ContinueWith(
-					task => Log.Error(task.Exception, "TTS failed during playback."),
+					task => Log.Error(task.Exception, "TTS failed during playback.\n"),
 					CancellationToken.None,
 					TaskContinuationOptions.OnlyOnFaulted,
 					TaskScheduler.Default);
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "TTS failed during setup.");
+			Log.Error(exception, "TTS failed during setup.\n");
 		}
 
 		context.Return();

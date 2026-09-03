@@ -20,7 +20,9 @@ public partial class DestructTool : ToolBase
 
 	public override void _Ready()
 	{
+		_highlight.Name = $"{nameof(DestructTool)} Selection Highlight";
 		_highlight.Visible = false;
+
 		AddChild(_highlight);
 	}
 
@@ -108,12 +110,11 @@ public partial class DestructTool : ToolBase
 
 		if (handle is null)
 		{
-			_highlight.Reparent(this);
 			_highlight.Visible = false;
 			return;
 		}
 
-		_highlight.Reparent(handle);
+		_highlight.GlobalTransform = handle.GlobalTransform;
 		_highlight.Aabb = handle.BoundaryAabb;
 		_highlight.Visible = true;
 	}

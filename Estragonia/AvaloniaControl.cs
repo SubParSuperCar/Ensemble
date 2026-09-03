@@ -43,7 +43,7 @@ public class AvaloniaControl : GdControl
 
 	/// <summary>Gets or sets the render scaling for the Avalonia control. Defaults to 1.0.</summary>
 	[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Doesn't affect correctness")]
-	public double RenderScaling
+	protected double RenderScaling
 	{
 		get;
 		// ReSharper disable once PropertyCanBeMadeInitOnly.Global

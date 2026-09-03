@@ -18,8 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="GodotSharp" Version="4.7.2"/>
-    <PackageReference Include="Avalonia" Version="[12.1.1]"/>
-    <PackageReference Include="Avalonia.HarfBuzz" Version="12.1.1"/>
+    <PackageReference Include="Avalonia" Version="12.1.2"/>
+    <PackageReference Include="Avalonia.HarfBuzz" Version="12.1.2"/>
     <PackageReference Include="SkiaSharp" Version="3.119.4"/>
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.4"/>
     <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.4"/>
@@ -27,7 +27,7 @@
 
   <ItemGroup>
     <Reference Include="Avalonia.Skia">
-      <HintPath>lib/Avalonia.Skia.dll</HintPath>
+      <HintPath>Lib/Avalonia.Skia.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>

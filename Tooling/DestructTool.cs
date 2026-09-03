@@ -13,15 +13,15 @@ public partial class DestructTool : ToolBase
 
 	private static readonly StringName TriggerAction = "tool_trigger";
 
-	private AxialHighlight _highlight = new();
+	private readonly AxialHighlight _highlight = new();
 	private AssetHandle? _selected;
 
 	protected override StringName ToggleAction => "tool_destruct_toggle";
 
 	public override void _Ready()
 	{
-		AddChild(_highlight);
 		_highlight.Visible = false;
+		AddChild(_highlight);
 	}
 
 	public override void _PhysicsProcess(double delta)

@@ -9,6 +9,7 @@ namespace Root.Common.Input;
 public static class InputSink
 {
 	private static readonly object Token = new();
+	public static readonly OwnershipFlag Sink = new();
 
 	static InputSink()
 	{
@@ -17,7 +18,6 @@ public static class InputSink
 		InputElement.LostFocusEvent.Raised.Subscribe(observer);
 	}
 
-	public static OwnershipFlag Sink { get; } = new();
 	public static bool IsSunk => Sink.IsSet;
 
 	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)

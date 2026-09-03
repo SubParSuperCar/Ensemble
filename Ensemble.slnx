@@ -29,8 +29,10 @@
     <File Path=".run/Player.run.xml"/>
     <File Path=".run/Player (External Console).run.xml"/>
   </Folder>
+  <Folder Name="/Vendored/">
+    <Project Path="Estragonia/Estragonia.csproj"/>
+  </Folder>
   <Project Path="AutoloadGenerator/AutoloadGenerator.csproj"/>
   <Project Path="Core/Core.csproj"/>
-  <Project Path="Estragonia/Estragonia.csproj"/>
   <Project Path="Game.csproj"/>
 </Solution>

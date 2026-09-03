@@ -5,8 +5,7 @@ namespace Root.Scripts.Adornments;
 [GlobalClass]
 public partial class AxialHighlight : MeshInstance3D
 {
-	private static readonly Shader HighlightShader =
-		GD.Load<Shader>("res://shaders/axial_highlight.gdshader");
+	private static readonly Shader HighlightShader = GD.Load<Shader>(ShadersDir + "axial_highlight.gdshader");
 
 	private readonly BoxMesh _box = new();
 	private readonly ShaderMaterial _material = new();
@@ -22,7 +21,7 @@ public partial class AxialHighlight : MeshInstance3D
 		}
 	}
 
-	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
+	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
 	public float EdgeThickness
 	{
 		get;

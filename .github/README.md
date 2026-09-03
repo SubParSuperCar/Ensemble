@@ -26,6 +26,9 @@ while its architecture, systems, and implementation continue to evolve.
 
 ## Name Info and Rationale
 
+<details open>
+  <summary>Click to expand/collapse this section.</summary>
+
 *(Pronounced "**EN-sem**-bull," not "ON-som-bull.")*
 
 This game was originally called **Baja Builders** on Roblox from approximately 2022–2025. However, the name never really
@@ -34,6 +37,7 @@ for two primary reasons:
 
 1. "Ensemble" literally means a group of people, which reflects the game's multiplayer and collaborative nature.
 2. It also sounds like "assemble," making it a fitting name for a building game.
+</details>
 
 ---
 

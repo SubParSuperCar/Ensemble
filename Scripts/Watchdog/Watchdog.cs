@@ -4,7 +4,6 @@ using Godot;
 using Root.Autoloading;
 using Serilog;
 using TinyDialogsNet;
-using Environment = System.Environment;
 
 namespace Root.Scripts.Watchdog;
 

@@ -13,6 +13,7 @@ config_version=5
 config/name="Ensemble"
 config/description="Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.
 https://github.com/SubParSuperCar/Ensemble"
+config/version="alpha"
 run/main_scene="uid://ddgi4ajn3rnnq"
 config/use_custom_user_dir=true
 config/features=PackedStringArray("4.7", "C#", "Mobile")

@@ -12,9 +12,20 @@ public sealed class LogSink : ILogEventSink
 	{
 		var renderedMessage = logEvent.RenderMessage(CultureInfo.InvariantCulture);
 
+		var level = logEvent.Level switch
+		{
+			LogEventLevel.Verbose => "VRB",
+			LogEventLevel.Debug => "DBG",
+			LogEventLevel.Information => "INF",
+			LogEventLevel.Warning => "WRN",
+			LogEventLevel.Error => "ERR",
+			LogEventLevel.Fatal => "FTL",
+			_ => "???"
+		};
+
 		var message = string.Create(
 			CultureInfo.InvariantCulture,
-			$"[{logEvent.Timestamp:HH:mm:ss.fff}] [{logEvent.Level:u3}] {renderedMessage}");
+			$"[{logEvent.Timestamp:HH:mm:ss.fff}] [{level}] {renderedMessage}");
 
 		if (logEvent.Exception is not null)
 			message = string.Concat(message, Environment.NewLine, logEvent.Exception);

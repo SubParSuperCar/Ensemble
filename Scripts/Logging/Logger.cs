@@ -81,7 +81,7 @@ public partial class Logger : Node, IAutoload
 		var configBuilder = new ConfigurationBuilder();
 		configBuilder.AddJsonStream(new MemoryStream(bytes));
 		configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
-		{ ["Serilog:WriteTo:1:Args:path"] = Path.Combine(logDir, "serilog-.json") });
+		{ ["Serilog:WriteTo:0:Args:path"] = Path.Combine(logDir, "serilog-.json") });
 
 		return configBuilder.Build();
 	}

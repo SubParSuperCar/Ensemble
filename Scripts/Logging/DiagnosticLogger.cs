@@ -71,7 +71,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 			}
 			catch (Exception exception)
 			{
-				Log.Error(exception, "Failed to read Linux kernel version file at: {Path}\n",
+				Log.Error(exception, "Failed to read Linux kernel version file at: {Path}",
 					LinuxKernelVersionFilePath);
 			}
 

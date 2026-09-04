@@ -90,7 +90,7 @@ public partial class StatViewModel : ViewModelBase
 
 			stats.Add(("Char. Pos.", character.GlobalPosition.Round()));
 			stats.Add(("Char. Speed",
-				string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():F3} m/s")));
+				string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():0.###} m/s")));
 		}
 
 		var width = stats.Max(stat => stat.Key.Length);

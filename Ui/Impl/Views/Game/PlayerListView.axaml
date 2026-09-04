@@ -16,7 +16,7 @@
         <Grid RowDefinitions="Auto,*">
             <Grid ColumnDefinitions="*,*,Auto">
                 <TextBlock Text="Name&#x0a; &#x2198;" />
-                <TextBlock Grid.Column="1" Text="Player List" />
+                <TextBlock Grid.Column="1" Text="Player List (Tab)" />
                 <TextBlock Grid.Column="2" Text="Peer ID&#x0a;&#x2193; " TextAlignment="Right" />
             </Grid>
 

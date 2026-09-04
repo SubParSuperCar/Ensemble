@@ -115,7 +115,7 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 			if (!ReferenceEquals(_cts, cts))
 				return;
 
-			Log.Error(exception, "HTTP request failed.\n");
+			Log.Error(exception, "HTTP request failed.");
 
 #pragma warning disable MA0040
 			// ReSharper disable once MethodSupportsCancellation

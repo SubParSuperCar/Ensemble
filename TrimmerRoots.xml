@@ -1,4 +1,6 @@
 <linker>
   <assembly fullname="Estragonia" preserve="all"/>
   <assembly fullname="Serilog.Sinks.File" preserve="all"/>
+  <assembly fullname="Serilog.Expressions" preserve="all"/>
+  <assembly fullname="Serilog.Settings.Configuration" preserve="all"/>
 </linker>

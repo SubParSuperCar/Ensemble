@@ -60,6 +60,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 #endif
 		);
 
+		Add(lines, "Build Version", (string)ProjectSettings.GetSetting("application/config/version", "Unknown"));
 		Add(lines, "Build Time", BuildInfo.BuildTime);
 
 		if (OperatingSystem.IsLinux())

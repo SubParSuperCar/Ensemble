@@ -101,9 +101,10 @@ public partial class Main : Node
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
 		if (e.ExceptionObject is Exception exception)
-			Log.Fatal(exception, "Unhandled exception. (IsTerminating={IsTerminating})\n", e.IsTerminating);
+			Log.Fatal(exception, "Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating})\n",
+				e.IsTerminating);
 		else
-			Log.Fatal("Unhandled exception. (IsTerminating={IsTerminating}):\n{Exception}",
+			Log.Fatal("Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating}):\n{Exception}",
 				e.IsTerminating,
 				e.ExceptionObject);
 
@@ -113,8 +114,8 @@ public partial class Main : Node
 
 	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
 	{
-		Log.Error(e.Exception, "Unobserved task exception.\n");
 		e.SetObserved();
+		Log.Error(e.Exception, "Ensemble mitigated an unobserved task exception.\n");
 	}
 
 	private async Task LoadDeferredAsync()

@@ -143,7 +143,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="**/*.gd;**/*.gdshader" Exclude=".godot/**;bin/**">
+    <None Include="**/*.gd;**/*.gdshader;assets/**" Exclude=".godot/**;bin/**;**/*.import">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>

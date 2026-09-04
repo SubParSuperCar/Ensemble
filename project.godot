@@ -29,6 +29,7 @@ AvaloniaLoader="uid://bvmhyw4rgjd4t"
 
 [debug]
 
+file_logging/log_path="user://godot_logs/godot.log"
 settings/stdout/verbose_stdout.editor=true
 settings/stdout/print_fps.editor=true
 

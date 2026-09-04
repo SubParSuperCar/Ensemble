@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://m08ai3dgujj"]
+
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_wpl7w"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_wpl7w"]
+data = PackedVector3Array(-0.25, 0, 0, 0, 0.125, -0.375, 0, 0, -0.25, -0.25, 0, 0, -0.375, 0.125, 0, 0, 0.125, -0.375, -0.375, 0.125, 0, 0, 0, -0.5, 0, 0.125, -0.375, -0.375, 0.125, 0, -0.5, 0, 0, 0, 0, -0.5, -0.5, 0, 0, 0, -0.125, -0.375, 0, 0, -0.5, -0.5, 0, 0, -0.375, -0.125, 0, 0, -0.125, -0.375, -0.375, -0.125, 0, 0, 0, -0.25, 0, -0.125, -0.375, -0.375, -0.125, 0, -0.25, 0, 0, 0, 0, -0.25, 0, 0, 0.25, -0.375, 0.125, 0, -0.25, 0, 0, 0, 0, 0.25, 0, 0.125, 0.375, -0.375, 0.125, 0, 0, 0.125, 0.375, -0.5, 0, 0, -0.375, 0.125, 0, 0, 0.125, 0.375, 0, 0, 0.5, -0.5, 0, 0, 0, 0, 0.5, -0.375, -0.125, 0, -0.5, 0, 0, 0, 0, 0.5, 0, -0.125, 0.375, -0.375, -0.125, 0, 0, -0.125, 0.375, -0.25, 0, 0, -0.375, -0.125, 0, 0, -0.125, 0.375, 0, 0, 0.25, -0.25, 0, 0, 0.25, 0, 0, 0, 0.125, 0.375, 0, 0, 0.25, 0.25, 0, 0, 0.375, 0.125, 0, 0, 0.125, 0.375, 0.375, 0.125, 0, 0, 0, 0.5, 0, 0.125, 0.375, 0.375, 0.125, 0, 0.5, 0, 0, 0, 0, 0.5, 0.5, 0, 0, 0, -0.125, 0.375, 0, 0, 0.5, 0.5, 0, 0, 0.375, -0.125, 0, 0, -0.125, 0.375, 0.375, -0.125, 0, 0, 0, 0.25, 0, -0.125, 0.375, 0.375, -0.125, 0, 0.25, 0, 0, 0, 0, 0.25, 0, 0, -0.25, 0.375, 0.125, 0, 0.25, 0, 0, 0, 0, -0.25, 0, 0.125, -0.375, 0.375, 0.125, 0, 0, 0.125, -0.375, 0.5, 0, 0, 0.375, 0.125, 0, 0, 0.125, -0.375, 0, 0, -0.5, 0.5, 0, 0, 0, 0, -0.5, 0.375, -0.125, 0, 0.5, 0, 0, 0, 0, -0.5, 0, -0.125, -0.375, 0.375, -0.125, 0, 0, -0.125, -0.375, 0.25, 0, 0, 0.375, -0.125, 0, 0, -0.125, -0.375, 0, 0, -0.25, 0.25, 0, 0)
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_gee14"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wpl7w"]
+shading_mode = 0
+albedo_color = Color(1, 0, 0, 1)
+albedo_texture = SubResource("PlaceholderTexture2D_gee14")
+uv1_triplanar = true
+texture_filter = 0
+
+[sub_resource type="TorusMesh" id="TorusMesh_t6xj4"]
+material = SubResource("StandardMaterial3D_wpl7w")
+inner_radius = 0.25
+outer_radius = 0.5
+rings = 4
+ring_segments = 4
+
+[node name="Torus" type="RigidBody3D" unique_id=726135581]
+script = ExtResource("1_wpl7w")
+AssetId = 6
+AssetName = &"Torus"
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF",
+&"_materialId": 0
+})
+MaxInstanceCount = 875
+BoundaryAabb = null
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=1511614985]
+shape = SubResource("ConcavePolygonShape3D_wpl7w")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
+mesh = SubResource("TorusMesh_t6xj4")

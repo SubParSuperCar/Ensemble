@@ -10,7 +10,9 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 	private const ushort MaxEntries = 500;
 
 	private static readonly ConcurrentQueue<string> HistoryQueue = [];
-	private static readonly ExpressionTemplate Formatter = new("[{@t:HH:mm:ss} {@l:u3}] {@m:lj}{#if @x}\n{@x}{#end}");
+
+	private static readonly ExpressionTemplate Formatter = new(
+		"[{@t:HH:mm:ss} {@l:u3}] {@m:lj}{#if @x is not null}\n{@x}{#end}");
 
 	public static IReadOnlyCollection<string> History => [.. HistoryQueue];
 

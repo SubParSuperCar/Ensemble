@@ -1,3 +1,5 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace Root.Autoloading;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Root;
 
-public static class ExportPatch
+public static class PatchExport
 {
 	[ModuleInitializer]
 	public static void Initialize()

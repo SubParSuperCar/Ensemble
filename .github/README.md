@@ -59,7 +59,7 @@ Ensemble uses separate licenses for its code and non-code assets:
 - **Code:** [GNU General Public License v3.0 or later](./LICENSE-CODE.txt)
 - **Non-code assets:** [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](./LICENSE-ASSETS.txt)
 
-See [**LICENSE.md**](./LICENSE.md) for an overview of the project's licensing.
+See [**LICENSE.md**](../LICENSE.md) for an overview of the project's licensing.
 
 ---
 

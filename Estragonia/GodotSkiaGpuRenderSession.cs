@@ -16,7 +16,7 @@ internal sealed class GodotSkiaGpuRenderSession : ISkiaGpuRenderSession
 
 		// Clear the texture on first draw. This is already done by Avalonia, but Godot doesn't know that.
 		// We need it to avoid texture corruption on first draw on AMD GPUs. It will result in a few transparent frames after resizing.
-		// TODO: find a better solution.
+		// TODO: Find a better solution.
 		if (Surface.DrawCount == 0)
 			Surface.RenderingDevice.TextureClear(Surface.GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
 

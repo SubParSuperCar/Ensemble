@@ -434,7 +434,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	/// <summary>
 	///     Handles files dropped from the OS onto the Godot window.
 	///     First sends DragLeave to end any hover session, then
-	///     synthesizes DragEnter → DragOver → Drop with real file data.
+	///     synthesizes DragEnter -> DragOver -> Drop with real file data.
 	/// </summary>
 	// ReSharper disable once UnusedParameter.Global
 	public bool OnFilesDropped(string[] files, Vector2 position, ulong timestamp)
@@ -470,22 +470,22 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			}
 			catch (ArgumentException)
 			{
-				// Invalid path characters — skip
+				// Invalid path characters - skip
 			}
 			catch (SecurityException)
 			{
-				// No access to path — skip
+				// No access to path - skip
 			}
 			catch (NotSupportedException)
 			{
-				// Path format not supported — skip
+				// Path format not supported - skip
 			}
 		}
 
 		if (dataTransfer.Items.Count == 0)
 			return false;
 
-		// Synthesize DragEnter → DragOver → Drop sequence
+		// Synthesize DragEnter -> DragOver -> Drop sequence
 		var enterArgs = new RawDragEvent(device, RawDragEventType.DragEnter, InputRoot, point, dataTransfer,
 			DragDropEffects.Copy | DragDropEffects.Link, modifiers);
 		input(enterArgs);

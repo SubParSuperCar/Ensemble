@@ -42,14 +42,14 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 	// Tracks the last PixelSize pushed from _Process to detect external size changes
 	// (user resize, maximize) vs Avalonia-driven changes (SizeToContent layout).
-	// This prevents feedback loops where SetRenderSize → Resized → layout → Resize
+	// This prevents feedback loops where SetRenderSize -> Resized -> layout -> Resize
 	// causes the window to grow each frame.
 	// Initialized to (-1,-1) so that _Process always pushes the first real size
 	// (even if the window starts at 0x0 or matches the default PixelSize).
 	private PixelSize _lastProcessRenderSize = new(-1, -1);
 
 	// For SizeToContent windows, we need to re-center after the first layout pass
-	// determines the actual content size (which differs from the initial 400×300).
+	// determines the actual content size (which differs from the initial 400x300).
 	private bool _needsRecenter;
 	private GodotWindowImpl? _parentImpl;
 	private Vector2I _pendingSize = new(400, 300);
@@ -75,7 +75,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		{
 			Title = string.Empty,
 			Visible = false,
-			// Keep native OS decorations — Godot/OS handles drag, resize, maximize, minimize
+			// Keep native OS decorations - Godot/OS handles drag, resize, maximize, minimize
 			Borderless = false,
 			Transparent = false,
 			InitialPosition = Window.WindowInitialPosition.Absolute,
@@ -141,7 +141,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		}
 	}
 
-	// OS handles decorations — no managed decorations needed
+	// OS handles decorations - no managed decorations needed
 	public bool WindowStateGetterIsUsable => false;
 	public bool IsClientAreaExtendedToDecorations => false;
 	public bool NeedsManagedDecorations => false;
@@ -155,7 +155,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		if (_isDisposed || _isVisible) return;
 		var sceneTree = (SceneTree)Engine.GetMainLoop();
 
-		// Only set GuiEmbedSubwindows once — this is a global property on the
+		// Only set GuiEmbedSubwindows once - this is a global property on the
 		// root viewport that affects all Godot sub-windows, not just ours.
 		if (!s_guiEmbedSubwindowsSet)
 		{
@@ -173,7 +173,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		// Always add sub-windows as siblings under the root viewport.
 		// Godot's Transient + Exclusive provides modal semantics via window IDs,
-		// not node hierarchy — nesting creates incorrect scene tree structure.
+		// not node hierarchy - nesting creates incorrect scene tree structure.
 		sceneTree.Root.AddChild(_gdWindow);
 
 		// Transient: stays on top of parent, focus returns on close
@@ -204,7 +204,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		var size = _gdWindow.Size;
 		_lastProcessRenderSize = new PixelSize(Math.Max(size.X, 1), Math.Max(size.Y, 1));
 		_topLevelImpl.SetRenderSize(_lastProcessRenderSize, 1.0);
-		// For SizeToContent windows (e.g. managed file dialogs), the initial 400×300
+		// For SizeToContent windows (e.g. managed file dialogs), the initial 400x300
 		// will be replaced by Avalonia's layout-determined size on the first _Process tick.
 		// Flag that we need to re-center after that happens.
 		if (_isManagedDialog)
@@ -257,7 +257,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 	{
 	}
 
-	// OS handles drag/resize natively — these are no-ops
+	// OS handles drag/resize natively - these are no-ops
 	public void BeginMoveDrag(PointerPressedEventArgs e)
 	{
 	}
@@ -430,9 +430,9 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		// Only push the size to Avalonia if it changed externally (user resize,
 		// maximize, etc.). Skip when Resize() already updated _lastProcessRenderSize
-		// to match — this prevents the feedback loop:
-		//   Resize() → _gdWindow.Size = X → OnSizeChanged → SetRenderSize →
-		//   Resized → layout → Resize() → _gdWindow.Size = X → OnSizeChanged → ...
+		// to match - this prevents the feedback loop:
+		//   Resize() -> _gdWindow.Size = X -> OnSizeChanged -> SetRenderSize ->
+		//   Resized -> layout -> Resize() -> _gdWindow.Size = X -> OnSizeChanged -> ...
 		if (pixelSize != _lastProcessRenderSize)
 		{
 			_lastProcessRenderSize = pixelSize;
@@ -608,8 +608,8 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 			// Only push Godot's window size to Avalonia when it changed externally
 			// (user resize, maximize, fullscreen). Skip when the size matches what
-			// Avalonia already set via Resize() — this prevents feedback loops with
-			// SizeToContent where SetRenderSize → Resized → layout → Resize grows
+			// Avalonia already set via Resize() - this prevents feedback loops with
+			// SizeToContent where SetRenderSize -> Resized -> layout -> Resize grows
 			// the window each frame.
 			if (pixelSize != _owner._lastProcessRenderSize)
 			{
@@ -625,7 +625,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			_owner.TryEnablePopupOverlayLayer();
 
 			// For SizeToContent windows, re-center after Avalonia layout determines
-			// the actual content size (which differs from the initial 400×300 default).
+			// the actual content size (which differs from the initial 400x300 default).
 			if (_owner._needsRecenter)
 			{
 				_owner._needsRecenter = false;

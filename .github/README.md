@@ -63,7 +63,21 @@ See [**LICENSE.md**](./LICENSE.md) for an overview of the project's licensing.
 
 ---
 
-[//]: # (TODO: Media)
+## Media
+
+<details open>
+  <summary>Click to expand/collapse this section.</summary>
+
+![Ensemble Main Menu](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
+![Ensemble Document File Viewer](https://github.com/user-attachments/assets/7c30bb1e-c322-4f0b-b995-649b6cec8834)
+![Ensemble Web Browser](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
+![Ensemble Day Blocks](https://github.com/user-attachments/assets/d180f320-1e58-4e8b-a372-deca6a402673)
+![Ensemble Console](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
+![Ensemble Night Blocks](https://github.com/user-attachments/assets/74e1df16-1ce3-4953-bf53-18506cb97394)
+
+</details>
+
+---
 
 ## Contributing
 

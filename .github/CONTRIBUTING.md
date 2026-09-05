@@ -2,7 +2,7 @@
 
 ## How to Set Up and Contribute
 
-1. Download and install **[Git](https://git-scm.com/install/)**. Git is already installed by default on many Linux
+1. Download and install [**Git**](https://git-scm.com/install/). Git is already installed by default on many Linux
    distributions.
 
 2. Clone this repository into a directory you will remember:
@@ -10,13 +10,13 @@
    git clone https://github.com/SubParSuperCar/Ensemble.git
    ```
 
-3. Download and install **[Godot Mono 4.7.2 or newer](https://godotengine.org/download/archive/4.7.2-stable/)**. Be sure
+3. Download and install [**Godot Mono 4.7.2 or newer**](https://godotengine.org/download/archive/4.7.2-stable/). Be sure
    to download the **.NET (Mono)** version for your operating system and system architecture.
 
-4. Download and install the **[.NET SDK 10.0.100 or newer](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/)**.
+4. Download and install the [**.NET SDK 10.0.100 or newer**](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/).
    The .NET SDK is required to build and run the project's C# code.
 
-5. (Optional) Download and install **[JetBrains Rider 2025.3 or newer](https://www.jetbrains.com/rider/download/)**.
+5. (Optional) Download and install [**JetBrains Rider 2025.3 or newer**](https://www.jetbrains.com/rider/download/).
    Rider is the recommended IDE for this project. See JetBrains' current licensing terms for information about its
    available licenses. **Visual Studio Code** is also supported, but its C# tooling is generally less comprehensive than
    Rider's. **Visual Studio 2026** can also be used, but only on Windows.

@@ -4,11 +4,11 @@
 [![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
 
 A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12. This project is created
-and maintained by **[SubParSuperCar](https://github.com/SubParSuperCar)**.
+and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 
 <img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made w/ Inkscape)" alt="Ensemble's Icon">
 
-> *“Nothing is Arbitrary; Everything is Relative.”*<br>
+> *"Nothing is Arbitrary; Everything is Relative."*<br>
 > <small>- *Ensemble's motto*</small>
 
 <br clear="left"/>
@@ -20,9 +20,9 @@ and maintained by **[SubParSuperCar](https://github.com/SubParSuperCar)**.
 > - Code quality may be "sub-par" (pun intended) as the codebase continues to mature.
 
 > [!WARNING]
-> **Ensemble** is in the early stages of development (pre-release) and should not be considered representative of future
-1.x or later releases. The project has been open-sourced early to encourage feedback, discussion, and contributions
-while its architecture, systems, and implementation continue to evolve.
+> **Ensemble** is in the early stages of development (alpha/pre-release) and should not be considered representative of
+future 1.x or later releases. The project has been open-sourced early to encourage feedback, discussion, and
+contributions while its architecture, systems, and implementation continue to evolve.
 
 ---
 
@@ -33,7 +33,7 @@ while its architecture, systems, and implementation continue to evolve.
 
 *(Pronounced "**EN-sem**-bull," not "ON-som-bull.")*
 
-This game was originally called **Baja Builders** on Roblox from approximately 2022–2025. However, the name never really
+This game was originally called **Baja Builders** on Roblox from approximately 2022-2025. However, the name never really
 resonated with me, and "baja" can be interpreted as "below" or "low" in Spanish. I ultimately renamed it to **Ensemble**
 for two primary reasons:
 
@@ -46,7 +46,7 @@ for two primary reasons:
 
 ## Credits
 
-All `OBJ` files under `/assets/meshes/`, except for `plots_base.obj`, were created by "Shrimp Fried Koishi." Other
+All `OBJ` files under `/assets/meshes/`, except for `plots_base.obj`, were created by **"Shrimp Fried Koishi."** Other
 third-party resources, including NuGet packages and files under `/addons/` and `/Estragonia/`, are distributed under
 their respective licenses and are subject to their respective authors' or copyright holders' terms.
 
@@ -59,7 +59,7 @@ Ensemble uses separate licenses for its code and non-code assets:
 - **Code:** [GNU General Public License v3.0 or later](./LICENSE-CODE.txt)
 - **Non-code assets:** [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](./LICENSE-ASSETS.txt)
 
-See [LICENSE.md](./LICENSE.md) for an overview of the project's licensing.
+See [**LICENSE.md**](./LICENSE.md) for an overview of the project's licensing.
 
 ---
 

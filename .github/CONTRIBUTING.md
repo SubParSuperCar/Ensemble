@@ -2,7 +2,7 @@
 
 ## How to Set Up and Contribute
 
-1. Download and install **Git** from https://git-scm.com/install/. Git is already installed by default on many Linux
+1. Download and install **[Git](https://git-scm.com/install/)**. Git is already installed by default on many Linux
    distributions.
 
 2. Clone this repository into a directory you will remember:
@@ -10,20 +10,21 @@
    git clone https://github.com/SubParSuperCar/Ensemble.git
    ```
 
-3. Download and install **Godot Mono 4.7.2 or newer** from https://godotengine.org/download/archive/4.7.2-stable/. Be
-   sure to download the **.NET (Mono)** version for your operating system and system architecture.
+3. Download and install **[Godot Mono 4.7.2 or newer](https://godotengine.org/download/archive/4.7.2-stable/)**. Be sure
+   to download the **.NET (Mono)** version for your operating system and system architecture.
 
-4. Download and install the **.NET SDK 10.0.100 or newer**
-   from https://dotnet.microsoft.com/en-us/download/dotnet/10.0/. The .NET SDK is required to build and run the
-   project's C# code.
+4. Download and install the **[.NET SDK 10.0.100 or newer](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/)**.
+   The .NET SDK is required to build and run the project's C# code.
 
-5. (Optional) Download and install **JetBrains Rider 2025.3 or newer** from https://www.jetbrains.com/rider/download/.
-   Rider is free for non-commercial use (as of the last update of this document) and is the recommended IDE for this
-   project. **Visual Studio Code** is also supported, but its C# tooling is generally less comprehensive than Rider's.
-   **Visual Studio 2026** can also be used, but only on Windows.
+5. (Optional) Download and install **[JetBrains Rider 2025.3 or newer](https://www.jetbrains.com/rider/download/)**.
+   Rider is the recommended IDE for this project. See JetBrains' current licensing terms for information about its
+   available licenses. **Visual Studio Code** is also supported, but its C# tooling is generally less comprehensive than
+   Rider's. **Visual Studio 2026** can also be used, but only on Windows.
 
-6. Open the project in Godot (to import it) and, optionally, in your preferred code editor (JetBrains Rider, Visual
-   Studio Code, etc.), then begin developing.
+6. Open the project in Godot to import and initialize it. Then open the project in your preferred code editor (JetBrains
+   Rider, Visual Studio Code, etc.) and begin developing.
+
+   ### Rider PATH Configuration
 
    If you use JetBrains Rider, it is recommended that you add the Godot executable to your system's `PATH` using one of
    the following names: `godot`, `godot4`, or `godot-mono`. This allows the **PATH Launcher** run configuration to

@@ -6,7 +6,7 @@
 A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12. This project is
 created, maintained, and owned by **SubParSuperCar** ([GitHub profile](https://github.com/SubParSuperCar)).
 
-<img align="left" width="256" src="https://raw.githubusercontent.com/SubParSuperCar/Ensemble/main/assets/images/ensemble_icon_square_colored.png" srcset="../assets/images/ensemble_icon_square_colored.png 1x" title="Ensemble's Icon (Made w/ Inkscape)" alt="Ensemble's Icon">
+<img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made w/ Inkscape)" alt="Ensemble's Icon">
 
 *"Nothing is Arbitrary; Everything is Relative."*<br>
 <small>(Ensemble's Motto)</small>

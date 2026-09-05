@@ -52,4 +52,4 @@ respective owners.
 
 ## License
 
-This project is licensed under the terms of the licenses found in [LICENSE.md](/LICENSE.md).
+This project is licensed under the terms of the licenses found in [LICENSE.md](./LICENSE.md).

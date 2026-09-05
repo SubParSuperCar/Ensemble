@@ -8,7 +8,8 @@ created, maintained, and owned by **SubParSuperCar** ([GitHub profile](https://g
 
 <img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made w/ Inkscape)">
 
-*"Nothing is Arbitrary; Everything is Relative."*
+*"Nothing is Arbitrary; Everything is Relative."*<br>
+<small>(Ensemble's Motto)</small>
 <br clear="left"/>
 
 ---

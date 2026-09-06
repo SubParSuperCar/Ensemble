@@ -197,6 +197,9 @@ test_hang={
 3d/run_on_separate_thread=true
 common/physics_ticks_per_second=120
 3d/physics_engine="Jolt Physics"
+jolt_physics_3d/limits/max_bodies=1048576
+jolt_physics_3d/limits/max_body_pairs=8388608
+jolt_physics_3d/limits/max_contact_constraints=2097152
 common/physics_interpolation=true
 
 [rendering]

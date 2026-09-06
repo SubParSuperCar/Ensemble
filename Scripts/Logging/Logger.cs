@@ -97,8 +97,9 @@ public partial class Logger : Node, IAutoload
 
 	private static byte[] ReadAllBytesOrThrow(string path)
 	{
-		using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read) ??
-						 throw new IOException($"Could not open for reading: {path} ({FileAccess.GetOpenError()})");
+		using var file =
+			FileAccess.Open(path, FileAccess.ModeFlags.Read) ??
+			throw new IOException($"Could not open for reading: {path} ({FileAccess.GetOpenError()})");
 
 		return file.GetBuffer((long)file.GetLength());
 	}

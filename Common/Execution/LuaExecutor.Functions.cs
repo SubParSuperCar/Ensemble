@@ -189,19 +189,17 @@ public static partial class LuaExecutor
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
+					var childTable = luaValue.Read<LuaTable>();
+
+					if (visited.Contains(childTable))
+						Log.Information("{Path} = <already visited>", childPath);
+					else
 					{
-						var childTable = luaValue.Read<LuaTable>();
-
-						if (visited.Contains(childTable))
-							Log.Information("{Path} = <already visited>", childPath);
-						else
-						{
-							Log.Information("{Path} = <table>", childPath);
-							DumpTable(childTable, childPath, visited);
-						}
-
-						break;
+						Log.Information("{Path} = <table>", childPath);
+						DumpTable(childTable, childPath, visited);
 					}
+
+					break;
 
 				case LuaValueType.Function:
 					Log.Information("{Path} = <function>", childPath);
@@ -266,9 +264,8 @@ public static partial class LuaExecutor
 	{
 		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
 
-		Log.Information("Available VSync modes:\n{Modes}",
-			string.Join('\n',
-				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{mode} ({(int)mode})"))));
+		Log.Information("Available VSync modes:{Modes}",
+			modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"\n{mode} ({(int)mode})")));
 
 		context.Return();
 		return default;
@@ -286,8 +283,7 @@ public static partial class LuaExecutor
 			.Select(entry => entry.Key.Read<string>())
 			.Order(StringComparer.Ordinal);
 
-		Log.Information("Custom injected functions in _ENV:\n{Functions}",
-			string.Join(Environment.NewLine, functions));
+		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join('\n', functions));
 
 		context.Return();
 		return default;
@@ -426,20 +422,16 @@ public static partial class LuaExecutor
 		switch (argument.Type)
 		{
 			case LuaValueType.String:
-				{
-					if (Enum.TryParse<DisplayServer.VSyncMode>(argument.Read<string>(), true, out var parsed))
-						mode = parsed;
-					break;
-				}
+				if (Enum.TryParse<DisplayServer.VSyncMode>(argument.Read<string>(), true, out var parsed))
+					mode = parsed;
+				break;
 
 			case LuaValueType.Number:
-				{
-					var value = (long)argument.Read<double>();
+				var value = (long)argument.Read<double>();
 
-					if (Enum.IsDefined(typeof(DisplayServer.VSyncMode), value))
-						mode = (DisplayServer.VSyncMode)value;
-					break;
-				}
+				if (Enum.IsDefined(typeof(DisplayServer.VSyncMode), value))
+					mode = (DisplayServer.VSyncMode)value;
+				break;
 		}
 
 		if (mode is { } result)

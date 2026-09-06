@@ -6,5 +6,8 @@ namespace Root.Ui.Impl.Views;
 
 public partial class StatView : UserControl, IViewFor<StatViewModel>
 {
-	public StatView() => InitializeComponent();
+	public StatView()
+	{
+		InitializeComponent();
+	}
 }

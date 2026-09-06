@@ -14,18 +14,18 @@
         <StackPanel Orientation="Horizontal" Spacing="4" ToolTip.Tip="ToolBar">
             <Border BorderBrush="DodgerBlue" BorderThickness="1">
                 <ToggleButton
-                    Content="Construct Tool (1)"
+                    Content="Place (1)"
                     Command="{Binding ToggleConstructToolCommand}"
                     IsChecked="{Binding IsConstructToolEnabled}"
-                    ToolTip.Tip="Toggles the construct (placement) tool. (Bound to 1 / One)" />
+                    ToolTip.Tip="Toggles the placement (construct) tool. (Bound to 1 / One)" />
             </Border>
 
             <Border BorderBrush="Red" BorderThickness="1">
                 <ToggleButton
-                    Content="Destruct Tool (2)"
+                    Content="Delete (2)"
                     Command="{Binding ToggleDestructToolCommand}"
                     IsChecked="{Binding IsDestructToolEnabled}"
-                    ToolTip.Tip="Toggles the destruct (deletion) tool. (Bound to 2 / Two)" />
+                    ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)" />
             </Border>
 
             <CheckBox

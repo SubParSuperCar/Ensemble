@@ -238,9 +238,9 @@ public static partial class LuaExecutor
 	{
 		var before = GC.GetTotalMemory(false);
 
-		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 		GC.WaitForPendingFinalizers();
-		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 
 		var after = GC.GetTotalMemory(false);
 		var reclaimed = Math.Max(0, before - after);

@@ -7,10 +7,7 @@ namespace Root.Ui.Impl.Views;
 
 public partial class GameView : UserControl, IViewFor<GameViewModel>
 {
-	public GameView()
-	{
-		InitializeComponent();
-	}
+	public GameView() => InitializeComponent();
 
 	private void OnMenuButtonDoubleTapped(object? sender, TappedEventArgs e) => GSessionManager.StopSession();
 }

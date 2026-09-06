@@ -14,9 +14,9 @@
         Padding="2">
 
         <Grid RowDefinitions="Auto,*">
-            <Grid ColumnDefinitions="*,*,Auto">
+            <Grid ColumnDefinitions="Auto,*,Auto">
                 <TextBlock Text="Name&#x0a; &#x2198;" />
-                <TextBlock Grid.Column="1" Text="Player List (Tab)" />
+                <TextBlock Grid.Column="1" Text="Player List (Tab)" HorizontalAlignment="Center" />
                 <TextBlock Grid.Column="2" Text="Peer ID&#x0a;&#x2193; " TextAlignment="Right" />
             </Grid>
 

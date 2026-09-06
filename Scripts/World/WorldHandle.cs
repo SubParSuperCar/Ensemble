@@ -11,17 +11,15 @@ public partial class WorldHandle : Node3D
 #if ENSEMBLE_DEBUG
 		{
 			const int plotId = 2;
+			const float y = 0.5f;
 
-			var plot = GPlots.GetPlot(plotId)!;
-			var instances = plot.Instances;
+			var instances = GPlots.GetPlot(plotId)!.Instances;
 
 			var assets = GAssets.GetAll();
 			var count = assets.Count;
 
 			for (var i = 0; i < count; i++)
 			{
-				const float y = 0.5f;
-
 				var asset = assets[i];
 				var angle = i * Mathf.Tau / count;
 

@@ -21,6 +21,7 @@ public class Players(TimeProvider? timeProvider = null) : IPlayers
 			throw new InvalidOperationException($"Player with id {playerId} already exists.");
 
 		var player = new Player(playerId, name, timeProvider);
+
 		_playersById.Add(playerId, player);
 		Added?.Invoke(player);
 

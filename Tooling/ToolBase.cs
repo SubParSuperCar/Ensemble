@@ -12,12 +12,10 @@ public abstract partial class ToolBase : Node
 
 	public event Action<bool>? IsEnabledChanged;
 
-	internal void Initialize(ToolControl control)
+	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (_control is not null)
-			throw new InvalidOperationException("Tool has already been initialized.");
-
-		_control = control;
+		if (ToggleAction is not null && @event.IsActionPressed(ToggleAction))
+			Toggle();
 	}
 
 	public void Enable() => _control.RequestEnable();
@@ -31,10 +29,12 @@ public abstract partial class ToolBase : Node
 			Enable();
 	}
 
-	public override void _UnhandledKeyInput(InputEvent @event)
+	internal void Initialize(ToolControl control)
 	{
-		if (ToggleAction is not null && @event.IsActionPressed(ToggleAction))
-			Toggle();
+		if (_control is not null)
+			throw new InvalidOperationException("Tool has already been initialized.");
+
+		_control = control;
 	}
 
 	internal void EnableInternal()

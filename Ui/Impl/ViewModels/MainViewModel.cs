@@ -58,6 +58,8 @@ public partial class MainViewModel : ViewModelBase
 		IsConsoleVisible = false;
 	}
 
+	private static void OnProcess(double delta) => RenderingServer.ForceDraw();
+
 	private void OnSessionStarted()
 	{
 		_dispatcher.Process -= OnProcess;
@@ -75,8 +77,6 @@ public partial class MainViewModel : ViewModelBase
 
 		Main = _services.GetRequiredService<MenuViewModel>();
 	}
-
-	private static void OnProcess(double delta) => RenderingServer.ForceDraw();
 
 	private void OnInput(InputEvent @event)
 	{

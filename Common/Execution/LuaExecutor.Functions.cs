@@ -16,7 +16,7 @@ using Environment = System.Environment;
 
 namespace Root.Common.Execution;
 
-public partial class LuaExecutor
+public static partial class LuaExecutor
 {
 	private const string PublicIPv4AddressSourceUrl = "https://api.ipify.org";
 
@@ -52,7 +52,7 @@ public partial class LuaExecutor
 		var positionRange = GPlotManager.GetHandle(plotId).GridBoundarySize / 2;
 
 		var instances = GPlots.GetPlot(plotId)!.Instances;
-		var assetIds = GAssets.GetAll().Select(a => a.Id).ToArray();
+		var assetIds = GAssets.GetAll().Select(asset => asset.Id).ToArray();
 		var random = Random.Shared;
 
 		var stopwatch = Stopwatch.StartNew();
@@ -126,7 +126,7 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var assemblies = AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetName());
+		var assemblies = AppDomain.CurrentDomain.GetAssemblies().Select(assembly => assembly.GetName());
 		Log.Information("\n{Assemblies}", string.Join('\n', assemblies));
 
 		context.Return();
@@ -152,7 +152,7 @@ public partial class LuaExecutor
 
 		foreach (
 			var action in InputMap.GetActions()
-				.Select(a => a.ToString())
+				.Select(action => action.ToString())
 				.Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
@@ -177,7 +177,7 @@ public partial class LuaExecutor
 			return;
 		}
 
-		foreach (var (luaKey, luaValue) in table.OrderBy(e => e.Key.ToString(), StringComparer.Ordinal))
+		foreach (var (luaKey, luaValue) in table.OrderBy(entry => entry.Key.ToString(), StringComparer.Ordinal))
 		{
 			var childPath = luaKey.Type is LuaValueType.Number
 				? $"{path}[{luaKey}]"
@@ -266,7 +266,7 @@ public partial class LuaExecutor
 
 		Log.Information("Available VSync modes:\n{Modes}",
 			string.Join('\n',
-				modes.Select(static m => string.Create(CultureInfo.InvariantCulture, $"{m} ({(int)m})"))));
+				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{mode} ({(int)mode})"))));
 
 		context.Return();
 		return default;
@@ -285,7 +285,7 @@ public partial class LuaExecutor
 			.Order(StringComparer.Ordinal);
 
 		Log.Information("Custom injected functions in _ENV:\n{Functions}",
-			string.Join((string?)Environment.NewLine, functions));
+			string.Join(Environment.NewLine, functions));
 
 		context.Return();
 		return default;
@@ -349,9 +349,17 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
+		SetTimeOfDay(context);
+
+		context.Return();
+		return default;
+	}
+
+	private static void SetTimeOfDay(LuaFunctionExecutionContext context)
+	{
 		var timeOfDay = WorldManager.Instance?.World?.GetNode("Sky/TimeOfDay");
 		if (timeOfDay is null)
-			goto Return;
+			return;
 
 		if (context.ArgumentCount is 0)
 		{
@@ -359,20 +367,16 @@ public partial class LuaExecutor
 			timeOfDay.Set("system_sync", true);
 
 			Log.Information("Synced lighting time to system clock.");
-
-			goto Return;
+			return;
 		}
 
 		var time = context.GetArgument<float>(0) % 24;
+
 		timeOfDay.Set("game_time_enabled", false);
 		timeOfDay.Set("system_sync", false);
 		timeOfDay.Set("current_time", time);
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight.", time);
-
-	Return:
-		context.Return();
-		return default;
 	}
 
 	private static ValueTask<int> set_ui_dark_theme_on(
@@ -412,22 +416,23 @@ public partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var arg = context.GetArgument<LuaValue>(0);
+		var argument = context.GetArgument<LuaValue>(0);
 
 		DisplayServer.VSyncMode? mode = null;
 
 		// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-		switch (arg.Type)
+		switch (argument.Type)
 		{
 			case LuaValueType.String:
 				{
-					if (Enum.TryParse<DisplayServer.VSyncMode>(arg.Read<string>(), true, out var parsed))
+					if (Enum.TryParse<DisplayServer.VSyncMode>(argument.Read<string>(), true, out var parsed))
 						mode = parsed;
 					break;
 				}
+
 			case LuaValueType.Number:
 				{
-					var value = (long)arg.Read<double>();
+					var value = (long)argument.Read<double>();
 
 					if (Enum.IsDefined(typeof(DisplayServer.VSyncMode), value))
 						mode = (DisplayServer.VSyncMode)value;
@@ -441,7 +446,7 @@ public partial class LuaExecutor
 			Log.Debug("Set VSync mode to: {Mode}", result);
 		}
 		else
-			Log.Error("Invalid VSync mode: {Mode}", arg);
+			Log.Error("Invalid VSync mode: {Mode}", argument);
 
 		context.Return();
 		return default;

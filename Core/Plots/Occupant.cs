@@ -12,6 +12,8 @@ public class Occupant(IPlayer player) : IOccupant
 
 	public event Action<IPlot?>? PlotChanged;
 
+	public override string ToString() => $"Occupant(playerId={Player.Id}, plotId={Plot?.Id})";
+
 	internal void SetPlot(Plot? plot)
 	{
 		if (ReferenceEquals(plot, Plot))
@@ -20,6 +22,4 @@ public class Occupant(IPlayer player) : IOccupant
 		Plot = plot;
 		PlotChanged?.Invoke(plot);
 	}
-
-	public override string ToString() => $"Occupant(playerId={Player.Id}, plotId={Plot?.Id})";
 }

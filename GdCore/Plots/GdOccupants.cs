@@ -17,6 +17,7 @@ public partial class GdOccupants : RefCounted
 	public delegate void RemovedEventHandler(GdOccupant occupant);
 
 	private static readonly ConditionalWeakTable<IOccupants, GdOccupants> Wrappers = [];
+
 	private IOccupants _source = null!;
 
 	public int Count => _source.All.Count;

@@ -95,14 +95,14 @@ public class Plots : IPlots
 
 	public bool TryGetOccupant(Guid playerId, [NotNullWhen(true)] out IOccupant? occupant)
 	{
-		if (Occupants.TryGet(playerId, out var found))
+		if (!Occupants.TryGet(playerId, out var found))
 		{
-			occupant = found;
-			return true;
+			occupant = null;
+			return false;
 		}
 
-		occupant = null;
-		return false;
+		occupant = found;
+		return true;
 	}
 
 	public void Lock() => IsLocked = true;

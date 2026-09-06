@@ -8,6 +8,7 @@ namespace Root.GdCore.Players;
 public partial class GdPlayer : RefCounted
 {
 	private static readonly ConditionalWeakTable<IPlayer, GdPlayer> Wrappers = [];
+
 	private IPlayer _source = null!;
 
 	public string Id => _source.Id.ToString();

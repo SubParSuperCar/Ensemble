@@ -9,6 +9,7 @@ namespace Root.GdCore.Assets;
 public partial class GdAsset : RefCounted
 {
 	private static readonly ConditionalWeakTable<IAsset, GdAsset> Wrappers = [];
+
 	private IAsset _source = null!;
 
 	public int Id => _source.Id;

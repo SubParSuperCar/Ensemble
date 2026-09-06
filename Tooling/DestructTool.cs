@@ -30,7 +30,7 @@ public partial class DestructTool : ToolBase
 	public override void _PhysicsProcess(double delta)
 	{
 		if (IsEnabled)
-			OnPhysicsProcess();
+			UpdateSelection();
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -49,7 +49,29 @@ public partial class DestructTool : ToolBase
 
 	protected override void OnDisable() => SetSelected(null);
 
-	private void OnPhysicsProcess()
+	private static TNode? FindInHierarchy<TNode>(Node node) where TNode : Node
+	{
+		while (node is not null)
+		{
+			if (node is TNode ofType)
+				return ofType;
+
+			node = node.GetParent();
+		}
+
+		return null;
+	}
+
+	private static bool IsHandleLocal(AssetHandle handle)
+	{
+		if (LocalPlot?.Id is not { } id)
+			return false;
+
+		var plotHandle = FindInHierarchy<PlotHandle>(handle);
+		return ReferenceEquals(GPlotManager.GetHandle(id), plotHandle);
+	}
+
+	private void UpdateSelection()
 	{
 		if (
 			CastRay() is { } result &&
@@ -77,28 +99,6 @@ public partial class DestructTool : ToolBase
 
 		var result = viewport.GetWorld3D().DirectSpaceState.IntersectRay(query);
 		return result.Count > 0 ? result["collider"].As<Node3D>() : null;
-	}
-
-	private static TNode? FindInHierarchy<TNode>(Node node) where TNode : Node
-	{
-		while (node is not null)
-		{
-			if (node is TNode ofType)
-				return ofType;
-
-			node = node.GetParent();
-		}
-
-		return null;
-	}
-
-	private static bool IsHandleLocal(AssetHandle handle)
-	{
-		if (LocalPlot?.Id is not { } id)
-			return false;
-
-		var plotHandle = FindInHierarchy<PlotHandle>(handle);
-		return ReferenceEquals(GPlotManager.GetHandle(id), plotHandle);
 	}
 
 	private void SetSelected(AssetHandle? handle)

@@ -76,14 +76,19 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 			authenticator.StopAuth(multiplayer);
 		}
 
-		multiplayer.MultiplayerPeer?.Close();
-		multiplayer.MultiplayerPeer = null;
+		ClosePeer();
 
 		if (!IsActive)
 			return;
 
 		IsActive = false;
 		Stopped?.Invoke();
+	}
+
+	private void ClosePeer()
+	{
+		multiplayer.MultiplayerPeer?.Close();
+		multiplayer.MultiplayerPeer = null;
 	}
 
 	private void OnConnectedToServer()
@@ -101,8 +106,7 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 		multiplayer.ConnectionFailed -= OnConnectionFailed;
 		multiplayer.ServerDisconnected -= OnServerDisconnected;
 
-		multiplayer.MultiplayerPeer?.Close();
-		multiplayer.MultiplayerPeer = null;
+		ClosePeer();
 
 		Failed?.Invoke("Connection failed.");
 	}
@@ -111,8 +115,7 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 	{
 		multiplayer.ServerDisconnected -= OnServerDisconnected;
 
-		multiplayer.MultiplayerPeer?.Close();
-		multiplayer.MultiplayerPeer = null;
+		ClosePeer();
 
 		IsActive = false;
 		Stopped?.Invoke();

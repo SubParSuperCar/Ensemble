@@ -43,19 +43,7 @@ public partial class ToolManager : Node, IAutoload
 			Instance = null;
 	}
 
-	private T CreateTool<T>() where T : ToolBase, new()
-	{
-		var tool = new T();
-		tool.Name = typeof(T).Name;
-		tool.Initialize(new ToolControl(this, tool));
-
-		_tools.Add(tool);
-		AddChild(tool);
-
-		Log.Debug("Created tool: {Tool}", tool.GetType().Name);
-
-		return tool;
-	}
+	internal static void RequestDisable(ToolBase tool) => tool.DisableInternal();
 
 	internal void RequestEnable(ToolBase tool)
 	{
@@ -68,7 +56,19 @@ public partial class ToolManager : Node, IAutoload
 		tool.EnableInternal();
 	}
 
-	internal static void RequestDisable(ToolBase tool) => tool.DisableInternal();
+	private TTool CreateTool<TTool>() where TTool : ToolBase, new()
+	{
+		var tool = new TTool();
+		tool.Name = typeof(TTool).Name;
+		tool.Initialize(new ToolControl(this, tool));
+
+		_tools.Add(tool);
+		AddChild(tool);
+
+		Log.Debug("Created tool: {Tool}", tool.GetType().Name);
+
+		return tool;
+	}
 
 	private void OnIsLocalPlotSpawnedChanged(bool? _)
 	{

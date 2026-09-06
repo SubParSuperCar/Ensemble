@@ -118,6 +118,12 @@ public partial class Ui : AvaloniaControl
 		};
 	}
 
+	private static void OnAvaloniaUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
+	{
+		args.Handled = true;
+		Log.Error(args.Exception, "Ensemble mitigated an unhandled exception in Avalonia.");
+	}
+
 	private void OnAutoloadsReady()
 	{
 		Main.AutoloadsReady -= OnAutoloadsReady;
@@ -151,9 +157,7 @@ public partial class Ui : AvaloniaControl
 			stopwatch.Stop();
 			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms.", stopwatch.Elapsed.TotalMilliseconds);
 
-			var windowSize = GetWindow().Size;
-			RenderScaling = GetRenderScale(windowSize);
-
+			RenderScaling = GetRenderScale(GetWindow().Size);
 			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), RenderScaling);
 		}
 		catch (Exception exception)
@@ -169,11 +173,5 @@ public partial class Ui : AvaloniaControl
 
 			QueueFree();
 		}
-	}
-
-	private static void OnAvaloniaUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
-	{
-		args.Handled = true;
-		Log.Error(args.Exception, "Ensemble mitigated an unhandled exception in Avalonia.");
 	}
 }

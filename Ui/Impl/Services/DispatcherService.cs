@@ -16,8 +16,8 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 			(_, message) => Input?.Invoke(message.Value));
 	}
 
-	protected override void OnDispose() => WeakReferenceMessenger.Default.UnregisterAll(this);
-
 	public event Action<double>? Process;
 	public event Action<InputEvent>? Input;
+
+	protected override void OnDispose() => WeakReferenceMessenger.Default.UnregisterAll(this);
 }

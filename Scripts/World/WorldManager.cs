@@ -9,9 +9,9 @@ namespace Root.Scripts.World;
 [Autoload(Order = sbyte.MaxValue - 1, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class WorldManager : Node, IAutoload
 {
-	public WorldHandle? World { get; private set; }
-
 	public static WorldManager? Instance { get; private set; }
+
+	public WorldHandle? World { get; private set; }
 
 	[Export] public PackedScene WorldScene { get; set; } = GD.Load<PackedScene>(ScenesDir + "world.tscn");
 

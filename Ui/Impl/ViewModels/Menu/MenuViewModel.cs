@@ -26,6 +26,14 @@ public class MenuViewModel : ViewModelBase
 
 	public NavigatorService Navigator { get; }
 
+	protected override void OnDispose()
+	{
+		_dispatcher.Input -= OnInput;
+		Navigator.GoTo();
+
+		_scope.Dispose();
+	}
+
 	private void OnInput(InputEvent @event)
 	{
 		if (!@event.IsActionPressed("ui_back") || !Navigator.CanGoBack || InputSink.IsSunk)
@@ -35,13 +43,5 @@ public class MenuViewModel : ViewModelBase
 		Navigator.GoBack();
 
 		Log.Debug("Navigated back to {ViewModel}.", Navigator.Current?.GetType().Name);
-	}
-
-	protected override void OnDispose()
-	{
-		_dispatcher.Input -= OnInput;
-		Navigator.GoTo();
-
-		_scope.Dispose();
 	}
 }

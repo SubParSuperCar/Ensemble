@@ -19,7 +19,7 @@ public static partial class LuaExecutor
 		InjectCustomFunctions(state.Environment);
 
 		var results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
-		Log.Information("< [{Results}]", string.Join(", ", results.Select(v => v.ToString())));
+		Log.Information("< [{Results}]", string.Join(", ", results.Select(value => value.ToString())));
 
 		return results;
 	}

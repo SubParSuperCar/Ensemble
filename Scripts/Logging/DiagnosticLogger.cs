@@ -119,7 +119,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 			Add(lines, "BIOS", $"{bios.Manufacturer} {bios.Version}");
 
 		hwInfo.RefreshDriveList();
-		foreach (var drive in hwInfo.DriveList.OrderBy(d => d.Model, StringComparer.OrdinalIgnoreCase))
+		foreach (var drive in hwInfo.DriveList.OrderBy(drive => drive.Model, StringComparer.OrdinalIgnoreCase))
 			Add(lines, "Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
 
 		hwInfo.RefreshMonitorList();
@@ -129,8 +129,8 @@ public partial class DiagnosticLogger : Node, IAutoload
 		hwInfo.RefreshNetworkAdapterList();
 		foreach (
 			var nic in hwInfo.NetworkAdapterList
-				.Where(a => !string.IsNullOrWhiteSpace(a.Name) && a.Name is not "lo")
-				.OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase))
+				.Where(adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")
+				.OrderBy(adapter => adapter.Name, StringComparer.OrdinalIgnoreCase))
 			Add(lines, "NIC", nic.Name);
 	}
 

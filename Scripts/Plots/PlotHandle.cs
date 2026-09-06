@@ -66,8 +66,7 @@ public partial class PlotHandle : Node3D
 
 		var transform = new Transform3D(
 			new Basis(instance.Rotation),
-			instance.Position * GridToWorldScale
-		);
+			instance.Position * GridToWorldScale);
 
 		handle.GlobalTransform = OriginTransform * transform;
 		InstanceHandles.Add(instance.Id, handle);

@@ -23,6 +23,12 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 		_urlBoxBinding = BindingOperations.GetBindingExpressionBase(UrlBox, TextBox.TextProperty);
 	}
 
+	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+	{
+		InputSink.Sink.Release(this);
+		base.OnDetachedFromVisualTree(e);
+	}
+
 	[RelayCommand(CanExecute = nameof(CanGoBack))]
 	private void GoBack() => WebView.GoBack();
 
@@ -49,12 +55,6 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 
 	private void WebView_GotFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Acquire(this);
 	private void WebView_LostFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Release(this);
-
-	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-	{
-		InputSink.Sink.Release(this);
-		base.OnDetachedFromVisualTree(e);
-	}
 
 	private void OnNavigationStateChanged()
 	{

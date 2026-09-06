@@ -12,6 +12,7 @@ public partial class GdPlot : RefCounted
 	public delegate void IsSpawnedChangedEventHandler(bool isSpawned);
 
 	private static readonly ConditionalWeakTable<IPlot, GdPlot> Wrappers = [];
+
 	private IPlot _source = null!;
 
 	public int Id => _source.Id;

@@ -13,8 +13,6 @@ namespace Root.GdCore;
 [Autoload(Order = sbyte.MinValue + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class GdCore : Node, IAutoload
 {
-	public Core Core { get; private set; } = null!;
-
 	public static GdCore? Instance
 	{
 		get;
@@ -28,6 +26,8 @@ public partial class GdCore : Node, IAutoload
 				value?.GetHashCode());
 		}
 	}
+
+	public Core Core { get; private set; } = null!;
 
 	public GdPlayers Players { get; private set; } = null!;
 	public GdAssets Assets { get; private set; } = null!;

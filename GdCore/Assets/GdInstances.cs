@@ -15,6 +15,7 @@ public partial class GdInstances : RefCounted
 	public delegate void RemovedEventHandler(GdInstance instance);
 
 	private static readonly ConditionalWeakTable<IInstances, GdInstances> Wrappers = [];
+
 	private IInstances _source = null!;
 
 	public int Count => _source.Count;
@@ -63,8 +64,8 @@ public partial class GdInstances : RefCounted
 	{
 		var result = new Godot.Collections.Dictionary<int, Array<int>>();
 
-		foreach (var (assetId, count) in _source.GetAllCounts())
-			result.Add(assetId, [count.Count, count.MaxCount]);
+		foreach (var (assetId, quota) in _source.GetAllCounts())
+			result.Add(assetId, [quota.Count, quota.MaxCount]);
 
 		return result;
 	}

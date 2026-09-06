@@ -11,9 +11,9 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 {
 	private const int NonceSize = 16;
 
-	private readonly Dictionary<long, byte[]> _pendingNonces = [];
-	private bool _isServer;
+	private readonly Dictionary<long, byte[]> _pendingNoncesByPeerId = [];
 
+	private bool _isServer;
 	private SceneMultiplayer? _multiplayer;
 
 	public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(5);
@@ -38,7 +38,7 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 		multiplayer.PeerAuthenticationFailed -= OnPeerAuthenticationFailed;
 		multiplayer.AuthCallback = default;
 
-		_pendingNonces.Clear();
+		_pendingNoncesByPeerId.Clear();
 		_multiplayer = null;
 	}
 
@@ -48,7 +48,7 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 			return;
 
 		var nonce = RandomNumberGenerator.GetBytes(NonceSize);
-		_pendingNonces[peerId] = nonce;
+		_pendingNoncesByPeerId[peerId] = nonce;
 
 		_multiplayer!.SendAuth((int)peerId, nonce);
 	}
@@ -63,11 +63,10 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 
 	private void HandleServerMessage(long peerId, byte[] data)
 	{
-		if (!_pendingNonces.TryGetValue(peerId, out var nonce))
+		if (!_pendingNoncesByPeerId.Remove(peerId, out var nonce))
 			return;
 
 		var expected = Hmac(nonce);
-		_pendingNonces.Remove(peerId);
 
 		if (data.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(data, expected))
 		{
@@ -83,13 +82,14 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 	private void HandleClientMessage(long peerId, byte[] data)
 	{
 		var response = Hmac(data);
+
 		_multiplayer!.SendAuth((int)peerId, response);
 		_multiplayer.CompleteAuth((int)peerId);
 	}
 
 	private void OnPeerAuthenticationFailed(long peerId)
 	{
-		_pendingNonces.Remove(peerId);
+		_pendingNoncesByPeerId.Remove(peerId);
 		AuthenticationFailed?.Invoke(peerId, "Authentication timed out or was rejected.");
 	}
 

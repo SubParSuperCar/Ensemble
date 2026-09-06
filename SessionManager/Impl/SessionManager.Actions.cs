@@ -18,7 +18,7 @@ public partial class SessionManager
 		if (IsServer)
 			TryApplyAndBroadcast(TAction.ActionId, payload, LocalPeerId, false);
 		else
-			RpcId(1, MethodName.RpcRequestAction, TAction.ActionId, payload);
+			RpcId(ServerPeerId, MethodName.RpcRequestAction, TAction.ActionId, payload);
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]

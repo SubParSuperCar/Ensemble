@@ -59,28 +59,6 @@ public partial class Watchdog : Node, IAutoload
 
 	public static void Heartbeat() => Volatile.Write(ref _heartbeatFlag, 1);
 
-	private void WatchdogPollLoop()
-	{
-		try
-		{
-			var missCount = 0;
-
-			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
-			{
-				if (Debugger.IsAttached || Volatile.Read(ref _heartbeatFlag) is 1)
-					missCount = 0;
-				else
-					OnMissed(++missCount);
-
-				Volatile.Write(ref _heartbeatFlag, 0);
-			}
-		}
-		catch (Exception exception) when (exception is not OperationCanceledException)
-		{
-			Main.FailFast(exception);
-		}
-	}
-
 	private static void OnMissed(int missCount)
 	{
 		Log.Warning("{Class} heartbeat missed: {Count} / {MaxCount}",
@@ -103,6 +81,28 @@ public partial class Watchdog : Node, IAutoload
 		finally
 		{
 			Main.FailFast();
+		}
+	}
+
+	private void WatchdogPollLoop()
+	{
+		try
+		{
+			var missCount = 0;
+
+			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
+			{
+				if (Debugger.IsAttached || Volatile.Read(ref _heartbeatFlag) is 1)
+					missCount = 0;
+				else
+					OnMissed(++missCount);
+
+				Volatile.Write(ref _heartbeatFlag, 0);
+			}
+		}
+		catch (Exception exception) when (exception is not OperationCanceledException)
+		{
+			Main.FailFast(exception);
 		}
 	}
 }

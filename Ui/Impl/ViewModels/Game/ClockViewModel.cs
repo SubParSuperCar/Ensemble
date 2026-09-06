@@ -8,6 +8,7 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class ClockViewModel : ViewModelBase
 {
 	private static readonly string LocalTimeZone = TimeZoneInfo.Local.DisplayName;
+
 	private readonly DispatcherService _dispatcher;
 
 	public ClockViewModel(DispatcherService dispatcher)
@@ -20,7 +21,11 @@ public partial class ClockViewModel : ViewModelBase
 
 	protected override void OnDispose() => _dispatcher.Process -= OnProcess;
 
-	private void OnProcess(double delta) =>
+	private void OnProcess(double delta)
+	{
+		var sessionDuration = GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt;
+
 		Text = string.Create(CultureInfo.CurrentCulture,
-			$"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt:G}");
+			$"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {sessionDuration:G}");
+	}
 }

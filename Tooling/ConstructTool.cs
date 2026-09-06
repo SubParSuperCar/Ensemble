@@ -5,6 +5,12 @@ using Root.Scripts.Assets;
 
 namespace Root.Tooling;
 
+public enum RotationSpace : byte
+{
+	Global,
+	Local
+}
+
 // TODO: Very early W.I.P.
 public partial class ConstructTool : ToolBase
 {
@@ -29,9 +35,6 @@ public partial class ConstructTool : ToolBase
 
 	public int AssetId { get; private set; }
 	public event Action<int>? AssetIdChanged;
-
-	protected override void OnEnable() { }
-	protected override void OnDisable() { }
 
 	public override void _Process(double delta) { }
 
@@ -58,6 +61,9 @@ public partial class ConstructTool : ToolBase
 		AssetId = id;
 		AssetIdChanged?.Invoke(id);
 	}
+
+	protected override void OnEnable() { }
+	protected override void OnDisable() { }
 
 	private void Activate()
 	{
@@ -89,10 +95,4 @@ public partial class ConstructTool : ToolBase
 			_ => throw new UnreachableException()
 		};
 	}
-}
-
-public enum RotationSpace : byte
-{
-	Global,
-	Local
 }

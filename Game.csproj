@@ -10,6 +10,10 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
@@ -36,6 +40,14 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'ExportDebug' Or '$(Configuration)' == 'ExportRelease'">
     <DefineConstants>$(DefineConstants);EXPORT</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <LaunchScriptExt>cmd</LaunchScriptExt>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+    <LaunchScriptExt>sh</LaunchScriptExt>
   </PropertyGroup>
 
   <ItemGroup>
@@ -99,6 +111,24 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToPublishDirectory="PreserveNewest"/>
+    <None Include="**/*.gd;**/*.gdshader;assets/**" Exclude=".godot/**;bin/**;**/*.import">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </None>
+    <None Include="Properties/**" Exclude="**/*.gdignore"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="AutoloadGenerator/**"/>
+    <Compile Remove="Core/**"/>
+    <Compile Remove="Estragonia/**"/>
+
+    <EmbeddedResource Remove="AutoloadGenerator/**"/>
+    <EmbeddedResource Remove="Core/**"/>
+    <EmbeddedResource Remove="Estragonia/**"/>
+  </ItemGroup>
+
   <Target Name="GenerateBuildInfo" BeforeTargets="BeforeCompile">
     <PropertyGroup>
       <BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC"))</BuildTime>
@@ -118,46 +148,11 @@
     </ItemGroup>
   </Target>
 
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <LaunchScriptExt>cmd</LaunchScriptExt>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
-    <LaunchScriptExt>sh</LaunchScriptExt>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
-  </PropertyGroup>
-
   <Target Name="PrepareGodotExport" BeforeTargets="Build">
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
 
     <WriteLinesToFile File="$(MSBuildProjectDirectory)/bin/.gdignore" Lines="" Overwrite="false"/>
   </Target>
-
-  <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToPublishDirectory="PreserveNewest"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="**/*.gd;**/*.gdshader;assets/**" Exclude=".godot/**;bin/**;**/*.import">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </None>
-    <None Include="Properties/**" Exclude="**/*.gdignore"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="AutoloadGenerator/**"/>
-    <Compile Remove="Core/**"/>
-    <Compile Remove="Estragonia/**"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="AutoloadGenerator/**"/>
-    <EmbeddedResource Remove="Core/**"/>
-    <EmbeddedResource Remove="Estragonia/**"/>
-  </ItemGroup>
 
 </Project>

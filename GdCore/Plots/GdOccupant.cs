@@ -12,6 +12,7 @@ public partial class GdOccupant : RefCounted
 	public delegate void PlotChangedEventHandler(GdPlot? plot);
 
 	private static readonly ConditionalWeakTable<IOccupant, GdOccupant> Wrappers = [];
+
 	private IOccupant _source = null!;
 
 	public GdPlayer Player => GdPlayer.From(_source.Player);

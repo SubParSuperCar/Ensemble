@@ -8,7 +8,6 @@ using Root.Common.Input;
 using Root.Common.Utils;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Services;
-using Environment = System.Environment;
 
 namespace Root.Ui.Impl.ViewModels;
 
@@ -96,6 +95,6 @@ public partial class StatViewModel : ViewModelBase
 		}
 
 		var width = stats.Max(stat => stat.Key.Length);
-		Text = string.Join(Environment.NewLine, stats.Select(stat => $"{stat.Key.PadRight(width)} = {stat.Value}"));
+		Text = string.Join('\n', stats.Select(stat => $"{stat.Key.PadRight(width)} = {stat.Value}"));
 	}
 }

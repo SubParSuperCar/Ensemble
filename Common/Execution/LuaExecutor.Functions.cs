@@ -7,6 +7,7 @@ using Godot;
 using Lua;
 using Root.Common.Logging;
 using Root.Common.Networking;
+using Root.Common.Utils;
 using Root.Scripts.World;
 using Root.Ui.Impl.Messages;
 using Serilog;
@@ -28,6 +29,7 @@ public static partial class LuaExecutor
 		env[nameof(dmp_asm_info)] = new LuaFunction(dmp_asm_info);
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
+		env[nameof(gc)] = new LuaFunction(gc);
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 		env[nameof(get_vsync_modes)] = new LuaFunction(get_vsync_modes);
 		env[nameof(help)] = new LuaFunction(help);
@@ -229,6 +231,24 @@ public static partial class LuaExecutor
 			.Replace("\\", @"\\", StringComparison.Ordinal)
 			.Replace("\r", "\\r", StringComparison.Ordinal)
 			.Replace("\n", "\\n", StringComparison.Ordinal);
+
+	private static ValueTask<int> gc(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var before = GC.GetTotalMemory(false);
+
+		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+		GC.WaitForPendingFinalizers();
+		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true, compacting: true);
+
+		var after = GC.GetTotalMemory(false);
+		var reclaimed = Math.Max(0, before - after);
+		Log.Information("GC reclaimed {Bytes}.", Formatter.FormatBytes((ulong)reclaimed));
+
+		context.Return();
+		return default;
+	}
 
 	private static async ValueTask<int> get_pub_ip4_addr(
 		LuaFunctionExecutionContext context,

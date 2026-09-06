@@ -8,10 +8,7 @@ namespace Root.Ui.Impl.Views;
 
 public partial class MenuHomeView : UserControl, IViewFor<MenuHomeViewModel>
 {
-	public MenuHomeView()
-	{
-		InitializeComponent();
-	}
+	public MenuHomeView() => InitializeComponent();
 
 	private void OnQuitButtonDoubleTapped(object? sender, TappedEventArgs e) =>
 		(Engine.GetMainLoop() as SceneTree)?.Quit();

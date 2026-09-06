@@ -6,8 +6,5 @@ namespace Root.Ui.Impl.Views;
 
 public partial class ClockView : UserControl, IViewFor<ClockViewModel>
 {
-	public ClockView()
-	{
-		InitializeComponent();
-	}
+	public ClockView() => InitializeComponent();
 }

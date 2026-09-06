@@ -6,8 +6,5 @@ namespace Root.Ui.Impl.Views;
 
 public partial class ToolBarView : UserControl, IViewFor<ToolBarViewModel>
 {
-	public ToolBarView()
-	{
-		InitializeComponent();
-	}
+	public ToolBarView() => InitializeComponent();
 }

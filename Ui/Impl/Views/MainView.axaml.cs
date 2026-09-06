@@ -6,8 +6,5 @@ namespace Root.Ui.Impl.Views;
 
 public partial class MainView : UserControl, IViewFor<MainViewModel>
 {
-	public MainView()
-	{
-		InitializeComponent();
-	}
+	public MainView() => InitializeComponent();
 }

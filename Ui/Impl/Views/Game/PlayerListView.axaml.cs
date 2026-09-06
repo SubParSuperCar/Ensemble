@@ -6,5 +6,8 @@ namespace Root.Ui.Impl.Views;
 
 public partial class PlayerListView : UserControl, IViewFor<PlayerListViewModel>
 {
-	public PlayerListView() => InitializeComponent();
+	public PlayerListView()
+	{
+		InitializeComponent();
+	}
 }

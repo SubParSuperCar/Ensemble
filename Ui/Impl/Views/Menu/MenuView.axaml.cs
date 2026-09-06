@@ -6,5 +6,8 @@ namespace Root.Ui.Impl.Views;
 
 public partial class MenuView : UserControl, IViewFor<MenuViewModel>
 {
-	public MenuView() => InitializeComponent();
+	public MenuView()
+	{
+		InitializeComponent();
+	}
 }

@@ -6,5 +6,8 @@ namespace Root.Ui.Impl.Views;
 
 public partial class PlotSelectorView : UserControl, IViewFor<PlotSelectorViewModel>
 {
-	public PlotSelectorView() => InitializeComponent();
+	public PlotSelectorView()
+	{
+		InitializeComponent();
+	}
 }

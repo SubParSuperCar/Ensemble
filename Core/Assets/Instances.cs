@@ -96,7 +96,7 @@ public class Instances : IInstances
 
 	public IReadOnlyDictionary<int, Quota> GetAllCounts()
 	{
-		var counts = new Dictionary<int, Quota>();
+		var counts = new Dictionary<int, Quota>(_assets.All.Count);
 
 		foreach (var assetId in _assets.All.Keys)
 			counts[assetId] = GetCount(assetId);

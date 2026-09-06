@@ -29,15 +29,12 @@ public partial class CharacterController : CharacterBody3D
 	{
 		Visible = Camera.GlobalPosition.DistanceTo(GlobalPosition) > FirstPersonInvisibleProximityThreshold;
 
-		if (!IsOnFloor())
-			Velocity += GetGravity() * (float)delta;
-		else if (!InputSink.IsSunk && Input.IsActionPressed("char_jump"))
-		{
-			var velocity = Velocity;
-			velocity.Y = MathF.Sqrt(JumpHeight * 2 * -GetGravity().Y);
+		var velocity = Velocity;
 
-			Velocity = velocity;
-		}
+		if (!IsOnFloor())
+			velocity += GetGravity() * (float)delta;
+		else if (!InputSink.IsSunk && Input.IsActionPressed("char_jump"))
+			velocity.Y = MathF.Sqrt(JumpHeight * 2 * -GetGravity().Y);
 
 		var inputDirection = !InputSink.IsSunk
 			? Input.GetVector(
@@ -47,8 +44,6 @@ public partial class CharacterController : CharacterBody3D
 
 		if (inputDirection != Vector2.Zero)
 		{
-			var velocity = Velocity;
-
 			// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 			var lookDirection = Camera?.GlobalBasis ?? Basis.Identity;
 			var moveDirection = lookDirection * new Vector3(inputDirection.X, 0, inputDirection.Y);
@@ -59,8 +54,6 @@ public partial class CharacterController : CharacterBody3D
 			velocity.X = moveDirection.X * speed;
 			velocity.Z = moveDirection.Z * speed;
 
-			Velocity = velocity;
-
 			var rotation = Rotation;
 			var turnAngle = MathF.Atan2(moveDirection.X, moveDirection.Z);
 			rotation.Y = (float)Mathf.LerpAngle(rotation.Y, turnAngle, TurnRate * delta);
@@ -69,13 +62,11 @@ public partial class CharacterController : CharacterBody3D
 		}
 		else
 		{
-			var velocity = Velocity;
 			velocity.X = 0;
 			velocity.Z = 0;
-
-			Velocity = velocity;
 		}
 
+		Velocity = velocity;
 		MoveAndSlide();
 	}
 }

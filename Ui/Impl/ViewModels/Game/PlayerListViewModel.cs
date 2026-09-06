@@ -30,18 +30,11 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
-		int? peerId = null;
-		foreach (var (id, peer) in GSessionManager.Peers)
-			if (string.Equals(peer.PlayerId, gdPlayer.Id, StringComparison.Ordinal))
-			{
-				peerId = id;
-				break;
-			}
-
-		var player = new Player(gdPlayer.Name, gdPlayer.Id, peerId ?? None);
+		var peerId = GSessionManager.TryGetPeerId(gdPlayer.Id, out var id) ? id : None;
+		var player = new Player(gdPlayer.Name, gdPlayer.Id, peerId);
 
 		var index = Players
-			.TakeWhile(p => string.Compare(p.Name, player.Name, StringComparison.Ordinal) < 0)
+			.TakeWhile(other => string.Compare(other.Name, player.Name, StringComparison.Ordinal) < 0)
 			.Count();
 
 		Players.Insert(index, player);

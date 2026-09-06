@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
@@ -43,18 +44,18 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 				[
 			""");
 
-		foreach (var (type, attribute) in autoloads)
-		{
-			var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
+		foreach (
+			var (typeName, attribute) in autoloads
+				.Select(static autoload =>
+					(Name: autoload.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), autoload.Attribute))
+				.OrderBy(static autoload => autoload.Name, StringComparer.Ordinal))
 			source.AppendLine(
-				$"\t\t\t\tnew(" +
+				"\t\t\t\tnew(" +
 				$"typeof({typeName}), " +
 				$"{GetScope(attribute)}, " +
 				$"{GetOrder(attribute)}, " +
 				$"{GetFailurePolicy(attribute)}, " +
 				$"static () => new {typeName}()),");
-		}
 
 		source.AppendLine(
 			"""
@@ -67,27 +68,32 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 			SourceText.From(source.ToString(), Encoding.UTF8));
 	}
 
-	private static string GetScope(AttributeData attribute)
+	private static string GetScope(AttributeData attribute) =>
+		TryGetNamedArgument(attribute, ScopePropertyName, out var value)
+			? $"(AutoloadScope){Convert.ToInt32(value, CultureInfo.InvariantCulture)}"
+			: "AutoloadScope.Client | AutoloadScope.Server";
+
+	private static string GetOrder(AttributeData attribute) =>
+		TryGetNamedArgument(attribute, OrderPropertyName, out var value)
+			? Convert.ToSByte(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture)
+			: "0";
+
+	private static string GetFailurePolicy(AttributeData attribute) =>
+		TryGetNamedArgument(attribute, FailurePolicyPropertyName, out var value)
+			? $"(AutoloadFailurePolicy){Convert.ToInt32(value, CultureInfo.InvariantCulture)}"
+			: "AutoloadFailurePolicy.AskUser";
+
+	private static bool TryGetNamedArgument(AttributeData attribute, string name, out object? value)
 	{
-		foreach (var argument in attribute.NamedArguments.Where(argument => argument.Key is ScopePropertyName))
-			return $"(AutoloadScope){Convert.ToInt32(argument.Value.Value)}";
+		foreach (
+			var argument in attribute.NamedArguments.Where(argument =>
+				string.Equals(argument.Key, name, StringComparison.Ordinal)))
+		{
+			value = argument.Value.Value;
+			return true;
+		}
 
-		return "AutoloadScope.Client | AutoloadScope.Server";
-	}
-
-	private static string GetOrder(AttributeData attribute)
-	{
-		foreach (var argument in attribute.NamedArguments.Where(argument => argument.Key is OrderPropertyName))
-			return Convert.ToSByte(argument.Value.Value).ToString();
-
-		return "0";
-	}
-
-	private static string GetFailurePolicy(AttributeData attribute)
-	{
-		foreach (var argument in attribute.NamedArguments.Where(argument => argument.Key is FailurePolicyPropertyName))
-			return $"(AutoloadFailurePolicy){Convert.ToInt32(argument.Value.Value)}";
-
-		return "AutoloadFailurePolicy.AskUser";
+		value = null;
+		return false;
 	}
 }

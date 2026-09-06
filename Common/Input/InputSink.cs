@@ -8,12 +8,14 @@ namespace Root.Common.Input;
 
 public static class InputSink
 {
-	private static readonly object Token = new();
 	public static readonly OwnershipFlag Sink = new();
+
+	private static readonly object Token = new();
 
 	static InputSink()
 	{
 		var observer = new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged);
+
 		InputElement.GotFocusEvent.Raised.Subscribe(observer);
 		InputElement.LostFocusEvent.Raised.Subscribe(observer);
 	}

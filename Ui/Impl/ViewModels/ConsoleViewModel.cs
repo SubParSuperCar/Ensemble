@@ -14,7 +14,10 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class ConsoleViewModel : ViewModelBase
 {
+	private const int EstimatedEntryLength = 128;
+
 	private static CancellationTokenSource _cts = new();
+
 	private readonly DispatcherService _dispatcher;
 
 	private byte _updateLogHistoryFlag;
@@ -28,12 +31,12 @@ public partial class ConsoleViewModel : ViewModelBase
 		VolatileLogHistorySink.Updated += OnLogHistoryUpdated;
 	}
 
-	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
-
 	public static TextDocument Source { get; } = new(
 		"--[[\nLua 5.2\nReference Manual: https://www.lua.org/manual/5.2/\n" +
 		"(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
 		"print(string.format(\"Hello, %s!\", _VERSION))\nhelp()\n");
+
+	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
 
 	protected override void OnDispose()
 	{
@@ -65,7 +68,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	private void UpdateOutput()
 	{
 		var history = VolatileLogHistorySink.History;
-		var builder = new StringBuilder(history.Count * 128);
+		var builder = new StringBuilder(history.Count * EstimatedEntryLength);
 
 		foreach (var line in history)
 			builder.AppendLine(line);

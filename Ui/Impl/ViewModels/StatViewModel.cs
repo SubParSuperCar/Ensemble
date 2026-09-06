@@ -45,7 +45,9 @@ public partial class StatViewModel : ViewModelBase
 			_frameTimes.Dequeue();
 
 		_sinceLastRefresh += delta;
-		if (_sinceLastRefresh < RefreshInterval) return;
+		if (_sinceLastRefresh < RefreshInterval)
+			return;
+
 		_sinceLastRefresh -= RefreshInterval;
 
 		var sampleDuration = _frameTimes.Count > 1 ? now - _frameTimes.Peek() : 0;

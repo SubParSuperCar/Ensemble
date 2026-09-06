@@ -13,6 +13,7 @@ public partial class GdProperties : RefCounted
 	public delegate void ChangedEventHandler(string key, Variant value);
 
 	private static readonly ConditionalWeakTable<IProperties, GdProperties> Wrappers = [];
+
 	private IProperties _source = null!;
 
 	public static GdProperties From(IProperties properties) =>

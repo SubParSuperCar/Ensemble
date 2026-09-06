@@ -34,6 +34,7 @@ public class Assets : IAssets
 				$"Asset with id {id} already exists."));
 
 		var asset = new Asset(id, name, properties?.ToFrozenDictionary(), maxInstanceCount);
+
 		_assetsById.Add(id, asset);
 		Added?.Invoke(asset);
 

@@ -1,24 +1,39 @@
 using Godot;
-using Godot.Collections;
 using Serilog;
+using GDictionary = Godot.Collections.Dictionary;
+using PeerDicts = Godot.Collections.Dictionary<int, Godot.Collections.Dictionary>;
 
 namespace Root.SessionManager;
 
 public partial class SessionManager
 {
-	private readonly System.Collections.Generic.Dictionary<string, int> _peerIdsByPlayerId = [];
-	private readonly System.Collections.Generic.Dictionary<int, PeerInfo> _peersById = [];
+	private readonly Dictionary<string, int> _peerIdsByPlayerId = [];
+	private readonly Dictionary<int, PeerInfo> _peersById = [];
 
 	public IReadOnlyDictionary<int, PeerInfo> Peers => _peersById;
 
 	public bool TryGetPeerId(string playerId, out int peerId) => _peerIdsByPlayerId.TryGetValue(playerId, out peerId);
+
+	public PeerDicts GetAllPeerDicts()
+	{
+		var result = new PeerDicts();
+
+		foreach (var (peerId, info) in _peersById)
+			result[peerId] = new GDictionary
+			{
+				["playerId"] = info.PlayerId,
+				["displayName"] = info.DisplayName
+			};
+
+		return result;
+	}
 
 	private void RegisterLocalPlayer(string playerId, string displayName)
 	{
 		if (IsServer)
 			ConfirmRegistration(LocalPeerId, playerId, displayName);
 		else
-			RpcId(1, MethodName.RpcRequestRegister, playerId, displayName);
+			RpcId(ServerPeerId, MethodName.RpcRequestRegister, playerId, displayName);
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
@@ -81,20 +96,6 @@ public partial class SessionManager
 	{
 		foreach (var peerId in _peersById.Keys.ToArray())
 			RemovePeer(peerId);
-	}
-
-	public Godot.Collections.Dictionary<int, Dictionary> GetAllPeerDicts()
-	{
-		var result = new Godot.Collections.Dictionary<int, Dictionary>();
-
-		foreach (var (peerId, info) in _peersById)
-			result[peerId] = new Dictionary
-			{
-				["playerId"] = info.PlayerId,
-				["displayName"] = info.DisplayName
-			};
-
-		return result;
 	}
 
 	public readonly record struct PeerInfo(string PlayerId, string DisplayName);

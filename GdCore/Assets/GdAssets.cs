@@ -15,6 +15,7 @@ public partial class GdAssets : RefCounted
 	public delegate void RemovedEventHandler(GdAsset asset);
 
 	private static readonly ConditionalWeakTable<IAssets, GdAssets> Wrappers = [];
+
 	private IAssets _source = null!;
 
 	public int Count => _source.All.Count;

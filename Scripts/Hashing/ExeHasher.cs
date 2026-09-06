@@ -13,6 +13,8 @@ namespace Root.Scripts.Hashing;
 [Autoload(FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ExeHasher : Node, IAutoload
 {
+	private const int BufferSize = 1 << 12;
+
 	private readonly CancellationTokenSource _cts = new();
 
 	public void Initialize() => _ = HashProcessExecutableAsync();
@@ -43,7 +45,7 @@ public partial class ExeHasher : Node, IAutoload
 				FileMode.Open,
 				FileAccess.Read,
 				FileShare.Read,
-				1 << 12,
+				BufferSize,
 				FileOptions.Asynchronous);
 
 			await using (stream.ConfigureAwait(false))

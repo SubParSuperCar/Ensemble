@@ -10,6 +10,7 @@ namespace Root.Scripts.DiscordRichPresence;
 public partial class DiscordRpc : Node, IAutoload
 {
 	private const string AppId = "1534319171079504002";
+
 	private DiscordRpcClient? _client;
 
 	public void Initialize()

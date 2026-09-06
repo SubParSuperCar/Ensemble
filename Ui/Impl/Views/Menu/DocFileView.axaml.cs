@@ -49,12 +49,13 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 
 	private void OnAttached()
 	{
-		if (DataContext is not DocFileViewModel vm || ReferenceEquals(_viewModel, vm))
+		if (DataContext is not DocFileViewModel viewModel || ReferenceEquals(_viewModel, viewModel))
 			return;
 
-		_viewModel = vm;
-		vm.PropertyChanged += OnViewModelPropertyChanged;
-		_ = LoadFileAsync(vm.SelectedFile);
+		_viewModel = viewModel;
+		viewModel.PropertyChanged += OnViewModelPropertyChanged;
+
+		_ = LoadFileAsync(viewModel.SelectedFile);
 	}
 
 	private void OnDetached()
@@ -71,8 +72,8 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 		if (!string.Equals(e.PropertyName, nameof(DocFileViewModel.SelectedFile), StringComparison.Ordinal))
 			return;
 
-		if (sender is DocFileViewModel vm && ReferenceEquals(vm, _viewModel))
-			_ = LoadFileAsync(vm.SelectedFile);
+		if (sender is DocFileViewModel viewModel && ReferenceEquals(viewModel, _viewModel))
+			_ = LoadFileAsync(viewModel.SelectedFile);
 	}
 
 	private async Task LoadFileAsync(DocFile file)

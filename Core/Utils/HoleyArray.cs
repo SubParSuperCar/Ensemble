@@ -6,6 +6,8 @@ namespace CoreRoot.Utils;
 
 internal sealed class HoleyArray<TValue> where TValue : class
 {
+	private const int MaxHolePunchIndex = 1 << 20;
+
 	private readonly List<TValue?> _items = [];
 	private int _nextFreeIndex;
 
@@ -73,7 +75,7 @@ internal sealed class HoleyArray<TValue> where TValue : class
 
 	private void Place(TValue item, int index)
 	{
-		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, int.MaxValue);
+		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, MaxHolePunchIndex);
 
 		while (_items.Count <= index)
 			_items.Add(null);

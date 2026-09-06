@@ -20,10 +20,9 @@ internal sealed class OccupantRegistry
 
 	public void Remove(IPlayer player)
 	{
-		if (!TryGet(player.Id, out var occupant))
+		if (!_occupantsByPlayerId.Remove(player.Id, out var occupant))
 			return;
 
 		occupant.Plot?.Occupants.Remove(occupant);
-		_occupantsByPlayerId.Remove(player.Id);
 	}
 }

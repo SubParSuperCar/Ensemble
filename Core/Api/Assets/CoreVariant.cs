@@ -20,14 +20,12 @@ public enum CoreVariantType : byte
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct CoreVariant : IEquatable<CoreVariant>
 {
-	[field: FieldOffset(0)] public CoreVariantType Type { get; }
+	public static readonly CoreVariant Null;
 
 	[FieldOffset(8)] private readonly long _integer;
 	[FieldOffset(8)] private readonly double _float;
 
 	[FieldOffset(16)] private readonly string? _string;
-
-	public static readonly CoreVariant Null;
 
 	public CoreVariant(bool value) : this()
 	{
@@ -62,6 +60,8 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 		Type = CoreVariantType.Str;
 		_string = value;
 	}
+
+	[field: FieldOffset(0)] public CoreVariantType Type { get; }
 
 	public object? Value =>
 		Type switch
@@ -128,7 +128,6 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 	public override int GetHashCode() =>
 		Type switch
 		{
-			CoreVariantType.Null => Type.GetHashCode(),
 			CoreVariantType.Bool or CoreVariantType.NumInt => HashCode.Combine(Type, _integer),
 			CoreVariantType.NumDouble => HashCode.Combine(Type, _float),
 			CoreVariantType.Str => HashCode.Combine(Type, _string),

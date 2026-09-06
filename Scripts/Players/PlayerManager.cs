@@ -39,17 +39,17 @@ public partial class PlayerManager : Node
 
 	private void OnPlayerAdded(GdPlayer player)
 	{
-		var node = PlayerScene.Instantiate<PlayerHandle>();
-		node.Id = player.Id;
-		node.Name = player.Name;
+		var handle = PlayerScene.Instantiate<PlayerHandle>();
+		handle.Id = player.Id;
+		handle.Name = player.Name;
 
-		Handles.Add(player.Id, node);
-		AddChild(node);
+		Handles.Add(player.Id, handle);
+		AddChild(handle);
 	}
 
 	private void OnPlayerRemoved(GdPlayer player)
 	{
-		if (Handles.Remove(player.Id, out var node))
-			node.QueueFree();
+		if (Handles.Remove(player.Id, out var handle))
+			handle.QueueFree();
 	}
 }

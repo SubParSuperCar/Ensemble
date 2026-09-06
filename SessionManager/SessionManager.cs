@@ -108,7 +108,7 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} in {ElapsedMs} ms.",
+		Log.Debug("Started {Class} in {ElapsedMs:F3} ms.",
 			nameof(SinglePlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
@@ -143,7 +143,7 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} (Host) in {ElapsedMs} ms.",
+		Log.Debug("Started {Class} (Host) in {ElapsedMs:F3} ms.",
 			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
@@ -168,7 +168,7 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} (Join) in {ElapsedMs} ms.",
+		Log.Debug("Started {Class} (Join) in {ElapsedMs:F3} ms.",
 			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
@@ -191,7 +191,35 @@ public partial class SessionManager : Node
 		session.Failed -= OnSessionFailed;
 
 		stopwatch.Stop();
-		Log.Debug("Stopped {SessionMode} in {ElapsedMs} ms.", mode, stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug("Stopped {SessionMode} in {ElapsedMs:F3} ms.", mode, stopwatch.Elapsed.TotalMilliseconds);
+	}
+
+	private static string LoadOrGeneratePlayerId()
+	{
+		var config = new ConfigFile();
+
+#if ENSEMBLE_RELEASE
+		var result = config.Load(UserDataCfgPath);
+
+		if (result is Error.Ok)
+		{
+			var stored = config.GetValue("player", "id", string.Empty).AsString();
+
+			if (Guid.TryParse(stored, out _))
+				return stored;
+
+			Log.Warning("Stored player ID is not a valid GUID: {Value}", stored);
+		}
+		else if (result is not Error.FileNotFound)
+			Log.Warning("Failed to load player data: {Error}", result);
+#endif
+
+		var id = Guid.NewGuid().ToString();
+
+		config.SetValue("player", "id", id);
+		config.Save(UserDataCfgPath);
+
+		return id;
 	}
 
 	private void StartSession()
@@ -242,32 +270,5 @@ public partial class SessionManager : Node
 	{
 		Log.Warning("Session failed: {Reason}", reason);
 		EmitSignal(SignalName.SessionFailed, reason);
-	}
-
-	private static string LoadOrGeneratePlayerId()
-	{
-		var config = new ConfigFile();
-
-#if ENSEMBLE_RELEASE
-		var result = config.Load(UserDataCfgPath);
-
-		if (result is Error.Ok)
-		{
-			var stored = config.GetValue("player", "id", string.Empty).AsString();
-
-			if (Guid.TryParse(stored, out _))
-				return stored;
-
-			Log.Warning("Stored player ID is not a valid GUID: {Value}", stored);
-		}
-		else if (result is not Error.FileNotFound)
-			Log.Warning("Failed to load player data: {Error}", result);
-#endif
-
-		var id = Guid.NewGuid().ToString();
-		config.SetValue("player", "id", id);
-		config.Save(UserDataCfgPath);
-
-		return id;
 	}
 }

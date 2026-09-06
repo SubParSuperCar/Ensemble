@@ -15,6 +15,7 @@ public partial class GdPlots : RefCounted
 	public delegate void RemovedEventHandler(GdPlot plot);
 
 	private static readonly ConditionalWeakTable<IPlots, GdPlots> Wrappers = [];
+
 	private IPlots _source = null!;
 
 	public int Count => _source.All.Count;
@@ -60,7 +61,8 @@ public partial class GdPlots : RefCounted
 		SetPlot(playerId, plotId, resolveOwnerIfNullOrRelinquishing, true);
 
 	public void SetPlot(
-		string playerId, int plotId,
+		string playerId,
+		int plotId,
 		bool resolveOwnerIfNullOrRelinquishing,
 		bool despawnAndClearInstancesIfLastToLeave)
 	{

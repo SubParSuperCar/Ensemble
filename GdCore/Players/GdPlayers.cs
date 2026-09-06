@@ -17,6 +17,7 @@ public partial class GdPlayers : RefCounted
 	public delegate void RemovedEventHandler(GdPlayer player);
 
 	private static readonly ConditionalWeakTable<IPlayers, GdPlayers> Wrappers = [];
+
 	private IPlayers _source = null!;
 
 	public int Count => _source.All.Count;

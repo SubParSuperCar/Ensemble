@@ -11,12 +11,12 @@ public partial class Main : Node
 {
 	public static Main Instance { get; private set; } = null!;
 
-	private static AutoloadScope RuntimeScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
-
 	public static bool IsHeadlessServer { get; } =
 		string.Equals(DisplayServer.GetName(), "headless", StringComparison.Ordinal);
 
 	public static bool AutoloadsLoaded { get; private set; }
+
+	private static AutoloadScope RuntimeScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
 
 	public static event Action? AutoloadsReady;
 
@@ -118,6 +118,39 @@ public partial class Main : Node
 		Log.Error(e.Exception, "Ensemble mitigated an unobserved task exception.");
 	}
 
+	private static void OnAutoloadFailed(
+		AutoloadDefinition definition,
+		AutoloadLoadStage stage,
+		Exception exception)
+	{
+		Log.Error(exception, "Failed to load {Type} during {Stage} stage.", definition.Type.FullName, stage);
+
+		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+		switch (definition.FailurePolicy)
+		{
+			case AutoloadFailurePolicy.LogAndContinue:
+				break;
+
+			case AutoloadFailurePolicy.FailFast:
+				FailFast();
+				break;
+
+			case AutoloadFailurePolicy.AskUser:
+				if (
+					!AskUser(
+						"Autoload Init Failed",
+						FormatFailureMessage(
+							$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
+							exception,
+							"Ensemble may be left in an unstable or partially initialized state.")))
+					FailFast();
+				break;
+
+			default:
+				throw new UnreachableException();
+		}
+	}
+
 	private async Task LoadDeferredAsync()
 	{
 		for (var i = 0; i < 3; i++)
@@ -196,39 +229,6 @@ public partial class Main : Node
 			OnAutoloadFailed(definition, stage, exception);
 
 			return false;
-		}
-	}
-
-	private static void OnAutoloadFailed(
-		AutoloadDefinition definition,
-		AutoloadLoadStage stage,
-		Exception exception)
-	{
-		Log.Error(exception, "Failed to load {Type} during {Stage} stage.", definition.Type.FullName, stage);
-
-		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-		switch (definition.FailurePolicy)
-		{
-			case AutoloadFailurePolicy.LogAndContinue:
-				break;
-
-			case AutoloadFailurePolicy.FailFast:
-				FailFast();
-				break;
-
-			case AutoloadFailurePolicy.AskUser:
-				if (
-					!AskUser(
-						"Autoload Init Failed",
-						FormatFailureMessage(
-							$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
-							exception,
-							"Ensemble may be left in an unstable or partially initialized state.")))
-					FailFast();
-				break;
-
-			default:
-				throw new UnreachableException();
 		}
 	}
 

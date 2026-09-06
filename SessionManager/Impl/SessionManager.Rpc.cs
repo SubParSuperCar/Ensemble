@@ -6,6 +6,8 @@ namespace Root.SessionManager;
 
 public partial class SessionManager
 {
+	private const int ServerPeerId = 1;
+
 	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
 
 	private static readonly TokenBucketRateLimiterOptions RateLimiterOptions = new()
@@ -37,13 +39,19 @@ public partial class SessionManager
 		}
 	}
 
+	private static void OnPeerDisconnectedDisposeRateLimiter(long peerId)
+	{
+		if (RateLimitersByPeerId.TryRemove((int)peerId, out var limiter))
+			limiter.Dispose();
+	}
+
 	private void EnqueueRpc(int senderId, int tokens, Action action) => _ = EnqueueRpcAsync(senderId, tokens, action);
 
 	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action)
 	{
-		var limiter = senderId is 1
+		var limiter = senderId is ServerPeerId
 			? null
-			: RateLimitersByPeerId.GetOrAdd(senderId, _ => new TokenBucketRateLimiter(RateLimiterOptions));
+			: RateLimitersByPeerId.GetOrAdd(senderId, static _ => new TokenBucketRateLimiter(RateLimiterOptions));
 
 		using var lease = limiter is null
 			? null
@@ -56,11 +64,5 @@ public partial class SessionManager
 		}
 
 		_pendingRpcs.Enqueue(action);
-	}
-
-	private static void OnPeerDisconnectedDisposeRateLimiter(long peerId)
-	{
-		if (RateLimitersByPeerId.TryRemove((int)peerId, out var limiter))
-			limiter.Dispose();
 	}
 }

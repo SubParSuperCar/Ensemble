@@ -42,6 +42,7 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 		_excludeFromHistory = false;
 
 		var type = _history.Pop();
+
 		Current = (ViewModelBase)services.GetRequiredService(type);
 		OnPropertyChanged(nameof(CanGoBack));
 	}

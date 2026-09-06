@@ -45,8 +45,7 @@ void fragment()
 
 	vec3 face_color;
 
-	if (dx <= dy && dx <= dz)
-	{
+	if (dx <= dy && dx <= dz) {
 		face_color = vec3(1.0, 0.0, 0.0);
 	} else if (dy <= dz) {
 		face_color = vec3(0.0, 1.0 / 3.0, 0.0);
@@ -57,8 +56,7 @@ void fragment()
 	vec3 edge_color;
 	float line;
 
-	if (x_line >= y_line && x_line >= z_line)
-	{
+	if (x_line >= y_line && x_line >= z_line) {
 		float position = (local_position.x + half_size.x) / box_size.x;
 		edge_color = axis_color(position, vec3(1.0, 0.0, 0.0));
 		line = x_line;

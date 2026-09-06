@@ -4,27 +4,27 @@ namespace Root.SessionManager.Actions;
 
 public sealed class NetworkActionRegistry
 {
-	private readonly Dictionary<string, Entry> _entries = [];
+	private readonly Dictionary<string, Entry> _entriesByActionId = [];
 
 	public void Register<TAction>(INetworkActionHandler<TAction> handler) where TAction : INetworkAction<TAction>
 	{
 		var actionId = TAction.ActionId;
 
 		if (
-			!_entries.TryAdd(actionId, new Entry(
+			!_entriesByActionId.TryAdd(actionId, new Entry(
 				(payload, senderId) => handler.Validate(TAction.FromPayload(payload), senderId),
 				(payload, senderId) => handler.Apply(TAction.FromPayload(payload), senderId))))
 			throw new InvalidOperationException($"A handler for action id {actionId} already exists.");
 	}
 
 	public ActionValidation ValidateRaw(string actionId, GDictionary payload, int sourcePeerId) =>
-		_entries.TryGetValue(actionId, out var entry)
+		_entriesByActionId.TryGetValue(actionId, out var entry)
 			? entry.Validate(payload, sourcePeerId)
 			: ActionValidation.Reject($"Action with id {actionId} not found.");
 
 	public void ApplyRaw(string actionId, GDictionary payload, int sourcePeerId)
 	{
-		if (_entries.TryGetValue(actionId, out var entry))
+		if (_entriesByActionId.TryGetValue(actionId, out var entry))
 			entry.Apply(payload, sourcePeerId);
 	}
 

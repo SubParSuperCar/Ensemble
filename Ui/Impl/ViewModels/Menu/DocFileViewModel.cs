@@ -9,6 +9,7 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class DocFileViewModel : ViewModelBase
 {
 	private const string GhMainHeadPath = "https://raw.githubusercontent.com/SubParSuperCar/Ensemble/refs/heads/main/";
+
 	private readonly NavigatorService _navigator;
 
 	public DocFileViewModel(NavigatorService navigator)

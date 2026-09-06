@@ -3,7 +3,7 @@ using CoreRoot.Assets;
 
 namespace Root.Saving;
 
-public sealed class SaveConverter
+public static class SaveConverter
 {
 	public static CreationSaveData ToSaveData(Instances instances)
 	{

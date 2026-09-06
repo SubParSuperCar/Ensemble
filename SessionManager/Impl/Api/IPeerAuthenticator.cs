@@ -6,8 +6,8 @@ public interface IPeerAuthenticator
 {
 	TimeSpan Timeout { get; }
 
+	event Action<long, string>? AuthenticationFailed;
+
 	void StartAuth(SceneMultiplayer multiplayer, bool isServer);
 	void StopAuth(SceneMultiplayer multiplayer);
-
-	event Action<long, string>? AuthenticationFailed;
 }

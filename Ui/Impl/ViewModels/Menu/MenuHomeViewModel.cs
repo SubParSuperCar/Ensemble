@@ -35,9 +35,7 @@ public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBa
 			return null;
 		}
 
-		var buffer = file.GetBuffer((long)file.GetLength());
-
-		using var stream = new MemoryStream(buffer);
+		using var stream = new MemoryStream(file.GetBuffer((long)file.GetLength()));
 		return new Bitmap(stream);
 	}
 }

@@ -127,9 +127,9 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-			.Select(assembly => $"~~> {assembly.GetName()}").ToArray();
+			.Select(assembly => $"\n~~> {assembly.GetName()}").ToArray();
 
-		Log.Information("Loaded assemblies ({Count}):\n{Assemblies}", assemblies.Length, string.Join('\n', assemblies));
+		Log.Information("Loaded assemblies ({Count}):\n{Assemblies}", assemblies.Length, assemblies);
 
 		context.Return();
 		return default;

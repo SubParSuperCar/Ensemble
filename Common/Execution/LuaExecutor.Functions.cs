@@ -128,10 +128,13 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var assemblies = AppDomain.CurrentDomain.GetAssemblies()
-			.Select(assembly => $"\n~~> {assembly.GetName()}").ToArray();
+		var assemblyNames = AppDomain.CurrentDomain.GetAssemblies()
+			.Select(assembly => assembly.GetName())
+			.OrderBy(name => name.Name, StringComparer.OrdinalIgnoreCase)
+			.ToArray();
 
-		Log.Information("Loaded assemblies ({Count}):\n{Assemblies}", assemblies.Length, assemblies);
+		Log.Information("Loaded assemblies ({Count}):\n{Assemblies}", assemblyNames.Length,
+			string.Join('\n', assemblyNames.Select(static name => $"~~> {name}")));
 
 		context.Return();
 		return default;

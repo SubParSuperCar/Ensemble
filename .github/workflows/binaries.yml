@@ -100,18 +100,17 @@ jobs:
           chmod +x "$bin"
           echo "GODOT_BIN=$bin" >> "$GITHUB_ENV"
 
-      - name: Build editor assembly
-        # Godot headless does not build the C# project for you; without this the
-        # editor logs "Failed to load project assembly" and autoloads fail to
-        # compile during the export scan. Godot re-publishes ExportRelease itself.
-        run: dotnet build Game.csproj -c Debug
+      - name: Restore
+        run: dotnet restore Game.csproj
 
       - name: Import project
+        timeout-minutes: 15
         run: |
           "$GODOT_BIN" --headless --path . --import || true
           "$GODOT_BIN" --headless --path . --import || true
 
       - name: Export
+        timeout-minutes: 40
         run: |
           set -euo pipefail
           mkdir -p out
@@ -235,13 +234,11 @@ jobs:
           if (-not $bin) { Get-ChildItem C:\godot -Recurse; throw "Godot binary not found" }
           "GODOT_BIN=$($bin.FullName)" | Out-File $env:GITHUB_ENV -Append
 
-      - name: Build editor assembly
-        # Godot headless does not build the C# project for you; without this the
-        # editor logs "Failed to load project assembly" and autoloads fail to
-        # compile during the export scan. Godot re-publishes ExportRelease itself.
-        run: dotnet build Game.csproj -c Debug
+      - name: Restore
+        run: dotnet restore Game.csproj
 
       - name: Import project
+        timeout-minutes: 15
         shell: pwsh
         run: |
           & "$env:GODOT_BIN" --headless --path . --import
@@ -250,6 +247,7 @@ jobs:
           exit 0
 
       - name: Export
+        timeout-minutes: 40
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"

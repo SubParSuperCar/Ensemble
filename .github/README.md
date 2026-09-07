@@ -1,6 +1,7 @@
 # Ensemble
 
-[![Create Source Release](https://github.com/SubParSuperCar/Ensemble/actions/workflows/zip.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/zip.yml)
+[![Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
+[![Create Source Release](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml)
 [![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
 
 A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12. This project is created
@@ -23,6 +24,20 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 > **Ensemble** is in the early stages of development (alpha/pre-release) and should not be considered representative of
 future 1.x or later releases. The project has been open-sourced early to encourage feedback, discussion, and
 contributions while its architecture, systems, and implementation continue to evolve.
+
+---
+
+## Download
+
+> [!NOTE]
+> Ensemble has no gameplay yet. These builds exist for testing and feedback.
+
+- **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
+Windows and Linux `x86_64` ZIPs. Unzip and run `Ensemble.exe` or `Ensemble.x86_64` &mdash; no install, no runtime needed.
+- **Latest commit:** trigger the [**Build Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
+workflow ("Run workflow"), then download the artifacts from the finished run.
+
+Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files.
 
 ---
 

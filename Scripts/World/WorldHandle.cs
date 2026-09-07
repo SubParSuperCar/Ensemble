@@ -9,6 +9,7 @@ public partial class WorldHandle : Node3D
 	public override void _Ready()
 	{
 #if ENSEMBLE_DEBUG
+		if (!Main.IsHeadlessServer)
 		{
 			const int plotId = 2;
 			const float y = 0.5f;

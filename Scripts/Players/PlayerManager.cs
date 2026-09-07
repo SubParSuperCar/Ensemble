@@ -9,6 +9,7 @@ public partial class PlayerManager : Node
 	public Godot.Collections.Dictionary<string, PlayerHandle> Handles { get; } = [];
 
 	[Export] public PackedScene PlayerScene { get; set; } = null!;
+	[Export] public Node3D TerrainNode { get; set; } = null!;
 
 	public override void _EnterTree() => GPlayerManager = this;
 
@@ -42,6 +43,7 @@ public partial class PlayerManager : Node
 		var handle = PlayerScene.Instantiate<PlayerHandle>();
 		handle.Id = player.Id;
 		handle.Name = player.Name;
+		handle.TerrainNode = TerrainNode;
 
 		Handles.Add(player.Id, handle);
 		AddChild(handle);

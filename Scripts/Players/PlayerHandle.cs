@@ -15,6 +15,7 @@ public partial class PlayerHandle : Node3D
 	[Export] public Script CharacterControllerScript { get; set; } = null!;
 
 	[Export] public PackedScene CameraScene { get; set; } = null!;
+	[Export] public Node3D TerrainNode { get; set; } = null!;
 
 	[Export] public Vector3 SpawnLocation { get; set; }
 
@@ -53,13 +54,17 @@ public partial class PlayerHandle : Node3D
 		Character = null;
 
 		Controller = (CharacterController)InstanceFromId(instanceId)!;
-		Controller.SetPhysicsProcess(true);
 
 		Camera = CameraScene.Instantiate<PopperCam>();
-		Camera.Focus = Controller;
 		AddChild(Camera);
 
+		Camera.Focus = Controller;
+
 		Controller.Camera = Camera.GetNode<Camera3D>("Camera");
+		Controller.Terrain = TerrainNode;
+
+		Controller._Ready();
+		Controller.SetPhysicsProcess(true);
 	}
 
 	private static bool IsIntersectingCuboid(Vector3 point, Transform3D transform, Vector3 size)

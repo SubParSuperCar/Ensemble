@@ -1,0 +1,314 @@
+name: Build Game Binaries
+
+# Produces ready-to-run Windows and Linux x86_64 builds of the game.
+#
+# NativeAOT (see Game.csproj: PublishAot + TrimMode=full for the ExportRelease
+# configuration) cannot cross-compile, so each platform is built on its own
+# native runner. Godot drives the publish itself during --export-release:
+#   dotnet publish Game.csproj -c ExportRelease -r <rid> --self-contained true -p:GodotTargetPlatform=<platform>
+#
+# Triggers:
+#   * push to a `ci/**` branch  -> build + upload artifacts (for iterating on this workflow)
+#   * push of a `v*` tag        -> build + attach ZIPs to a GitHub Release
+#   * manual dispatch           -> build; optionally publish a prerelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_release:
+        description: "Publish a prerelease with the built ZIPs"
+        type: boolean
+        default: false
+  push:
+    branches: ["ci/**"]
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: binaries-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: 4.7.2
+  # Matches Godot.NET.Sdk/4.7.2 in Game.csproj. Bump both together.
+
+jobs:
+  linux:
+    name: Linux (x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Install NativeAOT prerequisites
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+      - name: Cache Godot + export templates
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/godot
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-linux
+
+      - name: Install Godot + export templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          set -euo pipefail
+          pkg="Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64"
+          tpz="Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          for base in \
+            "https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable" \
+            "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"; do
+            if curl -fsSL -o godot.zip "${base}/${pkg}.zip" \
+              && curl -fsSL -o templates.tpz "${base}/${tpz}"; then
+              found=1; break
+            fi
+          done
+          [ "${found:-0}" = "1" ] || { echo "::error::Could not download Godot ${GODOT_VERSION}"; exit 1; }
+
+          mkdir -p ~/godot
+          unzip -q godot.zip -d ~/godot
+
+          mkdir -p ~/.local/share/godot/export_templates
+          unzip -q templates.tpz -d /tmp/tpl
+          mv /tmp/tpl/templates ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono
+
+      - name: Locate Godot binary
+        run: |
+          set -euo pipefail
+          bin="$(find ~/godot -type f -name 'Godot_v*_mono_linux.x86_64' | head -n1)"
+          [ -n "$bin" ] || { echo "::error::Godot binary not found"; find ~/godot; exit 1; }
+          chmod +x "$bin"
+          echo "GODOT_BIN=$bin" >> "$GITHUB_ENV"
+
+      - name: Restore
+        run: dotnet restore Game.csproj
+
+      - name: Import project
+        run: |
+          "$GODOT_BIN" --headless --path . --import || true
+          "$GODOT_BIN" --headless --path . --import || true
+
+      - name: Export
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          "$GODOT_BIN" --headless --path . \
+            --export-release "Linux (x86_64)" \
+            "$PWD/out/Ensemble.x86_64"
+          # Godot's editor teardown prints "ERROR:" lines even on a clean export,
+          # so trust the exit code + output verification below, not the log text.
+
+      - name: Verify + flatten export layout
+        run: |
+          set -euo pipefail
+          cd out
+          test -f Ensemble.x86_64
+          # Sanity floor: the AOT game library alone is tens of MB.
+          size=$(find . -name 'Game.so' -printf '%s' 2>/dev/null || echo 0)
+          [ "${size:-0}" -ge 10000000 ] || { echo "::error::Game.so missing or too small ($size bytes)"; ls -laR; exit 1; }
+          # Mirror PatchExport.cs: hoist data_* contents next to the executable
+          # so a freshly unzipped copy runs without the first-launch relayout.
+          for d in data_*/ ; do
+            [ -d "$d" ] || continue
+            cp -a "$d". .
+            rm -rf "$d"
+          done
+          chmod +x Ensemble.x86_64 Ensemble.sh 2>/dev/null || true
+          ls -la
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          (cd out && zip -9 -ry "$GITHUB_WORKSPACE/Ensemble-linux-x86_64.zip" .)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Ensemble-linux-x86_64
+          path: Ensemble-linux-x86_64.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload export log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-logs
+          path: |
+            ~/.local/share/godot/mono/build_logs/**
+          if-no-files-found: ignore
+
+  windows:
+    name: Windows (x86_64)
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    # GitHub-hosted windows-latest runs as the `runneradmin` user; Godot keeps its
+    # user data (including export templates) under this fixed path.
+    env:
+      GODOT_USER_DIR: C:\Users\runneradmin\AppData\Roaming\Godot
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Cache Godot + export templates
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:\godot
+            ${{ env.GODOT_USER_DIR }}\export_templates
+          key: godot-${{ env.GODOT_VERSION }}-windows
+
+      - name: Install Godot + export templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $pkg = "Godot_v$env:GODOT_VERSION-stable_mono_win64"
+          $tpz = "Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz"
+          $bases = @(
+            "https://github.com/godotengine/godot-builds/releases/download/$env:GODOT_VERSION-stable",
+            "https://github.com/godotengine/godot/releases/download/$env:GODOT_VERSION-stable"
+          )
+          $ok = $false
+          foreach ($b in $bases) {
+            try {
+              Invoke-WebRequest -Uri "$b/$pkg.zip" -OutFile godot.zip
+              Invoke-WebRequest -Uri "$b/$tpz" -OutFile templates.tpz
+              $ok = $true; break
+            } catch { }
+          }
+          if (-not $ok) { throw "Could not download Godot $env:GODOT_VERSION" }
+
+          New-Item -ItemType Directory -Force C:\godot | Out-Null
+          Expand-Archive godot.zip -DestinationPath C:\godot -Force
+
+          $dest = "$env:GODOT_USER_DIR\export_templates\$env:GODOT_VERSION.stable.mono"
+          New-Item -ItemType Directory -Force $dest | Out-Null
+          Expand-Archive templates.tpz -DestinationPath C:\tpl -Force
+          Move-Item C:\tpl\templates\* $dest -Force
+
+      - name: Locate Godot binary
+        shell: pwsh
+        run: |
+          $bin = Get-ChildItem C:\godot -Recurse -Filter "Godot_v*_mono_win64.exe" | Select-Object -First 1
+          if (-not $bin) { Get-ChildItem C:\godot -Recurse; throw "Godot binary not found" }
+          "GODOT_BIN=$($bin.FullName)" | Out-File $env:GITHUB_ENV -Append
+
+      - name: Restore
+        run: dotnet restore Game.csproj
+
+      - name: Import project
+        shell: pwsh
+        run: |
+          & "$env:GODOT_BIN" --headless --path . --import
+          & "$env:GODOT_BIN" --headless --path . --import
+          # Import can exit non-zero spuriously in headless mode; the export step is the gate.
+          exit 0
+
+      - name: Export
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          New-Item -ItemType Directory -Force out | Out-Null
+          & "$env:GODOT_BIN" --headless --path . `
+            --export-release "Microslop Windows (x86_64)" `
+            "$PWD\out\Ensemble.exe"
+          if ($LASTEXITCODE -ne 0) { throw "Godot export failed with exit code $LASTEXITCODE" }
+
+      - name: Verify + flatten export layout
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          Set-Location out
+          if (-not (Test-Path Ensemble.exe)) { throw "Ensemble.exe was not produced" }
+          $game = Get-ChildItem -Recurse -Filter Game.dll | Select-Object -First 1
+          if (-not $game -or $game.Length -lt 10MB) { Get-ChildItem -Recurse; throw "Game.dll missing or too small" }
+          # Mirror PatchExport.cs: hoist data_* contents next to the executable.
+          Get-ChildItem -Directory -Filter "data_*" | ForEach-Object {
+            Copy-Item "$($_.FullName)\*" . -Recurse -Force
+            Remove-Item $_.FullName -Recurse -Force
+          }
+          Get-ChildItem
+
+      - name: Package
+        shell: pwsh
+        run: Compress-Archive -Path out\* -DestinationPath "$env:GITHUB_WORKSPACE\Ensemble-windows-x86_64.zip" -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: Ensemble-windows-x86_64
+          path: Ensemble-windows-x86_64.zip
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload export log on failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-logs
+          path: ${{ env.GODOT_USER_DIR }}\mono\build_logs\**
+          if-no-files-found: ignore
+
+  publish:
+    name: Publish Release
+    needs: [linux, windows]
+    runs-on: ubuntu-latest
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && inputs.publish_release)
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Checksums
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum *.zip | tee SHA256SUMS.txt
+
+      - name: Create / update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            tag="${{ github.ref_name }}"
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" \
+              --title "$tag" --generate-notes \
+              dist/*.zip dist/SHA256SUMS.txt
+          else
+            tag="dev-${GITHUB_SHA::12}"
+            gh release delete "$tag" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+            gh release create "$tag" --repo "$GITHUB_REPOSITORY" \
+              --title "Development build $tag" --prerelease \
+              --target "$GITHUB_SHA" \
+              --notes "Automated development build from ${GITHUB_SHA}." \
+              dist/*.zip dist/SHA256SUMS.txt
+          fi

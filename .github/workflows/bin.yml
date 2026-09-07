@@ -1,0 +1,171 @@
+name: Build Binaries
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bin-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GODOT_VERSION: '4.7.2'
+
+jobs:
+  linux:
+    name: Linux (x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot
+        run: |
+          set -euo pipefail
+          sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+          curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          unzip -q godot.zip -d "${HOME}/godot"
+          unzip -q templates.tpz -d "${HOME}/tpl"
+          mkdir -p "${HOME}/.local/share/godot/export_templates"
+          mv "${HOME}/tpl/templates" "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono"
+          bin="${HOME}/godot/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64"
+          chmod +x "${bin}"
+          echo "GODOT=${bin}" >> "${GITHUB_ENV}"
+
+      - name: Disable Terrain3D editor plugin
+        run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
+
+      - name: Export
+        timeout-minutes: 45
+        run: |
+          set -euo pipefail
+          dotnet restore Game.csproj
+          "${GODOT}" --headless --path . --import || true
+          "${GODOT}" --headless --path . --import || true
+          mkdir -p out
+          "${GODOT}" --headless --path . --export-release "Linux (x86_64)" "${PWD}/out/Ensemble.x86_64"
+          test -s out/Ensemble.x86_64
+          cd out
+          shopt -s nullglob
+          for d in data_*/; do cp -a "${d}." . && rm -rf "${d}"; done
+          chmod +x Ensemble.x86_64 Ensemble.sh
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          cd out
+          zip -9 -ry ../bin-linux-x86_64-debug.zip .
+          rm -f ./*.pdb ./*.dbg ./*.xml
+          zip -9 -ry ../bin-linux-x86_64.zip .
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: bin-linux-x86_64
+          path: bin-linux-x86_64*.zip
+          if-no-files-found: error
+
+  windows:
+    name: Windows (x86_64)
+    runs-on: windows-latest
+    timeout-minutes: 60
+
+    defaults:
+      run:
+        shell: pwsh
+
+    env:
+      GODOT_USER_DIR: C:\Users\runneradmin\AppData\Roaming\Godot
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot
+        run: |
+          $base = "https://github.com/godotengine/godot-builds/releases/download/$env:GODOT_VERSION-stable"
+          Invoke-WebRequest "$base/Godot_v$env:GODOT_VERSION-stable_mono_win64.zip" -OutFile godot.zip
+          Invoke-WebRequest "$base/Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz" -OutFile templates.tpz
+          Expand-Archive godot.zip -DestinationPath C:\godot -Force
+          Expand-Archive templates.tpz -DestinationPath C:\tpl -Force
+          $dest = "$env:GODOT_USER_DIR\export_templates\$env:GODOT_VERSION.stable.mono"
+          New-Item -ItemType Directory -Force $dest | Out-Null
+          Move-Item C:\tpl\templates\* $dest -Force
+          "GODOT=C:\godot\Godot_v$env:GODOT_VERSION-stable_mono_win64\Godot_v$env:GODOT_VERSION-stable_mono_win64.exe" |
+            Out-File $env:GITHUB_ENV -Append
+
+      - name: Disable Terrain3D editor plugin
+        run: Move-Item addons\terrain_3d\plugin.cfg addons\terrain_3d\plugin.cfg.off
+
+      - name: Export
+        timeout-minutes: 45
+        run: |
+          dotnet build Game.csproj -c Debug
+          dotnet build-server shutdown
+          & $env:GODOT --headless --path . --import
+          & $env:GODOT --headless --path . --import
+          New-Item -ItemType Directory -Force out | Out-Null
+          & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64)" "$PWD\out\Ensemble.exe"
+          if ($LASTEXITCODE -ne 0) { throw "export failed ($LASTEXITCODE)" }
+          if (-not (Test-Path out\Ensemble.exe)) { throw "Ensemble.exe missing" }
+          Set-Location out
+          Get-ChildItem -Directory -Filter data_* | ForEach-Object {
+            Copy-Item "$($_.FullName)\*" . -Recurse -Force
+            Remove-Item $_.FullName -Recurse -Force
+          }
+
+      - name: Package
+        run: |
+          Set-Location out
+          Compress-Archive -Path * -DestinationPath ..\bin-windows-x86_64-debug.zip -Force
+          Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
+          Compress-Archive -Path * -DestinationPath ..\bin-windows-x86_64.zip -Force
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: bin-windows-x86_64
+          path: bin-windows-x86_64*.zip
+          if-no-files-found: error
+
+  publish:
+    name: Publish
+    needs: [linux, windows]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v7
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum *.zip > SHA256SUMS.txt
+          gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
+            --title "${GITHUB_REF_NAME}" --generate-notes *.zip SHA256SUMS.txt

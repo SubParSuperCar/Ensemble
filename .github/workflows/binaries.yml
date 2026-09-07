@@ -44,6 +44,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Disable editor plugins for headless export
+        # Editor plugins (Terrain3D, Sky3D, Rider) play no part in the export
+        # payload — the Terrain3D editor plugin in particular crashes Godot
+        # headless on Windows while building its tool UI. The GDExtensions they
+        # rely on (terrain.gdextension) stay loaded, so exported scenes are
+        # unaffected.
+        run: sed -i -E 's#^(enabled=PackedStringArray)\(.*\)#\1()#' project.godot
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -92,8 +100,11 @@ jobs:
           chmod +x "$bin"
           echo "GODOT_BIN=$bin" >> "$GITHUB_ENV"
 
-      - name: Restore
-        run: dotnet restore Game.csproj
+      - name: Build editor assembly
+        # Godot headless does not build the C# project for you; without this the
+        # editor logs "Failed to load project assembly" and autoloads fail to
+        # compile during the export scan. Godot re-publishes ExportRelease itself.
+        run: dotnet build Game.csproj -c Debug
 
       - name: Import project
         run: |
@@ -164,6 +175,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Disable editor plugins for headless export
+        # The Terrain3D editor plugin crashes Godot headless on Windows while
+        # building its tool UI during the export scan. Editor plugins have no
+        # role in the export payload; the GDExtensions stay loaded.
+        shell: pwsh
+        run: |
+          (Get-Content project.godot -Raw) `
+            -replace '(?m)^(enabled=PackedStringArray)\([^\r\n]*\)', '$1()' |
+            Set-Content project.godot -NoNewline
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -214,8 +235,11 @@ jobs:
           if (-not $bin) { Get-ChildItem C:\godot -Recurse; throw "Godot binary not found" }
           "GODOT_BIN=$($bin.FullName)" | Out-File $env:GITHUB_ENV -Append
 
-      - name: Restore
-        run: dotnet restore Game.csproj
+      - name: Build editor assembly
+        # Godot headless does not build the C# project for you; without this the
+        # editor logs "Failed to load project assembly" and autoloads fail to
+        # compile during the export scan. Godot re-publishes ExportRelease itself.
+        run: dotnet build Game.csproj -c Debug
 
       - name: Import project
         shell: pwsh

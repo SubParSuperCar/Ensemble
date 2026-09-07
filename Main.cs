@@ -153,6 +153,8 @@ public partial class Main : Node
 
 	private async Task LoadDeferredAsync()
 	{
+		// TODO: Don't await an arbitrary/magical number of times; use a readiness signal (if available)
+		// I've tested this, and it takes exactly 3 frames for Avalonia UI to show up. Unsure why.
 		for (var i = 0; i < 3; i++)
 		{
 			RenderingServer.ForceDraw();

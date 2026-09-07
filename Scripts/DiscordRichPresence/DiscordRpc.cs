@@ -5,6 +5,7 @@ using Serilog;
 
 namespace Root.Scripts.DiscordRichPresence;
 
+// TODO: Fix benign errors in AOT export builds caused by IPC named pipe socket exceptions
 [GlobalClass]
 [Autoload(Scope = AutoloadScope.Client, Order = 1, FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class DiscordRpc : Node, IAutoload

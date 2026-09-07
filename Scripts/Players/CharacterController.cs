@@ -22,8 +22,20 @@ public partial class CharacterController : CharacterBody3D
 	public float FirstPersonInvisibleProximityThreshold { get; set; } = 1;
 
 	[Export] public Camera3D Camera { get; set; } = null!;
+	[Export] public Node3D Terrain { get; set; } = null!;
 
-	public override void _Ready() => PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
+	public override void _Ready()
+	{
+		PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
+
+		var terrainFocus = new Camera3D { Current = false };
+		terrainFocus.Name = "Terrain Focus";
+		AddChild(terrainFocus);
+
+		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+		if (Terrain?.IsClass("Terrain3D") is true)
+			Terrain.Call("set_camera", terrainFocus);
+	}
 
 	public override void _PhysicsProcess(double delta)
 	{

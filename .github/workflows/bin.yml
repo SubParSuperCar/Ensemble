@@ -26,6 +26,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Identify build
+        run: |
+          set -euo pipefail
+          id="${GITHUB_REF_NAME}"
+          [ "${GITHUB_REF_TYPE}" = tag ] || id="$(git rev-parse --short HEAD)"
+          echo "ID=${id}" >> "${GITHUB_ENV}"
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
@@ -61,22 +68,22 @@ jobs:
           test -s out/Ensemble.x86_64
           cd out
           shopt -s nullglob
-          for d in data_*/; do cp -a "${d}." . && rm -rf "${d}"; done
+          for d in data_*/; do cp -a "${d}." . && find "${d}" -mindepth 1 -delete; done
           chmod +x Ensemble.x86_64 Ensemble.sh
 
       - name: Package
         run: |
           set -euo pipefail
           cd out
-          zip -9 -ry ../bin-linux-x86_64-debug.zip .
+          zip -9 -ry "../Ensemble-${ID}-linux-x86_64-debug.zip" .
           rm -f ./*.pdb ./*.dbg ./*.xml
-          zip -9 -ry ../bin-linux-x86_64.zip .
+          zip -9 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
 
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
-          name: bin-linux-x86_64
-          path: bin-linux-x86_64*.zip
+          name: Ensemble-${{ env.ID }}-linux-x86_64
+          path: Ensemble-${{ env.ID }}-linux-x86_64*.zip
           if-no-files-found: error
 
   windows:
@@ -94,6 +101,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Identify build
+        run: |
+          $id = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME } else { git rev-parse --short HEAD }
+          "ID=$id" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -132,21 +144,24 @@ jobs:
           Set-Location out
           Get-ChildItem -Directory -Filter data_* | ForEach-Object {
             Copy-Item "$($_.FullName)\*" . -Recurse -Force
-            Remove-Item $_.FullName -Recurse -Force
+            Remove-Item "$($_.FullName)\*" -Recurse -Force
           }
 
       - name: Package
         run: |
+          $PSNativeCommandUseErrorActionPreference = $false
           Set-Location out
-          Compress-Archive -Path * -DestinationPath ..\bin-windows-x86_64-debug.zip -Force
+          7z a -tzip -mx=9 "..\Ensemble-${env:ID}-windows-x86_64-debug.zip" . > $null
+          if ($LASTEXITCODE -ge 2) { throw "7z failed ($LASTEXITCODE)" }
           Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
-          Compress-Archive -Path * -DestinationPath ..\bin-windows-x86_64.zip -Force
+          7z a -tzip -mx=9 "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
+          if ($LASTEXITCODE -ge 2) { throw "7z failed ($LASTEXITCODE)" }
 
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
-          name: bin-windows-x86_64
-          path: bin-windows-x86_64*.zip
+          name: Ensemble-${{ env.ID }}-windows-x86_64
+          path: Ensemble-${{ env.ID }}-windows-x86_64*.zip
           if-no-files-found: error
 
   publish:

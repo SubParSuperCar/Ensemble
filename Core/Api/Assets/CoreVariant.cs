@@ -11,10 +11,10 @@ namespace CoreRoot.Api.Assets;
 public enum CoreVariantType : byte
 {
 	Null,
-	Bool,
-	NumInt,
-	NumDouble,
-	Str
+	Boolean,
+	Int64,
+	Double,
+	String
 }
 
 [StructLayout(LayoutKind.Explicit)]
@@ -29,7 +29,7 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 
 	public CoreVariant(bool value) : this()
 	{
-		Type = CoreVariantType.Bool;
+		Type = CoreVariantType.Boolean;
 		_integer = value ? 1 : 0;
 	}
 
@@ -37,7 +37,7 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 
 	public CoreVariant(long value) : this()
 	{
-		Type = CoreVariantType.NumInt;
+		Type = CoreVariantType.Int64;
 		_integer = value;
 	}
 
@@ -45,7 +45,7 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 
 	public CoreVariant(double value) : this()
 	{
-		Type = CoreVariantType.NumDouble;
+		Type = CoreVariantType.Double;
 		_float = value;
 	}
 
@@ -57,7 +57,7 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 			return;
 		}
 
-		Type = CoreVariantType.Str;
+		Type = CoreVariantType.String;
 		_string = value;
 	}
 
@@ -67,10 +67,10 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 		Type switch
 		{
 			CoreVariantType.Null => null,
-			CoreVariantType.Bool => (bool)this,
-			CoreVariantType.NumInt => (long)this,
-			CoreVariantType.NumDouble => (double)this,
-			CoreVariantType.Str => (string)this,
+			CoreVariantType.Boolean => (bool)this,
+			CoreVariantType.Int64 => (long)this,
+			CoreVariantType.Double => (double)this,
+			CoreVariantType.String => (string)this,
 			_ => throw new UnreachableException()
 		};
 
@@ -84,26 +84,26 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 	public static implicit operator CoreVariant(string? value) => new(value);
 
 	public static explicit operator bool(CoreVariant variant) =>
-		variant.Type is CoreVariantType.Bool ? variant._integer is not 0 : throw new InvalidCastException();
+		variant.Type is CoreVariantType.Boolean ? variant._integer is not 0 : throw new InvalidCastException();
 
 	public static explicit operator long(CoreVariant variant) =>
 		variant.Type switch
 		{
-			CoreVariantType.NumInt => variant._integer,
-			CoreVariantType.NumDouble => (long)variant._float,
+			CoreVariantType.Int64 => variant._integer,
+			CoreVariantType.Double => (long)variant._float,
 			_ => throw new InvalidCastException()
 		};
 
 	public static explicit operator double(CoreVariant variant) =>
 		variant.Type switch
 		{
-			CoreVariantType.NumDouble => variant._float,
-			CoreVariantType.NumInt => variant._integer,
+			CoreVariantType.Double => variant._float,
+			CoreVariantType.Int64 => variant._integer,
 			_ => throw new InvalidCastException()
 		};
 
 	public static explicit operator string(CoreVariant variant) =>
-		variant.Type is CoreVariantType.Str ? variant._string! : throw new InvalidCastException();
+		variant.Type is CoreVariantType.String ? variant._string! : throw new InvalidCastException();
 
 	public static bool operator ==(CoreVariant left, CoreVariant right) => left.Equals(right);
 	public static bool operator !=(CoreVariant left, CoreVariant right) => !left.Equals(right);
@@ -116,9 +116,9 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 		return Type switch
 		{
 			CoreVariantType.Null => true,
-			CoreVariantType.Bool or CoreVariantType.NumInt => _integer == other._integer,
-			CoreVariantType.NumDouble => _float.Equals(other._float),
-			CoreVariantType.Str => string.Equals(_string, other._string, StringComparison.Ordinal),
+			CoreVariantType.Boolean or CoreVariantType.Int64 => _integer == other._integer,
+			CoreVariantType.Double => _float.Equals(other._float),
+			CoreVariantType.String => string.Equals(_string, other._string, StringComparison.Ordinal),
 			_ => false
 		};
 	}
@@ -128,9 +128,9 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 	public override int GetHashCode() =>
 		Type switch
 		{
-			CoreVariantType.Bool or CoreVariantType.NumInt => HashCode.Combine(Type, _integer),
-			CoreVariantType.NumDouble => HashCode.Combine(Type, _float),
-			CoreVariantType.Str => HashCode.Combine(Type, _string),
+			CoreVariantType.Boolean or CoreVariantType.Int64 => HashCode.Combine(Type, _integer),
+			CoreVariantType.Double => HashCode.Combine(Type, _float),
+			CoreVariantType.String => HashCode.Combine(Type, _string),
 			_ => Type.GetHashCode()
 		};
 
@@ -138,10 +138,10 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 		Type switch
 		{
 			CoreVariantType.Null => "null",
-			CoreVariantType.Bool => (_integer is not 0).ToString(),
-			CoreVariantType.NumInt => _integer.ToString(CultureInfo.InvariantCulture),
-			CoreVariantType.NumDouble => _float.ToString(CultureInfo.InvariantCulture),
-			CoreVariantType.Str => _string ?? "null",
+			CoreVariantType.Boolean => (_integer is not 0).ToString(),
+			CoreVariantType.Int64 => _integer.ToString(CultureInfo.InvariantCulture),
+			CoreVariantType.Double => _float.ToString(CultureInfo.InvariantCulture),
+			CoreVariantType.String => _string ?? "null",
 			_ => "unknown"
 		};
 }

@@ -19,10 +19,10 @@ public static class Converter
 	public static Variant ToGodot(this CoreVariant variant) =>
 		variant.Type switch
 		{
-			CoreVariantType.Bool => Variant.CreateFrom((bool)variant),
-			CoreVariantType.NumInt => Variant.CreateFrom((long)variant),
-			CoreVariantType.NumDouble => Variant.CreateFrom((double)variant),
-			CoreVariantType.Str => Variant.CreateFrom((string)variant),
+			CoreVariantType.Boolean => Variant.CreateFrom((bool)variant),
+			CoreVariantType.Int64 => Variant.CreateFrom((long)variant),
+			CoreVariantType.Double => Variant.CreateFrom((double)variant),
+			CoreVariantType.String => Variant.CreateFrom((string)variant),
 			_ => default
 		};
 

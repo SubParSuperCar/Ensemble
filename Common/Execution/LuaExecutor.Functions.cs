@@ -295,8 +295,9 @@ public static partial class LuaExecutor
 	{
 		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
 
-		Log.Information("Available VSync modes:{Modes}",
-			modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"\n{mode} ({(int)mode})")));
+		Log.Information("Available VSync modes:\n{Modes}",
+			string.Join('\n',
+				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{mode} ({(int)mode})"))));
 
 		context.Return();
 		return default;

@@ -197,10 +197,9 @@ test_hang={
 3d/run_on_separate_thread=true
 common/physics_ticks_per_second=90
 3d/physics_engine="Jolt Physics"
-jolt_physics_3d/limits/temporary_memory_buffer_size=64
-jolt_physics_3d/limits/max_bodies=131072
-jolt_physics_3d/limits/max_body_pairs=1048576
-jolt_physics_3d/limits/max_contact_constraints=262144
+jolt_physics_3d/limits/temporary_memory_buffer_size=48
+jolt_physics_3d/limits/max_bodies=16384
+jolt_physics_3d/limits/max_contact_constraints=32768
 common/physics_interpolation=true
 
 [rendering]

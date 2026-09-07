@@ -44,13 +44,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Disable editor plugins for headless export
-        # Editor plugins (Terrain3D, Sky3D, Rider) play no part in the export
-        # payload — the Terrain3D editor plugin in particular crashes Godot
-        # headless on Windows while building its tool UI. The GDExtensions they
-        # rely on (terrain.gdextension) stay loaded, so exported scenes are
-        # unaffected.
-        run: sed -i -E 's#^(enabled=PackedStringArray)\(.*\)#\1()#' project.godot
+      - name: Neutralize the Terrain3D editor plugin
+        # Its editor plugin builds Control-based tool UI on load and hard-crashes
+        # Godot headless on Windows during the export scan. Renaming plugin.cfg
+        # makes Godot skip it (harmless "can't load addon" log) while leaving
+        # terrain.gdextension — which provides the runtime Terrain3D class — in
+        # place. Editing project.godot instead would trigger an SVG reimport
+        # storm, so touch only this file.
+        run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.ci-off
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -174,15 +175,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Disable editor plugins for headless export
-        # The Terrain3D editor plugin crashes Godot headless on Windows while
-        # building its tool UI during the export scan. Editor plugins have no
-        # role in the export payload; the GDExtensions stay loaded.
+      - name: Neutralize the Terrain3D editor plugin
+        # Its editor plugin builds Control-based tool UI on load and hard-crashes
+        # Godot headless on Windows during the export scan. Renaming plugin.cfg
+        # makes Godot skip it while leaving terrain.gdextension — which provides
+        # the runtime Terrain3D class — in place. Editing project.godot instead
+        # would trigger an SVG reimport storm, so touch only this file.
         shell: pwsh
-        run: |
-          (Get-Content project.godot -Raw) `
-            -replace '(?m)^(enabled=PackedStringArray)\([^\r\n]*\)', '$1()' |
-            Set-Content project.godot -NoNewline
+        run: Move-Item addons\terrain_3d\plugin.cfg addons\terrain_3d\plugin.cfg.ci-off
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5

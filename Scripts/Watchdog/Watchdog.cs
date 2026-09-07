@@ -74,9 +74,11 @@ public partial class Watchdog : Node, IAutoload
 		try
 		{
 			Log.Fatal("{Message}", message);
-			Log.CloseAndFlush();
-
 			TinyDialogs.NotifyPopup(NotificationIconType.Error, "Ensemble Watchdog Timed Out", message);
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "Failed to show watchdog timeout popup.");
 		}
 		finally
 		{

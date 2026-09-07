@@ -63,10 +63,14 @@ public partial class Main : Node
 		{
 			Log.Error(notifyException, "Failed to show crash popup.");
 		}
-		finally
+
+		try { Log.CloseAndFlush(); }
+		catch
 		{
-			Environment.FailFast(null, exception);
+			// Ignored
 		}
+
+		Environment.FailFast(null, exception);
 	}
 
 	public static bool AskUser(string topic, string prompt)

@@ -75,9 +75,9 @@ jobs:
         run: |
           set -euo pipefail
           cd out
-          zip -9 -ry "../Ensemble-${ID}-linux-x86_64-debug.zip" .
+          zip -6 -ry "../Ensemble-${ID}-linux-x86_64-debug.zip" .
           rm -f ./*.pdb ./*.dbg ./*.xml
-          zip -9 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
+          zip -6 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
 
       - name: Upload
         uses: actions/upload-artifact@v7
@@ -151,10 +151,10 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
           Set-Location out
-          7z a -tzip -mx=9 "..\Ensemble-${env:ID}-windows-x86_64-debug.zip" . > $null
+          7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64-debug.zip" . > $null
           if ($LASTEXITCODE -ge 2) { throw "7z failed ($LASTEXITCODE)" }
           Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
-          7z a -tzip -mx=9 "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
+          7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
           if ($LASTEXITCODE -ge 2) { throw "7z failed ($LASTEXITCODE)" }
 
       - name: Upload

@@ -28,19 +28,19 @@ internal sealed class CoreVariantJsonConverter : JsonConverter<CoreVariant>
 				writer.WriteNullValue();
 				break;
 
-			case CoreVariantType.Bool:
+			case CoreVariantType.Boolean:
 				writer.WriteBooleanValue((bool)value);
 				break;
 
-			case CoreVariantType.NumInt:
+			case CoreVariantType.Int64:
 				writer.WriteNumberValue((long)value);
 				break;
 
-			case CoreVariantType.NumDouble:
+			case CoreVariantType.Double:
 				WriteDouble(writer, (double)value);
 				break;
 
-			case CoreVariantType.Str:
+			case CoreVariantType.String:
 				writer.WriteStringValue((string)value);
 				break;
 

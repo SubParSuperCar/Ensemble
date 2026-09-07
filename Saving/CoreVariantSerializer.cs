@@ -13,10 +13,10 @@ internal static class CoreVariantSerializer
 		return type switch
 		{
 			CoreVariantType.Null => CoreVariant.Null,
-			CoreVariantType.Bool => new CoreVariant(reader.ReadBoolean()),
-			CoreVariantType.NumInt => new CoreVariant(reader.ReadInt64()),
-			CoreVariantType.NumDouble => new CoreVariant(reader.ReadDouble()),
-			CoreVariantType.Str => new CoreVariant(reader.ReadString()),
+			CoreVariantType.Boolean => new CoreVariant(reader.ReadBoolean()),
+			CoreVariantType.Int64 => new CoreVariant(reader.ReadInt64()),
+			CoreVariantType.Double => new CoreVariant(reader.ReadDouble()),
+			CoreVariantType.String => new CoreVariant(reader.ReadString()),
 			_ => throw new InvalidDataException($"Unknown variant type: {type}")
 		};
 	}
@@ -30,19 +30,19 @@ internal static class CoreVariantSerializer
 			case CoreVariantType.Null:
 				break;
 
-			case CoreVariantType.Bool:
+			case CoreVariantType.Boolean:
 				writer.Write((bool)variant);
 				break;
 
-			case CoreVariantType.NumInt:
+			case CoreVariantType.Int64:
 				writer.Write((long)variant);
 				break;
 
-			case CoreVariantType.NumDouble:
+			case CoreVariantType.Double:
 				writer.Write((double)variant);
 				break;
 
-			case CoreVariantType.Str:
+			case CoreVariantType.String:
 				writer.Write((string)variant);
 				break;
 

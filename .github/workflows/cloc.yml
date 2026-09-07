@@ -8,20 +8,25 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: cloc-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   cloc:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Count Source LoC
+      - name: Count source LoC
         uses: djdefi/cloc-action@6
         with:
           options: --exclude-lang=YAML --md --report-file=cloc.md
 
-      - name: Upload LoC Artifact
+      - name: Upload LoC artifact
         uses: actions/upload-artifact@v7
         with:
           name: source-loc

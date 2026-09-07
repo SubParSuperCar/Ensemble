@@ -22,7 +22,7 @@
   <Folder Name="/Solution Items/GitHub/Workflows/">
     <File Path=".github/workflows/bin.yml"/>
     <File Path=".github/workflows/cloc.yml"/>
-    <File Path=".github/workflows/zip.yml"/>
+    <File Path=".github/workflows/src.yml"/>
   </Folder>
   <Folder Name="/Solution Items/IntelliJ Run Configs/">
     <File Path=".run/Editor.run.xml"/>

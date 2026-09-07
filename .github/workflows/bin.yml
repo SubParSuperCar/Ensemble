@@ -110,8 +110,9 @@ jobs:
           $dest = "$env:GODOT_USER_DIR\export_templates\$env:GODOT_VERSION.stable.mono"
           New-Item -ItemType Directory -Force $dest | Out-Null
           Move-Item C:\tpl\templates\* $dest -Force
-          "GODOT=C:\godot\Godot_v$env:GODOT_VERSION-stable_mono_win64\Godot_v$env:GODOT_VERSION-stable_mono_win64.exe" |
-            Out-File $env:GITHUB_ENV -Append
+          $exe = (Get-ChildItem C:\godot -Recurse -Filter *_win64.console.exe | Select-Object -First 1) ??
+                 (Get-ChildItem C:\godot -Recurse -Filter *_win64.exe | Select-Object -First 1)
+          "GODOT=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Disable Terrain3D editor plugin
         run: Move-Item addons\terrain_3d\plugin.cfg addons\terrain_3d\plugin.cfg.off
@@ -119,12 +120,13 @@ jobs:
       - name: Export
         timeout-minutes: 45
         run: |
+          $PSNativeCommandUseErrorActionPreference = $false
           dotnet build Game.csproj -c Debug
           dotnet build-server shutdown
-          & $env:GODOT --headless --path . --import
-          & $env:GODOT --headless --path . --import
+          & $env:GODOT --headless --path . --import | Out-Host
+          & $env:GODOT --headless --path . --import | Out-Host
           New-Item -ItemType Directory -Force out | Out-Null
-          & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64)" "$PWD\out\Ensemble.exe"
+          & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64)" "$PWD\out\Ensemble.exe" | Out-Host
           if ($LASTEXITCODE -ne 0) { throw "export failed ($LASTEXITCODE)" }
           if (-not (Test-Path out\Ensemble.exe)) { throw "Ensemble.exe missing" }
           Set-Location out
@@ -152,6 +154,7 @@ jobs:
     needs: [linux, windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Download

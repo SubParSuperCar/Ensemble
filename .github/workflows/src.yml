@@ -8,46 +8,44 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: src-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Prepare Source
-        shell: bash
+      - name: Prepare source
         run: |
           set -euo pipefail
           mkdir src
-          rsync -a . src/ \
-            --exclude='.git' \
-            --exclude='src'
+          rsync -a . src/ --exclude='.git' --exclude='src'
 
-      - name: Create Deterministic Archive
+      - name: Create deterministic archive
         uses: timo-reymann/deterministic-zip-gh-action@v1
         with:
           source: src
           target: src.zip
           args: -i
 
-      - name: Hash Archive
-        shell: bash
+      - name: Hash archive
         run: |
           set -euo pipefail
           sha256sum src.zip > src.zip.sha256
 
-      - name: Create Release
-        shell: bash
+      - name: Create release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          TAG="src-${GITHUB_SHA::12}"
-          gh release create "$TAG" \
-            --target "$GITHUB_SHA" \
+          gh release create "src-${GITHUB_SHA::12}" \
+            --target "${GITHUB_SHA}" \
             --prerelease \
             --generate-notes \
-            src.zip \
-            src.zip.sha256
+            src.zip src.zip.sha256

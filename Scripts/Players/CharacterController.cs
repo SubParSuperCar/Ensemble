@@ -29,7 +29,7 @@ public partial class CharacterController : CharacterBody3D
 		PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
 
 		var terrainFocus = new Camera3D { Current = false };
-		terrainFocus.Name = "Terrain Focus";
+		terrainFocus.Name = "ShamCam";
 		AddChild(terrainFocus);
 
 		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract

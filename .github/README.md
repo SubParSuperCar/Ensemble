@@ -33,9 +33,11 @@ contributions while its architecture, systems, and implementation continue to ev
 > Ensemble has no gameplay yet. These builds exist for testing and feedback.
 
 - **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
-Windows and Linux `x86_64` ZIPs. Unzip and run `Ensemble.exe` or `Ensemble.x86_64` &mdash; no install, no runtime needed.
-- **Latest commit:** trigger the [**Build Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
-workflow ("Run workflow"), then download the artifacts from the finished run.
+  Windows and Linux `x86_64` ZIPs. Unzip and run `Ensemble.exe` or `Ensemble.x86_64` &mdash; no install, no runtime
+  needed.
+- **Latest commit:** trigger the [**Build
+  Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
+  workflow ("Run workflow"), then download the artifacts from the finished run.
 
 Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files.
 

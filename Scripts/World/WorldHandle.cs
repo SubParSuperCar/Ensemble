@@ -45,6 +45,11 @@ public partial class WorldHandle : Node3D
 
 		Log.Debug("{Plots}:", nameof(GPlots));
 		foreach (var plot in GPlots.GetAll())
-			Log.Debug("{$Plot}", plot.ToDict());
+		{
+			var dict = plot.ToDict();
+			dict.Add("occupants", plot.Occupants.GetAll().Select(occupant => occupant.Player.Id).ToArray());
+
+			Log.Debug("{$Plot}", dict);
+		}
 	}
 }

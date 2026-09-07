@@ -7,7 +7,7 @@ using Serilog;
 
 namespace Root.Tooling;
 
-// TODO: Add owner-only "Clear All" UI button
+// TODO: Add owner-only "Clear All" UI button & raycast filters
 public partial class DestructTool : ToolBase
 {
 	private const float RayLength = 1000;

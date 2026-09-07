@@ -73,7 +73,7 @@
     <PackageReference Include="LiveMarkdown.Avalonia.Svg.Skia" Version="2.4.0"/>
     <PackageReference Include="LuaCSharp" Version="0.5.6"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="2.0.150"/>
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.203">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.220">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

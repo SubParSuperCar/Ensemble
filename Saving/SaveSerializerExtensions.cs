@@ -5,7 +5,7 @@ namespace Root.Saving;
 public enum CompressionType : byte
 {
 	None,
-	Zstd
+	ZStandard
 }
 
 public static class SaveSerializerExtensions
@@ -26,7 +26,7 @@ public static class SaveSerializerExtensions
 					serializer.Serialize(file, data);
 					break;
 
-				case CompressionType.Zstd:
+				case CompressionType.ZStandard:
 					{
 						using var stream = compressionLevel is { } level
 							? new CompressionStream(file, level)
@@ -48,7 +48,7 @@ public static class SaveSerializerExtensions
 			return compressionType switch
 			{
 				CompressionType.None => serializer.Deserialize(file),
-				CompressionType.Zstd => DeserializeCompressed(file),
+				CompressionType.ZStandard => DeserializeCompressed(file),
 				_ => throw new ArgumentOutOfRangeException(nameof(compressionType))
 			};
 

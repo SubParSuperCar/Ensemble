@@ -238,13 +238,21 @@ public static partial class LuaExecutor
 	{
 		var before = GC.GetTotalMemory(false);
 
+		Log.Information("GC heap size before: {BytesBefore}", Formatter.FormatBytes((ulong)before));
+		var stopwatch = Stopwatch.StartNew();
+
 		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 		GC.WaitForPendingFinalizers();
 		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 
+		stopwatch.Stop();
+
 		var after = GC.GetTotalMemory(false);
 		var reclaimed = Math.Max(0, before - after);
-		Log.Information("GC reclaimed {Bytes}.", Formatter.FormatBytes((ulong)reclaimed));
+
+		Log.Information("GC heap size after: {BytesAfter} (reclaimed {BytesReclaimed} in {ElapsedMs:F3} ms)",
+			Formatter.FormatBytes((ulong)after), Formatter.FormatBytes((ulong)reclaimed),
+			stopwatch.Elapsed.TotalMilliseconds);
 
 		context.Return();
 		return default;

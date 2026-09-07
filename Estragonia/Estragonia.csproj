@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Use a custom patched assembly where ISkiaGpu is public. Last built against: v12.1.2 & .NET 10 -->
     <Reference Include="Avalonia.Skia">
       <HintPath>Lib/Avalonia.Skia.dll</HintPath>
       <Private>true</Private>

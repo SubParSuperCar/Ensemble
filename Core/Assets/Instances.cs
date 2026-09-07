@@ -6,6 +6,7 @@ using CoreRoot.Utils;
 
 namespace CoreRoot.Assets;
 
+// TODO: Update collections and counts BEFORE emitting changed signals
 public class Instances : IInstances
 {
 	private readonly IAssets _assets;

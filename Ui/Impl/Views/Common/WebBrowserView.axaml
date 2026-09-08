@@ -52,9 +52,9 @@
                 Name="UrlBox"
                 Text="{Binding #WebView.Source, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
                 PlaceholderText="Type URI here &amp; press Enter to navigate"
+                KeyDown="UrlBox_OnKeyDown"
                 ToolTip.Tip="The current URI. Type and press Enter to navigate.&#x0a;Use the 'file://' scheme to browse local files."
-                MinWidth="256" MaxWidth="512"
-                KeyDown="UrlBox_OnKeyDown" />
+                MinWidth="256" MaxWidth="512" />
         </StackPanel>
     </Grid>
 

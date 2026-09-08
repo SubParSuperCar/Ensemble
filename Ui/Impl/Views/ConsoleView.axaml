@@ -30,10 +30,7 @@
         </Style>
     </UserControl.Styles>
 
-    <Border
-        BorderBrush="GreenYellow"
-        BorderThickness="2">
-
+    <Border BorderBrush="GreenYellow" BorderThickness="2">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.0625*" MinWidth="320" />
@@ -42,10 +39,7 @@
             </Grid.ColumnDefinitions>
 
             <Grid>
-                <ScrollViewer
-                    x:Name="OutputScroll"
-                    HorizontalScrollBarVisibility="Disabled">
-
+                <ScrollViewer x:Name="OutputScroll" HorizontalScrollBarVisibility="Disabled">
                     <SelectableTextBlock
                         Name="Output"
                         Text="{Binding Output}"
@@ -102,10 +96,7 @@
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
                     Margin="0,0,22,4">
 
-                    <Border
-                        BorderBrush="Red"
-                        BorderThickness="1">
-
+                    <Border BorderBrush="Red" BorderThickness="1">
                         <Button
                             Content="Cancel Runners"
                             Command="{Binding CancelCommand}"
@@ -113,10 +104,7 @@
                             Background="Black" Foreground="White" />
                     </Border>
 
-                    <Border
-                        BorderBrush="DodgerBlue"
-                        BorderThickness="1">
-
+                    <Border BorderBrush="DodgerBlue" BorderThickness="1">
                         <Button
                             Content="Execute Script"
                             Command="{Binding ExecuteCommand}"

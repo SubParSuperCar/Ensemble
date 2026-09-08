@@ -13,8 +13,7 @@
             Command="{Binding GoBackCommand}"
             ToolTip.Tip="Go back (Bound to Backspace)"
             Background="{DynamicResource TranslucentBackgroundBrush}"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Bottom"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom"
             Margin="4"
             FontSize="24" />
     </Grid>

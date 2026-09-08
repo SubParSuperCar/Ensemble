@@ -20,10 +20,10 @@ public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBa
 	private static void StartSession() => GSessionManager.StartSinglePlayer();
 
 	[RelayCommand]
-	private void GoToDocFileViewer() => navigator.GoTo<DocFileViewModel>();
+	private void GoToDocFileViewer() => navigator.GoTo<MenuDocFileViewModel>();
 
 	[RelayCommand]
-	private void GoToWebBrowser() => navigator.GoTo<WebBrowserViewModel>();
+	private void GoToWebBrowser() => navigator.GoTo<MenuWebBrowserViewModel>();
 
 	private static Bitmap? LoadBitmapFromGodotImage(string path)
 	{

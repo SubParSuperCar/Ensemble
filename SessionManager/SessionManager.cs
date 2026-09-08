@@ -11,7 +11,7 @@ namespace Root.SessionManager;
 
 /// <summary>
 ///     The <see cref="GdCore" />-agnostic session lifetime manager using Godot's <see cref="MultiplayerApi" />.
-///     Provides resources for starting and stopping single and multi-player sessions,
+///     Provides resources for starting and stopping single- and multi-player sessions,
 ///     handling password authentication, managing RPC actions, and more.
 /// </summary>
 [GlobalClass]

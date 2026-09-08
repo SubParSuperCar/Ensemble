@@ -6,28 +6,26 @@
     x:DataType="vm:ToolBarViewModel"
     FontSize="20" FontWeight="ExtraLight">
 
-    <StackPanel
-        Orientation="Vertical"
-        HorizontalAlignment="Center"
-        Grid.IsSharedSizeScope="True">
-
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Grid.IsSharedSizeScope="True">
         <Grid ColumnSpacing="4" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ToolPlace" />
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ToolDelete" />
-                <ColumnDefinition Width="Auto" SharedSizeGroup="ToolMutex" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Place" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Delete" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
             </Grid.ColumnDefinitions>
 
-            <Button
-                Grid.Column="1"
-                Content="Clear All (2x)"
-                HorizontalAlignment="Stretch"
-                HorizontalContentAlignment="Center"
-                Margin="0,0,0,4"
-                IsVisible="{Binding IsClearAllVisible}"
-                IsEnabled="{Binding IsClearAllEnabled}"
-                DoubleTapped="OnClearAllDoubleTapped"
-                ToolTip.Tip="Removes every block from your plot. (Double-click)" />
+            <Border
+                Grid.Column="1" BorderBrush="Red" BorderThickness="1"
+                HorizontalAlignment="Stretch" Margin="0,0,0,4"
+                IsVisible="{Binding IsClearAllVisible}">
+
+                <Button
+                    Content="&#x26A0; Clear All (2x) &#x26A0;"
+                    HorizontalContentAlignment="Center"
+                    IsEnabled="{Binding IsClearAllEnabled}"
+                    DoubleTapped="OnClearAllDoubleTapped"
+                    ToolTip.Tip="Removes every block from your plot. (Double-click)&#x0a;WARNING: THIS ACTION IS IRREVERSIBLE!" />
+            </Border>
         </Grid>
 
         <Border
@@ -37,9 +35,9 @@
 
             <Grid ColumnSpacing="4" ToolTip.Tip="ToolBar">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ToolPlace" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ToolDelete" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="ToolMutex" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Place" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Delete" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
                 </Grid.ColumnDefinitions>
 
                 <Border BorderBrush="DodgerBlue" BorderThickness="1">

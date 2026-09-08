@@ -30,8 +30,7 @@
 
         <Border
             Background="{DynamicResource TranslucentBackgroundBrush}"
-            Padding="4"
-            CornerRadius="6">
+            Padding="4" CornerRadius="6">
 
             <Grid ColumnSpacing="4" ToolTip.Tip="ToolBar">
                 <Grid.ColumnDefinitions>

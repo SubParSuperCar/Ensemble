@@ -297,7 +297,7 @@ public static partial class LuaExecutor
 
 		Log.Information("Available VSync modes:\n{Modes}",
 			string.Join('\n',
-				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{mode} ({(int)mode})"))));
+				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{(int)mode}. {mode}"))));
 
 		context.Return();
 		return default;
@@ -312,7 +312,7 @@ public static partial class LuaExecutor
 
 		var functions = env
 			.Where(entry => entry.Value.Type is LuaValueType.Function)
-			.Select(entry => entry.Key.Read<string>())
+			.Select(entry => $"-> {entry.Key.Read<string>()}")
 			.Order(StringComparer.Ordinal);
 
 		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join('\n', functions));
@@ -336,23 +336,33 @@ public static partial class LuaExecutor
 		return default;
 	}
 
-	private static ValueTask<int> quit(
+	private static async ValueTask<int> quit(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
 		if (context.ArgumentCount > 0)
+		{
+			Log.Information("Force quitting...");
+			await Log.CloseAndFlushAsync().ConfigureAwait(false);
+
 			Environment.Exit(0);
+		}
 		else
+		{
+			Log.Information("Quitting...");
 			(Engine.GetMainLoop() as SceneTree)?.Quit();
+		}
 
 		context.Return();
-		return default;
+		return 0;
 	}
 
 	private static ValueTask<int> restart(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
+		Log.Information("Restarting...");
+
 		OS.SetRestartOnExit(true, OS.GetCmdlineArgs());
 		(Engine.GetMainLoop() as SceneTree)?.Quit();
 

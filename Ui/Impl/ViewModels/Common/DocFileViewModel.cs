@@ -19,7 +19,8 @@ public partial class DocFileViewModel : ViewModelBase
 		new("CONTRIBUTING.md", GhMainHeadPath + ".github/CONTRIBUTING.md"),
 		new("LICENSE.md", GhMainHeadPath + "LICENSE.md"),
 		new("LICENSE-ASSETS.txt", GhMainHeadPath + ".github/LICENSE-ASSETS.txt"),
-		new("LICENSE-CODE.txt", GhMainHeadPath + ".github/LICENSE-CODE.txt")
+		new("LICENSE-CODE.txt", GhMainHeadPath + ".github/LICENSE-CODE.txt"),
+		new("ROADMAP.md", GhMainHeadPath + ".github/ROADMAP.md")
 	];
 
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }

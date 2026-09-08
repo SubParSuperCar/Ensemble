@@ -96,13 +96,13 @@ Ensemble's main menu:
 ![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
 
 Ensemble's document file viewer viewing Ensemble's `README.md` file:
-![Ensemble's Document File Viewer UI](https://github.com/user-attachments/assets/7c30bb1e-c322-4f0b-b995-649b6cec8834)
+![Ensemble's Document File Viewer UI](https://github.com/user-attachments/assets/bd3e6834-2556-43ea-937a-2819d2b32651)
 
 Ensemble's web browser displaying Ensemble's official GitHub repository page:
 ![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
 
 Ensemble's blocks during the day with the light-mode UI enabled using the `set_ui_dark_theme_on` Lua function:
-![Ensemble's Blocks During the Day](https://github.com/user-attachments/assets/d180f320-1e58-4e8b-a372-deca6a402673)
+![Ensemble's Blocks During the Day](https://github.com/user-attachments/assets/fc6997e8-1025-4c0b-8325-f84acc14087f)
 
 Ensemble's console, with the output log on the left and the code editor on the right:
 ![Ensemble's Console UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)

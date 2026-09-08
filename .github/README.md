@@ -10,7 +10,7 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 <img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made w/ Inkscape)" alt="Ensemble's Icon">
 
 > *"Nothing is Arbitrary; Everything is Relative."*<br>
-> <small>- *Ensemble's motto*</small>
+> <small>&mdash; *Ensemble's motto*</small>
 
 <br clear="left"/>
 
@@ -30,7 +30,7 @@ contributions while its architecture, systems, and implementation continue to ev
 ## Download
 
 > [!NOTE]
-> Ensemble has no gameplay yet. These builds exist for testing and feedback.
+> Ensemble has very little gameplay. These builds exist for testing and feedback.
 
 - **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
   Windows and Linux `x86_64` ZIPs. Unzip and run `Ensemble.exe` or `Ensemble.x86_64` &mdash; no install, no runtime
@@ -57,9 +57,9 @@ commitment.
 
 *(Pronounced "**EN-sem**-bull," not "ON-som-bull.")*
 
-This game was originally called **Baja Builders** on Roblox from approximately 2022-2025. However, the name never really
-resonated with me, and "baja" can be interpreted as "below" or "low" in Spanish. I ultimately renamed it to **Ensemble**
-for two primary reasons:
+This game was originally called **Baja Builders** on Roblox from approximately 2022&mdash;2025. However, the name never
+really resonated with me, and "baja" can be interpreted as "below" or "low" in Spanish. I ultimately renamed it to
+**Ensemble** for two primary reasons:
 
 1. "Ensemble" literally means a group of people, which reflects the game's multiplayer and collaborative nature.
 2. It also sounds like "assemble," making it a fitting name for a building game.

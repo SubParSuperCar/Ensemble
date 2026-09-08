@@ -39,6 +39,8 @@ public partial class SessionManager : Node
 	[Signal]
 	public delegate void SessionStoppedEventHandler();
 
+	private const int Unlimited = -1;
+
 	private string _pendingDisplayName = string.Empty;
 
 	private ISession? _session;

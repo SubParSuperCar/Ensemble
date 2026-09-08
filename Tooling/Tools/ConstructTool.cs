@@ -3,7 +3,7 @@ using Godot;
 using Root.Common.Input;
 using Root.Scripts.Assets;
 
-namespace Root.Tooling;
+namespace Root.Tooling.Tools;
 
 public enum RotationSpace : byte
 {

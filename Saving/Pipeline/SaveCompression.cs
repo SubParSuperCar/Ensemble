@@ -1,7 +1,7 @@
 using System.IO.Compression;
 using ZstdSharp;
 
-namespace Root.Saving;
+namespace Root.Saving.Pipeline;
 
 internal static class SaveCompression
 {
@@ -12,7 +12,7 @@ internal static class SaveCompression
 			CompressionType.ZStandard => level is { } value
 				? new CompressionStream(target, value, leaveOpen: true)
 				: new CompressionStream(target, leaveOpen: true),
-			CompressionType.Brotli => new BrotliStream(target, ToBrotliLevel(level), leaveOpen: true),
+			CompressionType.Brotli => new BrotliStream(target, ToBrotliLevel(level), true),
 			_ => throw new ArgumentOutOfRangeException(nameof(type))
 		};
 
@@ -21,7 +21,7 @@ internal static class SaveCompression
 		{
 			CompressionType.None => null,
 			CompressionType.ZStandard => new DecompressionStream(source, leaveOpen: true),
-			CompressionType.Brotli => new BrotliStream(source, CompressionMode.Decompress, leaveOpen: true),
+			CompressionType.Brotli => new BrotliStream(source, CompressionMode.Decompress, true),
 			_ => throw new ArgumentOutOfRangeException(nameof(type))
 		};
 

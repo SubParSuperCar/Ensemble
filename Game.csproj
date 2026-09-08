@@ -124,10 +124,12 @@
     <Compile Remove="AutoloadGenerator/**"/>
     <Compile Remove="Core/**"/>
     <Compile Remove="Estragonia/**"/>
+    <Compile Remove="Tests/**"/>
 
     <EmbeddedResource Remove="AutoloadGenerator/**"/>
     <EmbeddedResource Remove="Core/**"/>
     <EmbeddedResource Remove="Estragonia/**"/>
+    <EmbeddedResource Remove="Tests/**"/>
   </ItemGroup>
 
   <Target Name="GenerateBuildInfo" BeforeTargets="BeforeCompile">

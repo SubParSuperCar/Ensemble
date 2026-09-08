@@ -5,16 +5,17 @@ using Root.Scripts.Assets;
 using Root.Scripts.Plots;
 using Serilog;
 
-namespace Root.Tooling;
+namespace Root.Tooling.Tools;
 
-// TODO: Add raycast filters & owner-only "Clear All" UI button
+// TODO: Owner-only "Clear All" UI button
 public partial class DestructTool : ToolBase
 {
 	private const float RayLength = 1000;
+	private const uint SelectableLayers = 1;
 
 	private static readonly StringName TriggerAction = "tool_trigger";
 
-	private readonly AxialHighlight _highlight = new();
+	private readonly SolidHighlight _highlight = new() { Tint = Colors.Red };
 	private AssetHandle? _selected;
 
 	protected override StringName ToggleAction => "tool_destruct_toggle";
@@ -94,8 +95,9 @@ public partial class DestructTool : ToolBase
 		var rayOrigin = camera.ProjectRayOrigin(mousePosition);
 		var rayEnd = rayOrigin + camera.ProjectRayNormal(mousePosition) * RayLength;
 
-		var query = PhysicsRayQueryParameters3D.Create(rayOrigin, rayEnd);
+		var query = PhysicsRayQueryParameters3D.Create(rayOrigin, rayEnd, SelectableLayers);
 		query.CollideWithBodies = true;
+		query.CollideWithAreas = false;
 
 		var result = viewport.GetWorld3D().DirectSpaceState.IntersectRay(query);
 		return result.Count > 0 ? result["collider"].As<Node3D>() : null;

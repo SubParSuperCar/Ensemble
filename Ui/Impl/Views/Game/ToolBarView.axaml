@@ -11,12 +11,7 @@
         HorizontalAlignment="Center"
         Grid.IsSharedSizeScope="True">
 
-        <Grid
-            ColumnSpacing="4"
-            Margin="0,0,0,4"
-            HorizontalAlignment="Center"
-            IsVisible="{Binding IsClearAllVisible}">
-
+        <Grid ColumnSpacing="4" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ToolPlace" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="ToolDelete" />
@@ -28,6 +23,8 @@
                 Content="Clear All (2x)"
                 HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Center"
+                Margin="0,0,0,4"
+                IsVisible="{Binding IsClearAllVisible}"
                 IsEnabled="{Binding IsClearAllEnabled}"
                 DoubleTapped="OnClearAllDoubleTapped"
                 ToolTip.Tip="Removes every block from your plot. (Double-click)" />

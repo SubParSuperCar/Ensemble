@@ -35,7 +35,7 @@ internal static class SaveEnvelope
 	public const int TagSize = 16;
 	public const int ChecksumSize = 32;
 
-	private const byte Version = 2;
+	private const byte Version = 0;
 	private const int PrefixSize = 8;
 	private const int KdfBlockSize = 11;
 

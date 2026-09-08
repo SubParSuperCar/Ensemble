@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CoreRoot.Api.Assets;
 
-namespace Root.Saving;
+namespace Root.Saving.SerDes;
 
 internal sealed class CoreVariantJsonConverter : JsonConverter<CoreVariant>
 {

@@ -2,7 +2,7 @@ using CoreRoot.Api.Assets;
 
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
-namespace Root.Saving;
+namespace Root.Saving.SerDes;
 
 internal static class CoreVariantSerializer
 {

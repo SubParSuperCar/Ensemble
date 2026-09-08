@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Konscious.Security.Cryptography;
 
-namespace Root.Saving;
+namespace Root.Saving.Pipeline;
 
 internal static class SaveCrypto
 {

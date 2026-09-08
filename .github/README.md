@@ -43,6 +43,13 @@ Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol f
 
 ---
 
+## Roadmap
+
+Planned systems and their status are tracked in [**ROADMAP.md**](./ROADMAP.md). It is a working checklist, not a
+commitment.
+
+---
+
 ## Naming
 
 <details open>

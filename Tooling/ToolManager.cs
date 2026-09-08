@@ -1,5 +1,6 @@
 using Godot;
 using Root.Autoloading;
+using Root.Tooling.Tools;
 using Serilog;
 
 namespace Root.Tooling;

@@ -18,6 +18,7 @@
     <File Path=".github/LICENSE-ASSETS.txt"/>
     <File Path=".github/LICENSE-CODE.txt"/>
     <File Path=".github/README.md"/>
+    <File Path=".github/ROADMAP.md"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Workflows/">
     <File Path=".github/workflows/bin.yml"/>
@@ -36,4 +37,5 @@
   <Project Path="AutoloadGenerator/AutoloadGenerator.csproj"/>
   <Project Path="Core/Core.csproj"/>
   <Project Path="Game.csproj"/>
+  <Project Path="Tests/Tests.csproj"/>
 </Solution>

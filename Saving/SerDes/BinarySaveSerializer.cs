@@ -3,7 +3,7 @@ using CoreRoot.Api.Assets;
 using Quaternion = System.Numerics.Quaternion;
 using Vector3 = System.Numerics.Vector3;
 
-namespace Root.Saving;
+namespace Root.Saving.SerDes;
 
 public sealed class BinarySaveSerializer : ISaveSerializer
 {

@@ -1,12 +1,19 @@
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
-namespace Root.Saving;
+namespace Root.Saving.Pipeline;
 
 internal enum KdfFunction : byte
 {
 	None,
 	ARGON2_ID
+}
+
+[Flags]
+internal enum SaveFlags : byte
+{
+	None = 0,
+	Checksum = 1 << 0
 }
 
 [StructLayout(LayoutKind.Auto)]
@@ -26,9 +33,10 @@ internal static class SaveEnvelope
 {
 	public const int NonceSize = 12;
 	public const int TagSize = 16;
+	public const int ChecksumSize = 32;
 
-	private const byte Version = 1;
-	private const int PrefixSize = 7;
+	private const byte Version = 2;
+	private const int PrefixSize = 8;
 	private const int KdfBlockSize = 11;
 
 	private static ReadOnlySpan<byte> Magic => "ENSV"u8;
@@ -37,25 +45,41 @@ internal static class SaveEnvelope
 		Stream stream,
 		CompressionType compression,
 		EncryptionType encryption,
+		SaveFlags flags,
+		ReadOnlySpan<byte> checksum,
 		KdfParameters kdf,
 		ReadOnlySpan<byte> salt)
 	{
 		var encrypted = encryption is not EncryptionType.None;
-		var header = new byte[encrypted ? PrefixSize + KdfBlockSize + salt.Length : PrefixSize];
+		var hasChecksum = flags.HasFlag(SaveFlags.Checksum);
+
+		var header = new byte[
+			PrefixSize
+			+ (hasChecksum ? ChecksumSize : 0)
+			+ (encrypted ? KdfBlockSize + salt.Length : 0)];
 
 		Magic.CopyTo(header);
 		header[4] = Version;
 		header[5] = (byte)compression;
 		header[6] = (byte)encryption;
+		header[7] = (byte)flags;
+
+		var offset = PrefixSize;
+
+		if (hasChecksum)
+		{
+			checksum.CopyTo(header.AsSpan(offset));
+			offset += ChecksumSize;
+		}
 
 		if (encrypted)
 		{
-			header[7] = (byte)kdf.Function;
-			BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(8), (uint)kdf.MemoryKiB);
-			BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(12), (uint)kdf.Iterations);
-			header[16] = (byte)kdf.DegreeOfParallelism;
-			header[17] = checked((byte)salt.Length);
-			salt.CopyTo(header.AsSpan(18));
+			header[offset] = (byte)kdf.Function;
+			BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(offset + 1), (uint)kdf.MemoryKiB);
+			BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(offset + 5), (uint)kdf.Iterations);
+			header[offset + 9] = (byte)kdf.DegreeOfParallelism;
+			header[offset + 10] = checked((byte)salt.Length);
+			salt.CopyTo(header.AsSpan(offset + 11));
 		}
 
 		stream.Write(header);
@@ -75,15 +99,30 @@ internal static class SaveEnvelope
 
 		var compression = (CompressionType)prefix[5];
 		var encryption = (EncryptionType)prefix[6];
+		var flags = (SaveFlags)prefix[7];
+
+		using var authenticated = new MemoryStream();
+		authenticated.Write(prefix);
+
+		byte[]? checksum = null;
+
+		if (flags.HasFlag(SaveFlags.Checksum))
+		{
+			checksum = new byte[ChecksumSize];
+			stream.ReadExactly(checksum);
+			authenticated.Write(checksum);
+		}
 
 		if (encryption is EncryptionType.None)
-			return new Header(compression, encryption, KdfParameters.None, [], [.. prefix]);
+			return new Header(compression, encryption, flags, checksum, KdfParameters.None, [],
+				authenticated.ToArray());
 
 		if (encryption is not EncryptionType.Aes256Gcm)
 			throw new InvalidDataException($"Unsupported encryption type: {prefix[6]}.");
 
 		Span<byte> kdf = stackalloc byte[KdfBlockSize];
 		stream.ReadExactly(kdf);
+		authenticated.Write(kdf);
 
 		var parameters = new KdfParameters(
 			(KdfFunction)kdf[0],
@@ -93,18 +132,16 @@ internal static class SaveEnvelope
 
 		var salt = new byte[kdf[10]];
 		stream.ReadExactly(salt);
+		authenticated.Write(salt);
 
-		var bytes = new byte[PrefixSize + KdfBlockSize + salt.Length];
-		prefix.CopyTo(bytes);
-		kdf.CopyTo(bytes.AsSpan(PrefixSize));
-		salt.CopyTo(bytes.AsSpan(PrefixSize + KdfBlockSize));
-
-		return new Header(compression, encryption, parameters, salt, bytes);
+		return new Header(compression, encryption, flags, checksum, parameters, salt, authenticated.ToArray());
 	}
 
 	public readonly record struct Header(
 		CompressionType Compression,
 		EncryptionType Encryption,
+		SaveFlags Flags,
+		byte[]? Checksum,
 		KdfParameters Kdf,
 		byte[] Salt,
 		byte[] Bytes);

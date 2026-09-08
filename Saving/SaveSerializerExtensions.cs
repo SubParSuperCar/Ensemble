@@ -1,3 +1,5 @@
+using Root.Saving.Pipeline;
+
 namespace Root.Saving;
 
 public static class SaveSerializerExtensions

@@ -110,6 +110,10 @@ Ensemble's console, with the output log on the left and the code editor on the r
 Ensemble's blocks at night, generated using the `add_rand_insts` Lua function:
 ![Ensemble's Blocks at Night](https://github.com/user-attachments/assets/74e1df16-1ce3-4953-bf53-18506cb97394)
 
+Ensemble's test map:
+![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
+
+
 </details>
 
 ---

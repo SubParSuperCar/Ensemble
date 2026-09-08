@@ -9,14 +9,8 @@
     x:DataType="vm:PlotSelectorViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <Border
-        Background="{DynamicResource TranslucentBackgroundBrush}"
-        Padding="2">
-
-        <Grid
-            RowDefinitions="Auto,*,2,Auto"
-            ToolTip.Tip="Plot Selector">
-
+    <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
+        <Grid RowDefinitions="Auto,*,2,Auto" ToolTip.Tip="Plot Selector">
             <Grid ColumnDefinitions="Auto,32,*,Auto">
                 <TextBlock Text="ID&#x0a; &#x2193;" />
                 <TextBlock Grid.Column="2" Text="Owner Name&#x0a; &#x2198;" HorizontalAlignment="Left" />

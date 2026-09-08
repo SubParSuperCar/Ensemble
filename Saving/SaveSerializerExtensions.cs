@@ -1,62 +1,19 @@
-using ZstdSharp;
-
 namespace Root.Saving;
-
-public enum CompressionType : byte
-{
-	None,
-	ZStandard
-}
 
 public static class SaveSerializerExtensions
 {
 	extension(ISaveSerializer serializer)
 	{
-		public void Save(
-			string path,
-			CreationSaveData data,
-			CompressionType compressionType = CompressionType.None,
-			int? compressionLevel = null)
+		public void Save(string path, CreationSaveData data, SaveOptions? options = null)
 		{
 			using var file = File.Create(path);
-
-			switch (compressionType)
-			{
-				case CompressionType.None:
-					serializer.Serialize(file, data);
-					break;
-
-				case CompressionType.ZStandard:
-					{
-						using var stream = compressionLevel is { } level
-							? new CompressionStream(file, level)
-							: new CompressionStream(file);
-
-						serializer.Serialize(stream, data);
-						break;
-					}
-
-				default:
-					throw new ArgumentOutOfRangeException(nameof(compressionType));
-			}
+			SaveCodec.Write(serializer, file, data, options ?? SaveOptions.Default);
 		}
 
-		public CreationSaveData Load(string path, CompressionType compressionType = CompressionType.None)
+		public CreationSaveData Load(string path, LoadOptions? options = null)
 		{
 			using var file = File.OpenRead(path);
-
-			return compressionType switch
-			{
-				CompressionType.None => serializer.Deserialize(file),
-				CompressionType.ZStandard => DeserializeCompressed(file),
-				_ => throw new ArgumentOutOfRangeException(nameof(compressionType))
-			};
-
-			CreationSaveData DeserializeCompressed(Stream stream)
-			{
-				using var decompressor = new DecompressionStream(stream);
-				return serializer.Deserialize(decompressor);
-			}
+			return SaveCodec.Read(serializer, file, options ?? LoadOptions.Default);
 		}
 	}
 }

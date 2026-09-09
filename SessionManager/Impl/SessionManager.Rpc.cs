@@ -39,7 +39,7 @@ public partial class SessionManager
 		}
 	}
 
-	private static void OnPeerDisconnectedDisposeRateLimiter(long peerId)
+	private static void DisposeRateLimiter(long peerId)
 	{
 		if (RateLimitersByPeerId.TryRemove((int)peerId, out var limiter))
 			limiter.Dispose();

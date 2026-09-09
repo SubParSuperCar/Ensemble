@@ -61,7 +61,7 @@ internal sealed class HoleyArray<TValue> where TValue : class
 	public void Remove(int index)
 	{
 		if (!TryGet(index, out var item))
-			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
+			throw new KeyNotFoundException(string.Create(CultureInfo.InvariantCulture,
 				$"Item at index {index} not found."));
 
 		_items[index] = null;

@@ -9,14 +9,14 @@ public static class Formatter
 	public static string FormatBytes(ulong bytes)
 	{
 		double value = bytes;
-		var unit = 0;
+		var unitIndex = 0;
 
-		while (value >= 1024 && unit < Units.Length - 1)
+		while (value >= 1024 && unitIndex < Units.Length - 1)
 		{
 			value /= 1024;
-			unit++;
+			unitIndex++;
 		}
 
-		return $"{value.ToString(unit is 0 ? "F0" : "F3", CultureInfo.InvariantCulture)} {Units[unit]}";
+		return $"{value.ToString(unitIndex is 0 ? "F0" : "F3", CultureInfo.InvariantCulture)} {Units[unitIndex]}";
 	}
 }

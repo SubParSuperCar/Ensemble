@@ -63,7 +63,7 @@ public partial class Ui : AvaloniaControl
 			WeakReferenceMessenger.Default.Register<SetUiRenderScaleMessage>(this,
 				(_, message) => RenderScaling = message.Value);
 
-			if (Main.AutoloadsLoaded)
+			if (Main.AreAutoloadsLoaded)
 				SwapToRealUi();
 			else
 				Main.AutoloadsReady += OnAutoloadsReady;
@@ -112,7 +112,7 @@ public partial class Ui : AvaloniaControl
 
 		return diagonal switch
 		{
-			< 2570.06d => 1,
+			< 2570.06d => 1f,
 			< 3671.51d => 1.25f,
 			_ => 1.5f
 		};

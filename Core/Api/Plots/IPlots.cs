@@ -15,7 +15,7 @@ public interface IPlots
 		int? maxOccupantCount = null,
 		int? maxInstanceCount = null);
 
-	void SetPlot(Guid playerId, int? plotId = null, bool resolveOwnerIfNullOrRelinquishing = false);
+	void SetPlot(Guid playerId, int? plotId = null, bool shouldResolveOwnerIfNullOrRelinquishing = false);
 	bool TryGetOccupant(Guid playerId, [NotNullWhen(true)] out IOccupant? occupant);
 
 	void Lock();

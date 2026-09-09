@@ -9,12 +9,12 @@ namespace Root;
 
 public partial class Main : Node
 {
-	public static Main Instance { get; private set; } = null!;
+	public static Main? Instance { get; private set; }
 
 	public static bool IsHeadlessServer { get; } =
 		string.Equals(DisplayServer.GetName(), "headless", StringComparison.Ordinal);
 
-	public static bool AutoloadsLoaded { get; private set; }
+	public static bool AreAutoloadsLoaded { get; private set; }
 
 	private static AutoloadScope RuntimeScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
 
@@ -34,7 +34,7 @@ public partial class Main : Node
 		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
 
 		if (ReferenceEquals(Instance, this))
-			Instance = null!;
+			Instance = null;
 	}
 
 	public override void _Ready()
@@ -142,7 +142,7 @@ public partial class Main : Node
 			case AutoloadFailurePolicy.AskUser:
 				if (
 					!AskUser(
-						"Autoload Init Failed",
+						"Autoload Initialization Failed",
 						FormatFailureMessage(
 							$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
 							exception,
@@ -176,7 +176,7 @@ public partial class Main : Node
 
 		Log.Debug("Finished {Class} loading sequence. Emitting {Event}...", nameof(Main), nameof(AutoloadsReady));
 
-		AutoloadsLoaded = true;
+		AreAutoloadsLoaded = true;
 		AutoloadsReady?.Invoke();
 	}
 

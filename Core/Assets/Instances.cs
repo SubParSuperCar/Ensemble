@@ -74,7 +74,7 @@ public class Instances : IInstances
 	public void Remove(int instanceId)
 	{
 		if (!TryGet(instanceId, out var instance))
-			throw new InvalidOperationException(string.Create(
+			throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Instance with id {instanceId} not found."));
 

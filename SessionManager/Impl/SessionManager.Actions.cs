@@ -29,7 +29,11 @@ public partial class SessionManager
 			() => TryApplyAndBroadcast(actionId, payload, senderId, true));
 	}
 
-	private void TryApplyAndBroadcast(string actionId, Dictionary payload, int sourcePeerId, bool notifyRejection)
+	private void TryApplyAndBroadcast(
+		string actionId,
+		Dictionary payload,
+		int sourcePeerId,
+		bool shouldNotifyRejection)
 	{
 		var result = Actions.ValidateRaw(actionId, payload, sourcePeerId);
 
@@ -38,7 +42,7 @@ public partial class SessionManager
 			Log.Debug("Rejected action {ActionId} from peer {PeerId}: {Reason}",
 				actionId, sourcePeerId, result.Reason);
 
-			if (notifyRejection)
+			if (shouldNotifyRejection)
 				RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, result.Reason ?? string.Empty);
 
 			return;

@@ -23,9 +23,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 			static (context, _) =>
 				((INamedTypeSymbol)context.TargetSymbol, context.Attributes[0]));
 
-		context.RegisterSourceOutput(
-			autoloads.Collect(),
-			static (context, autoloads) => Generate(context, autoloads));
+		context.RegisterSourceOutput(autoloads.Collect(), Generate);
 	}
 
 	private static void Generate(

@@ -57,19 +57,19 @@ public partial class GdPlots : RefCounted
 	public void SetPlot(string playerId) => SetPlot(playerId, None);
 	public void SetPlot(string playerId, int plotId) => SetPlot(playerId, plotId, true);
 
-	public void SetPlot(string playerId, int plotId, bool resolveOwnerIfNullOrRelinquishing) =>
-		SetPlot(playerId, plotId, resolveOwnerIfNullOrRelinquishing, true);
+	public void SetPlot(string playerId, int plotId, bool shouldResolveOwnerIfNullOrRelinquishing) =>
+		SetPlot(playerId, plotId, shouldResolveOwnerIfNullOrRelinquishing, true);
 
 	public void SetPlot(
 		string playerId,
 		int plotId,
-		bool resolveOwnerIfNullOrRelinquishing,
-		bool despawnAndClearInstancesIfLastToLeave)
+		bool shouldResolveOwnerIfNullOrRelinquishing,
+		bool shouldDespawnAndClearInstancesIfLastToLeave)
 	{
 		if (!Guid.TryParse(playerId, out var guid))
 			return;
 
-		if (despawnAndClearInstancesIfLastToLeave)
+		if (shouldDespawnAndClearInstancesIfLastToLeave)
 		{
 			if (!TryGetOccupant(guid, out var occupant))
 				return;
@@ -84,7 +84,7 @@ public partial class GdPlots : RefCounted
 			}
 		}
 
-		_source.SetPlot(guid, plotId is None ? null : plotId, resolveOwnerIfNullOrRelinquishing);
+		_source.SetPlot(guid, plotId is None ? null : plotId, shouldResolveOwnerIfNullOrRelinquishing);
 	}
 
 	public GdOccupant? GetOccupant(string playerId) =>

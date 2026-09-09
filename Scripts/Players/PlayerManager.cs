@@ -36,7 +36,7 @@ public partial class PlayerManager : Node
 
 	public PlayerHandle GetHandle(string playerId) =>
 		GetHandleOrNull(playerId) ??
-		throw new InvalidOperationException($"Handle with player id {playerId} not found.");
+		throw new KeyNotFoundException($"Handle with player id {playerId} not found.");
 
 	private void OnPlayerAdded(GdPlayer player)
 	{

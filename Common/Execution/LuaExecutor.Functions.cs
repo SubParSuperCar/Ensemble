@@ -377,7 +377,6 @@ public static partial class LuaExecutor
 		var isVisible = context.GetArgument<bool>(0);
 		Log.Information("Setting Temporal Static shader visibility to: {IsVisible}", isVisible);
 
-		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		var temporalShader = Main.Instance?.GetNode<CanvasLayer>("Temporal Static");
 		temporalShader?.Visible = isVisible;
 

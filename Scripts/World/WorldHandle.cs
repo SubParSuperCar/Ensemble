@@ -36,15 +36,15 @@ public partial class WorldHandle : Node3D
 		}
 #endif
 
-		Log.Debug("{Players}:", nameof(GPlayers));
+		Log.Debug("{Member}:", nameof(GPlayers));
 		foreach (var player in GPlayers.GetAll())
 			Log.Debug("{$Player}", player.ToDict());
 
-		Log.Debug("{Assets}:", nameof(GAssets));
+		Log.Debug("{Member}:", nameof(GAssets));
 		foreach (var asset in GAssets.GetAll())
 			Log.Debug("{$Asset}", asset.ToDict());
 
-		Log.Debug("{Plots}:", nameof(GPlots));
+		Log.Debug("{Member}:", nameof(GPlots));
 		foreach (var plot in GPlots.GetAll())
 		{
 			var dict = plot.ToDict();

@@ -95,9 +95,9 @@ internal static class SaveCrypto
 	private static byte[] DeriveKey(SaveEnvelope.Header header, LoadOptions options) =>
 		header.Kdf.Function switch
 		{
-			KdfFunction.None => ValidateKey((options.Key ?? throw Missing("raw key")).Span),
-			KdfFunction.ARGON2_ID => DeriveArgon2IdKey(
-				Encoding.UTF8.GetBytes(options.Password ?? throw Missing("password")),
+			KdfFunction.None => ValidateKey((options.Key ?? throw Missing("raw key", nameof(options))).Span),
+			KdfFunction.Argon2Id => DeriveArgon2IdKey(
+				Encoding.UTF8.GetBytes(options.Password ?? throw Missing("password", nameof(options))),
 				header.Salt,
 				header.Kdf.MemoryKiB,
 				header.Kdf.Iterations,
@@ -129,6 +129,6 @@ internal static class SaveCrypto
 			? key.ToArray()
 			: throw new ArgumentException($"Encryption key must be exactly {KeySize} bytes.", nameof(key));
 
-	private static InvalidOperationException Missing(string material) =>
-		new($"This save file is encrypted; a {material} is required to load it.");
+	private static ArgumentException Missing(string material, string paramName) =>
+		new($"This save file is encrypted; a {material} is required to load it.", paramName);
 }

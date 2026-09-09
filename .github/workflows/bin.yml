@@ -33,7 +33,7 @@ jobs:
           [ "${GITHUB_REF_TYPE}" = tag ] || id="$(git rev-parse --short HEAD)"
           echo "ID=${id}" >> "${GITHUB_ENV}"
 
-      - name: Setup .NET
+      - name: Set up .NET
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
@@ -107,7 +107,7 @@ jobs:
           $id = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME } else { git rev-parse --short HEAD }
           "ID=$id" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
-      - name: Setup .NET
+      - name: Set up .NET
         uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json

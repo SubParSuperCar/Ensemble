@@ -70,15 +70,15 @@ public class Plots : IPlots
 		return plot;
 	}
 
-	public void SetPlot(Guid playerId, int? plotId = null, bool resolveOwnerIfNullOrRelinquishing = false)
+	public void SetPlot(Guid playerId, int? plotId = null, bool shouldResolveOwnerIfNullOrRelinquishing = false)
 	{
 		if (!Occupants.TryGet(playerId, out var occupant))
-			throw new InvalidOperationException($"Occupant with player id {playerId} not found.");
+			throw new KeyNotFoundException($"Occupant with player id {playerId} not found.");
 
 		IPlot? plot = null;
 
 		if (plotId is { } id && !_plotsById.TryGetValue(id, out plot))
-			throw new InvalidOperationException(string.Create(
+			throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Plot with id {plotId} not found."));
 
@@ -87,10 +87,10 @@ public class Plots : IPlots
 			if (ReferenceEquals(plot, current))
 				return;
 
-			current.Occupants.Remove(occupant, resolveOwnerIfNullOrRelinquishing, plot is not null);
+			current.Occupants.Remove(occupant, shouldResolveOwnerIfNullOrRelinquishing, plot is not null);
 		}
 
-		(plot as Plot)?.Occupants.Add(occupant, resolveOwnerIfNullOrRelinquishing);
+		(plot as Plot)?.Occupants.Add(occupant, shouldResolveOwnerIfNullOrRelinquishing);
 	}
 
 	public bool TryGetOccupant(Guid playerId, [NotNullWhen(true)] out IOccupant? occupant)

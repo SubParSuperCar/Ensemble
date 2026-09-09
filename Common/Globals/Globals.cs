@@ -17,13 +17,12 @@ public static class Globals
 		GdCore.GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null.");
 
 	public static GdPlayers GPlayers =>
-		GCore.Players ?? throw new InvalidOperationException($"{nameof(GdCore.Players)} is null.");
+		GCore.Players ?? throw new InvalidOperationException($"{nameof(GdPlayers)} is null.");
 
 	public static GdAssets GAssets =>
-		GCore.Assets ?? throw new InvalidOperationException($"{nameof(GdCore.Assets)} is null.");
+		GCore.Assets ?? throw new InvalidOperationException($"{nameof(GdAssets)} is null.");
 
-	public static GdPlots GPlots =>
-		GCore.Plots ?? throw new InvalidOperationException($"{nameof(GdCore.Plots)} is null.");
+	public static GdPlots GPlots => GCore.Plots ?? throw new InvalidOperationException($"{nameof(GdPlots)} is null.");
 
 	/// <inheritdoc cref="Root.SessionManager.SessionManager" />
 	public static SessionManager.SessionManager GSessionManager =>

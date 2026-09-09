@@ -52,21 +52,22 @@ public partial class ToolManager : Node, IAutoload
 			return;
 
 		if (UseMutex)
-			DisableAllExcept(tool);
+			DisableAll(tool);
 
 		tool.EnableInternal();
 	}
 
 	private TTool CreateTool<TTool>() where TTool : ToolBase, new()
 	{
-		var tool = new TTool();
-		tool.Name = typeof(TTool).Name;
+		var name = typeof(TTool).Name;
+		var tool = new TTool { Name = name };
+
 		tool.Initialize(new ToolControl(this, tool));
 
 		_tools.Add(tool);
 		AddChild(tool);
 
-		Log.Debug("Created tool: {Tool}", tool.GetType().Name);
+		Log.Debug("Created tool: {Tool}", name);
 
 		return tool;
 	}
@@ -77,13 +78,7 @@ public partial class ToolManager : Node, IAutoload
 			DisableAll();
 	}
 
-	private void DisableAll()
-	{
-		foreach (var tool in _tools)
-			tool.DisableInternal();
-	}
-
-	private void DisableAllExcept(ToolBase exception)
+	private void DisableAll(ToolBase? exception = null)
 	{
 		foreach (var tool in _tools.Where(tool => !ReferenceEquals(tool, exception)))
 			tool.DisableInternal();

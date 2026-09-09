@@ -243,7 +243,7 @@ public partial class SessionManager : Node
 	{
 		Log.Debug("Peer disconnected: {PeerId}", peerId);
 
-		OnPeerDisconnectedDisposeRateLimiter(peerId);
+		DisposeRateLimiter(peerId);
 
 		var id = (int)peerId;
 		if (IsServer)

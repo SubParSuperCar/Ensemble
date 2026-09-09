@@ -61,8 +61,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 		var formatVersion = reader.ReadByte();
 		if (formatVersion is not FormatVersion)
-			throw new InvalidDataException(
-				$"Unsupported save format version: {formatVersion}");
+			throw new InvalidDataException($"Unsupported save format version: {formatVersion}.");
 
 		var save = new CreationSaveData
 		{

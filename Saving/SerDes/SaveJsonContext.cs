@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 
 namespace Root.Saving.SerDes;
 
-[JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(CreationSaveData))]
 internal partial class SaveJsonContext : JsonSerializerContext
 {

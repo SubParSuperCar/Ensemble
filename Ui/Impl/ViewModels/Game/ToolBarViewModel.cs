@@ -102,9 +102,9 @@ public partial class ToolBarViewModel : ViewModelBase
 
 	private void UpdateClearAll()
 	{
-		var visible = IsDestructToolEnabled && IsPlotOwner is true && IsLocalPlotSpawned is not true;
+		var isVisible = IsDestructToolEnabled && IsPlotOwner is true && IsLocalPlotSpawned is not true;
 
-		IsClearAllVisible = visible;
-		IsClearAllEnabled = visible && _instances is { Count: > 0 };
+		IsClearAllVisible = isVisible;
+		IsClearAllEnabled = isVisible && _instances is { Count: > 0 };
 	}
 }

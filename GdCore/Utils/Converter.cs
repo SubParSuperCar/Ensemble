@@ -49,8 +49,7 @@ public static class Converter
 	public static IReadOnlyDictionary<string, CoreVariant> FromGodotProperties(Dictionary properties)
 	{
 		var result = new System.Collections.Generic.Dictionary<string, CoreVariant>(
-			properties.Count,
-			StringComparer.OrdinalIgnoreCase);
+			properties.Count, StringComparer.OrdinalIgnoreCase);
 
 		foreach (var (key, value) in properties)
 			result[key.AsString()] = value.FromGodot();

@@ -68,7 +68,7 @@ public partial class Logger : Node, IAutoload
 
 		try
 		{
-			MakeUserAppSettingsIfMissing();
+			CreateUserAppSettingsIfMissing();
 			bytes = ReadAllBytesOrThrow(UserAppSettingsPath);
 		}
 		catch
@@ -80,12 +80,14 @@ public partial class Logger : Node, IAutoload
 
 		configBuilder.AddJsonStream(new MemoryStream(bytes));
 		configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
-		{ ["Serilog:WriteTo:0:Args:path"] = Path.Combine(logDir, LogFileNameTemplate) });
+		{
+			["Serilog:WriteTo:0:Args:path"] = Path.Combine(logDir, LogFileNameTemplate)
+		});
 
 		return configBuilder.Build();
 	}
 
-	private static void MakeUserAppSettingsIfMissing()
+	private static void CreateUserAppSettingsIfMissing()
 	{
 		if (FileAccess.FileExists(UserAppSettingsPath))
 			return;

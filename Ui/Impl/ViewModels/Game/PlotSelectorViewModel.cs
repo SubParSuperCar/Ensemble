@@ -72,7 +72,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			plot.OwnerName = owner is null ? "<None>" : owner.Player.Name;
 		}
 
-		void OnOccupantChanged(GdOccupant occupant)
+		void OnOccupantChanged(GdOccupant _)
 		{
 			UpdateOccupancy();
 		}

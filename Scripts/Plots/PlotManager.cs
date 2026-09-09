@@ -43,7 +43,7 @@ public partial class PlotManager : Node
 	public PlotHandle? GetHandleOrNull(int plotId) => Handles.TryGetValue(plotId, out var handle) ? handle : null;
 
 	public PlotHandle GetHandle(int plotId) =>
-		GetHandleOrNull(plotId) ?? throw new InvalidOperationException(string.Create(
+		GetHandleOrNull(plotId) ?? throw new KeyNotFoundException(string.Create(
 			CultureInfo.InvariantCulture,
 			$"Handle with plot id {plotId} not found."));
 }

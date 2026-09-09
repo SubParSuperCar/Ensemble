@@ -9,7 +9,7 @@ namespace Root.Ui.Impl.Services;
 public partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
 {
 	private readonly Stack<Type> _history = [];
-	private bool _excludeFromHistory;
+	private bool _shouldExcludeFromHistory;
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
@@ -19,16 +19,16 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 	public void GoTo() => Current = null;
 
-	public void GoTo<TViewModel>(bool excludeFromHistory = false) where TViewModel : ViewModelBase
+	public void GoTo<TViewModel>(bool shouldExcludeFromHistory = false) where TViewModel : ViewModelBase
 	{
 		var type = Current?.GetType();
 		if (type == typeof(TViewModel))
 			return;
 
-		if (type is not null && !_excludeFromHistory)
+		if (type is not null && !_shouldExcludeFromHistory)
 			_history.Push(type);
 
-		_excludeFromHistory = excludeFromHistory;
+		_shouldExcludeFromHistory = shouldExcludeFromHistory;
 
 		Current = services.GetRequiredService<TViewModel>();
 		OnPropertyChanged(nameof(CanGoBack));
@@ -39,7 +39,7 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 		if (!CanGoBack)
 			return;
 
-		_excludeFromHistory = false;
+		_shouldExcludeFromHistory = false;
 
 		var type = _history.Pop();
 

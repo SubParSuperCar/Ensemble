@@ -146,7 +146,7 @@ public partial class ConstructTool : ToolBase
 		{
 			LocalPlot?.Instances.Add(AssetId, _gridPosition, _rotation);
 
-			Log.Verbose("Added: {AssetId} (Position={Position}, Rotation={Rotation}",
+			Log.Verbose("Added: {AssetId} (Position={Position}, Rotation={Rotation})",
 				AssetId, _gridPosition, _rotation);
 		}
 		else if (_preview is { Visible: true })
@@ -204,11 +204,11 @@ public partial class ConstructTool : ToolBase
 			return PlacementState.Overlapping;
 
 		var counts = instances.GetCount(AssetId);
-		var placed = counts[0];
-		var limit = counts[1];
+		var placedCount = counts[0];
+		var maxCount = counts[1];
 
 		if (
-			(limit is not Unlimited && placed >= limit) ||
+			(maxCount is not Unlimited && placedCount >= maxCount) ||
 			(instances.MaxCount is not Unlimited && instances.Count >= instances.MaxCount))
 			return PlacementState.LimitReached;
 
@@ -234,8 +234,8 @@ public partial class ConstructTool : ToolBase
 		_previewShape = _preview.GetNode<CollisionShape3D>("Collider").Shape;
 		_previewBounds = _preview.BoundaryAabb;
 
-		_axialHighlight = new AxialHighlight { Aabb = _previewBounds };
-		_solidHighlight = new SolidHighlight { Aabb = _previewBounds, Tint = Colors.Red };
+		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = _previewBounds };
+		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = _previewBounds, Tint = Colors.Red };
 		_preview.AddChild(_axialHighlight);
 		_preview.AddChild(_solidHighlight);
 	}

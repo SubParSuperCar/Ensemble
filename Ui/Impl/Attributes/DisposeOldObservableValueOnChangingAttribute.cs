@@ -8,7 +8,7 @@ public sealed class DisposeOldObservableValueOnChangingAttribute : OnMethodBound
 {
 	public override void OnEntry(MethodExecutionArgs arg)
 	{
-		var propertyName = arg.Method.Name.Replace("set_", "", StringComparison.Ordinal);
+		var propertyName = arg.Method.Name.Replace("set_", string.Empty, StringComparison.Ordinal);
 #pragma warning disable IL2075
 		var property = arg.Instance.GetType().GetProperty(propertyName);
 #pragma warning restore IL2075

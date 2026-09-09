@@ -6,7 +6,7 @@ namespace Root.Saving.Pipeline;
 internal enum KdfFunction : byte
 {
 	None,
-	ARGON2_ID
+	Argon2Id
 }
 
 [Flags]
@@ -26,7 +26,7 @@ internal readonly record struct KdfParameters(
 	public static KdfParameters None => new(KdfFunction.None, 0, 0, 0);
 
 	public static KdfParameters Argon2Id(int memoryKiB, int iterations, int degreeOfParallelism) =>
-		new(KdfFunction.ARGON2_ID, memoryKiB, iterations, degreeOfParallelism);
+		new(KdfFunction.Argon2Id, memoryKiB, iterations, degreeOfParallelism);
 }
 
 internal static class SaveEnvelope
@@ -114,8 +114,8 @@ internal static class SaveEnvelope
 		}
 
 		if (encryption is EncryptionType.None)
-			return new Header(compression, encryption, flags, checksum, KdfParameters.None, [],
-				authenticated.ToArray());
+			return new Header(
+				compression, encryption, flags, checksum, KdfParameters.None, [], authenticated.ToArray());
 
 		if (encryption is not EncryptionType.Aes256Gcm)
 			throw new InvalidDataException($"Unsupported encryption type: {prefix[6]}.");

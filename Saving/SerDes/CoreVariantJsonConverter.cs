@@ -17,7 +17,7 @@ internal sealed class CoreVariantJsonConverter : JsonConverter<CoreVariant>
 			JsonTokenType.Number when reader.TryGetInt64(out var integer) => new CoreVariant(integer),
 			JsonTokenType.Number => new CoreVariant(reader.GetDouble()),
 			JsonTokenType.String => new CoreVariant(reader.GetString()),
-			_ => throw new JsonException($"Unsupported JSON token: {reader.TokenType}")
+			_ => throw new JsonException($"Unsupported JSON token: {reader.TokenType}.")
 		};
 
 	public override void Write(Utf8JsonWriter writer, CoreVariant value, JsonSerializerOptions options)
@@ -45,7 +45,7 @@ internal sealed class CoreVariantJsonConverter : JsonConverter<CoreVariant>
 				break;
 
 			default:
-				throw new JsonException($"Unsupported variant type: {value.Type}");
+				throw new JsonException($"Unsupported variant type: {value.Type}.");
 		}
 	}
 

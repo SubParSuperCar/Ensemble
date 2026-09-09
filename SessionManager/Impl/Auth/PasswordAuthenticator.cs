@@ -66,7 +66,7 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 		if (!_pendingNoncesByPeerId.Remove(peerId, out var nonce))
 			return;
 
-		var expected = Hmac(nonce);
+		var expected = ComputeHmac(nonce);
 
 		if (data.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(data, expected))
 		{
@@ -81,7 +81,7 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 
 	private void HandleClientMessage(long peerId, byte[] data)
 	{
-		var response = Hmac(data);
+		var response = ComputeHmac(data);
 
 		_multiplayer!.SendAuth((int)peerId, response);
 		_multiplayer.CompleteAuth((int)peerId);
@@ -93,5 +93,5 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 		AuthenticationFailed?.Invoke(peerId, "Authentication timed out or was rejected.");
 	}
 
-	private byte[] Hmac(byte[] nonce) => HMACSHA256.HashData(Encoding.UTF8.GetBytes(password), nonce);
+	private byte[] ComputeHmac(byte[] nonce) => HMACSHA256.HashData(Encoding.UTF8.GetBytes(password), nonce);
 }

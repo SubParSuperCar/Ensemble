@@ -39,10 +39,7 @@ public static class SaveConverter
 	{
 		foreach (var instance in data.Instances)
 		{
-			var created = instances.Add(
-				instance.AssetId,
-				instance.Position,
-				instance.Rotation);
+			var created = instances.Add(instance.AssetId, instance.Position, instance.Rotation);
 
 			if (instance.Properties is null)
 				continue;

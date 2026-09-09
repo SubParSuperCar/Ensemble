@@ -47,14 +47,14 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 			WebView.Refresh();
 	}
 
-	private void UrlBox_OnKeyDown(object? sender, KeyEventArgs e)
+	private void OnUrlBoxKeyDown(object? sender, KeyEventArgs e)
 	{
 		if (e.Key is Key.Enter)
 			_urlBoxBinding?.UpdateSource();
 	}
 
-	private void WebView_GotFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Acquire(this);
-	private void WebView_LostFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Release(this);
+	private void OnWebViewGotFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Acquire(this);
+	private void OnWebViewLostFocus(object? sender, FocusChangedEventArgs e) => InputSink.Sink.Release(this);
 
 	private void OnNavigationStateChanged()
 	{
@@ -65,7 +65,7 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 		GoForwardCommand.NotifyCanExecuteChanged();
 	}
 
-	private void WebView_OnNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
+	private void OnWebViewNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
 	{
 		OnNavigationStateChanged();
 
@@ -73,7 +73,7 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 		LoadingIndicator.SpeedRatio = 2;
 	}
 
-	private void WebView_OnNavigationCompleted(object? sender, WebViewNavigationCompletedEventArgs e)
+	private void OnWebViewNavigationCompleted(object? sender, WebViewNavigationCompletedEventArgs e)
 	{
 		OnNavigationStateChanged();
 
@@ -84,7 +84,7 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 		LoadingIndicator.IsActive = true;
 	}
 
-	private void WebView_OnEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e)
+	private void OnWebViewEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e)
 	{
 		e.EnableDevTools = true;
 
@@ -104,7 +104,7 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 		}
 	}
 
-	private void WebView_OnAdapterCreated(object? sender, WebViewAdapterEventArgs e)
+	private void OnWebViewAdapterCreated(object? sender, WebViewAdapterEventArgs e)
 	{
 		if (WebView.AdapterInfo is not { } info)
 			return;
@@ -116,6 +116,6 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 			info.Version);
 	}
 
-	private void WebView_OnAdapterDestroyed(object? sender, WebViewAdapterEventArgs e) =>
+	private void OnWebViewAdapterDestroyed(object? sender, WebViewAdapterEventArgs e) =>
 		Log.Debug("WebView adapter destroyed.");
 }

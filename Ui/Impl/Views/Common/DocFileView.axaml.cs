@@ -108,9 +108,7 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 				Log.Debug("Loaded {FileName} in {ElapsedMs:F3} ms.", file.Name, stopwatch.Elapsed.TotalMilliseconds);
 			});
 		}
-		catch (OperationCanceledException)
-		{
-		}
+		catch (OperationCanceledException) { }
 		catch (HttpRequestException exception)
 		{
 			if (!ReferenceEquals(_cts, cts))

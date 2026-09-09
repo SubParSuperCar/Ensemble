@@ -21,6 +21,7 @@ internal enum PlacementState : byte
 	LimitReached
 }
 
+// TODO: W.I.P.
 public partial class ConstructTool : ToolBase
 {
 	private const float OverlapProbeInset = 0.02f;
@@ -28,11 +29,10 @@ public partial class ConstructTool : ToolBase
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
 	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
-	private AxialHighlight? _axialHighlight;
 
+	private AxialHighlight? _axialHighlight;
 	private bool _canPlace;
 	private Vector3 _gridPosition;
-
 	private AssetHandle? _preview;
 	private Aabb _previewBounds;
 	private Shape3D? _previewShape;
@@ -287,10 +287,10 @@ public partial class ConstructTool : ToolBase
 		var max = position + extents;
 
 		return min.X >= bounds.Position.X - epsilon &&
-			   min.Y >= bounds.Position.Y - epsilon &&
-			   min.Z >= bounds.Position.Z - epsilon &&
-			   max.X <= bounds.End.X + epsilon &&
-			   max.Y <= bounds.End.Y + epsilon &&
-			   max.Z <= bounds.End.Z + epsilon;
+		       min.Y >= bounds.Position.Y - epsilon &&
+		       min.Z >= bounds.Position.Z - epsilon &&
+		       max.X <= bounds.End.X + epsilon &&
+		       max.Y <= bounds.End.Y + epsilon &&
+		       max.Z <= bounds.End.Z + epsilon;
 	}
 }

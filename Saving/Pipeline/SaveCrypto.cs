@@ -9,7 +9,7 @@ internal static class SaveCrypto
 	private const int KeySize = 32;
 	private const int SaltSize = 16;
 
-	public static byte[] NewSalt()
+	public static byte[] CreateSalt()
 	{
 		var salt = new byte[SaltSize];
 		RandomNumberGenerator.Fill(salt);
@@ -67,11 +67,11 @@ internal static class SaveCrypto
 
 			try
 			{
-				aes.Decrypt(nonce, ciphertext, tag, plaintext, header.Bytes);
+				aes.Decrypt(nonce, ciphertext, tag, plaintext, header.AssociatedData);
 			}
-			catch (AuthenticationTagMismatchException e)
+			catch (AuthenticationTagMismatchException exception)
 			{
-				throw new InvalidDataException("Wrong key, or the save file has been tampered with.", e);
+				throw new InvalidDataException("Wrong key, or the save file has been tampered with.", exception);
 			}
 
 			return plaintext;
@@ -85,9 +85,10 @@ internal static class SaveCrypto
 	private static byte[] DeriveKey(SaveEncryption encryption, ReadOnlySpan<byte> salt) =>
 		encryption switch
 		{
-			SaveEncryption.Key raw => ValidateKey(raw.Value.Span),
-			SaveEncryption.Password pw => Argon2Id(
-				Encoding.UTF8.GetBytes(pw.Secret), salt, pw.MemoryKiB, pw.Iterations, pw.DegreeOfParallelism),
+			SaveEncryption.Key key => ValidateKey(key.Value.Span),
+			SaveEncryption.Password password => DeriveArgon2IdKey(
+				Encoding.UTF8.GetBytes(password.Secret), salt,
+				password.MemoryKiB, password.Iterations, password.DegreeOfParallelism),
 			_ => throw new ArgumentOutOfRangeException(nameof(encryption))
 		};
 
@@ -95,7 +96,7 @@ internal static class SaveCrypto
 		header.Kdf.Function switch
 		{
 			KdfFunction.None => ValidateKey((options.Key ?? throw Missing("raw key")).Span),
-			KdfFunction.ARGON2_ID => Argon2Id(
+			KdfFunction.ARGON2_ID => DeriveArgon2IdKey(
 				Encoding.UTF8.GetBytes(options.Password ?? throw Missing("password")),
 				header.Salt,
 				header.Kdf.MemoryKiB,
@@ -104,7 +105,7 @@ internal static class SaveCrypto
 			_ => throw new InvalidDataException($"Unknown key-derivation function: {(byte)header.Kdf.Function}.")
 		};
 
-	private static byte[] Argon2Id(
+	private static byte[] DeriveArgon2IdKey(
 		byte[] password, ReadOnlySpan<byte> salt, int memoryKiB, int iterations, int degreeOfParallelism)
 	{
 		try

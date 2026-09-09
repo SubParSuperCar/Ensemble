@@ -12,17 +12,17 @@ internal static class SaveCodec
 
 		if (options.Encryption is { } encryption)
 		{
-			var salt = SaveCrypto.NewSalt();
+			var salt = SaveCrypto.CreateSalt();
 
 			var header = SaveEnvelope.WriteHeader(
 				stream, options.Compression, EncryptionType.Aes256Gcm,
-				SaveFlags.None, default, KdfFor(encryption), salt);
+				SaveFlags.None, default, GetKdfParameters(encryption), salt);
 
 			SaveCrypto.Encrypt(stream, bytes, header, encryption, salt);
 			return;
 		}
 
-		if (options.Checksum)
+		if (options.UseChecksum)
 		{
 			Span<byte> checksum = stackalloc byte[SaveEnvelope.ChecksumSize];
 			SHA256.HashData(bytes, checksum);
@@ -70,22 +70,22 @@ internal static class SaveCodec
 	private static void Compress(ISaveSerializer serializer, Stream target, CreationSaveData data, SaveOptions options)
 	{
 		using var compressor =
-			SaveCompression.TryCreateCompressor(target, options.Compression, options.CompressionLevel);
+			SaveCompression.CreateCompressorOrNull(target, options.Compression, options.CompressionLevel);
 
 		serializer.Serialize(compressor ?? target, data);
 	}
 
 	private static CreationSaveData Decompress(ISaveSerializer serializer, Stream source, CompressionType compression)
 	{
-		using var decompressor = SaveCompression.TryCreateDecompressor(source, compression);
+		using var decompressor = SaveCompression.CreateDecompressorOrNull(source, compression);
 		return serializer.Deserialize(decompressor ?? source);
 	}
 
-	private static KdfParameters KdfFor(SaveEncryption encryption) =>
+	private static KdfParameters GetKdfParameters(SaveEncryption encryption) =>
 		encryption switch
 		{
-			SaveEncryption.Password pw =>
-				KdfParameters.Argon2Id(pw.MemoryKiB, pw.Iterations, pw.DegreeOfParallelism),
+			SaveEncryption.Password password =>
+				KdfParameters.Argon2Id(password.MemoryKiB, password.Iterations, password.DegreeOfParallelism),
 			SaveEncryption.Key => KdfParameters.None,
 			_ => throw new ArgumentOutOfRangeException(nameof(encryption))
 		};

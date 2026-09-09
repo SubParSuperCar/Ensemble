@@ -76,6 +76,12 @@ public partial class PlotHandle : Node3D
 			handle.QueueFree();
 	}
 
+	public Vector3 WorldToGrid(Vector3 worldPosition) =>
+		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;
+
+	public Transform3D GridToWorld(Vector3 gridPosition, Quaternion rotation) =>
+		OriginTransform * new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale);
+
 	private Transform3D CalculateOriginTransform()
 	{
 		var baseCollider = GetNode<CollisionShape3D>("Base/Collider");

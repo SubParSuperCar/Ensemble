@@ -5,7 +5,7 @@ namespace Root.Saving.Pipeline;
 
 internal static class SaveCompression
 {
-	public static Stream? TryCreateCompressor(Stream target, CompressionType type, int? level) =>
+	public static Stream? CreateCompressorOrNull(Stream target, CompressionType type, int? level) =>
 		type switch
 		{
 			CompressionType.None => null,
@@ -16,7 +16,7 @@ internal static class SaveCompression
 			_ => throw new ArgumentOutOfRangeException(nameof(type))
 		};
 
-	public static Stream? TryCreateDecompressor(Stream source, CompressionType type) =>
+	public static Stream? CreateDecompressorOrNull(Stream source, CompressionType type) =>
 		type switch
 		{
 			CompressionType.None => null,

@@ -34,7 +34,7 @@ public sealed record SaveOptions
 	public int? CompressionLevel { get; init; }
 	public SaveEncryption? Encryption { get; init; }
 
-	public bool Checksum { get; init; }
+	public bool UseChecksum { get; init; }
 }
 
 public sealed record LoadOptions

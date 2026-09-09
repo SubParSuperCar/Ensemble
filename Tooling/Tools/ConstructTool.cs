@@ -257,7 +257,8 @@ public partial class ConstructTool : ToolBase
 		_canPlace = false;
 	}
 
-	private void Flash() => CreateTween().TweenProperty(_solidHighlight!, "Tint", Colors.Red, 0.15).From(Colors.White);
+	private void Flash() =>
+		CreateTween().TweenProperty(_solidHighlight!, "Tint", Colors.Red, 1f / 8).From(Colors.White);
 
 	private void Rotate(Vector3 axis)
 	{

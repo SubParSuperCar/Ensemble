@@ -286,11 +286,12 @@ public partial class ConstructTool : ToolBase
 		var min = position - extents;
 		var max = position + extents;
 
-		return min.X >= bounds.Position.X - epsilon &&
-		       min.Y >= bounds.Position.Y - epsilon &&
-		       min.Z >= bounds.Position.Z - epsilon &&
-		       max.X <= bounds.End.X + epsilon &&
-		       max.Y <= bounds.End.Y + epsilon &&
-		       max.Z <= bounds.End.Z + epsilon;
+		return
+			min.X >= bounds.Position.X - epsilon &&
+			min.Y >= bounds.Position.Y - epsilon &&
+			min.Z >= bounds.Position.Z - epsilon &&
+			max.X <= bounds.End.X + epsilon &&
+			max.Y <= bounds.End.Y + epsilon &&
+			max.Z <= bounds.End.Z + epsilon;
 	}
 }

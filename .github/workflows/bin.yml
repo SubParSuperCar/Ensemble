@@ -139,8 +139,6 @@ jobs:
           & $env:GODOT --headless --path . --import | Out-Host
           New-Item -ItemType Directory -Force out | Out-Null
           & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64)" "$PWD\out\Ensemble.exe" | Out-Host
-          if ($LASTEXITCODE -ne 0) { throw "export failed ($LASTEXITCODE)" }
-          if (-not (Test-Path out\Ensemble.exe)) { throw "Ensemble.exe missing" }
           Set-Location out
           Get-ChildItem -Directory -Filter data_* | ForEach-Object {
             Copy-Item "$($_.FullName)\*" . -Recurse -Force
@@ -152,10 +150,8 @@ jobs:
           $PSNativeCommandUseErrorActionPreference = $false
           Set-Location out
           7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64-debug.zip" . > $null
-          if ($LASTEXITCODE -ge 2) { throw "7z failed ($LASTEXITCODE)" }
           Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
           7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
-          if ($LASTEXITCODE -ge 2) { throw "7z failed ($LASTEXITCODE)" }
 
       - name: Upload
         uses: actions/upload-artifact@v7

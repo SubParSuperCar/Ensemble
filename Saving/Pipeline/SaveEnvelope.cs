@@ -50,13 +50,13 @@ internal static class SaveEnvelope
 		KdfParameters kdf,
 		ReadOnlySpan<byte> salt)
 	{
-		var encrypted = encryption is not EncryptionType.None;
+		var isEncrypted = encryption is not EncryptionType.None;
 		var hasChecksum = flags.HasFlag(SaveFlags.Checksum);
 
 		var header = new byte[
 			PrefixSize
 			+ (hasChecksum ? ChecksumSize : 0)
-			+ (encrypted ? KdfBlockSize + salt.Length : 0)];
+			+ (isEncrypted ? KdfBlockSize + salt.Length : 0)];
 
 		Magic.CopyTo(header);
 		header[4] = Version;
@@ -72,7 +72,7 @@ internal static class SaveEnvelope
 			offset += ChecksumSize;
 		}
 
-		if (encrypted)
+		if (isEncrypted)
 		{
 			header[offset] = (byte)kdf.Function;
 			BinaryPrimitives.WriteUInt32LittleEndian(header.AsSpan(offset + 1), (uint)kdf.MemoryKiB);
@@ -120,21 +120,21 @@ internal static class SaveEnvelope
 		if (encryption is not EncryptionType.Aes256Gcm)
 			throw new InvalidDataException($"Unsupported encryption type: {prefix[6]}.");
 
-		Span<byte> kdf = stackalloc byte[KdfBlockSize];
-		stream.ReadExactly(kdf);
-		authenticated.Write(kdf);
+		Span<byte> kdfBlock = stackalloc byte[KdfBlockSize];
+		stream.ReadExactly(kdfBlock);
+		authenticated.Write(kdfBlock);
 
-		var parameters = new KdfParameters(
-			(KdfFunction)kdf[0],
-			(int)BinaryPrimitives.ReadUInt32LittleEndian(kdf[1..]),
-			(int)BinaryPrimitives.ReadUInt32LittleEndian(kdf[5..]),
-			kdf[9]);
+		var kdfParameters = new KdfParameters(
+			(KdfFunction)kdfBlock[0],
+			(int)BinaryPrimitives.ReadUInt32LittleEndian(kdfBlock[1..]),
+			(int)BinaryPrimitives.ReadUInt32LittleEndian(kdfBlock[5..]),
+			kdfBlock[9]);
 
-		var salt = new byte[kdf[10]];
+		var salt = new byte[kdfBlock[10]];
 		stream.ReadExactly(salt);
 		authenticated.Write(salt);
 
-		return new Header(compression, encryption, flags, checksum, parameters, salt, authenticated.ToArray());
+		return new Header(compression, encryption, flags, checksum, kdfParameters, salt, authenticated.ToArray());
 	}
 
 	public readonly record struct Header(
@@ -144,5 +144,5 @@ internal static class SaveEnvelope
 		byte[]? Checksum,
 		KdfParameters Kdf,
 		byte[] Salt,
-		byte[] Bytes);
+		byte[] AssociatedData);
 }

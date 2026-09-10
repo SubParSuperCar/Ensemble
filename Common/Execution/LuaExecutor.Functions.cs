@@ -350,7 +350,7 @@ public static partial class LuaExecutor
 		else
 		{
 			Log.Information("Quitting...");
-			(Engine.GetMainLoop() as SceneTree)?.Quit();
+			GMain.Quit();
 		}
 
 		context.Return();
@@ -377,7 +377,7 @@ public static partial class LuaExecutor
 		var isVisible = context.GetArgument<bool>(0);
 		Log.Information("Setting Temporal Static shader visibility to: {IsVisible}", isVisible);
 
-		var temporalShader = Main.Instance?.GetNode<CanvasLayer>("Temporal Static");
+		var temporalShader = GMain.GetNode<CanvasLayer>("Temporal Static");
 		temporalShader?.Visible = isVisible;
 
 		context.Return();

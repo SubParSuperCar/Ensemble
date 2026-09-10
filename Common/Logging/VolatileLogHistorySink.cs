@@ -12,7 +12,7 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 	private static readonly ConcurrentQueue<string> HistoryQueue = [];
 
 	private static readonly ExpressionTemplate Formatter = new(
-		"[{@t:HH:mm:ss} {@l:u3}] {@m:lj}{#if @x is not null}\n{@x}{#end}");
+		"[{@t:HH:mm:ss.fff} {@l:u3}] {@m:lj}{#if @x is not null}\n{@x}{#end}");
 
 	public static IReadOnlyCollection<string> History => [.. HistoryQueue];
 

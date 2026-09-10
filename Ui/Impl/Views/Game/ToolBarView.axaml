@@ -50,7 +50,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
                 </Grid.ColumnDefinitions>
 
-                <Border BorderBrush="#0080FF" BorderThickness="1">
+                <Border BorderBrush="#40A0FF" BorderThickness="1">
                     <ToggleButton
                         Content="Place (1)"
                         Command="{Binding ToggleConstructToolCommand}"

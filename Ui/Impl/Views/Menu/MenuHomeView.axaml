@@ -54,7 +54,7 @@
             HorizontalAlignment="Center" VerticalAlignment="Center">
 
             <Border
-                BorderBrush="DodgerBlue" BorderThickness="1"
+                BorderBrush="#40A0FF" BorderThickness="1.5"
                 CornerRadius="8" ClipToBounds="True">
 
                 <Button
@@ -84,7 +84,7 @@
                 ToolTip.Tip="Opens the web browser.&#x0a;Requires a compatible web rendering component.&#x0a;On Windows, WebView2 should already be installed.&#x0a;On Linux, you may need to install WebKitGTK or WPE WebKit." />
 
             <Border
-                BorderBrush="Red" BorderThickness="1"
+                BorderBrush="Red" BorderThickness="1.5"
                 CornerRadius="8" ClipToBounds="True">
 
                 <Button

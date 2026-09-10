@@ -56,16 +56,42 @@ public partial class Main : Node
 
 	public override void _Notification(int what)
 	{
-		if (what != NotificationWMCloseRequest || _isQuitting)
+		if (what == NotificationWMCloseRequest)
+			_ = OnQuit();
+	}
+
+	private async Task OnQuit()
+	{
+		if (_isQuitting)
 			return;
 
 		_isQuitting = true;
 
-		var tree = GetTree();
-		foreach (var child in tree.Root.GetChildren())
-			child.QueueFree();
+		Log.Debug("Shutdown notification received. Starting shutdown sequence...");
 
-		ToSignal(tree, SceneTree.SignalName.ProcessFrame).OnCompleted(() => GetTree().Quit());
+		var children = GetChildren();
+
+		for (var i = children.Count - 1; i >= 0; i--)
+			children[i].QueueFree();
+
+		var tree = GetTree();
+		var rootChildren = tree.Root.GetChildren();
+
+		for (var i = rootChildren.Count - 1; i >= 0; i--)
+		{
+			var child = rootChildren[i];
+
+			if (!ReferenceEquals(child, this))
+				child.QueueFree();
+		}
+
+		Log.Debug("Queued children to be freed. Awaiting children removal...");
+
+		while (tree.Root.GetChildCount() > 1 || GetChildCount() > 0)
+			await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+		Log.Debug("All children removed. Quitting the application...");
+		tree.Quit();
 	}
 
 	public void Quit() => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
@@ -197,7 +223,7 @@ public partial class Main : Node
 
 	private void Load()
 	{
-		Console.WriteLine($"Starting {nameof(Main)} loading sequence...");
+		Console.WriteLine($"Starting {nameof(Main)} loading sequence (boot-load autoloads)...");
 
 		LoadAutoloads(AutoloadRegistry.GetAll());
 

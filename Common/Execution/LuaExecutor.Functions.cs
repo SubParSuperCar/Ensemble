@@ -118,7 +118,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		VolatileLogHistorySink.Clear();
+		Callable.From(VolatileLogHistorySink.Clear).CallDeferred();
 
 		context.Return();
 		return default;

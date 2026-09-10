@@ -10,7 +10,7 @@ namespace Root;
 /// <summary>
 ///     The main entry point for Ensemble's code-behind.
 ///     Handles boot-loading Node-inheriting classes marked with <see cref="AutoloadAttribute" />,
-///     and provides resources for managing the application lifetime and shutdowns.
+///     and provides resources for handling errors and managing the application lifetime and shutdowns.
 /// </summary>
 public partial class Main : Node
 {

@@ -16,6 +16,7 @@ https://github.com/SubParSuperCar/Ensemble"
 config/version="alpha"
 run/main_scene="uid://ddgi4ajn3rnnq"
 config/use_custom_user_dir=true
+config/auto_accept_quit=false
 config/features=PackedStringArray("4.7", "C#", "Mobile")
 boot_splash/bg_color=Color(0.043137256, 0.09019608, 0.15686275, 1)
 boot_splash/stretch_mode=0

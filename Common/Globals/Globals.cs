@@ -12,6 +12,9 @@ namespace Root.Common.Globals;
 
 public static class Globals
 {
+	/// <inheritdoc cref="Main" />
+	public static Main GMain => Main.Instance ?? throw new InvalidOperationException($"{nameof(Main)} is null.");
+
 	/// <inheritdoc cref="CoreRoot.Api.ICore" />
 	public static GdCore.GdCore GCore =>
 		GdCore.GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null.");

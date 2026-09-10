@@ -86,6 +86,12 @@ public partial class SessionManager : Node
 			Instance = null;
 	}
 
+	public override void _Notification(int what)
+	{
+		if (what == NotificationWMCloseRequest)
+			StopSession();
+	}
+
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event))

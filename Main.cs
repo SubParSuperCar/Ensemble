@@ -7,8 +7,15 @@ using Environment = System.Environment;
 
 namespace Root;
 
+/// <summary>
+///     The main entry point for Ensemble's code-behind.
+///     Handles boot-loading Node-inheriting classes marked with <see cref="AutoloadAttribute" />,
+///     and provides resources for managing the application lifetime and shutdowns.
+/// </summary>
 public partial class Main : Node
 {
+	private bool _isQuitting;
+
 	public static Main? Instance { get; private set; }
 
 	public static bool IsHeadlessServer { get; } =
@@ -47,6 +54,22 @@ public partial class Main : Node
 			_ = LoadDeferredAsync();
 	}
 
+	public override void _Notification(int what)
+	{
+		if (what != NotificationWMCloseRequest || _isQuitting)
+			return;
+
+		_isQuitting = true;
+
+		var tree = GetTree();
+		foreach (var child in tree.Root.GetChildren())
+			child.QueueFree();
+
+		ToSignal(tree, SceneTree.SignalName.ProcessFrame).OnCompleted(() => GetTree().Quit());
+	}
+
+	public void Quit() => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+
 	public static void FailFast(Exception? exception = null)
 	{
 		try
@@ -61,16 +84,20 @@ public partial class Main : Node
 		}
 		catch (Exception notifyException)
 		{
-			Log.Error(notifyException, "Failed to show crash popup.");
+			PCall((Action<Exception, string>)Log.Error, notifyException, "Failed to show crash popup.");
 		}
 
-		try { Log.CloseAndFlush(); }
+		PCall(Log.CloseAndFlush);
+		Environment.FailFast(null, exception);
+	}
+
+	private static void PCall(Delegate action, params object?[] args)
+	{
+		try { action.DynamicInvoke(args); }
 		catch
 		{
-			// Ignored
+			// Ignore
 		}
-
-		Environment.FailFast(null, exception);
 	}
 
 	public static bool AskUser(string topic, string prompt)

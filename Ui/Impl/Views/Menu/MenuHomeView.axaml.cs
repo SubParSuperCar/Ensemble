@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using Godot;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
 
@@ -13,6 +12,5 @@ public partial class MenuHomeView : UserControl, IViewFor<MenuHomeViewModel>
 		InitializeComponent();
 	}
 
-	private void OnQuitButtonDoubleTapped(object? sender, TappedEventArgs e) =>
-		(Engine.GetMainLoop() as SceneTree)?.Quit();
+	private void OnQuitButtonDoubleTapped(object? sender, TappedEventArgs e) => GMain.Quit();
 }

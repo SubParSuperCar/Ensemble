@@ -53,7 +53,7 @@
         </Border>
 
         <ToggleButton
-            Content="Toggle Console (` / F9)"
+            Content="Open/Close Console UI (` / F9)"
             IsChecked="{Binding IsConsoleVisible, Mode=TwoWay}"
             ToolTip.Tip="Toggles the console UI. (Bound to ` and F9)"
             Background="{DynamicResource TranslucentBackgroundBrush}"

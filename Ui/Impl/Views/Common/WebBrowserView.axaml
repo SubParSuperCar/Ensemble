@@ -45,7 +45,7 @@
                 <li:LoadingIndicator
                     Name="LoadingIndicator"
                     Mode="FlipPlane"
-                    Foreground="LimeGreen" />
+                    Foreground="#00C000" />
             </Button>
 
             <TextBox

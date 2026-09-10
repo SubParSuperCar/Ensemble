@@ -104,7 +104,7 @@
                             Background="Black" Foreground="White" />
                     </Border>
 
-                    <Border BorderBrush="DodgerBlue" BorderThickness="1">
+                    <Border BorderBrush="#0080FF" BorderThickness="1">
                         <Button
                             Content="Execute Script"
                             Command="{Binding ExecuteCommand}"

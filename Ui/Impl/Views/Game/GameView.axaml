@@ -44,12 +44,16 @@
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
 
-        <Button
-            Content="&lt;- Menu (2x)"
-            DoubleTapped="OnMenuButtonDoubleTapped"
-            ToolTip.Tip="Stops the current session. (Double-click)"
-            Background="{DynamicResource TranslucentBackgroundBrush}"
-            HorizontalAlignment="Left" VerticalAlignment="Top" />
+        <Border
+            BorderBrush="Red" BorderThickness="1"
+            HorizontalAlignment="Left" VerticalAlignment="Top">
+
+            <Button
+                Content="&lt;- Menu | Quit Session (2x)"
+                DoubleTapped="OnMenuButtonDoubleTapped"
+                ToolTip.Tip="Stops the current session. (Double-click)"
+                Background="{DynamicResource TranslucentBackgroundBrush}" />
+        </Border>
     </Grid>
 
 </UserControl>

@@ -11,6 +11,10 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Place" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Delete" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Edit" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
             </Grid.ColumnDefinitions>
 
@@ -24,7 +28,7 @@
                 <Button
                     Content="&#x26A0; Clear All (2x) &#x26A0;"
                     DoubleTapped="OnClearAllDoubleTapped"
-                    ToolTip.Tip="Removes every block from your plot. (Double-click)&#x0a;WARNING: THIS ACTION IS IRREVERSIBLE!"
+                    ToolTip.Tip="Removes every asset from your plot. (Double-click)&#x0a;&#x26A0; WARNING: THIS ACTION CANNOT BE UNDONE! &#x26A0;"
                     HorizontalContentAlignment="Center"
                     IsEnabled="{Binding IsClearAllEnabled}" />
             </Border>
@@ -39,15 +43,19 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Place" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Delete" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Edit" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
                 </Grid.ColumnDefinitions>
 
-                <Border BorderBrush="DodgerBlue" BorderThickness="1">
+                <Border BorderBrush="#0080FF" BorderThickness="1">
                     <ToggleButton
                         Content="Place (1)"
                         Command="{Binding ToggleConstructToolCommand}"
                         IsChecked="{Binding IsConstructToolEnabled}"
-                        ToolTip.Tip="Toggles the placement (construct) tool. (Bound to 1 / One)" />
+                        ToolTip.Tip="Toggles the placement (construct/ctor) tool. (Bound to 1 / One)" />
                 </Border>
 
                 <Border Grid.Column="1" BorderBrush="Red" BorderThickness="1">
@@ -58,12 +66,40 @@
                         ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)" />
                 </Border>
 
+                <Border Grid.Column="2" BorderBrush="#00FF00" BorderThickness="1">
+                    <ToggleButton
+                        Content="Edit (3)"
+                        IsEnabled="False"
+                        ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)" />
+                </Border>
+
+                <Border Grid.Column="3" BorderBrush="#FF00FF" BorderThickness="1">
+                    <ToggleButton
+                        Content="Paint (4)"
+                        IsEnabled="False"
+                        ToolTip.Tip="Toggles the painting (material) tool. (Bound to 4 / Four)" />
+                </Border>
+
+                <Border Grid.Column="4" BorderBrush="#FFFF00" BorderThickness="1">
+                    <ToggleButton
+                        Content="Move (5)"
+                        IsEnabled="False"
+                        ToolTip.Tip="Toggles the moving (translate) tool. (Bound to 5 / Five)" />
+                </Border>
+
+                <Border Grid.Column="5" BorderBrush="#FF8000" BorderThickness="1">
+                    <ToggleButton
+                        Content="Inspect (6)"
+                        IsEnabled="False"
+                        ToolTip.Tip="Toggles the inspection (inspect) tool. (Bound to 6 / Six)" />
+                </Border>
+
                 <CheckBox
-                    Grid.Column="2"
+                    Grid.Column="6"
                     Content="Mut.Ex."
                     Command="{Binding ToggleMutexEnforcedCommand}"
                     IsChecked="{Binding IsMutexEnforced}"
-                    ToolTip.Tip="Mutual Exclusion: Toggles whether tools cannot be enabled simultaneously."
+                    ToolTip.Tip="Mutual Exclusion: Toggles whether only one tool can be enabled at a time.&#x0a;Disables all other tools when you enable one."
                     Margin="4,0,0,0" />
             </Grid>
         </Border>

@@ -46,10 +46,22 @@
                         Background="Black" Foreground="White"
                         SelectionForegroundBrush="Black"
                         Padding="1"
-                        FontSize="13" FontWeight="ExtraLight"
+                        FontSize="10" FontWeight="ExtraLight"
                         TextWrapping="Wrap"
                         LineSpacing="2" />
                 </ScrollViewer>
+
+                <TextBlock
+                    Background="#80000000" Foreground="Cyan"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    Margin="0,2,20,0"
+                    FontSize="10" FontWeight="ExtraLight" FontStyle="Italic">
+
+                    <!-- @formatter:off -->
+<Span xml:space="preserve"><Run Text="&#x2199; SeriLog Output (" /><Underline><Bold><Run Text="Not" /></Bold></Underline><Run
+Text=" StdOut/Err)" /></Span>
+                    <!-- @formatter:on -->
+                </TextBlock>
 
                 <StackPanel
                     Orientation="Horizontal" Spacing="4"
@@ -104,7 +116,7 @@
                             Background="Black" Foreground="White" />
                     </Border>
 
-                    <Border BorderBrush="#0080FF" BorderThickness="1">
+                    <Border BorderBrush="#40A0FF" BorderThickness="1">
                         <Button
                             Content="Execute Script"
                             Command="{Binding ExecuteCommand}"

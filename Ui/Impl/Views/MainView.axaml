@@ -20,7 +20,7 @@
         <ContentControl
             Content="{Binding Stats}"
             HorizontalAlignment="Left" VerticalAlignment="Top"
-            Margin="4,32,0,0"
+            Margin="4,34,0,0"
             IsHitTestVisible="False" />
 
         <Grid ColumnDefinitions="1*,4*,1*" RowDefinitions="1*,4*,1*">

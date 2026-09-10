@@ -68,6 +68,13 @@ public partial class ConsoleViewModel : ViewModelBase
 	private void UpdateOutput()
 	{
 		var history = VolatileLogHistorySink.History;
+
+		if (history.Count is 0)
+		{
+			Output = "<Empty>";
+			return;
+		}
+
 		var builder = new StringBuilder(history.Count * EstimatedEntryLength);
 
 		foreach (var line in history)

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 using Konscious.Security.Cryptography;
@@ -8,6 +9,13 @@ internal static class SaveCrypto
 {
 	private const int KeySize = 32;
 	private const int SaltSize = 16;
+
+	private const int MinArgon2MemoryKiB = 8 * 1024;
+	private const int MaxArgon2MemoryKiB = 2 * 1024 * 1024;
+	private const int MinArgon2Iterations = 1;
+	private const int MaxArgon2Iterations = 16;
+	private const int MinArgon2DegreeOfParallelism = 1;
+	private const int MaxArgon2DegreeOfParallelism = 64;
 
 	public static byte[] CreateSalt()
 	{
@@ -110,6 +118,21 @@ internal static class SaveCrypto
 	{
 		try
 		{
+			if (memoryKiB is < MinArgon2MemoryKiB or > MaxArgon2MemoryKiB)
+				throw new InvalidDataException(
+					$"Argon2id memory cost must be between {MinArgon2MemoryKiB} and {MaxArgon2MemoryKiB} KiB, " +
+					string.Create(CultureInfo.InvariantCulture, $"got {memoryKiB}."));
+
+			if (iterations is < MinArgon2Iterations or > MaxArgon2Iterations)
+				throw new InvalidDataException(
+					$"Argon2id iteration count must be between {MinArgon2Iterations} and {MaxArgon2Iterations}, " +
+					string.Create(CultureInfo.InvariantCulture, $"got {iterations}."));
+
+			if (degreeOfParallelism is < MinArgon2DegreeOfParallelism or > MaxArgon2DegreeOfParallelism)
+				throw new InvalidDataException(
+					$"Argon2id parallelism must be between {MinArgon2DegreeOfParallelism} and " +
+					$"{MaxArgon2DegreeOfParallelism}, got {degreeOfParallelism.ToString(CultureInfo.InvariantCulture)}.");
+
 			using var argon2 = new Argon2id(password);
 			argon2.Salt = [.. salt];
 			argon2.MemorySize = memoryKiB;

@@ -23,7 +23,8 @@ public partial class Main : Node
 
 	public static bool AreAutoloadsLoaded { get; private set; }
 
-	private static AutoloadScope RuntimeScope => IsHeadlessServer ? AutoloadScope.Server : AutoloadScope.Client;
+	private static AutoloadScope RuntimeScope =>
+		IsHeadlessServer ? AutoloadScope.HeadlessServer : AutoloadScope.RegularClient;
 
 	public static event Action? AutoloadsReady;
 

@@ -69,7 +69,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 	private static string GetScope(AttributeData attribute) =>
 		TryGetNamedArgument(attribute, ScopePropertyName, out var value)
 			? $"(AutoloadScope){Convert.ToInt32(value, CultureInfo.InvariantCulture)}"
-			: "AutoloadScope.Client | AutoloadScope.Server";
+			: "AutoloadScope.RegularClient | AutoloadScope.HeadlessServer";
 
 	private static string GetOrder(AttributeData attribute) =>
 		TryGetNamedArgument(attribute, OrderPropertyName, out var value)

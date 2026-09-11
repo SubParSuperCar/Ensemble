@@ -61,6 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           dotnet restore Game.csproj
+          dotnet build Game.csproj -c ExportRelease --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
@@ -133,12 +134,17 @@ jobs:
         timeout-minutes: 45
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
-          dotnet build Game.csproj -c Debug
+          dotnet build Game.csproj -c ExportRelease
+          if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
           dotnet build-server shutdown
           & $env:GODOT --headless --path . --import | Out-Host
           & $env:GODOT --headless --path . --import | Out-Host
           New-Item -ItemType Directory -Force out | Out-Null
           & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64)" "$PWD\out\Ensemble.exe" | Out-Host
+          if ($LASTEXITCODE -ne 0) { throw "Godot export failed with exit code $LASTEXITCODE" }
+          if (-not (Test-Path out\Ensemble.exe) -or (Get-Item out\Ensemble.exe).Length -eq 0) {
+            throw "Ensemble.exe missing or empty after export"
+          }
           Set-Location out
           Get-ChildItem -Directory -Filter data_* | ForEach-Object {
             Copy-Item "$($_.FullName)\*" . -Recurse -Force

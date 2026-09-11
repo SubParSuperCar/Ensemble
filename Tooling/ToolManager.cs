@@ -6,7 +6,10 @@ using Serilog;
 namespace Root.Tooling;
 
 [GlobalClass]
-[Autoload(Scope = AutoloadScope.Client, Order = sbyte.MinValue + 4, FailurePolicy = AutoloadFailurePolicy.AskUser)]
+[Autoload(
+	Scope = AutoloadScope.RegularClient,
+	Order = sbyte.MinValue + 4,
+	FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ToolManager : Node, IAutoload
 {
 	private readonly List<ToolBase> _tools = [];

@@ -7,6 +7,7 @@ using CoreRoot.Plots;
 namespace CoreRoot;
 
 /// <inheritdoc />
+// Core is non-authoritative. Max counts are purely metadata and not enforced.
 public class Core : ICore
 {
 	private readonly Assets.Assets _assets;

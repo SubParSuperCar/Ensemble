@@ -6,7 +6,6 @@ using CoreRoot.Utils;
 
 namespace CoreRoot.Assets;
 
-// TODO: Update collections and counts BEFORE emitting changed signals
 public class Instances : IInstances
 {
 	private readonly IAssets _assets;
@@ -24,10 +23,16 @@ public class Instances : IInstances
 		_instancesById.Added += (id, instance) =>
 		{
 			instance.Id = id;
+			_countsByAssetId.Increment(instance.Asset.Id);
+
 			Added?.Invoke(instance);
 		};
 
-		_instancesById.Removed += (_, instance) => Removed?.Invoke(instance);
+		_instancesById.Removed += (_, instance) =>
+		{
+			_countsByAssetId.Decrement(instance.Asset.Id);
+			Removed?.Invoke(instance);
+		};
 	}
 
 	public IEnumerable<IInstance> All => _instancesById.GetAll();
@@ -67,19 +72,17 @@ public class Instances : IInstances
 		else
 			_instancesById.Add(instance);
 
-		_countsByAssetId.Increment(assetId);
 		return instance;
 	}
 
 	public void Remove(int instanceId)
 	{
-		if (!TryGet(instanceId, out var instance))
+		if (!TryGet(instanceId, out _))
 			throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Instance with id {instanceId} not found."));
 
 		_instancesById.Remove(instanceId);
-		_countsByAssetId.Decrement(instance.Asset.Id);
 	}
 
 	public void Clear()

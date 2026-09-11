@@ -13,6 +13,8 @@ using TinyDialogsNet;
 
 namespace Root.Ui.Impl.Views;
 
+// TODO: Fix random exit code 139 (SIGSEGV), also known as a segfault, upon opening this view
+// The random crashing seems to occur just after the Markdown is parsed and rendered and right before the images asynchronously load
 public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 {
 	private CancellationTokenSource? _cts;

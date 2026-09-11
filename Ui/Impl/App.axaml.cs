@@ -33,7 +33,7 @@ public class App : Application
 
 	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs e)
 	{
-		if (e.Key is Key.Space && !InputSink.IsSunk)
+		if (e.Key is Key.Space or Key.Tab && !InputSink.IsSunk)
 			e.Handled = true;
 	}
 }

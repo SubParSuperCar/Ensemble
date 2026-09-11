@@ -58,6 +58,7 @@ public class Occupants : IOccupants
 
 	internal void Remove(Occupant occupant, bool shouldResolveOwnerIfRelinquishing = false, bool isExchanging = false)
 	{
+		// TODO: Make the next owner deterministic
 		if (ReferenceEquals(occupant, Owner))
 			SetOwner(_occupantsByPlayerId.Count > 1 && shouldResolveOwnerIfRelinquishing
 				? _occupantsByPlayerId.Values.First(other => !ReferenceEquals(other, occupant)).Player.Id

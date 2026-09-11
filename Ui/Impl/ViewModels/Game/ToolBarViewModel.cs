@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Godot;
 using Root.GdCore.Assets;
 using Root.GdCore.Plots;
 using Root.Tooling.Tools;
@@ -78,7 +77,7 @@ public partial class ToolBarViewModel : ViewModelBase
 	}
 
 	private void OnClearAllConditionChanged(bool? _) => UpdateClearAll();
-	private void OnInstanceCountChanged(GdInstance _) => Callable.From(UpdateClearAll).CallDeferred();
+	private void OnInstanceCountChanged(GdInstance _) => UpdateClearAll();
 
 	private void SetInstances(GdInstances? instances)
 	{

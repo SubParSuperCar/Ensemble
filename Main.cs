@@ -91,7 +91,7 @@ public partial class Main : Node
 		while (tree.Root.GetChildCount() > 1 || GetChildCount() > 0)
 			await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
 
-		Log.Debug("All children removed. Quitting the application...");
+		Console.WriteLine("All children removed. Quitting the application...");
 		tree.Quit();
 	}
 

@@ -146,7 +146,7 @@ public partial class ConstructTool : ToolBase
 		{
 			LocalPlot?.Instances.Add(AssetId, _gridPosition, _rotation);
 
-			Log.Verbose("Added: {AssetId} (Position={Position}, Rotation={Rotation})",
+			Log.Verbose("Added asset id: {AssetId} (Position={Position}, Rotation={Rotation})",
 				AssetId, _gridPosition, _rotation);
 		}
 		else if (_preview is { Visible: true })

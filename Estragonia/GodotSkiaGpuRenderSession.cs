@@ -28,9 +28,7 @@ internal sealed class GodotSkiaGpuRenderSession : ISkiaGpuRenderSession
 
 	GRSurfaceOrigin ISkiaGpuRenderSession.SurfaceOrigin => GRSurfaceOrigin.TopLeft;
 
-	public void Dispose()
-	{
+	public void Dispose() =>
 		// Finalize rendering (handles flush and layout transitions)
 		Synchronizer.FinishRendering(Surface);
-	}
 }

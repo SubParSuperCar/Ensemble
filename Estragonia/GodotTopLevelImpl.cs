@@ -92,20 +92,11 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	AcrylicPlatformCompensationLevels ITopLevelImpl.AcrylicCompensationLevels => new(1.0, 1.0, 1.0);
 
-	void ITopLevelImpl.SetInputRoot(IInputRoot inputRoot)
-	{
-		InputRoot = inputRoot;
-	}
+	void ITopLevelImpl.SetInputRoot(IInputRoot inputRoot) => InputRoot = inputRoot;
 
-	Point ITopLevelImpl.PointToClient(PixelPoint point)
-	{
-		return point.ToPoint(RenderScaling);
-	}
+	Point ITopLevelImpl.PointToClient(PixelPoint point) => point.ToPoint(RenderScaling);
 
-	PixelPoint ITopLevelImpl.PointToScreen(Point point)
-	{
-		return PixelPoint.FromPoint(point, RenderScaling);
-	}
+	PixelPoint ITopLevelImpl.PointToScreen(Point point) => PixelPoint.FromPoint(point, RenderScaling);
 
 	void ITopLevelImpl.SetCursor(ICursorImpl? cursor)
 	{
@@ -117,27 +108,20 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		CursorChanged?.Invoke(cursorShape);
 	}
 
-	IPopupImpl? ITopLevelImpl.CreatePopup()
-	{
-		return null;
-	}
+	IPopupImpl? ITopLevelImpl.CreatePopup() => null;
 
-	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels)
-	{
+	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels) =>
 		// Overlay windows are always composited onto the host control's texture,
 		// so we force Transparent level regardless of what Avalonia requests.
 		// This prevents PART_TransparencyFallback from showing an opaque white background.
 		TransparencyLevel = WindowTransparencyLevel.Transparent;
-	}
 
 	void ITopLevelImpl.SetFrameThemeVariant(PlatformThemeVariant? themeVariant)
 	{
 	}
 
-	object? IOptionalFeatureProvider.TryGetFeature(Type featureType)
-	{
-		return featureType == typeof(IClipboard) ? _clipboard : null;
-	}
+	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) =>
+		featureType == typeof(IClipboard) ? _clipboard : null;
 
 	public void Dispose()
 	{
@@ -164,20 +148,11 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	}
 
 	// ReSharper disable once UnusedMember.Global
-	public IGodotSkiaSurface? TryGetSurface()
-	{
-		return _surface;
-	}
+	public IGodotSkiaSurface? TryGetSurface() => _surface;
 
-	public IGodotSkiaSurface GetOrCreateSurface()
-	{
-		return _surface ??= CreateSurface();
-	}
+	public IGodotSkiaSurface GetOrCreateSurface() => _surface ??= CreateSurface();
 
-	private IPlatformRenderSurface[] GetOrCreateSurfaces()
-	{
-		return [GetOrCreateSurface()];
-	}
+	private IPlatformRenderSurface[] GetOrCreateSurfaces() => [GetOrCreateSurface()];
 
 	[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Doesn't affect correctness")]
 	public void SetRenderSize(PixelSize renderSize, double renderScaling)
@@ -346,9 +321,8 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		return args.Handled;
 	}
 
-	private RawPointerPoint CreateRawPointerPoint(Vector2 position, float pressure, Vector2 tilt)
-	{
-		return new RawPointerPoint
+	private RawPointerPoint CreateRawPointerPoint(Vector2 position, float pressure, Vector2 tilt) =>
+		new()
 		{
 			Position = position.ToAvaloniaPoint() / RenderScaling,
 			Twist = 0.0f,
@@ -356,7 +330,6 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			XTilt = tilt.X * 90.0f,
 			YTilt = tilt.Y * 90.0f
 		};
-	}
 
 	public bool OnKey(InputEventKey inputEvent, ulong timestamp)
 	{
@@ -436,10 +409,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		return args.Handled;
 	}
 
-	public void OnLostFocus()
-	{
-		LostFocus?.Invoke();
-	}
+	public void OnLostFocus() => LostFocus?.Invoke();
 
 	// ReSharper disable once UnusedMethodReturnValue.Global
 	public bool OnMouseExited(ulong timestamp)

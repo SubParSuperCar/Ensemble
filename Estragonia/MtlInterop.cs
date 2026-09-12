@@ -65,8 +65,8 @@ internal static class MtlInterop
 			{
 				var ps = c.GetParameters();
 				return ps.Length == 2 &&
-				       ps[0].ParameterType == typeof(IntPtr) &&
-				       ps[1].ParameterType == typeof(bool);
+					   ps[0].ParameterType == typeof(IntPtr) &&
+					   ps[1].ParameterType == typeof(bool);
 			});
 
 			if (ctor is not null)
@@ -136,8 +136,8 @@ internal static class MtlInterop
 			{
 				var ps = c.GetParameters();
 				return ps.Length == 2 &&
-				       ps[0].ParameterType == typeof(IntPtr) &&
-				       ps[1].ParameterType == typeof(bool);
+					   ps[0].ParameterType == typeof(IntPtr) &&
+					   ps[1].ParameterType == typeof(bool);
 			});
 
 			if (ctor is not null)
@@ -243,10 +243,7 @@ internal static class MtlInterop
 	{
 		public ulong width, height, depth;
 
-		public static MtlSize Create(int w, int h)
-		{
-			return new MtlSize { width = (ulong)w, height = (ulong)h, depth = 1 };
-		}
+		public static MtlSize Create(int w, int h) => new() { width = (ulong)w, height = (ulong)h, depth = 1 };
 	}
 
 	// Cached selectors for Metal operations
@@ -372,10 +369,8 @@ internal static class MtlInterop
 	[DllImport(SkiaLibrary, CallingConvention = CallingConvention.Cdecl)]
 	private static extern bool gr_backendtexture_get_mtl_textureinfo(IntPtr texture, out GrMtlTextureInfoNative info);
 
-	private static IntPtr GetMetalTextureFromBackend(IntPtr backendTexture)
-	{
-		return gr_backendtexture_get_mtl_textureinfo(backendTexture, out var info) ? info.Texture : IntPtr.Zero;
-	}
+	private static IntPtr GetMetalTextureFromBackend(IntPtr backendTexture) =>
+		gr_backendtexture_get_mtl_textureinfo(backendTexture, out var info) ? info.Texture : IntPtr.Zero;
 
 	#endregion
 }

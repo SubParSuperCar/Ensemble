@@ -21,10 +21,8 @@ internal sealed class GodotSkiaRenderTarget(
 	public PlatformRenderTargetState State =>
 		IsCorrupted ? PlatformRenderTargetState.Corrupted : PlatformRenderTargetState.Ready;
 
-	public ISkiaGpuRenderSession BeginRenderingSession(IRenderTarget.RenderTargetSceneInfo sceneInfo)
-	{
-		return new GodotSkiaGpuRenderSession(surface, grContext, synchronizer);
-	}
+	public ISkiaGpuRenderSession BeginRenderingSession(IRenderTarget.RenderTargetSceneInfo sceneInfo) =>
+		new GodotSkiaGpuRenderSession(surface, grContext, synchronizer);
 
 	void IDisposable.Dispose()
 	{

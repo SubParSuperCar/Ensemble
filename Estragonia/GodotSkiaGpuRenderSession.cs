@@ -18,6 +18,7 @@ internal sealed class GodotSkiaGpuRenderSession : ISkiaGpuRenderSession
 
 	public IGodotSkiaSurface Surface { get; }
 
+	// ReSharper disable once MemberCanBePrivate.Global
 	public ISurfaceSynchronizer Synchronizer { get; }
 
 	public GRContext GrContext { get; }

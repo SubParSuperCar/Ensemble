@@ -1,9 +1,12 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Godot;
 using SkiaSharp;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace Estragonia;
 
@@ -12,6 +15,7 @@ namespace Estragonia;
 // safely, which can't be validated without a macOS machine to actually run this code on.
 
 /// <summary>Native interop for SkiaSharp Metal functions and GPU texture blitting.</summary>
+[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 internal static class MtlInterop
 {
 	private const string SkiaLibrary = "libSkiaSharp";
@@ -114,6 +118,7 @@ internal static class MtlInterop
 	}
 
 	/// <summary>Creates a GRBackendRenderTarget for a Metal texture.</summary>
+	// ReSharper disable once UnusedMember.Global
 	public static GRBackendRenderTarget? CreateMetalRenderTarget(int width, int height, IntPtr mtlTexture)
 	{
 		var textureInfo = new GrMtlTextureInfoNative { Texture = mtlTexture };

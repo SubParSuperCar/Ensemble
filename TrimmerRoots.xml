@@ -1,6 +1,11 @@
 <linker>
   <assembly fullname="Estragonia" preserve="all"/>
 
+  <!-- MtlInterop.cs (Estragonia) reflects into private GRContext/GRBackendTexture/GRBackendRenderTarget
+       constructors to build a Metal-backed Skia context on macOS; ILC trimming would remove those. -->
+  <assembly fullname="Avalonia.Skia" preserve="all"/>
+  <assembly fullname="SkiaSharp" preserve="all"/>
+
   <assembly fullname="Serilog.Sinks.File" preserve="all"/>
   <assembly fullname="Serilog.Expressions" preserve="all"/>
   <assembly fullname="Serilog.Settings.Configuration" preserve="all"/>

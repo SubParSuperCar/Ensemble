@@ -1,6 +1,8 @@
 using Godot;
 using Root.Common.Input;
 
+// ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+
 namespace Root.Scripts.Players;
 
 [GlobalClass]
@@ -31,9 +33,10 @@ public partial class CharacterController : CharacterBody3D
 		var terrainFocus = new Camera3D { Name = "ShamCam", Current = false };
 		AddChild(terrainFocus);
 
-		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		if (Terrain?.IsClass("Terrain3D") is true)
 			Terrain.Call("set_camera", terrainFocus);
+
+		Camera?.MakeCurrent();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -55,7 +58,6 @@ public partial class CharacterController : CharacterBody3D
 
 		if (inputDirection != Vector2.Zero)
 		{
-			// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 			var lookDirection = Camera?.GlobalBasis ?? Basis.Identity;
 			var moveDirection = lookDirection * new Vector3(inputDirection.X, 0, inputDirection.Y);
 			moveDirection.Y = 0;

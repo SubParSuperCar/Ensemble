@@ -105,7 +105,7 @@ public static partial class LuaExecutor
 		instances.Clear();
 
 		stopwatch.Stop();
-		Log.Information("Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms.",
+		Log.Information("Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms (deferred).",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);

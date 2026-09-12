@@ -150,6 +150,9 @@ See [**LICENSE.md**](../LICENSE.md) for an overview of the project's licensing.
 <details open>
   <summary>Click to expand/collapse this section.</summary>
 
+> [!NOTE]
+> Some of these screenshots may be out of date or not fully representative of the current state of the gameplay.
+
 Ensemble's main menu:
 ![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
 

@@ -6,7 +6,7 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 namespace Root.Scripts.World;
 
 [GlobalClass]
-[Autoload(Order = sbyte.MaxValue - 1, FailurePolicy = AutoloadFailurePolicy.AskUser)]
+[Autoload(Order = sbyte.MaxValue, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class WorldManager : Node, IAutoload
 {
 	public static WorldManager? Instance { get; private set; }

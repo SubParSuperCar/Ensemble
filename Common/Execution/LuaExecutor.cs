@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Lua;
 using Lua.Standard;
 using Serilog;
@@ -18,8 +19,13 @@ public static partial class LuaExecutor
 
 		InjectCustomFunctions(state.Environment);
 
+		var stopwatch = Stopwatch.StartNew();
 		var results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
-		Log.Information("< [{Results}]", string.Join(", ", results.Select(value => value.ToString())));
+
+		stopwatch.Stop();
+		Log.Information("< [{Results}] ({ElapsedMs} ms)",
+			string.Join(", ", results.Select(value => value.ToString())),
+			stopwatch.Elapsed.TotalMilliseconds);
 
 		return results;
 	}

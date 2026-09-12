@@ -52,12 +52,23 @@
                 SpeedRatio="2" />
         </Border>
 
-        <ToggleButton
-            Content="Open/Close Console UI (` / F9)"
-            IsChecked="{Binding IsConsoleVisible, Mode=TwoWay}"
-            ToolTip.Tip="Toggles the console UI. (Bound to ` and F9)"
-            Background="{DynamicResource TranslucentBackgroundBrush}"
-            HorizontalAlignment="Right" VerticalAlignment="Top" />
+        <StackPanel
+            HorizontalAlignment="Right" VerticalAlignment="Top"
+            Orientation="Horizontal" Spacing="4">
+
+            <ToggleButton
+                Content="Toggle Console (` / F9)"
+                IsChecked="{Binding IsConsoleVisible, Mode=TwoWay}"
+                ToolTip.Tip="Toggles the console UI. (Bound to ` and F9)"
+                Background="{DynamicResource TranslucentBackgroundBrush}" />
+
+            <Button
+                Content="Open Terminal (PTY, F8)"
+                Command="{Binding OpenTerminalCommand}"
+                ToolTip.Tip="Opens a new pseudo-terminal window. (Bound to F8)"
+                Background="{DynamicResource TranslucentBackgroundBrush}" />
+        </StackPanel>
+
 
         <TextBlock
             Text="&quot;Ensemble&quot; (In-Dev. Build)&#x0a;By: @SubParSuperCar &amp; Contributors"

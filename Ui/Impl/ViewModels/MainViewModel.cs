@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Godot;
+using Iciclecreek.Terminal;
 using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
@@ -58,6 +60,9 @@ public partial class MainViewModel : ViewModelBase
 		IsConsoleVisible = false;
 	}
 
+	[RelayCommand]
+	private static void OpenTerminal() => ShowNewTerminalWindow();
+
 	private static void OnProcess(double delta) => RenderingServer.ForceDraw();
 
 	private void OnSessionStarted()
@@ -82,6 +87,8 @@ public partial class MainViewModel : ViewModelBase
 	{
 		if (Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
 			IsConsoleVisible = !IsConsoleVisible;
+		else if (Input.IsActionJustPressedByEvent("ui_open_terminal", @event))
+			ShowNewTerminalWindow();
 	}
 
 	partial void OnIsConsoleVisibleChanging(bool value)
@@ -96,5 +103,11 @@ public partial class MainViewModel : ViewModelBase
 			Console = null;
 			Log.Debug("Closed {Control}.", nameof(ConsoleViewModel));
 		}
+	}
+
+	private static void ShowNewTerminalWindow()
+	{
+		var terminal = new TerminalWindow { Width = 1280, Height = 720 };
+		terminal.Show();
 	}
 }

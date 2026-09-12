@@ -29,7 +29,7 @@ public partial class AvaloniaLoader : Node
 				.Configure<App>()
 				.UseGodot()
 				.WithJetBrainsMonoFont()
-				.SetupWithoutStarting();
+				.SetupWithGodot();
 
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(CultureInfo.InvariantCulture,

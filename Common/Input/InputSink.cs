@@ -3,6 +3,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
 using AvaloniaEdit.Editing;
+using Iciclecreek.Terminal;
 
 namespace Root.Common.Input;
 
@@ -27,7 +28,7 @@ public static class InputSink
 		if (value.Args is not FocusChangedEventArgs focus)
 			return;
 
-		if (focus.NewFocusedElement is TextBox or TextArea)
+		if (focus.NewFocusedElement is TextBox or TextArea or TerminalView)
 			Sink.Acquire(Token);
 		else
 			Sink.Release(Token);

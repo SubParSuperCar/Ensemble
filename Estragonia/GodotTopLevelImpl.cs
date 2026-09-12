@@ -350,7 +350,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 				key,
 				inputEvent.GetRawInputModifiers(),
 				inputEvent.PhysicalKeycode.ToAvaloniaPhysicalKey(),
-				OS.GetKeycodeString(inputEvent.KeyLabel)
+				GetKeySymbol(inputEvent)
 			);
 
 			input(args);
@@ -371,6 +371,25 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		}
 
 		return false;
+	}
+
+	/// <summary>
+	///     Computes Avalonia's <see cref="KeyEventArgs.KeySymbol" /> from Godot's shift/layout-aware
+	///     <see cref="InputEventKey.Unicode" />, instead of the always-unshifted <see cref="InputEventKey.KeyLabel" />.
+	///     Some controls (e.g. terminal emulators, WebView) treat KeySymbol as authoritative printable text on KeyDown
+	///     and mark the event handled, so getting this wrong here means those controls never see a TextInput event
+	///     with the correctly-cased character - only the unshifted, always-uppercase key label.
+	/// </summary>
+	private static string? GetKeySymbol(InputEventKey inputEvent)
+	{
+		var codepoint = (int)inputEvent.Unicode;
+		return codepoint switch
+		{
+			// Match Avalonia's own KeySymbolHelper.IsAllowedAsciiKeySymbol: most control characters
+			// (other than a handful of whitespace/editing ones) and DEL aren't valid key symbols.
+			0 or < 0x20 and not ('\b' or '\t' or '\r' or 0x1B) or 0x7F => null,
+			_ => char.ConvertFromUtf32(codepoint)
+		};
 	}
 
 	public bool OnJoypadButton(InputEventJoypadButton inputEvent, ulong timestamp)

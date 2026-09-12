@@ -33,13 +33,66 @@ contributions while its architecture, systems, and implementation continue to ev
 > Ensemble has very little gameplay. These builds exist for testing and feedback.
 
 - **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
-  Windows and Linux `x86_64` ZIPs. Unzip and run `Ensemble.exe` or `Ensemble.x86_64` &mdash; no install, no runtime
-  needed.
+  Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or
+  `Ensemble.app` (macOS) &mdash; no install, no runtime needed.
 - **Latest commit:** trigger the [**Build
   Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
   workflow ("Run workflow"), then download the artifacts from the finished run.
 
 Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files.
+
+> [!IMPORTANT]
+> macOS builds need one extra step before they'll open &mdash; see [**Bypassing Gatekeeper on
+> macOS**](#bypassing-gatekeeper-on-macos) below.
+
+---
+
+## Platform Support
+
+<details open>
+    <summary>Click to expand/collapse this section.</summary>
+
+| Platform | Architecture(s)                | Graphics API                                                    |
+|----------|--------------------------------|-----------------------------------------------------------------|
+| Windows  | `x86_64`                       | Vulkan                                                          |
+| Linux    | `x86_64`                       | Vulkan                                                          |
+| macOS    | Universal (`x86_64` + `arm64`) | Metal (native, default), with Vulkan-via-MoltenVK as a fallback |
+
+Ensemble renders through [Godot](https://godotengine.org)'s rendering hardware interface, with an embedded
+[Avalonia UI](https://avaloniaui.net) overlay on top of it (via a heavily-modified fork of
+[**Estragonia**](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows
+and Linux. On macOS, both default to Apple's native Metal API; if you need to fall back to Vulkan (translated
+through [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) for troubleshooting, set Godot's
+`rendering/rendering_device/driver.macos` project setting to `vulkan`.
+
+Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple Silicon.
+
+### Bypassing Gatekeeper on macOS
+
+> [!NOTE]
+> Proper Apple code signing and notarization cost $99/year. Ensemble is free and open-source, so its macOS build is
+> only **ad-hoc signed** &mdash; enough for the app to actually run, but not enough for Apple to vouch for it to
+> Gatekeeper. This is expected, and isn't a sign that anything is wrong with the build.
+
+Try these in order &mdash; which step you need depends on your macOS version:
+
+1. **Right-click (or Control-click) `Ensemble.app` and choose "Open,"** then click **"Open"** again in the dialog that
+   appears. This is usually all it takes.
+2. If macOS instead says it **"cannot check it for malicious software"** and doesn't offer an Open button: go to
+   **System Settings &rarr; Privacy & Security**, scroll down, and click **"Open Anyway"** next to the mention of
+   Ensemble. (You may need to attempt step 1 first for this button to show up.) Confirm once more in the dialog that
+   follows.
+3. If macOS says `Ensemble.app` **"is damaged and can't be opened"** &mdash; a misleading message Gatekeeper shows for
+   unsigned/ad-hoc/non-notarized apps; the download itself isn't actually corrupted &mdash; clear the quarantine flag
+   yourself in Terminal:
+   ```bash
+   xattr -cr /path/to/Ensemble.app
+   ```
+   Replace the path with wherever you extracted `Ensemble.app`, then try opening it again.
+
+You only need to do this once per downloaded build.
+
+</details>
 
 ---
 
@@ -112,7 +165,6 @@ Ensemble's blocks at night, generated using the `add_rand_insts` Lua function:
 
 Ensemble's test map:
 ![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
-
 
 </details>
 

@@ -145,6 +145,7 @@ jobs:
           cd out
           ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal-debug.zip"
           find Ensemble.app -name '*.pdb' -delete
+          find Ensemble.app -name '*.dSYM' -type d -exec rm -rf {} +
           ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal.zip"
 
       - name: Upload

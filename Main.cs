@@ -269,7 +269,7 @@ public partial class Main : Node
 			instance = definition.Factory();
 
 			if (fullName is not null)
-				instance.Name = fullName.Replace('.', '-');
+				instance.Name = fullName.TrimStart("Root.").ToString().Replace('.', '-');
 
 			stage = AutoloadLoadStage.AddChild;
 			AddChild(instance);

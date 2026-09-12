@@ -60,6 +60,7 @@ public partial class WorldManager : Node, IAutoload
 		if (World is null)
 			return;
 
+		RemoveChild(World);
 		World.QueueFree();
 		World = null;
 

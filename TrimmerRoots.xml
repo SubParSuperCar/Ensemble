@@ -9,4 +9,5 @@
   <assembly fullname="Serilog.Settings.Configuration" preserve="all"/>
 
   <assembly fullname="Fonts.Avalonia.JetBrainsMono" preserve="all"/>
+  <assembly fullname="Iciclecreek.Avalonia.Terminal" preserve="all"/>
 </linker>

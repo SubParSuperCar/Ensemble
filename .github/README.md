@@ -22,8 +22,8 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 
 > [!WARNING]
 > **Ensemble** is in the early stages of development (alpha/pre-release) and should not be considered representative of
-future 1.x or later releases. The project has been open-sourced early to encourage feedback, discussion, and
-contributions while its architecture, systems, and implementation continue to evolve.
+> future 1.x or later releases. The project has been open-sourced early to encourage feedback, discussion, and
+> contributions while its architecture, systems, and implementation continue to evolve.
 
 ---
 
@@ -35,6 +35,7 @@ contributions while its architecture, systems, and implementation continue to ev
 - **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
   Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or
   `Ensemble.app` (macOS) &mdash; no install, no runtime needed.
+
 - **Latest commit:** trigger the [**Build
   Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
   workflow ("Run workflow"), then download the artifacts from the finished run.
@@ -78,16 +79,20 @@ Try these in order &mdash; which step you need depends on your macOS version:
 
 1. **Right-click (or Control-click) `Ensemble.app` and choose "Open,"** then click **"Open"** again in the dialog that
    appears. This is usually all it takes.
+
 2. If macOS instead says it **"cannot check it for malicious software"** and doesn't offer an Open button: go to
    **System Settings &rarr; Privacy & Security**, scroll down, and click **"Open Anyway"** next to the mention of
    Ensemble. (You may need to attempt step 1 first for this button to show up.) Confirm once more in the dialog that
    follows.
+
 3. If macOS says `Ensemble.app` **"is damaged and can't be opened"** &mdash; a misleading message Gatekeeper shows for
    unsigned/ad-hoc/non-notarized apps; the download itself isn't actually corrupted &mdash; clear the quarantine flag
    yourself in Terminal:
+
    ```bash
    xattr -cr /path/to/Ensemble.app
    ```
+
    Replace the path with wherever you extracted `Ensemble.app`, then try opening it again.
 
 You only need to do this once per downloaded build.

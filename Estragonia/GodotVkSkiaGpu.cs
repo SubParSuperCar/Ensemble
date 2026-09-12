@@ -104,15 +104,9 @@ internal sealed class GodotVkSkiaGpu : IGodotSkiaGpu
 
 	public bool IsLost => _grContext.IsAbandoned;
 
-	object? IOptionalFeatureProvider.TryGetFeature(Type featureType)
-	{
-		return null;
-	}
+	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) => null;
 
-	IDisposable IPlatformGraphicsContext.EnsureCurrent()
-	{
-		return EmptyDisposable.Instance;
-	}
+	IDisposable IPlatformGraphicsContext.EnsureCurrent() => EmptyDisposable.Instance;
 
 	public IPlatformGraphicsContext PlatformGraphicsContext => this;
 
@@ -122,24 +116,18 @@ internal sealed class GodotVkSkiaGpu : IGodotSkiaGpu
 		=>
 			true;
 
-	public ISkiaGpuRenderTarget? TryCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces)
-	{
-		return surfaces.OfType<GodotSkiaSurface>().FirstOrDefault() is { } surface
+	public ISkiaGpuRenderTarget? TryCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces) =>
+		surfaces.OfType<GodotSkiaSurface>().FirstOrDefault() is { } surface
 			? new GodotSkiaRenderTarget(surface, _grContext, _barrierHelper)
 			: null;
-	}
 
-	public IScopedResource<GRContext> TryGetGrContext()
-	{
-		return ScopedResource<GRContext>.Create(_grContext, static () => { });
-	}
+	public IScopedResource<GRContext> TryGetGrContext() =>
+		ScopedResource<GRContext>.Create(_grContext, static () => { });
 
-	public ISkiaSurface? TryCreateSurface(PixelSize size, ISkiaGpuRenderSession? session)
-	{
-		return session is GodotSkiaGpuRenderSession godotSession
+	public ISkiaSurface? TryCreateSurface(PixelSize size, ISkiaGpuRenderSession? session) =>
+		session is GodotSkiaGpuRenderSession godotSession
 			? CreateSurface(size, godotSession.Surface.RenderScaling)
 			: null;
-	}
 
 	public void Dispose()
 	{
@@ -271,7 +259,7 @@ internal sealed class GodotVkSkiaGpu : IGodotSkiaGpu
 
 			// Verify the main program exports Vulkan symbols
 			return handle != IntPtr.Zero
-			       && NativeLibrary.TryGetExport(handle, "vkGetInstanceProcAddr", out _);
+				   && NativeLibrary.TryGetExport(handle, "vkGetInstanceProcAddr", out _);
 		}
 
 		static bool TryLoadByName(string libraryName, out IntPtr handle)

@@ -149,10 +149,7 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 
 	[DoesNotReturn]
 	[MethodImpl(MethodImplOptions.NoInlining)]
-	private static void ThrowDisposed()
-	{
-		throw new ObjectDisposedException(nameof(VkBarrierHelper));
-	}
+	private static void ThrowDisposed() => throw new ObjectDisposedException(nameof(VkBarrierHelper));
 
 	/// <summary>
 	///     Contains a reusable command pool, command buffer and an associated fence.
@@ -205,10 +202,7 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 
 		public VkFence Fence { get; }
 
-		public bool IsAvailable()
-		{
-			return _deviceApi.GetFenceStatus(_device, Fence) == VkResult.VK_SUCCESS;
-		}
+		public bool IsAvailable() => _deviceApi.GetFenceStatus(_device, Fence) == VkResult.VK_SUCCESS;
 
 		public unsafe void Dispose()
 		{

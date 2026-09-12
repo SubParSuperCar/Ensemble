@@ -45,34 +45,25 @@ internal sealed class GodotMtlSkiaGpu : IGodotSkiaGpu
 
 	public bool IsLost => _grContext.IsAbandoned;
 
-	object? IOptionalFeatureProvider.TryGetFeature(Type featureType)
-	{
-		return null;
-	}
+	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) => null;
 
-	IDisposable IPlatformGraphicsContext.EnsureCurrent()
-	{
-		return EmptyDisposable.Instance;
-	}
+	IDisposable IPlatformGraphicsContext.EnsureCurrent() => EmptyDisposable.Instance;
 
 	public IPlatformGraphicsContext PlatformGraphicsContext => this;
 
 #pragma warning disable CA1822
 	public bool IsReadyToCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces)
 #pragma warning restore CA1822
-		=> true;
+		=>
+			true;
 
-	public ISkiaGpuRenderTarget? TryCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces)
-	{
-		return surfaces.OfType<GodotSkiaSurfaceMetal>().FirstOrDefault() is { } surface
+	public ISkiaGpuRenderTarget? TryCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces) =>
+		surfaces.OfType<GodotSkiaSurfaceMetal>().FirstOrDefault() is { } surface
 			? new GodotSkiaRenderTarget(surface, _grContext, _synchronizer)
 			: null;
-	}
 
-	public IScopedResource<GRContext> TryGetGrContext()
-	{
-		return ScopedResource<GRContext>.Create(_grContext, static () => { });
-	}
+	public IScopedResource<GRContext> TryGetGrContext() =>
+		ScopedResource<GRContext>.Create(_grContext, static () => { });
 
 	public IGodotSkiaSurface CreateSurface(PixelSize size, double renderScaling)
 	{
@@ -90,10 +81,10 @@ internal sealed class GodotMtlSkiaGpu : IGodotSkiaGpu
 			Mipmaps = 1,
 			Samples = RenderingDevice.TextureSamples.Samples1,
 			UsageBits = RenderingDevice.TextureUsageBits.SamplingBit
-			            | RenderingDevice.TextureUsageBits.ColorAttachmentBit
-			            | RenderingDevice.TextureUsageBits.CanCopyFromBit
-			            | RenderingDevice.TextureUsageBits.CanCopyToBit
-			            | RenderingDevice.TextureUsageBits.CanUpdateBit
+						| RenderingDevice.TextureUsageBits.ColorAttachmentBit
+						| RenderingDevice.TextureUsageBits.CanCopyFromBit
+						| RenderingDevice.TextureUsageBits.CanCopyToBit
+						| RenderingDevice.TextureUsageBits.CanUpdateBit
 		};
 
 		var gdRdTexture = _renderingDevice.TextureCreate(gdRdTextureFormat, new RDTextureView());
@@ -144,12 +135,10 @@ internal sealed class GodotMtlSkiaGpu : IGodotSkiaGpu
 		);
 	}
 
-	public ISkiaSurface? TryCreateSurface(PixelSize size, ISkiaGpuRenderSession? session)
-	{
-		return session is GodotSkiaGpuRenderSession godotSession
+	public ISkiaSurface? TryCreateSurface(PixelSize size, ISkiaGpuRenderSession? session) =>
+		session is GodotSkiaGpuRenderSession godotSession
 			? CreateSurface(size, godotSession.Surface.RenderScaling)
 			: null;
-	}
 
 	public void Dispose()
 	{

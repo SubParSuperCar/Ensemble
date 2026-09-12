@@ -19,23 +19,13 @@ internal sealed class GodotWindowingPlatform : IWindowingPlatform
 		return new GodotWindowImpl(platformGraphics, clipboard, GodotPlatform.Compositor);
 	}
 
-	public IWindowImpl CreateEmbeddableWindow()
-	{
+	public IWindowImpl CreateEmbeddableWindow() =>
 		throw new NotImplementedException("Embeddable windows aren't implemented yet");
-	}
 
-	public ITopLevelImpl CreateEmbeddableTopLevel()
-	{
+	public ITopLevelImpl CreateEmbeddableTopLevel() =>
 		throw new NotImplementedException("Embeddable top levels aren't implemented yet");
-	}
 
-	public ITrayIconImpl? CreateTrayIcon()
-	{
-		return null;
-	}
+	public ITrayIconImpl? CreateTrayIcon() => null;
 
-	public void GetWindowsZOrder(ReadOnlySpan<IWindowImpl> windows, Span<long> zOrder)
-	{
-		zOrder.Clear();
-	}
+	public void GetWindowsZOrder(ReadOnlySpan<IWindowImpl> windows, Span<long> zOrder) => zOrder.Clear();
 }

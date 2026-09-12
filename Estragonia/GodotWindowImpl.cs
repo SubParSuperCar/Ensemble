@@ -220,34 +220,20 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		_isVisible = false;
 	}
 
-	public void Activate()
-	{
-		_gdWindow.GrabFocus();
-	}
+	public void Activate() => _gdWindow.GrabFocus();
 
 	public void SetTopmost(bool value)
 	{
 	}
 
-	public void SetTitle(string? title)
-	{
-		_gdWindow.Title = title ?? string.Empty;
-	}
+	public void SetTitle(string? title) => _gdWindow.Title = title ?? string.Empty;
 
-	public void SetParent(IWindowImpl? parent)
-	{
-		_parentImpl = parent as GodotWindowImpl;
-	}
+	public void SetParent(IWindowImpl? parent) => _parentImpl = parent as GodotWindowImpl;
 
-	public void SetEnabled(bool enable)
-	{
-		_hostControl.SetEnabled(enable);
-	}
+	public void SetEnabled(bool enable) => _hostControl.SetEnabled(enable);
 
-	public void SetWindowDecorations(WindowDecorations enabled)
-	{
+	public void SetWindowDecorations(WindowDecorations enabled) =>
 		_gdWindow.Borderless = enabled == WindowDecorations.None;
-	}
 
 	public void SetIcon(IWindowIconImpl? icon)
 	{
@@ -314,36 +300,19 @@ internal sealed class GodotWindowImpl : IWindowImpl
 	{
 	}
 
-	void ITopLevelImpl.SetInputRoot(IInputRoot inputRoot)
-	{
-		((ITopLevelImpl)_topLevelImpl).SetInputRoot(inputRoot);
-	}
+	void ITopLevelImpl.SetInputRoot(IInputRoot inputRoot) => ((ITopLevelImpl)_topLevelImpl).SetInputRoot(inputRoot);
 
-	Point ITopLevelImpl.PointToClient(PixelPoint point)
-	{
-		return ((ITopLevelImpl)_topLevelImpl).PointToClient(point);
-	}
+	Point ITopLevelImpl.PointToClient(PixelPoint point) => ((ITopLevelImpl)_topLevelImpl).PointToClient(point);
 
-	PixelPoint ITopLevelImpl.PointToScreen(Point point)
-	{
-		return ((ITopLevelImpl)_topLevelImpl).PointToScreen(point);
-	}
+	PixelPoint ITopLevelImpl.PointToScreen(Point point) => ((ITopLevelImpl)_topLevelImpl).PointToScreen(point);
 
-	void ITopLevelImpl.SetCursor(ICursorImpl? cursor)
-	{
-		((ITopLevelImpl)_topLevelImpl).SetCursor(cursor);
-	}
+	void ITopLevelImpl.SetCursor(ICursorImpl? cursor) => ((ITopLevelImpl)_topLevelImpl).SetCursor(cursor);
 
-	IPopupImpl? ITopLevelImpl.CreatePopup()
-	{
-		return null;
-	}
+	IPopupImpl? ITopLevelImpl.CreatePopup() => null;
 
 	// Use OverlayPopupHost
-	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels)
-	{
+	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels) =>
 		((ITopLevelImpl)_topLevelImpl).SetTransparencyLevelHint(transparencyLevels);
-	}
 
 	void ITopLevelImpl.SetFrameThemeVariant(PlatformThemeVariant? themeVariant)
 	{
@@ -578,10 +547,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 		}
 
-		public void SetEnabled(bool enabled)
-		{
-			_isEnabled = enabled;
-		}
+		public void SetEnabled(bool enabled) => _isEnabled = enabled;
 
 		protected override bool InvokeGodotClassMethod(in godot_string_name method, NativeVariantPtrArgs args,
 			out godot_variant ret)
@@ -614,12 +580,10 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			return true;
 		}
 
-		protected override bool HasGodotClassMethod(in godot_string_name method)
-		{
-			return method == Node.MethodName._Ready || method == Node.MethodName._Process ||
-			       method == CanvasItem.MethodName._Draw || method == MethodName._GuiInput ||
-			       base.HasGodotClassMethod(method);
-		}
+		protected override bool HasGodotClassMethod(in godot_string_name method) =>
+			method == Node.MethodName._Ready || method == Node.MethodName._Process ||
+			method == CanvasItem.MethodName._Draw || method == MethodName._GuiInput ||
+			base.HasGodotClassMethod(method);
 
 		public override void _Ready()
 		{
@@ -710,9 +674,6 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			if (handled) AcceptEvent();
 		}
 
-		public void SetCursor(GdCursorShape cursorShape)
-		{
-			MouseDefaultCursorShape = cursorShape;
-		}
+		public void SetCursor(GdCursorShape cursorShape) => MouseDefaultCursorShape = cursorShape;
 	}
 }

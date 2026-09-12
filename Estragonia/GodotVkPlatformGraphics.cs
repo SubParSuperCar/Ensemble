@@ -22,15 +22,9 @@ internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
 
 	bool IPlatformGraphics.UsesSharedContext => true;
 
-	IPlatformGraphicsContext IPlatformGraphics.CreateContext()
-	{
-		throw new NotSupportedException();
-	}
+	IPlatformGraphicsContext IPlatformGraphics.CreateContext() => throw new NotSupportedException();
 
-	IPlatformGraphicsContext IPlatformGraphics.GetSharedContext()
-	{
-		return GetSharedContext();
-	}
+	IPlatformGraphicsContext IPlatformGraphics.GetSharedContext() => GetSharedContext();
 
 	public IGodotSkiaGpu GetSharedContext()
 	{
@@ -45,10 +39,7 @@ internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
 		return _context;
 	}
 
-	public void AddRef()
-	{
-		Interlocked.Increment(ref _refCount);
-	}
+	public void AddRef() => Interlocked.Increment(ref _refCount);
 
 	public void Release()
 	{
@@ -58,8 +49,5 @@ internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
 
 	[DoesNotReturn]
 	[MethodImpl(MethodImplOptions.NoInlining)]
-	private static void ThrowDisposed()
-	{
-		throw new ObjectDisposedException(nameof(GodotVkPlatformGraphics));
-	}
+	private static void ThrowDisposed() => throw new ObjectDisposedException(nameof(GodotVkPlatformGraphics));
 }

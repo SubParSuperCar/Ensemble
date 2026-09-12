@@ -89,7 +89,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 	private static void AddHardwareInfo(List<Kvp> lines)
 	{
 		var hwInfo = new HardwareInfo();
-		hwInfo.RefreshCPUList(includePercentProcessorTime: false, includePerformanceCounter: false);
+		hwInfo.RefreshCPUList(false, includePerformanceCounter: false);
 
 		foreach (var cpu in hwInfo.CpuList)
 		{
@@ -125,7 +125,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		foreach (var monitor in hwInfo.MonitorList)
 			Add(lines, "Monitor", monitor.Name);
 
-		hwInfo.RefreshNetworkAdapterList(includeBytesPerSec: false, includeNetworkAdapterConfiguration: false);
+		hwInfo.RefreshNetworkAdapterList(false, false);
 		foreach (
 			var nic in hwInfo.NetworkAdapterList
 				.Where(adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")

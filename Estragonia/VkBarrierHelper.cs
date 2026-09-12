@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using Godot;
 using static Estragonia.VkInterop;
 
 namespace Estragonia;
@@ -11,7 +12,7 @@ namespace Estragonia;
 ///     An helper to create Vulkan image barriers.
 /// </summary>
 internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceApi deviceApi, uint queueFamilyIndex)
-	: IDisposable
+	: ISurfaceSynchronizer
 {
 	private readonly List<ReusableBuffer> _reusableBuffers = [];
 
@@ -28,6 +29,36 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 			_reusableBuffers[i].Dispose();
 
 		_reusableBuffers.Clear();
+	}
+
+	/// <summary>Prepares the surface for Skia rendering by transitioning to COLOR_ATTACHMENT_OPTIMAL.</summary>
+	public void PrepareForRendering(IGodotSkiaSurface surface)
+	{
+		if (surface is not GodotSkiaSurface vkSurface)
+			throw new ArgumentException("Surface must be a Vulkan surface", nameof(surface));
+
+		// Clear the texture on first draw. This is already done by Avalonia, but Godot doesn't know that.
+		// We need it to avoid texture corruption on first draw on AMD GPUs. It will result in a few transparent frames after resizing.
+		// TODO: Find a better solution.
+		if (vkSurface.DrawCount == 0)
+			vkSurface.RenderingDevice.TextureClear(vkSurface.GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
+
+		// Godot leaves the image in SHADER_READ_ONLY_OPTIMAL but Skia expects it in COLOR_ATTACHMENT_OPTIMAL
+		vkSurface.TransitionLayoutTo(VkImageLayout.COLOR_ATTACHMENT_OPTIMAL);
+	}
+
+	/// <summary>Finalizes rendering by transitioning back to SHADER_READ_ONLY_OPTIMAL for Godot.</summary>
+	public void FinishRendering(IGodotSkiaSurface surface)
+	{
+		if (surface is not GodotSkiaSurface vkSurface)
+			throw new ArgumentException("Surface must be a Vulkan surface", nameof(surface));
+
+		vkSurface.SkSurface.Flush(true);
+
+		// Switch back to SHADER_READ_ONLY_OPTIMAL for Godot
+		vkSurface.TransitionLayoutTo(VkImageLayout.SHADER_READ_ONLY_OPTIMAL);
+
+		vkSurface.DrawCount++;
 	}
 
 	public unsafe void TransitionImageLayout(
@@ -118,7 +149,10 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 
 	[DoesNotReturn]
 	[MethodImpl(MethodImplOptions.NoInlining)]
-	private static void ThrowDisposed() => throw new ObjectDisposedException(nameof(VkBarrierHelper));
+	private static void ThrowDisposed()
+	{
+		throw new ObjectDisposedException(nameof(VkBarrierHelper));
+	}
 
 	/// <summary>
 	///     Contains a reusable command pool, command buffer and an associated fence.
@@ -171,7 +205,10 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 
 		public VkFence Fence { get; }
 
-		public bool IsAvailable() => _deviceApi.GetFenceStatus(_device, Fence) == VkResult.VK_SUCCESS;
+		public bool IsAvailable()
+		{
+			return _deviceApi.GetFenceStatus(_device, Fence) == VkResult.VK_SUCCESS;
+		}
 
 		public unsafe void Dispose()
 		{

@@ -8,9 +8,9 @@ namespace Estragonia;
 
 /// <summary>A render target that uses an underlying Skia surface.</summary>
 internal sealed class GodotSkiaRenderTarget(
-	GodotSkiaSurface surface,
+	IGodotSkiaSurface surface,
 	GRContext grContext,
-	VkBarrierHelper barrierHelper)
+	ISurfaceSynchronizer synchronizer)
 	: ISkiaGpuRenderTarget
 {
 	private readonly double _renderScaling = surface.RenderScaling;
@@ -21,8 +21,10 @@ internal sealed class GodotSkiaRenderTarget(
 	public PlatformRenderTargetState State =>
 		IsCorrupted ? PlatformRenderTargetState.Corrupted : PlatformRenderTargetState.Ready;
 
-	public ISkiaGpuRenderSession BeginRenderingSession(IRenderTarget.RenderTargetSceneInfo sceneInfo) =>
-		new GodotSkiaGpuRenderSession(surface, grContext, barrierHelper);
+	public ISkiaGpuRenderSession BeginRenderingSession(IRenderTarget.RenderTargetSceneInfo sceneInfo)
+	{
+		return new GodotSkiaGpuRenderSession(surface, grContext, synchronizer);
+	}
 
 	void IDisposable.Dispose()
 	{

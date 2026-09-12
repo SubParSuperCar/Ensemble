@@ -71,13 +71,18 @@ public class AvaloniaControl : GdControl
 	/// <summary>Gets the underlying Avalonia top-level element.</summary>
 	/// <returns>The Avalonia top-level element.</returns>
 	/// <exception cref="InvalidOperationException">Thrown if the control isn't ready or has been disposed.</exception>
-	public GodotTopLevel GetTopLevel() =>
-		_topLevel ?? throw new InvalidOperationException($"The {nameof(AvaloniaControl)} isn't initialized");
+	public GodotTopLevel GetTopLevel()
+	{
+		return _topLevel ?? throw new InvalidOperationException($"The {nameof(AvaloniaControl)} isn't initialized");
+	}
 
 	/// <summary>Gets the underlying Godot texture where <see cref="Control" /> is rendered.</summary>
 	/// <returns>A texture.</returns>
 	/// <exception cref="InvalidOperationException">Thrown if the control isn't ready or has been disposed.</exception>
-	public Texture2D GetTexture() => GetTopLevel().Impl.GetOrCreateSurface().GdTexture;
+	public Texture2D GetTexture()
+	{
+		return GetTopLevel().Impl.GetOrCreateSurface().GdTexture;
+	}
 
 	protected override bool InvokeGodotClassMethod(in godot_string_name method, NativeVariantPtrArgs args,
 		out godot_variant ret)
@@ -116,13 +121,15 @@ public class AvaloniaControl : GdControl
 		return true;
 	}
 
-	protected override bool HasGodotClassMethod(in godot_string_name method) =>
-		method == Node.MethodName._Ready
-		|| method == Node.MethodName._Process
-		|| method == CanvasItem.MethodName._Draw
-		|| method == MethodName._GuiInput
-		|| method == MethodName._HasPoint
-		|| base.HasGodotClassMethod(method);
+	protected override bool HasGodotClassMethod(in godot_string_name method)
+	{
+		return method == Node.MethodName._Ready
+		       || method == Node.MethodName._Process
+		       || method == CanvasItem.MethodName._Draw
+		       || method == MethodName._GuiInput
+		       || method == MethodName._HasPoint
+		       || base.HasGodotClassMethod(method);
+	}
 
 	public override void _Ready()
 	{
@@ -138,7 +145,7 @@ public class AvaloniaControl : GdControl
 
 		var locator = AvaloniaLocator.Current;
 
-		if (locator.GetService<IPlatformGraphics>() is not GodotVkPlatformGraphics graphics)
+		if (locator.GetService<IPlatformGraphics>() is not IGodotPlatformGraphics graphics)
 		{
 			GD.PrintErr(
 				"No Godot platform graphics found, did you forget to register your Avalonia app with UseGodot()?");
@@ -188,11 +195,20 @@ public class AvaloniaControl : GdControl
 		RenderAvalonia();
 	}
 
-	private PixelSize GetFrameSize() => PixelSize.FromSize(Size.ToAvaloniaSize(), 1.0);
+	private PixelSize GetFrameSize()
+	{
+		return PixelSize.FromSize(Size.ToAvaloniaSize(), 1.0);
+	}
 
-	private void RenderAvalonia() => _topLevel?.Impl.OnDraw(new Rect(Size.ToAvaloniaSize()));
+	private void RenderAvalonia()
+	{
+		_topLevel?.Impl.OnDraw(new Rect(Size.ToAvaloniaSize()));
+	}
 
-	private void OnAvaloniaCursorChanged(CursorShape cursor) => MouseDefaultCursorShape = cursor;
+	private void OnAvaloniaCursorChanged(CursorShape cursor)
+	{
+		MouseDefaultCursorShape = cursor;
+	}
 
 	private void OnResized()
 	{
@@ -227,7 +243,10 @@ public class AvaloniaControl : GdControl
 		inputElement.Focus(navigationMethod);
 	}
 
-	private void OnFocusExited() => _topLevel?.Impl.OnLostFocus();
+	private void OnFocusExited()
+	{
+		_topLevel?.Impl.OnLostFocus();
+	}
 
 	public override void _Draw()
 	{
@@ -298,8 +317,9 @@ public class AvaloniaControl : GdControl
 		return args.Handled;
 	}
 
-	private static bool TryHandleInput(GodotTopLevelImpl impl, InputEvent inputEvent) =>
-		inputEvent switch
+	private static bool TryHandleInput(GodotTopLevelImpl impl, InputEvent inputEvent)
+	{
+		return inputEvent switch
 		{
 			InputEventMouseMotion mouseMotion => impl.OnMouseMotion(mouseMotion, Time.GetTicksMsec()),
 			InputEventMouseButton mouseButton => impl.OnMouseButton(mouseButton, Time.GetTicksMsec()),
@@ -310,6 +330,7 @@ public class AvaloniaControl : GdControl
 			InputEventJoypadMotion joypadMotion => impl.OnJoypadMotion(joypadMotion, Time.GetTicksMsec()),
 			_ => false
 		};
+	}
 
 	private bool TryMoveFocus(NavigationDirection direction, InputEvent inputEvent)
 	{
@@ -363,7 +384,10 @@ public class AvaloniaControl : GdControl
 		}
 	}
 
-	private void OnMouseExited() => _topLevel?.Impl.OnMouseExited(Time.GetTicksMsec());
+	private void OnMouseExited()
+	{
+		_topLevel?.Impl.OnMouseExited(Time.GetTicksMsec());
+	}
 
 	private void OnFilesDropped(string[] files)
 	{
@@ -378,8 +402,10 @@ public class AvaloniaControl : GdControl
 			AcceptEvent();
 	}
 
-	public override bool _HasPoint(Vector2 point) =>
-		_topLevel?.InputHitTest(point.ToAvaloniaPoint() / _topLevel.RenderScaling, false) is not null;
+	public override bool _HasPoint(Vector2 point)
+	{
+		return _topLevel?.InputHitTest(point.ToAvaloniaPoint() / _topLevel.RenderScaling, false) is not null;
+	}
 
 	protected override void Dispose(bool disposing)
 	{

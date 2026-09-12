@@ -87,6 +87,73 @@ jobs:
           path: Ensemble-${{ env.ID }}-linux-x86_64*.zip
           if-no-files-found: error
 
+  macos:
+    name: macOS (universal)
+    runs-on: macos-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Identify build
+        run: |
+          set -euo pipefail
+          id="${GITHUB_REF_NAME}"
+          [ "${GITHUB_REF_TYPE}" = tag ] || id="$(git rev-parse --short HEAD)"
+          echo "ID=${id}" >> "${GITHUB_ENV}"
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_macos.universal.zip"
+          curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          unzip -q godot.zip -d "${HOME}/godot"
+          unzip -q templates.tpz -d "${HOME}/tpl"
+          template_dir="${HOME}/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable.mono"
+          mkdir -p "${template_dir}"
+          mv "${HOME}/tpl/templates"/* "${template_dir}/"
+          bin="${HOME}/godot/Godot_mono.app/Contents/MacOS/Godot"
+          chmod +x "${bin}"
+          echo "GODOT=${bin}" >> "${GITHUB_ENV}"
+
+      - name: Disable Terrain3D editor plugin
+        run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
+
+      - name: Export
+        timeout-minutes: 45
+        run: |
+          set -euo pipefail
+          dotnet restore Game.csproj
+          dotnet build Game.csproj -c ExportRelease --no-restore
+          "${GODOT}" --headless --path . --import || true
+          "${GODOT}" --headless --path . --import || true
+          mkdir -p out
+          "${GODOT}" --headless --path . --export-release "Crapple macOS" "${PWD}/out/Ensemble.app"
+          test -d out/Ensemble.app
+          test -s out/Ensemble.app/Contents/MacOS/Ensemble
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          cd out
+          ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal-debug.zip"
+          find Ensemble.app -name '*.pdb' -delete
+          ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal.zip"
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: Ensemble-${{ env.ID }}-macos-universal
+          path: Ensemble-${{ env.ID }}-macos-universal*.zip
+          if-no-files-found: error
+
   windows:
     name: Windows (x86_64)
     runs-on: windows-latest
@@ -168,7 +235,7 @@ jobs:
 
   publish:
     name: Publish
-    needs: [ linux, windows ]
+    needs: [ linux, windows, macos ]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 15

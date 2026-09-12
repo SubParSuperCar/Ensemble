@@ -7,7 +7,7 @@ using Avalonia.Platform;
 namespace Estragonia;
 
 /// <summary>Godot Vulkan-based <see cref="IPlatformGraphics" /> implementation.</summary>
-internal sealed class GodotVkPlatformGraphics : IPlatformGraphics, IDisposable
+internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
 {
 	private GodotVkSkiaGpu? _context;
 	private int _refCount;
@@ -22,11 +22,17 @@ internal sealed class GodotVkPlatformGraphics : IPlatformGraphics, IDisposable
 
 	bool IPlatformGraphics.UsesSharedContext => true;
 
-	IPlatformGraphicsContext IPlatformGraphics.CreateContext() => throw new NotSupportedException();
+	IPlatformGraphicsContext IPlatformGraphics.CreateContext()
+	{
+		throw new NotSupportedException();
+	}
 
-	IPlatformGraphicsContext IPlatformGraphics.GetSharedContext() => GetSharedContext();
+	IPlatformGraphicsContext IPlatformGraphics.GetSharedContext()
+	{
+		return GetSharedContext();
+	}
 
-	public GodotVkSkiaGpu GetSharedContext()
+	public IGodotSkiaGpu GetSharedContext()
 	{
 		if (Volatile.Read(ref _refCount) == 0)
 			ThrowDisposed();
@@ -39,15 +45,21 @@ internal sealed class GodotVkPlatformGraphics : IPlatformGraphics, IDisposable
 		return _context;
 	}
 
-	[DoesNotReturn]
-	[MethodImpl(MethodImplOptions.NoInlining)]
-	private static void ThrowDisposed() => throw new ObjectDisposedException(nameof(GodotVkPlatformGraphics));
-
-	public void AddRef() => Interlocked.Increment(ref _refCount);
+	public void AddRef()
+	{
+		Interlocked.Increment(ref _refCount);
+	}
 
 	public void Release()
 	{
 		if (Interlocked.Decrement(ref _refCount) == 0)
 			Dispose();
+	}
+
+	[DoesNotReturn]
+	[MethodImpl(MethodImplOptions.NoInlining)]
+	private static void ThrowDisposed()
+	{
+		throw new ObjectDisposedException(nameof(GodotVkPlatformGraphics));
 	}
 }

@@ -206,6 +206,7 @@ common/physics_interpolation=true
 [rendering]
 
 renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
 lights_and_shadows/use_physical_light_units=true
 lights_and_shadows/positional_shadow/soft_shadow_filter_quality=3
 anti_aliasing/quality/use_debanding=true

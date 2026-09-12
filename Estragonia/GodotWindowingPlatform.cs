@@ -9,7 +9,7 @@ internal sealed class GodotWindowingPlatform : IWindowingPlatform
 {
 	public IWindowImpl CreateWindow()
 	{
-		var platformGraphics = AvaloniaLocator.Current.GetService<IPlatformGraphics>() as GodotVkPlatformGraphics;
+		var platformGraphics = AvaloniaLocator.Current.GetService<IPlatformGraphics>() as IGodotPlatformGraphics;
 		var clipboard = AvaloniaLocator.Current.GetService<IClipboard>();
 
 		if (platformGraphics is null || clipboard is null)
@@ -19,13 +19,23 @@ internal sealed class GodotWindowingPlatform : IWindowingPlatform
 		return new GodotWindowImpl(platformGraphics, clipboard, GodotPlatform.Compositor);
 	}
 
-	public IWindowImpl CreateEmbeddableWindow() =>
+	public IWindowImpl CreateEmbeddableWindow()
+	{
 		throw new NotImplementedException("Embeddable windows aren't implemented yet");
+	}
 
-	public ITopLevelImpl CreateEmbeddableTopLevel() =>
+	public ITopLevelImpl CreateEmbeddableTopLevel()
+	{
 		throw new NotImplementedException("Embeddable top levels aren't implemented yet");
+	}
 
-	public ITrayIconImpl? CreateTrayIcon() => null;
+	public ITrayIconImpl? CreateTrayIcon()
+	{
+		return null;
+	}
 
-	public void GetWindowsZOrder(ReadOnlySpan<IWindowImpl> windows, Span<long> zOrder) => zOrder.Clear();
+	public void GetWindowsZOrder(ReadOnlySpan<IWindowImpl> windows, Span<long> zOrder)
+	{
+		zOrder.Clear();
+	}
 }

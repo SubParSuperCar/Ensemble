@@ -6,12 +6,11 @@ using Avalonia.Platform;
 
 namespace Estragonia;
 
-/// <summary>Godot Vulkan-based <see cref="IPlatformGraphics" /> implementation.</summary>
-internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
+/// <summary>Godot Metal-based <see cref="IPlatformGraphics" /> implementation.</summary>
+internal sealed class GodotMtlPlatformGraphics : IGodotPlatformGraphics
 {
-	private GodotVkSkiaGpu? _context;
+	private GodotMtlSkiaGpu? _context;
 	private int _refCount;
-
 
 	public void Dispose()
 	{
@@ -40,7 +39,7 @@ internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
 		if (_context is not null && !_context.IsLost) return _context;
 		_context?.Dispose();
 		_context = null;
-		_context = new GodotVkSkiaGpu();
+		_context = new GodotMtlSkiaGpu();
 
 		return _context;
 	}
@@ -60,6 +59,6 @@ internal sealed class GodotVkPlatformGraphics : IGodotPlatformGraphics
 	[MethodImpl(MethodImplOptions.NoInlining)]
 	private static void ThrowDisposed()
 	{
-		throw new ObjectDisposedException(nameof(GodotVkPlatformGraphics));
+		throw new ObjectDisposedException(nameof(GodotMtlPlatformGraphics));
 	}
 }

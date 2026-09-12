@@ -1,5 +1,4 @@
 using System;
-using Avalonia.Platform.Surfaces;
 using Avalonia.Skia;
 using Godot;
 using SkiaSharp;
@@ -9,7 +8,7 @@ using static Estragonia.VkInterop;
 
 namespace Estragonia;
 
-/// <summary>Encapsulates a Skia surface along with the Godot texture it comes from.</summary>
+/// <summary>Encapsulates a Skia surface along with the Godot texture it comes from (Vulkan backend).</summary>
 internal sealed class GodotSkiaSurface(
 	SKSurface skSurface,
 	Texture2Drd gdTexture,
@@ -18,21 +17,20 @@ internal sealed class GodotSkiaSurface(
 	RenderingDevice renderingDevice,
 	double renderScaling,
 	VkBarrierHelper barrierHelper)
-	: ISkiaSurface, IPlatformRenderSurface
+	: IGodotSkiaSurface
 {
-	public SKSurface SkSurface { get; } = skSurface;
-
-	public Texture2Drd GdTexture { get; } = gdTexture;
-
 	public VkImage VkImage { get; } = vkImage;
-
-	public RenderingDevice RenderingDevice { get; } = renderingDevice;
-
-	public double RenderScaling { get; set; } = renderScaling;
 
 	public VkImageLayout LastLayout { get; set; } = lastLayout;
 
 	public VkBarrierHelper BarrierHelper { get; } = barrierHelper;
+	public SKSurface SkSurface { get; } = skSurface;
+
+	public Texture2Drd GdTexture { get; } = gdTexture;
+
+	public RenderingDevice RenderingDevice { get; } = renderingDevice;
+
+	public double RenderScaling { get; set; } = renderScaling;
 
 	public ulong DrawCount { get; set; }
 
@@ -42,7 +40,10 @@ internal sealed class GodotSkiaSurface(
 
 	bool ISkiaSurface.CanBlit => false;
 
-	void ISkiaSurface.Blit(SKCanvas canvas) => throw new NotSupportedException();
+	void ISkiaSurface.Blit(SKCanvas canvas)
+	{
+		throw new NotSupportedException();
+	}
 
 	public void Dispose()
 	{

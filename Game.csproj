@@ -154,6 +154,7 @@
   <Target Name="PrepareGodotExport" BeforeTargets="Build">
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
+    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/macos"/>
 
     <WriteLinesToFile File="$(MSBuildProjectDirectory)/bin/.gdignore" Lines="" Overwrite="false"/>
   </Target>

@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://d3grw53v0y6b8"
 path.s3tc="res://.godot/imported/cartesian_grid.png-a0b04f34c728ffa02c86c60b35d3695e.s3tc.ctex"
+path.etc2="res://.godot/imported/cartesian_grid.png-a0b04f34c728ffa02c86c60b35d3695e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/images/cartesian_grid.png"
-dest_files=["res://.godot/imported/cartesian_grid.png-a0b04f34c728ffa02c86c60b35d3695e.s3tc.ctex"]
+dest_files=["res://.godot/imported/cartesian_grid.png-a0b04f34c728ffa02c86c60b35d3695e.s3tc.ctex", "res://.godot/imported/cartesian_grid.png-a0b04f34c728ffa02c86c60b35d3695e.etc2.ctex"]
 
 [params]
 

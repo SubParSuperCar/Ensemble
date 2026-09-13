@@ -34,7 +34,7 @@ jobs:
           echo "ID=${id}" >> "${GITHUB_ENV}"
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -104,7 +104,7 @@ jobs:
           echo "ID=${id}" >> "${GITHUB_ENV}"
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 
@@ -177,7 +177,7 @@ jobs:
           "ID=$id" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v6
         with:
           global-json-file: global.json
 

@@ -21,7 +21,7 @@ internal enum PlacementState : byte
 	LimitReached
 }
 
-// TODO: W.I.P.
+// TODO: Implement Separating Axis Theorem (SAT)-based placement overlap resolution
 public partial class ConstructTool : ToolBase
 {
 	private const float OverlapProbeInset = 0.02f;

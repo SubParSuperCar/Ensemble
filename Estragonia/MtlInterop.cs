@@ -15,7 +15,8 @@ namespace Estragonia;
 // safely, which can't be validated without a macOS machine to actually run this code on.
 
 /// <summary>Native interop for SkiaSharp Metal functions and GPU texture blitting.</summary>
-[SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
+[SuppressMessage("Interoperability",
+	"SYSLIB1054:Use \'LibraryImportAttribute\' instead of \'DllImportAttribute\' to generate P/Invoke marshalling code at compile time")]
 internal static class MtlInterop
 {
 	private const string SkiaLibrary = "libSkiaSharp";

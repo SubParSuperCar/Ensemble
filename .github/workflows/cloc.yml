@@ -30,6 +30,6 @@ jobs:
       - name: Upload LoC artifact
         uses: actions/upload-artifact@v7
         with:
-          name: source-loc
+          name: src-loc
           path: cloc.md
           if-no-files-found: error

@@ -53,7 +53,7 @@ jobs:
           chmod +x "${bin}"
           echo "GODOT=${bin}" >> "${GITHUB_ENV}"
 
-      - name: Disable Terrain3D editor plugin
+      - name: Neuter Terrain3D editor plugin
         run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
 
       - name: Export
@@ -123,7 +123,7 @@ jobs:
           chmod +x "${bin}"
           echo "GODOT=${bin}" >> "${GITHUB_ENV}"
 
-      - name: Disable Terrain3D editor plugin
+      - name: Neuter Terrain3D editor plugin
         run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
 
       - name: Export
@@ -195,7 +195,7 @@ jobs:
                  (Get-ChildItem C:\godot -Recurse -Filter *_win64.exe | Select-Object -First 1)
           "GODOT=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
-      - name: Disable Terrain3D editor plugin
+      - name: Neuter Terrain3D editor plugin
         run: Move-Item addons\terrain_3d\plugin.cfg addons\terrain_3d\plugin.cfg.off
 
       - name: Export

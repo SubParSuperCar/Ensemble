@@ -3,19 +3,19 @@
 namespace Root.Autoloading;
 
 /// <summary>
-///     An attribute given to game components that will be automatically instantiated when the game loads.
+///     An attribute given to game components that should be automatically instantiated when the game loads.
 ///     For initialization errors to be caught, this attribute should be paired with <see cref="IAutoload" />.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class AutoloadAttribute : Attribute
 {
 	/// <summary>
-	///     The run context(s) that this Autoload will be instantiated in.
+	///     The run context(s) that this Autoload should be instantiated in.
 	/// </summary>
 	public AutoloadScope Scope { get; init; } = AutoloadScope.RegularClient | AutoloadScope.HeadlessServer;
 
 	/// <summary>
-	///     The order that this Autoload will be instantiated in,
+	///     The order that this Autoload should be instantiated in,
 	///     where lower values are earlier and higher values are later.
 	///     Ranges from -128 (<see cref="sbyte.MinValue" />) to 127 (<see cref="sbyte.MaxValue" />).
 	///     If more than one Autoload object has the same order,

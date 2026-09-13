@@ -4,17 +4,17 @@ namespace Root.Autoloading;
 public enum AutoloadScope : byte
 {
 	/// <summary>
-	///     This Autoload will never be instantiated. Effectively disabled.
+	///     This Autoload may never be instantiated. Effectively disabled.
 	/// </summary>
 	None = 0,
 
 	/// <summary>
-	///     This Autoload will be run on clients, where rendering is enabled.
+	///     This Autoload may be run on clients, where rendering is enabled.
 	/// </summary>
 	RegularClient = 1 << 0,
 
 	/// <summary>
-	///     This Autoload will be run on headless servers, where rendering is disabled.
+	///     This Autoload may be run on headless servers, where rendering is disabled.
 	/// </summary>
 	HeadlessServer = 1 << 1
 }

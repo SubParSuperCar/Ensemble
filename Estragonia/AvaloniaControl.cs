@@ -14,6 +14,9 @@ using GdInput = Godot.Input;
 using GdKey = Godot.Key;
 using GdWindow = Godot.Window;
 
+// ReSharper disable MemberCanBeProtected.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Estragonia;
 
 /// <summary>Renders an Avalonia control and forwards input to it.</summary>
@@ -57,6 +60,7 @@ public class AvaloniaControl : GdControl
 	///     The mapped actions are ui_left, ui_right, ui_up, ui_down, ui_accept and ui_cancel.
 	///     Defaults to true.
 	/// </summary>
+	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
 	public bool AutoConvertUiActionToKeyDown { get; set; } = true;
 
 	/// <summary>Gets the underlying Avalonia top-level element.</summary>

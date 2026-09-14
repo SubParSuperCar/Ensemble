@@ -213,5 +213,6 @@ internal sealed unsafe class VkDeviceApi
 	public void DestroyFence(VkDevice device, VkFence fence, IntPtr pAllocator) =>
 		_vkDestroyFence(device, fence, pAllocator);
 
+	// ReSharper disable once UnusedMember.Global
 	public void QueueWaitIdle(VkQueue queue) => _vkQueueWaitIdle(queue).VerifySuccess(nameof(QueueWaitIdle));
 }

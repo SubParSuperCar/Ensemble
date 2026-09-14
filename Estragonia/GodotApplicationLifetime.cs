@@ -15,6 +15,7 @@ internal sealed class GodotApplicationLifetime : IClassicDesktopStyleApplication
 	private readonly List<AvWindow> _windows = [];
 	private CombinedDisposable? _eventSubscription;
 
+	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 	public string[]? Args { get; set; }
 
 	public ShutdownMode ShutdownMode { get; set; }

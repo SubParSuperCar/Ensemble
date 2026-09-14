@@ -45,6 +45,7 @@ public static class AppBuilderExtensions
 		///     This enables <c>Application.Current.ApplicationLifetime</c> to return a valid desktop lifetime,
 		///     which is required for <c>Window.ShowDialog()</c> to find an owner window.
 		/// </summary>
+		// ReSharper disable once UnusedMethodReturnValue.Global
 		public AppBuilder SetupWithGodot() => builder.SetupWithLifetime(GodotPlatform.CreateApplicationLifetime());
 	}
 }

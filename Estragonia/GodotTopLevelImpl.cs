@@ -427,6 +427,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public void OnLostFocus() => LostFocus?.Invoke();
 
+	// ReSharper disable once UnusedMethodReturnValue.Global
 	public bool OnMouseExited(ulong timestamp)
 	{
 		if (InputRoot is null || Input is not { } input)

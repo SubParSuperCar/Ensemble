@@ -1,0 +1,27 @@
+# Formatting rules inherited from upstream Estragonia, so that vendored sources keep their original shape.
+
+[*.cs]
+
+# Wrap overlong parameter and argument lists one item per line
+resharper_csharp_wrap_parameters_style = chop_if_long
+resharper_csharp_wrap_arguments_style = chop_if_long
+resharper_csharp_wrap_extends_list_style = chop_if_long
+resharper_csharp_wrap_multiple_type_parameter_constraints_style = chop_always
+resharper_csharp_wrap_after_declaration_lpar = true
+resharper_csharp_wrap_before_declaration_rpar = true
+resharper_csharp_wrap_after_invocation_lpar = true
+resharper_csharp_wrap_before_invocation_rpar = true
+resharper_keep_existing_declaration_parens_arrangement = false
+resharper_keep_existing_invocation_parens_arrangement = false
+resharper_keep_existing_embedded_arrangement = false
+resharper_place_simple_embedded_statement_on_same_line = false
+resharper_place_expr_method_on_single_line = if_owner_is_single_line
+resharper_place_expr_property_on_single_line = if_owner_is_single_line
+
+# Indent continuations with tabs instead of aligning them with spaces
+resharper_csharp_alignment_tab_fill_style = use_tabs_only
+resharper_align_multiline_binary_expressions_chain = false
+resharper_align_multiline_statement_conditions = false
+resharper_align_multiline_argument = false
+resharper_align_multiline_parameter = false
+resharper_align_multiline_extends_list = false

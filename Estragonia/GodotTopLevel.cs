@@ -12,7 +12,8 @@ public sealed class GodotTopLevel : EmbeddableControlRoot
 {
 	static GodotTopLevel()
 	{
-		// TopLevel has Cycle navigation mode but we want the focus to be able to leave Avalonia to return back to godot: use Continue
+		// TopLevel uses Cycle navigation mode, but the focus should be able to leave Avalonia
+		// and return to Godot, so use Continue instead
 		KeyboardNavigation.TabNavigationProperty.OverrideDefaultValue<GodotTopLevel>(KeyboardNavigationMode.Continue);
 	}
 

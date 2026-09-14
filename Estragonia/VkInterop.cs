@@ -1,15 +1,12 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-// ReSharper disable UnusedMember.Global
-
 namespace Estragonia;
 
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
 
-/// <summary>Contains some used Vulkan constants.</summary>
+/// <summary>Contains the Vulkan constants, enumerations and structures used by Estragonia.</summary>
 [SuppressMessage("ReSharper", "InconsistentNaming", Justification = "Matches the official Vulkan names")]
-[SuppressMessage("ReSharper", "NotAccessedField.Global", Justification = "Used in interop")]
 internal static class VkInterop
 {
 	internal const uint VK_QUEUE_FAMILY_IGNORED = ~0U;
@@ -532,7 +529,7 @@ internal static class VkInterop
 	// Provided by VK_VERSION_1_0
 	internal struct VkImage(ulong handle)
 	{
-		public readonly ulong Handle = handle;
+		public ulong Handle = handle;
 	}
 
 	// Provided by VK_VERSION_1_0

@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -13,22 +12,18 @@ using AvDispatcher = Avalonia.Threading.Dispatcher;
 using GdControl = Godot.Control;
 using GdInput = Godot.Input;
 using GdKey = Godot.Key;
-using Window = Godot.Window;
-
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
-// ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+using GdWindow = Godot.Window;
 
 namespace Estragonia;
 
 /// <summary>Renders an Avalonia control and forwards input to it.</summary>
 public class AvaloniaControl : GdControl
 {
-	private Window? _connectedWindow;
+	private GdWindow? _connectedWindow;
 	private GodotTopLevel? _topLevel;
 
 	/// <summary>Gets or sets the underlying Avalonia control that will be rendered.</summary>
-	protected AvControl? Control
+	public AvControl? Control
 	{
 		get;
 		set
@@ -42,14 +37,12 @@ public class AvaloniaControl : GdControl
 	}
 
 	/// <summary>Gets or sets the render scaling for the Avalonia control. Defaults to 1.0.</summary>
-	[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Doesn't affect correctness")]
-	protected double RenderScaling
+	public double RenderScaling
 	{
 		get;
-		// ReSharper disable once PropertyCanBeMadeInitOnly.Global
 		set
 		{
-			if (field == value)
+			if (field.Equals(value))
 				return;
 
 			field = value;
@@ -64,9 +57,7 @@ public class AvaloniaControl : GdControl
 	///     The mapped actions are ui_left, ui_right, ui_up, ui_down, ui_accept and ui_cancel.
 	///     Defaults to true.
 	/// </summary>
-	// ReSharper disable once InconsistentNaming
-	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-	public bool AutoConvertUIActionToKeyDown { get; set; } = true;
+	public bool AutoConvertUiActionToKeyDown { get; set; } = true;
 
 	/// <summary>Gets the underlying Avalonia top-level element.</summary>
 	/// <returns>The Avalonia top-level element.</returns>
@@ -79,8 +70,11 @@ public class AvaloniaControl : GdControl
 	/// <exception cref="InvalidOperationException">Thrown if the control isn't ready or has been disposed.</exception>
 	public Texture2D GetTexture() => GetTopLevel().Impl.GetOrCreateSurface().GdTexture;
 
-	protected override bool InvokeGodotClassMethod(in godot_string_name method, NativeVariantPtrArgs args,
-		out godot_variant ret)
+	protected override bool InvokeGodotClassMethod(
+		in godot_string_name method,
+		NativeVariantPtrArgs args,
+		out godot_variant ret
+	)
 	{
 		if (method == Node.MethodName._Ready && args.Count == 0)
 		{
@@ -110,10 +104,14 @@ public class AvaloniaControl : GdControl
 			return true;
 		}
 
-		if (method != MethodName._HasPoint || args.Count != 1)
-			return base.InvokeGodotClassMethod(method, args, out ret);
-		ret = VariantUtils.CreateFrom(_HasPoint(VariantUtils.ConvertTo<Vector2>(args[0])));
-		return true;
+		// ReSharper disable once InvertIf -- keeps this branch symmetric with the ones above
+		if (method == MethodName._HasPoint && args.Count == 1)
+		{
+			ret = VariantUtils.CreateFrom(_HasPoint(VariantUtils.ConvertTo<Vector2>(args[0])));
+			return true;
+		}
+
+		return base.InvokeGodotClassMethod(method, args, out ret);
 	}
 
 	protected override bool HasGodotClassMethod(in godot_string_name method) =>
@@ -129,7 +127,8 @@ public class AvaloniaControl : GdControl
 		if (Engine.IsEditorHint())
 			return;
 
-		// Skia outputs a premultiplied alpha image, ensure we got the correct blend mode if the user didn't specify any
+		// Skia outputs a premultiplied alpha image, so ensure the blend mode is correct
+		// when the user didn't specify one
 		Material ??= new CanvasItemMaterial
 		{
 			BlendMode = CanvasItemMaterial.BlendModeEnum.PremultAlpha,
@@ -141,15 +140,19 @@ public class AvaloniaControl : GdControl
 		if (locator.GetService<IPlatformGraphics>() is not IGodotPlatformGraphics graphics)
 		{
 			GD.PrintErr(
-				"No Godot platform graphics found, did you forget to register your Avalonia app with UseGodot()?");
+				"No Godot platform graphics found, did you forget to register your Avalonia app with UseGodot()?"
+			);
 			return;
 		}
 
-		var topLevelImpl =
-			new GodotTopLevelImpl(graphics, locator.GetRequiredService<IClipboard>(), GodotPlatform.Compositor)
-			{
-				CursorChanged = OnAvaloniaCursorChanged
-			};
+		var topLevelImpl = new GodotTopLevelImpl(
+			graphics,
+			locator.GetRequiredService<IClipboard>(),
+			GodotPlatform.Compositor
+		)
+		{
+			CursorChanged = OnAvaloniaCursorChanged
+		};
 
 		topLevelImpl.SetRenderSize(GetFrameSize(), RenderScaling);
 
@@ -181,8 +184,8 @@ public class AvaloniaControl : GdControl
 	{
 		GodotPlatform.TriggerRenderTick();
 
-		// Process all queued Avalonia dispatcher work items (layout passes, animations, etc.)
-		// This ensures layout is up-to-date before we force a synchronous render.
+		// Process all the queued Avalonia dispatcher work items (layout passes, animations, and so on),
+		// so that the layout is up to date before a synchronous render is forced
 		AvDispatcher.UIThread.RunJobs();
 
 		RenderAvalonia();
@@ -210,14 +213,13 @@ public class AvaloniaControl : GdControl
 
 		_topLevel.Focus();
 
-		if (_topLevel.FocusManager?.FindFirstFocusableElement() is not { } inputElement)
+		if (_topLevel.FocusManager.FindFirstFocusableElement() is not { } inputElement)
 			return;
 
 		NavigationMethod navigationMethod;
 
-		if (
-			GdInput.IsActionPressed(GodotBuiltInActions.UIFocusNext) ||
-			GdInput.IsActionPressed(GodotBuiltInActions.UIFocusPrev))
+		if (GdInput.IsActionPressed(GodotBuiltInActions.UiFocusNext)
+			|| GdInput.IsActionPressed(GodotBuiltInActions.UiFocusPrev))
 			navigationMethod = NavigationMethod.Tab;
 		else if (GdInput.GetMouseButtonMask() != 0)
 			navigationMethod = NavigationMethod.Pointer;
@@ -252,40 +254,45 @@ public class AvaloniaControl : GdControl
 		if (!inputEvent.IsActionType())
 			return false;
 
-		if (inputEvent.IsActionPressed(GodotBuiltInActions.UIFocusNext, true, true))
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiFocusNext, true, true))
 			return TryMoveFocus(NavigationDirection.Next, inputEvent);
 
-		if (inputEvent.IsActionPressed(GodotBuiltInActions.UIFocusPrev, true, true))
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiFocusPrev, true, true))
 			return TryMoveFocus(NavigationDirection.Previous, inputEvent);
 
-		if (!AutoConvertUIActionToKeyDown) return false;
-		if (inputEvent.IsActionPressed(GodotBuiltInActions.UILeft, true, true))
+		if (!AutoConvertUiActionToKeyDown)
+			return false;
+
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiLeft, true, true))
 			return SimulateKeyDownFromAction(inputEvent, GdKey.Left);
 
-		if (inputEvent.IsActionPressed(GodotBuiltInActions.UIRight, true, true))
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiRight, true, true))
 			return SimulateKeyDownFromAction(inputEvent, GdKey.Right);
 
-		if (inputEvent.IsActionPressed(GodotBuiltInActions.UIUp, true, true))
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiUp, true, true))
 			return SimulateKeyDownFromAction(inputEvent, GdKey.Up);
 
-		if (inputEvent.IsActionPressed(GodotBuiltInActions.UIDown, true, true))
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiDown, true, true))
 			return SimulateKeyDownFromAction(inputEvent, GdKey.Down);
 
-		if (inputEvent.IsActionPressed(GodotBuiltInActions.UIAccept, true, true))
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiAccept, true, true))
 			return SimulateKeyDownFromAction(inputEvent, GdKey.Enter);
 
-		return
-			inputEvent.IsActionPressed(GodotBuiltInActions.UICancel, true, true) &&
-			SimulateKeyDownFromAction(inputEvent, GdKey.Escape);
+		// ReSharper disable once ConvertIfStatementToReturnStatement -- keeps the action list uniform
+		if (inputEvent.IsActionPressed(GodotBuiltInActions.UiCancel, true, true))
+			return SimulateKeyDownFromAction(inputEvent, GdKey.Escape);
+
+		return false;
 	}
 
 	private bool SimulateKeyDownFromAction(InputEvent inputEvent, GdKey key)
 	{
-		// if the action already matches the key we're going to simulate, abort: it already got through TryHandleInput and wasn't handled
+		// If the action already matches the key about to be simulated, abort: it already went
+		// through TryHandleInput and wasn't handled
 		if (inputEvent is InputEventKey inputEventKey && inputEventKey.Keycode == key)
 			return false;
 
-		if (_topLevel?.FocusManager?.GetFocusedElement() is not { } currentElement)
+		if (_topLevel?.FocusManager.GetFocusedElement() is not { } currentElement)
 			return false;
 
 		var args = new KeyEventArgs
@@ -318,9 +325,10 @@ public class AvaloniaControl : GdControl
 
 		var currentElement = focusManager.GetFocusedElement() ?? _topLevel;
 
-		// GodotTopLevel has a Continue tab navigation since we want to be able to focus the Godot controls
-		// once we're done with the Avalonia ones. However, if there's no Godot control, we want to act as Cycle.
+		// GodotTopLevel uses Continue tab navigation so that the Godot controls can be focused once the
+		// Avalonia ones are done. If there's no Godot control, however, it should behave as Cycle.
 		var nextElement = GetNextTabElement(focusManager, currentElement, direction);
+
 		if (nextElement is null)
 		{
 			var nextGdControl = direction switch
@@ -334,7 +342,6 @@ public class AvaloniaControl : GdControl
 				nextElement = GetNextTabElement(focusManager, _topLevel, direction);
 		}
 
-
 		if (nextElement is null)
 			return false;
 
@@ -342,20 +349,24 @@ public class AvaloniaControl : GdControl
 		return true;
 	}
 
-	private static IInputElement? GetNextTabElement(IFocusManager focusManager, IInputElement element,
-		NavigationDirection direction)
+	private static IInputElement? GetNextTabElement(
+		IFocusManager focusManager,
+		IInputElement element,
+		NavigationDirection direction
+	)
 	{
 		var previous = element;
 
 		while (true)
 		{
-			// FindNextElement doesn't take IsEffectivelyEnabled into account, check it manually
-			var next = focusManager.FindNextElement(direction,
-				new FindNextElementOptions { FocusedElement = previous });
+			// FindNextElement doesn't take IsEffectivelyEnabled into account, so check it manually
+			var options = new FindNextElementOptions { FocusedElement = previous };
+			var next = focusManager.FindNextElement(direction, options);
+
 			if (next is null || next.IsEffectivelyEnabled)
 				return next;
 
-			// handle potential all-disabled cycle
+			// Handle a potential all-disabled cycle
 			if (next == element)
 				return null;
 
@@ -374,7 +385,7 @@ public class AvaloniaControl : GdControl
 		var mousePos = GetGlobalMousePosition();
 		var localPos = mousePos - GlobalPosition;
 
-		if (_topLevel.Impl.OnFilesDropped(files, localPos, Time.GetTicksMsec()))
+		if (_topLevel.Impl.OnFilesDropped(files, localPos))
 			AcceptEvent();
 	}
 

@@ -4,7 +4,7 @@ namespace Root.Autoloading;
 public enum AutoloadScope : byte
 {
 	/// <summary>
-	///     This Autoload may never be instantiated. Effectively disabled.
+	///     This Autoload may never be run. Effectively disabled.
 	/// </summary>
 	None = 0,
 

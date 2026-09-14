@@ -8,7 +8,6 @@ namespace Estragonia;
 
 internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 {
-	// ReSharper disable once MemberCanBePrivate.Global
 	public FileInfo FileInfo { get; } = fileInfo;
 
 	public string Name => FileInfo.Name;
@@ -20,11 +19,13 @@ internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 	public Task<StorageItemProperties> GetBasicPropertiesAsync()
 	{
 		if (FileInfo.Exists)
-			return Task.FromResult(new StorageItemProperties(
-				(ulong)FileInfo.Length,
-				FileInfo.CreationTimeUtc,
-				FileInfo.LastAccessTimeUtc
-			));
+			return Task.FromResult(
+				new StorageItemProperties(
+					(ulong)FileInfo.Length,
+					FileInfo.CreationTimeUtc,
+					FileInfo.LastAccessTimeUtc
+				)
+			);
 
 		return Task.FromResult(new StorageItemProperties());
 	}
@@ -59,7 +60,9 @@ internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 
 	public Task<IStorageItem?> MoveAsync(IStorageFolder destination)
 	{
-		if (destination is not BclStorageFolder storageFolder) return Task.FromResult<IStorageItem?>(null);
+		if (destination is not BclStorageFolder storageFolder)
+			return Task.FromResult<IStorageItem?>(null);
+
 		var newPath = System.IO.Path.Combine(storageFolder.DirectoryInfo.FullName, FileInfo.Name);
 		FileInfo.MoveTo(newPath);
 

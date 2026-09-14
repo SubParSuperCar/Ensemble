@@ -4,8 +4,6 @@ using GdInput = Godot.Input;
 using GdKey = Godot.Key;
 using GdMouseButton = Godot.MouseButton;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace Estragonia.Input;
 
 /// <summary>Contains methods to get input modifiers.</summary>

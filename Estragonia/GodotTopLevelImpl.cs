@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Security;
 using Avalonia;
@@ -24,7 +23,6 @@ namespace Estragonia;
 internal sealed class GodotTopLevelImpl : ITopLevelImpl
 {
 	private readonly IClipboard _clipboard;
-
 	private readonly IGodotPlatformGraphics _platformGraphics;
 	private readonly TouchDevice _touchDevice = new();
 	private GdCursorShape _cursorShape;
@@ -110,10 +108,10 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	IPopupImpl? ITopLevelImpl.CreatePopup() => null;
 
+	// Overlay windows are always composited onto the host control's texture, so the transparency level is
+	// forced regardless of what Avalonia requests. This keeps PART_TransparencyFallback from showing an
+	// opaque white background.
 	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels) =>
-		// Overlay windows are always composited onto the host control's texture,
-		// so we force Transparent level regardless of what Avalonia requests.
-		// This prevents PART_TransparencyFallback from showing an opaque white background.
 		TransparencyLevel = WindowTransparencyLevel.Transparent;
 
 	void ITopLevelImpl.SetFrameThemeVariant(PlatformThemeVariant? themeVariant)
@@ -147,17 +145,13 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		return _platformGraphics.GetSharedContext().CreateSurface(_renderSize, RenderScaling);
 	}
 
-	// ReSharper disable once UnusedMember.Global
-	public IGodotSkiaSurface? TryGetSurface() => _surface;
-
 	public IGodotSkiaSurface GetOrCreateSurface() => _surface ??= CreateSurface();
 
 	private IPlatformRenderSurface[] GetOrCreateSurfaces() => [GetOrCreateSurface()];
 
-	[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator", Justification = "Doesn't affect correctness")]
 	public void SetRenderSize(PixelSize renderSize, double renderScaling)
 	{
-		var hasScalingChanged = RenderScaling != renderScaling;
+		var hasScalingChanged = !RenderScaling.Equals(renderScaling);
 		if (_renderSize == renderSize && !hasScalingChanged)
 			return;
 
@@ -190,8 +184,10 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		}
 
 		if (oldClientSize != ClientSize)
-			Resized?.Invoke(ClientSize,
-				hasScalingChanged ? WindowResizeReason.DpiChange : WindowResizeReason.Unspecified);
+			Resized?.Invoke(
+				ClientSize,
+				hasScalingChanged ? WindowResizeReason.DpiChange : WindowResizeReason.Unspecified
+			);
 	}
 
 	public void OnDraw(Rect rect)
@@ -359,7 +355,8 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 				return true;
 		}
 
-		if (!pressed || !OS.IsKeycodeUnicode((long)keyCode)) return false;
+		// ReSharper disable once InvertIf -- the guard form would bury the text input handling in a nested block
+		if (pressed && OS.IsKeycodeUnicode((long)keyCode))
 		{
 			var text = char.ConvertFromUtf32((int)inputEvent.Unicode);
 			var args = new RawTextInputEventArgs(GodotDevices.Keyboard, timestamp, InputRoot, text);
@@ -430,7 +427,6 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public void OnLostFocus() => LostFocus?.Invoke();
 
-	// ReSharper disable once UnusedMethodReturnValue.Global
 	public bool OnMouseExited(ulong timestamp)
 	{
 		if (InputRoot is null || Input is not { } input)
@@ -451,12 +447,10 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	}
 
 	/// <summary>
-	///     Handles files dropped from the OS onto the Godot window.
-	///     First sends DragLeave to end any hover session, then
-	///     synthesizes DragEnter -> DragOver -> Drop with real file data.
+	///     Handles files dropped from the OS onto the Godot window by synthesizing a
+	///     DragEnter -> DragOver -> Drop sequence carrying the real file data.
 	/// </summary>
-	// ReSharper disable once UnusedParameter.Global
-	public bool OnFilesDropped(string[] files, Vector2 position, ulong timestamp)
+	public bool OnFilesDropped(string[] files, Vector2 position)
 	{
 		if (InputRoot is null || Input is not { } input)
 			return false;
@@ -465,9 +459,8 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		var modifiers = InputModifiersProvider.GetRawInputModifiers();
 		var device = AvaloniaLocator.Current.GetRequiredService<IDragDropDevice>();
 
-		// Build IDataTransfer from the dropped file paths.
-		// Validate each path exists on the filesystem before creating storage items
-		// to prevent processing invalid or potentially malicious paths.
+		// Build the IDataTransfer from the dropped file paths, checking that each one exists on the
+		// filesystem first so that invalid or potentially malicious paths are never processed
 		var dataTransfer = new DataTransfer();
 		foreach (var filePath in files)
 		{
@@ -480,43 +473,53 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 			try
 			{
-				IStorageItem storageItem = Directory.Exists(filePath)
+				IStorageItem? storageItem = Directory.Exists(filePath)
 					? new BclStorageFolder(new DirectoryInfo(filePath))
 					: File.Exists(filePath)
 						? new BclStorageFile(new FileInfo(filePath))
-						: null!; // Skip paths that no longer exist
-				dataTransfer.Add(DataTransferItem.CreateFile(storageItem));
+						: null;
+
+				// Skip paths that no longer exist
+				if (storageItem is not null)
+					dataTransfer.Add(DataTransferItem.CreateFile(storageItem));
 			}
 			catch (ArgumentException)
 			{
-				// Invalid path characters - skip
+				// Skip paths with invalid characters
 			}
 			catch (SecurityException)
 			{
-				// No access to path - skip
+				// Skip paths that can't be accessed
 			}
 			catch (NotSupportedException)
 			{
-				// Path format not supported - skip
+				// Skip paths in an unsupported format
 			}
 		}
 
 		if (dataTransfer.Items.Count == 0)
 			return false;
 
-		// Synthesize DragEnter -> DragOver -> Drop sequence
-		var enterArgs = new RawDragEvent(device, RawDragEventType.DragEnter, InputRoot, point, dataTransfer,
-			DragDropEffects.Copy | DragDropEffects.Link, modifiers);
-		input(enterArgs);
+		// Synthesize the DragEnter -> DragOver -> Drop sequence
+		input(CreateDragEvent(RawDragEventType.DragEnter));
+		input(CreateDragEvent(RawDragEventType.DragOver));
 
-		var overArgs = new RawDragEvent(device, RawDragEventType.DragOver, InputRoot, point, dataTransfer,
-			DragDropEffects.Copy | DragDropEffects.Link, modifiers);
-		input(overArgs);
-
-		var dropArgs = new RawDragEvent(device, RawDragEventType.Drop, InputRoot, point, dataTransfer,
-			DragDropEffects.Copy | DragDropEffects.Link, modifiers);
+		var dropArgs = CreateDragEvent(RawDragEventType.Drop);
 		input(dropArgs);
 
 		return dropArgs.Handled;
+
+		RawDragEvent CreateDragEvent(RawDragEventType type)
+		{
+			return new RawDragEvent(
+				device,
+				type,
+				InputRoot,
+				point,
+				dataTransfer,
+				DragDropEffects.Copy | DragDropEffects.Link,
+				modifiers
+			);
+		}
 	}
 }

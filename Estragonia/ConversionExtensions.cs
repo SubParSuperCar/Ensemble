@@ -4,20 +4,20 @@ using Avalonia.Input;
 using Godot;
 using AvColor = Avalonia.Media.Color;
 using AvKey = Avalonia.Input.Key;
-using GdCursorShape = Godot.Control.CursorShape;
 using GdColor = Godot.Color;
+using GdCursorShape = Godot.Control.CursorShape;
 using GdKey = Godot.Key;
-
-// ReSharper disable InconsistentNaming
 
 namespace Estragonia;
 
-/// <summary>Contains extensions methods to convert between Godot and Avalonia types.</summary>
+// CA1708 is a false positive here: every C# 14 extension block is seen as a member named "extension"
 #pragma warning disable CA1708
+
+/// <summary>Contains extension methods to convert between Godot and Avalonia types.</summary>
 public static class ConversionExtensions
 {
 	// Reference: https://github.com/godotengine/godot/blob/master/platform/windows/key_mapping_windows.cpp
-	private static readonly Dictionary<GdKey, AvKey> s_keyMap = new()
+	private static readonly Dictionary<GdKey, AvKey> KeyMap = new()
 	{
 		[GdKey.Backspace] = AvKey.Back,
 		[GdKey.Tab] = AvKey.Tab, // Godot maps Tab and CrSel to the same key
@@ -154,7 +154,7 @@ public static class ConversionExtensions
 		[GdKey.Bar] = AvKey.Oem102
 	};
 
-	private static readonly Dictionary<GdKey, PhysicalKey> s_physicalKeyMap = new()
+	private static readonly Dictionary<GdKey, PhysicalKey> PhysicalKeyMap = new()
 	{
 		[GdKey.Backspace] = PhysicalKey.Backspace,
 		[GdKey.Tab] = PhysicalKey.Tab, // Godot maps Tab and CrSel to the same key
@@ -291,7 +291,7 @@ public static class ConversionExtensions
 		[GdKey.Bar] = PhysicalKey.IntlBackslash
 	};
 
-	private static readonly Dictionary<StandardCursorType, GdCursorShape> s_cursorMap = new()
+	private static readonly Dictionary<StandardCursorType, GdCursorShape> CursorMap = new()
 	{
 		[StandardCursorType.Arrow] = GdCursorShape.Arrow,
 		[StandardCursorType.Ibeam] = GdCursorShape.Ibeam,
@@ -318,17 +318,11 @@ public static class ConversionExtensions
 		[StandardCursorType.DragLink] = GdCursorShape.Drag
 	};
 
-	public static AvColor ToAvaloniaColor(this GdColor source) =>
-		new((byte)source.A8, (byte)source.R8, (byte)source.G8, (byte)source.B8);
-
-	public static GdCursorShape ToGodotCursorShape(this StandardCursorType source) =>
-		s_cursorMap.GetValueOrDefault(source, GdCursorShape.Arrow);
-
 	extension(GdKey source)
 	{
-		public AvKey ToAvaloniaKey() => s_keyMap.GetValueOrDefault(source, AvKey.None);
+		public AvKey ToAvaloniaKey() => KeyMap.GetValueOrDefault(source, AvKey.None);
 
-		public PhysicalKey ToAvaloniaPhysicalKey() => s_physicalKeyMap.GetValueOrDefault(source, PhysicalKey.None);
+		public PhysicalKey ToAvaloniaPhysicalKey() => PhysicalKeyMap.GetValueOrDefault(source, PhysicalKey.None);
 	}
 
 	extension(Vector2 source)
@@ -337,5 +331,14 @@ public static class ConversionExtensions
 
 		public Point ToAvaloniaPoint() => new(source.X, source.Y);
 	}
-#pragma warning restore CA1708
+
+	extension(GdColor source)
+	{
+		public AvColor ToAvaloniaColor() => new((byte)source.A8, (byte)source.R8, (byte)source.G8, (byte)source.B8);
+	}
+
+	extension(StandardCursorType source)
+	{
+		public GdCursorShape ToGodotCursorShape() => CursorMap.GetValueOrDefault(source, GdCursorShape.Arrow);
+	}
 }

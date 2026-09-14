@@ -27,7 +27,7 @@ internal sealed class GodotClipboard : IClipboard
 		string? text = null;
 		foreach (var item in dataTransfer.Items)
 		{
-			if (item.Formats.Any(format => format.Equals(DataFormat.Text)))
+			if (item.Formats.Contains(DataFormat.Text))
 				text = (item as IDataTransferItem)?.TryGetRaw(DataFormat.Text) as string;
 
 			if (text is not null)

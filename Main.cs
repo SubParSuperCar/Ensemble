@@ -9,8 +9,8 @@ namespace Root;
 
 /// <summary>
 ///     The main entry point for Ensemble's code-behind.
-///     Handles boot-loading Node-inheriting classes marked with <see cref="AutoloadAttribute" />,
-///     and provides resources for handling errors and managing the application lifetime and shutdowns.
+///     Handles boot-loading Node-inheriting classes marked with <see cref="AutoloadAttribute" />
+///     and provides resources for handling errors and managing the application lifetime and shutdown.
 /// </summary>
 public partial class Main : Node
 {
@@ -212,7 +212,7 @@ public partial class Main : Node
 	private async Task LoadDeferredAsync()
 	{
 		// TODO: Don't await an arbitrary/magical number of times; use a readiness signal (if available)
-		// I've tested this, and it takes exactly 3 frames for Avalonia UI to show up. Unsure why.
+		// Testing showed it takes exactly 3 frames for the Avalonia UI to appear. The reason is unclear.
 		for (var i = 0; i < 3; i++)
 		{
 			RenderingServer.ForceDraw();

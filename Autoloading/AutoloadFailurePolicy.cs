@@ -3,14 +3,14 @@ namespace Root.Autoloading;
 public enum AutoloadFailurePolicy : byte
 {
 	/// <summary>
-	///     Log the event and attempt to ask the user (using a shell dialog) if they want to continue with loading.
+	///     Log the event and attempt to ask the user, through a shell dialog, whether to continue loading.
 	///     Best used for noncritical components that may degrade the user's experience.
 	/// </summary>
 	AskUser,
 
 	/// <summary>
 	///     Log the event and continue with loading.
-	///     Best used for noncritical components that have negligible impacts on the user's experience.
+	///     Best used for noncritical components that have a negligible impact on the user's experience.
 	/// </summary>
 	LogAndContinue,
 

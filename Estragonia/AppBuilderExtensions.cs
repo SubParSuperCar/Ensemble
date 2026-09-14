@@ -7,7 +7,7 @@ using Avalonia.Input.Platform;
 
 namespace Estragonia;
 
-/// <summary>Contains extensions methods for <see cref="AppBuilder" /> related to Godot.</summary>
+/// <summary>Contains extension methods for <see cref="AppBuilder" /> related to Godot.</summary>
 public static class AppBuilderExtensions
 {
 	extension(AppBuilder builder)
@@ -19,18 +19,21 @@ public static class AppBuilderExtensions
 		/// </summary>
 		public AppBuilder UseGodot()
 		{
-			// Register PlatformHotkeyConfiguration early so it's available
-			// when UrsaSemiTheme XAML is loaded during App.Initialize().
+			var hotkeyConfiguration = OperatingSystem.IsMacOS()
+				? new PlatformHotkeyConfiguration(KeyModifiers.Meta, wholeWordTextActionModifiers: KeyModifiers.Alt)
+				: new PlatformHotkeyConfiguration(KeyModifiers.Control);
+
+			// Register PlatformHotkeyConfiguration early so that it's available when theme XAML
+			// is loaded during App.Initialize().
 			AvaloniaLocator.CurrentMutable
 				.Bind<PlatformHotkeyConfiguration>()
-				.ToConstant(OperatingSystem.IsMacOS()
-					? new PlatformHotkeyConfiguration(KeyModifiers.Meta, wholeWordTextActionModifiers: KeyModifiers.Alt)
-					: new PlatformHotkeyConfiguration(KeyModifiers.Control));
+				.ToConstant(hotkeyConfiguration);
 
-#pragma warning disable CA1416
+			// Managed dialogs are only available on desktop platforms
+			if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS() || OperatingSystem.IsWindows())
+				builder = builder.UseManagedSystemDialogs();
+
 			return builder
-				.UseManagedSystemDialogs()
-#pragma warning restore CA1416
 				.UseStandardRuntimePlatformSubsystem()
 				.UseSkia()
 				.UseHarfBuzz()
@@ -42,7 +45,6 @@ public static class AppBuilderExtensions
 		///     This enables <c>Application.Current.ApplicationLifetime</c> to return a valid desktop lifetime,
 		///     which is required for <c>Window.ShowDialog()</c> to find an owner window.
 		/// </summary>
-		// ReSharper disable once UnusedMember.Global
 		public AppBuilder SetupWithGodot() => builder.SetupWithLifetime(GodotPlatform.CreateApplicationLifetime());
 	}
 }

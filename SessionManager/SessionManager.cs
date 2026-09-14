@@ -15,7 +15,7 @@ namespace Root.SessionManager;
 ///     sessions, handling password authentication, managing RPC actions, and more.
 /// </summary>
 [GlobalClass]
-[Autoload(Order = sbyte.MinValue + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
+[Autoload(Order = AutoloadOrder.Early + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class SessionManager : Node
 {
 	[Signal]

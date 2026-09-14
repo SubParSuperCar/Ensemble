@@ -10,7 +10,7 @@ using FileAccess = System.IO.FileAccess;
 namespace Root.Scripts.Hashing;
 
 [GlobalClass]
-[Autoload(FailurePolicy = AutoloadFailurePolicy.AskUser)]
+[Autoload(Order = AutoloadOrder.Standard, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ExeHasher : Node, IAutoload
 {
 	private const int BufferSize = 1 << 12;

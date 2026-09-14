@@ -6,7 +6,7 @@ using Serilog;
 namespace Root.Scripts.PlayerSync;
 
 [GlobalClass]
-[Autoload(Order = sbyte.MinValue + 3, FailurePolicy = AutoloadFailurePolicy.FailFast)]
+[Autoload(Order = AutoloadOrder.Early + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class PlayerSync : Node, IAutoload
 {
 	public void Initialize()

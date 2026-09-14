@@ -10,7 +10,7 @@ namespace Root.GdCore;
 
 /// <inheritdoc cref="CoreRoot.Api.ICore" />
 [GlobalClass]
-[Autoload(Order = sbyte.MinValue + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
+[Autoload(Order = AutoloadOrder.Early, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class GdCore : Node, IAutoload
 {
 	public static GdCore? Instance

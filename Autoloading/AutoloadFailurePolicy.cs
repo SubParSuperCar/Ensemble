@@ -1,5 +1,8 @@
 namespace Root.Autoloading;
 
+/// <summary>
+///     The policy to follow if a failure occurs in this Autoload and it cannot be instantiated.
+/// </summary>
 public enum AutoloadFailurePolicy : byte
 {
 	/// <summary>

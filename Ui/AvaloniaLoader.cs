@@ -29,6 +29,7 @@ public partial class AvaloniaLoader : Node
 				.Configure<App>()
 				.UseGodot()
 				.WithJetBrainsMonoFont()
+				.LogToTrace()
 				.SetupWithGodot();
 
 			stopwatch.Stop();

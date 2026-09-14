@@ -1,8 +1,6 @@
 using Avalonia.Input;
 using Avalonia.Input.Raw;
 
-// ReSharper disable SuspiciousTypeConversion.Global
-
 namespace Estragonia.Input;
 
 /// <summary>Implementation of <see cref="IJoypadDevice" />.</summary>
@@ -38,7 +36,7 @@ internal sealed class JoypadDevice(int id) : IJoypadDevice
 		if (routedEvent is null)
 			return;
 
-		var element = rawArgs.Root.FocusManager?.GetFocusedElement() ?? (IInputElement)rawArgs.Root;
+		var element = GetTargetElement(rawArgs);
 		var args = new JoypadButtonEventArgs(routedEvent, element, this, rawArgs.Button);
 		element.RaiseEvent(args);
 		rawArgs.Handled = args.Handled;
@@ -46,10 +44,21 @@ internal sealed class JoypadDevice(int id) : IJoypadDevice
 
 	private void ProcessAxisEvent(RawJoypadAxisEventArgs rawArgs)
 	{
-		var element = rawArgs.Root.FocusManager?.GetFocusedElement() ?? (IInputElement)rawArgs.Root;
-		var args = new JoypadAxisEventArgs(JoypadEvents.JoypadAxisMovedEvent, element, this, rawArgs.Axis,
-			rawArgs.AxisValue);
+		var element = GetTargetElement(rawArgs);
+		var args = new JoypadAxisEventArgs(
+			JoypadEvents.JoypadAxisMovedEvent,
+			element,
+			this,
+			rawArgs.Axis,
+			rawArgs.AxisValue
+		);
 		element.RaiseEvent(args);
 		rawArgs.Handled = args.Handled;
 	}
+
+	// Every Avalonia IInputRoot is a TopLevel, and therefore an InputElement, but ReSharper can't see
+	// that through the referenced assembly
+	// ReSharper disable once SuspiciousTypeConversion.Global
+	private static IInputElement GetTargetElement(RawInputEventArgs rawArgs) =>
+		rawArgs.Root.FocusManager?.GetFocusedElement() ?? (IInputElement)rawArgs.Root;
 }

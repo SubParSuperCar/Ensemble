@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Avalonia.Threading;
 using Godot;
@@ -9,16 +8,10 @@ using SysTimer = System.Threading.Timer;
 namespace Estragonia;
 
 /// <summary>An implementation of <see cref="IDispatcherImpl" /> that uses the underlying Godot dispatcher.</summary>
-[SuppressMessage(
-	"Design",
-	"CA1001:Types that own disposable fields should be disposable",
-	Justification = "This type has equivalent to a static lifetime"
-)]
-internal sealed class GodotDispatcherImpl : IDispatcherImpl
+internal sealed class GodotDispatcherImpl : IDispatcherImpl, IDisposable
 {
 	private readonly SendOrPostCallback _invokeSignaled; // cached delegate
 	private readonly SendOrPostCallback _invokeTimer; // cached delegate
-
 	private readonly Thread _mainThread;
 	private readonly SysTimer _timer;
 
@@ -48,6 +41,9 @@ internal sealed class GodotDispatcherImpl : IDispatcherImpl
 	}
 
 	public void Signal() => GdDispatcher.SynchronizationContext.Post(_invokeSignaled, this);
+
+	// Never called by Avalonia, which keeps the dispatcher alive for the lifetime of the process
+	void IDisposable.Dispose() => _timer.Dispose();
 
 	private void OnTimerTick(object? state) => GdDispatcher.SynchronizationContext.Post(_invokeTimer, null);
 

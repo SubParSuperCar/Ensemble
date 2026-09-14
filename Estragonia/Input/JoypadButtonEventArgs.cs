@@ -1,8 +1,6 @@
 using Avalonia.Interactivity;
 using Godot;
 
-// ReSharper disable UnusedMember.Global
-
 namespace Estragonia.Input;
 
 /// <summary>Provides information about a joypad button event.</summary>

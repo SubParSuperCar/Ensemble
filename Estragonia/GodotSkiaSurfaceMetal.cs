@@ -16,25 +16,25 @@ internal sealed class GodotSkiaSurfaceMetal(
 	int width,
 	int height,
 	bool isZeroCopy = false,
-	GRBackendTexture? backendTexture = null)
-	: IGodotSkiaSurface
+	GRBackendTexture? backendTexture = null
+) : IGodotSkiaSurface
 {
-	/// <summary>The Metal command queue handle for GPU blitting.</summary>
+	/// <summary>Gets the Metal command queue handle used for GPU blitting.</summary>
 	public IntPtr CommandQueue { get; } = commandQueue;
 
-	/// <summary>The Godot texture's native Metal handle.</summary>
+	/// <summary>Gets the Godot texture's native Metal handle.</summary>
 	public IntPtr GdMetalTexture { get; } = gdMetalTexture;
 
-	/// <summary>Width of the surface in pixels.</summary>
+	/// <summary>Gets the width of the surface in pixels.</summary>
 	public int Width { get; } = width;
 
-	/// <summary>Height of the surface in pixels.</summary>
+	/// <summary>Gets the height of the surface in pixels.</summary>
 	public int Height { get; } = height;
 
-	/// <summary>True if this surface renders directly to Godot's texture (no copy needed).</summary>
+	/// <summary>Gets whether this surface renders directly to Godot's texture (no copy needed).</summary>
 	public bool IsZeroCopy { get; } = isZeroCopy;
 
-	/// <summary>The backend texture wrapping Godot's Metal texture (only for zero-copy mode).</summary>
+	/// <summary>Gets the backend texture wrapping Godot's Metal texture (only used in zero-copy mode).</summary>
 	private GRBackendTexture? BackendTexture { get; } = backendTexture;
 
 	public SKSurface SkSurface { get; } = skSurface;

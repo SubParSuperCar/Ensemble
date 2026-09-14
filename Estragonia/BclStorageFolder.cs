@@ -19,11 +19,13 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 	public Uri Path => field ??= BuildPath();
 
 	public Task<StorageItemProperties> GetBasicPropertiesAsync() =>
-		Task.FromResult(new StorageItemProperties(
-			null,
-			DirectoryInfo.CreationTimeUtc,
-			DirectoryInfo.LastAccessTimeUtc
-		));
+		Task.FromResult(
+			new StorageItemProperties(
+				null,
+				DirectoryInfo.CreationTimeUtc,
+				DirectoryInfo.LastAccessTimeUtc
+			)
+		);
 
 	public Task<IStorageFolder?> GetParentAsync()
 	{
@@ -62,7 +64,9 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 
 	public Task<IStorageItem?> MoveAsync(IStorageFolder destination)
 	{
-		if (destination is not BclStorageFolder storageFolder) return Task.FromResult<IStorageItem?>(null);
+		if (destination is not BclStorageFolder storageFolder)
+			return Task.FromResult<IStorageItem?>(null);
+
 		var newPath = System.IO.Path.Combine(storageFolder.DirectoryInfo.FullName, DirectoryInfo.Name);
 		DirectoryInfo.MoveTo(newPath);
 
@@ -91,9 +95,7 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 		var path = System.IO.Path.Combine(DirectoryInfo.FullName, name);
 		var dir = new DirectoryInfo(path);
 
-		return Task.FromResult<IStorageFolder?>(
-			dir.Exists ? new BclStorageFolder(dir) : null
-		);
+		return Task.FromResult<IStorageFolder?>(dir.Exists ? new BclStorageFolder(dir) : null);
 	}
 
 	public Task<IStorageFile?> GetFileAsync(string name)
@@ -101,9 +103,7 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 		var path = System.IO.Path.Combine(DirectoryInfo.FullName, name);
 		var file = new FileInfo(path);
 
-		return Task.FromResult<IStorageFile?>(
-			file.Exists ? new BclStorageFile(file) : null
-		);
+		return Task.FromResult<IStorageFile?>(file.Exists ? new BclStorageFile(file) : null);
 	}
 
 	private Uri BuildPath()

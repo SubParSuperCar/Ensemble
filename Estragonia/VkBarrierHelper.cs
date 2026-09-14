@@ -8,37 +8,22 @@ using static Estragonia.VkInterop;
 
 namespace Estragonia;
 
-/// <summary>
-///     An helper to create Vulkan image barriers.
-/// </summary>
+/// <summary>A helper for creating Vulkan image barriers.</summary>
 internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceApi deviceApi, uint queueFamilyIndex)
 	: ISurfaceSynchronizer
 {
 	private readonly List<ReusableBuffer> _reusableBuffers = [];
-
 	private bool _isDisposed;
 
-	public void Dispose()
-	{
-		if (_isDisposed)
-			return;
-
-		_isDisposed = true;
-
-		for (var i = _reusableBuffers.Count - 1; i >= 0; --i)
-			_reusableBuffers[i].Dispose();
-
-		_reusableBuffers.Clear();
-	}
-
-	/// <summary>Prepares the surface for Skia rendering by transitioning to COLOR_ATTACHMENT_OPTIMAL.</summary>
+	/// <summary>Prepares the surface for Skia rendering by transitioning it to COLOR_ATTACHMENT_OPTIMAL.</summary>
 	public void PrepareForRendering(IGodotSkiaSurface surface)
 	{
 		if (surface is not GodotSkiaSurface vkSurface)
 			throw new ArgumentException("Surface must be a Vulkan surface", nameof(surface));
 
 		// Clear the texture on first draw. This is already done by Avalonia, but Godot doesn't know that.
-		// We need it to avoid texture corruption on first draw on AMD GPUs. It will result in a few transparent frames after resizing.
+		// It's needed to avoid texture corruption on first draw on AMD GPUs, at the cost of a few
+		// transparent frames after a resize.
 		// TODO: Find a better solution.
 		if (vkSurface.DrawCount == 0)
 			vkSurface.RenderingDevice.TextureClear(vkSurface.GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
@@ -54,11 +39,21 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 			throw new ArgumentException("Surface must be a Vulkan surface", nameof(surface));
 
 		vkSurface.SkSurface.Flush(true);
-
-		// Switch back to SHADER_READ_ONLY_OPTIMAL for Godot
 		vkSurface.TransitionLayoutTo(VkImageLayout.SHADER_READ_ONLY_OPTIMAL);
-
 		vkSurface.DrawCount++;
+	}
+
+	public void Dispose()
+	{
+		if (_isDisposed)
+			return;
+
+		_isDisposed = true;
+
+		for (var i = _reusableBuffers.Count - 1; i >= 0; --i)
+			_reusableBuffers[i].Dispose();
+
+		_reusableBuffers.Clear();
 	}
 
 	public unsafe void TransitionImageLayout(
@@ -139,8 +134,8 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 
 	private ReusableBuffer GetOrCreateReusableBuffer()
 	{
-		foreach (var existingBuffer in _reusableBuffers.Where(existingBuffer => existingBuffer.IsAvailable()))
-			return existingBuffer;
+		if (_reusableBuffers.FirstOrDefault(static buffer => buffer.IsAvailable()) is { } availableBuffer)
+			return availableBuffer;
 
 		var newBuffer = new ReusableBuffer(device, deviceApi, queueFamilyIndex);
 		_reusableBuffers.Add(newBuffer);
@@ -151,13 +146,10 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 	[MethodImpl(MethodImplOptions.NoInlining)]
 	private static void ThrowDisposed() => throw new ObjectDisposedException(nameof(VkBarrierHelper));
 
-	/// <summary>
-	///     Contains a reusable command pool, command buffer and an associated fence.
-	/// </summary>
+	/// <summary>Contains a reusable command pool, command buffer and an associated fence.</summary>
 	private sealed class ReusableBuffer
 	{
 		private readonly VkCommandPool _commandPool;
-
 		private readonly VkDevice _device;
 		private readonly VkDeviceApi _deviceApi;
 		private bool _isDisposed;

@@ -4,7 +4,9 @@ using Avalonia.Platform;
 
 namespace Estragonia;
 
-/// <summary>An implementation of <see cref="IPlatformIconLoader" /> that provides fake icons (never displayed).</summary>
+/// <summary>
+///     An implementation of <see cref="IPlatformIconLoader" /> that provides fake icons (never displayed).
+/// </summary>
 internal sealed class StubPlatformIconLoader : IPlatformIconLoader
 {
 	public IWindowIconImpl LoadIcon(string fileName)

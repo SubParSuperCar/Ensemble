@@ -15,41 +15,39 @@ using Godot;
 using Godot.NativeInterop;
 using AvCompositor = Avalonia.Rendering.Composition.Compositor;
 using AvDispatcher = Avalonia.Threading.Dispatcher;
-using Control = Godot.Control;
+using GdControl = Godot.Control;
 using GdCursorShape = Godot.Control.CursorShape;
-using Window = Godot.Window;
-
-// ReSharper disable InconsistentNaming
+using GdWindow = Godot.Window;
 
 namespace Estragonia;
 
 /// <summary>
-///     IWindowImpl using a Godot Window node with native OS decorations.
-///     Drag, resize, maximize, minimize are all handled by the OS/Godot.
-///     Avalonia content is rendered inside the client area.
+///     An <see cref="IWindowImpl" /> backed by a Godot Window node with native OS decorations.
+///     Dragging, resizing, maximizing and minimizing are all handled by the OS through Godot,
+///     while the Avalonia content is rendered inside the client area.
 /// </summary>
 internal sealed class GodotWindowImpl : IWindowImpl
 {
-	private static bool s_guiEmbedSubwindowsSet;
-	private readonly Window _gdWindow;
+	private static bool _guiEmbedSubwindowsSet;
+	private readonly GdWindow _gdWindow;
 	private readonly WindowHostControl _hostControl;
 	private readonly bool _isManagedDialog;
 	private readonly GodotScreenImpl _screenImpl;
 
 	private readonly GodotTopLevelImpl _topLevelImpl;
+
 	private bool _isDisposed;
 	private bool _isVisible;
 
-	// Tracks the last PixelSize pushed from _Process to detect external size changes
-	// (user resize, maximize) vs Avalonia-driven changes (SizeToContent layout).
-	// This prevents feedback loops where SetRenderSize -> Resized -> layout -> Resize
-	// causes the window to grow each frame.
-	// Initialized to (-1,-1) so that _Process always pushes the first real size
-	// (even if the window starts at 0x0 or matches the default PixelSize).
+	// Tracks the last PixelSize pushed from _Process, to tell external size changes (a user resize or a
+	// maximize) apart from Avalonia-driven ones (a SizeToContent layout). This prevents the feedback loop
+	// where SetRenderSize -> Resized -> layout -> Resize makes the window grow every frame. It starts at
+	// (-1, -1) so that _Process always pushes the first real size, even when the window starts at 0x0 or
+	// already matches the default PixelSize.
 	private PixelSize _lastProcessRenderSize = new(-1, -1);
 
-	// For SizeToContent windows, we need to re-center after the first layout pass
-	// determines the actual content size (which differs from the initial 400x300).
+	// SizeToContent windows have to be re-centered once the first layout pass has determined their actual
+	// content size, which differs from the initial 400x300 default
 	private bool _needsRecenter;
 	private GodotWindowImpl? _parentImpl;
 	private Vector2I _pendingSize = new(400, 300);
@@ -71,14 +69,14 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		_topLevelImpl.SetRenderSize(new PixelSize(400, 300), 1.0);
 
-		_gdWindow = new Window
+		_gdWindow = new GdWindow
 		{
 			Title = string.Empty,
 			Visible = false,
 			// Keep native OS decorations - Godot/OS handles drag, resize, maximize, minimize
 			Borderless = false,
 			Transparent = false,
-			InitialPosition = Window.WindowInitialPosition.Absolute,
+			InitialPosition = GdWindow.WindowInitialPosition.Absolute,
 			WrapControls = false,
 			MinSize = new Vector2I(100, 50),
 			Size = new Vector2I(400, 300)
@@ -132,11 +130,11 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			_windowState = value;
 			_gdWindow.Mode = value switch
 			{
-				WindowState.Normal => Window.ModeEnum.Windowed,
-				WindowState.Maximized => Window.ModeEnum.Maximized,
-				WindowState.Minimized => Window.ModeEnum.Minimized,
-				WindowState.FullScreen => Window.ModeEnum.Fullscreen,
-				_ => Window.ModeEnum.Windowed
+				WindowState.Normal => GdWindow.ModeEnum.Windowed,
+				WindowState.Maximized => GdWindow.ModeEnum.Maximized,
+				WindowState.Minimized => GdWindow.ModeEnum.Minimized,
+				WindowState.FullScreen => GdWindow.ModeEnum.Fullscreen,
+				_ => GdWindow.ModeEnum.Windowed
 			};
 		}
 	}
@@ -152,45 +150,46 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 	public void Show(bool activate, bool isDialog)
 	{
-		if (_isDisposed || _isVisible) return;
+		if (_isDisposed || _isVisible)
+			return;
+
 		var sceneTree = (SceneTree)Engine.GetMainLoop();
 
-		// Only set GuiEmbedSubwindows once - this is a global property on the
-		// root viewport that affects all Godot sub-windows, not just ours.
-		if (!s_guiEmbedSubwindowsSet)
+		// Only set GuiEmbedSubwindows once: it's a global property on the root viewport
+		// that affects every Godot sub-window, not just this one
+		if (!_guiEmbedSubwindowsSet)
 		{
 			sceneTree.Root.GuiEmbedSubwindows = false;
-			s_guiEmbedSubwindowsSet = true;
+			_guiEmbedSubwindowsSet = true;
 		}
 
-		// Determine if this window should be modal (block input to parent).
-		// isDialog: set by Avalonia's ShowDialog().
-		// _isManagedDialog: set when created via ManagedFileDialogOptions.ContentRootFactory
-		//   (managed file dialogs that use Show() instead of ShowDialog() because the
-		//   parent TopLevel is GodotTopLevel, not an Avalonia Window).
-		// _unresizable && _parentImpl is null: fallback heuristic for other dialog-like windows.
+		// Determine whether this window should be modal, that is, block input to its parent:
+		// - isDialog is set by Avalonia's ShowDialog()
+		// - _isManagedDialog is set when the window comes from ManagedFileDialogOptions.ContentRootFactory,
+		//   as managed file dialogs use Show() rather than ShowDialog() when the parent TopLevel is a
+		//   GodotTopLevel instead of an Avalonia Window
+		// - _unresizable with no parent is a fallback heuristic for other dialog-like windows
 		var modal = isDialog || (_isManagedDialog && _parentImpl is null) || (_unresizable && _parentImpl is null);
 
-		// Always add sub-windows as siblings under the root viewport.
-		// Godot's Transient + Exclusive provides modal semantics via window IDs,
-		// not node hierarchy - nesting creates incorrect scene tree structure.
+		// Always add sub-windows as siblings under the root viewport: Godot's Transient and Exclusive
+		// flags provide the modal semantics through window IDs rather than the node hierarchy, so
+		// nesting would only produce an incorrect scene tree structure
 		sceneTree.Root.AddChild(_gdWindow);
 
-		// Transient: stays on top of parent, focus returns on close
-		// Exclusive: blocks ALL input to parent (Godot modal mechanism)
+		// Transient keeps the window on top of its parent and returns focus when it closes, while
+		// Exclusive blocks all input to the parent, which is Godot's modal mechanism
 		if (modal)
 		{
 			_gdWindow.Transient = true;
 			_gdWindow.Exclusive = true;
 		}
 
-		// Apply pending size AFTER AddChild so the window is registered
-		// in DisplayServer before OnSizeChanged fires.
+		// Apply the pending size after AddChild, so that the window is registered in the
+		// DisplayServer before OnSizeChanged fires
 		_gdWindow.Size = _pendingSize;
 
-		// Defer initial positioning (Godot bug #89372)
-		// Center relative to the main window's actual screen position,
-		// not the screen origin (0,0).
+		// Defer the initial positioning (Godot bug #89372) and center the window relative to the main
+		// window's actual screen position rather than the screen origin
 		var mainWinId = sceneTree.Root.GetWindowId();
 		var mainWinPos = DisplayServer.WindowGetPosition(mainWinId);
 		var mainWinSize = sceneTree.Root.Size;
@@ -199,19 +198,22 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			mainWinPos.X + Math.Max((mainWinSize.X - subWinSize.X) / 2, 0),
 			mainWinPos.Y + Math.Max((mainWinSize.Y - subWinSize.Y) / 2, 0)
 		);
-		_gdWindow.CallDeferred(Window.MethodName.SetPosition, centerPos);
+		_gdWindow.CallDeferred(GdWindow.MethodName.SetPosition, centerPos);
 
 		var size = _gdWindow.Size;
 		_lastProcessRenderSize = new PixelSize(Math.Max(size.X, 1), Math.Max(size.Y, 1));
 		_topLevelImpl.SetRenderSize(_lastProcessRenderSize, 1.0);
-		// For SizeToContent windows (e.g. managed file dialogs), the initial 400x300
-		// will be replaced by Avalonia's layout-determined size on the first _Process tick.
-		// Flag that we need to re-center after that happens.
+
+		// For SizeToContent windows such as managed file dialogs, Avalonia replaces the initial 400x300
+		// with its layout-determined size on the first _Process tick, so flag a re-center for afterwards
 		if (_isManagedDialog)
 			_needsRecenter = true;
+
 		_gdWindow.Visible = true;
 		_isVisible = true;
-		if (activate) _gdWindow.GrabFocus();
+
+		if (activate)
+			_gdWindow.GrabFocus();
 	}
 
 	public void Hide()
@@ -273,7 +275,8 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		_pendingSize = pixelSize;
 		if (_isVisible && _gdWindow.IsInsideTree())
 			_gdWindow.Size = pixelSize;
-		// Record the size so _Process doesn't re-push it back to Avalonia.
+
+		// Record the size so that _Process doesn't push it back to Avalonia
 		_lastProcessRenderSize = pxSize;
 		_topLevelImpl.SetRenderSize(pxSize, 1.0);
 	}
@@ -282,6 +285,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 	{
 		if (_isVisible && _gdWindow.IsInsideTree())
 			DisplayServer.WindowSetPosition(new Vector2I(point.X, point.Y), _gdWindow.GetWindowId());
+
 		Position = point;
 	}
 
@@ -308,9 +312,9 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 	void ITopLevelImpl.SetCursor(ICursorImpl? cursor) => ((ITopLevelImpl)_topLevelImpl).SetCursor(cursor);
 
+	// Returning null makes Avalonia use an OverlayPopupHost
 	IPopupImpl? ITopLevelImpl.CreatePopup() => null;
 
-	// Use OverlayPopupHost
 	void ITopLevelImpl.SetTransparencyLevelHint(IReadOnlyList<WindowTransparencyLevel> transparencyLevels) =>
 		((ITopLevelImpl)_topLevelImpl).SetTransparencyLevelHint(transparencyLevels);
 
@@ -318,20 +322,21 @@ internal sealed class GodotWindowImpl : IWindowImpl
 	{
 	}
 
-	object? IOptionalFeatureProvider.TryGetFeature(Type featureType)
-	{
-		if (featureType == typeof(IScreenImpl)) return _screenImpl;
-		return ((ITopLevelImpl)_topLevelImpl).TryGetFeature(featureType);
-	}
+	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) =>
+		featureType == typeof(IScreenImpl)
+			? _screenImpl
+			: ((ITopLevelImpl)_topLevelImpl).TryGetFeature(featureType);
 
 	public void Dispose()
 	{
-		if (_isDisposed) return;
+		if (_isDisposed)
+			return;
+
 		_isDisposed = true;
 		_isVisible = false;
 
-		// Unsubscribe events BEFORE removing from tree to prevent
-		// OnSizeChanged from firing on an invalid window.
+		// Unsubscribe from the events before removing the window from the tree, so that
+		// OnSizeChanged can't fire on an invalid window
 		if (GodotObject.IsInstanceValid(_gdWindow))
 		{
 			_gdWindow.CloseRequested -= OnCloseRequested;
@@ -340,13 +345,11 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			_gdWindow.FilesDropped -= OnFilesDropped;
 			if (_gdWindow.IsInsideTree())
 			{
-				// Hide immediately to stop visual updates.
-				// Defer RemoveChild + QueueFree to end of frame to avoid
-				// _push_unhandled_input_internal !is_inside_tree() error:
-				// Dispose is called during input processing (close button click),
-				// and Godot's input pipeline still holds a reference to this
-				// viewport. Immediate RemoveChild causes the engine to push
-				// unhandled input to a node no longer in the tree.
+				// Hide the window immediately to stop visual updates, then defer RemoveChild and QueueFree
+				// to the end of the frame to avoid a _push_unhandled_input_internal !is_inside_tree()
+				// error: Dispose runs during input processing, such as a close button click, while Godot's
+				// input pipeline still holds a reference to this viewport, so removing the child right
+				// away would make the engine push unhandled input to a node that has left the tree
 				_gdWindow.Visible = false;
 				var parent = _gdWindow.GetParent();
 				parent?.CallDeferred(Node.MethodName.RemoveChild, _gdWindow);
@@ -364,48 +367,55 @@ internal sealed class GodotWindowImpl : IWindowImpl
 	///     Called from _Process after layout completes with a valid size.
 	/// </summary>
 	/// <remarks>
-	///     This method uses reflection to access Avalonia internal APIs
-	///     (RootVisual, VisualChildren, EnablePopupOverlayLayer) because no
-	///     public API exists for this purpose. These are protected by
-	///     AvaloniaAccessUnstablePrivateApis and may break on Avalonia version upgrades.
-	///     Reflection results are cached to minimize AOT trimming risk.
+	///     This method reflects into Avalonia's internal APIs (RootVisual, VisualChildren and
+	///     EnablePopupOverlayLayer) because no public API exists for this purpose. They're guarded by
+	///     AvaloniaAccessUnstablePrivateApis and may break when Avalonia is upgraded. The reflection
+	///     results are cached to keep the AOT trimming risk to a minimum.
 	/// </remarks>
 	private void TryEnablePopupOverlayLayer()
 	{
-		if (_popupLayerEnabled || _isDisposed) return;
+		if (_popupLayerEnabled || _isDisposed)
+			return;
 
-		// Use the internal property instead of reflection into our own class
+		// Use the internal property rather than reflecting into this class
 		var inputRoot = _topLevelImpl.InputRoot;
-		if (inputRoot is null) return;
 
-		// RootVisual is an Avalonia internal property on PresentationSource.
-		// Cached lazily from the inputRoot instance type (PresentationSource is internal).
+		if (inputRoot is null)
+			return;
+
+		// RootVisual is an Avalonia internal property on PresentationSource, which is itself internal,
+		// so it's resolved lazily from the inputRoot instance type
 		var rootVisualProperty = CachedReflection.GetRootVisualProperty(inputRoot);
 		var rootVisual = rootVisualProperty?.GetValue(inputRoot) as InputElement;
-		if ((rootVisual as ILogical)?.LogicalParent is not TopLevel topLevel) return;
 
-		// Walk visual tree to find the (possibly unnamed) VisualLayerManager.
-		var vlm = FindVisualChild<VisualLayerManager>(topLevel);
-		if (vlm is null) return;
+		if ((rootVisual as ILogical)?.LogicalParent is not TopLevel topLevel)
+			return;
 
-		vlm.EnableOverlayLayer = true;
-		vlm.EnableTextSelectorLayer = true;
+		// Walk the visual tree to find the, possibly unnamed, VisualLayerManager
+		if (FindVisualChild<VisualLayerManager>(topLevel) is not { } visualLayerManager)
+			return;
 
-		// EnablePopupOverlayLayer is an Avalonia internal property.
-		var popupOverlayProperty = CachedReflection.VisualLayerManager_EnablePopupOverlayLayer;
-		popupOverlayProperty?.SetValue(vlm, true);
+		visualLayerManager.EnableOverlayLayer = true;
+		visualLayerManager.EnableTextSelectorLayer = true;
+
+		// EnablePopupOverlayLayer is an Avalonia internal property
+		CachedReflection.EnablePopupOverlayLayerProperty?.SetValue(visualLayerManager, true);
 
 		_popupLayerEnabled = true;
 	}
 
 	private static T? FindVisualChild<T>(Visual parent) where T : Visual
 	{
-		var childrenProperty = CachedReflection.Visual_VisualChildren;
-		if (childrenProperty?.GetValue(parent) is not IEnumerable<Visual> children) return null;
+		if (CachedReflection.VisualChildrenProperty?.GetValue(parent) is not IEnumerable<Visual> children)
+			return null;
+
 		foreach (var child in children)
 		{
-			if (child is T typed) return typed;
-			if (FindVisualChild<T>(child) is { } result) return result;
+			if (child is T typed)
+				return typed;
+
+			if (FindVisualChild<T>(child) is { } result)
+				return result;
 		}
 
 		return null;
@@ -413,34 +423,32 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 	private void OnCloseRequested()
 	{
-		var closing = Closing;
-		if (closing is not null)
-			if (closing(WindowCloseReason.WindowClosing))
-				return;
+		if (Closing?.Invoke(WindowCloseReason.WindowClosing) == true)
+			return;
 
 		Dispose();
 	}
 
 	private void OnSizeChanged()
 	{
-		if (_isDisposed) return;
+		if (_isDisposed)
+			return;
 
 		var size = _gdWindow.Size;
 		var pixelSize = new PixelSize(Math.Max(size.X, 1), Math.Max(size.Y, 1));
 
-		// Only push the size to Avalonia if it changed externally (user resize,
-		// maximize, etc.). Skip when Resize() already updated _lastProcessRenderSize
-		// to match - this prevents the feedback loop:
-		//   Resize() -> _gdWindow.Size = X -> OnSizeChanged -> SetRenderSize ->
-		//   Resized -> layout -> Resize() -> _gdWindow.Size = X -> OnSizeChanged -> ...
+		// Only push the size to Avalonia when it changed externally, through a user resize or a maximize.
+		// Skip it when Resize() already updated _lastProcessRenderSize to match, which prevents the
+		// feedback loop: Resize() -> _gdWindow.Size = X -> OnSizeChanged -> SetRenderSize -> Resized ->
+		// layout -> Resize() -> _gdWindow.Size = X -> OnSizeChanged -> ...
 		if (pixelSize != _lastProcessRenderSize)
 		{
 			_lastProcessRenderSize = pixelSize;
 			_topLevelImpl.SetRenderSize(pixelSize, 1.0);
 		}
 
-		// DisplayServer.WindowGetPosition fails if window isn't registered yet
-		// (e.g., Size set before AddChild) or already removed (during Dispose).
+		// DisplayServer.WindowGetPosition fails when the window isn't registered yet, for instance when
+		// Size is set before AddChild, or when it has already been removed during Dispose
 		if (_isVisible && _gdWindow.IsInsideTree())
 		{
 			var windowId = _gdWindow.GetWindowId();
@@ -451,19 +459,22 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		var newAvState = _gdWindow.Mode switch
 		{
-			Window.ModeEnum.Maximized => WindowState.Maximized,
-			Window.ModeEnum.Minimized => WindowState.Minimized,
-			Window.ModeEnum.Fullscreen => WindowState.FullScreen,
+			GdWindow.ModeEnum.Maximized => WindowState.Maximized,
+			GdWindow.ModeEnum.Minimized => WindowState.Minimized,
+			GdWindow.ModeEnum.Fullscreen => WindowState.FullScreen,
 			_ => WindowState.Normal
 		};
-		if (newAvState == _windowState) return;
+		if (newAvState == _windowState)
+			return;
+
 		_windowState = newAvState;
 		WindowStateChanged?.Invoke(newAvState);
 	}
 
 	private void OnWindowInput(InputEvent @event)
 	{
-		if (_isDisposed) return;
+		if (_isDisposed)
+			return;
 
 		_ = @event switch
 		{
@@ -483,60 +494,51 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		if (_isDisposed || files.Length == 0)
 			return;
 
-		// Get mouse position relative to the window content area
+		// Get the mouse position relative to the window's content area
 		var mousePos = _gdWindow.GetMousePosition();
-		_topLevelImpl.OnFilesDropped(files, mousePos, Time.GetTicksMsec());
+		_topLevelImpl.OnFilesDropped(files, mousePos);
 	}
 
 	/// <summary>
-	///     Caches reflection lookups for Avalonia internal APIs to:
-	///     1. Avoid repeated reflection overhead on every _Process tick
-	///     2. Fail fast and deterministically if APIs are trimmed by AOT
-	///     3. Centralize all Avalonia internal API access for easy maintenance
+	///     Caches the reflection lookups for Avalonia's internal APIs, which avoids the reflection
+	///     overhead on every _Process tick and keeps all internal API access in a single place.
 	/// </summary>
 	private static class CachedReflection
 	{
-		private static PropertyInfo? s_rootVisualProperty;
-		private static bool s_rootVisualResolved;
-		private static readonly bool s_initialized;
+		private const BindingFlags PropertyFlags =
+			BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
-		static CachedReflection()
-		{
-			if (s_initialized) return;
-			s_initialized = true;
+		private static PropertyInfo? _rootVisualProperty;
+		private static bool _rootVisualResolved;
 
-			Visual_VisualChildren = typeof(Visual).GetProperty("VisualChildren",
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+		public static PropertyInfo? VisualChildrenProperty { get; } =
+			typeof(Visual).GetProperty("VisualChildren", PropertyFlags);
 
-			VisualLayerManager_EnablePopupOverlayLayer = typeof(VisualLayerManager).GetProperty(
-				"EnablePopupOverlayLayer",
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-		}
-
-		public static PropertyInfo? Visual_VisualChildren { get; }
-
-		public static PropertyInfo? VisualLayerManager_EnablePopupOverlayLayer { get; }
+		public static PropertyInfo? EnablePopupOverlayLayerProperty { get; } =
+			typeof(VisualLayerManager).GetProperty("EnablePopupOverlayLayer", PropertyFlags);
 
 		/// <summary>
-		///     Lazily resolves and caches the RootVisual property from the
-		///     PresentationSource type (which is internal in Avalonia).
-		///     Returns null if the property is not found (e.g. trimmed by AOT).
+		///     Lazily resolves and caches the RootVisual property from the PresentationSource type,
+		///     which is internal in Avalonia. Returns <c>null</c> when the property isn't found, for
+		///     instance because AOT trimmed it away.
 		/// </summary>
 		public static PropertyInfo? GetRootVisualProperty(IInputRoot inputRoot)
 		{
-			if (s_rootVisualResolved)
-				return s_rootVisualProperty;
+			if (_rootVisualResolved)
+				return _rootVisualProperty;
 
-			s_rootVisualResolved = true;
+			_rootVisualResolved = true;
+
+			// A RootVisual that AOT trimmed away is handled by returning null
 #pragma warning disable IL2075
-			s_rootVisualProperty = inputRoot.GetType().GetProperty("RootVisual",
-				BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+			_rootVisualProperty = inputRoot.GetType().GetProperty("RootVisual", PropertyFlags);
 #pragma warning restore IL2075
-			return s_rootVisualProperty;
+
+			return _rootVisualProperty;
 		}
 	}
 
-	private sealed class WindowHostControl : Control
+	private sealed class WindowHostControl : GdControl
 	{
 		private readonly GodotWindowImpl _owner;
 		private bool _isEnabled = true;
@@ -549,8 +551,11 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		public void SetEnabled(bool enabled) => _isEnabled = enabled;
 
-		protected override bool InvokeGodotClassMethod(in godot_string_name method, NativeVariantPtrArgs args,
-			out godot_variant ret)
+		protected override bool InvokeGodotClassMethod(
+			in godot_string_name method,
+			NativeVariantPtrArgs args,
+			out godot_variant ret
+		)
 		{
 			if (method == Node.MethodName._Ready && args.Count == 0)
 			{
@@ -573,21 +578,29 @@ internal sealed class GodotWindowImpl : IWindowImpl
 				return true;
 			}
 
-			if (method != MethodName._GuiInput || args.Count != 1)
-				return base.InvokeGodotClassMethod(method, args, out ret);
-			_GuiInput(VariantUtils.ConvertTo<InputEvent>(args[0]));
-			ret = default;
-			return true;
+			// ReSharper disable once InvertIf -- keeps this branch symmetric with the ones above
+			if (method == MethodName._GuiInput && args.Count == 1)
+			{
+				_GuiInput(VariantUtils.ConvertTo<InputEvent>(args[0]));
+				ret = default;
+				return true;
+			}
+
+			return base.InvokeGodotClassMethod(method, args, out ret);
 		}
 
 		protected override bool HasGodotClassMethod(in godot_string_name method) =>
-			method == Node.MethodName._Ready || method == Node.MethodName._Process ||
-			method == CanvasItem.MethodName._Draw || method == MethodName._GuiInput ||
-			base.HasGodotClassMethod(method);
+			method == Node.MethodName._Ready
+			|| method == Node.MethodName._Process
+			|| method == CanvasItem.MethodName._Draw
+			|| method == MethodName._GuiInput
+			|| base.HasGodotClassMethod(method);
 
 		public override void _Ready()
 		{
-			if (Engine.IsEditorHint()) return;
+			if (Engine.IsEditorHint())
+				return;
+
 			Material = new CanvasItemMaterial
 			{
 				BlendMode = CanvasItemMaterial.BlendModeEnum.PremultAlpha,
@@ -597,7 +610,8 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		public override void _Process(double delta)
 		{
-			if (_owner._isDisposed) return;
+			if (_owner._isDisposed)
+				return;
 
 			GodotPlatform.TriggerRenderTick();
 			AvDispatcher.UIThread.RunJobs();
@@ -606,26 +620,25 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			var winSize = window.Size;
 			var pixelSize = new PixelSize(Math.Max(winSize.X, 1), Math.Max(winSize.Y, 1));
 
-			// Only push Godot's window size to Avalonia when it changed externally
-			// (user resize, maximize, fullscreen). Skip when the size matches what
-			// Avalonia already set via Resize() - this prevents feedback loops with
-			// SizeToContent where SetRenderSize -> Resized -> layout -> Resize grows
-			// the window each frame.
+			// Only push Godot's window size to Avalonia when it changed externally, through a user
+			// resize, a maximize or a fullscreen toggle. Skip it when the size matches what Avalonia
+			// already set through Resize(), which prevents the SizeToContent feedback loop where
+			// SetRenderSize -> Resized -> layout -> Resize grows the window every frame.
 			if (pixelSize != _owner._lastProcessRenderSize)
 			{
 				_owner._lastProcessRenderSize = pixelSize;
 				_owner._topLevelImpl.SetRenderSize(pixelSize, 1.0);
-				// Run queued layout jobs triggered by SetRenderSize before drawing.
-				// Without this, maximize/fullscreen shows a blurry texture because
-				// OnDraw renders with the old layout onto the new surface.
+				// Run the layout jobs queued by SetRenderSize before drawing. Without this, maximizing
+				// or going fullscreen shows a blurry texture, as OnDraw would render the old layout
+				// onto the new surface.
 				AvDispatcher.UIThread.RunJobs();
 			}
 
-			// Enable popup overlay after first layout pass (needs valid size).
+			// Enable the popup overlay after the first layout pass, which needs a valid size
 			_owner.TryEnablePopupOverlayLayer();
 
-			// For SizeToContent windows, re-center after Avalonia layout determines
-			// the actual content size (which differs from the initial 400x300 default).
+			// Re-center SizeToContent windows once Avalonia's layout has determined their actual
+			// content size, which differs from the initial 400x300 default
 			if (_owner._needsRecenter)
 			{
 				_owner._needsRecenter = false;
@@ -638,7 +651,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 					mainWinPos.X + Math.Max((mainWinSize.X - subWinSize.X) / 2, 0),
 					mainWinPos.Y + Math.Max((mainWinSize.Y - subWinSize.Y) / 2, 0)
 				);
-				window.CallDeferred(Window.MethodName.SetPosition, centerPos);
+				window.CallDeferred(GdWindow.MethodName.SetPosition, centerPos);
 			}
 
 			_owner._topLevelImpl.OnDraw(new Rect(pixelSize.ToSize(1.0)));
@@ -647,7 +660,9 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		public override void _Draw()
 		{
-			if (_owner._isDisposed) return;
+			if (_owner._isDisposed)
+				return;
+
 			var surface = _owner._topLevelImpl.GetOrCreateSurface();
 			DrawTexture(surface.GdTexture, Vector2.Zero);
 		}
@@ -656,7 +671,9 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		{
 			if (_owner._isDisposed || !_isEnabled)
 			{
-				if (!_isEnabled) _owner.GotInputWhenDisabled?.Invoke();
+				if (!_isEnabled)
+					_owner.GotInputWhenDisabled?.Invoke();
+
 				return;
 			}
 
@@ -671,7 +688,8 @@ internal sealed class GodotWindowImpl : IWindowImpl
 				InputEventJoypadMotion jm => _owner._topLevelImpl.OnJoypadMotion(jm, Time.GetTicksMsec()),
 				_ => false
 			};
-			if (handled) AcceptEvent();
+			if (handled)
+				AcceptEvent();
 		}
 
 		public void SetCursor(GdCursorShape cursorShape) => MouseDefaultCursorShape = cursorShape;

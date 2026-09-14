@@ -7,32 +7,42 @@ namespace Estragonia;
 
 internal sealed unsafe class VkDeviceApi
 {
-	private readonly delegate* unmanaged[Stdcall]<VkDevice, ref VkCommandBufferAllocateInfo, VkCommandBuffer*, VkResult>
-		_vkAllocateCommandBuffers;
+	private readonly delegate* unmanaged[Stdcall]<
+		VkDevice, ref VkCommandBufferAllocateInfo, VkCommandBuffer*, VkResult
+		> _vkAllocateCommandBuffers;
 
-	private readonly delegate* unmanaged[Stdcall]<VkCommandBuffer, ref VkCommandBufferBeginInfo, VkResult>
-		_vkBeginCommandBuffer;
+	private readonly delegate* unmanaged[Stdcall]<
+		VkCommandBuffer, ref VkCommandBufferBeginInfo, VkResult
+		> _vkBeginCommandBuffer;
 
-	private readonly delegate* unmanaged[Stdcall]<VkCommandBuffer, VkPipelineStageFlags, VkPipelineStageFlags,
-		VkDependencyFlags, uint, IntPtr, uint, IntPtr, uint, VkImageMemoryBarrier*, void> _vkCmdPipelineBarrier;
+	private readonly delegate* unmanaged[Stdcall]<
+		VkCommandBuffer, VkPipelineStageFlags, VkPipelineStageFlags, VkDependencyFlags, uint, IntPtr, uint, IntPtr,
+		uint, VkImageMemoryBarrier*, void
+		> _vkCmdPipelineBarrier;
 
 	// Provided by VK_VERSION_1_0
-	private readonly delegate* unmanaged[Stdcall]<VkDevice, ref VkCommandPoolCreateInfo, IntPtr, out VkCommandPool,
-		VkResult> _vkCreateCommandPool;
+	private readonly delegate* unmanaged[Stdcall]<
+		VkDevice, ref VkCommandPoolCreateInfo, IntPtr, out VkCommandPool, VkResult
+		> _vkCreateCommandPool;
 
-	private readonly delegate* unmanaged[Stdcall]<VkDevice, ref VkFenceCreateInfo, IntPtr, out VkFence, VkResult>
-		_vkCreateFence;
+	private readonly delegate* unmanaged[Stdcall]<
+		VkDevice, ref VkFenceCreateInfo, IntPtr, out VkFence, VkResult
+		> _vkCreateFence;
 
 	private readonly delegate* unmanaged[Stdcall]<VkDevice, VkCommandPool, IntPtr, void> _vkDestroyCommandPool;
 	private readonly delegate* unmanaged[Stdcall]<VkDevice, VkFence, IntPtr, void> _vkDestroyFence;
+
 	private readonly delegate* unmanaged[Stdcall]<VkCommandBuffer, VkResult> _vkEndCommandBuffer;
 
-	private readonly delegate* unmanaged[Stdcall]<VkDevice, VkCommandPool, uint, VkCommandBuffer*, void>
-		_vkFreeCommandBuffers;
+	private readonly delegate* unmanaged[Stdcall]<
+		VkDevice, VkCommandPool, uint, VkCommandBuffer*, void
+		> _vkFreeCommandBuffers;
 
 	private readonly delegate* unmanaged[Stdcall]<VkDevice, VkFence, VkResult> _vkGetFenceStatus;
+
 	private readonly delegate* unmanaged[Stdcall]<VkQueue, uint, VkSubmitInfo*, VkFence, VkResult> _vkQueueSubmit;
 	private readonly delegate* unmanaged[Stdcall]<VkQueue, VkResult> _vkQueueWaitIdle;
+
 	private readonly delegate* unmanaged[Stdcall]<VkDevice, uint, VkFence*, VkResult> _vkResetFences;
 	private readonly delegate* unmanaged[Stdcall]<VkDevice, uint, VkFence*, uint, ulong, VkResult> _vkWaitForFences;
 
@@ -63,8 +73,8 @@ internal sealed unsafe class VkDeviceApi
 			GetVkProcAddress("vkFreeCommandBuffers");
 
 		_vkCmdPipelineBarrier =
-			(delegate* unmanaged[Stdcall]<VkCommandBuffer, VkPipelineStageFlags, VkPipelineStageFlags, VkDependencyFlags
-				, uint, IntPtr, uint, IntPtr, uint, VkImageMemoryBarrier*, void>)
+			(delegate* unmanaged[Stdcall]<VkCommandBuffer, VkPipelineStageFlags, VkPipelineStageFlags,
+				VkDependencyFlags, uint, IntPtr, uint, IntPtr, uint, VkImageMemoryBarrier*, void>)
 			GetVkProcAddress("vkCmdPipelineBarrier");
 
 		_vkQueueSubmit =
@@ -108,16 +118,13 @@ internal sealed unsafe class VkDeviceApi
 			IntPtr result;
 
 			fixed (byte* utf8NamePtr = utf8Name)
-			{
 				result = vkGetDeviceProcAddr(vkDevice, utf8NamePtr);
-			}
 
 			return result == IntPtr.Zero
 				? throw new EntryPointNotFoundException($"Vulkan entry point not found for {name}")
 				: result;
 		}
 	}
-
 
 	public void CreateCommandPool(
 		VkDevice device,
@@ -147,8 +154,12 @@ internal sealed unsafe class VkDeviceApi
 		_vkEndCommandBuffer(commandBuffer)
 			.VerifySuccess(nameof(EndCommandBuffer));
 
-	public void FreeCommandBuffers(VkDevice device, VkCommandPool commandPool, uint commandBufferCount,
-		VkCommandBuffer* pCommandBuffers) =>
+	public void FreeCommandBuffers(
+		VkDevice device,
+		VkCommandPool commandPool,
+		uint commandBufferCount,
+		VkCommandBuffer* pCommandBuffers
+	) =>
 		_vkFreeCommandBuffers(device, commandPool, commandBufferCount, pCommandBuffers);
 
 	public void CmdPipelineBarrier(
@@ -173,14 +184,19 @@ internal sealed unsafe class VkDeviceApi
 			bufferMemoryBarrierCount,
 			pBufferMemoryBarriers,
 			imageMemoryBarrierCount,
-			pImageMemoryBarriers);
+			pImageMemoryBarriers
+		);
 
 	public void QueueSubmit(VkQueue queue, uint submitCount, VkSubmitInfo* pSubmits, VkFence fence) =>
 		_vkQueueSubmit(queue, submitCount, pSubmits, fence)
 			.VerifySuccess(nameof(QueueSubmit));
 
-	public void CreateFence(VkDevice device, ref VkFenceCreateInfo pCreateInfo, IntPtr pAllocator,
-		out VkFence pFence) =>
+	public void CreateFence(
+		VkDevice device,
+		ref VkFenceCreateInfo pCreateInfo,
+		IntPtr pAllocator,
+		out VkFence pFence
+	) =>
 		_vkCreateFence(device, ref pCreateInfo, pAllocator, out pFence)
 			.VerifySuccess(nameof(CreateFence));
 
@@ -197,6 +213,5 @@ internal sealed unsafe class VkDeviceApi
 	public void DestroyFence(VkDevice device, VkFence fence, IntPtr pAllocator) =>
 		_vkDestroyFence(device, fence, pAllocator);
 
-	// ReSharper disable once UnusedMember.Global
 	public void QueueWaitIdle(VkQueue queue) => _vkQueueWaitIdle(queue).VerifySuccess(nameof(QueueWaitIdle));
 }

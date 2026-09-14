@@ -14,7 +14,8 @@ internal sealed class GodotWindowingPlatform : IWindowingPlatform
 
 		if (platformGraphics is null || clipboard is null)
 			throw new InvalidOperationException(
-				"GodotPlatform not initialized - call UseGodot().SetupWithoutStarting() first.");
+				"GodotPlatform isn't initialized - call UseGodot().SetupWithGodot() first"
+			);
 
 		return new GodotWindowImpl(platformGraphics, clipboard, GodotPlatform.Compositor);
 	}

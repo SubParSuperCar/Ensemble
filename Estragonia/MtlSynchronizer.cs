@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace Estragonia;
 
-/// <summary>Metal surface synchronizer. Uses GPU-to-GPU blitting when possible.</summary>
+/// <summary>A Metal surface synchronizer that uses GPU-to-GPU blitting when possible.</summary>
 internal sealed class MtlSynchronizer : ISurfaceSynchronizer
 {
 	private bool _gpuBlitFailed;
@@ -17,23 +17,20 @@ internal sealed class MtlSynchronizer : ISurfaceSynchronizer
 			surface.RenderingDevice.TextureClear(surface.GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
 	}
 
-	/// <summary>Finalizes rendering by blitting from Skia surface to Godot texture.</summary>
+	/// <summary>Finalizes rendering by blitting from the Skia surface to the Godot texture.</summary>
 	public void FinishRendering(IGodotSkiaSurface surface)
 	{
-		var skSurface = surface.SkSurface;
-
 		// Flush Skia GPU commands
-		skSurface.Flush();
+		surface.SkSurface.Flush();
 
-		// Check if this is a zero-copy surface (renders directly to Godot's texture)
+		// A zero-copy surface renders directly to Godot's texture, so nothing needs to be copied
 		if (surface is GodotSkiaSurfaceMetal { IsZeroCopy: true })
 		{
-			// No copy needed - Skia rendered directly to Godot's texture
 			surface.DrawCount++;
 			return;
 		}
 
-		// Try GPU-to-GPU blit if we have a Metal surface
+		// Try a GPU-to-GPU blit if this is a Metal surface
 		if (!_gpuBlitFailed && surface is GodotSkiaSurfaceMetal mtlSurface)
 		{
 			if (TryGpuBlit(mtlSurface))
@@ -42,44 +39,45 @@ internal sealed class MtlSynchronizer : ISurfaceSynchronizer
 				return;
 			}
 
-			// Fall back to CPU copy if GPU blit fails
+			// Fall back to a CPU copy if the GPU blit fails
 			_gpuBlitFailed = true;
-			GD.Print("[Estragonia Metal] GPU blit failed, falling back to CPU copy");
+			GD.Print("[Estragonia Metal] GPU blit failed, falling back to a CPU copy");
 		}
 
-		// CPU fallback: read pixels and upload
 		CpuCopy(surface);
 		surface.DrawCount++;
 	}
 
 	public void Dispose()
 	{
-		// No resources to dispose for Metal synchronizer
+		// The Metal synchronizer has no resources to dispose
 	}
 
 	private static bool TryGpuBlit(GodotSkiaSurfaceMetal surface)
 	{
 		// Get Skia's Metal texture from its surface
 		var skiaTexture = MtlInterop.GetSurfaceMetalTexture(surface.SkSurface);
-		if (skiaTexture != IntPtr.Zero)
-			// Perform GPU blit from Skia texture to Godot texture
-			return MtlInterop.BlitTexture(
-				surface.CommandQueue,
-				skiaTexture,
-				surface.GdMetalTexture,
-				surface.Width,
-				surface.Height
-			);
 
-		GD.PrintErr("[Estragonia Metal] Could not get Skia Metal texture");
-		return false;
+		// ReSharper disable once InvertIf -- the guard clause keeps the error path next to its check
+		if (skiaTexture == IntPtr.Zero)
+		{
+			GD.PrintErr("[Estragonia Metal] Couldn't get Skia's Metal texture");
+			return false;
+		}
+
+		return MtlInterop.BlitTexture(
+			surface.CommandQueue,
+			skiaTexture,
+			surface.GdMetalTexture,
+			surface.Width,
+			surface.Height
+		);
 	}
 
 	private static void CpuCopy(IGodotSkiaSurface surface)
 	{
 		var skSurface = surface.SkSurface;
-		var canvas = skSurface.Canvas;
-		var bounds = canvas.DeviceClipBounds;
+		var bounds = skSurface.Canvas.DeviceClipBounds;
 		var width = bounds.Width;
 		var height = bounds.Height;
 
@@ -93,7 +91,7 @@ internal sealed class MtlSynchronizer : ISurfaceSynchronizer
 		if (!skSurface.ReadPixels(imageInfo, bitmap.GetPixels(), imageInfo.RowBytes, 0, 0))
 			return;
 
-		// Get pixel data and upload to Godot texture
+		// Get the pixel data and upload it to the Godot texture
 		var pixelData = bitmap.GetPixelSpan().ToArray();
 		surface.RenderingDevice.TextureUpdate(
 			surface.GdTexture.TextureRdRid,

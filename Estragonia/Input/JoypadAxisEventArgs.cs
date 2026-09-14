@@ -1,8 +1,6 @@
 using Avalonia.Interactivity;
 using Godot;
 
-// ReSharper disable UnusedMember.Global
-
 namespace Estragonia.Input;
 
 /// <summary>Provides information about a joypad axis event.</summary>
@@ -11,8 +9,8 @@ public class JoypadAxisEventArgs(
 	object? source,
 	IJoypadDevice device,
 	JoyAxis axis,
-	float axisValue)
-	: RoutedEventArgs(routedEvent, source)
+	float axisValue
+) : RoutedEventArgs(routedEvent, source)
 {
 	/// <summary>Gets the device where the event comes from.</summary>
 	public IJoypadDevice Device { get; } = device;

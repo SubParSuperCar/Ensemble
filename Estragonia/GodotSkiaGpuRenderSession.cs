@@ -6,20 +6,19 @@ namespace Estragonia;
 /// <summary>A render session that uses an underlying Skia surface.</summary>
 internal sealed class GodotSkiaGpuRenderSession : ISkiaGpuRenderSession
 {
+	private readonly ISurfaceSynchronizer _synchronizer;
+
 	public GodotSkiaGpuRenderSession(IGodotSkiaSurface surface, GRContext grContext, ISurfaceSynchronizer synchronizer)
 	{
 		Surface = surface;
 		GrContext = grContext;
-		Synchronizer = synchronizer;
+		_synchronizer = synchronizer;
 
-		// Prepare surface for rendering (handles texture clear and layout transitions)
-		Synchronizer.PrepareForRendering(Surface);
+		// Prepare the surface for rendering (handles texture clear and layout transitions)
+		_synchronizer.PrepareForRendering(Surface);
 	}
 
 	public IGodotSkiaSurface Surface { get; }
-
-	// ReSharper disable once MemberCanBePrivate.Global
-	public ISurfaceSynchronizer Synchronizer { get; }
 
 	public GRContext GrContext { get; }
 
@@ -29,7 +28,6 @@ internal sealed class GodotSkiaGpuRenderSession : ISkiaGpuRenderSession
 
 	GRSurfaceOrigin ISkiaGpuRenderSession.SurfaceOrigin => GRSurfaceOrigin.TopLeft;
 
-	public void Dispose() =>
-		// Finalize rendering (handles flush and layout transitions)
-		Synchronizer.FinishRendering(Surface);
+	// Finalizes rendering, which handles the flush and the layout transitions
+	public void Dispose() => _synchronizer.FinishRendering(Surface);
 }

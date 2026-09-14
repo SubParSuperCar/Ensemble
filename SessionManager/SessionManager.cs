@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Globalization;
 using Godot;
 using Root.Autoloading;
@@ -6,13 +5,14 @@ using Root.SessionManager.Api;
 using Root.SessionManager.Auth;
 using Root.SessionManager.Sessions;
 using Serilog;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace Root.SessionManager;
 
 /// <summary>
-///     The <see cref="GdCore" />-agnostic session lifetime manager using Godot's <see cref="MultiplayerApi" />.
-///     Provides resources for starting and stopping single- and multi-player sessions,
-///     handling password authentication, managing RPC actions, and more.
+///     The <see cref="GdCore" />-agnostic session lifetime manager using Godot's <see cref="MultiplayerApi" />.ayerApi"
+///     />. Provides resources for starting and stopping single- and multiplayer
+///     sessions, handling password authentication, managing RPC actions, and more.
 /// </summary>
 [GlobalClass]
 [Autoload(Order = sbyte.MinValue + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]

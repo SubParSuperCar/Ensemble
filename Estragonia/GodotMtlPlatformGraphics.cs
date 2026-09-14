@@ -12,13 +12,6 @@ internal sealed class GodotMtlPlatformGraphics : IGodotPlatformGraphics
 	private GodotMtlSkiaGpu? _context;
 	private int _refCount;
 
-	public void Dispose()
-	{
-		if (_context is null) return;
-		_context.Dispose();
-		_context = null;
-	}
-
 	bool IPlatformGraphics.UsesSharedContext => true;
 
 	IPlatformGraphicsContext IPlatformGraphics.CreateContext() => throw new NotSupportedException();
@@ -30,10 +23,13 @@ internal sealed class GodotMtlPlatformGraphics : IGodotPlatformGraphics
 		if (Volatile.Read(ref _refCount) == 0)
 			ThrowDisposed();
 
-		if (_context is not null && !_context.IsLost) return _context;
-		_context?.Dispose();
-		_context = null;
-		_context = new GodotMtlSkiaGpu();
+		// ReSharper disable once InvertIf -- inverting would duplicate the return of the cached context
+		if (_context is null || _context.IsLost)
+		{
+			_context?.Dispose();
+			_context = null;
+			_context = new GodotMtlSkiaGpu();
+		}
 
 		return _context;
 	}
@@ -44,6 +40,15 @@ internal sealed class GodotMtlPlatformGraphics : IGodotPlatformGraphics
 	{
 		if (Interlocked.Decrement(ref _refCount) == 0)
 			Dispose();
+	}
+
+	public void Dispose()
+	{
+		if (_context is null)
+			return;
+
+		_context.Dispose();
+		_context = null;
 	}
 
 	[DoesNotReturn]

@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
@@ -10,11 +9,13 @@ using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels;
 using Serilog;
 using TinyDialogsNet;
+using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace Root.Ui.Impl.Views;
 
-// TODO: Fix random exit code 139 (SIGSEGV), also known as a segfault, upon opening this view
-// The random crashing seems to occur just after the Markdown is parsed and rendered and right before the images asynchronously load
+// TODO: Fix the random exit code 139 (SIGSEGV), also known as a segfault, when opening this view
+// The crash seems to happen just after the Markdown is parsed and rendered,
+// and right before the images load asynchronously
 public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 {
 	private CancellationTokenSource? _cts;

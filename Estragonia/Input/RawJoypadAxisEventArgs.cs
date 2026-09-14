@@ -10,11 +10,10 @@ public class RawJoypadAxisEventArgs(
 	ulong timestamp,
 	IInputRoot root,
 	JoyAxis axis,
-	float axisValue)
-	: RawInputEventArgs(device, timestamp, root)
+	float axisValue
+) : RawInputEventArgs(device, timestamp, root)
 {
 	/// <summary>Gets the associated device.</summary>
-	// ReSharper disable once UnusedMember.Global
 	public new IJoypadDevice Device => (IJoypadDevice)base.Device;
 
 	/// <summary>Gets the axis.</summary>

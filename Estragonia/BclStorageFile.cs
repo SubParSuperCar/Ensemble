@@ -8,6 +8,7 @@ namespace Estragonia;
 
 internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 {
+	// ReSharper disable once MemberCanBePrivate.Global
 	public FileInfo FileInfo { get; } = fileInfo;
 
 	public string Name => FileInfo.Name;

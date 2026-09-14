@@ -14,6 +14,7 @@ public class RawJoypadButtonEventArgs(
 ) : RawInputEventArgs(device, timestamp, root)
 {
 	/// <summary>Gets the associated device.</summary>
+	// ReSharper disable once UnusedMember.Global
 	public new IJoypadDevice Device => (IJoypadDevice)base.Device;
 
 	/// <summary>Gets whether the button is pressed or released.</summary>

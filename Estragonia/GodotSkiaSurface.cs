@@ -4,6 +4,8 @@ using Godot;
 using SkiaSharp;
 using static Estragonia.VkInterop;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace Estragonia;
 
 /// <summary>Encapsulates a Skia surface along with the Godot texture it comes from (Vulkan backend).</summary>

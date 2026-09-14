@@ -65,6 +65,7 @@ internal static class MtlInterop
 	/// <param name="height">The height of the render target in pixels.</param>
 	/// <param name="mtlTexture">The MTLTexture handle.</param>
 	/// <returns>The created render target, or <c>null</c> on failure.</returns>
+	// ReSharper disable once UnusedMember.Global
 	public static GRBackendRenderTarget? CreateMetalRenderTarget(int width, int height, IntPtr mtlTexture)
 	{
 		var textureInfo = new GrMtlTextureInfoNative { Texture = mtlTexture };

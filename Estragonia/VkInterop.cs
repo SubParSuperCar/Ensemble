@@ -1,6 +1,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
+// ReSharper disable UnusedMember.Global
+// ReSharper disable NotAccessedField.Global
+
 namespace Estragonia;
 
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value
@@ -529,6 +532,7 @@ internal static class VkInterop
 	// Provided by VK_VERSION_1_0
 	internal struct VkImage(ulong handle)
 	{
+		// ReSharper disable once FieldCanBeMadeReadOnly.Global
 		public ulong Handle = handle;
 	}
 

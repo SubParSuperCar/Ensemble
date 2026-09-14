@@ -74,7 +74,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 	private static string GetOrder(AttributeData attribute) =>
 		TryGetNamedArgument(attribute, OrderPropertyName, out var value)
 			? Convert.ToSByte(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture)
-			: "0";
+			: "AutoloadOrder.Standard";
 
 	private static string GetFailurePolicy(AttributeData attribute) =>
 		TryGetNamedArgument(attribute, FailurePolicyPropertyName, out var value)

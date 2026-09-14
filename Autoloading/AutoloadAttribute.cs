@@ -9,23 +9,12 @@ namespace Root.Autoloading;
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class AutoloadAttribute : Attribute
 {
-	/// <summary>
-	///     The run contexts that this Autoload should be instantiated in.
-	/// </summary>
+	/// <inheritdoc cref="AutoloadScope" />
 	public AutoloadScope Scope { get; init; } = AutoloadScope.RegularClient | AutoloadScope.HeadlessServer;
 
-	/// <summary>
-	///     The order that this Autoload should be instantiated in,
-	///     where lower values are earlier and higher values are later.
-	///     Ranges from -128 (<see cref="sbyte.MinValue" />) to 127 (<see cref="sbyte.MaxValue" />).
-	///     If more than one Autoload object has the same order,
-	///     their order of instantiation is resolved by ordinal alphabetical ordering,
-	///     so "A" runs before "Z", which runs before "a", which runs before "z".
-	/// </summary>
-	public sbyte Order { get; init; }
+	/// <inheritdoc cref="AutoloadOrder" />
+	public sbyte Order { get; init; } = AutoloadOrder.Standard;
 
-	/// <summary>
-	///     The policy to follow if a failure occurs in this Autoload and it cannot be instantiated.
-	/// </summary>
+	/// <inheritdoc cref="AutoloadFailurePolicy" />
 	public AutoloadFailurePolicy FailurePolicy { get; init; }
 }

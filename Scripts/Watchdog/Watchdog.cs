@@ -8,7 +8,7 @@ using TinyDialogsNet;
 namespace Root.Scripts.Watchdog;
 
 [GlobalClass]
-[Autoload(Order = sbyte.MaxValue, FailurePolicy = AutoloadFailurePolicy.AskUser)]
+[Autoload(Order = AutoloadOrder.Last, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class Watchdog : Node, IAutoload
 {
 	private const int PollIntervalMs = (int)TimeSpan.MillisecondsPerSecond;

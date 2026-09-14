@@ -10,7 +10,7 @@ using FileAccess = Godot.FileAccess;
 namespace Root.Scripts.Logging;
 
 [GlobalClass]
-[Autoload(Order = sbyte.MinValue, FailurePolicy = AutoloadFailurePolicy.AskUser)]
+[Autoload(Order = AutoloadOrder.First, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class Logger : Node, IAutoload
 {
 	private const string LogFileNameTemplate = "serilog-.json";

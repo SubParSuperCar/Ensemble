@@ -13,7 +13,7 @@ using Kvp = (string Key, string Value);
 namespace Root.Scripts.Logging;
 
 [GlobalClass]
-[Autoload(Order = 2, FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
+[Autoload(Order = AutoloadOrder.Standard + 2, FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class DiagnosticLogger : Node, IAutoload
 {
 	private const string LinuxKernelVersionFilePath = "/proc/sys/kernel/osrelease";

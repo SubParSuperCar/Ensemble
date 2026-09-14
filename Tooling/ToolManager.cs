@@ -8,7 +8,7 @@ namespace Root.Tooling;
 [GlobalClass]
 [Autoload(
 	Scope = AutoloadScope.RegularClient,
-	Order = sbyte.MinValue + 4,
+	Order = AutoloadOrder.Early + 3,
 	FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ToolManager : Node, IAutoload
 {

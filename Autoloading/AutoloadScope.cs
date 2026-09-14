@@ -1,5 +1,8 @@
 namespace Root.Autoloading;
 
+/// <summary>
+///     The run contexts that this Autoload should be instantiated in.
+/// </summary>
 [Flags]
 public enum AutoloadScope : byte
 {

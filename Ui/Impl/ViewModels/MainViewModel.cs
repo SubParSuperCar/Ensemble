@@ -1,3 +1,4 @@
+using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Godot;
@@ -7,6 +8,8 @@ using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
 using Root.Ui.Impl.Services;
 using Serilog;
+using XTerm.Common;
+using Color = Avalonia.Media.Color;
 
 namespace Root.Ui.Impl.ViewModels;
 
@@ -107,7 +110,29 @@ public partial class MainViewModel : ViewModelBase
 
 	private static void ShowNewTerminalWindow()
 	{
-		var terminal = new TerminalWindow { Width = 1280, Height = 720 };
+		var terminal = new TerminalWindow
+		{
+			Width = 1280,
+			Height = 720,
+			CursorStyle = CursorStyle.Block,
+			CursorColor = Color.Parse("#40A0FF"),
+			CursorBlink = true,
+			CursorBlinkRate = (int)TimeSpan.MillisecondsPerSecond / 3
+		};
+
+		Log.Debug("PTY process created with shell: {Shell}", terminal.Process);
+
+		terminal.ProcessExited += OnProcessExited;
 		terminal.Show();
+
+		var editor = terminal
+			.GetVisualDescendants()
+			.OfType<TerminalView>()
+			.FirstOrDefault();
+
+		editor?.Focus();
 	}
+
+	private static void OnProcessExited(object? sender, ProcessExitedEventArgs e) =>
+		Log.Debug("PTY process exited with code: {ExitCode}", e.ExitCode);
 }

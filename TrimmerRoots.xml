@@ -10,4 +10,6 @@
 
   <assembly fullname="Fonts.Avalonia.JetBrainsMono" preserve="all"/>
   <assembly fullname="Iciclecreek.Avalonia.Terminal" preserve="all"/>
+
+  <assembly fullname="BogaNet.TTS" preserve="all"/>
 </linker>

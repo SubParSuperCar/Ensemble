@@ -95,7 +95,7 @@ internal static class SaveEnvelope
 			throw new InvalidDataException("Unrecognized save file.");
 
 		if (prefix[4] is not Version)
-			throw new InvalidDataException($"Unsupported save envelope version: {prefix[4]}.");
+			throw new InvalidDataException($"Unsupported save envelope version: {prefix[4]}");
 
 		var compression = (CompressionType)prefix[5];
 		var encryption = (EncryptionType)prefix[6];
@@ -118,7 +118,7 @@ internal static class SaveEnvelope
 				compression, encryption, flags, checksum, KdfParameters.None, [], authenticated.ToArray());
 
 		if (encryption is not EncryptionType.Aes256Gcm)
-			throw new InvalidDataException($"Unsupported encryption type: {prefix[6]}.");
+			throw new InvalidDataException($"Unsupported encryption type: {prefix[6]}");
 
 		Span<byte> kdfBlock = stackalloc byte[KdfBlockSize];
 		stream.ReadExactly(kdfBlock);

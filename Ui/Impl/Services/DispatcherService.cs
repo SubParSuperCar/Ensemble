@@ -14,10 +14,14 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 
 		WeakReferenceMessenger.Default.Register<InputMessage>(this,
 			(_, message) => Input?.Invoke(message.Value));
+
+		WeakReferenceMessenger.Default.Register<NotificationMessage>(this,
+			(_, message) => Notification?.Invoke(message.Value));
 	}
 
 	public event Action<double>? Process;
 	public event Action<InputEvent>? Input;
+	public event Action<int>? Notification;
 
 	protected override void OnDispose() => WeakReferenceMessenger.Default.UnregisterAll(this);
 }

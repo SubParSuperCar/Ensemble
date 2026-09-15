@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,6 +18,7 @@ public partial class MainViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceProvider _services;
+	private readonly List<TerminalWindow> _terminals = [];
 
 	public MainViewModel(IServiceProvider services, DispatcherService dispatcher)
 	{
@@ -26,6 +28,7 @@ public partial class MainViewModel : ViewModelBase
 		Stats = services.GetRequiredService<StatViewModel>();
 
 		dispatcher.Input += OnInput;
+		dispatcher.Notification += OnNotification;
 
 		if (GSessionManager.IsActive)
 			OnSessionStarted();
@@ -57,6 +60,7 @@ public partial class MainViewModel : ViewModelBase
 
 		_dispatcher.Process -= OnProcess;
 		_dispatcher.Input -= OnInput;
+		_dispatcher.Notification -= OnNotification;
 
 		Main = null;
 		Stats = null;
@@ -64,7 +68,7 @@ public partial class MainViewModel : ViewModelBase
 	}
 
 	[RelayCommand]
-	private static void OpenTerminal() => ShowNewTerminalWindow();
+	private void OpenTerminal() => ShowNewTerminalWindow();
 
 	private static void OnProcess(double delta) => RenderingServer.ForceDraw();
 
@@ -94,6 +98,15 @@ public partial class MainViewModel : ViewModelBase
 			ShowNewTerminalWindow();
 	}
 
+	private void OnNotification(int what)
+	{
+		if (what != Node.NotificationWMCloseRequest)
+			return;
+
+		foreach (var window in _terminals.ToArray())
+			window.Close();
+	}
+
 	partial void OnIsConsoleVisibleChanging(bool value)
 	{
 		if (value)
@@ -108,7 +121,7 @@ public partial class MainViewModel : ViewModelBase
 		}
 	}
 
-	private static void ShowNewTerminalWindow()
+	private void ShowNewTerminalWindow()
 	{
 		var terminal = new TerminalWindow
 		{
@@ -120,9 +133,13 @@ public partial class MainViewModel : ViewModelBase
 			CursorBlinkRate = (int)TimeSpan.MillisecondsPerSecond / 3
 		};
 
+		_terminals.Add(terminal);
+
+		terminal.Closing += OnClosing;
+		terminal.ProcessExited += OnProcessExited;
+
 		Log.Debug("PTY process created with shell: {Shell}", terminal.Process);
 
-		terminal.ProcessExited += OnProcessExited;
 		terminal.Show();
 
 		var editor = terminal
@@ -131,6 +148,12 @@ public partial class MainViewModel : ViewModelBase
 			.FirstOrDefault();
 
 		editor?.Focus();
+		return;
+
+		void OnClosing(object? sender, WindowClosingEventArgs e)
+		{
+			_terminals.Remove(terminal);
+		}
 	}
 
 	private static void OnProcessExited(object? sender, ProcessExitedEventArgs e) =>

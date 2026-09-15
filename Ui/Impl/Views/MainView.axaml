@@ -57,13 +57,13 @@
             Orientation="Horizontal" Spacing="4">
 
             <ToggleButton
-                Content="DevConsole (` / F9)"
+                Content="Dev-Console (` / F9)"
                 IsChecked="{Binding IsConsoleVisible, Mode=TwoWay}"
                 ToolTip.Tip="Toggles the console UI. (Bound to ` and F9)"
                 Background="{DynamicResource TranslucentBackgroundBrush}" />
 
             <Button
-                Content="SysTerminal (PTY, F8)"
+                Content="Sys-Terminal (PTY, F8)"
                 Command="{Binding OpenTerminalCommand}"
                 ToolTip.Tip="Opens a new pseudo-terminal (PTY) window. (Bound to F8)&#x0a;On Windows, Command Prompt (cmd) is used.&#x0a;On other OSes, Bash is used.&#x0a;&#x0a;&#x26A0; WARNING: &#x26A0;&#x0a;Be careful what you run; don't run anything&#x0a;someone sends you without reviewing it first.&#x0a;The consequences could be devastating.&#x0a;&#x0a;Note:&#x0a;The terminal inherits the same privilege level&#x0a;as the main Ensemble process."
                 Background="{DynamicResource TranslucentBackgroundBrush}" />

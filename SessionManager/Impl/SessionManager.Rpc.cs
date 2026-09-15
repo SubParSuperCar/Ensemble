@@ -15,7 +15,7 @@ public partial class SessionManager
 		TokenLimit = 100,
 		QueueLimit = 10,
 		TokensPerPeriod = 1,
-		ReplenishmentPeriod = TimeSpan.FromSeconds(0.1),
+		ReplenishmentPeriod = TimeSpan.FromMilliseconds(100),
 		AutoReplenishment = true
 	};
 

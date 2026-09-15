@@ -110,7 +110,7 @@ internal static class SaveCrypto
 				header.Kdf.MemoryKiB,
 				header.Kdf.Iterations,
 				header.Kdf.DegreeOfParallelism),
-			_ => throw new InvalidDataException($"Unknown key-derivation function: {(byte)header.Kdf.Function}.")
+			_ => throw new InvalidDataException($"Unknown key-derivation function: {(byte)header.Kdf.Function}")
 		};
 
 	private static byte[] DeriveArgon2IdKey(

@@ -102,6 +102,7 @@ public partial class Ui : AvaloniaControl
 	}
 
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
+	public override void _Notification(int what) => WeakReferenceMessenger.Default.Send(new NotificationMessage(what));
 
 	private static float GetRenderScale(Vector2I size)
 	{

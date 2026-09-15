@@ -24,6 +24,7 @@ public partial class SessionManager
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
 	private void RpcRequestAction(string actionId, Dictionary payload)
 	{
+		// TODO: Allow actions to define their token cost instead of always using 1
 		var senderId = Multiplayer.GetRemoteSenderId();
 		EnqueueRpc(senderId, 1,
 			() => TryApplyAndBroadcast(actionId, payload, senderId, true));

@@ -23,7 +23,7 @@ public partial class StatViewModel : ViewModelBase
 	private readonly DispatcherService _dispatcher;
 	private readonly Queue<double> _frameTimes = [];
 
-	private double _sinceLastRefresh;
+	private double _sinceLastRefresh = double.MaxValue;
 
 	public StatViewModel(DispatcherService dispatcher)
 	{
@@ -47,7 +47,7 @@ public partial class StatViewModel : ViewModelBase
 		if (_sinceLastRefresh < RefreshInterval)
 			return;
 
-		_sinceLastRefresh -= RefreshInterval;
+		_sinceLastRefresh %= RefreshInterval;
 
 		var sampleDuration = _frameTimes.Count > 1 ? now - _frameTimes.Peek() : 0;
 		var fps = sampleDuration > 0 ? (_frameTimes.Count - 1) / sampleDuration : 0;

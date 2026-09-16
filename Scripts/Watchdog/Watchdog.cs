@@ -78,7 +78,7 @@ public partial class Watchdog : Node, IAutoload
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "Failed to show watchdog timeout popup.");
+			Log.Error(exception, "Failed to show watchdog timeout popup");
 		}
 		finally
 		{

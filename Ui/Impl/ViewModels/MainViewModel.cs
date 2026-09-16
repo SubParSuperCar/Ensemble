@@ -76,7 +76,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		_dispatcher.Process -= OnProcess;
 
-		Log.Debug("Stopped forced render drawing.");
+		Log.Debug("Stopped forced render drawing");
 
 		Main = _services.GetRequiredService<GameViewModel>();
 	}
@@ -112,12 +112,12 @@ public partial class MainViewModel : ViewModelBase
 		if (value)
 		{
 			Console = _services.GetRequiredService<ConsoleViewModel>();
-			Log.Debug("Opened {Control}.", nameof(ConsoleViewModel));
+			Log.Debug("Opened {Control}", nameof(ConsoleViewModel));
 		}
 		else
 		{
 			Console = null;
-			Log.Debug("Closed {Control}.", nameof(ConsoleViewModel));
+			Log.Debug("Closed {Control}", nameof(ConsoleViewModel));
 		}
 	}
 

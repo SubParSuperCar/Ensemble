@@ -108,7 +108,7 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 				MarkdownRenderer.DocumentUpdate = new MarkdownDocumentUpdate.Full(document);
 
 				stopwatch.Stop();
-				Log.Debug("Loaded {FileName} in {ElapsedMs:F3} ms.", file.Name, stopwatch.Elapsed.TotalMilliseconds);
+				Log.Debug("Loaded {FileName} in {ElapsedMs:F3} ms", file.Name, stopwatch.Elapsed.TotalMilliseconds);
 			});
 		}
 		catch (OperationCanceledException) { }
@@ -117,7 +117,7 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 			if (!ReferenceEquals(_cts, cts))
 				return;
 
-			Log.Error(exception, "HTTP request failed.");
+			Log.Error(exception, "HTTP request failed");
 
 #pragma warning disable MA0040
 			// ReSharper disable once MethodSupportsCancellation

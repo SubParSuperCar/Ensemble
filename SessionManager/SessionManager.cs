@@ -116,7 +116,7 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} in {ElapsedMs:F3} ms.",
+		Log.Debug("Started {Class} in {ElapsedMs:F3} ms",
 			nameof(SinglePlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
@@ -151,7 +151,7 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} (Host) in {ElapsedMs:F3} ms.",
+		Log.Debug("Started {Class} (Host) in {ElapsedMs:F3} ms",
 			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
@@ -176,7 +176,7 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} (Join) in {ElapsedMs:F3} ms.",
+		Log.Debug("Started {Class} (Join) in {ElapsedMs:F3} ms",
 			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
@@ -199,7 +199,7 @@ public partial class SessionManager : Node
 		session.Failed -= OnSessionFailed;
 
 		stopwatch.Stop();
-		Log.Debug("Stopped {SessionMode} in {ElapsedMs:F3} ms.", mode, stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug("Stopped {SessionMode} in {ElapsedMs:F3} ms", mode, stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private static string LoadOrGeneratePlayerId()

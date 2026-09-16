@@ -35,7 +35,7 @@ public partial class SessionManager
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "Unhandled exception in RPC action.");
+			Log.Error(exception, "Unhandled exception in RPC action");
 		}
 	}
 
@@ -59,7 +59,7 @@ public partial class SessionManager
 
 		if (lease is { IsAcquired: false })
 		{
-			Log.Debug("Peer {PeerId} hit the RPC rate limit.", senderId);
+			Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
 			return;
 		}
 

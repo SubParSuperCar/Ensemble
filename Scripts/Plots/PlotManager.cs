@@ -21,7 +21,7 @@ public partial class PlotManager : Node
 
 		if (GPlots.IsLocked)
 		{
-			Log.Warning("{Class} is locked.", nameof(GPlots));
+			Log.Warning("{Class} is locked", nameof(GPlots));
 			return;
 		}
 

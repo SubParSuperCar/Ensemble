@@ -63,7 +63,7 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 		options.ColumnRulerPositions = [RulerPosition];
 
 		stopwatch.Stop();
-		Log.Debug("Initialized {Control} in {ElapsedMs:F3} ms.", nameof(Editor), stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug("Initialized {Control} in {ElapsedMs:F3} ms", nameof(Editor), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private void OnOutputScrollChanged(object? sender, ScrollChangedEventArgs e)

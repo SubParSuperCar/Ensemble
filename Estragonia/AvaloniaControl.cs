@@ -72,6 +72,7 @@ public class AvaloniaControl : GdControl
 	/// <summary>Gets the underlying Godot texture where <see cref="Control" /> is rendered.</summary>
 	/// <returns>A texture.</returns>
 	/// <exception cref="InvalidOperationException">Thrown if the control isn't ready or has been disposed.</exception>
+	// ReSharper disable once UnusedMember.Global
 	public Texture2D GetTexture() => GetTopLevel().Impl.GetOrCreateSurface().GdTexture;
 
 	protected override bool InvokeGodotClassMethod(

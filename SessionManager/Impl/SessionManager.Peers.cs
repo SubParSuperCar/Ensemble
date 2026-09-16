@@ -75,7 +75,7 @@ public partial class SessionManager
 
 		_peerIdsByPlayerId[playerId] = peerId;
 
-		Log.Debug("Registered player {PlayerId} for peer {PeerId}.", playerId, peerId);
+		Log.Debug("Registered player {PlayerId} for peer {PeerId}", playerId, peerId);
 		EmitSignal(SignalName.PlayerRegistered, peerId, playerId, displayName);
 	}
 
@@ -86,7 +86,7 @@ public partial class SessionManager
 
 		_peerIdsByPlayerId.Remove(info.PlayerId);
 
-		Log.Debug("Unregistered player {PlayerId} for peer {PeerId}.", info.PlayerId, peerId);
+		Log.Debug("Unregistered player {PlayerId} for peer {PeerId}", info.PlayerId, peerId);
 		EmitSignal(SignalName.PlayerUnregistered, peerId, info.PlayerId);
 
 		return true;

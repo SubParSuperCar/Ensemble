@@ -30,7 +30,7 @@ public partial class ExeHasher : Node, IAutoload
 
 			if (!File.Exists(exePath))
 			{
-				Log.Warning("Process executable not found.");
+				Log.Warning("Process executable not found");
 				return;
 			}
 
@@ -53,7 +53,7 @@ public partial class ExeHasher : Node, IAutoload
 				var hashBytes = await SHA256.HashDataAsync(stream, _cts.Token).ConfigureAwait(false);
 
 				stopwatch.Stop();
-				Log.Debug("Hashed process executable in {ElapsedMs:F3} ms.", stopwatch.Elapsed.TotalMilliseconds);
+				Log.Debug("Hashed process executable in {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
 
 				var hashHex = Convert.ToHexString(hashBytes).ToLowerInvariant();
 				Log.Information("Process executable SHA-256 digest: {Digest}", hashHex);
@@ -61,7 +61,7 @@ public partial class ExeHasher : Node, IAutoload
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "Failed to hash process executable.");
+			Log.Error(exception, "Failed to hash process executable");
 		}
 		finally
 		{

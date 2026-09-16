@@ -29,7 +29,7 @@ public partial class AssetManager : Node
 	{
 		if (GAssets.IsLocked)
 		{
-			Log.Warning("{Class} is locked.", nameof(GAssets));
+			Log.Warning("{Class} is locked", nameof(GAssets));
 			return;
 		}
 
@@ -38,7 +38,7 @@ public partial class AssetManager : Node
 		ScanDirectory(BuildAssetsDir);
 		GAssets.Lock();
 
-		Log.Debug("Registered {Count} asset(s).", Scenes.Count);
+		Log.Debug("Registered {Count} asset(s)", Scenes.Count);
 	}
 
 	public PackedScene? GetPackedOrNull(int assetId) => Scenes.TryGetValue(assetId, out var packed) ? packed : null;

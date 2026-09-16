@@ -142,7 +142,7 @@ public partial class Main : Node
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "Failed to show dialog.");
+			Log.Error(exception, "Failed to show dialog");
 			return false;
 		}
 	}
@@ -173,7 +173,7 @@ public partial class Main : Node
 	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
 	{
 		e.SetObserved();
-		Log.Error(e.Exception, "Ensemble mitigated an unobserved task exception.");
+		Log.Error(e.Exception, "Ensemble mitigated an unobserved task exception");
 	}
 
 	private static void OnAutoloadFailed(
@@ -181,7 +181,7 @@ public partial class Main : Node
 		AutoloadLoadStage stage,
 		Exception exception)
 	{
-		Log.Error(exception, "Failed to load {Type} during {Stage} stage.", definition.Type.FullName, stage);
+		Log.Error(exception, "Failed to load {Type} during {Stage} stage", definition.Type.FullName, stage);
 
 		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 		switch (definition.FailurePolicy)
@@ -245,7 +245,7 @@ public partial class Main : Node
 			.Count(definition => LoadAutoload(definition, perAutoloadStopwatch));
 
 		totalStopwatch.Stop();
-		Log.Debug("Loaded {Count} autoload(s) in {ElapsedMs:F3} ms.",
+		Log.Debug("Loaded {Count} autoload(s) in {ElapsedMs:F3} ms",
 			loadedCount, totalStopwatch.Elapsed.TotalMilliseconds);
 	}
 
@@ -279,7 +279,7 @@ public partial class Main : Node
 				autoload.Initialize();
 
 			stopwatch.Stop();
-			Log.Debug("Loaded {Type} in {ElapsedMs:F3} ms.", fullName, stopwatch.Elapsed.TotalMilliseconds);
+			Log.Debug("Loaded {Type} in {ElapsedMs:F3} ms", fullName, stopwatch.Elapsed.TotalMilliseconds);
 
 			return true;
 		}

@@ -28,12 +28,12 @@ public partial class PlayerSync : Node, IAutoload
 		else
 			GPlayers.Add(playerId, displayName);
 
-		Log.Debug("Synced {Class} {PlayerId} for peer {PeerId}.", nameof(GdPlayer), playerId, peerId);
+		Log.Debug("Synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), playerId, peerId);
 	}
 
 	private static void OnPlayerUnregistered(int peerId, string playerId)
 	{
 		GPlayers.Remove(playerId);
-		Log.Debug("Removed synced {Class} {PlayerId} for peer {PeerId}.", nameof(GdPlayer), playerId, peerId);
+		Log.Debug("Removed synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), playerId, peerId);
 	}
 }

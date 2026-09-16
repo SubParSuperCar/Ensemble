@@ -84,7 +84,7 @@ public static partial class LuaExecutor
 		}
 
 		stopwatch.Stop();
-		Log.Information("Added {Count} instance(s) to plot with id {PlotId} in {ElapsedMs:F3} ms.",
+		Log.Information("Added {Count} instance(s) to plot with id {PlotId} in {ElapsedMs:F3} ms",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
@@ -105,7 +105,7 @@ public static partial class LuaExecutor
 		instances.Clear();
 
 		stopwatch.Stop();
-		Log.Information("Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms (deferred).",
+		Log.Information("Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms (deferred)",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
@@ -282,7 +282,7 @@ public static partial class LuaExecutor
 		}
 		catch (HttpRequestException exception)
 		{
-			Log.Error(exception, "Failed to get public IPv4 address.");
+			Log.Error(exception, "Failed to get public IPv4 address");
 			context.Return();
 		}
 
@@ -405,7 +405,7 @@ public static partial class LuaExecutor
 			timeOfDay.Set("game_time_enabled", true);
 			timeOfDay.Set("system_sync", true);
 
-			Log.Information("Synced lighting time to system clock.");
+			Log.Information("Synced lighting time to system clock");
 			return;
 		}
 
@@ -415,7 +415,7 @@ public static partial class LuaExecutor
 		timeOfDay.Set("system_sync", false);
 		timeOfDay.Set("current_time", time);
 
-		Log.Information("Set lighting time to {Hours} hour(s) after midnight.", time);
+		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
 	}
 
 	private static ValueTask<int> set_ui_dark_theme_on(
@@ -503,14 +503,14 @@ public static partial class LuaExecutor
 
 			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
 				.ContinueWith(
-					task => Log.Error(task.Exception, "TTS failed during playback."),
+					task => Log.Error(task.Exception, "TTS failed during playback"),
 					CancellationToken.None,
 					TaskContinuationOptions.OnlyOnFaulted,
 					TaskScheduler.Default);
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "TTS failed during setup.");
+			Log.Error(exception, "TTS failed during setup");
 		}
 
 		context.Return();

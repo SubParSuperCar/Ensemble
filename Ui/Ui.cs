@@ -122,7 +122,7 @@ public partial class Ui : AvaloniaControl
 	private static void OnAvaloniaUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs args)
 	{
 		args.Handled = true;
-		Log.Error(args.Exception, "Ensemble mitigated an unhandled exception in Avalonia.");
+		Log.Error(args.Exception, "Ensemble mitigated an unhandled exception in Avalonia");
 	}
 
 	private void OnAutoloadsReady()
@@ -156,7 +156,7 @@ public partial class Ui : AvaloniaControl
 			Control = locator.Build(viewModel);
 
 			stopwatch.Stop();
-			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms.", stopwatch.Elapsed.TotalMilliseconds);
+			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
 
 			RenderScaling = GetRenderScale(GetWindow().Size);
 			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), RenderScaling);

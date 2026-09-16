@@ -70,7 +70,7 @@ public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 
 		if (data.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(data, expected))
 		{
-			Log.Warning("Peer {PeerId} failed password authentication.", peerId);
+			Log.Warning("Peer {PeerId} failed password authentication", peerId);
 			_multiplayer!.DisconnectPeer((int)peerId);
 
 			return;

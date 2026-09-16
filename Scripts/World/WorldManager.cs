@@ -42,7 +42,7 @@ public partial class WorldManager : Node, IAutoload
 
 		stopwatch.Stop();
 		Log.Debug(
-			"Instantiated and added {Class} in {ElapsedMs:F3} ms.",
+			"Instantiated and added {Class} in {ElapsedMs:F3} ms",
 			nameof(WorldHandle),
 			stopwatch.Elapsed.TotalMilliseconds);
 	}
@@ -55,7 +55,7 @@ public partial class WorldManager : Node, IAutoload
 		GCore.Reset();
 
 		stopwatch.Stop();
-		Log.Debug("Reset {Member} in {ElapsedMs:F3} ms.", nameof(GCore), stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug("Reset {Member} in {ElapsedMs:F3} ms", nameof(GCore), stopwatch.Elapsed.TotalMilliseconds);
 
 		if (World is null)
 			return;
@@ -64,6 +64,6 @@ public partial class WorldManager : Node, IAutoload
 		World.QueueFree();
 		World = null;
 
-		Log.Debug("Queued {Class} to be freed.", nameof(WorldHandle));
+		Log.Debug("Queued {Class} to be freed", nameof(WorldHandle));
 	}
 }

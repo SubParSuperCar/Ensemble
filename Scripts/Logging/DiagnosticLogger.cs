@@ -33,7 +33,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 			Log.Information("\n{Report}", BuildReport(lines));
 
 			stopwatch.Stop();
-			Log.Debug("Built {Class} report in {ElapsedMs:F3} ms.",
+			Log.Debug("Built {Class} report in {ElapsedMs:F3} ms",
 				nameof(DiagnosticLogger), stopwatch.Elapsed.TotalMilliseconds);
 		});
 

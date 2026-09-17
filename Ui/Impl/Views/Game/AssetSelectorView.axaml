@@ -39,6 +39,7 @@
                 Value="1"
                 PlaceholderText="&lt;Lin. Incr.&gt;"
                 ToolTip.Tip=""
+                Minimum="0" Maximum="10"
                 Increment="0.125" />
 
             <NumericUpDown
@@ -46,6 +47,7 @@
                 Value="90"
                 PlaceholderText="&lt;Rot. Incr. Deg.&gt;"
                 ToolTip.Tip=""
+                Minimum="-180" Maximum="180"
                 Increment="11.25"
                 ButtonSpinnerLocation="Left" />
 

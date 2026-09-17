@@ -5,6 +5,7 @@ using CoreRoot.Api.Plots;
 
 namespace CoreRoot.Plots;
 
+/// <inheritdoc />
 public class Plots : IPlots
 {
 	private readonly IAssets _assets;

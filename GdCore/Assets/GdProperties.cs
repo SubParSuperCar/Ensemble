@@ -7,6 +7,7 @@ using Variant = Godot.Variant;
 
 namespace Root.GdCore.Assets;
 
+/// <inheritdoc cref="IProperties" />
 public partial class GdProperties : RefCounted
 {
 	[Signal]

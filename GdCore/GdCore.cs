@@ -8,7 +8,7 @@ using Serilog;
 
 namespace Root.GdCore;
 
-/// <inheritdoc cref="CoreRoot.Api.ICore" />
+/// <inheritdoc cref="CoreRoot.Core" />
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class GdCore : Node, IAutoload
@@ -27,10 +27,16 @@ public partial class GdCore : Node, IAutoload
 		}
 	}
 
+	/// <inheritdoc cref="CoreRoot.Core" />
 	public Core Core { get; private set; } = null!;
 
+	/// <inheritdoc cref="GdPlayers" />
 	public GdPlayers Players { get; private set; } = null!;
+
+	/// <inheritdoc cref="GdAssets" />
 	public GdAssets Assets { get; private set; } = null!;
+
+	/// <inheritdoc cref="GdPlots" />
 	public GdPlots Plots { get; private set; } = null!;
 
 	public void Initialize()

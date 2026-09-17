@@ -4,6 +4,7 @@ using CoreRoot.Assets;
 
 namespace CoreRoot.Plots;
 
+/// <inheritdoc />
 public class Plot : IPlot
 {
 	public Plot(int id, IAssets assets, int? maxOccupantCount = null, int? maxInstanceCount = null)

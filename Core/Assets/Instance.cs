@@ -3,6 +3,7 @@ using CoreRoot.Api.Assets;
 
 namespace CoreRoot.Assets;
 
+/// <inheritdoc />
 public class Instance(IAsset asset, Vector3 position, Quaternion rotation) : IInstance
 {
 	public int Id { get; internal set; }

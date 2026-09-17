@@ -2,6 +2,7 @@ using CoreRoot.Api.Players;
 
 namespace CoreRoot.Players;
 
+/// <inheritdoc />
 public class Players(TimeProvider? timeProvider = null) : IPlayers
 {
 	private readonly Dictionary<Guid, IPlayer> _playersById = [];

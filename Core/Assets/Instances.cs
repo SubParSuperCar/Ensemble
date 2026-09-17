@@ -6,6 +6,7 @@ using CoreRoot.Utils;
 
 namespace CoreRoot.Assets;
 
+/// <inheritdoc />
 public class Instances : IInstances
 {
 	private readonly IAssets _assets;

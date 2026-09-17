@@ -1,8 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
+using CoreRoot.Api.Plots;
 
 namespace CoreRoot.Api.Assets;
 
+/// <summary>
+///     The <see cref="IInstance" /> objects placed on a single <see cref="IPlot" />.
+/// </summary>
 public interface IInstances
 {
 	IEnumerable<IInstance> All { get; }

@@ -1,5 +1,8 @@
 namespace CoreRoot.Api.Assets;
 
+/// <summary>
+///     The registry of <see cref="IAsset" /> objects. Should be locked once registration is complete.
+/// </summary>
 public interface IAssets
 {
 	IReadOnlyDictionary<int, IAsset> All { get; }

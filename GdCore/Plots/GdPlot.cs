@@ -6,6 +6,7 @@ using Root.GdCore.Assets;
 
 namespace Root.GdCore.Plots;
 
+/// <inheritdoc cref="IPlot" />
 public partial class GdPlot : RefCounted
 {
 	[Signal]
@@ -18,7 +19,10 @@ public partial class GdPlot : RefCounted
 	public int Id => _source.Id;
 	public bool IsSpawned => _source.IsSpawned;
 
+	/// <inheritdoc cref="GdInstances" />
 	public GdInstances Instances => field ??= GdInstances.From(_source.Instances);
+
+	/// <inheritdoc cref="GdOccupants" />
 	public GdOccupants Occupants => field ??= GdOccupants.From(_source.Occupants);
 
 	public static GdPlot From(IPlot plot) =>

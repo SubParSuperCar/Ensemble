@@ -1,5 +1,8 @@
 namespace CoreRoot.Api.Players;
 
+/// <summary>
+///     The registry of <see cref="IPlayer" /> objects, including which one, if any, is the local player.
+/// </summary>
 public interface IPlayers
 {
 	IReadOnlyDictionary<Guid, IPlayer> All { get; }

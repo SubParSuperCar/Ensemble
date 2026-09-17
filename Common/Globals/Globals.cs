@@ -15,19 +15,22 @@ public static class Globals
 	/// <inheritdoc cref="Main" />
 	public static Main GMain => Main.Instance ?? throw new InvalidOperationException($"{nameof(Main)} is null.");
 
-	/// <inheritdoc cref="CoreRoot.Api.ICore" />
+	/// <inheritdoc cref="GdCore" />
 	public static GdCore.GdCore GCore =>
 		GdCore.GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null.");
 
+	/// <inheritdoc cref="GdPlayers" />
 	public static GdPlayers GPlayers =>
 		GCore.Players ?? throw new InvalidOperationException($"{nameof(GdPlayers)} is null.");
 
+	/// <inheritdoc cref="GdAssets" />
 	public static GdAssets GAssets =>
 		GCore.Assets ?? throw new InvalidOperationException($"{nameof(GdAssets)} is null.");
 
+	/// <inheritdoc cref="GdPlots" />
 	public static GdPlots GPlots => GCore.Plots ?? throw new InvalidOperationException($"{nameof(GdPlots)} is null.");
 
-	/// <inheritdoc cref="Root.SessionManager.SessionManager" />
+	/// <inheritdoc cref="SessionManager.SessionManager" />
 	public static SessionManager.SessionManager GSessionManager =>
 		SessionManager.SessionManager.Instance ??
 		throw new InvalidOperationException($"{nameof(SessionManager.SessionManager)} is null.");

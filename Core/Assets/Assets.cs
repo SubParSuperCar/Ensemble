@@ -4,6 +4,7 @@ using CoreRoot.Api.Assets;
 
 namespace CoreRoot.Assets;
 
+/// <inheritdoc />
 public class Assets : IAssets
 {
 	private readonly Dictionary<int, IAsset> _assetsById = [];

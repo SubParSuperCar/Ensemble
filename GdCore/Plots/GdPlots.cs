@@ -6,6 +6,7 @@ using Godot.Collections;
 
 namespace Root.GdCore.Plots;
 
+/// <inheritdoc cref="IPlots" />
 public partial class GdPlots : RefCounted
 {
 	[Signal]

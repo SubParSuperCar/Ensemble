@@ -5,6 +5,7 @@ using Godot.Collections;
 
 namespace Root.GdCore.Players;
 
+/// <inheritdoc cref="IPlayer" />
 public partial class GdPlayer : RefCounted
 {
 	private static readonly ConditionalWeakTable<IPlayer, GdPlayer> Wrappers = [];

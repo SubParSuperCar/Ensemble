@@ -6,6 +6,7 @@ using Root.GdCore.Utils;
 
 namespace Root.GdCore.Assets;
 
+/// <inheritdoc cref="IInstance" />
 public partial class GdInstance : RefCounted
 {
 	private static readonly ConditionalWeakTable<IInstance, GdInstance> Wrappers = [];
@@ -14,7 +15,10 @@ public partial class GdInstance : RefCounted
 
 	public int Id => _source.Id;
 
+	/// <inheritdoc cref="GdAsset" />
 	public GdAsset Asset => GdAsset.From(_source.Asset);
+
+	/// <inheritdoc cref="GdProperties" />
 	public GdProperties Properties => field ??= GdProperties.From(_source.Properties);
 
 	public Vector3 Position => _source.Position.ToGodot();

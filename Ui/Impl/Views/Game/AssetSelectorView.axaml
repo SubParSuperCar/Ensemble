@@ -32,6 +32,19 @@
                     </Grid>
                 </DataTemplate>
             </TreeView.ItemTemplate>
+
+            <TreeViewItem Header="Root" IsExpanded="True">
+                <TreeViewItem Header="One 1" />
+                <TreeViewItem Header="Two 2" />
+
+                <TreeViewItem Header="Nested">
+                    <TreeViewItem Header="Four 4" />
+                    <TreeViewItem Header="Five 5" />
+                    <TreeViewItem Header="Six 6" />
+                </TreeViewItem>
+
+                <TreeViewItem Header="Three 3" />
+            </TreeViewItem>
         </TreeView>
 
         <Grid Grid.Row="2" ColumnDefinitions="1*,1*,Auto,4,Auto,2,Auto,2,Auto,4,Auto">

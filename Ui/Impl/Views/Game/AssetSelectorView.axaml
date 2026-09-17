@@ -1,0 +1,66 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
+    x:Class="Root.Ui.Impl.Views.AssetSelectorView"
+    x:DataType="vm:AssetSelectorViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <Grid RowDefinitions="Auto,*,Auto" ToolTip.Tip="Asset Selector">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBox
+                PlaceholderText="Filter by Name or ID&#x2026;"
+                ToolTip.Tip="" />
+
+            <TextBlock
+                Grid.Column="1"
+                Text="0 / 1000"
+                ToolTip.Tip=""
+                VerticalAlignment="Center"
+                Margin="4" />
+        </Grid>
+
+        <TreeView Grid.Row="1" SelectionMode="Single">
+            <TreeView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="Auto,*" ToolTip.Tip="">
+                        <TextBlock ToolTip.Tip="" />
+                        <TextBlock Grid.Column="1" ToolTip.Tip="" />
+                    </Grid>
+                </DataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+
+        <Grid Grid.Row="2" ColumnDefinitions="1*,1*,Auto,4,Auto,2,Auto,2,Auto,4,Auto">
+            <NumericUpDown
+                Value="1"
+                PlaceholderText="&lt;Lin. Incr.&gt;"
+                ToolTip.Tip=""
+                Increment="0.125" />
+
+            <NumericUpDown
+                Grid.Column="1"
+                Value="90"
+                PlaceholderText="&lt;Rot. Incr. Deg.&gt;"
+                ToolTip.Tip=""
+                Increment="11.25"
+                ButtonSpinnerLocation="Left" />
+
+            <!-- TODO -->
+            <ComboBox Grid.Column="2" ToolTip.Tip="" SelectedIndex="0">
+                <ComboBoxItem Content="Local" ToolTip.Tip="" />
+                <ComboBoxItem Content="Global" ToolTip.Tip="" />
+            </ComboBox>
+
+            <Button Grid.Column="4" Content=" X " ToolTip.Tip="" Background="#FF0000" Foreground="White" />
+            <Button Grid.Column="6" Content=" Y " ToolTip.Tip="" Background="#00FF00" Foreground="Black" />
+            <Button Grid.Column="8" Content=" Z " ToolTip.Tip="" Background="#0000FF" Foreground="White" />
+
+            <Button Grid.Column="10" Content="Reset Rot." ToolTip.Tip="" />
+        </Grid>
+    </Grid>
+
+</UserControl>

@@ -15,7 +15,8 @@ public partial class Logger : Node, IAutoload
 {
 	private const string LogFileNameTemplate = "serilog-.json";
 
-	private ILoggerFactory? _loggerFactory;
+	private ILoggerFactory? _factory;
+	public static ILoggerFactory? Factory { get; private set; }
 
 	public void Initialize()
 	{
@@ -42,11 +43,12 @@ public partial class Logger : Node, IAutoload
 
 		Log.Logger = loggerConfig.CreateLogger();
 
-		_loggerFactory = LoggerFactory.Create(builder =>
+		_factory = LoggerFactory.Create(builder =>
 		{
 			builder.ClearProviders();
 			builder.AddSerilog(Log.Logger);
 		});
+		Factory = _factory;
 
 		if (failure is null)
 			Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
@@ -58,7 +60,10 @@ public partial class Logger : Node, IAutoload
 	{
 		Log.Debug("Closing and flushing logger...");
 
-		_loggerFactory?.Dispose();
+		_factory?.Dispose();
+		if (ReferenceEquals(Factory, _factory))
+			Factory = null;
+
 		Log.CloseAndFlush();
 	}
 

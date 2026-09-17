@@ -100,7 +100,7 @@ Text=" StdOut/Err)" /></Span>
                     <ae:TextEditor.Background>
                         <SolidColorBrush
                             Color="{DynamicResource ThemeBackgroundColor}"
-                            Opacity="0.4375" />
+                            Opacity="0.375" />
                     </ae:TextEditor.Background>
                 </ae:TextEditor>
 

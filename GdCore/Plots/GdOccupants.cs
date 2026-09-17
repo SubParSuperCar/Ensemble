@@ -5,6 +5,7 @@ using Godot.Collections;
 
 namespace Root.GdCore.Plots;
 
+/// <inheritdoc cref="IOccupants" />
 public partial class GdOccupants : RefCounted
 {
 	[Signal]

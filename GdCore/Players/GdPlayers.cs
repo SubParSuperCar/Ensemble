@@ -5,6 +5,7 @@ using Godot.Collections;
 
 namespace Root.GdCore.Players;
 
+/// <inheritdoc cref="IPlayers" />
 public partial class GdPlayers : RefCounted
 {
 	[Signal]

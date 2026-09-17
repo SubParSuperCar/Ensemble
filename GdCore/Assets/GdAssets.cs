@@ -6,6 +6,7 @@ using Root.GdCore.Utils;
 
 namespace Root.GdCore.Assets;
 
+/// <inheritdoc cref="IAssets" />
 public partial class GdAssets : RefCounted
 {
 	[Signal]

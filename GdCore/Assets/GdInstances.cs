@@ -6,6 +6,7 @@ using Root.GdCore.Utils;
 
 namespace Root.GdCore.Assets;
 
+/// <inheritdoc cref="IInstances" />
 public partial class GdInstances : RefCounted
 {
 	[Signal]

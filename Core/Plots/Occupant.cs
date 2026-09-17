@@ -3,6 +3,7 @@ using CoreRoot.Api.Plots;
 
 namespace CoreRoot.Plots;
 
+/// <inheritdoc />
 public class Occupant(IPlayer player) : IOccupant
 {
 	public Plot? Plot { get; private set; }

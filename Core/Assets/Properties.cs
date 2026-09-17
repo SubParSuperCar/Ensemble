@@ -3,6 +3,7 @@ using CoreRoot.Api.Assets;
 
 namespace CoreRoot.Assets;
 
+/// <inheritdoc />
 public class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties
 {
 	private readonly Dictionary<string, CoreVariant> _valuesByKey =

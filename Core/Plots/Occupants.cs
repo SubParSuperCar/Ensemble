@@ -2,6 +2,7 @@ using CoreRoot.Api.Plots;
 
 namespace CoreRoot.Plots;
 
+/// <inheritdoc />
 public class Occupants : IOccupants
 {
 	private readonly Dictionary<Guid, IOccupant> _occupantsByPlayerId = [];

@@ -6,6 +6,7 @@ using Root.GdCore.Utils;
 
 namespace Root.GdCore.Assets;
 
+/// <inheritdoc cref="IAsset" />
 public partial class GdAsset : RefCounted
 {
 	private static readonly ConditionalWeakTable<IAsset, GdAsset> Wrappers = [];

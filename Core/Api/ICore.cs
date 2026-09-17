@@ -15,8 +15,13 @@ namespace CoreRoot.Api;
 /// </summary>
 public interface ICore
 {
+	/// <inheritdoc cref="IPlayers" />
 	IPlayers Players { get; }
+
+	/// <inheritdoc cref="IAssets" />
 	IAssets Assets { get; }
+
+	/// <inheritdoc cref="IPlots" />
 	IPlots Plots { get; }
 
 	void Reset();

@@ -17,6 +17,9 @@ public enum CoreVariantType : byte
 	String
 }
 
+/// <summary>
+///     A Godot-agnostic Variant type that supports only primitives, easily converted to and from Godot's Variant.
+/// </summary>
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct CoreVariant : IEquatable<CoreVariant>
 {

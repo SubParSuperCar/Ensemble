@@ -2,6 +2,10 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace CoreRoot.Api.Plots;
 
+/// <summary>
+///     The registry of <see cref="IPlot" /> objects and the assignment of players to them as <see cref="IOccupant" />
+///     objects. Should be locked once registration is complete.
+/// </summary>
 public interface IPlots
 {
 	IReadOnlyDictionary<int, IPlot> All { get; }

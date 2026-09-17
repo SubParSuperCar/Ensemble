@@ -6,6 +6,7 @@ using Root.GdCore.Players;
 
 namespace Root.GdCore.Plots;
 
+/// <inheritdoc cref="IOccupant" />
 public partial class GdOccupant : RefCounted
 {
 	[Signal]
@@ -15,7 +16,10 @@ public partial class GdOccupant : RefCounted
 
 	private IOccupant _source = null!;
 
+	/// <inheritdoc cref="GdPlayer" />
 	public GdPlayer Player => GdPlayer.From(_source.Player);
+
+	/// <inheritdoc cref="GdPlot" />
 	public GdPlot? Plot => _source.Plot is { } plot ? GdPlot.From(plot) : null;
 
 	public static GdOccupant From(IOccupant occupant) =>

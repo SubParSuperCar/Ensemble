@@ -2,6 +2,7 @@ using CoreRoot.Api.Players;
 
 namespace CoreRoot.Players;
 
+/// <inheritdoc />
 public class Player(Guid id, string? name = null, TimeProvider? timeProvider = null) : IPlayer
 {
 	public Guid Id { get; } = id;

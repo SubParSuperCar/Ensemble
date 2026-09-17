@@ -4,6 +4,7 @@ using CoreRoot.Api.Assets;
 
 namespace CoreRoot.Assets;
 
+/// <inheritdoc />
 public class Asset(
 	int id,
 	string? name = null,

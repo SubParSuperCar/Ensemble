@@ -4,11 +4,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Godot;
 using Hardware.Info;
+using Microsoft.Extensions.Logging;
 using Root.Autoloading;
 using Root.Common.Utils;
 using Serilog;
 using Environment = System.Environment;
-using Kvp = (string Key, string Value);
+using Entry = (string Name, string Value);
 
 namespace Root.Scripts.Logging;
 
@@ -24,29 +25,29 @@ public partial class DiagnosticLogger : Node, IAutoload
 			Log.Debug("Building {Class} report...", nameof(DiagnosticLogger));
 			var stopwatch = Stopwatch.StartNew();
 
-			var lines = new List<Kvp>();
+			var entries = new List<Entry>();
 
-			AddSoftwareInfo(lines);
-			AddHardwareInfo(lines);
-			AddLocaleInfo(lines);
+			AddSoftwareInfo(entries);
+			AddHardwareInfo(entries);
+			AddLocaleInfo(entries);
 
-			Log.Information("\n{Report}", BuildReport(lines));
+			Log.Information("\n{Report}", BuildReport(entries));
 
 			stopwatch.Stop();
 			Log.Debug("Built {Class} report in {ElapsedMs:F3} ms",
 				nameof(DiagnosticLogger), stopwatch.Elapsed.TotalMilliseconds);
 		});
 
-	private static void AddSoftwareInfo(List<Kvp> lines)
+	private static void AddSoftwareInfo(List<Entry> entries)
 	{
-		Add(lines, "Machine Name", Environment.MachineName);
-		Add(lines, "User Name", Environment.UserName);
+		Add(entries, "Machine Name", Environment.MachineName);
+		Add(entries, "User Name", Environment.UserName);
 
-		Add(lines, "OS", RuntimeInformation.OSDescription);
-		Add(lines, "OS Arch.", RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant());
-		Add(lines, ".NET", RuntimeInformation.FrameworkDescription);
+		Add(entries, "OS", RuntimeInformation.OSDescription);
+		Add(entries, "OS Arch.", RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant());
+		Add(entries, ".NET", RuntimeInformation.FrameworkDescription);
 
-		Add(lines, "Build Config.",
+		Add(entries, "Build Config.",
 #if DEBUG
 			"DEBUG"
 #elif ENSEMBLE_DEBUG
@@ -60,15 +61,15 @@ public partial class DiagnosticLogger : Node, IAutoload
 #endif
 		);
 
-		Add(lines, "Build Version", (string)ProjectSettings.GetSetting("application/config/version", "Unknown"));
-		Add(lines, "Build Time", BuildInfo.BuildTime);
+		Add(entries, "Build Version", (string)ProjectSettings.GetSetting("application/config/version", "Unknown"));
+		Add(entries, "Build Time", BuildInfo.BuildTime);
 
 		if (OperatingSystem.IsLinux())
 		{
 			try
 			{
 				if (File.Exists(LinuxKernelVersionFilePath))
-					Add(lines, "Kernel", File.ReadAllText(LinuxKernelVersionFilePath));
+					Add(entries, "Kernel", File.ReadAllText(LinuxKernelVersionFilePath));
 			}
 			catch (Exception exception)
 			{
@@ -76,87 +77,87 @@ public partial class DiagnosticLogger : Node, IAutoload
 					LinuxKernelVersionFilePath);
 			}
 
-			Add(lines, "Shell", Environment.GetEnvironmentVariable("SHELL"));
-			Add(lines, "Desktop", Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP"));
-			Add(lines, "Session", Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"));
+			Add(entries, "Shell", Environment.GetEnvironmentVariable("SHELL"));
+			Add(entries, "Desktop", Environment.GetEnvironmentVariable("XDG_CURRENT_DESKTOP"));
+			Add(entries, "Session", Environment.GetEnvironmentVariable("XDG_SESSION_TYPE"));
 		}
 
-		Add(lines, "System Uptime",
+		Add(entries, "System Uptime",
 			TimeSpan.FromMilliseconds(Environment.TickCount64)
 				.ToString(@"d\d\ hh\h\ mm\m", CultureInfo.InvariantCulture));
 	}
 
-	private static void AddHardwareInfo(List<Kvp> lines)
+	private static void AddHardwareInfo(List<Entry> entries)
 	{
-		var hwInfo = new HardwareInfo();
+		var hwInfo = new HardwareInfo(logger: new Logger<HardwareInfo>(Logger.Factory!));
 		hwInfo.RefreshCPUList(false, includePerformanceCounter: false);
 
 		foreach (var cpu in hwInfo.CpuList)
 		{
-			Add(lines, "CPU", cpu.Name);
-			Add(lines, "Topology", $"{cpu.NumberOfCores}C / {cpu.NumberOfLogicalProcessors}T");
+			Add(entries, "CPU", cpu.Name);
+			Add(entries, "Topology", $"{cpu.NumberOfCores}C / {cpu.NumberOfLogicalProcessors}T");
 
 			if (cpu.MaxClockSpeed > 0)
-				Add(lines, "Max Clock",
+				Add(entries, "Max Clock",
 					string.Create(CultureInfo.InvariantCulture, $"{cpu.MaxClockSpeed / 1000f:F2} GHz"));
 		}
 
 		hwInfo.RefreshVideoControllerList();
 		foreach (var gpu in hwInfo.VideoControllerList)
-			Add(lines, "GPU", gpu.Name);
+			Add(entries, "GPU", gpu.Name);
 
 		hwInfo.RefreshMemoryStatus();
 		var totalMemory = hwInfo.MemoryStatus.TotalPhysical;
 		var usedMemory = totalMemory - hwInfo.MemoryStatus.AvailablePhysical;
-		Add(lines, "Memory", $"{Formatter.FormatBytes(usedMemory)} / {Formatter.FormatBytes(totalMemory)}");
+		Add(entries, "Memory", $"{Formatter.FormatBytes(usedMemory)} / {Formatter.FormatBytes(totalMemory)}");
 
 		hwInfo.RefreshMotherboardList();
 		if (hwInfo.MotherboardList.FirstOrDefault() is { } board)
-			Add(lines, "Board", $"{board.Manufacturer} {board.Product}");
+			Add(entries, "Board", $"{board.Manufacturer} {board.Product}");
 
 		hwInfo.RefreshBIOSList();
 		if (hwInfo.BiosList.FirstOrDefault() is { } bios)
-			Add(lines, "BIOS", $"{bios.Manufacturer} {bios.Version}");
+			Add(entries, "BIOS", $"{bios.Manufacturer} {bios.Version}");
 
 		hwInfo.RefreshDriveList();
 		foreach (var drive in hwInfo.DriveList.OrderBy(drive => drive.Model, StringComparer.OrdinalIgnoreCase))
-			Add(lines, "Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
+			Add(entries, "Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
 
 		foreach (var monitor in hwInfo.MonitorList)
-			Add(lines, "Monitor", monitor.Name);
+			Add(entries, "Monitor", monitor.Name);
 
 		hwInfo.RefreshNetworkAdapterList(false, false);
 		foreach (
 			var nic in hwInfo.NetworkAdapterList
 				.Where(adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")
 				.OrderBy(adapter => adapter.Name, StringComparer.OrdinalIgnoreCase))
-			Add(lines, "NIC", nic.Name);
+			Add(entries, "NIC", nic.Name);
 	}
 
-	private static void AddLocaleInfo(List<Kvp> lines)
+	private static void AddLocaleInfo(List<Entry> entries)
 	{
-		Add(lines, "Culture", CultureInfo.CurrentCulture.DisplayName);
-		Add(lines, "Time Zone", TimeZoneInfo.Local.DisplayName);
+		Add(entries, "Culture", CultureInfo.CurrentCulture.DisplayName);
+		Add(entries, "Time Zone", TimeZoneInfo.Local.DisplayName);
 	}
 
-	private static string BuildReport(List<Kvp> lines)
+	private static string BuildReport(IReadOnlyList<Entry> entries)
 	{
 		var builder = new StringBuilder();
-		builder.AppendLine("=== System Info (Diagnostics) ===");
+		builder.AppendLine("=== Diagnostic Info ===");
 
-		var width = lines.Max(line => line.Key.Length);
+		var width = entries.Max(entry => entry.Name.Length);
 
-		foreach (var (key, value) in lines)
-			builder.AppendLine(CultureInfo.InvariantCulture, $"{key.PadRight(width)} : {value}");
+		foreach (var (name, value) in entries)
+			builder.AppendLine(CultureInfo.InvariantCulture, $"{name.PadRight(width)} : {value}");
 
 		return builder.ToString().TrimEnd();
 	}
 
-	private static void Add(List<Kvp> lines, string key, object? value)
+	private static void Add(List<Entry> lines, string name, object? value)
 	{
 		var text = value?.ToString();
 
 		if (!string.IsNullOrWhiteSpace(text))
-			lines.Add((key, text.Trim()));
+			lines.Add((name, text.Trim()));
 	}
 }

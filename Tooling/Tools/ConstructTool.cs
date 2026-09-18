@@ -46,7 +46,7 @@ public partial class ConstructTool : ToolBase
 	public float? SnappingIncrementLinear { get; set; } = 1;
 	public float SnappingIncrementAngularRadians { get; set; } = MathF.PI / 2;
 
-	public int AssetId { get; private set; } = 2;
+	public int AssetId { get; private set; }
 
 	public bool IsActive { get; private set; }
 	public event Action<int>? AssetIdChanged;
@@ -76,6 +76,8 @@ public partial class ConstructTool : ToolBase
 	public void RotateX() => Rotate(Vector3.Up);
 	public void RotateY() => Rotate(Vector3.Right);
 	public void RotateZ() => Rotate(Vector3.Back);
+
+	public void ResetRotation() => _rotation = Quaternion.Identity;
 
 	public void SetAsset(int id)
 	{

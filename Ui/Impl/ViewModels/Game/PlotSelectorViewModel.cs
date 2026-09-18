@@ -79,8 +79,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 		void UpdateOccupancy()
 		{
-			plot.Occupancy = string.Create(CultureInfo.InvariantCulture,
-				$"{occupants.Count} / {(occupants.MaxCount is Unlimited ? "\u221E" : occupants.MaxCount)}");
+			plot.Occupancy = QuotaFormat.Fraction(occupants.Count, occupants.MaxCount);
 		}
 
 		void Unsubscribe()

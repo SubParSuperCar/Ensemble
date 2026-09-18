@@ -28,6 +28,7 @@ public partial class DiscordRpc : Node, IAutoload
 			Logger = new ConsoleLogger(LogLevel.Info, true)
 		};
 		_client.OnReady += OnReady;
+		_client.OnConnectionFailed += OnConnectionFailed;
 
 		_client.SetPresence(new RichPresence
 		{
@@ -47,4 +48,10 @@ public partial class DiscordRpc : Node, IAutoload
 
 	private static void OnReady(object? sender, ReadyMessage e) =>
 		Log.Debug("Connected to Discord with user: {UserName} ({SnowflakeId})", e.User.Username, e.User.ID);
+
+	private void OnConnectionFailed(object? sender, ConnectionFailedMessage e)
+	{
+		Log.Error("Connection to Discord failed");
+		QueueFree();
+	}
 }

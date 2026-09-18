@@ -26,6 +26,9 @@ public partial class GameViewModel : ViewModelBase
 
 		OnIsLocalPlotSpawnedChanged(IsLocalPlotSpawned);
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
+
+		OnConstructToolIsEnabledChanged(GToolManager.Construct.IsEnabled);
+		GToolManager.Construct.IsEnabledChanged += OnConstructToolIsEnabledChanged;
 	}
 
 	[ObservableProperty]
@@ -38,21 +41,28 @@ public partial class GameViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
+	public partial ToolBarViewModel? ToolBar { get; set; }
+
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
 	public partial PlotSelectorViewModel? PlotSelector { get; set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ToolBarViewModel? ToolBar { get; set; }
+	public partial AssetSelectorViewModel? AssetSelector { get; set; }
 
 	protected override void OnDispose()
 	{
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
+		GToolManager.Construct.IsEnabledChanged -= OnConstructToolIsEnabledChanged;
+
 		_dispatcher.Input -= OnInput;
 
 		Clock = null;
 		PlayerList = null;
-		PlotSelector = null;
 		ToolBar = null;
+		PlotSelector = null;
+		AssetSelector = null;
 	}
 
 	private void OnInput(InputEvent @event)
@@ -63,4 +73,7 @@ public partial class GameViewModel : ViewModelBase
 
 	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) =>
 		ToolBar = isSpawned is false ? _services.GetRequiredService<ToolBarViewModel>() : null;
+
+	private void OnConstructToolIsEnabledChanged(bool isEnabled) =>
+		AssetSelector = isEnabled ? _services.GetRequiredService<AssetSelectorViewModel>() : null;
 }

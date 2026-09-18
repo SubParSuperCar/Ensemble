@@ -36,7 +36,7 @@
 
             <TextBlock
                 Grid.Column="4"
-                Text="&#x2193; Quota &#x2191; "
+                Text="Quota &#x2193;&#x2191; "
                 HorizontalAlignment="Right"
                 ToolTip.Tip="Instances placed for this asset, out of its maximum." />
         </Grid>

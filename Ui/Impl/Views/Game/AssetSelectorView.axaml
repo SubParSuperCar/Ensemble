@@ -54,13 +54,8 @@
             </TreeView.Styles>
 
             <TreeView.DataTemplates>
-                <TreeDataTemplate
-                    DataType="vm:FolderNode"
-                    ItemsSource="{Binding Children}">
-
-                    <TextBlock
-                        Text="{Binding Name}"
-                        ToolTip.Tip="{Binding Path}" />
+                <TreeDataTemplate DataType="vm:FolderNode" ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Path}" />
                 </TreeDataTemplate>
 
                 <DataTemplate DataType="vm:AssetNode">
@@ -69,27 +64,15 @@
                         ToolTip.Tip="Select to place this asset with the construct tool."
                         Background="{DynamicResource TranslucentBackgroundBrush}">
 
-                        <TextBlock
-                            Grid.Column="1"
-                            Text="{Binding Name}" />
-
-                        <TextBlock
-                            Grid.Column="3"
-                            Text="{Binding Id}" />
-
-                        <TextBlock
-                            Grid.Column="5"
-                            Text="{Binding Quota}"
-                            TextAlignment="Right" />
+                        <TextBlock Grid.Column="1" Text="{Binding Name}" />
+                        <TextBlock Grid.Column="3" Text="{Binding Id, StringFormat='{}{0:000}'}" />
+                        <TextBlock Grid.Column="5" Text="{Binding Quota}" TextAlignment="Right" />
                     </Grid>
                 </DataTemplate>
             </TreeView.DataTemplates>
         </TreeView>
 
-        <Grid
-            Grid.Row="3"
-            ColumnDefinitions="*,*,Auto,4,Auto,2,Auto,2,Auto,4,Auto">
-
+        <Grid Grid.Row="3" ColumnDefinitions="*,*,Auto,4,Auto,2,Auto,2,Auto,4,Auto">
             <NumericUpDown
                 Value="{Binding LinearSnappingIncrement}"
                 PlaceholderText="&lt;Lin. Incr.&gt;"

@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace Root.Ui.Impl.ViewModels.Utils;
 
 internal static class QuotaFormat
 {

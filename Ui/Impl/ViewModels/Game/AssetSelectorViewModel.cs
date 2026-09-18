@@ -91,7 +91,7 @@ public partial class AssetSelectorViewModel : ViewModelBase
 		GetOrCreateFolder(category, asset.Id == Ctor.AssetId).Add(node);
 	}
 
-	private IList<INodeBase> GetOrCreateFolder(string category, bool expand)
+	private IList<INodeBase> GetOrCreateFolder(string category, bool isExpanded)
 	{
 		IList<INodeBase> children = _items;
 		var path = string.Empty;
@@ -109,13 +109,13 @@ public partial class AssetSelectorViewModel : ViewModelBase
 				{
 					Name = segment,
 					Path = path,
-					IsExpanded = expand || ExpandedFolderPaths.Contains(path)
+					IsExpanded = isExpanded || ExpandedFolderPaths.Contains(path)
 				};
 
 				folder.PropertyChanged += OnFolderPropertyChanged;
 				children.Add(folder);
 			}
-			else if (expand)
+			else if (isExpanded)
 				folder.IsExpanded = true;
 
 			children = folder.Children;

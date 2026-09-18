@@ -9,72 +9,141 @@
     x:DataType="vm:AssetSelectorViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <Grid RowDefinitions="Auto,*,Auto" ToolTip.Tip="Asset Selector">
+    <Grid
+        RowDefinitions="Auto,Auto,*,Auto"
+        ToolTip.Tip="Asset Selector"
+        Background="{DynamicResource TranslucentBackgroundBrush}">
+
         <Grid ColumnDefinitions="*,Auto">
             <TextBox
+                x:Name="FilterBox"
+                Text="{Binding FilterQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 PlaceholderText="Filter by Name or ID&#x2026;"
-                ToolTip.Tip="" />
+                ToolTip.Tip="Filter the asset list below by name or internal ID."
+                GotFocus="OnFilterBoxGotFocus" />
 
             <TextBlock
                 Grid.Column="1"
-                Text="0 / 1000"
-                ToolTip.Tip=""
+                Text="{Binding TotalQuota}"
+                ToolTip.Tip="Total instances placed on this plot, out of the plot's maximum."
                 VerticalAlignment="Center"
                 Margin="4" />
         </Grid>
 
-        <TreeView Grid.Row="1" SelectionMode="Single">
-            <TreeView.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="Auto,*" ToolTip.Tip="">
-                        <TextBlock ToolTip.Tip="" />
-                        <TextBlock Grid.Column="1" ToolTip.Tip="" />
+        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,4,128">
+            <TextBlock Text=" Item &#x2193;" ToolTip.Tip="Asset Name" />
+            <TextBlock Grid.Column="2" Text="ID &#x2193;" ToolTip.Tip="Asset ID" />
+
+            <TextBlock
+                Grid.Column="4"
+                Text="&#x2193; Quota &#x2191; "
+                HorizontalAlignment="Right"
+                ToolTip.Tip="Instances placed for this asset, out of its maximum." />
+        </Grid>
+
+        <TreeView
+            Grid.Row="2"
+            ItemsSource="{Binding VisibleItems}"
+            SelectedItems="{Binding SelectedItems}"
+            SelectionMode="Single">
+
+            <TreeView.Styles>
+                <Style Selector="TreeViewItem" x:DataType="vm:FolderNode">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                </Style>
+            </TreeView.Styles>
+
+            <TreeView.DataTemplates>
+                <TreeDataTemplate
+                    DataType="vm:FolderNode"
+                    ItemsSource="{Binding Children}">
+
+                    <TextBlock
+                        Text="{Binding Name}"
+                        ToolTip.Tip="{Binding Path}" />
+                </TreeDataTemplate>
+
+                <DataTemplate DataType="vm:AssetNode">
+                    <Grid
+                        ColumnDefinitions="4,*,4,Auto,4,128,4"
+                        ToolTip.Tip="Select to place this asset with the construct tool."
+                        Background="{DynamicResource TranslucentBackgroundBrush}">
+
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="{Binding Name}" />
+
+                        <TextBlock
+                            Grid.Column="3"
+                            Text="{Binding Id}" />
+
+                        <TextBlock
+                            Grid.Column="5"
+                            Text="{Binding Quota}"
+                            TextAlignment="Right" />
                     </Grid>
                 </DataTemplate>
-            </TreeView.ItemTemplate>
-
-            <TreeViewItem Header="Root" IsExpanded="True">
-                <TreeViewItem Header="One 1" />
-                <TreeViewItem Header="Two 2" />
-
-                <TreeViewItem Header="Nested">
-                    <TreeViewItem Header="Four 4" />
-                    <TreeViewItem Header="Five 5" />
-                    <TreeViewItem Header="Six 6" />
-                </TreeViewItem>
-
-                <TreeViewItem Header="Three 3" />
-            </TreeViewItem>
+            </TreeView.DataTemplates>
         </TreeView>
 
-        <Grid Grid.Row="2" ColumnDefinitions="1*,1*,Auto,4,Auto,2,Auto,2,Auto,4,Auto">
+        <Grid
+            Grid.Row="3"
+            ColumnDefinitions="*,*,Auto,4,Auto,2,Auto,2,Auto,4,Auto">
+
             <NumericUpDown
-                Value="1"
+                Value="{Binding LinearSnappingIncrement}"
                 PlaceholderText="&lt;Lin. Incr.&gt;"
-                ToolTip.Tip=""
+                ToolTip.Tip="Grid snapping increment, in units (0 disables snapping)."
                 Minimum="0" Maximum="10"
                 Increment="0.125" />
 
             <NumericUpDown
                 Grid.Column="1"
-                Value="90"
+                Value="{Binding AngularSnappingIncrement}"
                 PlaceholderText="&lt;Rot. Incr. Deg.&gt;"
-                ToolTip.Tip=""
+                ToolTip.Tip="Rotation snapping increment, in degrees."
                 Minimum="-180" Maximum="180"
                 Increment="11.25"
                 ButtonSpinnerLocation="Left" />
 
-            <!-- TODO -->
-            <ComboBox Grid.Column="2" ToolTip.Tip="" SelectedIndex="0">
-                <ComboBoxItem Content="Local" ToolTip.Tip="" />
-                <ComboBoxItem Content="Global" ToolTip.Tip="" />
-            </ComboBox>
+            <ComboBox
+                Grid.Column="2"
+                ItemsSource="{Binding RotationSpaces}"
+                SelectedItem="{Binding RotationSpace}"
+                ToolTip.Tip="Rotate around local or global axes." />
 
-            <Button Grid.Column="4" Content=" X " ToolTip.Tip="" Background="#FF0000" Foreground="White" />
-            <Button Grid.Column="6" Content=" Y " ToolTip.Tip="" Background="#00FF00" Foreground="Black" />
-            <Button Grid.Column="8" Content=" Z " ToolTip.Tip="" Background="#0000FF" Foreground="White" />
+            <Button
+                Grid.Column="4"
+                Content="X"
+                Command="{Binding RotateXCommand}"
+                ToolTip.Tip="Rotate around the X axis."
+                Background="#FF0000" Foreground="White"
+                Padding="8,0"
+                FontSize="24" />
 
-            <Button Grid.Column="10" Content="Reset Rot." ToolTip.Tip="" />
+            <Button
+                Grid.Column="6"
+                Content="Y"
+                Command="{Binding RotateYCommand}"
+                ToolTip.Tip="Rotate around the Y axis."
+                Background="#00FF00" Foreground="Black"
+                Padding="8,0"
+                FontSize="24" />
+
+            <Button
+                Grid.Column="8"
+                Content="Z"
+                Command="{Binding RotateZCommand}"
+                ToolTip.Tip="Rotate around the Z axis."
+                Background="#0000FF" Foreground="White"
+                Padding="8,0"
+                FontSize="24" />
+
+            <Button
+                Grid.Column="10"
+                Content="Reset Rot."
+                Command="{Binding ResetRotationCommand}"
+                ToolTip.Tip="Reset rotation to identity." />
         </Grid>
     </Grid>
 

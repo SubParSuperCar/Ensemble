@@ -10,6 +10,10 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Grid>
+        <ContentControl
+            Content="{Binding Clock}"
+            HorizontalAlignment="Center" VerticalAlignment="Top" />
+
         <TransitioningContentControl
             Content="{Binding PlayerList}"
             HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -25,9 +29,15 @@
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
 
-        <ContentControl
-            Content="{Binding Clock}"
-            HorizontalAlignment="Center" VerticalAlignment="Top" />
+        <TransitioningContentControl
+            Content="{Binding ToolBar}"
+            HorizontalAlignment="Center" VerticalAlignment="Bottom"
+            Margin="0,0,0,4">
+
+            <TransitioningContentControl.PageTransition>
+                <CrossFade Duration="{StaticResource TransitionDuration}" />
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
 
         <ContentControl
             Content="{Binding PlotSelector}"
@@ -35,9 +45,9 @@
             MinWidth="288" MaxWidth="416" MaxHeight="256" />
 
         <TransitioningContentControl
-            Content="{Binding ToolBar}"
-            HorizontalAlignment="Center" VerticalAlignment="Bottom"
-            Margin="0,0,0,4">
+            Content="{Binding AssetSelector}"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom"
+            Width="480" Height="384">
 
             <TransitioningContentControl.PageTransition>
                 <CrossFade Duration="{StaticResource TransitionDuration}" />

@@ -10,6 +10,7 @@ namespace Root.Scripts.Assets;
 public partial class AssetManager : Node
 {
 	public Godot.Collections.Dictionary<int, PackedScene> Scenes { get; } = [];
+	public Godot.Collections.Dictionary<int, string> Categories { get; } = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
@@ -86,6 +87,8 @@ public partial class AssetManager : Node
 			Log.Warning("Duplicate asset id {AssetId} at: {Path}", id, path);
 			return;
 		}
+
+		Categories[id] = path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/");
 
 		var converted = new Dictionary();
 		foreach (var (key, value) in properties)

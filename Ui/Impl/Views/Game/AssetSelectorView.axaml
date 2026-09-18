@@ -76,7 +76,7 @@
             <NumericUpDown
                 Value="{Binding LinearSnappingIncrement}"
                 PlaceholderText="&lt;Lin. Incr.&gt;"
-                ToolTip.Tip="Grid snapping increment, in units (0 disables snapping)."
+                ToolTip.Tip="Grid snapping increment, in units. (0 disables snapping)"
                 Minimum="0" Maximum="10"
                 Increment="0.125" />
 

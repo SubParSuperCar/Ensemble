@@ -10,6 +10,7 @@ using Root.GdCore.Plots;
 using Root.Tooling.Tools;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.ViewModels.Utils;
+using Dispatcher = Avalonia.Threading.Dispatcher;
 
 namespace Root.Ui.Impl.ViewModels;
 
@@ -182,8 +183,8 @@ public partial class AssetSelectorViewModel : ViewModelBase
 				Ctor.SetAsset(asset.Id);
 				break;
 
-			case FolderNode:
-				SelectedItems.Clear();
+			case FolderNode folder:
+				Dispatcher.UIThread.Post(() => SelectedItems.Remove(folder));
 				break;
 		}
 	}

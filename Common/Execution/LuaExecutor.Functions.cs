@@ -84,7 +84,8 @@ public static partial class LuaExecutor
 		}
 
 		stopwatch.Stop();
-		Log.Information("Added {Count} instance(s) to plot with id {PlotId} in {ElapsedMs:F3} ms",
+		Log.Information(
+			"Added {Count} instance(s) to plot with id {PlotId} in {ElapsedMs:F3} ms",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
@@ -105,7 +106,8 @@ public static partial class LuaExecutor
 		instances.Clear();
 
 		stopwatch.Stop();
-		Log.Information("Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms (deferred)",
+		Log.Information(
+			"Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms (deferred)",
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
@@ -129,11 +131,13 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var assemblyNames = AppDomain.CurrentDomain.GetAssemblies()
-			.Select(assembly => assembly.GetName())
-			.OrderBy(name => name.Name, StringComparer.OrdinalIgnoreCase)
+			.Select(static assembly => assembly.GetName())
+			.OrderBy(static name => name.Name, StringComparer.OrdinalIgnoreCase)
 			.ToArray();
 
-		Log.Information("Loaded assemblies ({Count}):\n{Assemblies}", assemblyNames.Length,
+		Log.Information(
+			"Loaded assemblies ({Count}):\n{Assemblies}",
+			assemblyNames.Length,
 			string.Join('\n', assemblyNames.Select(static name => $"~~> {name}")));
 
 		context.Return();
@@ -159,7 +163,7 @@ public static partial class LuaExecutor
 
 		foreach (
 			var action in InputMap.GetActions()
-				.Select(action => action.ToString())
+				.Select(static action => action.ToString())
 				.Order(StringComparer.Ordinal))
 		{
 			Log.Information("{Action}:", action);
@@ -184,7 +188,7 @@ public static partial class LuaExecutor
 			return;
 		}
 
-		foreach (var (luaKey, luaValue) in table.OrderBy(entry => entry.Key.ToString(), StringComparer.Ordinal))
+		foreach (var (luaKey, luaValue) in table.OrderBy(static entry => entry.Key.ToString(), StringComparer.Ordinal))
 		{
 			var childPath = luaKey.Type is LuaValueType.Number
 				? $"{path}[{luaKey}]"
@@ -253,8 +257,10 @@ public static partial class LuaExecutor
 		var after = GC.GetTotalMemory(false);
 		var reclaimed = Math.Max(0, before - after);
 
-		Log.Information("GC heap size after: {BytesAfter} (reclaimed {BytesReclaimed} in {ElapsedMs:F3} ms)",
-			Formatter.FormatBytes((ulong)after), Formatter.FormatBytes((ulong)reclaimed),
+		Log.Information(
+			"GC heap size after: {BytesAfter} (reclaimed {BytesReclaimed} in {ElapsedMs:F3} ms)",
+			Formatter.FormatBytes((ulong)after),
+			Formatter.FormatBytes((ulong)reclaimed),
 			stopwatch.Elapsed.TotalMilliseconds);
 
 		context.Return();
@@ -275,8 +281,10 @@ public static partial class LuaExecutor
 				cancellationToken).ConfigureAwait(false)).Trim();
 
 			stopwatch.Stop();
-			Log.Information("Public IPv4 address: {Address} (PingMs={PingMs:F3})",
-				address, stopwatch.Elapsed.TotalMilliseconds);
+			Log.Information(
+				"Public IPv4 address: {Address} (PingMs={PingMs:F3})",
+				address,
+				stopwatch.Elapsed.TotalMilliseconds);
 
 			context.Return(address);
 		}
@@ -295,8 +303,10 @@ public static partial class LuaExecutor
 	{
 		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
 
-		Log.Information("Available VSync modes:\n{Modes}",
-			string.Join('\n',
+		Log.Information(
+			"Available VSync modes:\n{Modes}",
+			string.Join(
+				'\n',
 				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{(int)mode}. {mode}"))));
 
 		context.Return();
@@ -311,8 +321,8 @@ public static partial class LuaExecutor
 		InjectCustomFunctions(env);
 
 		var functions = env
-			.Where(entry => entry.Value.Type is LuaValueType.Function)
-			.Select(entry => $"-> {entry.Key.Read<string>()}")
+			.Where(static entry => entry.Value.Type is LuaValueType.Function)
+			.Select(static entry => $"-> {entry.Key.Read<string>()}")
 			.Order(StringComparer.Ordinal);
 
 		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join('\n', functions));
@@ -377,7 +387,7 @@ public static partial class LuaExecutor
 		var isVisible = context.GetArgument<bool>(0);
 		Log.Information("Setting Temporal Static shader visibility to: {IsVisible}", isVisible);
 
-		var temporalShader = GMain.GetNode<CanvasLayer>("Temporal Static");
+		var temporalShader = GMain.GetNodeOrNull<CanvasLayer>("Temporal Static");
 		temporalShader?.Visible = isVisible;
 
 		context.Return();
@@ -470,7 +480,7 @@ public static partial class LuaExecutor
 			case LuaValueType.Number:
 				var value = (long)argument.Read<double>();
 
-				if (Enum.IsDefined(typeof(DisplayServer.VSyncMode), value))
+				if (Enum.IsDefined((DisplayServer.VSyncMode)value))
 					mode = (DisplayServer.VSyncMode)value;
 				break;
 		}

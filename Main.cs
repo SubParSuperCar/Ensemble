@@ -58,10 +58,71 @@ public partial class Main : Node
 	public override void _Notification(int what)
 	{
 		if (what == NotificationWMCloseRequest)
-			_ = OnQuit();
+			_ = OnQuitAsync();
 	}
 
-	private async Task OnQuit()
+	public void Quit() => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+
+	public static void FailFast(Exception? exception = null)
+	{
+		try
+		{
+			TinyDialogs.Beep();
+
+			TinyDialogs.NotifyPopup(
+				NotificationIconType.Error,
+				"Ensemble Crashed",
+				"Ensemble crashed. Please contact the developer(s) or review the logs. " +
+				"Run the game in a console (Command Prompt, PowerShell, Terminal, etc.) to view stdout/stderr.");
+		}
+		catch (Exception notifyException)
+		{
+			PCall((Action<Exception, string>)Log.Error, notifyException, "Failed to show crash popup");
+		}
+
+		PCall(Log.CloseAndFlush);
+		Environment.FailFast(null, exception);
+	}
+
+	public static bool AskUser(string topic, string prompt)
+	{
+		try
+		{
+			var response = TinyDialogs.MessageBox(
+				topic,
+				SanitizeMessageBoxBody(prompt),
+				MessageBoxDialogType.YesNo,
+				MessageBoxIconType.Error,
+				MessageBoxButton.No);
+
+			return response is MessageBoxButton.Yes;
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "Failed to show dialog");
+			return false;
+		}
+	}
+
+	public static string FormatFailureMessage(string action, Exception exception, string consequence) =>
+		$"{action}:\n\n{exception}\n\nContinue anyway?\n{consequence}";
+
+	public static string SanitizeMessageBoxBody(string message) =>
+		message
+			.Replace("\"", string.Empty, StringComparison.Ordinal)
+			.Replace("'", string.Empty, StringComparison.Ordinal)
+			.Replace("`", string.Empty, StringComparison.Ordinal);
+
+	private static void PCall(Delegate action, params object?[] args)
+	{
+		try { action.DynamicInvoke(args); }
+		catch
+		{
+			// Ignore
+		}
+	}
+
+	private async Task OnQuitAsync()
 	{
 		if (_isQuitting)
 			return;
@@ -95,74 +156,16 @@ public partial class Main : Node
 		tree.Quit();
 	}
 
-	public void Quit() => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
-
-	public static void FailFast(Exception? exception = null)
-	{
-		try
-		{
-			TinyDialogs.Beep();
-
-			TinyDialogs.NotifyPopup(
-				NotificationIconType.Error,
-				"Ensemble Crashed",
-				"Ensemble crashed. Please contact the developer(s) or review the logs. " +
-				"Run the game in a console (Cmd Prompt, PowerShell, Terminal, etc.) to view stdout/stderr.");
-		}
-		catch (Exception notifyException)
-		{
-			PCall((Action<Exception, string>)Log.Error, notifyException, "Failed to show crash popup.");
-		}
-
-		PCall(Log.CloseAndFlush);
-		Environment.FailFast(null, exception);
-	}
-
-	private static void PCall(Delegate action, params object?[] args)
-	{
-		try { action.DynamicInvoke(args); }
-		catch
-		{
-			// Ignore
-		}
-	}
-
-	public static bool AskUser(string topic, string prompt)
-	{
-		try
-		{
-			var response = TinyDialogs.MessageBox(
-				topic,
-				SanitizeMessageBoxBody(prompt),
-				MessageBoxDialogType.YesNo,
-				MessageBoxIconType.Error,
-				MessageBoxButton.No);
-
-			return response is MessageBoxButton.Yes;
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "Failed to show dialog");
-			return false;
-		}
-	}
-
-	public static string FormatFailureMessage(string action, Exception exception, string consequence) =>
-		$"{action}:\n\n{exception}\n\nContinue anyway?\n{consequence}";
-
-	public static string SanitizeMessageBoxBody(string message) =>
-		message
-			.Replace("\"", string.Empty, StringComparison.Ordinal)
-			.Replace("'", string.Empty, StringComparison.Ordinal)
-			.Replace("`", string.Empty, StringComparison.Ordinal);
-
 	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
 	{
 		if (e.ExceptionObject is Exception exception)
-			Log.Fatal(exception, "Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating})",
+			Log.Fatal(
+				exception,
+				"Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating})",
 				e.IsTerminating);
 		else
-			Log.Fatal("Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating}):\n{Exception}",
+			Log.Fatal(
+				"Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating}):\n{Exception}",
 				e.IsTerminating,
 				e.ExceptionObject);
 
@@ -245,8 +248,10 @@ public partial class Main : Node
 			.Count(definition => LoadAutoload(definition, perAutoloadStopwatch));
 
 		totalStopwatch.Stop();
-		Log.Debug("Loaded {Count} autoload(s) in {ElapsedMs:F3} ms",
-			loadedCount, totalStopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug(
+			"Loaded {Count} autoload(s) in {ElapsedMs:F3} ms",
+			loadedCount,
+			totalStopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private bool LoadAutoload(AutoloadDefinition definition, Stopwatch stopwatch)

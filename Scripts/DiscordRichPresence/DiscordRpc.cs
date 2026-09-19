@@ -50,8 +50,8 @@ public partial class DiscordRpc : Node, IAutoload
 		Log.Debug("Connected to Discord with user: {UserName} ({SnowflakeId})", e.User.Username, e.User.ID);
 
 	/* TODO:
-	 * Retry with exponential backoff instead of instantly shutting down if there's a failure,
-	 * being quieter and less verbose if Discord is simply closed */
+	 * Retry with exponential backoff instead of shutting down immediately on failure,
+	 * and log less verbosely if Discord is simply closed */
 	private void OnConnectionFailed(object? sender, ConnectionFailedMessage e)
 	{
 		Log.Error("Connection to Discord failed");

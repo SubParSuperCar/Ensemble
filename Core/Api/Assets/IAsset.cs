@@ -6,7 +6,7 @@ namespace CoreRoot.Api.Assets;
 /// </summary>
 public interface IAsset
 {
-	/// Asset ID
+	/// Asset ID.
 	int Id { get; }
 
 	string Name { get; }

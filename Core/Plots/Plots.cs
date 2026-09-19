@@ -81,7 +81,7 @@ public class Plots : IPlots
 		if (plotId is { } id && !_plotsById.TryGetValue(id, out plot))
 			throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Plot with id {plotId} not found."));
+				$"Plot with id {id} not found."));
 
 		if (occupant.Plot is { } current)
 		{

@@ -34,8 +34,10 @@ public partial class DiagnosticLogger : Node, IAutoload
 			Log.Information("\n{Report}", BuildReport(entries));
 
 			stopwatch.Stop();
-			Log.Debug("Built {Class} report in {ElapsedMs:F3} ms",
-				nameof(DiagnosticLogger), stopwatch.Elapsed.TotalMilliseconds);
+			Log.Debug(
+				"Built {Class} report in {ElapsedMs:F3} ms",
+				nameof(DiagnosticLogger),
+				stopwatch.Elapsed.TotalMilliseconds);
 		});
 
 	private static void AddSoftwareInfo(List<Entry> entries)
@@ -73,8 +75,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 			}
 			catch (Exception exception)
 			{
-				Log.Error(exception, "Failed to read Linux kernel version file at: {Path}",
-					LinuxKernelVersionFilePath);
+				Log.Error(exception, "Failed to read Linux kernel version file at: {Path}", LinuxKernelVersionFilePath);
 			}
 
 			Add(entries, "Shell", Environment.GetEnvironmentVariable("SHELL"));
@@ -120,17 +121,18 @@ public partial class DiagnosticLogger : Node, IAutoload
 			Add(entries, "BIOS", $"{bios.Manufacturer} {bios.Version}");
 
 		hwInfo.RefreshDriveList();
-		foreach (var drive in hwInfo.DriveList.OrderBy(drive => drive.Model, StringComparer.OrdinalIgnoreCase))
+		foreach (var drive in hwInfo.DriveList.OrderBy(static drive => drive.Model, StringComparer.OrdinalIgnoreCase))
 			Add(entries, "Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
 
+		hwInfo.RefreshMonitorList();
 		foreach (var monitor in hwInfo.MonitorList)
 			Add(entries, "Monitor", monitor.Name);
 
 		hwInfo.RefreshNetworkAdapterList(false, false);
 		foreach (
 			var nic in hwInfo.NetworkAdapterList
-				.Where(adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")
-				.OrderBy(adapter => adapter.Name, StringComparer.OrdinalIgnoreCase))
+				.Where(static adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")
+				.OrderBy(static adapter => adapter.Name, StringComparer.OrdinalIgnoreCase))
 			Add(entries, "NIC", nic.Name);
 	}
 
@@ -145,7 +147,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		var builder = new StringBuilder();
 		builder.AppendLine("=== Diagnostic Info ===");
 
-		var width = entries.Max(entry => entry.Name.Length);
+		var width = entries.Max(static entry => entry.Name.Length);
 
 		foreach (var (name, value) in entries)
 			builder.AppendLine(CultureInfo.InvariantCulture, $"{name.PadRight(width)} : {value}");
@@ -153,11 +155,11 @@ public partial class DiagnosticLogger : Node, IAutoload
 		return builder.ToString().TrimEnd();
 	}
 
-	private static void Add(List<Entry> lines, string name, object? value)
+	private static void Add(List<Entry> entries, string name, object? value)
 	{
 		var text = value?.ToString();
 
 		if (!string.IsNullOrWhiteSpace(text))
-			lines.Add((name, text.Trim()));
+			entries.Add((name, text.Trim()));
 	}
 }

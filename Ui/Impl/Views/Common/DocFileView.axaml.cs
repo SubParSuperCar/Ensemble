@@ -13,8 +13,8 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace Root.Ui.Impl.Views;
 
-// TODO: Fix the random exit code 139 (SIGSEGV), also known as a segfault, when opening this view
-// The crash seems to happen just after the Markdown is parsed and rendered,
+// TODO: Fix the intermittent exit code 139 (SIGSEGV, a segmentation fault) when opening this view
+// The crash appears to occur just after the Markdown is parsed and rendered,
 // and right before the images load asynchronously
 public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 {

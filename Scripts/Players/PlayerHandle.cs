@@ -67,17 +67,6 @@ public partial class PlayerHandle : Node3D
 		Controller.SetPhysicsProcess(true);
 	}
 
-	private static bool IsIntersectingCuboid(Vector3 point, Transform3D transform, Vector3 size)
-	{
-		var localPoint = transform.AffineInverse() * point;
-		var halfSize = size / 2;
-
-		return
-			Mathf.Abs(localPoint.X) < halfSize.X &&
-			Mathf.Abs(localPoint.Y) < halfSize.Y &&
-			Mathf.Abs(localPoint.Z) < halfSize.Z;
-	}
-
 	private void OnPlotChanged(GdPlot? plot)
 	{
 		if (plot is null)
@@ -96,5 +85,16 @@ public partial class PlayerHandle : Node3D
 		var aabb = collider.Shape.GetDebugMesh().GetAabb();
 
 		return new Vector3(0, aabb.Size.Y / 2, 0);
+	}
+
+	private static bool IsIntersectingCuboid(Vector3 point, Transform3D transform, Vector3 size)
+	{
+		var localPoint = transform.AffineInverse() * point;
+		var halfSize = size / 2;
+
+		return
+			Mathf.Abs(localPoint.X) < halfSize.X &&
+			Mathf.Abs(localPoint.Y) < halfSize.Y &&
+			Mathf.Abs(localPoint.Z) < halfSize.Z;
 	}
 }

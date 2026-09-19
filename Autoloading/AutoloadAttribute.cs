@@ -3,8 +3,8 @@
 namespace Root.Autoloading;
 
 /// <summary>
-///     An attribute given to game components that should be automatically instantiated when the game loads.
-///     For initialization errors to be caught, this attribute should be paired with <see cref="IAutoload" />.
+///     Marks a game component to be instantiated automatically when the game loads.
+///     For initialization errors to be caught, pair this attribute with <see cref="IAutoload" />.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class AutoloadAttribute : Attribute

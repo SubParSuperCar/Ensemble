@@ -60,7 +60,7 @@
                 <Button
                     Content="Play (Esc)"
                     Command="{Binding StartSessionCommand}"
-                    ToolTip.Tip="Starts a new [single player] session. (Bound to Escape)" />
+                    ToolTip.Tip="Starts a new [single-player] session. (Bound to Escape)" />
             </Border>
 
             <StackPanel

@@ -101,7 +101,7 @@ public partial class AssetSelectorViewModel : ViewModelBase
 			path = path.Length is 0 ? segment : $"{path}/{segment}";
 
 			var folder = children.OfType<FolderNode>()
-				.FirstOrDefault(f => string.Equals(f.Name, segment, StringComparison.Ordinal));
+				.FirstOrDefault(node => string.Equals(node.Name, segment, StringComparison.Ordinal));
 
 			if (folder is null)
 			{

@@ -47,7 +47,8 @@ internal sealed class HoleyArray<TValue> where TValue : class
 		ArgumentOutOfRangeException.ThrowIfNegative(index);
 
 		if (TryGet(index, out _))
-			throw new InvalidOperationException(string.Create(CultureInfo.InvariantCulture,
+			throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture,
 				$"Item at index {index} already exists."));
 
 		Place(item, index);
@@ -61,7 +62,8 @@ internal sealed class HoleyArray<TValue> where TValue : class
 	public void Remove(int index)
 	{
 		if (!TryGet(index, out var item))
-			throw new KeyNotFoundException(string.Create(CultureInfo.InvariantCulture,
+			throw new KeyNotFoundException(string.Create(
+				CultureInfo.InvariantCulture,
 				$"Item at index {index} not found."));
 
 		_items[index] = null;

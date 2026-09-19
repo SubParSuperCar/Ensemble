@@ -33,8 +33,8 @@ public partial class GdPlayers : RefCounted
 				source.Added += player => wrapper.EmitSignal(SignalName.Added, GdPlayer.From(player));
 				source.Removed += player => wrapper.EmitSignal(SignalName.Removed, GdPlayer.From(player));
 
-				source.LocalChanged += player
-					=> wrapper.EmitSignal(SignalName.LocalChanged, (player is null ? null : GdPlayer.From(player))!);
+				source.LocalChanged += player =>
+					wrapper.EmitSignal(SignalName.LocalChanged, (player is null ? null : GdPlayer.From(player))!);
 
 				return wrapper;
 			});

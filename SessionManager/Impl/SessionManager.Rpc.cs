@@ -45,22 +45,49 @@ public partial class SessionManager
 			limiter.Dispose();
 	}
 
+	private void ClearRpcState()
+	{
+		foreach (var peerId in RateLimitersByPeerId.Keys)
+			DisposeRateLimiter(peerId);
+
+		_pendingRpcs.Clear();
+	}
+
 	private void EnqueueRpc(int senderId, int tokens, Action action) => _ = EnqueueRpcAsync(senderId, tokens, action);
 
 	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action)
 	{
-		var limiter = senderId is ServerPeerId
-			? null
-			: RateLimitersByPeerId.GetOrAdd(senderId, static _ => new TokenBucketRateLimiter(RateLimiterOptions));
-
-		using var lease = limiter is null
-			? null
-			: await limiter.AcquireAsync(tokens).ConfigureAwait(false);
-
-		if (lease is { IsAcquired: false })
+		if (senderId is not ServerPeerId)
 		{
-			Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
-			return;
+			if (tokens > RateLimiterOptions.TokenLimit)
+			{
+				Log.Warning(
+					"Peer {PeerId} requested an RPC costing {Tokens} token(s), exceeding the limit of {TokenLimit}",
+					senderId,
+					tokens,
+					RateLimiterOptions.TokenLimit);
+
+				return;
+			}
+
+			var limiter = RateLimitersByPeerId.GetOrAdd(
+				senderId,
+				static _ => new TokenBucketRateLimiter(RateLimiterOptions));
+
+			try
+			{
+				using var lease = await limiter.AcquireAsync(tokens).ConfigureAwait(false);
+
+				if (!lease.IsAcquired)
+				{
+					Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
+					return;
+				}
+			}
+			catch (ObjectDisposedException)
+			{
+				return;
+			}
 		}
 
 		_pendingRpcs.Enqueue(action);

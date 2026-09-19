@@ -23,7 +23,8 @@ public static class PatchExport
 				MoveContents(dataDir, exeDir);
 
 			stopwatch.Stop();
-			Console.WriteLine(string.Create(CultureInfo.InvariantCulture,
+			Console.WriteLine(string.Create(
+				CultureInfo.InvariantCulture,
 				$"Patched export layout in {stopwatch.Elapsed.TotalMilliseconds:F3} ms."));
 		}
 		catch (Exception exception)

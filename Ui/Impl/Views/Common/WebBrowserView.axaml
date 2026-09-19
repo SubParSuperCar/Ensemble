@@ -34,12 +34,12 @@
             HorizontalAlignment="Center" VerticalAlignment="Top"
             Margin="2">
 
-            <Button Content="&lt;-" Command="{Binding #Root.GoBackCommand}" ToolTip.Tip="Go back (Undo)" />
-            <Button Content="-&gt;" Command="{Binding #Root.GoForwardCommand}" ToolTip.Tip="Go forward (Redo)" />
+            <Button Content="&lt;-" Command="{Binding #Root.GoBackCommand}" ToolTip.Tip="Goes back. (Undo)" />
+            <Button Content="-&gt;" Command="{Binding #Root.GoForwardCommand}" ToolTip.Tip="Goes forward. (Redo)" />
 
             <Button
                 Command="{Binding #Root.RefreshOrStopCommand}"
-                ToolTip.Tip="Refresh/cancel"
+                ToolTip.Tip="Refreshes the page or stops loading it."
                 Width="32" Height="32">
 
                 <li:LoadingIndicator

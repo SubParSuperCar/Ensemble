@@ -25,7 +25,7 @@
 
         <Grid ColumnDefinitions="1*,4*,1*" RowDefinitions="1*,4*,1*">
             <TransitioningContentControl
-                Grid.Column="1" Grid.Row="1"
+                Grid.Row="1" Grid.Column="1"
                 Content="{Binding Console}"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 ClipToBounds="False">
@@ -53,8 +53,8 @@
         </Border>
 
         <StackPanel
-            HorizontalAlignment="Right" VerticalAlignment="Top"
-            Orientation="Horizontal" Spacing="4">
+            Orientation="Horizontal" Spacing="4"
+            HorizontalAlignment="Right" VerticalAlignment="Top">
 
             <ToggleButton
                 Content="Dev-Console (` / F9)"

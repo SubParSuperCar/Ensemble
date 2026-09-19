@@ -6,7 +6,7 @@
     x:DataType="vm:ToolBarViewModel"
     FontSize="20" FontWeight="ExtraLight">
 
-    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Grid.IsSharedSizeScope="True">
+    <StackPanel HorizontalAlignment="Center" Grid.IsSharedSizeScope="True">
         <Grid ColumnSpacing="4" HorizontalAlignment="Center">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Place" />

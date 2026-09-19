@@ -16,6 +16,7 @@ public partial class Logger : Node, IAutoload
 	private const string LogFileNameTemplate = "ensemble-serilog-.json";
 
 	private ILoggerFactory? _factory;
+
 	public static ILoggerFactory? Factory { get; private set; }
 
 	public void Initialize()
@@ -99,14 +100,14 @@ public partial class Logger : Node, IAutoload
 
 		var result = DirAccess.CopyAbsolute(AppSettingsPath, UserAppSettingsPath);
 		if (result is not Error.Ok)
-			throw new IOException($"Could not copy {AppSettingsPath} to {UserAppSettingsPath} ({result})");
+			throw new IOException($"Could not copy {AppSettingsPath} to {UserAppSettingsPath}: {result}.");
 	}
 
 	private static byte[] ReadAllBytesOrThrow(string path)
 	{
 		using var file =
 			FileAccess.Open(path, FileAccess.ModeFlags.Read) ??
-			throw new IOException($"Could not open for reading: {path} ({FileAccess.GetOpenError()})");
+			throw new IOException($"Could not open {path} for reading: {FileAccess.GetOpenError()}.");
 
 		return file.GetBuffer((long)file.GetLength());
 	}

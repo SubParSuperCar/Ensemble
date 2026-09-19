@@ -23,8 +23,9 @@ public static partial class LuaExecutor
 		var results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
 
 		stopwatch.Stop();
-		Log.Information("< [{Results}] ({ElapsedMs:F3} ms)",
-			string.Join(", ", results.Select(value => value.ToString())),
+		Log.Information(
+			"< [{Results}] ({ElapsedMs:F3} ms)",
+			string.Join(", ", results.Select(static value => value.ToString())),
 			stopwatch.Elapsed.TotalMilliseconds);
 
 		return results;

@@ -20,8 +20,8 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 		var autoloads = context.SyntaxProvider.ForAttributeWithMetadataName(
 			AttributeMetadataName,
 			static (_, _) => true,
-			static (context, _) =>
-				((INamedTypeSymbol)context.TargetSymbol, context.Attributes[0]));
+			static (target, _) =>
+				((INamedTypeSymbol)target.TargetSymbol, target.Attributes[0]));
 
 		context.RegisterSourceOutput(autoloads.Collect(), Generate);
 	}

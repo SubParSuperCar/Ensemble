@@ -13,7 +13,7 @@ namespace Root.Scripts.Logging;
 [Autoload(Order = AutoloadOrder.First, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class Logger : Node, IAutoload
 {
-	private const string LogFileNameTemplate = "serilog-.json";
+	private const string LogFileNameTemplate = "ensemble-serilog-.json";
 
 	private ILoggerFactory? _factory;
 	public static ILoggerFactory? Factory { get; private set; }

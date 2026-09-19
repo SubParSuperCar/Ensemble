@@ -31,7 +31,7 @@ public partial class StatViewModel : ViewModelBase
 		dispatcher.Process += OnProcess;
 	}
 
-	[ObservableProperty] public partial string Text { get; set; } = string.Empty;
+	[ObservableProperty] public partial string Text { get; set; } = "<Default>";
 
 	protected override void OnDispose() => _dispatcher.Process -= OnProcess;
 

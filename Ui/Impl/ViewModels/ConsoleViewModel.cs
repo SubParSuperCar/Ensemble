@@ -36,7 +36,7 @@ public partial class ConsoleViewModel : ViewModelBase
 		"(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
 		"print(string.format(\"Hello, %s!\", _VERSION))\nhelp()\n");
 
-	[ObservableProperty] public partial string Output { get; set; } = string.Empty;
+	[ObservableProperty] public partial string Output { get; set; } = "<Default>";
 
 	protected override void OnDispose()
 	{

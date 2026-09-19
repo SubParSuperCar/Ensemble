@@ -3,13 +3,16 @@
 
   <assembly fullname="Avalonia.Skia" preserve="all"/>
   <assembly fullname="SkiaSharp" preserve="all"/>
+  <assembly fullname="Fonts.Avalonia.JetBrainsMono" preserve="all"/>
+  <assembly fullname="Iciclecreek.Avalonia.Terminal" preserve="all"/>
 
   <assembly fullname="Serilog.Sinks.File" preserve="all"/>
   <assembly fullname="Serilog.Expressions" preserve="all"/>
   <assembly fullname="Serilog.Settings.Configuration" preserve="all"/>
 
-  <assembly fullname="Fonts.Avalonia.JetBrainsMono" preserve="all"/>
-  <assembly fullname="Iciclecreek.Avalonia.Terminal" preserve="all"/>
-
   <assembly fullname="BogaNet.TTS" preserve="all"/>
+
+  <assembly fullname="DiscordRPC">
+    <type fullname="DiscordRPC.RPC.Payload.ClosePayload" preserve="all"/>
+  </assembly>
 </linker>

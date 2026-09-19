@@ -7,7 +7,7 @@ namespace CoreRoot.Api.Assets;
 /// </summary>
 public interface IInstance
 {
-	/// Instance ID
+	/// Instance ID.
 	int Id { get; }
 
 	/// <inheritdoc cref="IAsset" />

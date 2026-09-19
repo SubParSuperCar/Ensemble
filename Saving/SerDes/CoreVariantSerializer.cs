@@ -17,7 +17,7 @@ internal static class CoreVariantSerializer
 			CoreVariantType.Int64 => new CoreVariant(reader.ReadInt64()),
 			CoreVariantType.Double => new CoreVariant(reader.ReadDouble()),
 			CoreVariantType.String => new CoreVariant(reader.ReadString()),
-			_ => throw new InvalidDataException($"Unknown variant type: {type}")
+			_ => throw new InvalidDataException($"Unknown variant type: {type}.")
 		};
 	}
 
@@ -47,7 +47,7 @@ internal static class CoreVariantSerializer
 				break;
 
 			default:
-				throw new InvalidOperationException($"Unsupported variant type: {variant.Type}");
+				throw new InvalidOperationException($"Unsupported variant type: {variant.Type}.");
 		}
 	}
 }

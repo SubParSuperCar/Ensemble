@@ -28,8 +28,8 @@ public partial class GdOccupant : RefCounted
 			{
 				var wrapper = new GdOccupant { _source = source };
 
-				source.PlotChanged += plot
-					=> wrapper.EmitSignal(SignalName.PlotChanged, (plot is null ? null : GdPlot.From(plot))!);
+				source.PlotChanged += plot =>
+					wrapper.EmitSignal(SignalName.PlotChanged, (plot is null ? null : GdPlot.From(plot))!);
 
 				return wrapper;
 			});

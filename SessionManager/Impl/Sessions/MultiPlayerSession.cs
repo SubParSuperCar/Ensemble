@@ -27,16 +27,16 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 
 		var result = config switch
 		{
-			HostConfig host => host.MaxPlayerCount is null
-				? peer.CreateServer(host.Port)
-				: peer.CreateServer(host.Port, host.MaxPlayerCount.Value),
+			HostConfig host => host.MaxPlayerCount is { } maxPlayerCount
+				? peer.CreateServer(host.Port, maxPlayerCount)
+				: peer.CreateServer(host.Port),
 			JoinConfig join => peer.CreateClient(join.Address, join.Port),
 			_ => Error.InvalidParameter
 		};
 
 		if (result is not Error.Ok)
 		{
-			Failed?.Invoke($"Failed to start session: {result}");
+			Failed?.Invoke($"Failed to start session: {result}.");
 			return;
 		}
 

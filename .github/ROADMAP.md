@@ -44,7 +44,7 @@ SessionManager has the infra (sessions, auth, RPC action registry); nothing uses
 Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 
 - [x] (S) Split DocFileView / WebBrowserView - base views/VMs moved to Views/Common + ViewModels/Common, no
-  NavigatorService dependency; MenuDocFileView / MenuWebBrowser wrappers add the Back button for menu use
+  NavigatorService dependency; MenuDocFileView / MenuWebBrowserView wrappers add the Back button for menu use
 - [ ] (L) Window-widget system - draggable / resizable / minimizable panels (the "utensil drawer") to host browsers,
   settings, chat, docs
 - [ ] (M) Settings menu (hosted in a window)

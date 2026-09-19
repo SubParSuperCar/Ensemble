@@ -52,7 +52,8 @@ public partial class SessionManager : Node
 		{
 			field = value;
 
-			Log.Debug("{Class}.{Member} set. (Hash={Hash})",
+			Log.Debug(
+				"{Class}.{Member} set. (Hash={Hash})",
 				nameof(SessionManager),
 				nameof(Instance),
 				value?.GetHashCode());
@@ -116,8 +117,10 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} in {ElapsedMs:F3} ms",
-			nameof(SinglePlayerSession), stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug(
+			"Started {Class} in {ElapsedMs:F3} ms",
+			nameof(SinglePlayerSession),
+			stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
@@ -131,7 +134,8 @@ public partial class SessionManager : Node
 
 	public void HostMultiPlayer(int port, string? password, string? displayName, int maxPlayers)
 	{
-		Log.Debug("Hosting {Class}... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
+		Log.Debug(
+			"Hosting {Class}... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
 			nameof(MultiPlayerSession),
 			port,
 			maxPlayers is Unlimited ? "Unlimited" : maxPlayers.ToString(CultureInfo.InvariantCulture),
@@ -151,8 +155,10 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} (Host) in {ElapsedMs:F3} ms",
-			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug(
+			"Started {Class} (Host) in {ElapsedMs:F3} ms",
+			nameof(MultiPlayerSession),
+			stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
@@ -162,8 +168,12 @@ public partial class SessionManager : Node
 
 	public void JoinMultiPlayer(string address, int port, string? password, string displayName)
 	{
-		Log.Debug("Joining {Class}... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
-			nameof(MultiPlayerSession), address, port, !string.IsNullOrEmpty(password));
+		Log.Debug(
+			"Joining {Class}... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
+			nameof(MultiPlayerSession),
+			address,
+			port,
+			!string.IsNullOrEmpty(password));
 
 		StopSession();
 		var stopwatch = Stopwatch.StartNew();
@@ -176,8 +186,10 @@ public partial class SessionManager : Node
 		StartSession();
 
 		stopwatch.Stop();
-		Log.Debug("Started {Class} (Join) in {ElapsedMs:F3} ms",
-			nameof(MultiPlayerSession), stopwatch.Elapsed.TotalMilliseconds);
+		Log.Debug(
+			"Started {Class} (Join) in {ElapsedMs:F3} ms",
+			nameof(MultiPlayerSession),
+			stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	public void StopSession()
@@ -271,6 +283,7 @@ public partial class SessionManager : Node
 	private void OnSessionStopped()
 	{
 		ClearPeers();
+		ClearRpcState();
 		EmitSignal(SignalName.SessionStopped);
 	}
 

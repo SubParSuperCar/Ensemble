@@ -45,7 +45,7 @@ public class Players(TimeProvider? timeProvider = null) : IPlayers
 		IPlayer? player = null;
 
 		if (id is { } playerId && !_playersById.TryGetValue(playerId, out player))
-			throw new KeyNotFoundException($"Player with id {id} not found.");
+			throw new KeyNotFoundException($"Player with id {playerId} not found.");
 
 		if (ReferenceEquals(player, Local))
 			return;

@@ -1,11 +1,11 @@
 namespace Root.Autoloading;
 
 /// <summary>
-///     The order that this Autoload should be instantiated in,
+///     The order in which this Autoload is instantiated,
 ///     where lower values are earlier and higher values are later.
 ///     Ranges from -128 (<see cref="sbyte.MinValue" />) to 127 (<see cref="sbyte.MaxValue" />).
-///     If more than one Autoload object has the same order,
-///     their order of instantiation is resolved by ordinal alphabetical ordering,
+///     If more than one Autoload has the same order,
+///     their order of instantiation is resolved by the ordinal ordering of their fully qualified type names,
 ///     so "A" runs before "Z", which runs before "a", which runs before "z".
 /// </summary>
 public static class AutoloadOrder

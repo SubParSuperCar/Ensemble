@@ -24,9 +24,10 @@ public partial class SessionManager
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
 	private void RpcRequestAction(string actionId, Dictionary payload)
 	{
-		// TODO: Allow actions to define their token cost instead of always using 1
 		var senderId = Multiplayer.GetRemoteSenderId();
-		EnqueueRpc(senderId, 1,
+		EnqueueRpc(
+			senderId,
+			Actions.GetTokenCost(actionId),
 			() => TryApplyAndBroadcast(actionId, payload, senderId, true));
 	}
 
@@ -40,8 +41,11 @@ public partial class SessionManager
 
 		if (!result.IsValid)
 		{
-			Log.Debug("Rejected action {ActionId} from peer {PeerId}: {Reason}",
-				actionId, sourcePeerId, result.Reason);
+			Log.Debug(
+				"Rejected action {ActionId} from peer {PeerId}: {Reason}",
+				actionId,
+				sourcePeerId,
+				result.Reason);
 
 			if (shouldNotifyRejection)
 				RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, result.Reason ?? string.Empty);

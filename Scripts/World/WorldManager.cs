@@ -37,7 +37,7 @@ public partial class WorldManager : Node, IAutoload
 		Log.Debug("Instantiating and adding {Class}...", nameof(WorldHandle));
 		var stopwatch = Stopwatch.StartNew();
 
-		World = WorldScene.Instantiate() as WorldHandle;
+		World = WorldScene.Instantiate<WorldHandle>();
 		AddChild(World);
 
 		stopwatch.Stop();

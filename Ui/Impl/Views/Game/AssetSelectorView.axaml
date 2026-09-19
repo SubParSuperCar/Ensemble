@@ -16,10 +16,10 @@
 
         <Grid ColumnDefinitions="*,Auto">
             <TextBox
-                x:Name="FilterBox"
+                Name="FilterBox"
                 Text="{Binding FilterQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 PlaceholderText="Filter by Name or ID&#x2026;"
-                ToolTip.Tip="Filter the asset list below by name or internal ID."
+                ToolTip.Tip="Filters the asset list below by name or internal ID."
                 GotFocus="OnFilterBoxGotFocus" />
 
             <TextBlock
@@ -37,8 +37,8 @@
             <TextBlock
                 Grid.Column="4"
                 Text="Quota &#x2193;&#x2191; "
-                HorizontalAlignment="Right"
-                ToolTip.Tip="Instances placed for this asset, out of its maximum." />
+                ToolTip.Tip="Instances placed for this asset, out of its maximum."
+                HorizontalAlignment="Right" />
         </Grid>
 
         <TreeView
@@ -93,13 +93,13 @@
                 Grid.Column="2"
                 ItemsSource="{Binding RotationSpaces}"
                 SelectedItem="{Binding RotationSpace}"
-                ToolTip.Tip="Rotate around local or global axes." />
+                ToolTip.Tip="Rotates around local or global axes." />
 
             <Button
                 Grid.Column="4"
                 Content="X"
                 Command="{Binding RotateXCommand}"
-                ToolTip.Tip="Rotate around the X axis."
+                ToolTip.Tip="Rotates around the X axis."
                 Background="#FF0000" Foreground="White"
                 Padding="8,0"
                 FontSize="24" />
@@ -108,7 +108,7 @@
                 Grid.Column="6"
                 Content="Y"
                 Command="{Binding RotateYCommand}"
-                ToolTip.Tip="Rotate around the Y axis."
+                ToolTip.Tip="Rotates around the Y axis."
                 Background="#00FF00" Foreground="Black"
                 Padding="8,0"
                 FontSize="24" />
@@ -117,7 +117,7 @@
                 Grid.Column="8"
                 Content="Z"
                 Command="{Binding RotateZCommand}"
-                ToolTip.Tip="Rotate around the Z axis."
+                ToolTip.Tip="Rotates around the Z axis."
                 Background="#0000FF" Foreground="White"
                 Padding="8,0"
                 FontSize="24" />
@@ -126,7 +126,7 @@
                 Grid.Column="10"
                 Content="Reset Rot."
                 Command="{Binding ResetRotationCommand}"
-                ToolTip.Tip="Reset rotation to identity." />
+                ToolTip.Tip="Resets the rotation to identity." />
         </Grid>
     </Grid>
 

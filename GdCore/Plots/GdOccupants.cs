@@ -35,10 +35,8 @@ public partial class GdOccupants : RefCounted
 				source.Added += occupant => wrapper.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
 				source.Removed += occupant => wrapper.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
 
-				source.OwnerChanged += occupant
-					=> wrapper.EmitSignal(
-						SignalName.OwnerChanged,
-						(occupant is null ? null : GdOccupant.From(occupant))!);
+				source.OwnerChanged += occupant =>
+					wrapper.EmitSignal(SignalName.OwnerChanged, (occupant is null ? null : GdOccupant.From(occupant))!);
 
 				return wrapper;
 			});
@@ -60,15 +58,7 @@ public partial class GdOccupants : RefCounted
 
 	public void SetOwner() => SetOwner(string.Empty);
 
-	public void SetOwner(string playerId)
-	{
-		Guid? id = null;
-
-		if (playerId != string.Empty && Guid.TryParse(playerId, out var guid))
-			id = guid;
-
-		_source.SetOwner(id);
-	}
+	public void SetOwner(string playerId) => _source.SetOwner(Guid.TryParse(playerId, out var guid) ? guid : null);
 
 	public void Clear() => _source.Clear();
 

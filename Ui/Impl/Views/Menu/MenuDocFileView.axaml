@@ -11,7 +11,7 @@
         <Button
             Content="&lt;- Back"
             Command="{Binding GoBackCommand}"
-            ToolTip.Tip="Go back (Bound to Backspace)"
+            ToolTip.Tip="Goes back. (Bound to Backspace)"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"
             Margin="4"
             FontSize="24" />

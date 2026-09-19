@@ -79,7 +79,9 @@ internal static class SaveCrypto
 			}
 			catch (AuthenticationTagMismatchException exception)
 			{
-				throw new InvalidDataException("Wrong key, or the save file has been tampered with.", exception);
+				throw new InvalidDataException(
+					"Wrong key or password, or the save file has been tampered with.",
+					exception);
 			}
 
 			return plaintext;
@@ -110,7 +112,7 @@ internal static class SaveCrypto
 				header.Kdf.MemoryKiB,
 				header.Kdf.Iterations,
 				header.Kdf.DegreeOfParallelism),
-			_ => throw new InvalidDataException($"Unknown key-derivation function: {(byte)header.Kdf.Function}")
+			_ => throw new InvalidDataException($"Unknown key derivation function: {(byte)header.Kdf.Function}.")
 		};
 
 	private static byte[] DeriveArgon2IdKey(
@@ -119,19 +121,22 @@ internal static class SaveCrypto
 		try
 		{
 			if (memoryKiB is < MinArgon2MemoryKiB or > MaxArgon2MemoryKiB)
-				throw new InvalidDataException(
+				throw new InvalidDataException(string.Create(
+					CultureInfo.InvariantCulture,
 					$"Argon2id memory cost must be between {MinArgon2MemoryKiB} and {MaxArgon2MemoryKiB} KiB, " +
-					string.Create(CultureInfo.InvariantCulture, $"got {memoryKiB}."));
+					$"got {memoryKiB}."));
 
 			if (iterations is < MinArgon2Iterations or > MaxArgon2Iterations)
-				throw new InvalidDataException(
+				throw new InvalidDataException(string.Create(
+					CultureInfo.InvariantCulture,
 					$"Argon2id iteration count must be between {MinArgon2Iterations} and {MaxArgon2Iterations}, " +
-					string.Create(CultureInfo.InvariantCulture, $"got {iterations}."));
+					$"got {iterations}."));
 
 			if (degreeOfParallelism is < MinArgon2DegreeOfParallelism or > MaxArgon2DegreeOfParallelism)
-				throw new InvalidDataException(
-					$"Argon2id parallelism must be between {MinArgon2DegreeOfParallelism} and " +
-					$"{MaxArgon2DegreeOfParallelism}, got {degreeOfParallelism.ToString(CultureInfo.InvariantCulture)}.");
+				throw new InvalidDataException(string.Create(
+					CultureInfo.InvariantCulture,
+					$"Argon2id degree of parallelism must be between {MinArgon2DegreeOfParallelism} and " +
+					$"{MaxArgon2DegreeOfParallelism}, got {degreeOfParallelism}."));
 
 			using var argon2 = new Argon2id(password);
 			argon2.Salt = [.. salt];

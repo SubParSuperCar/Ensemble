@@ -58,7 +58,7 @@
                     FontSize="10" FontWeight="ExtraLight" FontStyle="Italic">
 
                     <!-- @formatter:off -->
-<Span xml:space="preserve"><Run Text="&#x2199; SeriLog Output (" /><Underline><Bold><Run Text="Not" /></Bold></Underline><Run
+<Span xml:space="preserve"><Run Text="&#x2199; Serilog Output (" /><Underline><Bold><Run Text="Not" /></Bold></Underline><Run
 Text=" StdOut/Err)" /></Span>
                     <!-- @formatter:on -->
                 </TextBlock>

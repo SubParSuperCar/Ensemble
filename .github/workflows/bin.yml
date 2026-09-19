@@ -236,7 +236,7 @@ jobs:
 
   publish:
     name: Publish
-    needs: [ linux, windows, macos ]
+    needs: [ linux, macos, windows ]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 15

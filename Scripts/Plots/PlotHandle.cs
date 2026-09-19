@@ -53,6 +53,12 @@ public partial class PlotHandle : Node3D
 		_plot.Instances.Removed += OnInstanceRemoved;
 	}
 
+	public Vector3 WorldToGrid(Vector3 worldPosition) =>
+		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;
+
+	public Transform3D GridToWorld(Vector3 gridPosition, Quaternion rotation) =>
+		OriginTransform * new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale);
+
 	private void OnInstanceAdded(GdInstance instance)
 	{
 		var packed = GAssetManager.GetPacked(instance.Asset.Id);
@@ -63,9 +69,7 @@ public partial class PlotHandle : Node3D
 		handle.Freeze = true;
 
 		_staticInstances.AddChild(handle);
-
-		var transform = new Transform3D(new Basis(instance.Rotation), instance.Position * GridToWorldScale);
-		handle.GlobalTransform = OriginTransform * transform;
+		handle.GlobalTransform = GridToWorld(instance.Position, instance.Rotation);
 
 		InstanceHandles.Add(instance.Id, handle);
 	}
@@ -75,12 +79,6 @@ public partial class PlotHandle : Node3D
 		if (InstanceHandles.Remove(instance.Id, out var handle))
 			handle.QueueFree();
 	}
-
-	public Vector3 WorldToGrid(Vector3 worldPosition) =>
-		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;
-
-	public Transform3D GridToWorld(Vector3 gridPosition, Quaternion rotation) =>
-		OriginTransform * new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale);
 
 	private Transform3D CalculateOriginTransform()
 	{

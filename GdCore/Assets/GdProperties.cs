@@ -23,8 +23,7 @@ public partial class GdProperties : RefCounted
 			{
 				var wrapper = new GdProperties { _source = source };
 
-				source.Changed += (key, value)
-					=> wrapper.EmitSignal(SignalName.Changed, key, value.ToGodot());
+				source.Changed += (key, value) => wrapper.EmitSignal(SignalName.Changed, key, value.ToGodot());
 
 				return wrapper;
 			});

@@ -51,7 +51,7 @@ Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol f
 ## Platform Support
 
 <details open>
-    <summary>Click to expand/collapse this section.</summary>
+  <summary>Click to expand/collapse this section.</summary>
 
 | Platform | Architecture(s)                | Graphics API                                                    |
 |----------|--------------------------------|-----------------------------------------------------------------|
@@ -60,7 +60,7 @@ Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol f
 | macOS    | Universal (`x86_64` + `arm64`) | Metal (native, default), with Vulkan-via-MoltenVK as a fallback |
 
 Ensemble renders through [Godot](https://godotengine.org)'s rendering hardware interface, with an embedded
-[Avalonia UI](https://avaloniaui.net) overlay on top of it (via a heavily-modified fork of
+[Avalonia UI](https://avaloniaui.net) overlay on top of it (via a heavily modified fork of
 [**Estragonia**](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows
 and Linux. On macOS, both default to Apple's native Metal API; if you need to fall back to Vulkan (translated
 through [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) for troubleshooting, set Godot's
@@ -115,7 +115,7 @@ commitment.
 
 *(Pronounced "**EN-sem**-bull," not "ON-som-bull.")*
 
-This game was originally called **Baja Builders** on Roblox from approximately 2022&mdash;2025. However, the name never
+This game was originally called **Baja Builders** on Roblox from approximately 2022&ndash;2025. However, the name never
 really resonated with me, and "baja" can be interpreted as "below" or "low" in Spanish. I ultimately renamed it to
 **Ensemble** for two primary reasons:
 

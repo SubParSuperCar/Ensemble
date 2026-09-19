@@ -49,6 +49,7 @@ public partial class ConstructTool : ToolBase
 	public int AssetId { get; private set; }
 
 	public bool IsActive { get; private set; }
+
 	public event Action<int>? AssetIdChanged;
 	public event Action<bool>? IsActiveChanged;
 
@@ -148,8 +149,11 @@ public partial class ConstructTool : ToolBase
 		{
 			LocalPlot?.Instances.Add(AssetId, _gridPosition, _rotation);
 
-			Log.Verbose("Added asset id: {AssetId} (Position={Position}, Rotation={Rotation})",
-				AssetId, _gridPosition, _rotation);
+			Log.Verbose(
+				"Added asset id: {AssetId} (Position={Position}, Rotation={Rotation})",
+				AssetId,
+				_gridPosition,
+				_rotation);
 		}
 		else if (_preview is { Visible: true })
 			Flash();

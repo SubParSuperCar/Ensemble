@@ -21,7 +21,8 @@ public partial class ToolManager : Node, IAutoload
 		{
 			field = value;
 
-			Log.Debug("{Class}.{Member} set. (Hash={Hash})",
+			Log.Debug(
+				"{Class}.{Member} set. (Hash={Hash})",
 				nameof(ToolManager),
 				nameof(Instance),
 				value?.GetHashCode());

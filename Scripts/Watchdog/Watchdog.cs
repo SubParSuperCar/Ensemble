@@ -61,14 +61,18 @@ public partial class Watchdog : Node, IAutoload
 
 	private static void OnMissed(int missCount)
 	{
-		Log.Warning("{Class} heartbeat missed: {Count} / {MaxCount}",
-			nameof(Watchdog), missCount, TimeoutMissCountThreshold);
+		Log.Warning(
+			"{Class} heartbeat missed: {Count} / {MaxCount}",
+			nameof(Watchdog),
+			missCount,
+			TimeoutMissCountThreshold);
 
 		if (missCount < TimeoutMissCountThreshold)
 			return;
 
 		var elapsedMs = missCount * PollIntervalMs;
-		var message = string.Create(CultureInfo.InvariantCulture,
+		var message = string.Create(
+			CultureInfo.InvariantCulture,
 			$"Main thread missed {missCount} heartbeat(s) in ~{elapsedMs} ms.");
 
 		try

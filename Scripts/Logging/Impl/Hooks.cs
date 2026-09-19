@@ -7,5 +7,5 @@ public static class Hooks
 {
 	// ReSharper disable once UnusedMember.Global
 	public static HeaderWriter Header =>
-		new("{\"@header\":\"This is an Ensemble SeriLog file: https://github.com/SubParSuperCar/Ensemble\"}");
+		new("{\"@header\":\"This is an Ensemble Serilog file: https://github.com/SubParSuperCar/Ensemble\"}");
 }

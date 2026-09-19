@@ -8,8 +8,9 @@ internal readonly record struct ToolRayHit(Vector3 Position, Vector3 Normal, Nod
 
 internal static class ToolCommon
 {
-	private const float RayLength = 1000;
 	public const uint SelectableLayers = 1;
+
+	private const float RayLength = 1000;
 
 	public static readonly StringName TriggerAction = "tool_trigger";
 

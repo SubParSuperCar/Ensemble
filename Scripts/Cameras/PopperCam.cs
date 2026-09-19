@@ -67,6 +67,7 @@ public partial class PopperCam : SpringArm3D
 					_pitch = Mathf.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
 
 					break;
+
 				case InputEventMouseButton { Pressed: true } button:
 					// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
 					switch (button.ButtonIndex)

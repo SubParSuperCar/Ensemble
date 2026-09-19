@@ -12,4 +12,8 @@
 
   <assembly fullname="BogaNet.TTS" preserve="all"/>
   <assembly fullname="DiscordRPC" preserve="all"/>
+
+  <assembly fullname="Game">
+    <type fullname="Root.Scripts.Logging.Impl.Hooks" preserve="all"/>
+  </assembly>
 </linker>

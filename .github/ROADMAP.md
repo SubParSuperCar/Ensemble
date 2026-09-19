@@ -20,11 +20,11 @@ The tool suite, in rough intended order of implementation.
 - ConstructTool / CtorTool (Place) - place the selected asset (WIP)
     - [ ] (M) raycast placement, face/grid snapping, rotation, ghost preview
     - [ ] (M) SAT-based intersection resolution (nudge placement out of overlaps)
-    - [ ] (M) Asset Selector UI - grid of placeable assets, feeds the tool
+    - [x] (M) Asset Selector UI - grid of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
 - [ ] TextureTool (Paint) - drives the _colorHex / _materialId asset attributes
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
-- [ ] (M) shared ToolConstants (or Tools/Utils.cs) - TriggerAction, RayLength, collision masks, etc.
+- [x] (M) shared ToolConstants (or Tools/Utils.cs) - TriggerAction, RayLength, collision masks, etc.
 - [ ] (M) MultiSelector - shared multi-selection state across tools (deferred)
 - [ ] (M) Marquee Selector UI - shift+drag to box-select, ctrl to toggle-select, Baja Builders parity (deferred)
 

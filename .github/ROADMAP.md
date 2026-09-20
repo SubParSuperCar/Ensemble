@@ -18,7 +18,7 @@ The tool suite, in rough intended order of implementation.
       instances; double-click to confirm; disables DestructTool after use
     - [ ] (S) finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
 - ConstructTool / CtorTool (Place) - place the selected asset (WIP)
-    - [ ] (M) raycast placement, face/grid snapping, rotation, ghost preview
+    - [x] (M) raycast placement, face/grid snapping, rotation, ghost preview
     - [ ] (M) SAT-based intersection resolution (nudge placement out of overlaps)
     - [x] (M) Asset Selector UI - grid of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore

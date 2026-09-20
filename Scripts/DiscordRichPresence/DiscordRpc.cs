@@ -18,10 +18,11 @@ public partial class DiscordRpc : Node, IAutoload
 	private const string AppId = "1534319171079504002";
 	private const int MaxConnectionAttemptCount = 8;
 
-	private static readonly TimeSpan FirstRetryDelay = TimeSpan.FromSeconds(4);
+	private static readonly TimeSpan FirstRetryDelay = TimeSpan.FromSeconds(2.5);
 	private static readonly TimeSpan MaxRetryDelay = TimeSpan.FromMinutes(2);
 
 	private readonly CancellationTokenSource _cts = new();
+	private readonly Timestamps _timestamps = Timestamps.Now;
 
 	private DiscordRpcClient? _client;
 	private int _connectionAttemptCount;
@@ -59,7 +60,7 @@ public partial class DiscordRpc : Node, IAutoload
 
 		client.SetPresence(new RichPresence
 		{
-			Timestamps = Timestamps.Now,
+			Timestamps = _timestamps,
 			Details = "By SubParSuperCar on GitHub",
 			DetailsUrl = "https://github.com/SubParSuperCar/Ensemble"
 		});
@@ -108,7 +109,7 @@ public partial class DiscordRpc : Node, IAutoload
 			if (attemptCount >= MaxConnectionAttemptCount)
 			{
 				Log.Debug(
-					"Gave up on Discord after {Count} connection attempt(s); Discord is most likely closed",
+					"Gave up on Discord after {Count} connection attempt(s)",
 					attemptCount);
 
 				Callable.From(QueueFree).CallDeferred();
@@ -118,7 +119,7 @@ public partial class DiscordRpc : Node, IAutoload
 			var delay = GetRetryDelay(attemptCount);
 
 			Log.Verbose(
-				"Connection to Discord failed. Reconnecting in {Delay}... (Attempt={Attempt}/{MaxAttemptCount})",
+				"Connection to Discord failed. Reconnecting in {Delay:g}... (Attempt={Attempt}/{MaxAttemptCount})",
 				delay,
 				attemptCount + 1,
 				MaxConnectionAttemptCount);

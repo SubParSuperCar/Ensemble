@@ -89,7 +89,7 @@ public partial class AssetSelectorViewModel : ViewModelBase
 		var node = new AssetNode { Name = asset.Name, Id = asset.Id };
 
 		_nodesByAssetId[asset.Id] = node;
-		GetOrCreateFolder(category, asset.Id == Ctor.AssetId).Add(node);
+		Insert(GetOrCreateFolder(category, asset.Id == Ctor.AssetId), node);
 	}
 
 	private IList<INodeBase> GetOrCreateFolder(string category, bool isExpanded)
@@ -114,7 +114,7 @@ public partial class AssetSelectorViewModel : ViewModelBase
 				};
 
 				folder.PropertyChanged += OnFolderPropertyChanged;
-				children.Add(folder);
+				Insert(children, folder);
 			}
 			else if (isExpanded)
 				folder.IsExpanded = true;
@@ -123,6 +123,21 @@ public partial class AssetSelectorViewModel : ViewModelBase
 		}
 
 		return children;
+	}
+
+	private static void Insert(IList<INodeBase> nodes, INodeBase node) =>
+		nodes.Insert(nodes.TakeWhile(other => Precedes(other, node)).Count(), node);
+
+	private static bool Precedes(INodeBase left, INodeBase right)
+	{
+		if (left is FolderNode != right is FolderNode)
+			return left is FolderNode;
+
+		return string.Compare(left.Name, right.Name, StringComparison.OrdinalIgnoreCase) switch
+		{
+			0 => string.CompareOrdinal(left.Name, right.Name) < 0,
+			var order => order < 0
+		};
 	}
 
 	private static void OnFolderPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -242,19 +257,22 @@ public partial class AssetSelectorViewModel : ViewModelBase
 
 public partial class FolderNode : ObservableObject, INodeBase
 {
-	public required string Name { get; init; }
 	public required string Path { get; init; }
 	public IList<INodeBase> Children { get; init; } = new List<INodeBase>();
 
 	[ObservableProperty] public partial bool IsExpanded { get; set; }
+	public required string Name { get; init; }
 }
 
 public partial class AssetNode : ObservableObject, INodeBase
 {
-	public required string Name { get; init; }
 	public int Id { get; init; }
 
 	[ObservableProperty] public partial string Quota { get; set; } = "???";
+	public required string Name { get; init; }
 }
 
-public interface INodeBase;
+public interface INodeBase
+{
+	string Name { get; }
+}

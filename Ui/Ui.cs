@@ -114,6 +114,7 @@ public partial class Ui : AvaloniaControl
 
 		return diagonal switch
 		{
+			< 1468.60d => 0.75f,
 			< 2570.06d => 1f,
 			< 3671.51d => 1.25f,
 			_ => 1.5f

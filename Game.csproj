@@ -1,6 +1,7 @@
 <Project Sdk="Godot.NET.Sdk/4.7.2">
 
   <PropertyGroup>
+    <Configurations>Debug;Release;ExportDebug;ExportRelease</Configurations>
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>14</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -36,6 +37,7 @@
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
+    <OutputPath>$(GodotProjectDir).godot/mono/temp/bin/Debug/</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'ExportDebug' Or '$(Configuration)' == 'ExportRelease'">

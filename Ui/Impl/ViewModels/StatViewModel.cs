@@ -54,10 +54,10 @@ public partial class StatViewModel : ViewModelBase
 		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 
 #if ENSEMBLE_DEBUG
-		var dram = OS.GetStaticMemoryUsage();
+		var dram = Formatter.FormatBytes(OS.GetStaticMemoryUsage());
 #else
 		_process.Refresh();
-		var dram = (ulong)_process.PrivateMemorySize64;
+		var dram = $"{Formatter.FormatBytes((ulong)_process.PrivateMemorySize64)} (PWS)";
 #endif
 
 		var processTimeMs = Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond;
@@ -74,7 +74,7 @@ public partial class StatViewModel : ViewModelBase
 			("Process Time", string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
 			("UI Proc. Time", string.Create(CultureInfo.InvariantCulture, $"{uiProcessTimeMs:F3} msec")),
-			("Used DRAM", Formatter.FormatBytes(dram)),
+			("Used DRAM", dram),
 			("Used VRAM", Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
 			("C# Heap Size", Formatter.FormatBytes((ulong)GC.GetTotalMemory(false))),
 			("Objects", Performance.GetMonitor(Performance.Monitor.ObjectCount)),

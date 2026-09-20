@@ -16,45 +16,118 @@ namespace Root.Scripts.DiscordRichPresence;
 public partial class DiscordRpc : Node, IAutoload
 {
 	private const string AppId = "1534319171079504002";
+	private const int MaxConnectionAttemptCount = 8;
+
+	private static readonly TimeSpan FirstRetryDelay = TimeSpan.FromSeconds(4);
+	private static readonly TimeSpan MaxRetryDelay = TimeSpan.FromMinutes(2);
+
+	private readonly CancellationTokenSource _cts = new();
 
 	private DiscordRpcClient? _client;
+	private int _connectionAttemptCount;
+	private int _isReconnectingFlag;
 
 	public void Initialize()
 	{
 		Log.Debug("Discord RPC app ID: {AppId}", AppId);
+		Connect();
+	}
 
-		_client = new DiscordRpcClient(AppId)
+	public override void _ExitTree()
+	{
+		_cts.Cancel();
+
+		DisposeClient();
+		_cts.Dispose();
+	}
+
+	private static TimeSpan GetRetryDelay(int attemptCount) =>
+		TimeSpan.FromTicks(Math.Min(FirstRetryDelay.Ticks << (attemptCount - 1), MaxRetryDelay.Ticks));
+
+	private void Connect()
+	{
+		if (_cts.IsCancellationRequested)
+			return;
+
+		var client = new DiscordRpcClient(AppId)
 		{
-			Logger = new ConsoleLogger(LogLevel.Info, true)
+			Logger = new ConsoleLogger(LogLevel.Warning, true)
 		};
-		_client.OnReady += OnReady;
-		_client.OnConnectionFailed += OnConnectionFailed;
 
-		_client.SetPresence(new RichPresence
+		client.OnReady += OnReady;
+		client.OnConnectionFailed += OnConnectionFailed;
+
+		client.SetPresence(new RichPresence
 		{
 			Timestamps = Timestamps.Now,
 			Details = "By SubParSuperCar on GitHub",
 			DetailsUrl = "https://github.com/SubParSuperCar/Ensemble"
 		});
 
-		_client.Initialize();
+		_client = client;
+
+		if (!client.Initialize())
+			ScheduleReconnect();
 	}
 
-	public override void _ExitTree()
+	private void DisposeClient()
 	{
-		Log.Debug("Terminating {$Client}...", _client);
-		_client?.Dispose();
+		if (Interlocked.Exchange(ref _client, null) is not { } client)
+			return;
+
+		Log.Debug("Terminating {$Client}...", client);
+
+		client.OnReady -= OnReady;
+		client.OnConnectionFailed -= OnConnectionFailed;
+
+		client.Dispose();
 	}
 
-	private static void OnReady(object? sender, ReadyMessage e) =>
+	private void OnReady(object? sender, ReadyMessage e)
+	{
+		Volatile.Write(ref _connectionAttemptCount, 0);
 		Log.Debug("Connected to Discord with user: {UserName} ({SnowflakeId})", e.User.Username, e.User.ID);
+	}
 
-	/* TODO:
-	 * Retry with exponential backoff instead of shutting down immediately on failure,
-	 * and log less verbosely if Discord is simply closed */
-	private void OnConnectionFailed(object? sender, ConnectionFailedMessage e)
+	private void OnConnectionFailed(object? sender, ConnectionFailedMessage e) => ScheduleReconnect();
+
+	private void ScheduleReconnect()
 	{
-		Log.Error("Connection to Discord failed");
-		QueueFree();
+		if (Interlocked.Exchange(ref _isReconnectingFlag, 1) is 0)
+			_ = ReconnectAsync();
+	}
+
+	private async Task ReconnectAsync()
+	{
+		try
+		{
+			DisposeClient();
+
+			var attemptCount = Interlocked.Increment(ref _connectionAttemptCount);
+
+			if (attemptCount >= MaxConnectionAttemptCount)
+			{
+				Log.Debug(
+					"Gave up on Discord after {Count} connection attempt(s); Discord is most likely closed",
+					attemptCount);
+
+				Callable.From(QueueFree).CallDeferred();
+				return;
+			}
+
+			var delay = GetRetryDelay(attemptCount);
+
+			Log.Verbose(
+				"Connection to Discord failed. Reconnecting in {Delay}... (Attempt={Attempt}/{MaxAttemptCount})",
+				delay,
+				attemptCount + 1,
+				MaxConnectionAttemptCount);
+
+			await Task.Delay(delay, GTimeProvider.Source, _cts.Token).ConfigureAwait(false);
+
+			Interlocked.Exchange(ref _isReconnectingFlag, 0);
+			Connect();
+		}
+		catch (OperationCanceledException) { }
 	}
 }

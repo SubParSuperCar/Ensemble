@@ -6,6 +6,7 @@ using Godot;
 using Root.Common.Execution;
 using Root.Common.Logging;
 using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 using Environment = System.Environment;
@@ -17,7 +18,6 @@ public partial class ConsoleViewModel : ViewModelBase
 	private const int EstimatedEntryLength = 128;
 
 	private static CancellationTokenSource _cts = new();
-
 	private readonly DispatcherService _dispatcher;
 
 	private byte _updateLogHistoryFlag;
@@ -25,7 +25,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	public ConsoleViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
-		dispatcher.Process += OnProcess;
+		dispatcher.UiProcess += OnUiProcess;
 
 		OnLogHistoryUpdated();
 		VolatileLogHistorySink.Updated += OnLogHistoryUpdated;
@@ -41,7 +41,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	protected override void OnDispose()
 	{
 		VolatileLogHistorySink.Updated -= OnLogHistoryUpdated;
-		_dispatcher.Process -= OnProcess;
+		_dispatcher.UiProcess -= OnUiProcess;
 	}
 
 	[RelayCommand]
@@ -59,7 +59,7 @@ public partial class ConsoleViewModel : ViewModelBase
 
 	private void OnLogHistoryUpdated() => Volatile.Write(ref _updateLogHistoryFlag, 1);
 
-	private void OnProcess(double delta)
+	private void OnUiProcess(UiProcessData data)
 	{
 		if (Interlocked.Exchange(ref _updateLogHistoryFlag, 0) is 1)
 			Dispatcher.UIThread.Post(UpdateOutput);

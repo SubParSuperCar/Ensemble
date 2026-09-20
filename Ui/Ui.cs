@@ -22,9 +22,12 @@ namespace Root.Ui;
 [GlobalClass]
 public partial class Ui : AvaloniaControl
 {
+	private const double UiProcessInterval = 1 / 120d;
+
 	public static readonly StringName ProcessTimeMonitor = "Ensemble/Time/UIProcess";
 
-	private double _processTime;
+	private double _lastUiProcessTime;
+	private double _sinceLastUiFrame = UiProcessInterval;
 
 	public override void _Ready()
 	{
@@ -93,13 +96,21 @@ public partial class Ui : AvaloniaControl
 
 	public override void _Process(double delta)
 	{
+		_sinceLastUiFrame += delta;
+
+		if (_sinceLastUiFrame < UiProcessInterval)
+			return;
+
+		var uiDelta = _sinceLastUiFrame;
+		_sinceLastUiFrame %= UiProcessInterval;
+
 		var before = Time.GetTicksUsec();
 
-		WeakReferenceMessenger.Default.Send(new ProcessMessage(delta));
-		base._Process(delta);
+		WeakReferenceMessenger.Default.Send(new UiProcessMessage(new UiProcessData(uiDelta, delta)));
+		base._Process(uiDelta);
 
 		var after = Time.GetTicksUsec();
-		_processTime = (after - before) / (double)TimeSpan.MicrosecondsPerSecond;
+		_lastUiProcessTime = (after - before) / (double)TimeSpan.MicrosecondsPerSecond;
 	}
 
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
@@ -114,7 +125,7 @@ public partial class Ui : AvaloniaControl
 
 		return diagonal switch
 		{
-			< 1468.60d => 0.75f,
+			< 1835.76d => 0.75f,
 			< 2570.06d => 1f,
 			< 3671.51d => 1.25f,
 			_ => 1.5f
@@ -150,7 +161,7 @@ public partial class Ui : AvaloniaControl
 
 			Performance.AddCustomMonitor(
 				ProcessTimeMonitor,
-				Callable.From(() => _processTime),
+				Callable.From(() => _lastUiProcessTime),
 				[],
 				Performance.MonitorType.Time);
 

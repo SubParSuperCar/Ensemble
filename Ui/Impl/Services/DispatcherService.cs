@@ -9,8 +9,8 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 {
 	public DispatcherService()
 	{
-		WeakReferenceMessenger.Default.Register<ProcessMessage>(this,
-			(_, message) => Process?.Invoke(message.Value));
+		WeakReferenceMessenger.Default.Register<UiProcessMessage>(this,
+			(_, message) => UiProcess?.Invoke(message.Value));
 
 		WeakReferenceMessenger.Default.Register<InputMessage>(this,
 			(_, message) => Input?.Invoke(message.Value));
@@ -19,7 +19,7 @@ public class DispatcherService : DisposableObject, ISingletonObject, IServiceBas
 			(_, message) => Notification?.Invoke(message.Value));
 	}
 
-	public event Action<double>? Process;
+	public event Action<UiProcessData>? UiProcess;
 	public event Action<InputEvent>? Input;
 	public event Action<int>? Notification;
 

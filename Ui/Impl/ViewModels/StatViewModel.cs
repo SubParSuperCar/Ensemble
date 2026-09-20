@@ -7,6 +7,7 @@ using Godot;
 using Root.Common.Input;
 using Root.Common.Utils;
 using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
@@ -14,43 +15,33 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class StatViewModel : ViewModelBase
 {
 	private const double RefreshInterval = 1 / 3d;
-	private const double SampleWindow = 1;
 
 #if !ENSEMBLE_DEBUG
 	private readonly Process _process = Process.GetCurrentProcess();
 #endif
 
 	private readonly DispatcherService _dispatcher;
-	private readonly Queue<double> _frameTimes = [];
-
-	private double _sinceLastRefresh = double.MaxValue;
+	private double _sinceLastRefresh = RefreshInterval;
 
 	public StatViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
-		dispatcher.Process += OnProcess;
+		dispatcher.UiProcess += OnUiProcess;
 	}
 
 	[ObservableProperty] public partial string Text { get; set; } = "<Default>";
 
-	protected override void OnDispose() => _dispatcher.Process -= OnProcess;
+	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
 
-	private void OnProcess(double delta)
+	private void OnUiProcess(UiProcessData data)
 	{
-		var now = Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
-		_frameTimes.Enqueue(now);
-
-		while (_frameTimes.Count > 0 && now - _frameTimes.Peek() > SampleWindow)
-			_frameTimes.Dequeue();
-
-		_sinceLastRefresh += delta;
+		_sinceLastRefresh += data.SinceLastUiProcess;
 		if (_sinceLastRefresh < RefreshInterval)
 			return;
 
 		_sinceLastRefresh %= RefreshInterval;
 
-		var sampleDuration = _frameTimes.Count > 1 ? now - _frameTimes.Peek() : 0;
-		var fps = sampleDuration > 0 ? (_frameTimes.Count - 1) / sampleDuration : 0;
+		var fps = Engine.GetFramesPerSecond();
 		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 
 #if ENSEMBLE_DEBUG
@@ -64,15 +55,19 @@ public partial class StatViewModel : ViewModelBase
 		var physicsTimeMs =
 			Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond;
 
+		var uiFps = data.SinceLastUiProcess > 0 ? 1 / data.SinceLastUiProcess : 0;
+		var uiFrameTimeMs = uiFps > 0 ? TimeSpan.MillisecondsPerSecond / uiFps : double.PositiveInfinity;
+
 		var uiProcessTimeMs = Performance.HasCustomMonitor(Ui.ProcessTimeMonitor)
 			? Performance.GetCustomMonitor(Ui.ProcessTimeMonitor).AsDouble() * TimeSpan.MillisecondsPerSecond
 			: 0;
 
 		List<(string Key, object Value)> stats =
 		[
-			("Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps:F2} FPS ({frameTimeMs:F3} mspf)")),
+			("Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps} FPS ({frameTimeMs:F3} mspf)")),
 			("Process Time", string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
+			("UI Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{uiFps:F3} FPS ({uiFrameTimeMs:F3} mspf)")),
 			("UI Proc. Time", string.Create(CultureInfo.InvariantCulture, $"{uiProcessTimeMs:F3} msec")),
 			("Used DRAM", dram),
 			("Used VRAM", Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),

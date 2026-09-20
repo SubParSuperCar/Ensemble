@@ -1,6 +1,7 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Root.Ui.Impl.Abstractions;
+using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 
 namespace Root.Ui.Impl.ViewModels;
@@ -14,14 +15,14 @@ public partial class ClockViewModel : ViewModelBase
 	public ClockViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
-		dispatcher.Process += OnProcess;
+		dispatcher.UiProcess += OnUiProcess;
 	}
 
 	[ObservableProperty] public partial string Text { get; set; } = "<Default>";
 
-	protected override void OnDispose() => _dispatcher.Process -= OnProcess;
+	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
 
-	private void OnProcess(double delta)
+	private void OnUiProcess(UiProcessData data)
 	{
 		var sessionDuration = GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt;
 

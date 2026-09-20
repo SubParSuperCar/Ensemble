@@ -7,6 +7,7 @@ using Iciclecreek.Terminal;
 using Microsoft.Extensions.DependencyInjection;
 using Root.Ui.Impl.Abstractions;
 using Root.Ui.Impl.Attributes;
+using Root.Ui.Impl.Messages;
 using Root.Ui.Impl.Services;
 using Serilog;
 using XTerm.Common;
@@ -58,7 +59,7 @@ public partial class MainViewModel : ViewModelBase
 		GSessionManager.SessionStarted -= OnSessionStarted;
 		GSessionManager.SessionStopped -= OnSessionStopped;
 
-		_dispatcher.Process -= OnProcess;
+		_dispatcher.UiProcess -= OnUiProcess;
 		_dispatcher.Input -= OnInput;
 		_dispatcher.Notification -= OnNotification;
 
@@ -70,11 +71,11 @@ public partial class MainViewModel : ViewModelBase
 	[RelayCommand]
 	private void OpenTerminal() => ShowNewTerminalWindow();
 
-	private static void OnProcess(double delta) => RenderingServer.ForceDraw();
+	private static void OnUiProcess(UiProcessData data) => RenderingServer.ForceDraw();
 
 	private void OnSessionStarted()
 	{
-		_dispatcher.Process -= OnProcess;
+		_dispatcher.UiProcess -= OnUiProcess;
 
 		Log.Debug("Stopped forced render drawing");
 
@@ -83,7 +84,7 @@ public partial class MainViewModel : ViewModelBase
 
 	private void OnSessionStopped()
 	{
-		_dispatcher.Process += OnProcess;
+		_dispatcher.UiProcess += OnUiProcess;
 
 		Log.Debug("Started forced render drawing...");
 

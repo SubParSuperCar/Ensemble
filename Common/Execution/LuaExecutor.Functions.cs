@@ -33,6 +33,7 @@ public static partial class LuaExecutor
 		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
 		env[nameof(get_vsync_modes)] = new LuaFunction(get_vsync_modes);
 		env[nameof(help)] = new LuaFunction(help);
+		env[nameof(perf_mod)] = new LuaFunction(perf_mod);
 		env[nameof(print)] = new LuaFunction(print);
 		env[nameof(quit)] = new LuaFunction(quit);
 		env[nameof(restart)] = new LuaFunction(restart);
@@ -326,6 +327,37 @@ public static partial class LuaExecutor
 			.Order(StringComparer.Ordinal);
 
 		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join('\n', functions));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> perf_mod(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		if ((Engine.GetMainLoop() as SceneTree)?.Root is { } root)
+		{
+			root.SetMsaa3D(Viewport.Msaa.Disabled);
+			root.SetScreenSpaceAA(Viewport.ScreenSpaceAAEnum.Disabled);
+		}
+
+		if (WorldManager.Instance?.World is { } world)
+		{
+			if (world.GetNodeOrNull<WorldEnvironment>("Sky") is { } sky)
+				sky.Set("sky3d_enabled", false);
+
+			if (world.GetNodeOrNull<Node3D>("Terrain") is { } terrain)
+				terrain.SetVisible(false);
+		}
+
+		foreach (var plot in GPlotManager.Handles.Values)
+			if (plot.GetNodeOrNull<AreaLight3D>("Night Light") is { } nightLight)
+				nightLight.SetVisible(false);
+
+		foreach (var player in GPlayerManager.Handles.Values)
+			if (player.GetNodeOrNull<SpotLight3D>("Character/Flashlight") is { } flashlight)
+				flashlight.SetVisible(false);
 
 		context.Return();
 		return default;

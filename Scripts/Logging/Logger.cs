@@ -44,7 +44,7 @@ public partial class Logger : Node, IAutoload
 
 		Log.Logger = loggerConfig.CreateLogger();
 
-		_factory = LoggerFactory.Create(builder =>
+		_factory = LoggerFactory.Create(static builder =>
 		{
 			builder.ClearProviders();
 			builder.AddSerilog(Log.Logger);

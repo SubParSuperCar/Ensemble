@@ -68,7 +68,7 @@ internal static class GodotPlatform
 		var fileDialogOptions = new ManagedFileDialogOptions
 		{
 			AllowDirectorySelection = true,
-			ContentRootFactory = () =>
+			ContentRootFactory = static () =>
 			{
 				IsManagedDialogWindow = true;
 

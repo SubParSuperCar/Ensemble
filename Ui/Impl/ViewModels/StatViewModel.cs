@@ -89,7 +89,7 @@ public partial class StatViewModel : ViewModelBase
 				string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():0.###} m/s")));
 		}
 
-		var width = stats.Max(stat => stat.Key.Length);
+		var width = stats.Max(static stat => stat.Key.Length);
 		Text = string.Join('\n', stats.Select(stat => $"{stat.Key.PadRight(width)} = {stat.Value}"));
 	}
 }

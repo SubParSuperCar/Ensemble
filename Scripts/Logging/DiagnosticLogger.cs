@@ -20,7 +20,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 	private const string LinuxKernelVersionFilePath = "/proc/sys/kernel/osrelease";
 
 	public void Initialize() =>
-		_ = Task.Run(() =>
+		_ = Task.Run(static () =>
 		{
 			Log.Debug("Building {Class} report...", nameof(DiagnosticLogger));
 			var stopwatch = Stopwatch.StartNew();

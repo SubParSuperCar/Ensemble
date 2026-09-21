@@ -35,8 +35,8 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 
 	public IAsyncEnumerable<IStorageItem> GetItemsAsync() =>
 		DirectoryInfo.EnumerateDirectories()
-			.Select(IStorageItem (d) => new BclStorageFolder(d))
-			.Concat(DirectoryInfo.EnumerateFiles().Select(f => new BclStorageFile(f)))
+			.Select(static IStorageItem (d) => new BclStorageFolder(d))
+			.Concat(DirectoryInfo.EnumerateFiles().Select(static f => new BclStorageFile(f)))
 			.AsAsyncEnumerable();
 
 	public Task<string?> SaveBookmarkAsync() =>

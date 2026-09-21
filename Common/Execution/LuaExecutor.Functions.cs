@@ -54,7 +54,7 @@ public static partial class LuaExecutor
 		var positionRange = GPlotManager.GetHandle(plotId).GridBoundarySize / 2;
 
 		var instances = GPlots.GetPlot(plotId)!.Instances;
-		var assetIds = GAssets.GetAll().Select(asset => asset.Id).ToArray();
+		var assetIds = GAssets.GetAll().Select(static asset => asset.Id).ToArray();
 		var random = Random.Shared;
 
 		var stopwatch = Stopwatch.StartNew();
@@ -512,8 +512,7 @@ public static partial class LuaExecutor
 			var voice = Speaker.Instance.VoiceForCulture(culture);
 
 			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
-				.ContinueWith(
-					task => Log.Error(task.Exception, "TTS failed during playback"),
+				.ContinueWith(static task => Log.Error(task.Exception, "TTS failed during playback"),
 					CancellationToken.None,
 					TaskContinuationOptions.OnlyOnFaulted,
 					TaskScheduler.Default);

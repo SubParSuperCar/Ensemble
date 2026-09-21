@@ -24,6 +24,7 @@ public static partial class LuaExecutor
 	private static void InjectCustomFunctions(LuaTable env)
 	{
 		env[nameof(add_rand_insts)] = new LuaFunction(add_rand_insts);
+		env[nameof(cap_fps)] = new LuaFunction(cap_fps);
 		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
 		env[nameof(clr_log)] = new LuaFunction(clr_log);
 		env[nameof(dmp_asm_info)] = new LuaFunction(dmp_asm_info);
@@ -90,6 +91,17 @@ public static partial class LuaExecutor
 			count,
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> cap_fps(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var maxFps = context.ArgumentCount is 0 ? 0 : context.GetArgument<int>(0);
+		Engine.MaxFps = maxFps;
 
 		context.Return();
 		return default;
@@ -338,8 +350,8 @@ public static partial class LuaExecutor
 	{
 		if ((Engine.GetMainLoop() as SceneTree)?.Root is { } root)
 		{
-			root.SetMsaa3D(Viewport.Msaa.Disabled);
-			root.SetScreenSpaceAA(Viewport.ScreenSpaceAAEnum.Disabled);
+			root.Msaa3D = Viewport.Msaa.Disabled;
+			root.ScreenSpaceAA = Viewport.ScreenSpaceAAEnum.Disabled;
 		}
 
 		if (WorldManager.Instance?.World is { } world)
@@ -348,16 +360,18 @@ public static partial class LuaExecutor
 				sky.Set("sky3d_enabled", false);
 
 			if (world.GetNodeOrNull<Node3D>("Terrain") is { } terrain)
-				terrain.SetVisible(false);
+				terrain.Visible = false;
 		}
 
 		foreach (var plot in GPlotManager.Handles.Values)
 			if (plot.GetNodeOrNull<AreaLight3D>("Night Light") is { } nightLight)
-				nightLight.SetVisible(false);
+				nightLight.Visible = false;
 
 		foreach (var player in GPlayerManager.Handles.Values)
 			if (player.GetNodeOrNull<SpotLight3D>("Character/Flashlight") is { } flashlight)
-				flashlight.SetVisible(false);
+				flashlight.Visible = false;
+
+		Log.Information("Performance modification applied. It may need to be reapplied upon session startups");
 
 		context.Return();
 		return default;
@@ -382,17 +396,17 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		if (context.ArgumentCount > 0)
+		if (context.ArgumentCount is 0)
+		{
+			Log.Information("Quitting...");
+			GMain.Quit();
+		}
+		else
 		{
 			Log.Information("Force quitting...");
 			await Log.CloseAndFlushAsync().ConfigureAwait(false);
 
 			Environment.Exit(0);
-		}
-		else
-		{
-			Log.Information("Quitting...");
-			GMain.Quit();
 		}
 
 		context.Return();

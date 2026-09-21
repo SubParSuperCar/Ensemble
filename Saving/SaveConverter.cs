@@ -41,8 +41,12 @@ public static class SaveConverter
 		{
 			var created = instances.Add(instance.AssetId, instance.Position, instance.Rotation);
 
-			if (instance.Properties is { } properties)
-				created.Properties.UpdateAll(properties);
+			if (instance.Properties is not { } properties)
+				continue;
+
+			foreach (var (key, value) in properties)
+				if (created.Properties.All.ContainsKey(key))
+					created.Properties.Update(key, value);
 		}
 	}
 }

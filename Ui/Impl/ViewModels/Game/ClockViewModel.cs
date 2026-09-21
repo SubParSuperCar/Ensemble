@@ -25,9 +25,10 @@ public partial class ClockViewModel : ViewModelBase
 	private void OnUiProcess(UiProcessData data)
 	{
 		var sessionDuration = GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt;
+		var duration = sessionDuration.ToString(@"d\:hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
 		Text = string.Create(
 			CultureInfo.CurrentCulture,
-			$"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {sessionDuration:G}");
+			$"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {duration}");
 	}
 }

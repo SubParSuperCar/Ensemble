@@ -250,7 +250,7 @@ internal static class MtlInterop
 		constructors.FirstOrDefault(constructor => HasParameterTypes(constructor, parameterTypes));
 
 	private static bool HasParameterTypes(ConstructorInfo constructor, Type[] parameterTypes) =>
-		constructor.GetParameters().Select(parameter => parameter.ParameterType).SequenceEqual(parameterTypes);
+		constructor.GetParameters().Select(static parameter => parameter.ParameterType).SequenceEqual(parameterTypes);
 
 	/// <summary>The native GrMtlTextureInfo structure.</summary>
 	[StructLayout(LayoutKind.Sequential)]

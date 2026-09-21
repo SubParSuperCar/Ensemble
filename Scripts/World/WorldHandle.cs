@@ -48,7 +48,7 @@ public partial class WorldHandle : Node3D
 		foreach (var plot in GPlots.GetAll().OrderBy(static p => p.Id))
 		{
 			var dict = plot.ToDict();
-			dict.Add("occupants", plot.Occupants.GetAll().Select(occupant => occupant.Player.Id).ToArray());
+			dict.Add("occupants", plot.Occupants.GetAll().Select(static occupant => occupant.Player.Id).ToArray());
 
 			Log.Debug("{$Plot}", dict);
 		}

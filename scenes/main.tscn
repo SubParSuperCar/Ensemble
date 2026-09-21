@@ -2,7 +2,35 @@
 
 [ext_resource type="Script" uid="uid://dyffxytf1id1l" path="res://Main.cs" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://0hf0xbvnk1kd" path="res://Ui/Ui.cs" id="2_0wfyh"]
+[ext_resource type="Script" uid="uid://ce4663ihappnk" path="res://addons/resonate/sound_manager/sound_bank.gd" id="3_jyhfs"]
 [ext_resource type="Shader" uid="uid://b40ts4rmsiyhu" path="res://shaders/temporal_static.gdshader" id="3_sugp2"]
+[ext_resource type="Script" uid="uid://36xmqkvux3vt" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="4_tbgi4"]
+[ext_resource type="AudioStream" uid="uid://drpphn1pullkq" path="res://assets/audio/Affirm.mp3" id="5_tefeu"]
+[ext_resource type="AudioStream" uid="uid://oyn5pbkk2y54" path="res://assets/audio/Dissent.mp3" id="6_o6xl0"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_o6xl0"]
+random_pitch = 1.0293022
+streams_count = 1
+stream_0/stream = ExtResource("5_tefeu")
+
+[sub_resource type="Resource" id="Resource_jyhfs"]
+script = ExtResource("4_tbgi4")
+name = "affirm"
+volume = -7.5
+streams = Array[AudioStream]([SubResource("AudioStreamRandomizer_o6xl0")])
+metadata/_custom_type_script = "uid://36xmqkvux3vt"
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_85g3d"]
+random_pitch = 1.0293022
+streams_count = 1
+stream_0/stream = ExtResource("6_o6xl0")
+
+[sub_resource type="Resource" id="Resource_tbgi4"]
+script = ExtResource("4_tbgi4")
+name = "dissent"
+volume = -7.5
+streams = Array[AudioStream]([SubResource("AudioStreamRandomizer_85g3d")])
+metadata/_custom_type_script = "uid://36xmqkvux3vt"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_0wfyh"]
 shader = ExtResource("3_sugp2")
@@ -28,6 +56,12 @@ focus_mode = 2
 mouse_force_pass_scroll_events = false
 script = ExtResource("2_0wfyh")
 metadata/_custom_type_script = "uid://0hf0xbvnk1kd"
+
+[node name="Sound Bank" type="Node" parent="." unique_id=2070128617]
+script = ExtResource("3_jyhfs")
+label = "main"
+events = Array[ExtResource("4_tbgi4")]([SubResource("Resource_jyhfs"), SubResource("Resource_tbgi4")])
+metadata/_custom_type_script = "uid://ce4663ihappnk"
 
 [node name="Temporal Static" type="CanvasLayer" parent="." unique_id=1153175403]
 layer = -1

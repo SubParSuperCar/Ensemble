@@ -24,13 +24,27 @@ boot_splash/image="uid://wm30e5juwv1l"
 config/icon="uid://wm30e5juwv1l"
 boot_splash/minimum_display_time=250
 
+[audio]
+
+manager/sound/bus="Sound"
+manager/sound/pool_1D_size=16
+manager/sound/pool_2D_size=16
+manager/sound/pool_3D_size=16
+manager/sound/max_polyphony=32
+manager/music/bus="Music"
+
 [autoload]
 
 AvaloniaLoader="uid://bvmhyw4rgjd4t"
+SoundManager="*uid://sgxo2a017ehn"
+MusicManager="*uid://b3612i7nyqsva"
 
 [debug]
 
 file_logging/log_path="user://godot_logs/godot.log"
+gdscript/warnings/directory_rules={
+"res://addons": 1
+}
 settings/stdout/verbose_stdout.editor=true
 settings/stdout/print_fps.editor=true
 
@@ -52,7 +66,7 @@ project/assembly_reload_attempts=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/rider-plugin/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/resonate/plugin.cfg", "res://addons/rider-plugin/plugin.cfg", "res://addons/sky_3d/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [input]
 

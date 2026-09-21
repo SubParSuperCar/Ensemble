@@ -95,6 +95,7 @@ Text=" StdOut/Err)" /></Span>
                     Document="{Binding Source}"
                     FontSize="13"
                     WordWrap="True"
+                    Watermark="&lt;Empty&gt;"
                     ShowLineNumbers="True">
 
                     <ae:TextEditor.Background>

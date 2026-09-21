@@ -54,9 +54,6 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 		options.ShowSpaces = true;
 		options.ShowTabs = true;
 		options.ShowEndOfLine = true;
-		options.ShowBoxForControlCharacters = true;
-		options.EnableHyperlinks = true;
-		options.EnableTextDragDrop = true;
 		options.HighlightCurrentLine = true;
 		options.IndentationSize = IndentationSize;
 		options.ShowColumnRulers = true;

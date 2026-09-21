@@ -126,9 +126,6 @@ jobs:
       - name: Neuter Terrain3D editor plugin
         run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
 
-      - name: Drop Terrain3D editor icons
-        run: rm -f addons/terrain_3d/icons/*.svg addons/terrain_3d/icons/*.svg.import
-
       - name: Export
         timeout-minutes: 45
         run: |

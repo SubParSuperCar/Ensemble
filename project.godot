@@ -27,11 +27,11 @@ boot_splash/minimum_display_time=250
 [audio]
 
 manager/sound/bus="Sound"
-manager/sound/pool_1D_size=8
+manager/sound/pool_1D_size=4
 manager/sound/pool_2D_size=1
 manager/sound/pool_3D_size=1
 manager/music/bus="Music"
-manager/sound/max_polyphony=10
+manager/sound/max_polyphony=6
 
 [autoload]
 

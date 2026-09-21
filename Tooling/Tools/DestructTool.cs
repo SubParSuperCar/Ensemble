@@ -69,8 +69,12 @@ public partial class DestructTool : ToolBase
 			return;
 		}
 
-		_highlight.Aabb = handle.BoundaryAabb;
-		_highlight.GlobalTransform = handle.GlobalTransform;
+		var aabb = handle.BoundaryAabb;
+		var transform = handle.GlobalTransform;
+		transform.Origin = transform * aabb.GetCenter();
+
+		_highlight.Aabb = aabb;
+		_highlight.GlobalTransform = transform;
 		_highlight.Visible = true;
 	}
 }

@@ -180,7 +180,10 @@ public partial class ConstructTool : ToolBase
 	private Vector3 GridExtents()
 	{
 		var basis = new Basis(_rotation);
-		var local = _previewBounds.Size / (2 * PlotHandle.GridToWorldScale);
+
+		var min = _previewBounds.Position;
+		var max = _previewBounds.End;
+		var local = min.Abs().Max(max.Abs()) / PlotHandle.GridToWorldScale;
 
 		return basis.X.Abs() * local.X + basis.Y.Abs() * local.Y + basis.Z.Abs() * local.Z;
 	}

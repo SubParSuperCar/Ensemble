@@ -29,7 +29,7 @@ Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": 0
 })
-MaxInstanceCount = 875
+MaxInstanceCount = -1
 BoundaryAabb = null
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=1511614985]

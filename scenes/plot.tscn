@@ -16,7 +16,7 @@ albedo_color = Color(0.79999995, 1, 0, 1)
 albedo_texture = ExtResource("2_cyvgl")
 uv1_scale = Vector3(0.25, 0.25, 0.25)
 uv1_triplanar = true
-texture_filter = 2
+texture_filter = 5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_72cjw"]
 shading_mode = 0
@@ -28,6 +28,9 @@ size = Vector2(32, 32)
 
 [node name="Plot" type="Node3D" unique_id=1176841675]
 script = ExtResource("1_cyvgl")
+Id = null
+MaxOccupantCount = null
+MaxTotalInstanceCount = null
 
 [node name="Boundary" type="Area3D" parent="." unique_id=989283433]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 0)

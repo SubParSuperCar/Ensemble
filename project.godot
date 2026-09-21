@@ -22,7 +22,7 @@ boot_splash/bg_color=Color(0.043137256, 0.09019608, 0.15686275, 1)
 boot_splash/stretch_mode=0
 boot_splash/image="uid://wm30e5juwv1l"
 config/icon="uid://wm30e5juwv1l"
-boot_splash/minimum_display_time=250
+boot_splash/minimum_display_time=125
 
 [audio]
 

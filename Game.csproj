@@ -118,7 +118,7 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToPublishDirectory="PreserveNewest"/>
-    <None Include="**/*.gd;**/*.gdshader;assets/**" Exclude=".godot/**;bin/**;**/*.import">
+    <None Include="**/*.gd;**/*.gdshader;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>

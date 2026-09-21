@@ -15,8 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [ split ]
-        rep: [ 1, 2, 3, 4, 5, 6 ]
+        variant: [ nothreads ]
+        rep: [ 1, 2, 3, 4, 5, 6, 7, 8 ]
 
     steps:
       - uses: actions/checkout@v7
@@ -37,6 +37,7 @@ jobs:
       - name: Apply variant
         run: |
           case "${{ matrix.variant }}" in
+            nothreads) printf '\n[editor]\n\nimport/use_multiple_threads=false\n' >> project.godot ;;
             never) rm -f assets/audio/*.mp3 assets/audio/*.mp3.import; cp alt/${{ matrix.variant }}/* assets/audio/ ;;
             no-mp3) rm -f assets/audio/*.mp3 assets/audio/*.mp3.import ;;
             no-resonate) mv addons/resonate/plugin.cfg addons/resonate/plugin.cfg.off ;;

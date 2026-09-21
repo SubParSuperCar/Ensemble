@@ -126,6 +126,9 @@ jobs:
       - name: Neuter Terrain3D editor plugin
         run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
 
+      - name: Disable threaded import
+        run: printf '\n[editor]\n\nimport/use_multiple_threads=false\n' >> project.godot
+
       - name: Export
         timeout-minutes: 45
         run: |

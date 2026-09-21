@@ -14,6 +14,7 @@ internal static class ToolCommon
 
 	public static readonly StringName TriggerAction = "tool_trigger";
 
+	public static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop())!.Root.GetNode("/root/SoundManager");
 	public static PlotHandle? LocalPlotHandle => LocalPlot?.Id is { } id ? GPlotManager.GetHandleOrNull(id) : null;
 
 	public static TNode? FindInHierarchy<TNode>(Node? node) where TNode : Node

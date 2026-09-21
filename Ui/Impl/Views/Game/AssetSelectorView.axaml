@@ -102,7 +102,7 @@
                 ToolTip.Tip="Rotates around the X axis."
                 Background="#FF0000" Foreground="White"
                 Padding="8,0"
-                FontSize="24" />
+                FontSize="24" FontWeight="Bold" />
 
             <Button
                 Grid.Column="6"
@@ -111,7 +111,7 @@
                 ToolTip.Tip="Rotates around the Y axis."
                 Background="#00FF00" Foreground="Black"
                 Padding="8,0"
-                FontSize="24" />
+                FontSize="24" FontWeight="Bold" />
 
             <Button
                 Grid.Column="8"
@@ -120,7 +120,7 @@
                 ToolTip.Tip="Rotates around the Z axis."
                 Background="#0000FF" Foreground="White"
                 Padding="8,0"
-                FontSize="24" />
+                FontSize="24" FontWeight="Bold" />
 
             <Button
                 Grid.Column="10"

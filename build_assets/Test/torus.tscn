@@ -25,10 +25,7 @@ ring_segments = 4
 script = ExtResource("1_wpl7w")
 AssetId = 6
 AssetName = &"Torus"
-Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF",
-&"_materialId": 0
-})
+Properties = null
 MaxInstanceCount = -1
 BoundaryAabb = null
 

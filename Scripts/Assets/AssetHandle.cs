@@ -33,10 +33,10 @@ public partial class AssetHandle : RigidBody3D
 	private Aabb CalculateBoundary()
 	{
 		var collider = GetNodeOrNull<CollisionShape3D>("Collider");
-		if (collider?.Shape is null)
+		if (collider?.Shape is not { } shape)
 			return default;
 
-		var aabb = collider.Shape.GetDebugMesh().GetAabb();
+		var aabb = shape.GetDebugMesh().GetAabb();
 		return aabb * collider.Transform;
 	}
 }

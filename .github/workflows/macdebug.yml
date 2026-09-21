@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [ wav, ogg ]
+        variant: [ split ]
         rep: [ 1, 2, 3, 4, 5, 6 ]
 
     steps:
@@ -37,7 +37,7 @@ jobs:
       - name: Apply variant
         run: |
           case "${{ matrix.variant }}" in
-            wav|ogg) rm -f assets/audio/*.mp3 assets/audio/*.mp3.import; cp alt/${{ matrix.variant }}/* assets/audio/ ;;
+            never) rm -f assets/audio/*.mp3 assets/audio/*.mp3.import; cp alt/${{ matrix.variant }}/* assets/audio/ ;;
             no-mp3) rm -f assets/audio/*.mp3 assets/audio/*.mp3.import ;;
             no-resonate) mv addons/resonate/plugin.cfg addons/resonate/plugin.cfg.off ;;
           esac
@@ -47,18 +47,22 @@ jobs:
           set -uo pipefail
           dotnet restore Game.csproj
           dotnet build Game.csproj -c ExportRelease --no-restore
-          "${GODOT}" --headless --path . --import > import.log 2>&1 &
-          pid=$!
-          for i in $(seq 1 24); do
-            kill -0 $pid 2>/dev/null || break
-            sleep 5
-          done
-          if kill -0 $pid 2>/dev/null; then
+          run_import() {
+            "${GODOT}" --headless --path . --import > import.log 2>&1 &
+            pid=$!
+            for i in $(seq 1 24); do
+              kill -0 $pid 2>/dev/null || return 0
+              sleep 5
+            done
             echo "HUNG after 120s"
-            sample $pid 5 -file sample.txt || true
-                        tail -5 import.log
+            tail -3 import.log
             kill -9 $pid
-            exit 1
+            return 1
+          }
+          if [ "${{ matrix.variant }}" = split ]; then
+            touch assets/audio/.gdignore
+            run_import || exit 1
+            rm assets/audio/.gdignore
           fi
+          run_import || exit 1
           echo "import finished"
-          tail -3 import.log

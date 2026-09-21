@@ -15,12 +15,14 @@ namespace Root.Ui.Impl.ViewModels;
 public partial class StatViewModel : ViewModelBase
 {
 	private const double RefreshInterval = 1 / 3d;
+	private const double SampleWindow = 1d;
 
 #if !ENSEMBLE_DEBUG
 	private readonly Process _process = Process.GetCurrentProcess();
 #endif
 
 	private readonly DispatcherService _dispatcher;
+	private readonly Queue<double> _uiFrameTimes = [];
 	private double _sinceLastRefresh = RefreshInterval;
 
 	public StatViewModel(DispatcherService dispatcher)
@@ -33,8 +35,16 @@ public partial class StatViewModel : ViewModelBase
 
 	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
 
+#pragma warning disable MA0051
 	private void OnUiProcess(UiProcessData data)
+#pragma warning restore MA0051
 	{
+		var now = Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
+		_uiFrameTimes.Enqueue(now);
+
+		while (_uiFrameTimes.Count > 0 && now - _uiFrameTimes.Peek() > SampleWindow)
+			_uiFrameTimes.Dequeue();
+
 		_sinceLastRefresh += data.SinceLastUiProcess;
 		if (_sinceLastRefresh < RefreshInterval)
 			return;
@@ -43,6 +53,10 @@ public partial class StatViewModel : ViewModelBase
 
 		var fps = Engine.GetFramesPerSecond();
 		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
+
+		var sampleDuration = _uiFrameTimes.Count > 1 ? now - _uiFrameTimes.Peek() : 0;
+		var uiFps = sampleDuration > 0 ? (_uiFrameTimes.Count - 1) / sampleDuration : 0;
+		var uiFrameTimeMs = uiFps > 0 ? TimeSpan.MillisecondsPerSecond / uiFps : double.PositiveInfinity;
 
 #if ENSEMBLE_DEBUG
 		var dram = Formatter.FormatBytes(OS.GetStaticMemoryUsage());
@@ -54,9 +68,6 @@ public partial class StatViewModel : ViewModelBase
 		var processTimeMs = Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond;
 		var physicsTimeMs =
 			Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond;
-
-		var uiFps = data.SinceLastUiProcess > 0 ? 1 / data.SinceLastUiProcess : 0;
-		var uiFrameTimeMs = uiFps > 0 ? TimeSpan.MillisecondsPerSecond / uiFps : double.PositiveInfinity;
 
 		var uiProcessTimeMs = Performance.HasCustomMonitor(Ui.ProcessTimeMonitor)
 			? Performance.GetCustomMonitor(Ui.ProcessTimeMonitor).AsDouble() * TimeSpan.MillisecondsPerSecond

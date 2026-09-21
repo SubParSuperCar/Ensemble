@@ -36,10 +36,10 @@ public partial class DestructTool : ToolBase
 			return;
 
 		instances.Remove(_selected.InstanceId);
-		Log.Verbose("Removed: {InstanceId}", _selected.InstanceId);
-
-		SetSelected(null);
 		ToolCommon.SoundManager.Call("play", "master", "affirm");
+
+		Log.Verbose("Removed: {InstanceId}", _selected.InstanceId);
+		SetSelected(null);
 	}
 
 	protected override void OnDisable() => SetSelected(null);

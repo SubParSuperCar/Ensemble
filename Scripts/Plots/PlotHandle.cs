@@ -12,7 +12,7 @@ public partial class PlotHandle : Node3D
 	private GdPlot _plot = null!;
 
 	[Export(PropertyHint.Range, "0,0,1,or_greater,hide_slider")]
-	public int Id { get; set; }
+	public int Id { get; set; } = None;
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int MaxOccupantCount { get; set; }

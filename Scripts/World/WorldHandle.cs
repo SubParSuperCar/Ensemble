@@ -36,19 +36,21 @@ public partial class WorldHandle : Node3D
 		}
 #endif
 
-		Log.Debug("{Member}:", nameof(GPlayers));
+		Log.Debug("{Member} ({Count}):", nameof(GPlayers), GPlayers.Count);
 		foreach (var player in GPlayers.GetAll().OrderBy(static p => p.Id, StringComparer.Ordinal))
 			Log.Debug("{$Player}", player.ToDict());
 
-		Log.Debug("{Member}:", nameof(GAssets));
+		Log.Debug("{Member} ({Count}):", nameof(GAssets), GAssets.Count);
 		foreach (var asset in GAssets.GetAll().OrderBy(static a => a.Id))
 			Log.Debug("{$Asset}", asset.ToDict());
 
-		Log.Debug("{Member}:", nameof(GPlots));
+		Log.Debug("{Member} ({Count}):", nameof(GPlots), GPlots.Count);
 		foreach (var plot in GPlots.GetAll().OrderBy(static p => p.Id))
 		{
 			var dict = plot.ToDict();
 			dict.Add("occupants", plot.Occupants.GetAll().Select(static occupant => occupant.Player.Id).ToArray());
+			dict.Add("maxOccupantCount", plot.Occupants.MaxCount);
+			dict.Add("maxTotalInstanceCount", plot.Instances.MaxCount);
 
 			Log.Debug("{$Plot}", dict);
 		}

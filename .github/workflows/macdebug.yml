@@ -1,0 +1,63 @@
+name: macdebug
+
+on:
+  push:
+    branches: [ ci-mac-debug ]
+
+env:
+  GODOT_VERSION: 4.7.2
+
+jobs:
+  probe:
+    name: probe (${{ matrix.variant }})
+    runs-on: macos-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [ baseline, baseline2, no-mp3, no-resonate ]
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_macos.universal.zip"
+          unzip -q godot.zip -d "${HOME}/godot"
+          echo "GODOT=${HOME}/godot/Godot_mono.app/Contents/MacOS/Godot" >> "${GITHUB_ENV}"
+          mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
+
+      - name: Apply variant
+        run: |
+          case "${{ matrix.variant }}" in
+            no-mp3) rm -f assets/audio/*.mp3 assets/audio/*.mp3.import ;;
+            no-resonate) mv addons/resonate/plugin.cfg addons/resonate/plugin.cfg.off ;;
+          esac
+
+      - name: Import
+        run: |
+          set -uo pipefail
+          dotnet restore Game.csproj
+          dotnet build Game.csproj -c ExportRelease --no-restore
+          "${GODOT}" --headless --path . --import > import.log 2>&1 &
+          pid=$!
+          for i in $(seq 1 60); do
+            kill -0 $pid 2>/dev/null || break
+            sleep 5
+          done
+          if kill -0 $pid 2>/dev/null; then
+            echo "HUNG after 300s"
+            sample $pid 5 -file sample.txt || true
+            cat sample.txt | head -400
+            tail -5 import.log
+            kill -9 $pid
+            exit 1
+          fi
+          echo "import finished"
+          tail -3 import.log

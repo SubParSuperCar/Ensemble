@@ -72,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.27809113, 0.27809113)
-shader_parameter/cirrus_position2 = Vector2(0.27809113, 0.27809113)
+shader_parameter/cirrus_position1 = Vector2(0.0039173714, 0.0039173714)
+shader_parameter/cirrus_position2 = Vector2(0.0039173714, 0.0039173714)
 shader_parameter/cirrus_texture = ExtResource("3_dss4m")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(1.3901678, 1.3901678)
+shader_parameter/cumulus_position = Vector2(0.019586908, 0.019586908)
 shader_parameter/cumulus_texture = ExtResource("4_7t5mc")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -198,10 +198,17 @@ MaxTotalInstanceCount = 0
 metadata/_edit_lock_ = true
 
 [node name="Plot 4" parent="Plots" unique_id=18388373 instance=ExtResource("13_munwf")]
-transform = Transform3D(0.8912767, -0.25456238, 0.375265, 0.19214766, 0.96160513, 0.19594614, -0.41073725, -0.10253594, 0.9059698, 60, 8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60, 1, 0)
 Id = 3
 MaxOccupantCount = 0
 MaxTotalInstanceCount = 100
+metadata/_edit_lock_ = true
+
+[node name="Test Plot" parent="Plots" unique_id=539683936 instance=ExtResource("13_munwf")]
+transform = Transform3D(0.70978725, -0.00023451447, -0.704416, 0.086824074, 0.9924039, 0.08715573, 0.6990447, -0.12302231, 0.704416, -125, 26, 110)
+Id = 4
+MaxOccupantCount = 0
+MaxTotalInstanceCount = 0
 metadata/_edit_lock_ = true
 
 [node name="Sky" type="WorldEnvironment" parent="." unique_id=1085309007]

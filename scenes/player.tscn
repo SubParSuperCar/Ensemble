@@ -61,6 +61,7 @@ mesh = SubResource("CapsuleMesh_agfs1")
 
 [node name="Forward Indicator" type="MeshInstance3D" parent="Character" unique_id=171823704]
 transform = Transform3D(1, 0, 0, 0, -0.3616246, -0.9323238, 0, 0.9323238, -0.3616246, 0, 0, 0.375)
+cast_shadow = 0
 mesh = SubResource("PrismMesh_fjrip")
 
 [node name="Nametag" type="Label3D" parent="Character" unique_id=1802129844]

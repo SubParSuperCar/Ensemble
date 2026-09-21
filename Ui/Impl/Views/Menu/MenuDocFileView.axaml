@@ -3,7 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     x:Class="Root.Ui.Impl.Views.MenuDocFileView"
-    x:DataType="vm:MenuDocFileViewModel">
+    x:DataType="vm:MenuDocFileViewModel"
+    TextOptions.TextRenderingMode="Antialias">
 
     <Grid>
         <ContentControl Content="{Binding Content}" />

@@ -4,7 +4,7 @@
     xmlns:vm="clr-namespace:Root.Ui.Impl.ViewModels"
     x:Class="Root.Ui.Impl.Views.ToolBarView"
     x:DataType="vm:ToolBarViewModel"
-    FontSize="20" FontWeight="ExtraLight">
+    FontSize="20" FontWeight="ExtraLight" LetterSpacing="-1">
 
     <StackPanel HorizontalAlignment="Center" Grid.IsSharedSizeScope="True">
         <Grid ColumnSpacing="4" HorizontalAlignment="Center">
@@ -87,12 +87,12 @@
                         ToolTip.Tip="Toggles the moving (translate) tool. (Bound to 5 / Five)" />
                 </Border>
 
-                <Border Grid.Column="5" BorderBrush="#FF8000" BorderThickness="1">
+                <!--<Border Grid.Column="5" BorderBrush="#FF8000" BorderThickness="1">
                     <ToggleButton
                         Content="Inspect (6)"
                         IsEnabled="False"
                         ToolTip.Tip="Toggles the inspection (inspect) tool. (Bound to 6 / Six)" />
-                </Border>
+                </Border>-->
 
                 <CheckBox
                     Grid.Column="6"

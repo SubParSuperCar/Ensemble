@@ -39,7 +39,7 @@ public partial class DestructTool : ToolBase
 		Log.Verbose("Removed: {InstanceId}", _selected.InstanceId);
 
 		SetSelected(null);
-		ToolCommon.SoundManager.Call("play", "main", "affirm");
+		ToolCommon.SoundManager.Call("play", "master", "affirm");
 	}
 
 	protected override void OnDisable() => SetSelected(null);

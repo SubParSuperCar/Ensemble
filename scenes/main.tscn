@@ -59,7 +59,7 @@ metadata/_custom_type_script = "uid://0hf0xbvnk1kd"
 
 [node name="Sound Bank" type="Node" parent="." unique_id=2070128617]
 script = ExtResource("3_jyhfs")
-label = "main"
+label = "master"
 events = Array[ExtResource("4_tbgi4")]([SubResource("Resource_jyhfs"), SubResource("Resource_tbgi4")])
 metadata/_custom_type_script = "uid://ce4663ihappnk"
 

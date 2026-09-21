@@ -155,12 +155,12 @@ public partial class ConstructTool : ToolBase
 				_gridPosition,
 				_rotation);
 
-			ToolCommon.SoundManager.Call("play", "main", "affirm");
+			ToolCommon.SoundManager.Call("play", "master", "affirm");
 		}
 		else if (_preview is { Visible: true })
 		{
 			Flash();
-			ToolCommon.SoundManager.Call("play", "main", "dissent");
+			ToolCommon.SoundManager.Call("play", "master", "dissent");
 		}
 	}
 

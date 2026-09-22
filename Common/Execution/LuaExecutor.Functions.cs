@@ -100,8 +100,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var maxFps = context.ArgumentCount is 0 ? 0 : context.GetArgument<int>(0);
-		Engine.MaxFps = maxFps;
+		Engine.MaxFps = context.ArgumentCount is 0 ? 0 : context.GetArgument<int>(0);
 
 		context.Return();
 		return default;
@@ -371,7 +370,9 @@ public static partial class LuaExecutor
 			if (player.GetNodeOrNull<SpotLight3D>("Character/Flashlight") is { } flashlight)
 				flashlight.Visible = false;
 
-		Log.Information("Performance modification applied. It may need to be reapplied upon session startups");
+		Log.Information(
+			"Performance modification applied. It may need to be reapplied upon session startups. " +
+			"Setting time to midnight is recommended");
 
 		context.Return();
 		return default;
@@ -576,8 +577,10 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var timeMs = context.ArgumentCount > 0 ? context.GetArgument<int>(0) : (int)TimeSpan.MillisecondsPerSecond / 30;
-		await Task.Delay(timeMs, cancellationToken).ConfigureAwait(false);
+		const int defaultDelayMs = (int)TimeSpan.MillisecondsPerSecond / 30;
+		var delayMs = context.ArgumentCount is 0 ? defaultDelayMs : context.GetArgument<int>(0);
+
+		await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 
 		context.Return();
 		return 0;

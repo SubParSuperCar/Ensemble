@@ -88,7 +88,7 @@ public partial class AssetManager : Node
 			return;
 		}
 
-		Categories[id] = path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/");
+		Categories.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
 
 		var converted = new Dictionary();
 		foreach (var (key, value) in properties)

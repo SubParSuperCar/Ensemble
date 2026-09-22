@@ -29,11 +29,11 @@ public partial class AssetSelectorViewModel : ViewModelBase
 
 		Filter();
 
-		SelectedItems.CollectionChanged += OnSelectedItemsChanged;
 		SelectInitialAsset();
+		SelectedItems.CollectionChanged += OnSelectedItemsChanged;
 
-		LocalPlotChanged += OnLocalPlotChanged;
 		OnLocalPlotChanged(LocalPlot);
+		LocalPlotChanged += OnLocalPlotChanged;
 	}
 
 	private static ConstructTool Ctor => GToolManager.Construct;

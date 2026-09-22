@@ -16,7 +16,7 @@ stream_0/stream = ExtResource("5_tefeu")
 [sub_resource type="Resource" id="Resource_jyhfs"]
 script = ExtResource("4_tbgi4")
 name = "affirm"
-volume = -7.5
+volume = -5.0
 streams = Array[AudioStream]([SubResource("AudioStreamRandomizer_o6xl0")])
 metadata/_custom_type_script = "uid://36xmqkvux3vt"
 
@@ -28,7 +28,6 @@ stream_0/stream = ExtResource("6_o6xl0")
 [sub_resource type="Resource" id="Resource_tbgi4"]
 script = ExtResource("4_tbgi4")
 name = "dissent"
-volume = -7.5
 streams = Array[AudioStream]([SubResource("AudioStreamRandomizer_85g3d")])
 metadata/_custom_type_script = "uid://36xmqkvux3vt"
 

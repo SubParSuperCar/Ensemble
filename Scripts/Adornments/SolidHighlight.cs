@@ -61,7 +61,7 @@ public partial class SolidHighlight : MeshInstance3D
 			return;
 
 		_box.Size = Aabb.Size;
-		Position = Aabb.Position + Aabb.Size * 0.5f;
+		Position = Aabb.Position + Aabb.Size / 2;
 
 		_material.SetShaderParameter("box_size", Aabb.Size);
 	}

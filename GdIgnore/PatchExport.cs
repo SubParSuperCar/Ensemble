@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Root;
 
+// TODO: bin.yml macOS TODO
 public static class PatchExport
 {
 	[ModuleInitializer]

@@ -7,7 +7,6 @@
     <File Path="Directory.Build.props"/>
     <File Path="export_presets.cfg"/>
     <File Path="FodyWeavers.xml"/>
-    <File Path="FodyWeavers.xsd"/>
     <File Path="global.json"/>
     <File Path="LICENSE.md"/>
     <File Path="TrimmerRoots.xml"/>

@@ -16,7 +16,6 @@ public static class InputSink
 	static InputSink()
 	{
 		var observer = new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged);
-
 		InputElement.GotFocusEvent.Raised.Subscribe(observer);
 		InputElement.LostFocusEvent.Raised.Subscribe(observer);
 	}

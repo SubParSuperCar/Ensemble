@@ -17,11 +17,11 @@ public partial class ToolBarViewModel : ViewModelBase
 		GToolManager.Construct.IsEnabledChanged += OnConstructToolIsEnabledChanged;
 		GToolManager.Destruct.IsEnabledChanged += OnDestructToolIsEnabledChanged;
 
+		OnLocalPlotChanged(LocalPlot);
+
 		LocalPlotChanged += OnLocalPlotChanged;
 		IsPlotOwnerChanged += OnClearAllConditionChanged;
 		IsLocalPlotSpawnedChanged += OnClearAllConditionChanged;
-
-		OnLocalPlotChanged(LocalPlot);
 	}
 
 	[ObservableProperty] public partial bool IsConstructToolEnabled { get; set; }

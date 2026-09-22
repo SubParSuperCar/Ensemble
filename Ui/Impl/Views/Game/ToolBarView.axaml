@@ -14,7 +14,7 @@
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Edit" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
-                <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" />
+                <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
             </Grid.ColumnDefinitions>
 
@@ -46,7 +46,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Edit" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" />
+                    <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
                 </Grid.ColumnDefinitions>
 

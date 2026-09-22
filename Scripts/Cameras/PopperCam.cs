@@ -65,7 +65,6 @@ public partial class PopperCam : SpringArm3D
 					var radiansPerPixel = Mathf.Tau * OrbitRatio / _viewportDiagonal;
 					_yaw -= motion.Relative.X * radiansPerPixel;
 					_pitch = Mathf.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
-
 					break;
 
 				case InputEventMouseButton { Pressed: true } button:

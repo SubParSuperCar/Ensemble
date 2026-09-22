@@ -57,7 +57,6 @@ public partial class GdOccupants : RefCounted
 	}
 
 	public void SetOwner() => SetOwner(string.Empty);
-
 	public void SetOwner(string playerId) => _source.SetOwner(Guid.TryParse(playerId, out var guid) ? guid : null);
 
 	public void Clear() => _source.Clear();

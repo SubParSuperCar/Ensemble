@@ -87,6 +87,10 @@ jobs:
           path: Ensemble-${{ env.ID }}-linux-x86_64*.zip
           if-no-files-found: error
 
+  # TODO: macOS's runtime is currently untested because I, NoodleSnake, do not have an Apple device
+  # macOS might not work because PatchExport.cs moves *two* directories for ARM64 and x86_64
+  # We could check and match system architecture to decide which one to move, but later
+  # Then, we can also purge the unused .dylib's, etc., to save disk space
   macos:
     name: macOS (universal)
     runs-on: macos-latest

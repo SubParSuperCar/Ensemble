@@ -32,6 +32,7 @@ public sealed record SaveOptions
 
 	public CompressionType Compression { get; init; } = CompressionType.None;
 	public int? CompressionLevel { get; init; }
+
 	public SaveEncryption? Encryption { get; init; }
 
 	public bool UseChecksum { get; init; }

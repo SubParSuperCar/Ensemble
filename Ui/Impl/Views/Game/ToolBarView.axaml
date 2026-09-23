@@ -95,7 +95,7 @@
                 </Border>-->
 
                 <CheckBox
-                    Grid.Column="6"
+                    Grid.Column="5"
                     Content="Mut.Ex."
                     Command="{Binding ToggleMutexEnforcedCommand}"
                     IsChecked="{Binding IsMutexEnforced}"

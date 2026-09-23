@@ -247,9 +247,9 @@ public partial class AssetSelectorViewModel : ViewModelBase
 		if (!_nodesByAssetId.TryGetValue(assetId, out var node))
 			return;
 
-		var counts = _instances?.GetCount(assetId);
-		var count = counts?[0] ?? 0;
-		var max = counts?[1] ?? GAssets.GetAsset(assetId)?.MaxInstanceCount ?? 0;
+		var quota = _instances?.GetQuota(assetId);
+		var count = quota?[0] ?? 0;
+		var max = quota?[1] ?? GAssets.GetAsset(assetId)?.MaxInstanceCount ?? 0;
 
 		node.Quota = QuotaFormat.Fraction(count, max);
 	}

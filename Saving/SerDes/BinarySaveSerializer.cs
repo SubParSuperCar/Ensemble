@@ -38,7 +38,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			writer.Write(instance.Rotation.W);
 
 			var properties = instance.Properties;
-			writer.Write(properties?.Count ?? 0);
+			writer.Write(checked((ushort)((properties?.Count ?? 0) + 1)));
 
 			if (properties is null)
 				continue;
@@ -92,16 +92,17 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 				reader.ReadSingle(),
 				reader.ReadSingle());
 
-			var propertyCount = reader.ReadInt32();
-			if (propertyCount is < 0 or int.MaxValue)
+			var propertyCount = reader.ReadUInt16();
+			if (propertyCount is 0 or ushort.MaxValue)
 				throw new InvalidDataException("Invalid property count.");
+			propertyCount -= 1;
 
 			Dictionary<string, CoreVariant>? properties = null;
 
 			if (propertyCount > 0)
 			{
 				properties = new Dictionary<string, CoreVariant>(
-					Math.Min(propertyCount, MaxPreallocatedCount),
+					Math.Min((int)propertyCount, MaxPreallocatedCount),
 					StringComparer.Ordinal);
 
 				for (var j = 0; j < propertyCount; j++)

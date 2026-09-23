@@ -24,6 +24,6 @@ public interface IInstances
 	void Remove(int instanceId);
 	void Clear();
 
-	Quota GetCount(int assetId);
-	IReadOnlyDictionary<int, Quota> GetAllCounts();
+	Quota GetQuota(int assetId);
+	IReadOnlyDictionary<int, Quota> GetAllQuotas();
 }

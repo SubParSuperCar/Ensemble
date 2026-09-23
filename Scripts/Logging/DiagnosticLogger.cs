@@ -42,8 +42,9 @@ public partial class DiagnosticLogger : Node, IAutoload
 
 	private static void AddSoftwareInfo(List<Entry> entries)
 	{
+		/* Though potentially useful for manual LAN discovery for MP w/ family, logging this might be unsafe. Disable
 		Add(entries, "Machine Name", Environment.MachineName);
-		Add(entries, "User Name", Environment.UserName);
+		Add(entries, "User Name", Environment.UserName);*/
 
 		Add(entries, "OS", RuntimeInformation.OSDescription);
 		Add(entries, "OS Arch.", RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant());

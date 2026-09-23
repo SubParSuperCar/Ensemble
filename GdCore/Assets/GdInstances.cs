@@ -55,17 +55,17 @@ public partial class GdInstances : RefCounted
 	public void Remove(int id) => _source.Remove(id);
 	public void Clear() => _source.Clear();
 
-	public Array<int> GetCount(int assetId)
+	public Array<int> GetQuota(int assetId)
 	{
-		var (count, maxCount) = _source.GetCount(assetId);
+		var (count, maxCount) = _source.GetQuota(assetId);
 		return [count, maxCount];
 	}
 
-	public Godot.Collections.Dictionary<int, Array<int>> GetAllCounts()
+	public Godot.Collections.Dictionary<int, Array<int>> GetAllQuotas()
 	{
 		var result = new Godot.Collections.Dictionary<int, Array<int>>();
 
-		foreach (var (assetId, quota) in _source.GetAllCounts())
+		foreach (var (assetId, quota) in _source.GetAllQuotas())
 			result.Add(assetId, [quota.Count, quota.MaxCount]);
 
 		return result;

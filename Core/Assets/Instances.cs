@@ -88,12 +88,12 @@ public class Instances : IInstances
 			Remove(instance.Id);
 	}
 
-	public Quota GetCount(int assetId) =>
+	public Quota GetQuota(int assetId) =>
 		_assets.All.TryGetValue(assetId, out var asset)
 			? (_countsByAssetId.Get(assetId), asset.MaxInstanceCount)
 			: throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Asset with id {assetId} not found."));
 
-	public IReadOnlyDictionary<int, Quota> GetAllCounts() => _assets.All.Keys.ToDictionary(static id => id, GetCount);
+	public IReadOnlyDictionary<int, Quota> GetAllQuotas() => _assets.All.Keys.ToDictionary(static id => id, GetQuota);
 }

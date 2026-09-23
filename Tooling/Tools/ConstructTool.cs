@@ -18,7 +18,7 @@ internal enum PlacementState : byte
 {
 	Valid,
 	Overlapping,
-	LimitReached
+	QuotaMet
 }
 
 // TODO: Implement Separating Axis Theorem (SAT)-based placement overlap resolution
@@ -215,17 +215,21 @@ public partial class ConstructTool : ToolBase
 
 	private PlacementState EvaluateState(PlotHandle plot, Vector3 position)
 	{
-		if (IntersectsInstance(plot, position) || LocalPlot?.Instances is not { } instances)
+		if (IntersectsInstance(plot, position))
 			return PlacementState.Overlapping;
 
-		var counts = instances.GetCount(AssetId);
-		var placedCount = counts[0];
-		var maxCount = counts[1];
-
+		var core = GCore.Core;
 		if (
-			(maxCount is not Unlimited && placedCount >= maxCount) ||
+			core.Players.Local is not { } local ||
+			!core.Plots.TryGetOccupant(local.Id, out var occupant) ||
+			occupant.Plot?.Instances is not { } instances)
+			throw new UnreachableException();
+
+		var quota = instances.GetQuota(AssetId);
+		if (
+			(quota.MaxCount is not Unlimited && quota.Count >= quota.MaxCount) ||
 			(instances.MaxCount is not Unlimited && instances.Count >= instances.MaxCount))
-			return PlacementState.LimitReached;
+			return PlacementState.QuotaMet;
 
 		return PlacementState.Valid;
 	}

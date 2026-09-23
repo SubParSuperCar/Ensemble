@@ -93,7 +93,6 @@ public partial class SessionManager : Node
 			StopSession();
 	}
 
-#if ENSEMBLE_DEBUG
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event))
@@ -102,7 +101,6 @@ public partial class SessionManager : Node
 		Log.Information("Restarting session as single-player (test action)...");
 		StartSinglePlayer();
 	}
-#endif
 
 	public void StartSinglePlayer() => StartSinglePlayer(string.Empty);
 

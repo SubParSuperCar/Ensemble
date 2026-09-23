@@ -38,8 +38,8 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			writer.Write(instance.Rotation.W);
 
 			var properties = instance.Properties;
-			var count = checked((ushort)((properties?.Count ?? 0) + 1));
-			writer.Write(Math.Min(count, ushort.MaxValue - 1u));
+			var propertyCount = Math.Min(properties?.Count ?? 0, ushort.MaxValue - 2) + 1;
+			writer.Write((ushort)propertyCount);
 
 			if (properties is null)
 				continue;

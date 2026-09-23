@@ -99,7 +99,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 			Dictionary<string, CoreVariant>? properties = null;
 
-			if (propertyCount > 0)
+			if (propertyCount is not 0)
 			{
 				properties = new Dictionary<string, CoreVariant>(
 					Math.Min((int)propertyCount, MaxPreallocatedCount),

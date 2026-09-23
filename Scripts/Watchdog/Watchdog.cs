@@ -48,6 +48,7 @@ public partial class Watchdog : Node, IAutoload
 
 	public override void _Process(double delta) => Heartbeat();
 
+#if ENSEMBLE_DEBUG
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (!Input.IsActionJustPressedByEvent("test_hang", @event))
@@ -56,6 +57,7 @@ public partial class Watchdog : Node, IAutoload
 		Log.Warning("Hanging main thread (test action)...");
 		Thread.Sleep(int.MaxValue);
 	}
+#endif
 
 	public static void Heartbeat() => Volatile.Write(ref _heartbeatFlag, 1);
 
@@ -98,12 +100,10 @@ public partial class Watchdog : Node, IAutoload
 
 			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
 			{
-				if (Debugger.IsAttached || Volatile.Read(ref _heartbeatFlag) is 1)
+				if (Interlocked.Exchange(ref _heartbeatFlag, 0) is 1 || Debugger.IsAttached)
 					missCount = 0;
 				else
 					OnMissed(++missCount);
-
-				Volatile.Write(ref _heartbeatFlag, 0);
 			}
 		}
 		catch (Exception exception) when (exception is not OperationCanceledException)

@@ -1,4 +1,3 @@
-using System.Text;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -15,8 +14,6 @@ namespace Root.Ui.Impl.ViewModels;
 
 public partial class ConsoleViewModel : ViewModelBase
 {
-	private const int EstimatedEntryLength = 128;
-
 	private static CancellationTokenSource _cts = new();
 	private readonly DispatcherService _dispatcher;
 
@@ -68,21 +65,6 @@ public partial class ConsoleViewModel : ViewModelBase
 	private void UpdateOutput()
 	{
 		var history = VolatileLogHistorySink.History;
-
-		if (history.Count is 0)
-		{
-			Output = "<Empty>";
-			return;
-		}
-
-		var builder = new StringBuilder(history.Count * EstimatedEntryLength);
-
-		foreach (var line in history)
-			builder.AppendLine(line);
-
-		if (builder.Length > 0)
-			builder.Length -= Environment.NewLine.Length;
-
-		Output = builder.ToString();
+		Output = history.Count is 0 ? "<Empty>" : string.Join(Environment.NewLine, history);
 	}
 }

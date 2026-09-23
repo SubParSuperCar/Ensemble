@@ -4,7 +4,7 @@ public sealed class OwnershipFlag
 {
 	private readonly HashSet<object> _owners = [];
 
-	public bool IsSet => _owners.Count is not 0;
+	public bool IsSet => _owners.Count > 0;
 	public int Count => _owners.Count;
 
 	public bool IsHeldBy(object owner) => _owners.Contains(owner);

@@ -61,7 +61,7 @@ public class Occupants : IOccupants
 	{
 		// TODO: Make the next owner deterministic
 		if (ReferenceEquals(occupant, Owner))
-			SetOwner(_occupantsByPlayerId.Count > 1 && shouldResolveOwnerIfRelinquishing
+			SetOwner(shouldResolveOwnerIfRelinquishing && _occupantsByPlayerId.Count > 1
 				? _occupantsByPlayerId.Values.First(other => !ReferenceEquals(other, occupant)).Player.Id
 				: null);
 

@@ -79,8 +79,8 @@ internal sealed class HoleyArray<TValue> where TValue : class
 	{
 		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, MaxHolePunchIndex);
 
-		while (_items.Count <= index)
-			_items.Add(null);
+		if (index >= _items.Count)
+			CollectionsMarshal.SetCount(_items, index + 1);
 
 		_items[index] = item;
 		Count++;

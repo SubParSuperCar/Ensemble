@@ -14,7 +14,8 @@ internal static class ToolCommon
 
 	public static readonly StringName TriggerAction = "tool_trigger";
 
-	public static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop())!.Root.GetNode("/root/SoundManager");
+	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode("SoundManager");
+
 	public static PlotHandle? LocalPlotHandle => LocalPlot?.Id is { } id ? GPlotManager.GetHandleOrNull(id) : null;
 
 	public static TNode? FindInHierarchy<TNode>(Node? node) where TNode : Node
@@ -25,6 +26,8 @@ internal static class ToolCommon
 
 		return null;
 	}
+
+	public static void PlaySound(string name) => SoundManager.Call("play", "master", name);
 
 	public static bool IsHandleLocal(AssetHandle handle) =>
 		LocalPlotHandle is { } plot && ReferenceEquals(FindInHierarchy<PlotHandle>(handle), plot);
@@ -44,11 +47,11 @@ internal static class ToolCommon
 
 		var result = viewport.GetWorld3D().DirectSpaceState.IntersectRay(query);
 
-		return result.Count > 0
-			? new ToolRayHit(
+		return result.Count is 0
+			? null
+			: new ToolRayHit(
 				result["position"].AsVector3(),
 				result["normal"].AsVector3(),
-				result["collider"].As<Node3D>())
-			: null;
+				result["collider"].As<Node3D>());
 	}
 }

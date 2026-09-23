@@ -148,7 +148,7 @@ public partial class ConstructTool : ToolBase
 		if (_canPlace)
 		{
 			LocalPlot?.Instances.Add(AssetId, _gridPosition, _rotation);
-			ToolCommon.SoundManager.Call("play", "master", "affirm");
+			ToolCommon.PlaySound("affirm");
 
 			Log.Verbose(
 				"Added asset id: {AssetId} (Position={Position}, Rotation={Rotation})",
@@ -158,7 +158,7 @@ public partial class ConstructTool : ToolBase
 		}
 		else if (_preview is { Visible: true })
 		{
-			ToolCommon.SoundManager.Call("play", "master", "dissent");
+			ToolCommon.PlaySound("dissent");
 			Flash();
 
 			Log.Verbose("Cannot place with this state");

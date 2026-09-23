@@ -19,11 +19,11 @@ public partial class SessionManager
 		var result = new PeerDicts();
 
 		foreach (var (peerId, info) in _peersById)
-			result[peerId] = new GDictionary
+			result.Add(peerId, new GDictionary
 			{
 				["playerId"] = info.PlayerId,
 				["displayName"] = info.DisplayName
-			};
+			});
 
 		return result;
 	}

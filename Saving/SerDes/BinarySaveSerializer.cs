@@ -22,7 +22,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		writer.Write(data.Version);
 		writer.Write(data.UtcCreatedAt.UtcTicks);
 
-		writer.Write(data.Instances.Count);
+		writer.Write(Math.Min(data.Instances.Count, int.MaxValue - 1));
 
 		foreach (var instance in data.Instances)
 		{
@@ -38,7 +38,8 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			writer.Write(instance.Rotation.W);
 
 			var properties = instance.Properties;
-			writer.Write(checked((ushort)((properties?.Count ?? 0) + 1)));
+			var count = checked((ushort)((properties?.Count ?? 0) + 1));
+			writer.Write(Math.Min(count, ushort.MaxValue - 1u));
 
 			if (properties is null)
 				continue;

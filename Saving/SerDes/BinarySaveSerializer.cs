@@ -94,9 +94,8 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 				reader.ReadSingle());
 
 			var propertyCount = reader.ReadUInt16();
-			if (propertyCount is 0 or ushort.MaxValue)
+			if (propertyCount-- is 0 or ushort.MaxValue)
 				throw new InvalidDataException("Invalid property count.");
-			propertyCount -= 1;
 
 			Dictionary<string, CoreVariant>? properties = null;
 

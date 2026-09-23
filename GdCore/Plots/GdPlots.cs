@@ -67,7 +67,7 @@ public partial class GdPlots : RefCounted
 		bool shouldResolveOwnerIfNullOrRelinquishing,
 		bool shouldDespawnAndClearInstancesIfLastToLeave)
 	{
-		if (!Guid.TryParse(playerId, out var guid))
+		if (!Guid.TryParse(playerId, out var guid) || (plotId is not None && !_source.All.ContainsKey(plotId)))
 			return;
 
 		if (shouldDespawnAndClearInstancesIfLastToLeave)

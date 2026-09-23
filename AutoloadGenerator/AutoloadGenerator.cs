@@ -21,14 +21,22 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 			AttributeMetadataName,
 			static (_, _) => true,
 			static (target, _) =>
-				((INamedTypeSymbol)target.TargetSymbol, target.Attributes[0]));
+			{
+				var attribute = target.Attributes[0];
+
+				return (
+					TypeName: target.TargetSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+					Scope: GetScope(attribute),
+					Order: GetOrder(attribute),
+					FailurePolicy: GetFailurePolicy(attribute));
+			});
 
 		context.RegisterSourceOutput(autoloads.Collect(), Generate);
 	}
 
 	private static void Generate(
 		SourceProductionContext context,
-		ImmutableArray<(INamedTypeSymbol Type, AttributeData Attribute)> autoloads)
+		ImmutableArray<(string TypeName, string Scope, string Order, string FailurePolicy)> autoloads)
 	{
 		var source = new StringBuilder();
 
@@ -42,18 +50,14 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 				[
 			""");
 
-		foreach (
-			var (typeName, attribute) in autoloads
-				.Select(static autoload =>
-					(Name: autoload.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat), autoload.Attribute))
-				.OrderBy(static autoload => autoload.Name, StringComparer.Ordinal))
+		foreach (var autoload in autoloads.OrderBy(static autoload => autoload.TypeName, StringComparer.Ordinal))
 			source.AppendLine(
 				"\t\t\t\tnew(" +
-				$"typeof({typeName}), " +
-				$"{GetScope(attribute)}, " +
-				$"{GetOrder(attribute)}, " +
-				$"{GetFailurePolicy(attribute)}, " +
-				$"static () => new {typeName}()),");
+				$"typeof({autoload.TypeName}), " +
+				$"{autoload.Scope}, " +
+				$"{autoload.Order}, " +
+				$"{autoload.FailurePolicy}, " +
+				$"static () => new {autoload.TypeName}()),");
 
 		source.AppendLine(
 			"""
@@ -83,13 +87,13 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 
 	private static bool TryGetNamedArgument(AttributeData attribute, string name, out object? value)
 	{
-		foreach (
-			var argument in attribute.NamedArguments.Where(argument =>
-				string.Equals(argument.Key, name, StringComparison.Ordinal)))
-		{
-			value = argument.Value.Value;
-			return true;
-		}
+		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		foreach (var argument in attribute.NamedArguments)
+			if (string.Equals(argument.Key, name, StringComparison.Ordinal))
+			{
+				value = argument.Value.Value;
+				return true;
+			}
 
 		value = null;
 		return false;

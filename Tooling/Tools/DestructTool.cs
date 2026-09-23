@@ -36,7 +36,7 @@ public partial class DestructTool : ToolBase
 			return;
 
 		instances.Remove(_selected.InstanceId);
-		ToolCommon.SoundManager.Call("play", "master", "affirm");
+		ToolCommon.PlaySound("affirm");
 
 		Log.Verbose("Removed: {InstanceId}", _selected.InstanceId);
 		SetSelected(null);

@@ -47,6 +47,12 @@ public static partial class LuaExecutor
 		env[nameof(wait)] = new LuaFunction(wait);
 	}
 
+	extension(LuaFunctionExecutionContext context)
+	{
+		private T GetArgumentOrDefault<T>(int index, T fallback = default!) =>
+			context.HasArgument(index) ? context.GetArgument<T>(index) : fallback;
+	}
+
 	private static ValueTask<int> add_rand_insts(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -79,7 +85,7 @@ public static partial class LuaExecutor
 			} while (!axis.IsNormalized());
 
 			var rotation = new Quaternion(
-				axis,
+				position.Normalized(),
 				(float)((random.NextDouble() - 0.5) * Math.Tau));
 
 			instances.Add(assetId, position, rotation);
@@ -100,7 +106,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		Engine.MaxFps = context.ArgumentCount is 0 ? 0 : context.GetArgument<int>(0);
+		Engine.MaxFps = context.GetArgumentOrDefault<int>(0);
 
 		context.Return();
 		return default;
@@ -382,12 +388,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		var arguments = new List<string>(context.ArgumentCount);
-
-		for (var i = 0; i < context.ArgumentCount; i++)
-			arguments.Add(context.GetArgument<LuaValue>(i).ToString());
-
-		Log.Information("Lua: \"{Message}\"", string.Join(' ', arguments));
+		Log.Information("Lua: \"{Message}\"", string.Join(' ', [.. context.Arguments]));
 
 		context.Return();
 		return default;
@@ -397,7 +398,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		if (context.ArgumentCount is 0)
+		if (!context.HasArgument(0))
 		{
 			Log.Information("Quitting...");
 			GMain.Quit();
@@ -453,11 +454,11 @@ public static partial class LuaExecutor
 
 	private static void SetTimeOfDay(LuaFunctionExecutionContext context)
 	{
-		var timeOfDay = WorldManager.Instance?.World?.GetNode("Sky/TimeOfDay");
+		var timeOfDay = WorldManager.Instance?.World?.GetNodeOrNull("Sky/TimeOfDay");
 		if (timeOfDay is null)
 			return;
 
-		if (context.ArgumentCount is 0)
+		if (!context.HasArgument(0))
 		{
 			timeOfDay.Set("game_time_enabled", true);
 			timeOfDay.Set("system_sync", true);
@@ -479,7 +480,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		bool? useDarkTheme = context.ArgumentCount > 0 ? context.GetArgument<bool>(0) : null;
+		bool? useDarkTheme = context.HasArgument(0) ? context.GetArgument<bool>(0) : null;
 
 		var theme = useDarkTheme switch
 		{
@@ -549,10 +550,10 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var text = context.GetArgument<string>(0);
-		var culture = context.ArgumentCount > 1 ? context.GetArgument<string>(1) : "en";
-		var rate = context.ArgumentCount > 2 ? context.GetArgument<float>(2) : 1;
-		var pitch = context.ArgumentCount > 3 ? context.GetArgument<float>(3) : 1;
-		var volume = context.ArgumentCount > 4 ? context.GetArgument<float>(4) : 1;
+		var culture = context.GetArgumentOrDefault(1, "en");
+		var rate = context.GetArgumentOrDefault(2, 1f);
+		var pitch = context.GetArgumentOrDefault(3, 1f);
+		var volume = context.GetArgumentOrDefault(4, 1f);
 
 		try
 		{
@@ -578,7 +579,7 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		const int defaultDelayMs = (int)TimeSpan.MillisecondsPerSecond / 30;
-		var delayMs = context.ArgumentCount is 0 ? defaultDelayMs : context.GetArgument<int>(0);
+		var delayMs = context.GetArgumentOrDefault(0, defaultDelayMs);
 
 		await Task.Delay(delayMs, cancellationToken).ConfigureAwait(false);
 

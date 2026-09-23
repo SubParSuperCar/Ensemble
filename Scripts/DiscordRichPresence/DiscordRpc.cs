@@ -124,7 +124,7 @@ public partial class DiscordRpc : Node, IAutoload
 				attemptCount + 1,
 				MaxConnectionAttemptCount);
 
-			await Task.Delay(delay, GTimeProvider.Source, _cts.Token).ConfigureAwait(false);
+			await Task.Delay(delay, GTimeProvider, _cts.Token).ConfigureAwait(false);
 
 			Interlocked.Exchange(ref _isReconnectingFlag, 0);
 			Connect();

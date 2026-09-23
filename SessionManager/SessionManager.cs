@@ -93,6 +93,7 @@ public partial class SessionManager : Node
 			StopSession();
 	}
 
+#if ENSEMBLE_DEBUG
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event))
@@ -101,6 +102,7 @@ public partial class SessionManager : Node
 		Log.Information("Restarting session as single-player (test action)...");
 		StartSinglePlayer();
 	}
+#endif
 
 	public void StartSinglePlayer() => StartSinglePlayer(string.Empty);
 
@@ -216,9 +218,8 @@ public partial class SessionManager : Node
 
 	private static string LoadOrGeneratePlayerId()
 	{
-		var config = new ConfigFile();
-
 #if ENSEMBLE_RELEASE
+		var config = new ConfigFile();
 		var result = config.Load(UserDataCfgPath);
 
 		if (result is Error.Ok)
@@ -232,7 +233,6 @@ public partial class SessionManager : Node
 		}
 		else if (result is not Error.FileNotFound)
 			Log.Warning("Failed to load player data: {Error}", result);
-#endif
 
 		var id = Guid.NewGuid().ToString();
 
@@ -240,6 +240,9 @@ public partial class SessionManager : Node
 		config.Save(UserDataCfgPath);
 
 		return id;
+#else
+		return Guid.NewGuid().ToString();
+#endif
 	}
 
 	private void StartSession()

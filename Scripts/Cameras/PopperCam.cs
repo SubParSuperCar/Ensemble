@@ -97,7 +97,7 @@ public partial class PopperCam : SpringArm3D
 				ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
 		}
 
-		_yaw = Mathf.LerpAngle(0, _yaw, 1);
+		_yaw = Mathf.Wrap(_yaw, -Mathf.Pi, Mathf.Pi);
 
 		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;

@@ -38,7 +38,7 @@ public partial class PlayerListViewModel : ViewModelBase
 			.Count();
 
 		Players.Insert(index, player);
-		_playersById[gdPlayer.Id] = player;
+		_playersById.Add(gdPlayer.Id, player);
 
 		if (ReferenceEquals(gdPlayer, GPlayers.Local))
 			SelectedPlayer = player;

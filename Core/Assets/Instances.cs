@@ -46,14 +46,10 @@ public class Instances : IInstances
 
 	public bool TryGet(int instanceId, [NotNullWhen(true)] out IInstance? instance)
 	{
-		if (!_instancesById.TryGet(instanceId, out var found))
-		{
-			instance = null;
-			return false;
-		}
-
+		var isFound = _instancesById.TryGet(instanceId, out var found);
 		instance = found;
-		return true;
+
+		return isFound;
 	}
 
 	public IInstance Add(int assetId, Vector3 position, Quaternion rotation, int? instanceId = null)
@@ -99,13 +95,5 @@ public class Instances : IInstances
 				CultureInfo.InvariantCulture,
 				$"Asset with id {assetId} not found."));
 
-	public IReadOnlyDictionary<int, Quota> GetAllCounts()
-	{
-		var counts = new Dictionary<int, Quota>(_assets.All.Count);
-
-		foreach (var assetId in _assets.All.Keys)
-			counts[assetId] = GetCount(assetId);
-
-		return counts;
-	}
+	public IReadOnlyDictionary<int, Quota> GetAllCounts() => _assets.All.Keys.ToDictionary(static id => id, GetCount);
 }

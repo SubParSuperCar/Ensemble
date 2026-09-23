@@ -88,7 +88,7 @@ public partial class AssetSelectorViewModel : ViewModelBase
 		var category = GAssetManager.Categories.TryGetValue(asset.Id, out var path) ? path : string.Empty;
 		var node = new AssetNode { Name = asset.Name, Id = asset.Id };
 
-		_nodesByAssetId[asset.Id] = node;
+		_nodesByAssetId.Add(asset.Id, node);
 		Insert(GetOrCreateFolder(category, asset.Id == Ctor.AssetId), node);
 	}
 
@@ -183,7 +183,7 @@ public partial class AssetSelectorViewModel : ViewModelBase
 			if (FilterNode(child) is { } filteredChild)
 				result.Children.Add(filteredChild);
 
-		return result.Children.Count > 0 ? result : null;
+		return result.Children.Count is 0 ? null : result;
 	}
 
 	private bool Matches(AssetNode asset) =>
@@ -268,7 +268,7 @@ public partial class AssetNode : ObservableObject, INodeBase
 {
 	public int Id { get; init; }
 
-	[ObservableProperty] public partial string Quota { get; set; } = "???";
+	[ObservableProperty] public partial string Quota { get; set; } = "<Unknown>";
 	public required string Name { get; init; }
 }
 

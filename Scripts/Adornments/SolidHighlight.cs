@@ -3,23 +3,9 @@ using Godot;
 namespace Root.Scripts.Adornments;
 
 [GlobalClass]
-public partial class SolidHighlight : MeshInstance3D
+public partial class SolidHighlight : HighlightBase
 {
 	private static readonly Shader HighlightShader = GD.Load<Shader>(ShadersDir + "solid_highlight.gdshader");
-
-	private readonly BoxMesh _box = new();
-	private readonly ShaderMaterial _material = new();
-
-	[Export]
-	public Aabb Aabb
-	{
-		get;
-		set
-		{
-			field = value;
-			UpdateMesh();
-		}
-	}
 
 	[Export]
 	public Color Tint
@@ -32,40 +18,13 @@ public partial class SolidHighlight : MeshInstance3D
 		}
 	} = Colors.White;
 
-	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
-	public float EdgeThickness
-	{
-		get;
-		set
-		{
-			field = value;
-			UpdateEdgeThickness();
-		}
-	} = 1 / 64f;
+	protected override Shader Shader => HighlightShader;
 
 	public override void _Ready()
 	{
-		_material.Shader = HighlightShader;
-
-		Mesh = _box;
-		MaterialOverride = _material;
-
-		UpdateMesh();
+		base._Ready();
 		UpdateTint();
-		UpdateEdgeThickness();
 	}
 
-	private void UpdateMesh()
-	{
-		if (!IsNodeReady())
-			return;
-
-		_box.Size = Aabb.Size;
-		Position = Aabb.Position + Aabb.Size / 2;
-
-		_material.SetShaderParameter("box_size", Aabb.Size);
-	}
-
-	private void UpdateTint() => _material.SetShaderParameter("tint", new Vector3(Tint.R, Tint.G, Tint.B));
-	private void UpdateEdgeThickness() => _material.SetShaderParameter("edge_thickness", EdgeThickness);
+	private void UpdateTint() => Material.SetShaderParameter("tint", new Vector3(Tint.R, Tint.G, Tint.B));
 }

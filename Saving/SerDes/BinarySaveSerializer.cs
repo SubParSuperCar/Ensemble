@@ -8,6 +8,7 @@ namespace Root.Saving.SerDes;
 public sealed class BinarySaveSerializer : ISaveSerializer
 {
 	private const byte FormatVersion = 0;
+	private const int MaxPreallocatedCount = 1 << 12;
 
 	private static ReadOnlySpan<byte> Magic => "ENSB"u8;
 
@@ -74,7 +75,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		if (instanceCount is < 0 or int.MaxValue)
 			throw new InvalidDataException("Invalid instance count.");
 
-		save.Instances.Capacity = instanceCount;
+		save.Instances.Capacity = Math.Min(instanceCount, MaxPreallocatedCount);
 
 		for (var i = 0; i < instanceCount; i++)
 		{
@@ -99,7 +100,9 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 			if (propertyCount > 0)
 			{
-				properties = new Dictionary<string, CoreVariant>(propertyCount, StringComparer.Ordinal);
+				properties = new Dictionary<string, CoreVariant>(
+					Math.Min(propertyCount, MaxPreallocatedCount),
+					StringComparer.Ordinal);
 
 				for (var j = 0; j < propertyCount; j++)
 				{

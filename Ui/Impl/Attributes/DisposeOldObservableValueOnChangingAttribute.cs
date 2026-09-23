@@ -14,7 +14,7 @@ public sealed class DisposeOldObservableValueOnChangingAttribute : OnMethodBound
 #pragma warning restore IL2075
 
 		var oldValue = property?.GetValue(arg.Instance);
-		var newValue = arg.Arguments.Length > 0 ? arg.Arguments[0] : null;
+		var newValue = arg.Arguments.Length is 0 ? null : arg.Arguments[0];
 
 		if (oldValue is IDisposable value && !Equals(oldValue, newValue))
 			value.Dispose();

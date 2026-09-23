@@ -25,7 +25,7 @@ public static class SaveConverter
 
 			save.Instances.Add(new SaveInstance
 			{
-				AssetId = (ushort)instance.Asset.Id,
+				AssetId = checked((ushort)instance.Asset.Id),
 				Position = instance.Position,
 				Rotation = instance.Rotation,
 				Properties = properties

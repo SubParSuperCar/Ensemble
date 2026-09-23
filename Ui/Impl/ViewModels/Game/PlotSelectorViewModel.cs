@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Root.GdCore.Plots;
@@ -52,21 +51,12 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		OnOwnerChanged(occupants.Owner);
 		occupants.OwnerChanged += OnOwnerChanged;
 
-		var index = Plots
-			.TakeWhile(other => string.Compare(Format(other.Id), Format(plot.Id), StringComparison.Ordinal) < 0)
-			.Count();
+		Plots.Insert(Plots.TakeWhile(other => other.Id < plot.Id).Count(), plot);
 
-		Plots.Insert(index, plot);
-
-		_plotsById[gdPlot.Id] = plot;
-		_unsubscribeByPlotId[gdPlot.Id] = Unsubscribe;
+		_plotsById.Add(gdPlot.Id, plot);
+		_unsubscribeByPlotId.Add(gdPlot.Id, Unsubscribe);
 
 		return;
-
-		static string Format(int id)
-		{
-			return id.ToString(CultureInfo.InvariantCulture);
-		}
 
 		void OnOwnerChanged(GdOccupant? owner)
 		{

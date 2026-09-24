@@ -153,6 +153,9 @@ See [**LICENSE.md**](../LICENSE.md) for an overview of the project's licensing.
 > [!NOTE]
 > Some of these screenshots may be out of date or not fully representative of the current state of the gameplay.
 
+Ensemble's placement tool and variety of placeable objects (assets):
+![Ensemble's Construct Tool & Assets](https://github.com/user-attachments/assets/5aa9ad93-547b-4f7a-aa28-ba491c979839)
+
 Ensemble's main menu:
 ![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
 

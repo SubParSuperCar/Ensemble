@@ -10,6 +10,7 @@ using DateTime = Root.Common.Time.DateTime;
 
 namespace Root.Common.Globals;
 
+// All members here should be mostly GDScript-friendly, especially GdCore and SessionManager
 public static class Globals
 {
 	/// <inheritdoc cref="Main" />

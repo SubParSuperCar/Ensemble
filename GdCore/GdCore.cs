@@ -28,6 +28,9 @@ public partial class GdCore : Node, IAutoload
 		}
 	}
 
+	// TODO: Expose the backing Core component for each GdCore class?
+	// Makes performance-critical code easier instead of walking GdCore from here
+	// E.g., in ConstructTool, where it accesses backing Core to optimize quota operations and bypass interop
 	/// <inheritdoc cref="CoreRoot.Core" />
 	public Core Core { get; private set; } = null!;
 

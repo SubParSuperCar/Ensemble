@@ -14,6 +14,8 @@ public partial class SessionManager
 
 	public bool TryGetPeerId(string playerId, out int peerId) => _peerIdsByPlayerId.TryGetValue(playerId, out peerId);
 
+	// The idea is that SessionManager be GDScript-friendly,
+	// so expose a method for accessing critical peers without proprietary C# types
 	public PeerDicts GetAllPeerDicts()
 	{
 		var result = new PeerDicts();

@@ -46,6 +46,7 @@ public partial class GdAssets : RefCounted
 		return result;
 	}
 
+	// Use explicit overloads so that GdCore can be used by GDScript, which does not support C# default args
 	public GdAsset Add(int id) => Add(id, string.Empty);
 	public GdAsset Add(int id, string name) => Add(id, name, null, Default);
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, Default);

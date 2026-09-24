@@ -46,7 +46,7 @@
                         Background="Black" Foreground="White"
                         SelectionForegroundBrush="Black"
                         Padding="1"
-                        FontSize="11" FontWeight="ExtraLight"
+                        FontSize="11.5" FontWeight="ExtraLight"
                         TextWrapping="Wrap"
                         LetterSpacing="-0.375" LineSpacing="3" />
                 </ScrollViewer>

@@ -4,10 +4,15 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:e="using:EnsembleRoot.Ui.Impl.Easings"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.GameView"
     x:DataType="vm:GameViewModel"
     TextOptions.TextRenderingMode="Antialias">
+
+    <UserControl.Resources>
+        <e:ZeroEasing x:Key="ZeroEasing" />
+    </UserControl.Resources>
 
     <Grid>
         <ContentControl
@@ -50,7 +55,15 @@
             Width="480" Height="384">
 
             <TransitioningContentControl.PageTransition>
-                <CrossFade Duration="{StaticResource TransitionDuration}" />
+                <CompositePageTransition>
+                    <PageSlide
+                        Duration="{StaticResource TransitionDuration}"
+                        Orientation="Vertical"
+                        SlideInEasing="CubicEaseOut"
+                        SlideOutEasing="{StaticResource ZeroEasing}" />
+
+                    <CrossFade Duration="{StaticResource TransitionDuration}" />
+                </CompositePageTransition>
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
 

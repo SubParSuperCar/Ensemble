@@ -402,17 +402,17 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		if (!context.HasArgument(0))
-		{
-			Log.Information("Quitting...");
-			GMain.Quit();
-		}
-		else
+		if (context.HasArgument(0))
 		{
 			Log.Information("Force quitting...");
 			await Log.CloseAndFlushAsync().ConfigureAwait(false);
 
 			Environment.Exit(0);
+		}
+		else
+		{
+			Log.Information("Quitting...");
+			GMain.Quit();
 		}
 
 		context.Return();

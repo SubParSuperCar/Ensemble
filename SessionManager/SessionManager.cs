@@ -231,16 +231,16 @@ public partial class SessionManager : Node
 		}
 		else if (result is not Error.FileNotFound)
 			Log.Warning("Failed to load player data: {Error}", result);
+#endif
 
 		var id = Guid.NewGuid().ToString();
 
+#if ENSEMBLE_RELEASE
 		config.SetValue("player", "id", id);
 		config.Save(UserDataCfgPath);
+#endif
 
 		return id;
-#else
-		return Guid.NewGuid().ToString();
-#endif
 	}
 
 	private void StartSession()

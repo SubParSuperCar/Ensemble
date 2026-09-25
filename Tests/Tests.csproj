@@ -11,6 +11,10 @@
     <IsPublishable>false</IsPublishable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="xunit.v3" Version="4.0.1"/>
     <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0">
@@ -20,11 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove=".gdignore"/>
+    <ProjectReference Include="../Core/Core.csproj"/>
+    <ProjectReference Include="../Game.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Core/Core.csproj"/>
+    <None Remove=".gdignore"/>
   </ItemGroup>
 
 </Project>

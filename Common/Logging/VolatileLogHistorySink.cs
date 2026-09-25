@@ -18,6 +18,9 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 
 	public void Emit(LogEvent logEvent)
 	{
+		if (logEvent.Level is LogEventLevel.Verbose)
+			return;
+
 		using var writer = new StringWriter();
 		Formatter.Format(logEvent, writer);
 

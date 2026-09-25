@@ -12,6 +12,7 @@ using Environment = System.Environment;
 
 namespace Root.Ui.Impl.ViewModels;
 
+// TODO: Add a ComboBox to select the minimum log severity level to show in Output
 public partial class ConsoleViewModel : ViewModelBase
 {
 	private static CancellationTokenSource _cts = new();

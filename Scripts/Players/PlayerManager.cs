@@ -1,7 +1,7 @@
+using EnsembleRoot.GdCore.Players;
 using Godot;
-using Root.GdCore.Players;
 
-namespace Root.Scripts.Players;
+namespace EnsembleRoot.Scripts.Players;
 
 [GlobalClass]
 public partial class PlayerManager : Node

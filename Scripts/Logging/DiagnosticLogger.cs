@@ -2,16 +2,16 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
+using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Utils;
 using Godot;
 using Hardware.Info;
 using Microsoft.Extensions.Logging;
-using Root.Autoloading;
-using Root.Common.Utils;
 using Serilog;
 using Environment = System.Environment;
 using Entry = (string Name, string Value);
 
-namespace Root.Scripts.Logging;
+namespace EnsembleRoot.Scripts.Logging;
 
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Standard + 2, FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]

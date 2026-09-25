@@ -1,8 +1,8 @@
+using EnsembleRoot.SessionManager.Api;
 using Godot;
-using Root.SessionManager.Api;
 using Serilog;
 
-namespace Root.SessionManager.Sessions;
+namespace EnsembleRoot.SessionManager.Sessions;
 
 public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig config) : ISession
 {

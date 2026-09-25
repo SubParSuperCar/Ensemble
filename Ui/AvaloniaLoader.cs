@@ -1,12 +1,12 @@
 using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
+using EnsembleRoot.Ui.Impl;
 using Estragonia;
 using Fonts.Avalonia.JetBrainsMono;
 using Godot;
-using Root.Ui.Impl;
 
-namespace Root.Ui;
+namespace EnsembleRoot.Ui;
 
 public partial class AvaloniaLoader : Node
 {

@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace CoreRoot.Api.Assets;
+namespace EnsembleCoreRoot.Api.Assets;
 
 /// <summary>
 ///     The representation of a placed asset.

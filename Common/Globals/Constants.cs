@@ -1,6 +1,6 @@
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace Root.Common.Globals;
+namespace EnsembleRoot.Common.Globals;
 
 public static class Constants
 {

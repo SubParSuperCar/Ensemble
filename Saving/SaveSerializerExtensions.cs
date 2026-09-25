@@ -1,6 +1,6 @@
-using Root.Saving.Pipeline;
+using EnsembleRoot.Saving.Pipeline;
 
-namespace Root.Saving;
+namespace EnsembleRoot.Saving;
 
 public static class SaveSerializerExtensions
 {

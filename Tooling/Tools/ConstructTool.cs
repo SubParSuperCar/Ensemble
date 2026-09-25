@@ -1,12 +1,12 @@
 using System.Diagnostics;
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Scripts.Adornments;
+using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Plots;
 using Godot;
-using Root.Common.Input;
-using Root.Scripts.Adornments;
-using Root.Scripts.Assets;
-using Root.Scripts.Plots;
 using Serilog;
 
-namespace Root.Tooling.Tools;
+namespace EnsembleRoot.Tooling.Tools;
 
 public enum RotationSpace : byte
 {

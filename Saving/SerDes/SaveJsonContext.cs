@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Root.Saving.SerDes;
+namespace EnsembleRoot.Saving.SerDes;
 
 [JsonSerializable(typeof(CreationSaveData))]
 internal partial class SaveJsonContext : JsonSerializerContext

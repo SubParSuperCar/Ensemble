@@ -1,9 +1,9 @@
 using System.Globalization;
+using EnsembleRoot.GdCore.Assets;
+using EnsembleRoot.Scripts.Assets;
 using Godot;
-using Root.GdCore.Assets;
-using Root.Scripts.Assets;
 
-namespace Root.Scripts.Plots;
+namespace EnsembleRoot.Scripts.Plots;
 
 public partial class PlotHandle
 {

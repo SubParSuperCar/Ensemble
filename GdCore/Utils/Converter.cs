@@ -1,9 +1,9 @@
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 using Godot;
 using Godot.Collections;
 using Variant = Godot.Variant;
 
-namespace Root.GdCore.Utils;
+namespace EnsembleRoot.GdCore.Utils;
 
 public static class Converter
 {

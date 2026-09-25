@@ -1,6 +1,6 @@
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Root.Autoloading;
+namespace EnsembleRoot.Autoloading;
 
 /// <summary>
 ///     Marks a game component to be instantiated automatically when the game loads.

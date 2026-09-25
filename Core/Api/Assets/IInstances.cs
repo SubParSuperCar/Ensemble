@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
-using CoreRoot.Api.Plots;
+using EnsembleCoreRoot.Api.Plots;
 
-namespace CoreRoot.Api.Assets;
+namespace EnsembleCoreRoot.Api.Assets;
 
 /// <summary>
 ///     The <see cref="IInstance" /> objects placed on a single <see cref="IPlot" />.

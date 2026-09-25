@@ -1,11 +1,11 @@
 using System.Runtime.CompilerServices;
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleRoot.GdCore.Utils;
 using Godot;
 using Godot.Collections;
-using Root.GdCore.Utils;
 using Variant = Godot.Variant;
 
-namespace Root.GdCore.Assets;
+namespace EnsembleRoot.GdCore.Assets;
 
 /// <inheritdoc cref="IProperties" />
 public partial class GdProperties : RefCounted

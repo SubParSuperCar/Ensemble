@@ -6,7 +6,7 @@
     <LangVersion>14</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>CoreRoot</RootNamespace>
+    <RootNamespace>EnsembleCoreRoot</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

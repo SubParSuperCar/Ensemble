@@ -1,9 +1,9 @@
+using EnsembleRoot.SessionManager.Actions;
 using Godot;
 using Godot.Collections;
-using Root.SessionManager.Actions;
 using Serilog;
 
-namespace Root.SessionManager;
+namespace EnsembleRoot.SessionManager;
 
 public partial class SessionManager
 {

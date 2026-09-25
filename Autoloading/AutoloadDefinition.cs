@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Root.Autoloading;
+namespace EnsembleRoot.Autoloading;
 
 public readonly record struct AutoloadDefinition(
 	Type Type,

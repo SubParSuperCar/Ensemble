@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
-namespace Root;
+namespace EnsembleRoot;
 
 // TODO: bin.yml macOS TODO
 public static class PatchExport

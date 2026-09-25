@@ -1,4 +1,4 @@
-namespace CoreRoot.Globals;
+namespace EnsembleCoreRoot.Globals;
 
 public static class Sentinels
 {

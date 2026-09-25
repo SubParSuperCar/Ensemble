@@ -1,9 +1,9 @@
+using EnsembleRoot.Autoloading;
+using EnsembleRoot.Tooling.Tools;
 using Godot;
-using Root.Autoloading;
-using Root.Tooling.Tools;
 using Serilog;
 
-namespace Root.Tooling;
+namespace EnsembleRoot.Tooling;
 
 [GlobalClass]
 [Autoload(

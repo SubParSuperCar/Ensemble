@@ -1,8 +1,8 @@
-using CoreRoot.Api.Assets;
-using CoreRoot.Api.Plots;
-using CoreRoot.Assets;
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Plots;
+using EnsembleCoreRoot.Assets;
 
-namespace CoreRoot.Plots;
+namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
 public class Plot : IPlot

@@ -1,4 +1,4 @@
-namespace Root.Autoloading;
+namespace EnsembleRoot.Autoloading;
 
 /// <summary>
 ///     The policy to apply if this Autoload fails and cannot be instantiated.

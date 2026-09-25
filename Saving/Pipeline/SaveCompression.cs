@@ -1,7 +1,7 @@
 using System.IO.Compression;
 using ZstdSharp;
 
-namespace Root.Saving.Pipeline;
+namespace EnsembleRoot.Saving.Pipeline;
 
 internal static class SaveCompression
 {

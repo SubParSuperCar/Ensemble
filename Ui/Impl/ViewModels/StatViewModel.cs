@@ -3,14 +3,14 @@ using System.Diagnostics;
 #endif
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Common.Utils;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Messages;
+using EnsembleRoot.Ui.Impl.Services;
 using Godot;
-using Root.Common.Input;
-using Root.Common.Utils;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Messages;
-using Root.Ui.Impl.Services;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class StatViewModel : ViewModelBase
 {

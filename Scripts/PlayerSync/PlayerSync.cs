@@ -1,9 +1,9 @@
+using EnsembleRoot.Autoloading;
+using EnsembleRoot.GdCore.Players;
 using Godot;
-using Root.Autoloading;
-using Root.GdCore.Players;
 using Serilog;
 
-namespace Root.Scripts.PlayerSync;
+namespace EnsembleRoot.Scripts.PlayerSync;
 
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]

@@ -1,7 +1,7 @@
-using Root.Common.Networking;
+using EnsembleRoot.Common.Networking;
 using Xunit;
 
-namespace Root.Tests;
+namespace EnsembleRoot.Tests;
 
 public sealed class TimeoutHandlerTests
 {

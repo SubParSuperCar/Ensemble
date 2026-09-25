@@ -1,11 +1,11 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Root.GdCore.Plots;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.ViewModels.Utils;
+using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class PlotSelectorViewModel : ViewModelBase
 {

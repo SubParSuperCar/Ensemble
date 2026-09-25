@@ -1,6 +1,6 @@
-using CoreRoot.Api.Players;
+using EnsembleCoreRoot.Api.Players;
 
-namespace CoreRoot.Players;
+namespace EnsembleCoreRoot.Players;
 
 /// <inheritdoc />
 public class Player(Guid id, string? name = null, TimeProvider? timeProvider = null) : IPlayer

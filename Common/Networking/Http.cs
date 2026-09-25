@@ -1,4 +1,4 @@
-namespace Root.Common.Networking;
+namespace EnsembleRoot.Common.Networking;
 
 public static class Http
 {

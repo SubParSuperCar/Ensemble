@@ -4,11 +4,11 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Mvvm.Messaging;
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Ui.Impl.Messages;
 using LiveMarkdown.Avalonia;
-using Root.Common.Input;
-using Root.Ui.Impl.Messages;
 
-namespace Root.Ui.Impl;
+namespace EnsembleRoot.Ui.Impl;
 
 public class App : Application
 {

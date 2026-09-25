@@ -1,9 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using CoreRoot.Api.Assets;
-using CoreRoot.Api.Plots;
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Plots;
 
-namespace CoreRoot.Plots;
+namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
 public class Plots : IPlots

@@ -1,10 +1,10 @@
-using CoreRoot.Api;
-using CoreRoot.Api.Assets;
-using CoreRoot.Api.Players;
-using CoreRoot.Api.Plots;
-using CoreRoot.Plots;
+using EnsembleCoreRoot.Api;
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Players;
+using EnsembleCoreRoot.Api.Plots;
+using EnsembleCoreRoot.Plots;
 
-namespace CoreRoot;
+namespace EnsembleCoreRoot;
 
 /// <inheritdoc />
 /// <remarks>Core is non-authoritative; max counts are metadata only and are not enforced.</remarks>

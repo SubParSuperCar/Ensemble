@@ -1,7 +1,7 @@
-using CoreRoot.Api.Assets;
-using CoreRoot.Assets;
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleCoreRoot.Assets;
 
-namespace Root.Saving;
+namespace EnsembleRoot.Saving;
 
 public static class SaveConverter
 {

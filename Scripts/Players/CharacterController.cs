@@ -1,9 +1,9 @@
+using EnsembleRoot.Common.Input;
 using Godot;
-using Root.Common.Input;
 
 // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 
-namespace Root.Scripts.Players;
+namespace EnsembleRoot.Scripts.Players;
 
 [GlobalClass]
 public partial class CharacterController : CharacterBody3D

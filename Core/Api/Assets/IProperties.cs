@@ -1,4 +1,4 @@
-namespace CoreRoot.Api.Assets;
+namespace EnsembleCoreRoot.Api.Assets;
 
 /// <summary>
 ///     The property values of an <see cref="IInstance" />, copied from its <see cref="IAsset" />'s defaults.

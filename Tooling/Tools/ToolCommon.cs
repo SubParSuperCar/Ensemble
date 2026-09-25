@@ -1,8 +1,8 @@
+using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Plots;
 using Godot;
-using Root.Scripts.Assets;
-using Root.Scripts.Plots;
 
-namespace Root.Tooling.Tools;
+namespace EnsembleRoot.Tooling.Tools;
 
 internal readonly record struct ToolRayHit(Vector3 Position, Vector3 Normal, Node3D Collider);
 

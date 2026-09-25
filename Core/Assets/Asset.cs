@@ -1,8 +1,8 @@
 using System.Collections.Frozen;
 using System.Globalization;
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 
-namespace CoreRoot.Assets;
+namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
 public class Asset(

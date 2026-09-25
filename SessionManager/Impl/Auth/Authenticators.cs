@@ -1,6 +1,6 @@
-using Root.SessionManager.Api;
+using EnsembleRoot.SessionManager.Api;
 
-namespace Root.SessionManager.Auth;
+namespace EnsembleRoot.SessionManager.Auth;
 
 public static class Authenticators
 {

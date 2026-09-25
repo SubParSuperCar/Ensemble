@@ -1,6 +1,6 @@
-using Root.Tooling.Tools;
+using EnsembleRoot.Tooling.Tools;
 
-namespace Root.Tooling;
+namespace EnsembleRoot.Tooling;
 
 internal sealed class ToolControl(ToolManager manager, ToolBase tool)
 {

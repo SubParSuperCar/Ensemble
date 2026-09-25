@@ -1,9 +1,9 @@
+using EnsembleRoot.Common.Input;
 using Godot;
-using Root.Common.Input;
 using Serilog;
 using MouseButton = Godot.MouseButton;
 
-namespace Root.Scripts.Cameras;
+namespace EnsembleRoot.Scripts.Cameras;
 
 [GlobalClass]
 public partial class PopperCam : SpringArm3D

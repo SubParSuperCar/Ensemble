@@ -1,11 +1,11 @@
 using DiscordRPC;
 using DiscordRPC.Logging;
 using DiscordRPC.Message;
+using EnsembleRoot.Autoloading;
 using Godot;
-using Root.Autoloading;
 using Serilog;
 
-namespace Root.Scripts.DiscordRichPresence;
+namespace EnsembleRoot.Scripts.DiscordRichPresence;
 
 // TODO: Fix benign errors in AOT export builds caused by IPC named pipe socket exceptions
 [GlobalClass]

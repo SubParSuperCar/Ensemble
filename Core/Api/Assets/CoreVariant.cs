@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
-namespace CoreRoot.Api.Assets;
+namespace EnsembleCoreRoot.Api.Assets;
 
 public enum CoreVariantType : byte
 {

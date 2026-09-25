@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Root.Saving.SerDes;
+namespace EnsembleRoot.Saving.SerDes;
 
 public sealed class JsonSaveSerializer : ISaveSerializer
 {

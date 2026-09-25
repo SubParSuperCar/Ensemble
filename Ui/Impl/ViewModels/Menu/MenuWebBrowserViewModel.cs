@@ -1,11 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Attributes;
+using EnsembleRoot.Ui.Impl.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Attributes;
-using Root.Ui.Impl.Services;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class MenuWebBrowserViewModel : ViewModelBase
 {

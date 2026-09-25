@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Attributes;
 
-namespace Root.Ui.Impl.Services;
+namespace EnsembleRoot.Ui.Impl.Services;
 
 [INotifyPropertyChanged]
 public partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase

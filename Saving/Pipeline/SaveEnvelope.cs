@@ -1,7 +1,7 @@
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
-namespace Root.Saving.Pipeline;
+namespace EnsembleRoot.Saving.Pipeline;
 
 internal enum KdfFunction : byte
 {

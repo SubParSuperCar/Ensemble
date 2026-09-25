@@ -1,7 +1,7 @@
 #if ENSEMBLE_DEBUG
 using Avalonia;
 
-namespace Root.Ui.Impl;
+namespace EnsembleRoot.Ui.Impl;
 
 public static class Designer
 {

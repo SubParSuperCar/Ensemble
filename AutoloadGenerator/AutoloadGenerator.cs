@@ -9,7 +9,7 @@ namespace AutoloadGenerator;
 [Generator]
 public sealed class AutoloadGenerator : IIncrementalGenerator
 {
-	private const string AttributeMetadataName = "Root.Autoloading.AutoloadAttribute";
+	private const string AttributeMetadataName = "EnsembleRoot.Autoloading.AutoloadAttribute";
 
 	private const string ScopePropertyName = "Scope";
 	private const string OrderPropertyName = "Order";
@@ -42,7 +42,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 
 		source.AppendLine(
 			"""
-			namespace Root.Autoloading;
+			namespace EnsembleRoot.Autoloading;
 
 			public static partial class AutoloadRegistry
 			{

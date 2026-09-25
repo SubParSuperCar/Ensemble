@@ -1,13 +1,13 @@
 using System.Globalization;
+using EnsembleRoot.Autoloading;
+using EnsembleRoot.SessionManager.Api;
+using EnsembleRoot.SessionManager.Auth;
+using EnsembleRoot.SessionManager.Sessions;
 using Godot;
-using Root.Autoloading;
-using Root.SessionManager.Api;
-using Root.SessionManager.Auth;
-using Root.SessionManager.Sessions;
 using Serilog;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
-namespace Root.SessionManager;
+namespace EnsembleRoot.SessionManager;
 
 /// <summary>
 ///     The <see cref="GdCore" />-agnostic session lifetime manager using Godot's <see cref="MultiplayerApi" />.

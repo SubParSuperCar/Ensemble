@@ -4,13 +4,13 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Platform;
 using CommunityToolkit.Mvvm.Input;
-using Root.Common.Input;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.ViewModels;
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.ViewModels;
 using Serilog;
 using Key = Avalonia.Input.Key;
 
-namespace Root.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Impl.Views;
 
 public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 {

@@ -1,7 +1,7 @@
-using CoreRoot.Api.Players;
-using CoreRoot.Api.Plots;
+using EnsembleCoreRoot.Api.Players;
+using EnsembleCoreRoot.Api.Plots;
 
-namespace CoreRoot.Plots;
+namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
 public class Occupant(IPlayer player) : IOccupant

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Root.Scripts.Assets;
+namespace EnsembleRoot.Scripts.Assets;
 
 [GlobalClass]
 public partial class AssetHandle : RigidBody3D

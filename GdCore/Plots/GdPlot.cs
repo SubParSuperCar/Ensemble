@@ -1,10 +1,10 @@
 using System.Runtime.CompilerServices;
-using CoreRoot.Api.Plots;
+using EnsembleCoreRoot.Api.Plots;
+using EnsembleRoot.GdCore.Assets;
 using Godot;
 using Godot.Collections;
-using Root.GdCore.Assets;
 
-namespace Root.GdCore.Plots;
+namespace EnsembleRoot.GdCore.Plots;
 
 /// <inheritdoc cref="IPlot" />
 public partial class GdPlot : RefCounted

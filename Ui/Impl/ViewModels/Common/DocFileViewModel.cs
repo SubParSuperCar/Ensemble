@@ -1,8 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Root.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Abstractions;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class DocFileViewModel : ViewModelBase
 {

@@ -1,10 +1,10 @@
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Scripts.Adornments;
+using EnsembleRoot.Scripts.Assets;
 using Godot;
-using Root.Common.Input;
-using Root.Scripts.Adornments;
-using Root.Scripts.Assets;
 using Serilog;
 
-namespace Root.Tooling.Tools;
+namespace EnsembleRoot.Tooling.Tools;
 
 public partial class DestructTool : ToolBase
 {

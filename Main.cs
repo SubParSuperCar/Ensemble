@@ -1,11 +1,11 @@
 using System.Diagnostics;
+using EnsembleRoot.Autoloading;
 using Godot;
-using Root.Autoloading;
 using Serilog;
 using TinyDialogsNet;
 using Environment = System.Environment;
 
-namespace Root;
+namespace EnsembleRoot;
 
 /// <summary>
 ///     The main entry point for Ensemble's code-behind.

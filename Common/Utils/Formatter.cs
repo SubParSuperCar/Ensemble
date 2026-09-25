@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Root.Common.Utils;
+namespace EnsembleRoot.Common.Utils;
 
 public static class Formatter
 {

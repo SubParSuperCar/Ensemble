@@ -1,4 +1,4 @@
-namespace Root.SessionManager.Actions;
+namespace EnsembleRoot.SessionManager.Actions;
 
 public readonly record struct ActionValidation(bool IsValid, string? Reason = null)
 {

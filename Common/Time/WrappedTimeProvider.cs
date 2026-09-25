@@ -1,4 +1,4 @@
-namespace Root.Common.Time;
+namespace EnsembleRoot.Common.Time;
 
 public sealed class WrappedTimeProvider : TimeProvider
 {

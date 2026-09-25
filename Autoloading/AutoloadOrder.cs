@@ -1,4 +1,4 @@
-namespace Root.Autoloading;
+namespace EnsembleRoot.Autoloading;
 
 /// <summary>
 ///     The order in which this Autoload is instantiated,

@@ -1,8 +1,8 @@
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 
 // ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
-namespace Root.Saving.SerDes;
+namespace EnsembleRoot.Saving.SerDes;
 
 internal static class CoreVariantSerializer
 {

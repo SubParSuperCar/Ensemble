@@ -1,8 +1,8 @@
 using Avalonia.Controls;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.ViewModels;
 
-namespace Root.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Impl.Views;
 
 public partial class MenuDocFileView : UserControl, IViewFor<MenuDocFileViewModel>
 {

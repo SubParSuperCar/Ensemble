@@ -1,14 +1,14 @@
-using CoreRoot;
+using EnsembleCoreRoot;
+using EnsembleRoot.Autoloading;
+using EnsembleRoot.GdCore.Assets;
+using EnsembleRoot.GdCore.Players;
+using EnsembleRoot.GdCore.Plots;
 using Godot;
-using Root.Autoloading;
-using Root.GdCore.Assets;
-using Root.GdCore.Players;
-using Root.GdCore.Plots;
 using Serilog;
 
-namespace Root.GdCore;
+namespace EnsembleRoot.GdCore;
 
-/// <inheritdoc cref="CoreRoot.Core" />
+/// <inheritdoc cref="EnsembleCoreRoot.Core" />
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class GdCore : Node, IAutoload
@@ -31,7 +31,7 @@ public partial class GdCore : Node, IAutoload
 	// TODO: Expose the backing Core component for each GdCore class?
 	// Makes performance-critical code easier instead of walking GdCore from here
 	// E.g., in ConstructTool, where it accesses backing Core to optimize quota operations and bypass interop
-	/// <inheritdoc cref="CoreRoot.Core" />
+	/// <inheritdoc cref="EnsembleCoreRoot.Core" />
 	public Core Core { get; private set; } = null!;
 
 	/// <inheritdoc cref="GdPlayers" />

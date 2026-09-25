@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Root.Scripts.Adornments;
+namespace EnsembleRoot.Scripts.Adornments;
 
 [GlobalClass]
 public partial class SolidHighlight : HighlightBase

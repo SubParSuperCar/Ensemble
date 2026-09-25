@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace CoreRoot.Api.Plots;
+namespace EnsembleCoreRoot.Api.Plots;
 
 /// <summary>
 ///     The registry of <see cref="IPlot" /> objects and the assignment of players to them as <see cref="IOccupant" />

@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace Root.Saving.Pipeline;
+namespace EnsembleRoot.Saving.Pipeline;
 
 internal static class SaveCodec
 {

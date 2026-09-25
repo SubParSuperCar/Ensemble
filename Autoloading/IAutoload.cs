@@ -1,4 +1,4 @@
-namespace Root.Autoloading;
+namespace EnsembleRoot.Autoloading;
 
 public interface IAutoload
 {

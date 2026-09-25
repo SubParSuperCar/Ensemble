@@ -3,7 +3,7 @@ using Lua;
 using Lua.Standard;
 using Serilog;
 
-namespace Root.Common.Execution;
+namespace EnsembleRoot.Common.Execution;
 
 public static partial class LuaExecutor
 {

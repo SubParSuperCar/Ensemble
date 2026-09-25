@@ -1,9 +1,9 @@
 using System.Runtime.CompilerServices;
-using CoreRoot.Api.Players;
+using EnsembleCoreRoot.Api.Players;
 using Godot;
 using Godot.Collections;
 
-namespace Root.GdCore.Players;
+namespace EnsembleRoot.GdCore.Players;
 
 /// <inheritdoc cref="IPlayers" />
 public partial class GdPlayers : RefCounted

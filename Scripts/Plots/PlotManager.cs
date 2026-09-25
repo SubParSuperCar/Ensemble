@@ -2,7 +2,7 @@ using System.Globalization;
 using Godot;
 using Serilog;
 
-namespace Root.Scripts.Plots;
+namespace EnsembleRoot.Scripts.Plots;
 
 [GlobalClass]
 public partial class PlotManager : Node

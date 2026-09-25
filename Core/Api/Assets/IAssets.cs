@@ -1,4 +1,4 @@
-namespace CoreRoot.Api.Assets;
+namespace EnsembleCoreRoot.Api.Assets;
 
 /// <summary>
 ///     The registry of <see cref="IAsset" /> objects. Should be locked once registration is complete.

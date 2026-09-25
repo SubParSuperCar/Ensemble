@@ -4,15 +4,15 @@ using System.ComponentModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.GdCore.Assets;
+using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Tooling.Tools;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 using Godot;
-using Root.GdCore.Assets;
-using Root.GdCore.Plots;
-using Root.Tooling.Tools;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.ViewModels.Utils;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class AssetSelectorViewModel : ViewModelBase
 {

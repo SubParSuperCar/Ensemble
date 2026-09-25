@@ -1,4 +1,4 @@
-namespace Root.Common.Input;
+namespace EnsembleRoot.Common.Input;
 
 public sealed class OwnershipFlag
 {

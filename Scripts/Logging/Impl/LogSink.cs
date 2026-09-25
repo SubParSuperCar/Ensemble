@@ -4,7 +4,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Environment = System.Environment;
 
-namespace Root.Scripts.Logging.Impl;
+namespace EnsembleRoot.Scripts.Logging.Impl;
 
 public sealed class LogSink : ILogEventSink
 {

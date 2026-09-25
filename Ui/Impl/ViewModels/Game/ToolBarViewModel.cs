@@ -1,12 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Root.GdCore.Assets;
-using Root.GdCore.Plots;
-using Root.Tooling.Tools;
-using Root.Ui.Impl.Abstractions;
+using EnsembleRoot.GdCore.Assets;
+using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Tooling.Tools;
+using EnsembleRoot.Ui.Impl.Abstractions;
 using Serilog;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class ToolBarViewModel : ViewModelBase
 {

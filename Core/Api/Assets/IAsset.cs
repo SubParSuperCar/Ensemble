@@ -1,4 +1,4 @@
-namespace CoreRoot.Api.Assets;
+namespace EnsembleCoreRoot.Api.Assets;
 
 /// <summary>
 ///     The representation or template of a placeable asset.

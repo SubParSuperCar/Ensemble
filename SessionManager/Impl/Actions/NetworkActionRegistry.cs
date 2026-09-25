@@ -1,7 +1,7 @@
 using System.Globalization;
 using GDictionary = Godot.Collections.Dictionary;
 
-namespace Root.SessionManager.Actions;
+namespace EnsembleRoot.SessionManager.Actions;
 
 public sealed class NetworkActionRegistry
 {

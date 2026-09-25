@@ -5,19 +5,19 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
+using EnsembleRoot.Ui.Impl.Extensions;
+using EnsembleRoot.Ui.Impl.Messages;
+using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Impl.ViewModels;
 using Estragonia;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
-using Root.Ui.Impl.Extensions;
-using Root.Ui.Impl.Messages;
-using Root.Ui.Impl.Services;
-using Root.Ui.Impl.ViewModels;
 using Serilog;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
-namespace Root.Ui;
+namespace EnsembleRoot.Ui;
 
 [GlobalClass]
 public partial class Ui : AvaloniaControl

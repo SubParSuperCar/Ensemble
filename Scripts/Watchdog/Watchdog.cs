@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using System.Globalization;
+using EnsembleRoot.Autoloading;
 using Godot;
-using Root.Autoloading;
 using Serilog;
 using TinyDialogsNet;
 
-namespace Root.Scripts.Watchdog;
+namespace EnsembleRoot.Scripts.Watchdog;
 
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Last, FailurePolicy = AutoloadFailurePolicy.AskUser)]

@@ -5,7 +5,7 @@ using Avalonia.Reactive;
 using AvaloniaEdit.Editing;
 using Iciclecreek.Terminal;
 
-namespace Root.Common.Input;
+namespace EnsembleRoot.Common.Input;
 
 public static class InputSink
 {

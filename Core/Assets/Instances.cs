@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
-using CoreRoot.Api.Assets;
-using CoreRoot.Utils;
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleCoreRoot.Utils;
 
-namespace CoreRoot.Assets;
+namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
 public class Instances : IInstances

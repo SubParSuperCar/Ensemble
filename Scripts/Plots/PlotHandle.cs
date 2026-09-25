@@ -1,7 +1,7 @@
+using EnsembleRoot.GdCore.Plots;
 using Godot;
-using Root.GdCore.Plots;
 
-namespace Root.Scripts.Plots;
+namespace EnsembleRoot.Scripts.Plots;
 
 [GlobalClass]
 public partial class PlotHandle : Node3D

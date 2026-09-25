@@ -1,6 +1,6 @@
 using Serilog.Sinks.File.Header;
 
-namespace Root.Scripts.Logging.Impl;
+namespace EnsembleRoot.Scripts.Logging.Impl;
 
 // ReSharper disable once UnusedType.Global
 public static class Hooks

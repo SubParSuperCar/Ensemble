@@ -1,4 +1,4 @@
-namespace Root.SessionManager.Actions;
+namespace EnsembleRoot.SessionManager.Actions;
 
 public interface INetworkActionHandler<in TAction> where TAction : INetworkAction<TAction>
 {

@@ -1,4 +1,4 @@
-namespace CoreRoot.Api.Players;
+namespace EnsembleCoreRoot.Api.Players;
 
 /// <summary>
 ///     The registry of <see cref="IPlayer" /> objects, including which one, if any, is the local player.

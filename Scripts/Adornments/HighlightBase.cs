@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Root.Scripts.Adornments;
+namespace EnsembleRoot.Scripts.Adornments;
 
 public abstract partial class HighlightBase : MeshInstance3D
 {

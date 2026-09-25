@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Root.SessionManager.Api;
+namespace EnsembleRoot.SessionManager.Api;
 
 public interface IPeerAuthenticator
 {

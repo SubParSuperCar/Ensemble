@@ -1,7 +1,7 @@
 using System.Text;
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 
-namespace CoreRoot.Assets;
+namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
 public class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties

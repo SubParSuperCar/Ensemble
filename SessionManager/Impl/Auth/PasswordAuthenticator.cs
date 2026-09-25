@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
+using EnsembleRoot.SessionManager.Api;
 using Godot;
-using Root.SessionManager.Api;
 using Serilog;
 using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator;
 
-namespace Root.SessionManager.Auth;
+namespace EnsembleRoot.SessionManager.Auth;
 
 public sealed class PasswordAuthenticator(string password) : IPeerAuthenticator
 {

@@ -1,6 +1,6 @@
-using CoreRoot.Api.Players;
+using EnsembleCoreRoot.Api.Players;
 
-namespace CoreRoot.Api.Plots;
+namespace EnsembleCoreRoot.Api.Plots;
 
 /// <summary>
 ///     The representation of an <see cref="IPlayer" /> object's occupancy on an <see cref="IPlot" />, if any.

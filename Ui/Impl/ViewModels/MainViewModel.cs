@@ -2,18 +2,18 @@ using Avalonia.Controls;
 using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Attributes;
+using EnsembleRoot.Ui.Impl.Messages;
+using EnsembleRoot.Ui.Impl.Services;
 using Godot;
 using Iciclecreek.Terminal;
 using Microsoft.Extensions.DependencyInjection;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Attributes;
-using Root.Ui.Impl.Messages;
-using Root.Ui.Impl.Services;
 using Serilog;
 using XTerm.Common;
 using Color = Avalonia.Media.Color;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {

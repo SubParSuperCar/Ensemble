@@ -1,13 +1,13 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Services;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Services;
 using Serilog;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using FileAccess = Godot.FileAccess;
 using OS = Godot.OS;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBase
 {

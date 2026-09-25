@@ -2,12 +2,12 @@ using System.Diagnostics;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using AvaloniaEdit.TextMate;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.ViewModels;
 using Serilog;
 using TextMateSharp.Grammars;
 
-namespace Root.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Impl.Views;
 
 public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 {

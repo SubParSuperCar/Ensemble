@@ -1,13 +1,13 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
+using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Utils;
 using Godot;
-using Root.Autoloading;
-using Root.Common.Utils;
 using Serilog;
 using Environment = System.Environment;
 using FileAccess = System.IO.FileAccess;
 
-namespace Root.Scripts.Hashing;
+namespace EnsembleRoot.Scripts.Hashing;
 
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Standard, FailurePolicy = AutoloadFailurePolicy.AskUser)]

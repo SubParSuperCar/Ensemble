@@ -1,4 +1,4 @@
-namespace CoreRoot.Api.Plots;
+namespace EnsembleCoreRoot.Api.Plots;
 
 /// <summary>
 ///     The <see cref="IOccupant" /> objects on a single <see cref="IPlot" />,

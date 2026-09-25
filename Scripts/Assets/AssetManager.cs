@@ -4,7 +4,7 @@ using Godot;
 using Godot.Collections;
 using Serilog;
 
-namespace Root.Scripts.Assets;
+namespace EnsembleRoot.Scripts.Assets;
 
 [GlobalClass]
 public partial class AssetManager : Node

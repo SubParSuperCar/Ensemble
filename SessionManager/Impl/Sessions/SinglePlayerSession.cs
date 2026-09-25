@@ -1,7 +1,7 @@
+using EnsembleRoot.SessionManager.Api;
 using Godot;
-using Root.SessionManager.Api;
 
-namespace Root.SessionManager.Sessions;
+namespace EnsembleRoot.SessionManager.Sessions;
 
 public sealed class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 {

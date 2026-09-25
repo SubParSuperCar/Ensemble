@@ -1,16 +1,16 @@
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Common.Execution;
+using EnsembleRoot.Common.Logging;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Messages;
+using EnsembleRoot.Ui.Impl.Services;
 using Godot;
-using Root.Common.Execution;
-using Root.Common.Logging;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Messages;
-using Root.Ui.Impl.Services;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 using Environment = System.Environment;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 // TODO: Add a ComboBox to select the minimum log severity level to show in Output
 public partial class ConsoleViewModel : ViewModelBase

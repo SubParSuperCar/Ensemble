@@ -1,9 +1,9 @@
+using EnsembleRoot.Autoloading;
 using Godot;
-using Root.Autoloading;
 using Serilog;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
-namespace Root.Scripts.World;
+namespace EnsembleRoot.Scripts.World;
 
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Late, FailurePolicy = AutoloadFailurePolicy.AskUser)]

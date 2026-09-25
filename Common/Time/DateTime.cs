@@ -1,4 +1,4 @@
-namespace Root.Common.Time;
+namespace EnsembleRoot.Common.Time;
 
 public static class DateTime
 {

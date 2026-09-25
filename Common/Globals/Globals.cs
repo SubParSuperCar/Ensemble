@@ -1,14 +1,14 @@
-using Root.Common.Time;
-using Root.GdCore.Assets;
-using Root.GdCore.Players;
-using Root.GdCore.Plots;
-using Root.Scripts.Assets;
-using Root.Scripts.Players;
-using Root.Scripts.Plots;
-using Root.Tooling;
-using DateTime = Root.Common.Time.DateTime;
+using EnsembleRoot.Common.Time;
+using EnsembleRoot.GdCore.Assets;
+using EnsembleRoot.GdCore.Players;
+using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Players;
+using EnsembleRoot.Scripts.Plots;
+using EnsembleRoot.Tooling;
+using DateTime = EnsembleRoot.Common.Time.DateTime;
 
-namespace Root.Common.Globals;
+namespace EnsembleRoot.Common.Globals;
 
 // All members here should be mostly GDScript-friendly, especially GdCore and SessionManager
 public static class Globals

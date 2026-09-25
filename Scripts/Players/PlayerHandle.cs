@@ -1,9 +1,9 @@
+using EnsembleRoot.GdCore.Players;
+using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Scripts.Cameras;
 using Godot;
-using Root.GdCore.Players;
-using Root.GdCore.Plots;
-using Root.Scripts.Cameras;
 
-namespace Root.Scripts.Players;
+namespace EnsembleRoot.Scripts.Players;
 
 [GlobalClass]
 public partial class PlayerHandle : Node3D

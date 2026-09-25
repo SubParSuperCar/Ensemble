@@ -1,4 +1,4 @@
-namespace Root.Autoloading;
+namespace EnsembleRoot.Autoloading;
 
 /// <summary>
 ///     The run contexts in which this Autoload is instantiated.

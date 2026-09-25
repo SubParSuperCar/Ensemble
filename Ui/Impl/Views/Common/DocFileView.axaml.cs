@@ -2,16 +2,16 @@ using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using EnsembleRoot.Common.Networking;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.ViewModels;
 using LiveMarkdown.Avalonia;
 using Markdig;
-using Root.Common.Networking;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.ViewModels;
 using Serilog;
 using TinyDialogsNet;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
-namespace Root.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Impl.Views;
 
 // TODO: Fix the intermittent exit code 139 (SIGSEGV, a segmentation fault) when opening this view
 // The crash appears to occur just after the Markdown is parsed and rendered,

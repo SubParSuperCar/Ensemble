@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Threading.RateLimiting;
 using Serilog;
 
-namespace Root.SessionManager;
+namespace EnsembleRoot.SessionManager;
 
 public partial class SessionManager
 {

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Root.Tooling.Tools;
+namespace EnsembleRoot.Tooling.Tools;
 
 public abstract partial class ToolBase : Node
 {

@@ -1,12 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Attributes;
+using EnsembleRoot.Ui.Impl.Services;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
-using Root.Common.Input;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Attributes;
-using Root.Ui.Impl.Services;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class GameViewModel : ViewModelBase
 {

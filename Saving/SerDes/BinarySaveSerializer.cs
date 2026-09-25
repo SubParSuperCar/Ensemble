@@ -1,9 +1,9 @@
 using System.Text;
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 using Quaternion = System.Numerics.Quaternion;
 using Vector3 = System.Numerics.Vector3;
 
-namespace Root.Saving.SerDes;
+namespace EnsembleRoot.Saving.SerDes;
 
 public sealed class BinarySaveSerializer : ISaveSerializer
 {

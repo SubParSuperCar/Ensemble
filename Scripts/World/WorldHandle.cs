@@ -1,7 +1,7 @@
 using Godot;
 using Serilog;
 
-namespace Root.Scripts.World;
+namespace EnsembleRoot.Scripts.World;
 
 [GlobalClass]
 public partial class WorldHandle : Node3D

@@ -1,9 +1,9 @@
 using System.Runtime.CompilerServices;
-using CoreRoot.Api.Plots;
+using EnsembleCoreRoot.Api.Plots;
 using Godot;
 using Godot.Collections;
 
-namespace Root.GdCore.Plots;
+namespace EnsembleRoot.GdCore.Plots;
 
 /// <inheritdoc cref="IOccupants" />
 public partial class GdOccupants : RefCounted

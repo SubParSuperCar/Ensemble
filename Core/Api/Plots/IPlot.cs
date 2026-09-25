@@ -1,6 +1,6 @@
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 
-namespace CoreRoot.Api.Plots;
+namespace EnsembleCoreRoot.Api.Plots;
 
 /// <summary>
 ///     The representation of a buildable area containing <see cref="IOccupant" /> and <see cref="IInstance" />

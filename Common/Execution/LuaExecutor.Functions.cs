@@ -3,19 +3,19 @@ using System.Globalization;
 using Avalonia.Styling;
 using BogaNet.TTS;
 using CommunityToolkit.Mvvm.Messaging;
+using EnsembleRoot.Common.Logging;
+using EnsembleRoot.Common.Networking;
+using EnsembleRoot.Common.Utils;
+using EnsembleRoot.Scripts.World;
+using EnsembleRoot.Ui.Impl.Messages;
 using Godot;
 using Lua;
-using Root.Common.Logging;
-using Root.Common.Networking;
-using Root.Common.Utils;
-using Root.Scripts.World;
-using Root.Ui.Impl.Messages;
 using Serilog;
 using Environment = System.Environment;
 
 // ReSharper disable InconsistentNaming
 
-namespace Root.Common.Execution;
+namespace EnsembleRoot.Common.Execution;
 
 public static partial class LuaExecutor
 {

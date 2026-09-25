@@ -1,9 +1,9 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 
-namespace Root.Saving.SerDes;
+namespace EnsembleRoot.Saving.SerDes;
 
 internal sealed class CoreVariantJsonConverter : JsonConverter<CoreVariant>
 {

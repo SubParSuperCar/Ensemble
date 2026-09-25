@@ -1,6 +1,6 @@
 using Godot.Collections;
 
-namespace Root.SessionManager.Actions;
+namespace EnsembleRoot.SessionManager.Actions;
 
 public interface INetworkAction<out TSelf> where TSelf : INetworkAction<TSelf>
 {

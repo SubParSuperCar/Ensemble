@@ -1,6 +1,6 @@
-using CoreRoot.Api.Plots;
+using EnsembleCoreRoot.Api.Plots;
 
-namespace CoreRoot.Plots;
+namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
 public class Occupants : IOccupants

@@ -1,10 +1,10 @@
-using CoreRoot.Api.Assets;
-using CoreRoot.Api.Players;
-using CoreRoot.Api.Plots;
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Players;
+using EnsembleCoreRoot.Api.Plots;
 
 // ReSharper disable UnusedMemberInSuper.Global
 
-namespace CoreRoot.Api;
+namespace EnsembleCoreRoot.Api;
 
 /// <summary>
 ///     The Godot-agnostic data model for Ensemble.

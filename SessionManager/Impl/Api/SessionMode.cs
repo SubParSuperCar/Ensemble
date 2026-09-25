@@ -1,4 +1,4 @@
-namespace Root.SessionManager.Api;
+namespace EnsembleRoot.SessionManager.Api;
 
 public enum SessionMode : byte
 {

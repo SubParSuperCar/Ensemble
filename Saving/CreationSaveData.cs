@@ -1,7 +1,7 @@
 using System.Numerics;
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 
-namespace Root.Saving;
+namespace EnsembleRoot.Saving;
 
 public sealed class CreationSaveData
 {

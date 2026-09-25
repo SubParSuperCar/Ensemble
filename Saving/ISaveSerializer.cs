@@ -1,4 +1,4 @@
-namespace Root.Saving;
+namespace EnsembleRoot.Saving;
 
 public interface ISaveSerializer
 {

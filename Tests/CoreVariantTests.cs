@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
-using CoreRoot.Api.Assets;
+using EnsembleCoreRoot.Api.Assets;
 using Xunit;
 
-namespace Root.Tests;
+namespace EnsembleRoot.Tests;
 
 public sealed class CoreVariantTests
 {

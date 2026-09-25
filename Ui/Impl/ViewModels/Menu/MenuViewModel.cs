@@ -1,11 +1,11 @@
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Services;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
-using Root.Common.Input;
-using Root.Ui.Impl.Abstractions;
-using Root.Ui.Impl.Services;
 using Serilog;
 
-namespace Root.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public class MenuViewModel : ViewModelBase
 {

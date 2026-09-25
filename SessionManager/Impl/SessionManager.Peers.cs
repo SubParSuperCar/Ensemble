@@ -3,7 +3,7 @@ using Serilog;
 using GDictionary = Godot.Collections.Dictionary;
 using PeerDicts = Godot.Collections.Dictionary<int, Godot.Collections.Dictionary>;
 
-namespace Root.SessionManager;
+namespace EnsembleRoot.SessionManager;
 
 public partial class SessionManager
 {

@@ -1,13 +1,13 @@
+using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Logging;
+using EnsembleRoot.Scripts.Logging.Impl;
 using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Root.Autoloading;
-using Root.Common.Logging;
-using Root.Scripts.Logging.Impl;
 using Serilog;
 using FileAccess = Godot.FileAccess;
 
-namespace Root.Scripts.Logging;
+namespace EnsembleRoot.Scripts.Logging;
 
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.First, FailurePolicy = AutoloadFailurePolicy.AskUser)]

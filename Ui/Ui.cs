@@ -48,12 +48,13 @@ public partial class Ui : AvaloniaControl
 
 			Control = new TextBlock
 			{
-				Text = "Loading Autoloads\u2026",
+				Text = "Loading Ensemble's Autoloads\u2026\nThis shouldn't take long.",
 				FontFamily = new FontFamily("sans-serif"),
 				FontWeight = FontWeight.Regular,
 				FontSize = 48,
 				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center
+				VerticalAlignment = VerticalAlignment.Center,
+				TextAlignment = TextAlignment.Center
 			};
 			TextOptions.SetTextRenderingMode(Control, TextRenderingMode.Antialias);
 

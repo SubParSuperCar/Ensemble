@@ -20,6 +20,10 @@ public enum CoreVariantType : byte
 /// <summary>
 ///     A Godot-agnostic Variant type that supports only primitives, easily converted to and from Godot's Variant.
 /// </summary>
+/// <remarks>
+///     Uses 24 bytes in memory: 17 bytes of fields plus 7 bytes of padding for 8-byte alignment,
+///     matching the size of Godot's Variant.
+/// </remarks>
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct CoreVariant : IEquatable<CoreVariant>
 {

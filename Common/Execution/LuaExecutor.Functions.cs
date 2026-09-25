@@ -23,6 +23,8 @@ public static partial class LuaExecutor
 
 	private static void InjectCustomFunctions(LuaTable env)
 	{
+		#region Injection Monotonous Boilerplate
+
 		env[nameof(add_rand_insts)] = new LuaFunction(add_rand_insts);
 		env[nameof(cap_fps)] = new LuaFunction(cap_fps);
 		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
@@ -45,6 +47,8 @@ public static partial class LuaExecutor
 		env[nameof(set_vsync_mode)] = new LuaFunction(set_vsync_mode);
 		env[nameof(tts)] = new LuaFunction(tts);
 		env[nameof(wait)] = new LuaFunction(wait);
+
+		#endregion
 	}
 
 	extension(LuaFunctionExecutionContext context)

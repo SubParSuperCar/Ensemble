@@ -31,6 +31,7 @@ public class App : Application
 		base.OnFrameworkInitializationCompleted();
 	}
 
+	// Sink/mark certain keystrokes as handled to prevent unintentional UI navigation
 	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs e)
 	{
 		if (e.Key is Key.Space or Key.Tab && !InputSink.IsSunk)

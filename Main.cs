@@ -161,11 +161,11 @@ public partial class Main : Node
 		if (e.ExceptionObject is Exception exception)
 			Log.Fatal(
 				exception,
-				"Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating})",
+				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating})",
 				e.IsTerminating);
 		else
 			Log.Fatal(
-				"Ensemble intercepted an unhandled exception. (IsTerminating={IsTerminating}):\n{Exception}",
+				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating}):\n{Exception}",
 				e.IsTerminating,
 				e.ExceptionObject);
 

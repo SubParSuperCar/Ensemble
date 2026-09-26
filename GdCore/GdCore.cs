@@ -21,7 +21,7 @@ public partial class GdCore : Node, IAutoload
 			field = value;
 
 			Log.Debug(
-				"{Class}.{Member} set. (Hash={Hash})",
+				"{Class}.{Member} set (Hash={Hash})",
 				nameof(GdCore),
 				nameof(Instance),
 				value?.GetHashCode());

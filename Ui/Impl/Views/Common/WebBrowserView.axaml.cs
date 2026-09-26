@@ -110,7 +110,7 @@ public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 			return;
 
 		Log.Debug(
-			"WebView adapter created. (Engine={Engine}, Type={Type}, Version={Version})",
+			"WebView adapter created (Engine={Engine}, Type={Type}, Version={Version})",
 			info.Engine,
 			info.Type,
 			info.Version);

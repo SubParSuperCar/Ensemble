@@ -1,0 +1,69 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignHeight="450"
+    x:Class="EnsembleRoot.Ui.Impl.Views.JoinConfigView"
+    x:DataType="vm:JoinConfigViewModel"
+    FontSize="24" FontWeight="ExtraLight">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
+        <TextBlock Text="Multi-Player Join Config:" />
+
+        <StackPanel>
+            <TextBlock Text="Method:" FontSize="16" />
+
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <RadioButton Name="ManualRadioButton" Content="Manual" FontSize="20" IsChecked="True" />
+                <RadioButton Name="CodeRadioButton" Content="Code" FontSize="20" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel IsVisible="{Binding #ManualRadioButton.IsChecked}" Spacing="4">
+            <StackPanel>
+                <TextBlock Text="Address (IPv4):" FontSize="16" />
+                <TextBox PlaceholderText="X.X.X.X" />
+            </StackPanel>
+
+            <StackPanel>
+                <TextBlock Text="Port Number:" FontSize="16" />
+                <NumericUpDown PlaceholderText="1024&#x2014;49,151" Minimum="0" Increment="1" ShowButtonSpinner="False" />
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel IsVisible="{Binding #CodeRadioButton.IsChecked}">
+            <TextBlock Text="Code:" FontSize="16" />
+            <TextBox PlaceholderText="&lt;Address&gt;:&lt;Port&gt;" />
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Password:" FontSize="16" />
+
+            <Grid ColumnDefinitions="*,4,Auto">
+                <TextBox
+                    Name="PasswordBox"
+                    PlaceholderText="&lt;Not Enforced&gt;"
+                    PasswordChar="*" />
+
+                <CheckBox
+                    Grid.Column="2"
+                    Content="Show"
+                    IsChecked="{Binding #PasswordBox.RevealPassword}"
+                    FontSize="20" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
+            <TextBox PlaceholderText="&lt;Saved or Generated&gt;" MaxLength="24" />
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*,4,*">
+            <Button Content="&lt;- Back" />
+            <Button Grid.Column="2" Content="Join!" />
+        </Grid>
+    </StackPanel>
+
+</UserControl>

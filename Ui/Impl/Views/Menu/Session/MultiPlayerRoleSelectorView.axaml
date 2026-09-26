@@ -1,0 +1,20 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    x:Class="EnsembleRoot.Ui.Impl.Views.MultiPlayerRoleSelectorView"
+    x:DataType="vm:MultiPlayerRoleSelectorViewModel"
+    FontSize="24" FontWeight="ExtraLight">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+        <TextBlock Text="Multi-Player Role:" />
+
+        <Grid ColumnDefinitions="*,4,*">
+            <Button Content="Join (Client)" />
+            <Button Grid.Column="2" Content="Host (Server)" />
+        </Grid>
+
+        <Button Content="&lt;- Back" />
+    </StackPanel>
+
+</UserControl>

@@ -1,0 +1,18 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    x:Class="EnsembleRoot.Ui.Impl.Views.SessionModeSelectorView"
+    x:DataType="vm:SessionModeSelectorViewModel"
+    FontSize="24" FontWeight="ExtraLight">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+        <TextBlock Text="Session Mode:" />
+
+        <Button Content="Single Player (Offline)" />
+        <Button Content="Multi-Player (Online)" />
+
+        <Button Content="&lt;- Back" />
+    </StackPanel>
+
+</UserControl>

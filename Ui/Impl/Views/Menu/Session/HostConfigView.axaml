@@ -1,0 +1,50 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    x:Class="EnsembleRoot.Ui.Impl.Views.HostConfigView"
+    x:DataType="vm:HostConfigViewModel"
+    FontSize="24" FontWeight="ExtraLight">
+
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
+        <TextBlock Text="Multi-Player Host Config:" />
+
+        <StackPanel>
+            <TextBlock Text="Port Number (1024&#x2014;49,151):" FontSize="16" />
+            <NumericUpDown PlaceholderText="&lt;Auto&gt;" Minimum="0" Increment="1" ShowButtonSpinner="False" />
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Password (Optional):" FontSize="16" />
+
+            <Grid ColumnDefinitions="*,4,Auto">
+                <TextBox
+                    Name="PasswordBox"
+                    PlaceholderText="&lt;Not Enforced&gt;"
+                    PasswordChar="*" />
+
+                <CheckBox
+                    Grid.Column="2"
+                    Content="Show"
+                    IsChecked="{Binding #PasswordBox.RevealPassword}"
+                    FontSize="20" />
+            </Grid>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Display Name:" FontSize="16" />
+            <TextBox PlaceholderText="&lt;Saved or Generated&gt;" />
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Max Peers (&#x2265;1):" FontSize="16" />
+            <NumericUpDown PlaceholderText="&lt;Unlimited&gt;" Minimum="1" Increment="1" />
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*,4,*">
+            <Button Content="&lt;- Back" />
+            <Button Grid.Column="2" Content="Host!" />
+        </Grid>
+    </StackPanel>
+
+</UserControl>

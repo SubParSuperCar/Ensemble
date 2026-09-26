@@ -62,7 +62,9 @@
                         SlideInEasing="CubicEaseOut"
                         SlideOutEasing="{StaticResource ZeroEasing}" />
 
-                    <CrossFade Duration="{StaticResource TransitionDuration}" />
+                    <CrossFade
+                        Duration="{StaticResource TransitionDuration}"
+                        FadeInEasing="CubicEaseOut" />
                 </CompositePageTransition>
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>

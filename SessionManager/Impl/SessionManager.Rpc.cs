@@ -60,15 +60,7 @@ public partial class SessionManager
 		if (senderId is not ServerPeerId)
 		{
 			if (tokens > RateLimiterOptions.TokenLimit)
-			{
-				Log.Warning(
-					"Peer {PeerId} requested an RPC costing {Tokens} token(s), exceeding the limit of {TokenLimit}",
-					senderId,
-					tokens,
-					RateLimiterOptions.TokenLimit);
-
 				return;
-			}
 
 			var limiter = RateLimitersByPeerId.GetOrAdd(
 				senderId,

@@ -53,7 +53,7 @@ public partial class SessionManager : Node
 			field = value;
 
 			Log.Debug(
-				"{Class}.{Member} set. (Hash={Hash})",
+				"{Class}.{Member} set (Hash={Hash})",
 				nameof(SessionManager),
 				nameof(Instance),
 				value?.GetHashCode());

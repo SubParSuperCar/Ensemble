@@ -42,6 +42,21 @@
                 ToolTip.Tip="Opens Ensemble's official GitHub repository page.&#x0a;Feel free to star it and/or contribute! :)" />
         </StackPanel>
 
+        <Border
+            Grid.Row="2"
+            BorderBrush="Orange" BorderThickness="1.5"
+            HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <TextBlock
+                Text="{Binding Notice}"
+                ToolTip.Tip="Why your last session ended."
+                Background="{DynamicResource TranslucentBackgroundBrush}" Foreground="Orange"
+                Padding="4"
+                FontSize="20"
+                TextAlignment="Center" TextWrapping="Wrap"
+                IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </Border>
+
         <StackPanel
             Grid.Row="3"
             Spacing="8"

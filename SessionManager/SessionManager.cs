@@ -42,8 +42,12 @@ public partial class SessionManager : Node
 	private const int Unlimited = -1;
 
 	private static readonly TimeSpan RegistrationTimeout = TimeSpan.FromSeconds(10);
+	private static readonly TimeSpan KickTimeout = TimeSpan.FromSeconds(2);
+
+	private static readonly string Version = ProjectSettings.GetSetting("application/config/version").AsString();
 
 	private string _displayName = string.Empty;
+	private bool _isDedicated;
 
 	private ISession? _session;
 
@@ -109,7 +113,7 @@ public partial class SessionManager : Node
 	public void StartSinglePlayer(string? displayName)
 	{
 		Log.Debug("Starting {Class}...", nameof(SinglePlayerSession));
-		Start(new SinglePlayerSession((SceneMultiplayer)Multiplayer), displayName);
+		Start(new SinglePlayerSession((SceneMultiplayer)Multiplayer), displayName, false);
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
@@ -118,20 +122,29 @@ public partial class SessionManager : Node
 	public void HostMultiPlayer(int port, string? password, string? displayName) =>
 		HostMultiPlayer(port, password, displayName, Unlimited);
 
-	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients)
+	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients) =>
+		HostMultiPlayer(port, password, displayName, maxClients, false);
+
+	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients, bool isDedicated)
 	{
 		Log.Debug(
-			"Hosting {Class}... (Port={Port}, MaxClients={MaxClients}, HasPassword={HasPassword})",
+			"Hosting {Class}... " +
+			"(Port={Port}, MaxClients={MaxClients}, HasPassword={HasPassword}, IsDedicated={IsDedicated})",
 			nameof(MultiPlayerSession),
 			port,
 			maxClients is Unlimited ? "Unlimited" : maxClients.ToString(CultureInfo.InvariantCulture),
-			!string.IsNullOrEmpty(password));
+			!string.IsNullOrEmpty(password),
+			isDedicated);
 
 		Start(
 			new MultiPlayerSession(
 				(SceneMultiplayer)Multiplayer,
-				new HostConfig(port, new PasswordAuthenticator(password), maxClients is Unlimited ? null : maxClients)),
-			displayName);
+				new HostConfig(
+					port,
+					new HandshakeAuthenticator(Version, password),
+					maxClients is Unlimited ? null : maxClients)),
+			displayName,
+			isDedicated);
 	}
 
 	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
@@ -151,19 +164,45 @@ public partial class SessionManager : Node
 		Start(
 			new MultiPlayerSession(
 				(SceneMultiplayer)Multiplayer,
-				new JoinConfig(address, port, new PasswordAuthenticator(password))),
-			displayName);
+				new JoinConfig(address, port, new HandshakeAuthenticator(Version, password))),
+			displayName,
+			false);
 	}
 
 	public void StopSession() => EndSession(null);
 
-	private void Start(ISession session, string? displayName)
+	public void Kick(int peerId) => Kick(peerId, string.Empty);
+
+	public void Kick(int peerId, string reason)
+	{
+		if (!IsServer || peerId == LocalPeerId || !Multiplayer.GetPeers().Contains(peerId))
+		{
+			Log.Warning("Cannot kick peer {PeerId}", peerId);
+			return;
+		}
+
+		Log.Information("Kicking peer {PeerId}... (Reason={Reason})", peerId, reason);
+		RpcId(peerId, MethodName.RpcEndSession, reason.Length is 0 ? "Kicked by host." : $"Kicked by host: {reason}");
+
+		var session = _session;
+		GetTree().CreateTimer(KickTimeout.TotalSeconds).Timeout += () =>
+		{
+			if (ReferenceEquals(_session, session) && Multiplayer.GetPeers().Contains(peerId))
+				((SceneMultiplayer)Multiplayer).DisconnectPeer(peerId);
+		};
+	}
+
+	[Rpc]
+	private void RpcEndSession(string reason) => OnSessionFailed(reason);
+
+	private void Start(ISession session, string? displayName, bool isDedicated)
 	{
 		StopSession();
 		var stopwatch = Stopwatch.StartNew();
 
 		_session = session;
 		_displayName = displayName ?? string.Empty;
+		_isDedicated = isDedicated;
 
 		session.Started += OnSessionStarted;
 		session.Failed += OnSessionFailed;
@@ -188,6 +227,9 @@ public partial class SessionManager : Node
 
 		Log.Debug("Stopping {SessionMode} after {Elapsed}...", mode, elapsed);
 		var stopwatch = Stopwatch.StartNew();
+
+		if (IsServer && Multiplayer.GetPeers() is not [])
+			Rpc(MethodName.RpcEndSession, failureReason ?? "Host ended the session.");
 
 		_session = null;
 
@@ -226,6 +268,12 @@ public partial class SessionManager : Node
 	{
 		LocalPeerId = Multiplayer.GetUniqueId();
 
+		if (_isDedicated)
+		{
+			Activate();
+			return;
+		}
+
 		if (IsServer)
 		{
 			RegisterPeer(LocalPeerId, _displayName);
@@ -242,9 +290,18 @@ public partial class SessionManager : Node
 		};
 	}
 
+	// Deferred so the session never ends mid-poll (e.g., from an RPC or a multiplayer signal)
 	private void OnSessionFailed(string reason)
 	{
-		Log.Warning("Session failed: {Reason}", reason);
-		EndSession(reason);
+		var session = _session;
+
+		Callable.From(() =>
+		{
+			if (!ReferenceEquals(_session, session))
+				return;
+
+			Log.Warning("Session failed: {Reason}", reason);
+			EndSession(reason);
+		}).CallDeferred();
 	}
 }

@@ -42,7 +42,7 @@ public partial class PlayerManager : Node
 	{
 		var handle = PlayerScene.Instantiate<PlayerHandle>();
 		handle.Id = player.Id;
-		handle.Name = player.Name;
+		handle.Name = player.Id;
 		handle.TerrainNode = TerrainNode;
 
 		Handles.Add(player.Id, handle);

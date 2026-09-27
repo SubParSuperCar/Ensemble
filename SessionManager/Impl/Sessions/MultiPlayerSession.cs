@@ -6,6 +6,7 @@ namespace EnsembleRoot.SessionManager.Sessions;
 public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig config) : ISession
 {
 	private const int MaxClientLimit = 4095;
+	private const int CloseTimeoutMs = 500;
 
 	public SessionMode Mode => SessionMode.MultiPlayer;
 	public bool IsServer => config is HostConfig;
@@ -52,8 +53,28 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 		config.Authenticator.Failed -= OnFailed;
 		config.Authenticator.StopAuth(multiplayer);
 
-		multiplayer.MultiplayerPeer?.Close();
+		if (multiplayer.MultiplayerPeer is ENetMultiplayerPeer peer)
+			Close(peer);
+
 		multiplayer.MultiplayerPeer = null;
+	}
+
+	// Lets queued reliable packets (e.g., a session-ended notice) be acknowledged before disconnecting
+	private void Close(ENetMultiplayerPeer peer)
+	{
+		var remotes = multiplayer.GetPeers().Select(peer.GetPeer).ToArray();
+
+		foreach (var remote in remotes)
+			remote.PeerDisconnectLater();
+
+		var deadline = Time.GetTicksMsec() + CloseTimeoutMs;
+
+		while (
+			remotes.Any(static remote => remote.GetState() is not ENetPacketPeer.PeerState.Disconnected) &&
+			Time.GetTicksMsec() < deadline)
+			peer.Host.Service(10);
+
+		peer.Close();
 	}
 
 	private void OnConnectedToServer() => Started?.Invoke();

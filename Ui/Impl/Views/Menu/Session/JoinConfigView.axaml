@@ -4,42 +4,69 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    mc:Ignorable="d" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.JoinConfigView"
     x:DataType="vm:JoinConfigViewModel"
+    TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
+    <StackPanel
+        Spacing="4"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        MaxWidth="384">
+
         <TextBlock Text="Multi-Player Join Config:" />
 
         <StackPanel>
             <TextBlock Text="Method:" FontSize="16" />
 
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <RadioButton Name="ManualRadioButton" Content="Manual" FontSize="20" IsChecked="True" />
-                <RadioButton Name="CodeRadioButton" Content="Code" FontSize="20" IsChecked="{Binding IsCodeMethod}" />
+                <RadioButton
+                    Name="ManualRadioButton"
+                    Content="Manual"
+                    IsChecked="True"
+                    ToolTip.Tip="Enter the host's address and port separately."
+                    FontSize="20" />
+
+                <RadioButton
+                    Name="CodeRadioButton"
+                    Content="Code"
+                    IsChecked="{Binding IsCodeMethod}"
+                    ToolTip.Tip="Enter the host's address and port as a single code."
+                    FontSize="20" />
             </StackPanel>
         </StackPanel>
 
-        <StackPanel IsVisible="{Binding #ManualRadioButton.IsChecked}" Spacing="4">
+        <StackPanel Spacing="4" IsVisible="{Binding #ManualRadioButton.IsChecked}">
             <StackPanel>
                 <TextBlock Text="Address (IPv4):" FontSize="16" />
-                <TextBox Text="{Binding Address}" PlaceholderText="X.X.X.X" />
+
+                <TextBox
+                    Text="{Binding Address}"
+                    PlaceholderText="X.X.X.X"
+                    ToolTip.Tip="The host's IPv4 address (or host name)." />
             </StackPanel>
 
             <StackPanel>
                 <TextBlock Text="Port Number:" FontSize="16" />
+
                 <NumericUpDown
                     Value="{Binding Port}"
                     PlaceholderText="1024&#x2014;49,151"
-                    Minimum="1024" Maximum="49151" Increment="1"
+                    ToolTip.Tip="The host's UDP port."
+                    Minimum="1024" Maximum="49151"
+                    Increment="1"
                     ShowButtonSpinner="False" />
             </StackPanel>
         </StackPanel>
 
         <StackPanel IsVisible="{Binding #CodeRadioButton.IsChecked}">
             <TextBlock Text="Code:" FontSize="16" />
-            <TextBox Text="{Binding Code}" PlaceholderText="&lt;Address&gt;:&lt;Port&gt;" />
+
+            <TextBox
+                Text="{Binding Code}"
+                PlaceholderText="&lt;Address&gt;:&lt;Port&gt;"
+                ToolTip.Tip="The host's address and port, separated by a colon." />
         </StackPanel>
 
         <StackPanel>
@@ -50,30 +77,45 @@
                     Name="PasswordBox"
                     Text="{Binding Password}"
                     PlaceholderText="&lt;Not Enforced&gt;"
+                    ToolTip.Tip="The host's password, if enforced."
                     PasswordChar="*" />
 
                 <CheckBox
                     Grid.Column="2"
                     Content="Show"
                     IsChecked="{Binding #PasswordBox.RevealPassword}"
+                    ToolTip.Tip="Toggles whether the password is revealed."
                     FontSize="20" />
             </Grid>
         </StackPanel>
 
         <StackPanel>
             <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
-            <TextBox Text="{Binding DisplayName}" PlaceholderText="&lt;Short GUID&gt;" MaxLength="24" />
+
+            <TextBox
+                Text="{Binding DisplayName}"
+                PlaceholderText="&lt;Short GUID&gt;"
+                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
+                MaxLength="24" />
         </StackPanel>
 
         <TextBlock
             Text="{Binding Status}"
-            IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
             FontSize="16"
-            TextWrapping="Wrap" />
+            TextWrapping="Wrap"
+            IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
-            <Button Grid.Column="2" Content="Join!" Command="{Binding JoinCommand}" />
+            <Button
+                Content="&lt;- Back"
+                Command="{Binding GoBackCommand}"
+                ToolTip.Tip="Goes back. (Bound to Backspace)" />
+
+            <Button
+                Grid.Column="2"
+                Content="Join!"
+                Command="{Binding JoinCommand}"
+                ToolTip.Tip="Connects to the host. Going back cancels a pending join." />
         </Grid>
     </StackPanel>
 

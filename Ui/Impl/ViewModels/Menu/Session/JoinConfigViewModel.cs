@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 using static EnsembleRoot.SessionManager.SessionManager;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
@@ -27,11 +28,17 @@ public partial class JoinConfigViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(JoinCommand))]
-	public partial string? DisplayName { get; set; }
+	public partial string? DisplayName { get; set; } = SessionPreferences.DisplayName;
 
 	[ObservableProperty] public partial string? Status { get; set; }
 
-	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;
+	protected override void OnDispose()
+	{
+		GSessionManager.SessionFailed -= OnSessionFailed;
+
+		if (!GSessionManager.IsActive)
+			GSessionManager.StopSession();
+	}
 
 	[RelayCommand]
 	private void GoBack() => _navigator.GoBack();
@@ -46,6 +53,8 @@ public partial class JoinConfigViewModel : ViewModelBase
 		}
 
 		Status = "Joining\u2026";
+		SessionPreferences.DisplayName = DisplayName ?? string.Empty;
+
 		GSessionManager.JoinMultiPlayer(address, port, Password, DisplayName);
 	}
 

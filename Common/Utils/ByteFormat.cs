@@ -2,11 +2,11 @@ using System.Globalization;
 
 namespace EnsembleRoot.Common.Utils;
 
-public static class Formatter
+public static class ByteFormat
 {
 	private static readonly string[] Units = ["B", "KiB", "MiB", "GiB", "TiB"];
 
-	public static string FormatBytes(ulong bytes)
+	public static string Humanize(ulong bytes)
 	{
 		double value = bytes;
 		var unitIndex = 0;

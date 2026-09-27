@@ -10,12 +10,6 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <UserControl.Styles>
-        <Style Selector="Button">
-            <Setter Property="CornerRadius" Value="8" />
-        </Style>
-    </UserControl.Styles>
-
     <Grid RowDefinitions="1*,1*,1*,1*,1*">
         <StackPanel
             Grid.Row="1"

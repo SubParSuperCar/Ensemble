@@ -1,5 +1,8 @@
 using Godot;
 using Serilog;
+#if ENSEMBLE_DEBUG
+using EnsembleRoot.SessionManager.Api;
+#endif
 
 namespace EnsembleRoot.Scripts.World;
 
@@ -9,7 +12,7 @@ public partial class WorldHandle : Node3D
 	public override void _Ready()
 	{
 #if ENSEMBLE_DEBUG
-		if (!Main.IsHeadlessServer)
+		if (GSessionManager.Mode is SessionMode.SinglePlayer)
 		{
 			const int plotId = 2;
 			const float y = 0.5f;

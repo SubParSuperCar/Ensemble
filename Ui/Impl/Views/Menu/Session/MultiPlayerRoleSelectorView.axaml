@@ -1,20 +1,38 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.MultiPlayerRoleSelectorView"
     x:DataType="vm:MultiPlayerRoleSelectorViewModel"
+    TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
+    <StackPanel
+        Spacing="4"
+        HorizontalAlignment="Center" VerticalAlignment="Center">
+
         <TextBlock Text="Multi-Player Role:" />
 
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="Join (Client)" Command="{Binding GoToJoinCommand}" />
-            <Button Grid.Column="2" Content="Host (Server)" Command="{Binding GoToHostCommand}" />
+            <Button
+                Content="Join (Client)"
+                Command="{Binding GoToJoinCommand}"
+                ToolTip.Tip="Configures a connection to another player's session." />
+
+            <Button
+                Grid.Column="2"
+                Content="Host (Server)"
+                Command="{Binding GoToHostCommand}"
+                ToolTip.Tip="Configures a session of your own for others to join." />
         </Grid>
 
-        <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
+        <Button
+            Content="&lt;- Back"
+            Command="{Binding GoBackCommand}"
+            ToolTip.Tip="Goes back. (Bound to Backspace)" />
     </StackPanel>
 
 </UserControl>

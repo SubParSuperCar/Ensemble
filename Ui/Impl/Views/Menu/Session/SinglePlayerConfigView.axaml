@@ -1,22 +1,43 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.SinglePlayerConfigView"
     x:DataType="vm:SinglePlayerConfigViewModel"
+    TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
+    <StackPanel
+        Spacing="4"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        MaxWidth="384">
+
         <TextBlock Text="Single Player Config:" />
 
         <StackPanel>
             <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
-            <TextBox Text="{Binding DisplayName}" PlaceholderText="&lt;Short GUID&gt;" MaxLength="24" />
+
+            <TextBox
+                Text="{Binding DisplayName}"
+                PlaceholderText="&lt;Short GUID&gt;"
+                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
+                MaxLength="24" />
         </StackPanel>
 
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
-            <Button Grid.Column="2" Content="Start!" Command="{Binding StartCommand}" />
+            <Button
+                Content="&lt;- Back"
+                Command="{Binding GoBackCommand}"
+                ToolTip.Tip="Goes back. (Bound to Backspace)" />
+
+            <Button
+                Grid.Column="2"
+                Content="Start!"
+                Command="{Binding StartCommand}"
+                ToolTip.Tip="Starts a new single-player session." />
         </Grid>
     </StackPanel>
 

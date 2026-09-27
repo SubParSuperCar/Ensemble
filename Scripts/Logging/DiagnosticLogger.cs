@@ -111,7 +111,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		hwInfo.RefreshMemoryStatus();
 		var totalMemory = hwInfo.MemoryStatus.TotalPhysical;
 		var usedMemory = totalMemory - hwInfo.MemoryStatus.AvailablePhysical;
-		Add(entries, "Memory", $"{Formatter.FormatBytes(usedMemory)} / {Formatter.FormatBytes(totalMemory)}");
+		Add(entries, "Memory", $"{ByteFormat.Humanize(usedMemory)} / {ByteFormat.Humanize(totalMemory)}");
 
 		hwInfo.RefreshMotherboardList();
 		if (hwInfo.MotherboardList.FirstOrDefault() is { } board)
@@ -123,7 +123,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 
 		hwInfo.RefreshDriveList();
 		foreach (var drive in hwInfo.DriveList.OrderBy(static drive => drive.Model, StringComparer.OrdinalIgnoreCase))
-			Add(entries, "Drive", $"{drive.Model} ({Formatter.FormatBytes(drive.Size)})");
+			Add(entries, "Drive", $"{drive.Model} ({ByteFormat.Humanize(drive.Size)})");
 
 		hwInfo.RefreshMonitorList();
 		foreach (var monitor in hwInfo.MonitorList)

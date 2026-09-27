@@ -33,13 +33,15 @@ The tool suite, in rough intended order of implementation.
 SessionManager has the infra (sessions, auth, server-assigned player IDs, self-registering RPC actions). Actions
 live in Actions/ and are submitted with `new SetPlotAction(id).Submit()`.
 
-- (WIP) (M) Main-menu session sub-menu - Singleplayer / Multiplayer, Host / Join, address, port, password (stretches
-  NavigatorService)
+- [x] (M) Main-menu session sub-menu - Singleplayer / Multiplayer, Host / Join, address, port, password, remembered
+  display name
 - [ ] (M) Late-join state sync - plot occupancy + instances snapshot for newly registered peers
-- [ ] (M) AddInstanceAction / RemoveInstanceAction - route ConstructTool / DestructTool through actions
+- [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
+- [ ] (M) SessionManager v2 - `Peer` objects (address, ping, kick), server info, request/response RPCs (planning)
+- [ ] (S) Headless dedicated server - host without registering a local player
 - [ ] (M) Character replication - position / rotation / state
 - [ ] (L) Dynamic instance replication - placed blocks sync + authority model
-- (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction done
+- (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction + occupant/owner checks done
 - [ ] (S) Text chat (multiplayer only) - chat RPC action + chat box UI
 
 ## UI / UX framework

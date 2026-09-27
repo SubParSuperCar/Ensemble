@@ -6,7 +6,6 @@ using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Tooling;
-using DateTime = EnsembleRoot.Common.Time.DateTime;
 
 namespace EnsembleRoot.Common.Globals;
 
@@ -57,5 +56,5 @@ public static class Globals
 	public static ToolManager GToolManager =>
 		ToolManager.Instance ?? throw new InvalidOperationException($"{nameof(ToolManager)} is null.");
 
-	public static WrappedTimeProvider GTimeProvider => DateTime.TimeProvider;
+	public static WrappedTimeProvider GTimeProvider { get; } = new();
 }

@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using EnsembleRoot.Actions;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots;
+using EnsembleRoot.SessionManager.Actions;
 using Godot;
 using Serilog;
 
@@ -147,11 +149,11 @@ public partial class ConstructTool : ToolBase
 	{
 		if (_canPlace)
 		{
-			LocalPlot?.Instances.Add(AssetId, _gridPosition, _rotation);
+			new AddInstanceAction(AssetId, _gridPosition, _rotation).Submit();
 			ToolCommon.PlaySound("affirm");
 
 			Log.Verbose(
-				"Added asset id: {AssetId} (Position={Position}, Rotation={Rotation})",
+				"Submitted asset id: {AssetId} (Position={Position}, Rotation={Rotation})",
 				AssetId,
 				_gridPosition,
 				_rotation);

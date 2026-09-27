@@ -77,9 +77,6 @@ public partial class SessionManager
 
 		AddPeer(peerId, playerId, displayName);
 		RpcRegistered(MethodName.RpcAddPeer, peerId, playerId, displayName);
-
-		if (peerId != LocalPeerId)
-			SendSnapshots(peerId);
 	}
 
 	private void RpcRegistered(StringName method, params Variant[] args)
@@ -108,6 +105,7 @@ public partial class SessionManager
 			return false;
 
 		_peerIdsByPlayerId.Remove(info.PlayerId);
+		_syncedPeerIds.Remove(peerId);
 
 		Log.Debug("Unregistered player {PlayerId} for peer {PeerId}", info.PlayerId, peerId);
 		EmitSignal(SignalName.PlayerUnregistered, peerId, info.PlayerId);

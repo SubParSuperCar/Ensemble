@@ -11,6 +11,8 @@ public partial class PlayerManager : Node
 	[Export] public PackedScene PlayerScene { get; set; } = null!;
 	[Export] public Node3D TerrainNode { get; set; } = null!;
 
+	public PlayerHandle? LocalHandle => GPlayers.Local is { } local ? GetHandleOrNull(local.Id) : null;
+
 	public override void _EnterTree() => GPlayerManager = this;
 
 	public override void _ExitTree()

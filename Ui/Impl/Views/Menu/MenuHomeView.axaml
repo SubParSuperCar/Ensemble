@@ -45,7 +45,8 @@
         <Border
             Grid.Row="2"
             BorderBrush="Orange" BorderThickness="1.5"
-            HorizontalAlignment="Center" VerticalAlignment="Center">
+            HorizontalAlignment="Center" VerticalAlignment="Center"
+            IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
 
             <TextBlock
                 Text="{Binding Notice}"
@@ -53,8 +54,7 @@
                 Background="{DynamicResource TranslucentBackgroundBrush}" Foreground="Orange"
                 Padding="4"
                 FontSize="20"
-                TextAlignment="Center" TextWrapping="Wrap"
-                IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                TextAlignment="Center" TextWrapping="Wrap" />
         </Border>
 
         <StackPanel

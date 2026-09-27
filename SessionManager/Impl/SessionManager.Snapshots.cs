@@ -6,10 +6,31 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace EnsembleRoot.SessionManager;
 
+// Clients request snapshots once SessionStarted has been handled (i.e., their world exists);
+// confirmed actions are only sent to synced peers, so none can precede or duplicate a snapshot
 public partial class SessionManager
 {
+	private readonly HashSet<int> _syncedPeerIds = [];
+
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+	private void RpcRequestSnapshots()
+	{
+		var senderId = Multiplayer.GetRemoteSenderId();
+		EnqueueRpc(senderId, 1, () => SendSnapshots(senderId));
+	}
+
+	[Rpc]
+	private void RpcRestoreSnapshot(string snapshotId, Array<Variant> payload)
+	{
+		NetworkSnapshotRegistry.Restore(snapshotId, payload);
+		Log.Debug("Restored snapshot {SnapshotId} for peer {PeerId}", snapshotId, LocalPeerId);
+	}
+
 	private void SendSnapshots(int peerId)
 	{
+		if (!_peersById.ContainsKey(peerId) || !_syncedPeerIds.Add(peerId))
+			return;
+
 		var stopwatch = Stopwatch.StartNew();
 		var count = 0;
 
@@ -27,7 +48,9 @@ public partial class SessionManager
 			stopwatch.Elapsed.TotalMilliseconds);
 	}
 
-	[Rpc]
-	private static void RpcRestoreSnapshot(string snapshotId, Array<Variant> payload) =>
-		NetworkSnapshotRegistry.Restore(snapshotId, payload);
+	private void RpcSynced(StringName method, params Variant[] args)
+	{
+		foreach (var peerId in _syncedPeerIds)
+			RpcId(peerId, method, args);
+	}
 }

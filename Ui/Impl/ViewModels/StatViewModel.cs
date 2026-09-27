@@ -91,10 +91,8 @@ public partial class StatViewModel : ViewModelBase
 			("Input Sinking", InputSink.IsSunk)
 		];
 
-		if (GPlayers.Local is { } local && GPlayerManager.Handles.TryGetValue(local.Id, out var handle))
+		if (GPlayers.Local is not null && GPlayerManager.LocalHandle is { Body: var character })
 		{
-			var character = handle.Character ?? handle.Controller!;
-
 			stats.Add(("Char. Pos.", character.GlobalPosition.Round()));
 			stats.Add(("Char. Speed",
 				string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():0.###} m/s")));

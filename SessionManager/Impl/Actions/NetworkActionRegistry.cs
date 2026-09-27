@@ -1,17 +1,18 @@
 using System.Globalization;
-using GDictionary = Godot.Collections.Dictionary;
+using Serilog;
+using GArray = Godot.Collections.Array;
 
 namespace EnsembleRoot.SessionManager.Actions;
 
-public sealed class NetworkActionRegistry
+public static class NetworkActionRegistry
 {
 	public const int DefaultTokenCost = 1;
 
-	private readonly Dictionary<string, Entry> _entriesByActionId = [];
+	private static readonly Dictionary<string, Entry> EntriesByActionId = new(StringComparer.Ordinal);
 
-	public void Register<TAction>(INetworkActionHandler<TAction> handler) where TAction : INetworkAction<TAction>
+	public static void Register<TAction>() where TAction : INetworkAction<TAction>
 	{
-		var actionId = TAction.ActionId;
+		var actionId = TAction.Id;
 		var tokenCost = TAction.TokenCost;
 
 		if (tokenCost <= 0)
@@ -19,30 +20,46 @@ public sealed class NetworkActionRegistry
 				CultureInfo.InvariantCulture,
 				$"Token cost of action id {actionId} must be positive, got {tokenCost}."));
 
-		if (
-			!_entriesByActionId.TryAdd(actionId, new Entry(
-				tokenCost,
-				(payload, senderId) => handler.Validate(TAction.FromPayload(payload), senderId),
-				(payload, senderId) => handler.Apply(TAction.FromPayload(payload), senderId))))
-			throw new InvalidOperationException($"A handler for action id {actionId} already exists.");
+		if (!EntriesByActionId.TryAdd(actionId, new Entry(tokenCost, Execute<TAction>)))
+			throw new InvalidOperationException($"Action with id {actionId} is already registered.");
 	}
 
-	public int GetTokenCost(string actionId) =>
-		_entriesByActionId.TryGetValue(actionId, out var entry) ? entry.TokenCost : DefaultTokenCost;
+	internal static int GetTokenCost(string actionId) =>
+		EntriesByActionId.TryGetValue(actionId, out var entry) ? entry.TokenCost : DefaultTokenCost;
 
-	public ActionValidation ValidateRaw(string actionId, GDictionary payload, int sourcePeerId) =>
-		_entriesByActionId.TryGetValue(actionId, out var entry)
-			? entry.Validate(payload, sourcePeerId)
-			: ActionValidation.Reject($"Action with id {actionId} not found.");
-
-	public void ApplyRaw(string actionId, GDictionary payload, int sourcePeerId)
+	internal static ActionValidation Execute(string actionId, GArray payload, ActionSource source)
 	{
-		if (_entriesByActionId.TryGetValue(actionId, out var entry))
-			entry.Apply(payload, sourcePeerId);
+		if (!EntriesByActionId.TryGetValue(actionId, out var entry))
+			return ActionValidation.Reject($"Action with id {actionId} not found.");
+
+		try
+		{
+			return entry.Execute(payload, source);
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "Failed to execute action {ActionId} from peer {PeerId}", actionId, source.PeerId);
+			return ActionValidation.Reject($"Action with id {actionId} failed to execute.");
+		}
 	}
 
-	private readonly record struct Entry(
-		int TokenCost,
-		Func<GDictionary, int, ActionValidation> Validate,
-		Action<GDictionary, int> Apply);
+	private static ActionValidation Execute<TAction>(GArray payload, ActionSource source)
+		where TAction : INetworkAction<TAction>
+	{
+		var action = TAction.FromPayload(payload);
+		var validation = action.Validate(source);
+
+		if (validation.IsValid)
+			action.Apply(source);
+
+		return validation;
+	}
+
+	extension<TAction>(TAction action) where TAction : INetworkAction<TAction>
+	{
+		public void Submit() => GSessionManager.Submit(action);
+	}
+
+	// ReSharper disable once MemberHidesStaticFromOuterClass
+	private readonly record struct Entry(int TokenCost, Func<GArray, ActionSource, ActionValidation> Execute);
 }

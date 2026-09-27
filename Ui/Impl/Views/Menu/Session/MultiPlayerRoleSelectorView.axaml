@@ -10,11 +10,11 @@
         <TextBlock Text="Multi-Player Role:" />
 
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="Join (Client)" />
-            <Button Grid.Column="2" Content="Host (Server)" />
+            <Button Content="Join (Client)" Command="{Binding GoToJoinCommand}" />
+            <Button Grid.Column="2" Content="Host (Server)" Command="{Binding GoToHostCommand}" />
         </Grid>
 
-        <Button Content="&lt;- Back" />
+        <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
     </StackPanel>
 
 </UserControl>

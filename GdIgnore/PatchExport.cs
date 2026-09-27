@@ -8,7 +8,6 @@ namespace EnsembleRoot;
 // TODO: bin.yml macOS TODO
 public static class PatchExport
 {
-#pragma warning disable CA2255
 	[ModuleInitializer]
 	public static void Initialize()
 	{
@@ -34,7 +33,6 @@ public static class PatchExport
 			Console.Error.WriteLine($"Failed to patch export layout:\n{exception}");
 		}
 	}
-#pragma warning restore CA2255
 
 	private static void MoveContents(string source, string destination)
 	{

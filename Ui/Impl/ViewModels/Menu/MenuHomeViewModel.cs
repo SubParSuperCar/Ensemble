@@ -17,7 +17,7 @@ public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBa
 	private static void OpenGitHubPage() => OS.ShellOpen("https://github.com/SubParSuperCar/Ensemble");
 
 	[RelayCommand]
-	private static void StartSession() => GSessionManager.StartSinglePlayer();
+	private void GoToSession() => navigator.GoTo<SessionModeSelectorViewModel>();
 
 	[RelayCommand]
 	private void GoToDocFileViewer() => navigator.GoTo<MenuDocFileViewModel>();

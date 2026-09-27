@@ -1,66 +1,75 @@
 using EnsembleRoot.SessionManager.Actions;
 using Godot;
-using Godot.Collections;
 using Serilog;
+using GArray = Godot.Collections.Array;
 
 namespace EnsembleRoot.SessionManager;
 
 public partial class SessionManager
 {
-	public NetworkActionRegistry Actions { get; } = new();
-
-	public event Action<string, string>? ActionRejected;
-
-	public void Submit<TAction>(TAction action) where TAction : INetworkAction<TAction>
+	internal void Submit<TAction>(TAction action) where TAction : INetworkAction<TAction>
 	{
-		var payload = action.ToPayload();
-
-		if (IsServer)
-			TryApplyAndBroadcast(TAction.ActionId, payload, LocalPeerId, false);
-		else
-			RpcId(ServerPeerId, MethodName.RpcRequestAction, TAction.ActionId, payload);
-	}
-
-	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-	private void RpcRequestAction(string actionId, Dictionary payload)
-	{
-		var senderId = Multiplayer.GetRemoteSenderId();
-		EnqueueRpc(
-			senderId,
-			Actions.GetTokenCost(actionId),
-			() => TryApplyAndBroadcast(actionId, payload, senderId, true));
-	}
-
-	private void TryApplyAndBroadcast(
-		string actionId,
-		Dictionary payload,
-		int sourcePeerId,
-		bool shouldNotifyRejection)
-	{
-		var result = Actions.ValidateRaw(actionId, payload, sourcePeerId);
-
-		if (!result.IsValid)
+		if (!IsActive)
 		{
-			Log.Debug(
-				"Rejected action {ActionId} from peer {PeerId}: {Reason}",
-				actionId,
-				sourcePeerId,
-				result.Reason);
-
-			if (shouldNotifyRejection)
-				RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, result.Reason ?? string.Empty);
-
+			Log.Warning("Dropped action {ActionId} outside of an active session", TAction.Id);
 			return;
 		}
 
-		Actions.ApplyRaw(actionId, payload, sourcePeerId);
-		Rpc(MethodName.RpcConfirmAction, actionId, payload, sourcePeerId);
+		if (IsServer)
+			HandleAction(TAction.Id, action.ToPayload(), LocalPeerId);
+		else
+			RpcId(ServerPeerId, MethodName.RpcRequestAction, TAction.Id, action.ToPayload());
 	}
 
-	[Rpc(CallLocal = false)]
-	private void RpcConfirmAction(string actionId, Dictionary payload, int sourcePeerId) =>
-		Actions.ApplyRaw(actionId, payload, sourcePeerId);
+	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
+	private void RpcRequestAction(string actionId, GArray payload)
+	{
+		var senderId = Multiplayer.GetRemoteSenderId();
 
-	[Rpc(CallLocal = false)]
-	private void RpcRejectAction(string actionId, string reason) => ActionRejected?.Invoke(actionId, reason);
+		EnqueueRpc(
+			senderId,
+			NetworkActionRegistry.GetTokenCost(actionId),
+			() => HandleAction(actionId, payload, senderId));
+	}
+
+	[Rpc]
+	private void RpcConfirmAction(string actionId, GArray payload, int sourcePeerId)
+	{
+		var result = ExecuteAction(actionId, payload, sourcePeerId);
+
+		if (!result.IsValid)
+			Log.Warning(
+				"Discarded confirmed action {ActionId} from peer {PeerId}: {Reason}",
+				actionId,
+				sourcePeerId,
+				result.Reason);
+	}
+
+	[Rpc]
+	private void RpcRejectAction(string actionId, string reason) =>
+		EmitSignal(SignalName.ActionRejected, actionId, reason);
+
+	private void HandleAction(string actionId, GArray payload, int sourcePeerId)
+	{
+		var result = ExecuteAction(actionId, payload, sourcePeerId);
+
+		if (result.IsValid)
+		{
+			RpcRegistered(MethodName.RpcConfirmAction, actionId, payload, sourcePeerId);
+			return;
+		}
+
+		var reason = result.Reason ?? string.Empty;
+		Log.Debug("Rejected action {ActionId} from peer {PeerId}: {Reason}", actionId, sourcePeerId, reason);
+
+		if (sourcePeerId == LocalPeerId)
+			EmitSignal(SignalName.ActionRejected, actionId, reason);
+		else
+			RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, reason);
+	}
+
+	private ActionValidation ExecuteAction(string actionId, GArray payload, int sourcePeerId) =>
+		_peersById.TryGetValue(sourcePeerId, out var info)
+			? NetworkActionRegistry.Execute(actionId, payload, new ActionSource(sourcePeerId, info.PlayerId))
+			: ActionValidation.Reject("Source peer is not registered.");
 }

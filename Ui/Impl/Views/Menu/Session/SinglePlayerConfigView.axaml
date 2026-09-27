@@ -10,13 +10,13 @@
         <TextBlock Text="Single Player Config:" />
 
         <StackPanel>
-            <TextBlock Text="Display Name:" FontSize="16" />
-            <TextBox PlaceholderText="&lt;Saved or Generated&gt;" />
+            <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
+            <TextBox Text="{Binding DisplayName}" PlaceholderText="&lt;Short GUID&gt;" MaxLength="24" />
         </StackPanel>
 
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="&lt;- Back" />
-            <Button Grid.Column="2" Content="Start!" />
+            <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
+            <Button Grid.Column="2" Content="Start!" Command="{Binding StartCommand}" />
         </Grid>
     </StackPanel>
 

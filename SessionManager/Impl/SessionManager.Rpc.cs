@@ -8,8 +8,6 @@ public partial class SessionManager
 {
 	private const int ServerPeerId = 1;
 
-	private static readonly ConcurrentDictionary<int, TokenBucketRateLimiter> RateLimitersByPeerId = [];
-
 	private static readonly TokenBucketRateLimiterOptions RateLimiterOptions = new()
 	{
 		TokenLimit = 100,
@@ -20,6 +18,7 @@ public partial class SessionManager
 	};
 
 	private readonly ConcurrentQueue<Action> _pendingRpcs = [];
+	private readonly ConcurrentDictionary<int, TokenBucketRateLimiter> _rateLimitersByPeerId = [];
 
 	public override void _Process(double delta)
 	{
@@ -39,15 +38,15 @@ public partial class SessionManager
 		}
 	}
 
-	private static void DisposeRateLimiter(long peerId)
+	private void DisposeRateLimiter(int peerId)
 	{
-		if (RateLimitersByPeerId.TryRemove((int)peerId, out var limiter))
+		if (_rateLimitersByPeerId.TryRemove(peerId, out var limiter))
 			limiter.Dispose();
 	}
 
 	private void ClearRpcState()
 	{
-		foreach (var peerId in RateLimitersByPeerId.Keys)
+		foreach (var peerId in _rateLimitersByPeerId.Keys)
 			DisposeRateLimiter(peerId);
 
 		_pendingRpcs.Clear();
@@ -57,29 +56,26 @@ public partial class SessionManager
 
 	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action)
 	{
-		if (senderId is not ServerPeerId)
+		if (tokens > RateLimiterOptions.TokenLimit)
+			return;
+
+		var limiter = _rateLimitersByPeerId.GetOrAdd(
+			senderId,
+			static _ => new TokenBucketRateLimiter(RateLimiterOptions));
+
+		try
 		{
-			if (tokens > RateLimiterOptions.TokenLimit)
-				return;
+			using var lease = await limiter.AcquireAsync(tokens).ConfigureAwait(false);
 
-			var limiter = RateLimitersByPeerId.GetOrAdd(
-				senderId,
-				static _ => new TokenBucketRateLimiter(RateLimiterOptions));
-
-			try
+			if (!lease.IsAcquired)
 			{
-				using var lease = await limiter.AcquireAsync(tokens).ConfigureAwait(false);
-
-				if (!lease.IsAcquired)
-				{
-					Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
-					return;
-				}
-			}
-			catch (ObjectDisposedException)
-			{
+				Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
 				return;
 			}
+		}
+		catch (ObjectDisposedException)
+		{
+			return;
 		}
 
 		_pendingRpcs.Enqueue(action);

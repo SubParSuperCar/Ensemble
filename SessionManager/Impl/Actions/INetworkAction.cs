@@ -1,12 +1,15 @@
-using Godot.Collections;
+using GArray = Godot.Collections.Array;
 
 namespace EnsembleRoot.SessionManager.Actions;
 
 public interface INetworkAction<out TSelf> where TSelf : INetworkAction<TSelf>
 {
-	static abstract string ActionId { get; }
+	static virtual string Id => typeof(TSelf).Name;
 	static virtual int TokenCost => NetworkActionRegistry.DefaultTokenCost;
 
-	Dictionary ToPayload();
-	static abstract TSelf FromPayload(Dictionary payload);
+	static abstract TSelf FromPayload(GArray payload);
+	GArray ToPayload();
+
+	ActionValidation Validate(ActionSource source);
+	void Apply(ActionSource source);
 }

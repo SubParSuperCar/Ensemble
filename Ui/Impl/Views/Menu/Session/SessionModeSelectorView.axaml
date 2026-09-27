@@ -9,10 +9,10 @@
     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
         <TextBlock Text="Session Mode:" />
 
-        <Button Content="Single Player (Offline)" />
-        <Button Content="Multi-Player (Online)" />
+        <Button Content="Single Player (Offline)" Command="{Binding GoToSinglePlayerCommand}" />
+        <Button Content="Multi-Player (Online)" Command="{Binding GoToMultiPlayerCommand}" />
 
-        <Button Content="&lt;- Back" />
+        <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
     </StackPanel>
 
 </UserControl>

@@ -11,7 +11,11 @@
 
         <StackPanel>
             <TextBlock Text="Port Number (1024&#x2014;49,151):" FontSize="16" />
-            <NumericUpDown PlaceholderText="&lt;Auto&gt;" Minimum="0" Increment="1" ShowButtonSpinner="False" />
+            <NumericUpDown
+                Value="{Binding Port}"
+                PlaceholderText="&lt;Auto&gt;"
+                Minimum="1024" Maximum="49151" Increment="1"
+                ShowButtonSpinner="False" />
         </StackPanel>
 
         <StackPanel>
@@ -20,6 +24,7 @@
             <Grid ColumnDefinitions="*,4,Auto">
                 <TextBox
                     Name="PasswordBox"
+                    Text="{Binding Password}"
                     PlaceholderText="&lt;Not Enforced&gt;"
                     PasswordChar="*" />
 
@@ -32,18 +37,27 @@
         </StackPanel>
 
         <StackPanel>
-            <TextBlock Text="Display Name:" FontSize="16" />
-            <TextBox PlaceholderText="&lt;Saved or Generated&gt;" />
+            <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
+            <TextBox Text="{Binding DisplayName}" PlaceholderText="&lt;Short GUID&gt;" MaxLength="24" />
         </StackPanel>
 
         <StackPanel>
-            <TextBlock Text="Max Peers (&#x2265;1):" FontSize="16" />
-            <NumericUpDown PlaceholderText="&lt;Unlimited&gt;" Minimum="1" Increment="1" />
+            <TextBlock Text="Max Clients (&#x2265;1):" FontSize="16" />
+            <NumericUpDown
+                Value="{Binding MaxClients}"
+                PlaceholderText="&lt;Unlimited&gt;"
+                Minimum="1" Increment="1" />
         </StackPanel>
 
+        <TextBlock
+            Text="{Binding Status}"
+            IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+            FontSize="16"
+            TextWrapping="Wrap" />
+
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="&lt;- Back" />
-            <Button Grid.Column="2" Content="Host!" />
+            <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
+            <Button Grid.Column="2" Content="Host!" Command="{Binding HostCommand}" />
         </Grid>
     </StackPanel>
 

@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Actions;
 using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.SessionManager.Actions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 
@@ -19,6 +21,11 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 		GPlots.Added += OnPlotAdded;
 		GPlots.Removed += OnPlotRemoved;
+
+		OnLocalPlotChanged(LocalPlot);
+
+		LocalPlotChanged += OnLocalPlotChanged;
+		GSessionManager.ActionRejected += OnActionRejected;
 	}
 
 	public ObservableCollection<Plot> Plots { get; } = [];
@@ -31,6 +38,9 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	{
 		GPlots.Added -= OnPlotAdded;
 		GPlots.Removed -= OnPlotRemoved;
+
+		LocalPlotChanged -= OnLocalPlotChanged;
+		GSessionManager.ActionRejected -= OnActionRejected;
 
 		foreach (var unsubscribe in _unsubscribeByPlotId.Values)
 			unsubscribe();
@@ -92,10 +102,15 @@ public partial class PlotSelectorViewModel : ViewModelBase
 			unsubscribe();
 	}
 
-	partial void OnSelectedPlotChanging(Plot? value)
+	private void OnLocalPlotChanged(GdPlot? plot) =>
+		SelectedPlot = plot is null ? null : _plotsById.GetValueOrDefault(plot.Id);
+
+	private void OnActionRejected(string actionId, string reason) => OnLocalPlotChanged(LocalPlot);
+
+	partial void OnSelectedPlotChanged(Plot? value)
 	{
-		if (GPlayers.Local is { } local)
-			GPlots.SetPlot(local.Id, value?.Id ?? None);
+		if (value?.Id != LocalPlot?.Id)
+			new SetPlotAction(value?.Id).Submit();
 	}
 
 	private bool CanSetPlotToNull() => SelectedPlot is not null;

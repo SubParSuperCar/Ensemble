@@ -52,7 +52,7 @@
 
                 <NumericUpDown
                     Value="{Binding Port}"
-                    PlaceholderText="1024&#x2014;49,151"
+                    PlaceholderText="1024&#x2014;65,535"
                     ToolTip.Tip="The host's UDP port."
                     Minimum="1024" Maximum="49151"
                     Increment="1"

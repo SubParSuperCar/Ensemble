@@ -7,15 +7,17 @@ using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator
 
 namespace EnsembleRoot.SessionManager.Auth;
 
-// Always installed so both sides agree on the handshake; an open server sends a 1-byte challenge, a locked one a nonce
-public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
+// Challenge: [IsLocked][Nonce (if locked)][Version (UTF-8)]; clients reject version mismatches before completing
+public sealed class HandshakeAuthenticator(string version, string? password) : IPeerAuthenticator
 {
-	private const int NonceSize = 16;
+	private const byte OpenFlag = 0;
+	private const byte LockedFlag = 1;
 
-	private static readonly byte[] OpenChallenge = [0];
+	private const int NonceSize = 16;
 
 	private readonly byte[]? _key = string.IsNullOrEmpty(password) ? null : Encoding.UTF8.GetBytes(password);
 	private readonly Dictionary<long, byte[]> _pendingNoncesByPeerId = [];
+	private readonly byte[] _version = Encoding.UTF8.GetBytes(version);
 
 	private bool _isServer;
 	private SceneMultiplayer? _multiplayer;
@@ -53,7 +55,7 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 
 		if (_key is null)
 		{
-			_multiplayer!.SendAuth((int)peerId, OpenChallenge);
+			_multiplayer!.SendAuth((int)peerId, [OpenFlag, .. _version]);
 			_multiplayer.CompleteAuth((int)peerId);
 
 			return;
@@ -62,7 +64,7 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 		var nonce = RandomNumberGenerator.GetBytes(NonceSize);
 		_pendingNoncesByPeerId[peerId] = nonce;
 
-		_multiplayer!.SendAuth((int)peerId, nonce);
+		_multiplayer!.SendAuth((int)peerId, [LockedFlag, .. nonce, .. _version]);
 	}
 
 	private void OnAuthMessage(long peerId, byte[] data)
@@ -93,7 +95,23 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 
 	private void HandleClientMessage(long peerId, byte[] data)
 	{
-		if (data.Length is NonceSize)
+		var isLocked = data is [LockedFlag, ..];
+		var headerSize = isLocked ? 1 + NonceSize : 1;
+
+		if (data.Length < headerSize)
+		{
+			Failed?.Invoke("Handshake malformed.");
+			return;
+		}
+
+		if (!data.AsSpan(headerSize).SequenceEqual(_version))
+		{
+			Failed?.Invoke(
+				$"Version mismatch (host {Encoding.UTF8.GetString(data.AsSpan(headerSize))}, local {version}).");
+			return;
+		}
+
+		if (isLocked)
 		{
 			if (_key is null)
 			{
@@ -101,7 +119,7 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 				return;
 			}
 
-			_multiplayer!.SendAuth((int)peerId, HMACSHA256.HashData(_key, data));
+			_multiplayer!.SendAuth((int)peerId, HMACSHA256.HashData(_key, data.AsSpan(1, NonceSize)));
 		}
 
 		_multiplayer!.CompleteAuth((int)peerId);

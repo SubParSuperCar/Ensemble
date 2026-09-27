@@ -28,6 +28,8 @@ public partial class PlayerHandle : Node3D
 
 	public Vector3 SpawnOffset => _spawnOffset ??= CalculateSpawnOffset();
 
+	private CharacterBody3D Body => Character ?? Controller!;
+
 	public override void _EnterTree()
 	{
 		_player = GPlayers.GetPlayer(Id)!;
@@ -72,16 +74,15 @@ public partial class PlayerHandle : Node3D
 		if (plot is null)
 			return;
 
-		var character = (Character ?? Controller)!;
 		var handle = GPlotManager.GetHandle(plot.Id);
 
-		if (!IsIntersectingCuboid(character.GlobalPosition, handle.BoundaryTransform, handle.BoundarySize))
-			character.GlobalPosition = handle.OriginTransform.Origin + SpawnOffset;
+		if (!IsIntersectingCuboid(Body.GlobalPosition, handle.BoundaryTransform, handle.BoundarySize))
+			Body.GlobalPosition = handle.OriginTransform.Origin + SpawnOffset;
 	}
 
 	private Vector3 CalculateSpawnOffset()
 	{
-		var collider = (Character ?? Controller)!.GetNode<CollisionShape3D>("Collider");
+		var collider = Body.GetNode<CollisionShape3D>("Collider");
 		var aabb = collider.Shape.GetDebugMesh().GetAabb();
 
 		return new Vector3(0, aabb.Size.Y / 2, 0);

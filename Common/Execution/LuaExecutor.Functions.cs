@@ -38,6 +38,7 @@ public static partial class LuaExecutor
 		env[nameof(dmp_vsync_modes)] = new LuaFunction(dmp_vsync_modes);
 		env[nameof(gc)] = new LuaFunction(gc);
 		env[nameof(help)] = new LuaFunction(help);
+		env[nameof(kick)] = new LuaFunction(kick);
 		env[nameof(log_lan_ip4_addr)] = new LuaFunction(log_lan_ip4_addr);
 		env[nameof(log_pub_ip4_addr)] = new LuaFunction(log_pub_ip4_addr);
 		env[nameof(perf_mod)] = new LuaFunction(perf_mod);
@@ -322,6 +323,16 @@ public static partial class LuaExecutor
 			.Order(StringComparer.Ordinal);
 
 		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join('\n', functions));
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> kick(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		GSessionManager.Kick(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
 
 		context.Return();
 		return default;

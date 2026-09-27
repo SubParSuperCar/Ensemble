@@ -9,21 +9,34 @@ using OS = Godot.OS;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class MenuHomeViewModel(NavigatorService navigator) : ViewModelBase
+public partial class MenuHomeViewModel : ViewModelBase
 {
+	private readonly NavigatorService _navigator;
+
+	public MenuHomeViewModel(NavigatorService navigator)
+	{
+		_navigator = navigator;
+		GSessionManager.SessionFailed += OnSessionFailed;
+	}
+
 	[ObservableProperty] public partial Bitmap? Icon { get; set; } = LoadBitmapFromGodotImage(GameIconPath);
+	[ObservableProperty] public partial string? Notice { get; set; }
+
+	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;
 
 	[RelayCommand]
 	private static void OpenGitHubPage() => OS.ShellOpen("https://github.com/SubParSuperCar/Ensemble");
 
 	[RelayCommand]
-	private void GoToSession() => navigator.GoTo<SessionModeSelectorViewModel>();
+	private void GoToSession() => _navigator.GoTo<SessionModeSelectorViewModel>();
 
 	[RelayCommand]
-	private void GoToDocFileViewer() => navigator.GoTo<MenuDocFileViewModel>();
+	private void GoToDocFileViewer() => _navigator.GoTo<MenuDocFileViewModel>();
 
 	[RelayCommand]
-	private void GoToWebBrowser() => navigator.GoTo<MenuWebBrowserViewModel>();
+	private void GoToWebBrowser() => _navigator.GoTo<MenuWebBrowserViewModel>();
+
+	private void OnSessionFailed(string reason) => Notice = $"Session ended: {reason}";
 
 	private static Bitmap? LoadBitmapFromGodotImage(string path)
 	{

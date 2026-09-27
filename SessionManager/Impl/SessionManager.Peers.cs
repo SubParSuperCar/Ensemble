@@ -77,6 +77,9 @@ public partial class SessionManager
 
 		AddPeer(peerId, playerId, displayName);
 		RpcRegistered(MethodName.RpcAddPeer, peerId, playerId, displayName);
+
+		if (peerId != LocalPeerId)
+			SendSnapshots(peerId);
 	}
 
 	private void RpcRegistered(StringName method, params Variant[] args)
@@ -118,7 +121,7 @@ public partial class SessionManager
 			RemovePeer(peerId);
 	}
 
-	private void OnPeerConnected(long peerId) => Log.Debug("Peer connected: {PeerId}", peerId);
+	private static void OnPeerConnected(long peerId) => Log.Debug("Peer connected: {PeerId}", peerId);
 
 	private void OnPeerDisconnected(long peerId)
 	{

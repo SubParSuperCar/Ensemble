@@ -30,16 +30,17 @@ The tool suite, in rough intended order of implementation.
 
 ## Multiplayer / replication
 
-SessionManager has the infra (sessions, auth, server-assigned player IDs, self-registering RPC actions). Actions
-live in Actions/ and are submitted with `new SetPlotAction(id).Submit()`.
+SessionManager has the infra (sessions, versioned auth handshake, server-assigned player IDs, self-registering RPC
+actions and late-join snapshots, kicks, graceful shutdown notices). Actions live in Actions/ and are submitted with
+`new SetPlotAction(id).Submit()`; snapshots live in Snapshots/.
 
 - [x] (M) Main-menu session sub-menu - Singleplayer / Multiplayer, Host / Join, address, port, password, remembered
   display name
-- [ ] (M) Late-join state sync - plot occupancy + instances snapshot for newly registered peers
+- [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties)
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
-- [ ] (M) SessionManager v2 - `Peer` objects (address, ping, kick), server info, request/response RPCs (planning)
-- [ ] (S) Headless dedicated server - host without registering a local player
-- [ ] (M) Character replication - position / rotation / state
+- [ ] (M) SessionManager v2 - `Peer` objects (address, ping), server info UI, kick UI, request/response RPCs
+- [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N` (or `--join=A:P`)
+- (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
 - [ ] (L) Dynamic instance replication - placed blocks sync + authority model
 - (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction + occupant/owner checks done
 - [ ] (S) Text chat (multiplayer only) - chat RPC action + chat box UI

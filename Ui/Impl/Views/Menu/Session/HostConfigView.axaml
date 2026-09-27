@@ -10,11 +10,7 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel
-        Spacing="4"
-        HorizontalAlignment="Center" VerticalAlignment="Center"
-        MaxWidth="384">
-
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
         <TextBlock Text="Multi-Player Host Config:" />
 
         <StackPanel>
@@ -22,7 +18,7 @@
 
             <NumericUpDown
                 Value="{Binding Port}"
-                PlaceholderText="&lt;Auto&gt;"
+                PlaceholderText="&lt;Default&gt;"
                 ToolTip.Tip="The UDP port to listen on. Clients need it to join.&#x0a;Leave empty for the default port."
                 Minimum="1024" Maximum="49151"
                 Increment="1"

@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using System.Globalization;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using Avalonia.Styling;
 using BogaNet.TTS;
 using CommunityToolkit.Mvvm.Messaging;
@@ -32,10 +35,11 @@ public static partial class LuaExecutor
 		env[nameof(dmp_asm_info)] = new LuaFunction(dmp_asm_info);
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
+		env[nameof(dmp_vsync_modes)] = new LuaFunction(dmp_vsync_modes);
 		env[nameof(gc)] = new LuaFunction(gc);
-		env[nameof(get_pub_ip4_addr)] = new LuaFunction(get_pub_ip4_addr);
-		env[nameof(get_vsync_modes)] = new LuaFunction(get_vsync_modes);
 		env[nameof(help)] = new LuaFunction(help);
+		env[nameof(log_lan_ip4_addr)] = new LuaFunction(log_lan_ip4_addr);
+		env[nameof(log_pub_ip4_addr)] = new LuaFunction(log_pub_ip4_addr);
 		env[nameof(perf_mod)] = new LuaFunction(perf_mod);
 		env[nameof(print)] = new LuaFunction(print);
 		env[nameof(quit)] = new LuaFunction(quit);
@@ -261,6 +265,22 @@ public static partial class LuaExecutor
 			.Replace("\r", "\\r", StringComparison.Ordinal)
 			.Replace("\n", "\\n", StringComparison.Ordinal);
 
+	private static ValueTask<int> dmp_vsync_modes(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
+
+		Log.Information(
+			"Available VSync modes:\n{Modes}",
+			string.Join(
+				'\n',
+				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{(int)mode}. {mode}"))));
+
+		context.Return();
+		return default;
+	}
+
 	private static ValueTask<int> gc(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -289,52 +309,6 @@ public static partial class LuaExecutor
 		return default;
 	}
 
-	private static async ValueTask<int> get_pub_ip4_addr(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		try
-		{
-			Log.Debug("Querying {Url}...", PublicIPv4AddressSourceUrl);
-			var stopwatch = Stopwatch.StartNew();
-
-			var address = (await Http.Client.GetStringAsync(
-				PublicIPv4AddressSourceUrl,
-				cancellationToken).ConfigureAwait(false)).Trim();
-
-			stopwatch.Stop();
-			Log.Information(
-				"Public IPv4 address: {Address} (PingMs={PingMs:F3})",
-				address,
-				stopwatch.Elapsed.TotalMilliseconds);
-
-			context.Return(address);
-		}
-		catch (HttpRequestException exception)
-		{
-			Log.Error(exception, "Failed to get public IPv4 address");
-			context.Return();
-		}
-
-		return 0;
-	}
-
-	private static ValueTask<int> get_vsync_modes(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
-	{
-		var modes = Enum.GetValues<DisplayServer.VSyncMode>();
-
-		Log.Information(
-			"Available VSync modes:\n{Modes}",
-			string.Join(
-				'\n',
-				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{(int)mode}. {mode}"))));
-
-		context.Return();
-		return default;
-	}
-
 	private static ValueTask<int> help(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -351,6 +325,52 @@ public static partial class LuaExecutor
 
 		context.Return();
 		return default;
+	}
+
+	private static ValueTask<int> log_lan_ip4_addr(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var address = NetworkInterface.GetAllNetworkInterfaces()
+			.Where(static ni =>
+				ni.OperationalStatus is OperationalStatus.Up &&
+				ni.NetworkInterfaceType is NetworkInterfaceType.Ethernet or NetworkInterfaceType.Wireless80211)
+			.SelectMany(static ni => ni.GetIPProperties().UnicastAddresses)
+			.Select(static a => a.Address)
+			.FirstOrDefault(static a => a.AddressFamily is AddressFamily.InterNetwork && !IPAddress.IsLoopback(a));
+
+		Log.Information("Local Area Network (LAN) IPv4 address: {Address}", address);
+
+		context.Return();
+		return default;
+	}
+
+	private static async ValueTask<int> log_pub_ip4_addr(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		try
+		{
+			Log.Debug("Querying {Url}...", PublicIPv4AddressSourceUrl);
+			var stopwatch = Stopwatch.StartNew();
+
+			var address = (await Http.Client.GetStringAsync(
+				PublicIPv4AddressSourceUrl,
+				cancellationToken).ConfigureAwait(false)).Trim();
+
+			stopwatch.Stop();
+			Log.Information(
+				"Public IPv4 address: {Address} (RequestMs={RequestMs:F3})",
+				address,
+				stopwatch.Elapsed.TotalMilliseconds);
+		}
+		catch (HttpRequestException exception)
+		{
+			Log.Error(exception, "Failed to get public IPv4 address");
+		}
+
+		context.Return();
+		return 0;
 	}
 
 	private static ValueTask<int> perf_mod(

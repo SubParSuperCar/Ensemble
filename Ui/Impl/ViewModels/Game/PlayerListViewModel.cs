@@ -7,7 +7,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class PlayerListViewModel : ViewModelBase
 {
-	private readonly Dictionary<string, Player> _playersById = [];
+	private readonly Dictionary<string, PlayerItem> _playersById = [];
 
 	public PlayerListViewModel()
 	{
@@ -18,9 +18,9 @@ public partial class PlayerListViewModel : ViewModelBase
 		GPlayers.Removed += OnPlayerRemoved;
 	}
 
-	public ObservableCollection<Player> Players { get; } = [];
+	public ObservableCollection<PlayerItem> Players { get; } = [];
 
-	[ObservableProperty] public partial Player? SelectedPlayer { get; set; }
+	[ObservableProperty] public partial PlayerItem? SelectedPlayer { get; set; }
 
 	protected override void OnDispose()
 	{
@@ -31,7 +31,7 @@ public partial class PlayerListViewModel : ViewModelBase
 	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
 		var peerId = GSessionManager.TryGetPeerId(gdPlayer.Id, out var id) ? id : None;
-		var player = new Player(gdPlayer.Name, gdPlayer.Id, peerId);
+		var player = new PlayerItem(gdPlayer.Name, gdPlayer.Id, peerId);
 
 		var index = Players
 			.TakeWhile(other => string.Compare(other.Name, player.Name, StringComparison.Ordinal) < 0)
@@ -54,4 +54,4 @@ public partial class PlayerListViewModel : ViewModelBase
 	}
 }
 
-public record Player(string Name, string Id, int PeerId);
+public record PlayerItem(string Name, string Id, int PeerId);

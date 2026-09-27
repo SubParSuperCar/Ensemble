@@ -11,7 +11,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class PlotSelectorViewModel : ViewModelBase
 {
-	private readonly Dictionary<int, Plot> _plotsById = [];
+	private readonly Dictionary<int, PlotItem> _plotsById = [];
 	private readonly Dictionary<int, Action> _unsubscribeByPlotId = [];
 
 	public PlotSelectorViewModel()
@@ -28,11 +28,11 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		GSessionManager.ActionRejected += OnActionRejected;
 	}
 
-	public ObservableCollection<Plot> Plots { get; } = [];
+	public ObservableCollection<PlotItem> Plots { get; } = [];
 
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(SetPlotToNullCommand))]
-	public partial Plot? SelectedPlot { get; set; }
+	public partial PlotItem? SelectedPlot { get; set; }
 
 	protected override void OnDispose()
 	{
@@ -52,7 +52,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	private void OnPlotAdded(GdPlot gdPlot)
 	{
 		var occupants = gdPlot.Occupants;
-		var plot = new Plot { Id = gdPlot.Id };
+		var plot = new PlotItem { Id = gdPlot.Id };
 
 		UpdateOccupancy();
 		occupants.Added += OnOccupantChanged;
@@ -107,7 +107,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 
 	private void OnActionRejected(string actionId, string reason) => OnLocalPlotChanged(LocalPlot);
 
-	partial void OnSelectedPlotChanged(Plot? value)
+	partial void OnSelectedPlotChanged(PlotItem? value)
 	{
 		if (value?.Id != LocalPlot?.Id)
 			new SetPlotAction(value?.Id).Submit();
@@ -116,7 +116,7 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	private bool CanSetPlotToNull() => SelectedPlot is not null;
 }
 
-public partial class Plot : ObservableObject
+public partial class PlotItem : ObservableObject
 {
 	public int Id { get; init; }
 

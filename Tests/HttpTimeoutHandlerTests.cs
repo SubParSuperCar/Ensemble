@@ -3,12 +3,12 @@ using Xunit;
 
 namespace EnsembleRoot.Tests;
 
-public sealed class TimeoutHandlerTests
+public sealed class HttpTimeoutHandlerTests
 {
 	[Fact]
 	public async Task SendAsync_TimesOut()
 	{
-		var handler = new TimeoutHandler(TimeSpan.FromMilliseconds(100))
+		var handler = new HttpTimeoutHandler(TimeSpan.FromMilliseconds(100))
 		{
 			InnerHandler = new HangingHandler()
 		};

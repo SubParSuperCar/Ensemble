@@ -6,6 +6,6 @@ public interface IPeerAuthenticator
 {
 	event Action<string> Failed;
 
-	void Start(SceneMultiplayer multiplayer, bool isServer);
-	void Stop(SceneMultiplayer multiplayer);
+	void StartAuth(SceneMultiplayer multiplayer, bool isServer);
+	void StopAuth(SceneMultiplayer multiplayer);
 }

@@ -59,10 +59,10 @@ public partial class StatViewModel : ViewModelBase
 		var uiFrameTimeMs = uiFps > 0 ? TimeSpan.MillisecondsPerSecond / uiFps : double.PositiveInfinity;
 
 #if ENSEMBLE_DEBUG
-		var dram = Formatter.FormatBytes(OS.GetStaticMemoryUsage());
+		var dram = ByteFormat.Humanize(OS.GetStaticMemoryUsage());
 #else
 		_process.Refresh();
-		var dram = $"{Formatter.FormatBytes((ulong)_process.PrivateMemorySize64)} (PWS)";
+		var dram = $"{ByteFormat.Humanize((ulong)_process.PrivateMemorySize64)} (PWS)";
 #endif
 
 		var processTimeMs = Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond;
@@ -81,8 +81,8 @@ public partial class StatViewModel : ViewModelBase
 			("UI Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{uiFps:F3} FPS ({uiFrameTimeMs:F3} mspf)")),
 			("UI Proc. Time", string.Create(CultureInfo.InvariantCulture, $"{uiProcessTimeMs:F3} msec")),
 			("Used DRAM", dram),
-			("Used VRAM", Formatter.FormatBytes((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
-			("C# Heap Size", Formatter.FormatBytes((ulong)GC.GetTotalMemory(false))),
+			("Used VRAM", ByteFormat.Humanize((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
+			("C# Heap Size", ByteFormat.Humanize((ulong)GC.GetTotalMemory(false))),
 			("Objects", Performance.GetMonitor(Performance.Monitor.ObjectCount)),
 			("Nodes", Performance.GetMonitor(Performance.Monitor.ObjectNodeCount)),
 			("Orphan Nodes", Performance.GetMonitor(Performance.Monitor.ObjectOrphanNodeCount)),

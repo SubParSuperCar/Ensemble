@@ -1,6 +1,6 @@
 namespace EnsembleRoot.Common.Networking;
 
-public sealed class TimeoutHandler(TimeSpan timeout) : DelegatingHandler
+public sealed class HttpTimeoutHandler(TimeSpan timeout) : DelegatingHandler
 {
 	protected override async Task<HttpResponseMessage> SendAsync(
 		HttpRequestMessage request,

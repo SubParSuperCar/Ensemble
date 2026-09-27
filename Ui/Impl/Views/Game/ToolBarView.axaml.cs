@@ -1,5 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using EnsembleRoot.Actions;
+using EnsembleRoot.SessionManager.Actions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels;
 using Serilog;
@@ -15,11 +17,8 @@ public partial class ToolBarView : UserControl, IViewFor<ToolBarViewModel>
 
 	private void OnClearAllDoubleTapped(object? sender, TappedEventArgs e)
 	{
-		if (LocalPlot?.Instances is { } instances)
-		{
-			Log.Debug("Clearing {Count} local plot instance(s)...", instances.Count);
-			instances.Clear();
-		}
+		Log.Debug("Clearing {Count} local plot instance(s)...", LocalPlot?.Instances.Count);
+		new ClearInstancesAction().Submit();
 
 		GToolManager.Destruct.Disable();
 	}

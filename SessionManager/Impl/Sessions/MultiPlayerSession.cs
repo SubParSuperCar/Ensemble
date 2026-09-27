@@ -5,6 +5,8 @@ namespace EnsembleRoot.SessionManager.Sessions;
 
 public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionConfig config) : ISession
 {
+	private const int MaxClientLimit = 4095;
+
 	public SessionMode Mode => SessionMode.MultiPlayer;
 	public bool IsServer => config is HostConfig;
 
@@ -17,8 +19,7 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 
 		var result = config switch
 		{
-			HostConfig { MaxClientCount: { } maxClientCount } host => peer.CreateServer(host.Port, maxClientCount),
-			HostConfig host => peer.CreateServer(host.Port),
+			HostConfig host => peer.CreateServer(host.Port, host.MaxClientCount ?? MaxClientLimit),
 			JoinConfig join => peer.CreateClient(join.Address, join.Port),
 			_ => Error.InvalidParameter
 		};
@@ -30,7 +31,7 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 		}
 
 		config.Authenticator.Failed += OnFailed;
-		config.Authenticator.Start(multiplayer, IsServer);
+		config.Authenticator.StartAuth(multiplayer, IsServer);
 
 		multiplayer.ConnectedToServer += OnConnectedToServer;
 		multiplayer.ConnectionFailed += OnConnectionFailed;
@@ -49,7 +50,7 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 		multiplayer.ServerDisconnected -= OnServerDisconnected;
 
 		config.Authenticator.Failed -= OnFailed;
-		config.Authenticator.Stop(multiplayer);
+		config.Authenticator.StopAuth(multiplayer);
 
 		multiplayer.MultiplayerPeer?.Close();
 		multiplayer.MultiplayerPeer = null;
@@ -57,6 +58,6 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 
 	private void OnConnectedToServer() => Started?.Invoke();
 	private void OnConnectionFailed() => Failed?.Invoke("Connection failed.");
-	private void OnServerDisconnected() => Failed?.Invoke("Disconnected from the server.");
+	private void OnServerDisconnected() => Failed?.Invoke("Disconnected from server.");
 	private void OnFailed(string reason) => Failed?.Invoke(reason);
 }

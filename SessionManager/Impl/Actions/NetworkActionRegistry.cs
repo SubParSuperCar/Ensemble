@@ -1,6 +1,7 @@
 using System.Globalization;
+using Godot;
+using Godot.Collections;
 using Serilog;
-using GArray = Godot.Collections.Array;
 
 namespace EnsembleRoot.SessionManager.Actions;
 
@@ -8,7 +9,8 @@ public static class NetworkActionRegistry
 {
 	public const int DefaultTokenCost = 1;
 
-	private static readonly Dictionary<string, Entry> EntriesByActionId = new(StringComparer.Ordinal);
+	private static readonly System.Collections.Generic.Dictionary<string, Entry> EntriesByActionId =
+		new(StringComparer.Ordinal);
 
 	public static void Register<TAction>() where TAction : INetworkAction<TAction>
 	{
@@ -27,7 +29,7 @@ public static class NetworkActionRegistry
 	internal static int GetTokenCost(string actionId) =>
 		EntriesByActionId.TryGetValue(actionId, out var entry) ? entry.TokenCost : DefaultTokenCost;
 
-	internal static ActionValidation Execute(string actionId, GArray payload, ActionSource source)
+	internal static ActionValidation Execute(string actionId, Array<Variant> payload, ActionSource source)
 	{
 		if (!EntriesByActionId.TryGetValue(actionId, out var entry))
 			return ActionValidation.Reject($"Action with id {actionId} not found.");
@@ -43,7 +45,7 @@ public static class NetworkActionRegistry
 		}
 	}
 
-	private static ActionValidation Execute<TAction>(GArray payload, ActionSource source)
+	private static ActionValidation Execute<TAction>(Array<Variant> payload, ActionSource source)
 		where TAction : INetworkAction<TAction>
 	{
 		var action = TAction.FromPayload(payload);
@@ -61,5 +63,5 @@ public static class NetworkActionRegistry
 	}
 
 	// ReSharper disable once MemberHidesStaticFromOuterClass
-	private readonly record struct Entry(int TokenCost, Func<GArray, ActionSource, ActionValidation> Execute);
+	private readonly record struct Entry(int TokenCost, Func<Array<Variant>, ActionSource, ActionValidation> Execute);
 }

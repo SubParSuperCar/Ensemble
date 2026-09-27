@@ -1,7 +1,7 @@
 using EnsembleRoot.SessionManager.Actions;
 using Godot;
+using Godot.Collections;
 using Serilog;
-using GArray = Godot.Collections.Array;
 
 namespace EnsembleRoot.SessionManager;
 
@@ -11,7 +11,7 @@ public partial class SessionManager
 	{
 		if (!IsActive)
 		{
-			Log.Warning("Dropped action {ActionId} outside of an active session", TAction.Id);
+			Log.Warning("Dropped action {ActionId}: no active session", TAction.Id);
 			return;
 		}
 
@@ -22,7 +22,7 @@ public partial class SessionManager
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-	private void RpcRequestAction(string actionId, GArray payload)
+	private void RpcRequestAction(string actionId, Array<Variant> payload)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
 
@@ -33,7 +33,7 @@ public partial class SessionManager
 	}
 
 	[Rpc]
-	private void RpcConfirmAction(string actionId, GArray payload, int sourcePeerId)
+	private void RpcConfirmAction(string actionId, Array<Variant> payload, int sourcePeerId)
 	{
 		var result = ExecuteAction(actionId, payload, sourcePeerId);
 
@@ -49,7 +49,7 @@ public partial class SessionManager
 	private void RpcRejectAction(string actionId, string reason) =>
 		EmitSignal(SignalName.ActionRejected, actionId, reason);
 
-	private void HandleAction(string actionId, GArray payload, int sourcePeerId)
+	private void HandleAction(string actionId, Array<Variant> payload, int sourcePeerId)
 	{
 		var result = ExecuteAction(actionId, payload, sourcePeerId);
 
@@ -68,8 +68,8 @@ public partial class SessionManager
 			RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, reason);
 	}
 
-	private ActionValidation ExecuteAction(string actionId, GArray payload, int sourcePeerId) =>
+	private ActionValidation ExecuteAction(string actionId, Array<Variant> payload, int sourcePeerId) =>
 		_peersById.TryGetValue(sourcePeerId, out var info)
 			? NetworkActionRegistry.Execute(actionId, payload, new ActionSource(sourcePeerId, info.PlayerId))
-			: ActionValidation.Reject("Source peer is not registered.");
+			: ActionValidation.Reject("Peer not registered.");
 }

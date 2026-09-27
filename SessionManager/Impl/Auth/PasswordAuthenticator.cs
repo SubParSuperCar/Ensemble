@@ -24,7 +24,7 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 
 	public event Action<string>? Failed;
 
-	public void Start(SceneMultiplayer multiplayer, bool isServer)
+	public void StartAuth(SceneMultiplayer multiplayer, bool isServer)
 	{
 		_multiplayer = multiplayer;
 		_isServer = isServer;
@@ -36,7 +36,7 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 		multiplayer.PeerAuthenticationFailed += OnPeerAuthenticationFailed;
 	}
 
-	public void Stop(SceneMultiplayer multiplayer)
+	public void StopAuth(SceneMultiplayer multiplayer)
 	{
 		multiplayer.PeerAuthenticating -= OnPeerAuthenticating;
 		multiplayer.PeerAuthenticationFailed -= OnPeerAuthenticationFailed;
@@ -97,7 +97,7 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 		{
 			if (_key is null)
 			{
-				Failed?.Invoke("The server requires a password.");
+				Failed?.Invoke("Password required.");
 				return;
 			}
 
@@ -114,6 +114,6 @@ public sealed class PasswordAuthenticator(string? password) : IPeerAuthenticator
 		if (_isServer)
 			Log.Warning("Peer {PeerId} timed out or was rejected during authentication", peerId);
 		else
-			Failed?.Invoke("Authentication timed out or was rejected (incorrect password?).");
+			Failed?.Invoke("Authentication failed.");
 	}
 }

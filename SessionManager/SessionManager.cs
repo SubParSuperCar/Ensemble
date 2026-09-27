@@ -130,7 +130,7 @@ public partial class SessionManager : Node
 		Start(
 			new MultiPlayerSession(
 				(SceneMultiplayer)Multiplayer,
-				new HostConfig(port, Authenticators.Password(password), maxClients is Unlimited ? null : maxClients)),
+				new HostConfig(port, new PasswordAuthenticator(password), maxClients is Unlimited ? null : maxClients)),
 			displayName);
 	}
 
@@ -151,7 +151,7 @@ public partial class SessionManager : Node
 		Start(
 			new MultiPlayerSession(
 				(SceneMultiplayer)Multiplayer,
-				new JoinConfig(address, port, Authenticators.Password(password))),
+				new JoinConfig(address, port, new PasswordAuthenticator(password))),
 			displayName);
 	}
 
@@ -238,7 +238,7 @@ public partial class SessionManager : Node
 		GetTree().CreateTimer(RegistrationTimeout.TotalSeconds).Timeout += () =>
 		{
 			if (ReferenceEquals(_session, session) && !IsActive)
-				OnSessionFailed("Timed out waiting for the server to register the local player.");
+				OnSessionFailed("Registration timed out.");
 		};
 	}
 

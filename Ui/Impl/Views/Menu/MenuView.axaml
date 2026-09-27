@@ -5,6 +5,12 @@
     x:Class="EnsembleRoot.Ui.Impl.Views.MenuView"
     x:DataType="vm:MenuViewModel">
 
+    <UserControl.Styles>
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+    </UserControl.Styles>
+
     <TransitioningContentControl
         Content="{Binding Navigator.Current}"
         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"

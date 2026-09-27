@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 using static EnsembleRoot.SessionManager.SessionManager;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
@@ -10,13 +11,17 @@ public partial class SinglePlayerConfigViewModel(NavigatorService navigator) : V
 {
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(StartCommand))]
-	public partial string? DisplayName { get; set; }
+	public partial string? DisplayName { get; set; } = SessionPreferences.DisplayName;
 
 	[RelayCommand]
 	private void GoBack() => navigator.GoBack();
 
 	[RelayCommand(CanExecute = nameof(CanStart))]
-	private void Start() => GSessionManager.StartSinglePlayer(DisplayName);
+	private void Start()
+	{
+		SessionPreferences.DisplayName = DisplayName ?? string.Empty;
+		GSessionManager.StartSinglePlayer(DisplayName);
+	}
 
 	private bool CanStart() => IsValidDisplayName(DisplayName);
 }

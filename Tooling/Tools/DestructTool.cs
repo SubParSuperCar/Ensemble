@@ -1,6 +1,8 @@
+using EnsembleRoot.Actions;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.SessionManager.Actions;
 using Godot;
 using Serilog;
 
@@ -32,13 +34,13 @@ public partial class DestructTool : ToolBase
 		if (!IsEnabled || InputSink.IsSunk || !@event.IsActionPressed(ToolCommon.TriggerAction))
 			return;
 
-		if (_selected is null || LocalPlot?.Instances is not { } instances)
+		if (_selected is null)
 			return;
 
-		instances.Remove(_selected.InstanceId);
+		new RemoveInstanceAction(_selected.InstanceId).Submit();
 		ToolCommon.PlaySound("affirm");
 
-		Log.Verbose("Removed: {InstanceId}", _selected.InstanceId);
+		Log.Verbose("Submitted removal: {InstanceId}", _selected.InstanceId);
 		SetSelected(null);
 	}
 

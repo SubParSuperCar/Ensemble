@@ -1,20 +1,31 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.HostConfigView"
     x:DataType="vm:HostConfigViewModel"
+    TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
+    <StackPanel
+        Spacing="4"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        MaxWidth="384">
+
         <TextBlock Text="Multi-Player Host Config:" />
 
         <StackPanel>
-            <TextBlock Text="Port Number (1024&#x2014;49,151):" FontSize="16" />
+            <TextBlock Text="Port Number (1024&#x2014;65,535):" FontSize="16" />
+
             <NumericUpDown
                 Value="{Binding Port}"
                 PlaceholderText="&lt;Auto&gt;"
-                Minimum="1024" Maximum="49151" Increment="1"
+                ToolTip.Tip="The UDP port to listen on. Clients need it to join.&#x0a;Leave empty for the default port."
+                Minimum="1024" Maximum="49151"
+                Increment="1"
                 ShowButtonSpinner="False" />
         </StackPanel>
 
@@ -26,38 +37,56 @@
                     Name="PasswordBox"
                     Text="{Binding Password}"
                     PlaceholderText="&lt;Not Enforced&gt;"
+                    ToolTip.Tip="The password joining players must enter.&#x0a;Leave empty to let anyone join."
                     PasswordChar="*" />
 
                 <CheckBox
                     Grid.Column="2"
                     Content="Show"
                     IsChecked="{Binding #PasswordBox.RevealPassword}"
+                    ToolTip.Tip="Toggles whether the password is revealed."
                     FontSize="20" />
             </Grid>
         </StackPanel>
 
         <StackPanel>
             <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
-            <TextBox Text="{Binding DisplayName}" PlaceholderText="&lt;Short GUID&gt;" MaxLength="24" />
+
+            <TextBox
+                Text="{Binding DisplayName}"
+                PlaceholderText="&lt;Short GUID&gt;"
+                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
+                MaxLength="24" />
         </StackPanel>
 
         <StackPanel>
-            <TextBlock Text="Max Clients (&#x2265;1):" FontSize="16" />
+            <TextBlock Text="Max Clients (1&#x2014;4,095):" FontSize="16" />
+
             <NumericUpDown
                 Value="{Binding MaxClients}"
                 PlaceholderText="&lt;Unlimited&gt;"
-                Minimum="1" Increment="1" />
+                ToolTip.Tip="The most players that can be connected at once, excluding you.&#x0a;Leave empty for no limit."
+                Minimum="1" Maximum="4095"
+                Increment="1" />
         </StackPanel>
 
         <TextBlock
             Text="{Binding Status}"
-            IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
             FontSize="16"
-            TextWrapping="Wrap" />
+            TextWrapping="Wrap"
+            IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
-            <Button Grid.Column="2" Content="Host!" Command="{Binding HostCommand}" />
+            <Button
+                Content="&lt;- Back"
+                Command="{Binding GoBackCommand}"
+                ToolTip.Tip="Goes back. (Bound to Backspace)" />
+
+            <Button
+                Grid.Column="2"
+                Content="Host!"
+                Command="{Binding HostCommand}"
+                ToolTip.Tip="Starts hosting a new multi-player session." />
         </Grid>
     </StackPanel>
 

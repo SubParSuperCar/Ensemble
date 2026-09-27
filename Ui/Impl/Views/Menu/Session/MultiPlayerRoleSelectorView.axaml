@@ -10,10 +10,7 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel
-        Spacing="4"
-        HorizontalAlignment="Center" VerticalAlignment="Center">
-
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4">
         <TextBlock Text="Multi-Player Role:" />
 
         <Grid ColumnDefinitions="*,4,*">

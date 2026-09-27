@@ -10,6 +10,7 @@ using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.World;
+using EnsembleRoot.SessionManager.Api;
 using EnsembleRoot.Ui.Impl.Messages;
 using Godot;
 using Lua;
@@ -50,6 +51,7 @@ public static partial class LuaExecutor
 		env[nameof(set_ui_dark_theme_on)] = new LuaFunction(set_ui_dark_theme_on);
 		env[nameof(set_ui_scale)] = new LuaFunction(set_ui_scale);
 		env[nameof(set_vsync_mode)] = new LuaFunction(set_vsync_mode);
+		env[nameof(tp_char)] = new LuaFunction(tp_char);
 		env[nameof(tts)] = new LuaFunction(tts);
 		env[nameof(wait)] = new LuaFunction(wait);
 
@@ -66,6 +68,12 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
+		if (!IsSinglePlayer(nameof(add_rand_insts)))
+		{
+			context.Return();
+			return default;
+		}
+
 		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgument<int>(1);
 		var positionRange = GPlotManager.GetHandle(plotId).GridBoundarySize / 2;
@@ -125,6 +133,12 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
+		if (!IsSinglePlayer(nameof(clr_insts)))
+		{
+			context.Return();
+			return default;
+		}
+
 		var plotId = context.GetArgument<int>(0);
 		var instances = GPlots.GetPlot(plotId)!.Instances;
 		var count = instances.Count;
@@ -141,6 +155,15 @@ public static partial class LuaExecutor
 
 		context.Return();
 		return default;
+	}
+
+	private static bool IsSinglePlayer(string function)
+	{
+		if (GSessionManager.Mode is SessionMode.SinglePlayer)
+			return true;
+
+		Log.Error("{Function} edits plots directly, so it is single-player only", function);
+		return false;
 	}
 
 	private static ValueTask<int> clr_log(
@@ -575,6 +598,37 @@ public static partial class LuaExecutor
 		}
 		else
 			Log.Error("Invalid VSync mode: {Mode}", argument);
+
+		context.Return();
+		return default;
+	}
+
+	private static ValueTask<int> tp_char(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		if (GPlayers.Local is null || GPlayerManager.LocalHandle is not { } handle)
+			Log.Error("No local character to teleport");
+		else if (!context.HasArgument(0))
+			handle.Respawn();
+		else if (context.GetArgument<LuaValue>(0) is { Type: LuaValueType.String } argument)
+		{
+			var query = argument.Read<string>();
+
+			var target = GPlayers.GetAll().FirstOrDefault(player =>
+				string.Equals(player.Id, query, StringComparison.Ordinal) ||
+				string.Equals(player.Name, query, StringComparison.Ordinal));
+
+			if (target is not null && GPlayerManager.GetHandleOrNull(target.Id) is { } other)
+				handle.Teleport(other.Body.GlobalPosition + Vector3.Up);
+			else
+				Log.Error("Player not found: {Query}", query);
+		}
+		else
+			handle.Teleport(new Vector3(
+				context.GetArgument<float>(0),
+				context.GetArgument<float>(1),
+				context.GetArgument<float>(2)));
 
 		context.Return();
 		return default;

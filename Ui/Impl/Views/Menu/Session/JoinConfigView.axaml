@@ -10,7 +10,7 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" MaxWidth="384">
         <TextBlock Text="Multi-Player Join Config:" />
 
         <StackPanel>
@@ -33,7 +33,7 @@
             </StackPanel>
         </StackPanel>
 
-        <StackPanel Spacing="4" IsVisible="{Binding #ManualRadioButton.IsChecked}">
+        <StackPanel Spacing="8" IsVisible="{Binding #ManualRadioButton.IsChecked}">
             <StackPanel>
                 <TextBlock Text="Address (IPv4):" FontSize="16" />
 
@@ -50,7 +50,7 @@
                     Value="{Binding Port}"
                     PlaceholderText="1024&#x2014;65,535"
                     ToolTip.Tip="The host's UDP port."
-                    Minimum="1024" Maximum="49151"
+                    Minimum="1024" Maximum="65535"
                     Increment="1"
                     ShowButtonSpinner="False" />
             </StackPanel>
@@ -68,7 +68,7 @@
         <StackPanel>
             <TextBlock Text="Password:" FontSize="16" />
 
-            <Grid ColumnDefinitions="*,4,Auto">
+            <Grid ColumnDefinitions="*,8,Auto">
                 <TextBox
                     Name="PasswordBox"
                     Text="{Binding Password}"
@@ -101,7 +101,7 @@
             TextWrapping="Wrap"
             IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-        <Grid ColumnDefinitions="*,4,*">
+        <Grid ColumnDefinitions="*,8,*">
             <Button
                 Content="&lt;- Back"
                 Command="{Binding GoBackCommand}"

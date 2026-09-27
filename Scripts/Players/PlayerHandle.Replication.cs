@@ -17,9 +17,9 @@ public partial class PlayerHandle
 
 	private static bool IsReplicating => GSessionManager is { Mode: SessionMode.MultiPlayer, IsActive: true };
 
-	public override void _PhysicsProcess(double delta)
+	private void Replicate(double delta)
 	{
-		if (Controller is null || !IsReplicating)
+		if (!IsReplicating)
 			return;
 
 		_sinceLastReplication += delta;
@@ -28,8 +28,8 @@ public partial class PlayerHandle
 
 		_sinceLastReplication = 0;
 
-		var position = Controller.GlobalPosition;
-		var yaw = Controller.GlobalRotation.Y;
+		var position = Body.GlobalPosition;
+		var yaw = Body.GlobalRotation.Y;
 
 		if (GSessionManager.IsServer)
 			Relay(position, yaw, GSessionManager.LocalPeerId);
@@ -37,9 +37,9 @@ public partial class PlayerHandle
 			RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcReplicate, position, yaw);
 	}
 
-	public override void _Process(double delta)
+	private void Interpolate(double delta)
 	{
-		if (Controller is not null || _targetPosition is not { } target)
+		if (_targetPosition is not { } target)
 			return;
 
 		var body = Body;

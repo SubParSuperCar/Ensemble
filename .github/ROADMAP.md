@@ -32,15 +32,17 @@ The tool suite, in rough intended order of implementation.
 
 SessionManager has the infra (sessions, versioned auth handshake, server-assigned player IDs, self-registering RPC
 actions and late-join snapshots, kicks, graceful shutdown notices). Actions live in Actions/ and are submitted with
-`new SetPlotAction(id).Submit()`; snapshots live in Snapshots/.
+`new SetPlotAction(id).Submit()`; both actions and snapshots live in Networking/.
 
 - [x] (M) Main-menu session sub-menu - Singleplayer / Multiplayer, Host / Join, address, port, password, remembered
   display name
-- [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties)
+- [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties), requested by
+  the client once its world exists; actions are withheld from a peer until it is synced
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
 - [ ] (M) SessionManager v2 - `Peer` objects (address, ping), server info UI, kick UI, request/response RPCs
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N` (or `--join=A:P`)
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
+- [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
 - [ ] (L) Dynamic instance replication - placed blocks sync + authority model
 - (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction + occupant/owner checks done
 - [ ] (S) Text chat (multiplayer only) - chat RPC action + chat box UI

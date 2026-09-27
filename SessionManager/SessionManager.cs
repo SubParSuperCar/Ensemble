@@ -262,6 +262,9 @@ public partial class SessionManager : Node
 		UtcStartedAt = GTimeProvider.GetUtcNow();
 
 		EmitSignal(SignalName.SessionStarted);
+
+		if (!IsServer)
+			RpcId(ServerPeerId, MethodName.RpcRequestSnapshots);
 	}
 
 	private void OnSessionStarted()

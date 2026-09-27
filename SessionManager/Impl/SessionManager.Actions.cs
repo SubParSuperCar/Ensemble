@@ -55,7 +55,7 @@ public partial class SessionManager
 
 		if (result.IsValid)
 		{
-			RpcRegistered(MethodName.RpcConfirmAction, actionId, payload, sourcePeerId);
+			RpcSynced(MethodName.RpcConfirmAction, actionId, payload, sourcePeerId);
 			return;
 		}
 

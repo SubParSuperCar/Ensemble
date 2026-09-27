@@ -10,7 +10,7 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="4" MaxWidth="384">
+    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" MaxWidth="384">
         <TextBlock Text="Multi-Player Host Config:" />
 
         <StackPanel>
@@ -20,7 +20,7 @@
                 Value="{Binding Port}"
                 PlaceholderText="&lt;Default&gt;"
                 ToolTip.Tip="The UDP port to listen on. Clients need it to join.&#x0a;Leave empty for the default port."
-                Minimum="1024" Maximum="49151"
+                Minimum="1024" Maximum="65535"
                 Increment="1"
                 ShowButtonSpinner="False" />
         </StackPanel>
@@ -28,7 +28,7 @@
         <StackPanel>
             <TextBlock Text="Password (Optional):" FontSize="16" />
 
-            <Grid ColumnDefinitions="*,4,Auto">
+            <Grid ColumnDefinitions="*,8,Auto">
                 <TextBox
                     Name="PasswordBox"
                     Text="{Binding Password}"
@@ -72,7 +72,7 @@
             TextWrapping="Wrap"
             IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-        <Grid ColumnDefinitions="*,4,*">
+        <Grid ColumnDefinitions="*,8,*">
             <Button
                 Content="&lt;- Back"
                 Command="{Binding GoBackCommand}"

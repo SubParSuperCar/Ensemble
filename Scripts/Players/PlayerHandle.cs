@@ -1,15 +1,22 @@
+using EnsembleRoot.Common.Input;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.Cameras;
 using Godot;
+using Serilog;
 
 namespace EnsembleRoot.Scripts.Players;
 
 [GlobalClass]
 public partial class PlayerHandle : Node3D
 {
+	private const double ResetHoldDuration = 1;
+
+	private static readonly StringName ResetAction = "char_reset";
+
 	private GdOccupant _occupant = null!;
 	private GdPlayer _player = null!;
+	private double _resetHeldFor;
 	private Vector3? _spawnOffset;
 
 	[Export] public Script CharacterControllerScript { get; set; } = null!;
@@ -24,11 +31,11 @@ public partial class PlayerHandle : Node3D
 	public CharacterBody3D? Character { get; private set; }
 	public CharacterController? Controller { get; private set; }
 
+	public CharacterBody3D Body => Character ?? Controller!;
+
 	public PopperCam? Camera { get; private set; }
 
 	public Vector3 SpawnOffset => _spawnOffset ??= CalculateSpawnOffset();
-
-	private CharacterBody3D Body => Character ?? Controller!;
 
 	public override void _EnterTree()
 	{
@@ -69,23 +76,65 @@ public partial class PlayerHandle : Node3D
 		Controller.SetPhysicsProcess(true);
 	}
 
+	public override void _Process(double delta)
+	{
+		if (Controller is null)
+			Interpolate(delta);
+		else
+			UpdateReset(delta);
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		if (Controller is not null)
+			Replicate(delta);
+	}
+
+	public void Teleport(Vector3 position)
+	{
+		Body.GlobalPosition = position;
+		Body.Velocity = Vector3.Zero;
+
+		Log.Debug("Teleported {Player} to {Position}", _player.Name, position);
+	}
+
+	public void Respawn() => Teleport(_occupant.Plot is { } plot ? GetPlotSpawn(plot) : SpawnLocation);
+
+	private void UpdateReset(double delta)
+	{
+		if (InputSink.IsSunk || !Input.IsActionPressed(ResetAction))
+		{
+			_resetHeldFor = 0;
+			return;
+		}
+
+		var heldFor = _resetHeldFor + delta;
+
+		if (_resetHeldFor < ResetHoldDuration && heldFor >= ResetHoldDuration)
+			Respawn();
+
+		_resetHeldFor = heldFor;
+	}
+
 	private void OnPlotChanged(GdPlot? plot)
 	{
-		if (plot is null)
+		if (plot is null || Controller is null)
 			return;
 
 		var handle = GPlotManager.GetHandle(plot.Id);
 
 		if (!IsIntersectingCuboid(Body.GlobalPosition, handle.BoundaryTransform, handle.BoundarySize))
-			Body.GlobalPosition = handle.OriginTransform.Origin + SpawnOffset;
+			Body.GlobalPosition = GetPlotSpawn(plot);
 	}
+
+	private Vector3 GetPlotSpawn(GdPlot plot) => GPlotManager.GetHandle(plot.Id).OriginTransform.Origin + SpawnOffset;
 
 	private Vector3 CalculateSpawnOffset()
 	{
 		var collider = Body.GetNode<CollisionShape3D>("Collider");
-		var aabb = collider.Shape.GetDebugMesh().GetAabb();
+		var aabb = collider.Transform * collider.Shape.GetDebugMesh().GetAabb();
 
-		return new Vector3(0, aabb.Size.Y / 2, 0);
+		return new Vector3(0, -aabb.Position.Y, 0);
 	}
 
 	private static bool IsIntersectingCuboid(Vector3 point, Transform3D transform, Vector3 size)

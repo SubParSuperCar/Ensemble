@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: SuppressMessage("Usage", "CA2255")]
+
 [assembly: SuppressMessage("Meziantou.Analyzer", "MA0003")]
 [assembly: SuppressMessage("Meziantou.Analyzer", "MA0007")]
 [assembly: SuppressMessage("Meziantou.Analyzer", "MA0026")]

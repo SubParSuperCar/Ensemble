@@ -4,10 +4,8 @@ namespace EnsembleRoot.SessionManager.Api;
 
 public interface IPeerAuthenticator
 {
-	TimeSpan Timeout { get; }
+	event Action<string> Failed;
 
-	event Action<long, string>? AuthenticationFailed;
-
-	void StartAuth(SceneMultiplayer multiplayer, bool isServer);
-	void StopAuth(SceneMultiplayer multiplayer);
+	void Start(SceneMultiplayer multiplayer, bool isServer);
+	void Stop(SceneMultiplayer multiplayer);
 }

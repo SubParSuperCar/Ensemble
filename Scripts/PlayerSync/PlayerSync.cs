@@ -5,6 +5,7 @@ using Serilog;
 
 namespace EnsembleRoot.Scripts.PlayerSync;
 
+// Bridges SessionManager and GdCore, keeping them technically independent while syncing peers <-> players
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class PlayerSync : Node, IAutoload

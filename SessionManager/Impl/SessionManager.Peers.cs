@@ -7,10 +7,17 @@ namespace EnsembleRoot.SessionManager;
 
 public partial class SessionManager
 {
+	public const int MaxDisplayNameLength = 24;
+
 	private readonly Dictionary<string, int> _peerIdsByPlayerId = [];
 	private readonly Dictionary<int, PeerInfo> _peersById = [];
 
 	public IReadOnlyDictionary<int, PeerInfo> Peers => _peersById;
+
+	// Empty means "let Core generate one from the player ID"
+	public static bool IsValidDisplayName(string? displayName) =>
+		displayName is null ||
+		(displayName.Length <= MaxDisplayNameLength && displayName.All(char.IsAsciiLetterOrDigit));
 
 	public bool TryGetPeerId(string playerId, out int peerId) => _peerIdsByPlayerId.TryGetValue(playerId, out peerId);
 
@@ -30,55 +37,66 @@ public partial class SessionManager
 		return result;
 	}
 
-	private void RegisterLocalPlayer(string playerId, string displayName)
-	{
-		if (IsServer)
-			ConfirmRegistration(LocalPeerId, playerId, displayName);
-		else
-			RpcId(ServerPeerId, MethodName.RpcRequestRegister, playerId, displayName);
-	}
-
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
-	private void RpcRequestRegister(string playerId, string displayName)
+	private void RpcRequestRegister(string displayName)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
-		EnqueueRpc(senderId, 1, () => ConfirmRegistration(senderId, playerId, displayName));
+		EnqueueRpc(senderId, 1, () => RegisterPeer(senderId, displayName));
 	}
 
-	private void ConfirmRegistration(int peerId, string playerId, string displayName)
+	[Rpc]
+	private void RpcAddPeer(int peerId, string playerId, string displayName)
+	{
+		if (!Guid.TryParse(playerId, out var guid))
+		{
+			Log.Warning("Discarded malformed player id {PlayerId} for peer {PeerId}", playerId, peerId);
+			return;
+		}
+
+		AddPeer(peerId, guid.ToString(), IsValidDisplayName(displayName) ? displayName : string.Empty);
+	}
+
+	[Rpc]
+	private void RpcRemovePeer(int peerId) => RemovePeer(peerId);
+
+	private void RegisterPeer(int peerId, string displayName)
 	{
 		if (_peersById.ContainsKey(peerId))
 			return;
 
+		if (!IsValidDisplayName(displayName))
+		{
+			Log.Debug("Discarded invalid display name from peer {PeerId}: {DisplayName}", peerId, displayName);
+			displayName = string.Empty;
+		}
+
 		foreach (var (existingPeerId, info) in _peersById)
-			RpcId(peerId, MethodName.RpcConfirmRegister, existingPeerId, info.PlayerId, info.DisplayName);
+			RpcId(peerId, MethodName.RpcAddPeer, existingPeerId, info.PlayerId, info.DisplayName);
+
+		var playerId = Guid.NewGuid().ToString();
 
 		AddPeer(peerId, playerId, displayName);
-		Rpc(MethodName.RpcConfirmRegister, peerId, playerId, displayName);
+		RpcRegistered(MethodName.RpcAddPeer, peerId, playerId, displayName);
 	}
 
-	[Rpc(CallLocal = false)]
-	private void RpcConfirmRegister(int peerId, string playerId, string displayName) =>
-		AddPeer(peerId, playerId, displayName);
-
-	private void BroadcastUnregister(int peerId)
+	private void RpcRegistered(StringName method, params Variant[] args)
 	{
-		if (RemovePeer(peerId))
-			Rpc(MethodName.RpcConfirmUnregister, peerId);
+		foreach (var peerId in _peersById.Keys.Where(peerId => peerId != LocalPeerId))
+			RpcId(peerId, method, args);
 	}
-
-	[Rpc(CallLocal = false)]
-	private void RpcConfirmUnregister(int peerId) => RemovePeer(peerId);
 
 	private void AddPeer(int peerId, string playerId, string displayName)
 	{
-		if (!_peersById.TryAdd(peerId, new PeerInfo(playerId, displayName)))
+		if (_peerIdsByPlayerId.ContainsKey(playerId) || !_peersById.TryAdd(peerId, new PeerInfo(playerId, displayName)))
 			return;
 
-		_peerIdsByPlayerId[playerId] = peerId;
+		_peerIdsByPlayerId.Add(playerId, peerId);
 
 		Log.Debug("Registered player {PlayerId} for peer {PeerId}", playerId, peerId);
 		EmitSignal(SignalName.PlayerRegistered, peerId, playerId, displayName);
+
+		if (peerId == LocalPeerId)
+			Activate();
 	}
 
 	private bool RemovePeer(int peerId)
@@ -98,6 +116,18 @@ public partial class SessionManager
 	{
 		foreach (var peerId in _peersById.Keys.ToArray())
 			RemovePeer(peerId);
+	}
+
+	private void OnPeerConnected(long peerId) => Log.Debug("Peer connected: {PeerId}", peerId);
+
+	private void OnPeerDisconnected(long peerId)
+	{
+		Log.Debug("Peer disconnected: {PeerId}", peerId);
+
+		DisposeRateLimiter((int)peerId);
+
+		if (IsServer && RemovePeer((int)peerId))
+			RpcRegistered(MethodName.RpcRemovePeer, (int)peerId);
 	}
 
 	public readonly record struct PeerInfo(string PlayerId, string DisplayName);

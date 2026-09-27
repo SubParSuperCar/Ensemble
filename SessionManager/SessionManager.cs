@@ -11,18 +11,16 @@ namespace EnsembleRoot.SessionManager;
 
 /// <summary>
 ///     The <see cref="GdCore" />-agnostic session lifetime manager using Godot's <see cref="MultiplayerApi" />.
-///     Provides resources for starting and stopping single- and multiplayer
-///     sessions, handling password authentication, managing RPC actions, and more.
+///     Provides resources for starting and stopping single- and multiplayer sessions,
+///     handling password authentication, registering server-assigned player IDs, managing RPC actions, and more.
+///     A session is only started (<see cref="IsActive" />) once the local player has been registered.
 /// </summary>
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class SessionManager : Node
 {
 	[Signal]
-	public delegate void PeerConnectedEventHandler(int peerId);
-
-	[Signal]
-	public delegate void PeerDisconnectedEventHandler(int peerId);
+	public delegate void ActionRejectedEventHandler(string actionId, string reason);
 
 	[Signal]
 	public delegate void PlayerRegisteredEventHandler(int peerId, string playerId, string displayName);
@@ -39,9 +37,13 @@ public partial class SessionManager : Node
 	[Signal]
 	public delegate void SessionStoppedEventHandler();
 
+	public const int DefaultPort = 7777;
+
 	private const int Unlimited = -1;
 
-	private string _pendingDisplayName = string.Empty;
+	private static readonly TimeSpan RegistrationTimeout = TimeSpan.FromSeconds(10);
+
+	private string _displayName = string.Empty;
 
 	private ISession? _session;
 
@@ -63,9 +65,9 @@ public partial class SessionManager : Node
 	public SessionMode Mode => _session?.Mode ?? SessionMode.Inactive;
 
 	public bool IsServer => _session?.IsServer ?? false;
-	public bool IsActive => _session?.IsActive ?? false;
+	public bool IsActive { get; private set; }
 
-	public DateTimeOffset UtcStartedAt => _session?.UtcStartedAt ?? default;
+	public DateTimeOffset UtcStartedAt { get; private set; }
 	public double UtcStartedAtUnix => UtcStartedAt.ToUnixTimeSeconds();
 
 	public int LocalPeerId { get; private set; }
@@ -104,69 +106,40 @@ public partial class SessionManager : Node
 
 	public void StartSinglePlayer() => StartSinglePlayer(string.Empty);
 
-	public void StartSinglePlayer(string displayName)
+	public void StartSinglePlayer(string? displayName)
 	{
 		Log.Debug("Starting {Class}...", nameof(SinglePlayerSession));
-
-		StopSession();
-		var stopwatch = Stopwatch.StartNew();
-
-		_pendingDisplayName = displayName;
-		_session = new SinglePlayerSession((SceneMultiplayer)Multiplayer);
-
-		StartSession();
-
-		stopwatch.Stop();
-		Log.Debug(
-			"Started {Class} in {ElapsedMs:F3} ms",
-			nameof(SinglePlayerSession),
-			stopwatch.Elapsed.TotalMilliseconds);
+		Start(new SinglePlayerSession((SceneMultiplayer)Multiplayer), displayName);
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
-	public void HostMultiPlayer(int port, string password) => HostMultiPlayer(port, password, Unlimited);
+	public void HostMultiPlayer(int port, string? password) => HostMultiPlayer(port, password, string.Empty);
 
-	public void HostMultiPlayer(int port, string? password, int maxPlayers) =>
-		HostMultiPlayer(port, password, string.Empty, maxPlayers);
-
-	public void HostMultiPlayer(int port, string? password, string displayName) =>
+	public void HostMultiPlayer(int port, string? password, string? displayName) =>
 		HostMultiPlayer(port, password, displayName, Unlimited);
 
-	public void HostMultiPlayer(int port, string? password, string? displayName, int maxPlayers)
+	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients)
 	{
 		Log.Debug(
-			"Hosting {Class}... (Port={Port}, MaxPlayers={MaxPlayers}, HasPassword={HasPassword})",
+			"Hosting {Class}... (Port={Port}, MaxClients={MaxClients}, HasPassword={HasPassword})",
 			nameof(MultiPlayerSession),
 			port,
-			maxPlayers is Unlimited ? "Unlimited" : maxPlayers.ToString(CultureInfo.InvariantCulture),
+			maxClients is Unlimited ? "Unlimited" : maxClients.ToString(CultureInfo.InvariantCulture),
 			!string.IsNullOrEmpty(password));
 
-		StopSession();
-		var stopwatch = Stopwatch.StartNew();
-
-		_pendingDisplayName = displayName ?? string.Empty;
-		_session = new MultiPlayerSession(
-			(SceneMultiplayer)Multiplayer,
-			new HostConfig(
-				port,
-				Authenticators.Password(password),
-				maxPlayers is Unlimited ? null : maxPlayers));
-
-		StartSession();
-
-		stopwatch.Stop();
-		Log.Debug(
-			"Started {Class} (Host) in {ElapsedMs:F3} ms",
-			nameof(MultiPlayerSession),
-			stopwatch.Elapsed.TotalMilliseconds);
+		Start(
+			new MultiPlayerSession(
+				(SceneMultiplayer)Multiplayer,
+				new HostConfig(port, Authenticators.Password(password), maxClients is Unlimited ? null : maxClients)),
+			displayName);
 	}
 
 	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
 
-	public void JoinMultiPlayer(string address, int port, string password) =>
+	public void JoinMultiPlayer(string address, int port, string? password) =>
 		JoinMultiPlayer(address, port, password, string.Empty);
 
-	public void JoinMultiPlayer(string address, int port, string? password, string displayName)
+	public void JoinMultiPlayer(string address, int port, string? password, string? displayName)
 	{
 		Log.Debug(
 			"Joining {Class}... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
@@ -175,122 +148,103 @@ public partial class SessionManager : Node
 			port,
 			!string.IsNullOrEmpty(password));
 
+		Start(
+			new MultiPlayerSession(
+				(SceneMultiplayer)Multiplayer,
+				new JoinConfig(address, port, Authenticators.Password(password))),
+			displayName);
+	}
+
+	public void StopSession() => EndSession(null);
+
+	private void Start(ISession session, string? displayName)
+	{
 		StopSession();
 		var stopwatch = Stopwatch.StartNew();
 
-		_pendingDisplayName = displayName;
-		_session = new MultiPlayerSession(
-			(SceneMultiplayer)Multiplayer,
-			new JoinConfig(address, port, Authenticators.Password(password)));
+		_session = session;
+		_displayName = displayName ?? string.Empty;
 
-		StartSession();
+		session.Started += OnSessionStarted;
+		session.Failed += OnSessionFailed;
+		session.StartSession();
 
 		stopwatch.Stop();
-		Log.Debug(
-			"Started {Class} (Join) in {ElapsedMs:F3} ms",
-			nameof(MultiPlayerSession),
-			stopwatch.Elapsed.TotalMilliseconds);
+
+		if (ReferenceEquals(_session, session))
+			Log.Debug(
+				"Started {Class} in {ElapsedMs:F3} ms",
+				session.GetType().Name,
+				stopwatch.Elapsed.TotalMilliseconds);
 	}
 
-	public void StopSession()
+	private void EndSession(string? failureReason)
 	{
-		if (_session is null)
+		if (_session is not { } session)
 			return;
 
 		var mode = Mode;
-		Log.Debug("Stopping {SessionMode} after {Elapsed}...", mode, GTimeProvider.GetUtcNow() - UtcStartedAt);
+		var elapsed = IsActive ? GTimeProvider.GetUtcNow() - UtcStartedAt : TimeSpan.Zero;
+
+		Log.Debug("Stopping {SessionMode} after {Elapsed}...", mode, elapsed);
 		var stopwatch = Stopwatch.StartNew();
 
-		var session = _session;
 		_session = null;
 
+		session.Started -= OnSessionStarted;
+		session.Failed -= OnSessionFailed;
 		session.StopSession();
 
-		session.Started -= OnSessionStarted;
-		session.Stopped -= OnSessionStopped;
-		session.Failed -= OnSessionFailed;
+		ClearPeers();
+		ClearRpcState();
+
+		var wasActive = IsActive;
+
+		IsActive = false;
+		UtcStartedAt = default;
+		LocalPeerId = 0;
 
 		stopwatch.Stop();
 		Log.Debug("Stopped {SessionMode} in {ElapsedMs:F3} ms", mode, stopwatch.Elapsed.TotalMilliseconds);
+
+		if (wasActive)
+			EmitSignal(SignalName.SessionStopped);
+
+		if (failureReason is not null)
+			EmitSignal(SignalName.SessionFailed, failureReason);
 	}
 
-	private static string LoadOrGeneratePlayerId()
+	private void Activate()
 	{
-#if ENSEMBLE_RELEASE
-		var config = new ConfigFile();
-		var result = config.Load(UserDataCfgPath);
+		IsActive = true;
+		UtcStartedAt = GTimeProvider.GetUtcNow();
 
-		if (result is Error.Ok)
-		{
-			var stored = config.GetValue("player", "id", string.Empty).AsString();
-
-			if (Guid.TryParse(stored, out _))
-				return stored;
-
-			Log.Warning("Stored player ID is not a valid GUID: {Value}", stored);
-		}
-		else if (result is not Error.FileNotFound)
-			Log.Warning("Failed to load player data: {Error}", result);
-#endif
-
-		var id = Guid.NewGuid().ToString();
-
-#if ENSEMBLE_RELEASE
-		config.SetValue("player", "id", id);
-		config.Save(UserDataCfgPath);
-#endif
-
-		return id;
-	}
-
-	private void StartSession()
-	{
-		_session!.Started += OnSessionStarted;
-		_session.Stopped += OnSessionStopped;
-		_session.Failed += OnSessionFailed;
-
-		_session.StartSession();
-	}
-
-	private void OnPeerConnected(long peerId)
-	{
-		Log.Debug("Peer connected: {PeerId}", peerId);
-		EmitSignal(SignalName.PeerConnected, (int)peerId);
-	}
-
-	private void OnPeerDisconnected(long peerId)
-	{
-		Log.Debug("Peer disconnected: {PeerId}", peerId);
-
-		DisposeRateLimiter(peerId);
-
-		var id = (int)peerId;
-		if (IsServer)
-			BroadcastUnregister(id);
-
-		EmitSignal(SignalName.PeerDisconnected, id);
+		EmitSignal(SignalName.SessionStarted);
 	}
 
 	private void OnSessionStarted()
 	{
 		LocalPeerId = Multiplayer.GetUniqueId();
 
-		var playerId = LoadOrGeneratePlayerId();
-		RegisterLocalPlayer(playerId, _pendingDisplayName);
+		if (IsServer)
+		{
+			RegisterPeer(LocalPeerId, _displayName);
+			return;
+		}
 
-		EmitSignal(SignalName.SessionStarted);
-	}
+		RpcId(ServerPeerId, MethodName.RpcRequestRegister, _displayName);
 
-	private void OnSessionStopped()
-	{
-		ClearPeers();
-		ClearRpcState();
-		EmitSignal(SignalName.SessionStopped);
+		var session = _session;
+		GetTree().CreateTimer(RegistrationTimeout.TotalSeconds).Timeout += () =>
+		{
+			if (ReferenceEquals(_session, session) && !IsActive)
+				OnSessionFailed("Timed out waiting for the server to register the local player.");
+		};
 	}
 
 	private void OnSessionFailed(string reason)
 	{
 		Log.Warning("Session failed: {Reason}", reason);
-		EmitSignal(SignalName.SessionFailed, reason);
+		EndSession(reason);
 	}
 }

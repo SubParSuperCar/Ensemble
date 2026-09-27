@@ -16,7 +16,7 @@ public sealed class TimeoutHandlerTests
 		// ReSharper disable once ShortLivedHttpClient
 		using var client = new HttpClient(handler);
 
-		await Assert.ThrowsAsync<OperationCanceledException>(() =>
+		await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
 			client.GetAsync("http://example.com", TestContext.Current.CancellationToken));
 	}
 

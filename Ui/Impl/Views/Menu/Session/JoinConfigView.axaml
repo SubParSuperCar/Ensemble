@@ -17,25 +17,29 @@
 
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <RadioButton Name="ManualRadioButton" Content="Manual" FontSize="20" IsChecked="True" />
-                <RadioButton Name="CodeRadioButton" Content="Code" FontSize="20" />
+                <RadioButton Name="CodeRadioButton" Content="Code" FontSize="20" IsChecked="{Binding IsCodeMethod}" />
             </StackPanel>
         </StackPanel>
 
         <StackPanel IsVisible="{Binding #ManualRadioButton.IsChecked}" Spacing="4">
             <StackPanel>
                 <TextBlock Text="Address (IPv4):" FontSize="16" />
-                <TextBox PlaceholderText="X.X.X.X" />
+                <TextBox Text="{Binding Address}" PlaceholderText="X.X.X.X" />
             </StackPanel>
 
             <StackPanel>
                 <TextBlock Text="Port Number:" FontSize="16" />
-                <NumericUpDown PlaceholderText="1024&#x2014;49,151" Minimum="0" Increment="1" ShowButtonSpinner="False" />
+                <NumericUpDown
+                    Value="{Binding Port}"
+                    PlaceholderText="1024&#x2014;49,151"
+                    Minimum="1024" Maximum="49151" Increment="1"
+                    ShowButtonSpinner="False" />
             </StackPanel>
         </StackPanel>
 
         <StackPanel IsVisible="{Binding #CodeRadioButton.IsChecked}">
             <TextBlock Text="Code:" FontSize="16" />
-            <TextBox PlaceholderText="&lt;Address&gt;:&lt;Port&gt;" />
+            <TextBox Text="{Binding Code}" PlaceholderText="&lt;Address&gt;:&lt;Port&gt;" />
         </StackPanel>
 
         <StackPanel>
@@ -44,6 +48,7 @@
             <Grid ColumnDefinitions="*,4,Auto">
                 <TextBox
                     Name="PasswordBox"
+                    Text="{Binding Password}"
                     PlaceholderText="&lt;Not Enforced&gt;"
                     PasswordChar="*" />
 
@@ -57,12 +62,18 @@
 
         <StackPanel>
             <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
-            <TextBox PlaceholderText="&lt;Saved or Generated&gt;" MaxLength="24" />
+            <TextBox Text="{Binding DisplayName}" PlaceholderText="&lt;Short GUID&gt;" MaxLength="24" />
         </StackPanel>
 
+        <TextBlock
+            Text="{Binding Status}"
+            IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+            FontSize="16"
+            TextWrapping="Wrap" />
+
         <Grid ColumnDefinitions="*,4,*">
-            <Button Content="&lt;- Back" />
-            <Button Grid.Column="2" Content="Join!" />
+            <Button Content="&lt;- Back" Command="{Binding GoBackCommand}" />
+            <Button Grid.Column="2" Content="Join!" Command="{Binding JoinCommand}" />
         </Grid>
     </StackPanel>
 

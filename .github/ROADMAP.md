@@ -39,7 +39,8 @@ actions and late-join snapshots, kicks, graceful shutdown notices). Actions live
 - [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties), requested by
   the client once its world exists; actions are withheld from a peer until it is synced
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
-- [ ] (M) SessionManager v2 - `Peer` objects (address, ping), server info UI, kick UI, request/response RPCs
+- [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
+- [ ] (S) Peer UI - ping / address in the player list, server info panel, kick button
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N` (or `--join=A:P`)
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
@@ -65,7 +66,7 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) SessionManager fully gdignored; Sentinels dependency removed
 - [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
 - [ ] (S) dedicated 3D physics layers - Plot Base, Instances (only World + Character exist today)
-- [ ] (S) populate Tests/ - HoleyArray, OccupantRegistry, CoreVariant, save-pipeline roundtrip
+- (WIP) (S) populate Tests/ - Occupants ownership done; HoleyArray, CoreVariant, save-pipeline roundtrip next
 - [ ] (S) audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 
 ## Later / big

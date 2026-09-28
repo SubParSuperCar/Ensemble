@@ -19,18 +19,19 @@ public partial class GdOccupants : RefCounted
 
 	private static readonly ConditionalWeakTable<IOccupants, GdOccupants> Wrappers = [];
 
-	private IOccupants _source = null!;
+	/// <inheritdoc cref="IOccupants" />
+	public IOccupants Source { get; private init; } = null!;
 
-	public int Count => _source.All.Count;
-	public int MaxCount => _source.MaxCount;
+	public int Count => Source.All.Count;
+	public int MaxCount => Source.MaxCount;
 
-	public GdOccupant? Owner => _source.Owner is { } owner ? GdOccupant.From(owner) : null;
+	public GdOccupant? Owner => Source.Owner is { } owner ? GdOccupant.From(owner) : null;
 
 	public static GdOccupants From(IOccupants occupants) =>
 		Wrappers.GetValue(occupants,
 			static source =>
 			{
-				var wrapper = new GdOccupants { _source = source };
+				var wrapper = new GdOccupants { Source = source };
 
 				source.Added += occupant => wrapper.EmitSignal(SignalName.Added, GdOccupant.From(occupant));
 				source.Removed += occupant => wrapper.EmitSignal(SignalName.Removed, GdOccupant.From(occupant));
@@ -42,7 +43,7 @@ public partial class GdOccupants : RefCounted
 			});
 
 	public GdOccupant? GetOccupant(string playerId) =>
-		Guid.TryParse(playerId, out var guid) && _source.All.TryGetValue(guid, out var occupant)
+		Guid.TryParse(playerId, out var guid) && Source.All.TryGetValue(guid, out var occupant)
 			? GdOccupant.From(occupant)
 			: null;
 
@@ -50,22 +51,22 @@ public partial class GdOccupants : RefCounted
 	{
 		var result = new Array<GdOccupant>();
 
-		foreach (var occupant in _source.All.Values)
+		foreach (var occupant in Source.All.Values)
 			result.Add(GdOccupant.From(occupant));
 
 		return result;
 	}
 
 	public void SetOwner() => SetOwner(string.Empty);
-	public void SetOwner(string playerId) => _source.SetOwner(Guid.TryParse(playerId, out var guid) ? guid : null);
+	public void SetOwner(string playerId) => Source.SetOwner(Guid.TryParse(playerId, out var guid) ? guid : null);
 
-	public void Clear() => _source.Clear();
+	public void Clear() => Source.Clear();
 
 	public Array<Dictionary> GetAllDicts()
 	{
 		var result = new Array<Dictionary>();
 
-		foreach (var occupant in _source.All.Values)
+		foreach (var occupant in Source.All.Values)
 			result.Add(GdOccupant.From(occupant).ToDict());
 
 		return result;

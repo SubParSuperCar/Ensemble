@@ -220,11 +220,7 @@ public partial class ConstructTool : ToolBase
 		if (IntersectsInstance(plot, position))
 			return PlacementState.Overlapping;
 
-		var core = GCore.Core;
-		if (
-			core.Players.Local is not { } local ||
-			!core.Plots.TryGetOccupant(local.Id, out var occupant) ||
-			occupant.Plot?.Instances is not { } instances)
+		if (LocalPlot?.Source.Instances is not { } instances)
 			throw new UnreachableException();
 
 		var quota = instances.GetQuota(AssetId);

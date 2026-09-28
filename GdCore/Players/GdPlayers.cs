@@ -19,16 +19,17 @@ public partial class GdPlayers : RefCounted
 
 	private static readonly ConditionalWeakTable<IPlayers, GdPlayers> Wrappers = [];
 
-	private IPlayers _source = null!;
+	/// <inheritdoc cref="IPlayers" />
+	public IPlayers Source { get; private init; } = null!;
 
-	public int Count => _source.All.Count;
-	public GdPlayer? Local => _source.Local is { } local ? GdPlayer.From(local) : null;
+	public int Count => Source.All.Count;
+	public GdPlayer? Local => Source.Local is { } local ? GdPlayer.From(local) : null;
 
 	public static GdPlayers From(IPlayers players) =>
 		Wrappers.GetValue(players,
 			static source =>
 			{
-				var wrapper = new GdPlayers { _source = source };
+				var wrapper = new GdPlayers { Source = source };
 
 				source.Added += player => wrapper.EmitSignal(SignalName.Added, GdPlayer.From(player));
 				source.Removed += player => wrapper.EmitSignal(SignalName.Removed, GdPlayer.From(player));
@@ -40,7 +41,7 @@ public partial class GdPlayers : RefCounted
 			});
 
 	public GdPlayer? GetPlayer(string id) =>
-		Guid.TryParse(id, out var guid) && _source.All.TryGetValue(guid, out var player)
+		Guid.TryParse(id, out var guid) && Source.All.TryGetValue(guid, out var player)
 			? GdPlayer.From(player)
 			: null;
 
@@ -48,7 +49,7 @@ public partial class GdPlayers : RefCounted
 	{
 		var result = new Array<GdPlayer>();
 
-		foreach (var player in _source.All.Values)
+		foreach (var player in Source.All.Values)
 			result.Add(GdPlayer.From(player));
 
 		return result;
@@ -58,14 +59,14 @@ public partial class GdPlayers : RefCounted
 	public GdPlayer Add(string id) => Add(id, string.Empty);
 
 	public GdPlayer Add(string id, string name) =>
-		GdPlayer.From(_source.Add(
+		GdPlayer.From(Source.Add(
 			id == string.Empty ? null : Guid.Parse(id),
 			name == string.Empty ? null : name));
 
 	public void Remove(string id)
 	{
 		if (Guid.TryParse(id, out var guid))
-			_source.Remove(guid);
+			Source.Remove(guid);
 	}
 
 	public void SetLocal(string id) => SetLocal(id, string.Empty);
@@ -75,17 +76,17 @@ public partial class GdPlayers : RefCounted
 		if (!Guid.TryParse(id, out var guid))
 			return;
 
-		if (!_source.All.ContainsKey(guid))
-			_source.Add(guid, name == string.Empty ? null : name);
+		if (!Source.All.ContainsKey(guid))
+			Source.Add(guid, name == string.Empty ? null : name);
 
-		_source.SetLocal(guid);
+		Source.SetLocal(guid);
 	}
 
 	public Array<Dictionary> GetAllDicts()
 	{
 		var result = new Array<Dictionary>();
 
-		foreach (var player in _source.All.Values)
+		foreach (var player in Source.All.Values)
 			result.Add(GdPlayer.From(player).ToDict());
 
 		return result;

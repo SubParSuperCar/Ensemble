@@ -69,7 +69,7 @@ public partial class SessionManager
 	}
 
 	private ActionValidation ExecuteAction(string actionId, Array<Variant> payload, int sourcePeerId) =>
-		_peersById.TryGetValue(sourcePeerId, out var info)
-			? NetworkActionRegistry.Execute(actionId, payload, new ActionSource(sourcePeerId, info.PlayerId))
+		_peersById.TryGetValue(sourcePeerId, out var peer)
+			? NetworkActionRegistry.Execute(actionId, payload, new ActionSource(sourcePeerId, peer.PlayerId))
 			: ActionValidation.Reject("Peer not registered.");
 }

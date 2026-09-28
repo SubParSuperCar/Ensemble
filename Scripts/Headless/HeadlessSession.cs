@@ -7,9 +7,11 @@ using static EnsembleRoot.SessionManager.SessionManager;
 
 namespace EnsembleRoot.Scripts.Headless;
 
-// Hosts a dedicated session, or joins one as a client, from user args, e.g.:
-// --headless -- --port=7777 --password=abc --max-clients=8
-// --headless -- --join=127.0.0.1:7777 --password=abc --name=Bot
+/// <summary>
+///     Hosts a dedicated session, or joins one as a client, from user args, e.g.:
+///     <c lang="shell">--headless -- --port=7777 --password=abc --max-clients=8</c> or
+///     <c lang="shell">--headless -- --join=127.0.0.1:7777 --password=abc --name=Bot</c>.
+/// </summary>
 [GlobalClass]
 [Autoload(
 	Scope = AutoloadScope.HeadlessServer,
@@ -50,7 +52,7 @@ public partial class HeadlessSession : Node, IAutoload
 
 	private static void OnSessionFailed(string reason)
 	{
-		Log.Fatal("Headless session failed: {Reason}", reason);
+		Log.Warning("Headless session ended: {Reason}", reason);
 		GMain.Quit();
 	}
 }

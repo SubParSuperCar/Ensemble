@@ -17,16 +17,17 @@ public partial class GdPlots : RefCounted
 
 	private static readonly ConditionalWeakTable<IPlots, GdPlots> Wrappers = [];
 
-	private IPlots _source = null!;
+	/// <inheritdoc cref="IPlots" />
+	public IPlots Source { get; private init; } = null!;
 
-	public int Count => _source.All.Count;
-	public bool IsLocked => _source.IsLocked;
+	public int Count => Source.All.Count;
+	public bool IsLocked => Source.IsLocked;
 
 	public static GdPlots From(IPlots plots) =>
 		Wrappers.GetValue(plots,
 			static source =>
 			{
-				var wrapper = new GdPlots { _source = source };
+				var wrapper = new GdPlots { Source = source };
 
 				source.Added += plot => wrapper.EmitSignal(SignalName.Added, GdPlot.From(plot));
 				source.Removed += plot => wrapper.EmitSignal(SignalName.Removed, GdPlot.From(plot));
@@ -34,13 +35,13 @@ public partial class GdPlots : RefCounted
 				return wrapper;
 			});
 
-	public GdPlot? GetPlot(int id) => _source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
+	public GdPlot? GetPlot(int id) => Source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
 
 	public Array<GdPlot> GetAll()
 	{
 		var result = new Array<GdPlot>();
 
-		foreach (var plot in _source.All.Values)
+		foreach (var plot in Source.All.Values)
 			result.Add(GdPlot.From(plot));
 
 		return result;
@@ -50,7 +51,7 @@ public partial class GdPlots : RefCounted
 	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, Default);
 
 	public GdPlot Add(int id, int maxOccupantCount, int maxInstanceCount) =>
-		GdPlot.From(_source.Add(
+		GdPlot.From(Source.Add(
 			id,
 			maxOccupantCount is Default ? null : maxOccupantCount,
 			maxInstanceCount is Default ? null : maxInstanceCount));
@@ -67,7 +68,7 @@ public partial class GdPlots : RefCounted
 		bool shouldResolveOwnerIfNullOrRelinquishing,
 		bool shouldDespawnAndClearInstancesIfLastToLeave)
 	{
-		if (!Guid.TryParse(playerId, out var guid) || (plotId is not None && !_source.All.ContainsKey(plotId)))
+		if (!Guid.TryParse(playerId, out var guid) || (plotId is not None && !Source.All.ContainsKey(plotId)))
 			return;
 
 		if (shouldDespawnAndClearInstancesIfLastToLeave)
@@ -85,19 +86,19 @@ public partial class GdPlots : RefCounted
 			}
 		}
 
-		_source.SetPlot(guid, plotId is None ? null : plotId, shouldResolveOwnerIfNullOrRelinquishing);
+		Source.SetPlot(guid, plotId is None ? null : plotId, shouldResolveOwnerIfNullOrRelinquishing);
 	}
 
 	public GdOccupant? GetOccupant(string playerId) =>
 		Guid.TryParse(playerId, out var guid) && TryGetOccupant(guid, out var occupant) ? occupant : null;
 
-	public void Lock() => _source.Lock();
+	public void Lock() => Source.Lock();
 
 	public Array<Dictionary> GetAllDicts()
 	{
 		var result = new Array<Dictionary>();
 
-		foreach (var plot in _source.All.Values)
+		foreach (var plot in Source.All.Values)
 			result.Add(GdPlot.From(plot).ToDict());
 
 		return result;
@@ -105,7 +106,7 @@ public partial class GdPlots : RefCounted
 
 	private bool TryGetOccupant(Guid guid, [NotNullWhen(true)] out GdOccupant? occupant)
 	{
-		if (!_source.TryGetOccupant(guid, out var found))
+		if (!Source.TryGetOccupant(guid, out var found))
 		{
 			occupant = null;
 			return false;

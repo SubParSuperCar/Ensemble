@@ -48,6 +48,52 @@ Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol f
 
 ---
 
+## Playing Together
+
+<details open>
+  <summary>Click to expand/collapse this section.</summary>
+
+Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone must run the **same version**.
+
+- **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`),
+  and optionally set a password and a client limit. Share your address with the players joining:
+    - **Same network (LAN):** run `log_lan_ip4_addr()` in the console (`` ` `` / `F9`).
+    - **Over the internet:** run `log_pub_ip4_addr()`, and forward the UDP port on your router.
+- **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address and port, or a
+  single `<address>:<port>` code.
+- **Dedicated server:** run the executable headless with user arguments, e.g.
+  `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8`.
+
+Players who join late receive the current state of every plot. Plot changes, placements, and deletions are
+synchronized, and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove
+one using `kick(peer_id, "reason")`. Display names are remembered between sessions.
+
+</details>
+
+---
+
+## Controls
+
+<details>
+  <summary>Click to expand/collapse this section.</summary>
+
+| Action                           | Binding                                |
+|----------------------------------|----------------------------------------|
+| Move / run / jump                | `WASD` or arrows / `Shift` / `Space`   |
+| Orbit / turn / zoom camera       | Right mouse / `Q` `E` / wheel, `I` `O` |
+| Toggle place / delete tool       | `1` / `2`                              |
+| Place or delete (tool trigger)   | Left mouse                             |
+| Rotate placement (X / Y / Z)     | `R` / `T` / `Y`                        |
+| Reset character position         | Hold `H` for 1 second                  |
+| Player list                      | `Tab`                                  |
+| Console / system terminal        | `` ` `` or `F9` / `F8`                 |
+| Back (menus)                     | `Backspace`                            |
+| Quick-start a single-player game | `Esc`                                  |
+
+</details>
+
+---
+
 ## Platform Support
 
 <details open>

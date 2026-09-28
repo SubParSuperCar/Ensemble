@@ -17,16 +17,17 @@ public partial class GdInstances : RefCounted
 
 	private static readonly ConditionalWeakTable<IInstances, GdInstances> Wrappers = [];
 
-	private IInstances _source = null!;
+	/// <inheritdoc cref="IInstances" />
+	public IInstances Source { get; private init; } = null!;
 
-	public int Count => _source.Count;
-	public int MaxCount => _source.MaxCount;
+	public int Count => Source.Count;
+	public int MaxCount => Source.MaxCount;
 
 	public static GdInstances From(IInstances instances) =>
 		Wrappers.GetValue(instances,
 			static source =>
 			{
-				var wrapper = new GdInstances { _source = source };
+				var wrapper = new GdInstances { Source = source };
 
 				source.Added += instance => wrapper.EmitSignal(SignalName.Added, GdInstance.From(instance));
 				source.Removed += instance => wrapper.EmitSignal(SignalName.Removed, GdInstance.From(instance));
@@ -34,30 +35,30 @@ public partial class GdInstances : RefCounted
 				return wrapper;
 			});
 
-	public GdInstance? GetInstance(int id) => _source.TryGet(id, out var instance) ? GdInstance.From(instance) : null;
+	public GdInstance? GetInstance(int id) => Source.TryGet(id, out var instance) ? GdInstance.From(instance) : null;
 
 	public Array<GdInstance> GetAll()
 	{
 		var result = new Array<GdInstance>();
 
-		foreach (var instance in _source.All)
+		foreach (var instance in Source.All)
 			result.Add(GdInstance.From(instance));
 
 		return result;
 	}
 
 	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation) =>
-		GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot()));
+		GdInstance.From(Source.Add(assetId, position.FromGodot(), rotation.FromGodot()));
 
 	public GdInstance AddAt(int assetId, Vector3 position, Quaternion rotation, int instanceId) =>
-		GdInstance.From(_source.Add(assetId, position.FromGodot(), rotation.FromGodot(), instanceId));
+		GdInstance.From(Source.Add(assetId, position.FromGodot(), rotation.FromGodot(), instanceId));
 
-	public void Remove(int id) => _source.Remove(id);
-	public void Clear() => _source.Clear();
+	public void Remove(int id) => Source.Remove(id);
+	public void Clear() => Source.Clear();
 
 	public Array<int> GetQuota(int assetId)
 	{
-		var (count, maxCount) = _source.GetQuota(assetId);
+		var (count, maxCount) = Source.GetQuota(assetId);
 		return [count, maxCount];
 	}
 
@@ -65,7 +66,7 @@ public partial class GdInstances : RefCounted
 	{
 		var result = new Godot.Collections.Dictionary<int, Array<int>>();
 
-		foreach (var (assetId, quota) in _source.GetAllQuotas())
+		foreach (var (assetId, quota) in Source.GetAllQuotas())
 			result.Add(assetId, [quota.Count, quota.MaxCount]);
 
 		return result;
@@ -75,7 +76,7 @@ public partial class GdInstances : RefCounted
 	{
 		var result = new Array<Dictionary>();
 
-		foreach (var instance in _source.All)
+		foreach (var instance in Source.All)
 			result.Add(GdInstance.From(instance).ToDict());
 
 		return result;

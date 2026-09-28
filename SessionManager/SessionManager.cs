@@ -1,7 +1,6 @@
 using System.Globalization;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.SessionManager.Api;
-using EnsembleRoot.SessionManager.Auth;
 using EnsembleRoot.SessionManager.Sessions;
 using Godot;
 using Serilog;
@@ -11,10 +10,15 @@ namespace EnsembleRoot.SessionManager;
 
 /// <summary>
 ///     The <see cref="GdCore" />-agnostic session lifetime manager using Godot's <see cref="MultiplayerApi" />.
-///     Provides resources for starting and stopping single- and multiplayer sessions,
-///     handling password authentication, registering server-assigned player IDs, managing RPC actions, and more.
-///     A session is only started (<see cref="IsActive" />) once the local player has been registered.
+///     Provides resources for starting and stopping single- and multiplayer sessions, authenticating peers,
+///     registering them as <see cref="Peer" /> objects with server-assigned player IDs, managing RPC actions and
+///     snapshots, and more.
 /// </summary>
+/// <remarks>
+///     A session is only started (<see cref="IsActive" />) once the local player has been registered. Clients then
+///     request snapshots, and confirmed actions are only sent to peers that received them, so none can precede or
+///     duplicate a snapshot. Failures are handled deferred, so a session never ends mid-poll (e.g., from an RPC).
+/// </remarks>
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class SessionManager : Node
@@ -23,10 +27,10 @@ public partial class SessionManager : Node
 	public delegate void ActionRejectedEventHandler(string actionId, string reason);
 
 	[Signal]
-	public delegate void PlayerRegisteredEventHandler(int peerId, string playerId, string displayName);
+	public delegate void PeerRegisteredEventHandler(Peer peer);
 
 	[Signal]
-	public delegate void PlayerUnregisteredEventHandler(int peerId, string playerId);
+	public delegate void PeerUnregisteredEventHandler(Peer peer);
 
 	[Signal]
 	public delegate void SessionFailedEventHandler(string reason);
@@ -44,10 +48,7 @@ public partial class SessionManager : Node
 	private static readonly TimeSpan RegistrationTimeout = TimeSpan.FromSeconds(10);
 	private static readonly TimeSpan KickTimeout = TimeSpan.FromSeconds(2);
 
-	private static readonly string Version = ProjectSettings.GetSetting("application/config/version").AsString();
-
 	private string _displayName = string.Empty;
-	private bool _isDedicated;
 
 	private ISession? _session;
 
@@ -66,6 +67,8 @@ public partial class SessionManager : Node
 		}
 	}
 
+	public static string Version { get; } = ProjectSettings.GetSetting("application/config/version").AsString();
+
 	public SessionMode Mode => _session?.Mode ?? SessionMode.Inactive;
 
 	public bool IsServer => _session?.IsServer ?? false;
@@ -75,6 +78,12 @@ public partial class SessionManager : Node
 	public double UtcStartedAtUnix => UtcStartedAt.ToUnixTimeSeconds();
 
 	public int LocalPeerId { get; private set; }
+
+	public ISessionConfig? Config => _session?.Config;
+
+	public int Port => Config?.Port ?? 0;
+	public bool HasPassword => !string.IsNullOrEmpty(Config?.Password);
+	public bool IsDedicated => Config is HostConfig { IsDedicated: true };
 
 	public override void _EnterTree()
 	{
@@ -113,7 +122,7 @@ public partial class SessionManager : Node
 	public void StartSinglePlayer(string? displayName)
 	{
 		Log.Debug("Starting {Class}...", nameof(SinglePlayerSession));
-		Start(new SinglePlayerSession((SceneMultiplayer)Multiplayer), displayName, false);
+		Start(new SinglePlayerSession((SceneMultiplayer)Multiplayer), displayName);
 	}
 
 	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
@@ -136,15 +145,8 @@ public partial class SessionManager : Node
 			!string.IsNullOrEmpty(password),
 			isDedicated);
 
-		Start(
-			new MultiPlayerSession(
-				(SceneMultiplayer)Multiplayer,
-				new HostConfig(
-					port,
-					new HandshakeAuthenticator(Version, password),
-					maxClients is Unlimited ? null : maxClients)),
-			displayName,
-			isDedicated);
+		var config = new HostConfig(port, password, maxClients is Unlimited ? null : maxClients, isDedicated);
+		Start(new MultiPlayerSession((SceneMultiplayer)Multiplayer, config, Version), displayName);
 	}
 
 	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
@@ -161,12 +163,8 @@ public partial class SessionManager : Node
 			port,
 			!string.IsNullOrEmpty(password));
 
-		Start(
-			new MultiPlayerSession(
-				(SceneMultiplayer)Multiplayer,
-				new JoinConfig(address, port, new HandshakeAuthenticator(Version, password))),
-			displayName,
-			false);
+		var config = new JoinConfig(address, port, password);
+		Start(new MultiPlayerSession((SceneMultiplayer)Multiplayer, config, Version), displayName);
 	}
 
 	public void StopSession() => EndSession(null);
@@ -195,14 +193,13 @@ public partial class SessionManager : Node
 	[Rpc]
 	private void RpcEndSession(string reason) => OnSessionFailed(reason);
 
-	private void Start(ISession session, string? displayName, bool isDedicated)
+	private void Start(ISession session, string? displayName)
 	{
 		StopSession();
 		var stopwatch = Stopwatch.StartNew();
 
 		_session = session;
 		_displayName = displayName ?? string.Empty;
-		_isDedicated = isDedicated;
 
 		session.Started += OnSessionStarted;
 		session.Failed += OnSessionFailed;
@@ -271,7 +268,7 @@ public partial class SessionManager : Node
 	{
 		LocalPeerId = Multiplayer.GetUniqueId();
 
-		if (_isDedicated)
+		if (IsDedicated)
 		{
 			Activate();
 			return;
@@ -293,7 +290,6 @@ public partial class SessionManager : Node
 		};
 	}
 
-	// Deferred so the session never ends mid-poll (e.g., from an RPC or a multiplayer signal)
 	private void OnSessionFailed(string reason)
 	{
 		var session = _session;

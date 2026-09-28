@@ -24,6 +24,8 @@ public partial class SessionManager
 	{
 		while (_pendingRpcs.TryDequeue(out var action))
 			RunSafely(action);
+
+		UpdatePings(delta);
 	}
 
 	private static void RunSafely(Action action)

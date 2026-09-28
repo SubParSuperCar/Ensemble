@@ -1,40 +1,44 @@
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.GdCore.Players;
+using EnsembleRoot.SessionManager;
 using Godot;
 using Serilog;
 
 namespace EnsembleRoot.Scripts.PlayerSync;
 
-// Bridges SessionManager and GdCore, keeping them technically independent while syncing peers <-> players
+/// <summary>
+///     Mirrors session <see cref="Peer" /> objects as <see cref="GdPlayers" /> players,
+///     keeping SessionManager and GdCore independent of each other.
+/// </summary>
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class PlayerSync : Node, IAutoload
 {
 	public void Initialize()
 	{
-		GSessionManager.PlayerRegistered += OnPlayerRegistered;
-		GSessionManager.PlayerUnregistered += OnPlayerUnregistered;
+		GSessionManager.PeerRegistered += OnPeerRegistered;
+		GSessionManager.PeerUnregistered += OnPeerUnregistered;
 	}
 
 	public override void _ExitTree()
 	{
-		GSessionManager.PlayerRegistered -= OnPlayerRegistered;
-		GSessionManager.PlayerUnregistered -= OnPlayerUnregistered;
+		GSessionManager.PeerRegistered -= OnPeerRegistered;
+		GSessionManager.PeerUnregistered -= OnPeerUnregistered;
 	}
 
-	private static void OnPlayerRegistered(int peerId, string playerId, string displayName)
+	private static void OnPeerRegistered(Peer peer)
 	{
-		if (peerId == GSessionManager.LocalPeerId)
-			GPlayers.SetLocal(playerId, displayName);
+		if (peer.IsLocal)
+			GPlayers.SetLocal(peer.PlayerId, peer.DisplayName);
 		else
-			GPlayers.Add(playerId, displayName);
+			GPlayers.Add(peer.PlayerId, peer.DisplayName);
 
-		Log.Debug("Synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), playerId, peerId);
+		Log.Debug("Synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), peer.PlayerId, peer.Id);
 	}
 
-	private static void OnPlayerUnregistered(int peerId, string playerId)
+	private static void OnPeerUnregistered(Peer peer)
 	{
-		GPlayers.Remove(playerId);
-		Log.Debug("Removed synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), playerId, peerId);
+		GPlayers.Remove(peer.PlayerId);
+		Log.Debug("Removed synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), peer.PlayerId, peer.Id);
 	}
 }

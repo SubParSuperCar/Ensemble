@@ -11,17 +11,18 @@ public partial class GdAsset : RefCounted
 {
 	private static readonly ConditionalWeakTable<IAsset, GdAsset> Wrappers = [];
 
-	private IAsset _source = null!;
+	/// <inheritdoc cref="IAsset" />
+	public IAsset Source { get; private init; } = null!;
 
-	public int Id => _source.Id;
-	public string Name => _source.Name;
+	public int Id => Source.Id;
+	public string Name => Source.Name;
 
-	public int MaxInstanceCount => _source.MaxInstanceCount;
+	public int MaxInstanceCount => Source.MaxInstanceCount;
 
-	public Dictionary Properties => Converter.ToGodotProperties(_source.Properties);
+	public Dictionary Properties => Converter.ToGodotProperties(Source.Properties);
 
 	public static GdAsset From(IAsset asset) =>
-		Wrappers.GetValue(asset, static source => new GdAsset { _source = source });
+		Wrappers.GetValue(asset, static source => new GdAsset { Source = source });
 
 	public Dictionary ToDict() =>
 		new()
@@ -32,5 +33,5 @@ public partial class GdAsset : RefCounted
 			["properties"] = Properties
 		};
 
-	public override string ToString() => _source.ToString()!;
+	public override string ToString() => Source.ToString()!;
 }

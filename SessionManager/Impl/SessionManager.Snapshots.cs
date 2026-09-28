@@ -6,8 +6,6 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace EnsembleRoot.SessionManager;
 
-// Clients request snapshots once SessionStarted has been handled (i.e., their world exists);
-// confirmed actions are only sent to synced peers, so none can precede or duplicate a snapshot
 public partial class SessionManager
 {
 	private readonly HashSet<int> _syncedPeerIds = [];

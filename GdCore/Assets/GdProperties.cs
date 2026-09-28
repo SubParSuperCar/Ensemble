@@ -15,24 +15,25 @@ public partial class GdProperties : RefCounted
 
 	private static readonly ConditionalWeakTable<IProperties, GdProperties> Wrappers = [];
 
-	private IProperties _source = null!;
+	/// <inheritdoc cref="IProperties" />
+	public IProperties Source { get; private init; } = null!;
 
 	public static GdProperties From(IProperties properties) =>
 		Wrappers.GetValue(properties,
 			static source =>
 			{
-				var wrapper = new GdProperties { _source = source };
+				var wrapper = new GdProperties { Source = source };
 
 				source.Changed += (key, value) => wrapper.EmitSignal(SignalName.Changed, key, value.ToGodot());
 
 				return wrapper;
 			});
 
-	public Variant GetValue(string key) => _source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
-	public Dictionary GetAll() => Converter.ToGodotProperties(_source.All);
+	public Variant GetValue(string key) => Source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
+	public Dictionary GetAll() => Converter.ToGodotProperties(Source.All);
 
-	public void Update(string key, Variant value) => _source.Update(key, value.FromGodot());
-	public void UpdateAll(Dictionary properties) => _source.UpdateAll(Converter.FromGodotProperties(properties));
+	public void Update(string key, Variant value) => Source.Update(key, value.FromGodot());
+	public void UpdateAll(Dictionary properties) => Source.UpdateAll(Converter.FromGodotProperties(properties));
 
-	public override string ToString() => _source.ToString()!;
+	public override string ToString() => Source.ToString()!;
 }

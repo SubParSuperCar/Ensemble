@@ -10,15 +10,16 @@ public partial class GdPlayer : RefCounted
 {
 	private static readonly ConditionalWeakTable<IPlayer, GdPlayer> Wrappers = [];
 
-	private IPlayer _source = null!;
+	/// <inheritdoc cref="IPlayer" />
+	public IPlayer Source { get; private init; } = null!;
 
-	public string Id => _source.Id.ToString();
-	public string Name => _source.Name;
+	public string Id => Source.Id.ToString();
+	public string Name => Source.Name;
 
-	public double UtcCreatedAtUnix => _source.UtcCreatedAt.ToUnixTimeSeconds();
+	public double UtcCreatedAtUnix => Source.UtcCreatedAt.ToUnixTimeSeconds();
 
 	public static GdPlayer From(IPlayer player) =>
-		Wrappers.GetValue(player, static source => new GdPlayer { _source = source });
+		Wrappers.GetValue(player, static source => new GdPlayer { Source = source });
 
 	public Dictionary ToDict() =>
 		new()
@@ -28,5 +29,5 @@ public partial class GdPlayer : RefCounted
 			["utcCreatedAtUnix"] = UtcCreatedAtUnix
 		};
 
-	public override string ToString() => _source.ToString()!;
+	public override string ToString() => Source.ToString()!;
 }

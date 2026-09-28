@@ -7,7 +7,12 @@ using RandomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator
 
 namespace EnsembleRoot.SessionManager.Auth;
 
-// Challenge: [IsLocked][Nonce (if locked)][Version (UTF-8)]; clients reject version mismatches before completing
+/// <summary>
+///     Authenticates every peer, locked or not, so both sides always agree on the handshake.
+/// </summary>
+/// <remarks>
+///     The challenge is [IsLocked][Nonce (if locked)][Version (UTF-8)]; clients reject version mismatches.
+/// </remarks>
 public sealed class HandshakeAuthenticator(string version, string? password) : IPeerAuthenticator
 {
 	private const byte OpenFlag = 0;

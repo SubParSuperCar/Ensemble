@@ -14,31 +14,32 @@ public partial class GdPlot : RefCounted
 
 	private static readonly ConditionalWeakTable<IPlot, GdPlot> Wrappers = [];
 
-	private IPlot _source = null!;
+	/// <inheritdoc cref="IPlot" />
+	public IPlot Source { get; private init; } = null!;
 
-	public int Id => _source.Id;
-	public bool IsSpawned => _source.IsSpawned;
+	public int Id => Source.Id;
+	public bool IsSpawned => Source.IsSpawned;
 
 	/// <inheritdoc cref="GdInstances" />
-	public GdInstances Instances => field ??= GdInstances.From(_source.Instances);
+	public GdInstances Instances => field ??= GdInstances.From(Source.Instances);
 
 	/// <inheritdoc cref="GdOccupants" />
-	public GdOccupants Occupants => field ??= GdOccupants.From(_source.Occupants);
+	public GdOccupants Occupants => field ??= GdOccupants.From(Source.Occupants);
 
 	public static GdPlot From(IPlot plot) =>
 		Wrappers.GetValue(plot,
 			static source =>
 			{
-				var wrapper = new GdPlot { _source = source };
+				var wrapper = new GdPlot { Source = source };
 				source.IsSpawnedChanged += isSpawned => wrapper.EmitSignal(SignalName.IsSpawnedChanged, isSpawned);
 
 				return wrapper;
 			});
 
-	public void Spawn() => _source.Spawn();
-	public void Despawn() => _source.Despawn();
+	public void Spawn() => Source.Spawn();
+	public void Despawn() => Source.Despawn();
 
-	public void Reset() => _source.Reset();
+	public void Reset() => Source.Reset();
 
 	public Dictionary ToDict() =>
 		new()
@@ -47,5 +48,5 @@ public partial class GdPlot : RefCounted
 			["isSpawned"] = IsSpawned
 		};
 
-	public override string ToString() => _source.ToString()!;
+	public override string ToString() => Source.ToString()!;
 }

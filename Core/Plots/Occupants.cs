@@ -5,7 +5,7 @@ namespace EnsembleCoreRoot.Plots;
 /// <inheritdoc />
 public class Occupants : IOccupants
 {
-	private readonly Dictionary<Guid, IOccupant> _occupantsByPlayerId = [];
+	private readonly OrderedDictionary<Guid, IOccupant> _occupantsByPlayerId = [];
 	private readonly Plot _plot;
 
 	public Occupants(Plot plot, int? maxCount = null)
@@ -59,7 +59,6 @@ public class Occupants : IOccupants
 
 	internal void Remove(Occupant occupant, bool shouldResolveOwnerIfRelinquishing = false, bool isExchanging = false)
 	{
-		// TODO: Make the next owner deterministic
 		if (ReferenceEquals(occupant, Owner))
 			SetOwner(shouldResolveOwnerIfRelinquishing && _occupantsByPlayerId.Count > 1
 				? _occupantsByPlayerId.Values.First(other => !ReferenceEquals(other, occupant)).Player.Id

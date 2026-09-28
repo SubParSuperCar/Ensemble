@@ -68,7 +68,7 @@ public partial class PlayerHandle
 
 		if (GSessionManager.IsServer)
 		{
-			if (!GSessionManager.TryGetPeerId(Id, out var ownerId) || ownerId != senderId)
+			if (GSessionManager.GetPeerByPlayerId(Id)?.Id != senderId)
 				return;
 
 			Relay(position, yaw, senderId);

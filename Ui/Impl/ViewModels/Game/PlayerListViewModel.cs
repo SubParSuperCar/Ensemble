@@ -30,7 +30,7 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
-		var peerId = GSessionManager.TryGetPeerId(gdPlayer.Id, out var id) ? id : None;
+		var peerId = GSessionManager.GetPeerByPlayerId(gdPlayer.Id)?.Id ?? None;
 		var player = new PlayerItem(gdPlayer.Name, gdPlayer.Id, peerId);
 
 		var index = Players

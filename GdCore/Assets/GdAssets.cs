@@ -17,16 +17,17 @@ public partial class GdAssets : RefCounted
 
 	private static readonly ConditionalWeakTable<IAssets, GdAssets> Wrappers = [];
 
-	private IAssets _source = null!;
+	/// <inheritdoc cref="IAssets" />
+	public IAssets Source { get; private init; } = null!;
 
-	public int Count => _source.All.Count;
-	public bool IsLocked => _source.IsLocked;
+	public int Count => Source.All.Count;
+	public bool IsLocked => Source.IsLocked;
 
 	public static GdAssets From(IAssets assets) =>
 		Wrappers.GetValue(assets,
 			static source =>
 			{
-				var wrapper = new GdAssets { _source = source };
+				var wrapper = new GdAssets { Source = source };
 
 				source.Added += asset => wrapper.EmitSignal(SignalName.Added, GdAsset.From(asset));
 				source.Removed += asset => wrapper.EmitSignal(SignalName.Removed, GdAsset.From(asset));
@@ -34,13 +35,13 @@ public partial class GdAssets : RefCounted
 				return wrapper;
 			});
 
-	public GdAsset? GetAsset(int id) => _source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
+	public GdAsset? GetAsset(int id) => Source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
 
 	public Array<GdAsset> GetAll()
 	{
 		var result = new Array<GdAsset>();
 
-		foreach (var asset in _source.All.Values)
+		foreach (var asset in Source.All.Values)
 			result.Add(GdAsset.From(asset));
 
 		return result;
@@ -52,19 +53,19 @@ public partial class GdAssets : RefCounted
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, Default);
 
 	public GdAsset Add(int id, string name, Dictionary? properties, int maxInstanceCount) =>
-		GdAsset.From(_source.Add(
+		GdAsset.From(Source.Add(
 			id,
 			name == string.Empty ? null : name,
 			properties is null ? null : Converter.FromGodotProperties(properties),
 			maxInstanceCount is Default ? null : maxInstanceCount));
 
-	public void Lock() => _source.Lock();
+	public void Lock() => Source.Lock();
 
 	public Array<Dictionary> GetAllDicts()
 	{
 		var result = new Array<Dictionary>();
 
-		foreach (var asset in _source.All.Values)
+		foreach (var asset in Source.All.Values)
 			result.Add(GdAsset.From(asset).ToDict());
 
 		return result;

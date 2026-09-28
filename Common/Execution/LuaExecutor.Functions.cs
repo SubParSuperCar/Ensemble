@@ -36,6 +36,7 @@ public static partial class LuaExecutor
 		env[nameof(dmp_asm_info)] = new LuaFunction(dmp_asm_info);
 		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
 		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
+		env[nameof(dmp_peers)] = new LuaFunction(dmp_peers);
 		env[nameof(dmp_vsync_modes)] = new LuaFunction(dmp_vsync_modes);
 		env[nameof(gc)] = new LuaFunction(gc);
 		env[nameof(help)] = new LuaFunction(help);
@@ -288,6 +289,27 @@ public static partial class LuaExecutor
 			.Replace("\\", @"\\", StringComparison.Ordinal)
 			.Replace("\r", "\\r", StringComparison.Ordinal)
 			.Replace("\n", "\\n", StringComparison.Ordinal);
+
+	private static ValueTask<int> dmp_peers(
+		LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
+	{
+		var manager = GSessionManager;
+
+		Log.Information(
+			"Session: {Mode} (Version={Version}, Port={Port}, HasPassword={HasPassword}, IsDedicated={IsDedicated})",
+			manager.Mode,
+			SessionManager.SessionManager.Version,
+			manager.Port,
+			manager.HasPassword,
+			manager.IsDedicated);
+
+		foreach (var peer in manager.Peers.Values.OrderBy(static peer => peer.Id))
+			Log.Information("{$Peer}", peer.ToDict());
+
+		context.Return();
+		return default;
+	}
 
 	private static ValueTask<int> dmp_vsync_modes(
 		LuaFunctionExecutionContext context,

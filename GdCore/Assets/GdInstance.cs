@@ -11,21 +11,22 @@ public partial class GdInstance : RefCounted
 {
 	private static readonly ConditionalWeakTable<IInstance, GdInstance> Wrappers = [];
 
-	private IInstance _source = null!;
+	/// <inheritdoc cref="IInstance" />
+	public IInstance Source { get; private init; } = null!;
 
-	public int Id => _source.Id;
+	public int Id => Source.Id;
 
 	/// <inheritdoc cref="GdAsset" />
-	public GdAsset Asset => GdAsset.From(_source.Asset);
+	public GdAsset Asset => GdAsset.From(Source.Asset);
 
 	/// <inheritdoc cref="GdProperties" />
-	public GdProperties Properties => field ??= GdProperties.From(_source.Properties);
+	public GdProperties Properties => field ??= GdProperties.From(Source.Properties);
 
-	public Vector3 Position => _source.Position.ToGodot();
-	public Quaternion Rotation => _source.Rotation.ToGodot();
+	public Vector3 Position => Source.Position.ToGodot();
+	public Quaternion Rotation => Source.Rotation.ToGodot();
 
 	public static GdInstance From(IInstance instance) =>
-		Wrappers.GetValue(instance, static source => new GdInstance { _source = source });
+		Wrappers.GetValue(instance, static source => new GdInstance { Source = source });
 
 	public Dictionary ToDict() =>
 		new()
@@ -37,5 +38,5 @@ public partial class GdInstance : RefCounted
 			["properties"] = Properties.GetAll()
 		};
 
-	public override string ToString() => _source.ToString()!;
+	public override string ToString() => Source.ToString()!;
 }

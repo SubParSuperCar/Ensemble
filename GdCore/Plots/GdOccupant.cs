@@ -14,19 +14,20 @@ public partial class GdOccupant : RefCounted
 
 	private static readonly ConditionalWeakTable<IOccupant, GdOccupant> Wrappers = [];
 
-	private IOccupant _source = null!;
+	/// <inheritdoc cref="IOccupant" />
+	public IOccupant Source { get; private init; } = null!;
 
 	/// <inheritdoc cref="GdPlayer" />
-	public GdPlayer Player => GdPlayer.From(_source.Player);
+	public GdPlayer Player => GdPlayer.From(Source.Player);
 
 	/// <inheritdoc cref="GdPlot" />
-	public GdPlot? Plot => _source.Plot is { } plot ? GdPlot.From(plot) : null;
+	public GdPlot? Plot => Source.Plot is { } plot ? GdPlot.From(plot) : null;
 
 	public static GdOccupant From(IOccupant occupant) =>
 		Wrappers.GetValue(occupant,
 			static source =>
 			{
-				var wrapper = new GdOccupant { _source = source };
+				var wrapper = new GdOccupant { Source = source };
 
 				source.PlotChanged += plot =>
 					wrapper.EmitSignal(SignalName.PlotChanged, (plot is null ? null : GdPlot.From(plot))!);
@@ -41,5 +42,5 @@ public partial class GdOccupant : RefCounted
 			["plotId"] = Plot?.Id ?? None
 		};
 
-	public override string ToString() => _source.ToString()!;
+	public override string ToString() => Source.ToString()!;
 }

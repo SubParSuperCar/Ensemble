@@ -8,6 +8,8 @@ public sealed class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 	public SessionMode Mode => SessionMode.SinglePlayer;
 	public bool IsServer => true;
 
+	public ISessionConfig? Config => null;
+
 	public event Action? Started;
 
 	event Action<string> ISession.Failed { add { } remove { } }
@@ -19,4 +21,7 @@ public sealed class SinglePlayerSession(SceneMultiplayer multiplayer) : ISession
 	}
 
 	public void StopSession() => multiplayer.MultiplayerPeer = null;
+
+	public string GetAddress(int peerId) => string.Empty;
+	public int GetPing(int peerId) => 0;
 }

@@ -40,7 +40,8 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
   Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
   workflow ("Run workflow"), then download the artifacts from the finished run.
 
-Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files.
+Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files. There is also a single `-jit` ZIP
+for testing and troubleshooting; see [**Platform Support**](#platform-support) before choosing it.
 
 > [!IMPORTANT]
 > macOS builds need one extra step before they'll open &mdash; see [**Bypassing Gatekeeper on
@@ -113,6 +114,15 @@ through [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) for troubleshootin
 `rendering/rendering_device/driver.macos` project setting to `vulkan`.
 
 Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple Silicon.
+
+### JIT Build
+
+The regular builds are compiled ahead of time with NativeAOT: fast to start and run, but one download per platform.
+The `-jit` ZIP instead runs Ensemble's code on the regular .NET runtime, which compiles it just in time (JIT). It is
+slower to start, larger, and **not recommended for playing**, but it bundles both Windows and Linux (`x86_64`) in one
+download and keeps every assembly and debug symbol as a separate file, which helps with testing and troubleshooting.
+Run `Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux) from the extracted folder; each uses its own self-contained
+.NET runtime in its `data_Game_<platform>_x86_64` folder, so keep those folders next to the executables.
 
 ### Bypassing Gatekeeper on macOS
 

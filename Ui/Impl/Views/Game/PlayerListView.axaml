@@ -32,7 +32,7 @@
                 <TextBlock
                     Grid.Column="4"
                     Text="Peer ID&#x0a;&#x2193; "
-                    ToolTip.Tip="The player's connection ID in this session. The host is always 001."
+                    ToolTip.Tip="The player's connection ID in this session. The host is always 1."
                     TextAlignment="Right" />
 
                 <TextBlock

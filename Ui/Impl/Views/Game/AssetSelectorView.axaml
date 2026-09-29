@@ -83,7 +83,7 @@
                         </Grid.ColumnDefinitions>
 
                         <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="3" Text="{Binding Id, StringFormat='{}{0:000}'}" />
+                        <TextBlock Grid.Column="3" Text="{Binding Id}" />
                         <TextBlock Grid.Column="5" Text="{Binding Quota}" TextAlignment="Right" />
                     </Grid>
                 </DataTemplate>

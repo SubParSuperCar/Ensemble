@@ -54,7 +54,7 @@
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="Occupancy" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Text="{Binding Id, StringFormat='{}{0:000}'}" />
+                            <TextBlock Text="{Binding Id}" />
 
                             <TextBlock
                                 Grid.Column="2"

@@ -42,7 +42,7 @@ public static partial class LuaExecutor
 		env[nameof(help)] = new LuaFunction(help);
 		env[nameof(kick)] = new LuaFunction(kick);
 		env[nameof(log_lan_ip4_addr)] = new LuaFunction(log_lan_ip4_addr);
-		env[nameof(log_pub_ip4_addr)] = new LuaFunction(log_pub_ip4_addr);
+		env[nameof(log_wan_ip4_addr)] = new LuaFunction(log_wan_ip4_addr);
 		env[nameof(perf_mod)] = new LuaFunction(perf_mod);
 		env[nameof(print)] = new LuaFunction(print);
 		env[nameof(quit)] = new LuaFunction(quit);
@@ -401,7 +401,7 @@ public static partial class LuaExecutor
 		return default;
 	}
 
-	private static async ValueTask<int> log_pub_ip4_addr(
+	private static async ValueTask<int> log_wan_ip4_addr(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
@@ -416,7 +416,7 @@ public static partial class LuaExecutor
 
 			stopwatch.Stop();
 			Log.Information(
-				"Public IPv4 address: {Address} (RequestMs={RequestMs:F3})",
+				"Wide Area Network (WAN) IPv4 address: {Address} (RequestMs={RequestMs:F3})",
 				address,
 				stopwatch.Elapsed.TotalMilliseconds);
 		}

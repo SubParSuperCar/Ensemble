@@ -58,7 +58,7 @@ Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone mus
 - **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`),
   and optionally set a password and a client limit. Share your address with the players joining:
     - **Same network (LAN):** run `log_lan_ip4_addr()` in the console (`` ` `` / `F9`).
-    - **Over the internet:** run `log_pub_ip4_addr()`, and forward the UDP port on your router.
+    - **Over the internet:** run `log_wan_ip4_addr()`, and forward the UDP port on your router.
 - **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address and port, or a
   single `<address>:<port>` code.
 - **Dedicated server:** run the executable headless with user arguments, e.g.

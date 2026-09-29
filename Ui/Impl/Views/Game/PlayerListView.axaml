@@ -13,9 +13,9 @@
         <Grid RowDefinitions="Auto,*" Grid.IsSharedSizeScope="True">
             <Grid Margin="6,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="16" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="PeerId" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Ping" />
@@ -27,7 +27,7 @@
                     Grid.Column="2"
                     Text="Player List (Tab)"
                     ToolTip.Tip="Everyone in this session, sorted by name. (Bound to Tab)"
-                    TextAlignment="Center" />
+                    HorizontalAlignment="Center" />
 
                 <TextBlock
                     Grid.Column="4"
@@ -64,7 +64,7 @@
 
                             <TextBlock
                                 Grid.Column="2"
-                                Text="{Binding PeerId, StringFormat='{}{0:000}'}"
+                                Text="{Binding PeerId}"
                                 TextAlignment="Right" />
 
                             <TextBlock

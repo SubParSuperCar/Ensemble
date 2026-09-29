@@ -40,7 +40,7 @@ actions and late-join snapshots, kicks, graceful shutdown notices). Actions live
   the client once its world exists; actions are withheld from a peer until it is synced
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
-- [ ] (S) Peer UI - ping / address in the player list, server info panel, kick button
+- (WIP) (S) Peer UI - ping column in the player list done; server info panel and kick button next
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N` (or `--join=A:P`)
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua

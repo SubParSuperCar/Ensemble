@@ -12,6 +12,8 @@ namespace EnsembleRoot.Ui.Impl;
 
 public class App : Application
 {
+	private static bool IsInSession => SessionManager.SessionManager.Instance?.IsActive is true;
+
 	public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
 	public override void OnFrameworkInitializationCompleted()
@@ -31,10 +33,17 @@ public class App : Application
 		base.OnFrameworkInitializationCompleted();
 	}
 
-	// Sink/mark certain keystrokes as handled to prevent unintentional UI navigation
+	// Sink/mark keystrokes as handled to prevent unintentional UI navigation, and all navigation keys while in-session
 	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs e)
 	{
-		if (e.Key is Key.Space or Key.Tab && !InputSink.IsSunk)
+		if (InputSink.IsSunk)
+			return;
+
+		if (
+			e.Key is Key.Space or Key.Tab ||
+			(IsInSession &&
+			 e.Key is Key.Up or Key.Down or Key.Left or Key.Right
+				 or Key.PageUp or Key.PageDown or Key.Home or Key.End or Key.Enter))
 			e.Handled = true;
 	}
 }

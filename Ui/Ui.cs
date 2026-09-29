@@ -63,7 +63,7 @@ public partial class Ui : AvaloniaControl
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms."));
+				$"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 
 			WeakReferenceMessenger.Default.Register<SetUiRenderScaleMessage>(this,
 				(_, message) => RenderScaling = message.Value);

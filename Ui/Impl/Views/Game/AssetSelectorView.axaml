@@ -12,7 +12,8 @@
     <Grid
         RowDefinitions="Auto,Auto,*,Auto"
         ToolTip.Tip="Asset Selector"
-        Background="{DynamicResource TranslucentBackgroundBrush}">
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        Grid.IsSharedSizeScope="True">
 
         <Grid ColumnDefinitions="*,Auto">
             <TextBox
@@ -27,18 +28,26 @@
                 Text="{Binding TotalQuota}"
                 ToolTip.Tip="Total instances placed on this plot, out of the plot's maximum."
                 VerticalAlignment="Center"
-                Margin="4" />
+                Margin="4,0" />
         </Grid>
 
-        <Grid Grid.Row="1" ColumnDefinitions="Auto,*,Auto,4,128">
-            <TextBlock Text=" Item &#x2193;" ToolTip.Tip="Asset Name" />
-            <TextBlock Grid.Column="2" Text="ID &#x2193;" ToolTip.Tip="Asset ID" />
+        <Grid Grid.Row="1" Margin="6,0,10,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="AssetId" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Quota" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Item &#x2193;" ToolTip.Tip="The asset's name, grouped into folders by category." />
+            <TextBlock Grid.Column="2" Text="&#x2193; ID" ToolTip.Tip="The asset's internal ID." />
 
             <TextBlock
                 Grid.Column="4"
-                Text="Quota &#x2193;&#x2191; "
+                Text="&#x2195; Quota"
                 ToolTip.Tip="Instances placed for this asset, out of its maximum."
-                HorizontalAlignment="Right" />
+                TextAlignment="Right" />
         </Grid>
 
         <TreeView
@@ -55,16 +64,25 @@
 
             <TreeView.DataTemplates>
                 <TreeDataTemplate DataType="vm:FolderNode" ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Path}" />
+                    <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Path}" TextTrimming="CharacterEllipsis" />
                 </TreeDataTemplate>
 
                 <DataTemplate DataType="vm:AssetNode">
                     <Grid
-                        ColumnDefinitions="4,*,4,Auto,4,128,4"
-                        ToolTip.Tip="Select to place this asset with the construct tool."
+                        ToolTip.Tip="Selects this asset for the placement tool."
                         Background="{DynamicResource TranslucentBackgroundBrush}">
 
-                        <TextBlock Grid.Column="1" Text="{Binding Name}" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="AssetId" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Quota" />
+                            <ColumnDefinition Width="4" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
                         <TextBlock Grid.Column="3" Text="{Binding Id, StringFormat='{}{0:000}'}" />
                         <TextBlock Grid.Column="5" Text="{Binding Quota}" TextAlignment="Right" />
                     </Grid>

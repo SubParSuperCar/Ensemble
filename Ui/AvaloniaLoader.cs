@@ -35,7 +35,7 @@ public partial class AvaloniaLoader : Node
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Loaded Avalonia UI in {stopwatch.Elapsed.TotalMilliseconds:F3} ms."));
+				$"Loaded Avalonia UI in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 		}
 		catch (Exception exception)
 		{

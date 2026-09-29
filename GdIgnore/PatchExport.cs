@@ -26,7 +26,7 @@ public static class PatchExport
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Patched export layout in {stopwatch.Elapsed.TotalMilliseconds:F3} ms."));
+				$"Patched export layout in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 		}
 		catch (Exception exception)
 		{

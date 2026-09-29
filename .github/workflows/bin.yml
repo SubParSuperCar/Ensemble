@@ -83,6 +83,16 @@ jobs:
           rm -f ./*.pdb ./*.dbg ./*.xml
           zip -6 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
 
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          cd out
+          ./Ensemble.x86_64 --headless -- --port=7777 > ../smoke.log 2>&1 & pid=$!
+          sleep 30
+          kill -0 "${pid}" || { tail -50 ../smoke.log; exit 1; }
+          kill "${pid}"
+          grep -qF 'Instantiated and added "WorldHandle"' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
+
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
@@ -90,10 +100,6 @@ jobs:
           path: Ensemble-${{ env.ID }}-linux-x86_64*.zip
           if-no-files-found: error
 
-  # TODO: macOS's runtime is currently untested because I, NoodleSnake, do not have an Apple device
-  # macOS might not work because PatchExport.cs moves *two* directories for ARM64 and x86_64
-  # We could check and match system architecture to decide which one to move, but later
-  # Then, we can also purge the unused .dylib's, etc., to save disk space
   macos:
     name: macOS (universal)
     runs-on: macos-latest
@@ -153,10 +159,22 @@ jobs:
         run: |
           set -euo pipefail
           cd out
+          codesign --verify --deep --strict Ensemble.app
           ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal-debug.zip"
           find Ensemble.app -name '*.pdb' -delete
           find Ensemble.app -name '*.dSYM' -type d -exec rm -rf {} +
+          codesign --force --deep --sign - Ensemble.app
+          codesign --verify --deep --strict Ensemble.app
           ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal.zip"
+
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          out/Ensemble.app/Contents/MacOS/Ensemble --headless -- --port=7777 > smoke.log 2>&1 & pid=$!
+          sleep 30
+          kill -0 "${pid}" || { tail -50 smoke.log; exit 1; }
+          kill "${pid}"
+          grep -qF 'Instantiated and added "WorldHandle"' smoke.log || { tail -50 smoke.log; exit 1; }
 
       - name: Upload
         uses: actions/upload-artifact@v7
@@ -240,6 +258,18 @@ jobs:
           Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
           7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
 
+      - name: Smoke test
+        run: |
+          $process = Start-Process out\Ensemble.console.exe -ArgumentList '--headless', '--', '--port=7777' `
+            -RedirectStandardOutput smoke.log -RedirectStandardError smoke.err.log -NoNewWindow -PassThru
+          Start-Sleep 30
+          $alive = -not $process.HasExited
+          Get-Process Ensemble* -ErrorAction SilentlyContinue | Stop-Process -Force
+          if (-not $alive -or -not (Select-String smoke.log -SimpleMatch 'Instantiated and added "WorldHandle"' -Quiet)) {
+            Get-Content smoke.log, smoke.err.log -Tail 50
+            throw "Smoke test failed"
+          }
+
       - name: Upload
         uses: actions/upload-artifact@v7
         with:
@@ -247,9 +277,124 @@ jobs:
           path: Ensemble-${{ env.ID }}-windows-x86_64*.zip
           if-no-files-found: error
 
+  jit:
+    name: JIT (Linux + Windows, x86_64)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    env:
+      EnsembleJit: 'true'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Identify build
+        run: |
+          set -euo pipefail
+          id="${GITHUB_REF_NAME}"
+          [ "${GITHUB_REF_TYPE}" = tag ] || id="$(git rev-parse --short HEAD)"
+          echo "ID=${id}" >> "${GITHUB_ENV}"
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          global-json-file: global.json
+
+      - name: Set up Godot
+        run: |
+          set -euo pipefail
+          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
+          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+          curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          unzip -q godot.zip -d "${HOME}/godot"
+          unzip -q templates.tpz -d "${HOME}/tpl"
+          mkdir -p "${HOME}/.local/share/godot/export_templates"
+          mv "${HOME}/tpl/templates" "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono"
+          bin="${HOME}/godot/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64"
+          chmod +x "${bin}"
+          echo "GODOT=${bin}" >> "${GITHUB_ENV}"
+
+      - name: Neuter Terrain3D editor plugin
+        run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
+
+      - name: Disable threaded import
+        run: printf '\n[editor]\n\nimport/use_multiple_threads=false\n' >> project.godot
+
+      - name: Export
+        timeout-minutes: 45
+        run: |
+          set -euo pipefail
+          dotnet restore Game.csproj
+          dotnet build Game.csproj -c ExportRelease --no-restore
+          "${GODOT}" --headless --path . --import || true
+          "${GODOT}" --headless --path . --import || true
+          mkdir -p out
+          "${GODOT}" --headless --path . --export-release "Linux (x86_64)" "${PWD}/out/Ensemble.x86_64"
+          "${GODOT}" --headless --path . --export-release "Microslop Windows (x86_64)" "${PWD}/out/Ensemble.exe"
+          test -s out/Ensemble.x86_64
+          test -s out/Ensemble.exe
+          test -s out/data_Game_linuxbsd_x86_64/Game.dll
+          test -s out/data_Game_windows_x86_64/Game.dll
+          chmod +x out/Ensemble.x86_64 out/Ensemble.sh
+
+      - name: Package
+        run: |
+          set -euo pipefail
+          cd out
+          zip -6 -ry "../Ensemble-${ID}-jit.zip" .
+
+      - name: Smoke test (Linux)
+        run: |
+          set -euo pipefail
+          cd out
+          ./Ensemble.x86_64 --headless -- --port=7777 > ../smoke.log 2>&1 & pid=$!
+          sleep 30
+          kill -0 "${pid}" || { tail -50 ../smoke.log; exit 1; }
+          kill "${pid}"
+          grep -qF 'Instantiated and added "WorldHandle"' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
+
+      - name: Upload
+        uses: actions/upload-artifact@v7
+        with:
+          name: Ensemble-${{ env.ID }}-jit
+          path: Ensemble-${{ env.ID }}-jit.zip
+          if-no-files-found: error
+
+  jit-windows:
+    name: JIT (Windows smoke test)
+    needs: jit
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - name: Download
+        uses: actions/download-artifact@v8
+        with:
+          pattern: Ensemble-*-jit
+          merge-multiple: true
+
+      - name: Smoke test
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          7z x -ojit (Get-ChildItem *-jit.zip).FullName > $null
+          $process = Start-Process jit\Ensemble.console.exe -ArgumentList '--headless', '--', '--port=7777' `
+            -RedirectStandardOutput smoke.log -RedirectStandardError smoke.err.log -NoNewWindow -PassThru
+          Start-Sleep 30
+          $alive = -not $process.HasExited
+          Get-Process Ensemble* -ErrorAction SilentlyContinue | Stop-Process -Force
+          if (-not $alive -or -not (Select-String smoke.log -SimpleMatch 'Instantiated and added "WorldHandle"' -Quiet)) {
+            Get-Content smoke.log, smoke.err.log -Tail 50
+            throw "Smoke test failed"
+          }
+
   publish:
     name: Publish
-    needs: [ linux, macos, windows ]
+    needs: [ linux, macos, windows, jit, jit-windows ]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 15

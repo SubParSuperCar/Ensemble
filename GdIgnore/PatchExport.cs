@@ -1,24 +1,29 @@
-#if EXPORT
+#if EXPORT && !ENSEMBLE_JIT
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace EnsembleRoot;
 
-// TODO: bin.yml macOS TODO
+/// <summary>
+///     Flattens NativeAOT exports by hoisting the <c>data_*</c> directory's contents beside the executable.
+/// </summary>
+/// <remarks>
+///     Excluded from JIT exports, where it would move the .NET runtime out from under the host mid-load,
+///     and skipped on macOS, where the data lives in the signed bundle's <c>Resources</c> directory.
+/// </remarks>
 public static class PatchExport
 {
 	[ModuleInitializer]
 	public static void Initialize()
 	{
+		if (OperatingSystem.IsMacOS() || Path.GetDirectoryName(Environment.ProcessPath) is not { } exeDir)
+			return;
+
 		try
 		{
 			Console.WriteLine("Patching export layout...");
 			var stopwatch = Stopwatch.StartNew();
-
-			var exeDir = Path.GetDirectoryName(Environment.ProcessPath);
-			if (exeDir is null)
-				return;
 
 			foreach (var dataDir in Directory.EnumerateDirectories(exeDir, "data*", SearchOption.TopDirectoryOnly))
 				MoveContents(dataDir, exeDir);

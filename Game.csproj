@@ -27,8 +27,15 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
     <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
     <OptimizationPreference>Speed</OptimizationPreference>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="('$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease') And '$(EnsembleJit)' != 'true'">
     <PublishAot>true</PublishAot>
     <TrimMode>full</TrimMode>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(EnsembleJit)' == 'true'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_JIT</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">

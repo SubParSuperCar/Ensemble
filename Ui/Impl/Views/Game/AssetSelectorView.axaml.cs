@@ -17,4 +17,10 @@ public partial class AssetSelectorView : UserControl, IViewFor<AssetSelectorView
 		if (DataContext is AssetSelectorViewModel viewModel)
 			viewModel.FilterQuery = string.Empty;
 	}
+
+	private void OnTreeViewContainerPrepared(object? sender, ContainerPreparedEventArgs e)
+	{
+		if (sender is TreeView treeView && e.Container is TreeViewItem item)
+			item.Classes.Set("folder", treeView.ItemFromContainer(e.Container) is FolderNode);
+	}
 }

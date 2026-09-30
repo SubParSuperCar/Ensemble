@@ -54,10 +54,11 @@
             Grid.Row="2"
             ItemsSource="{Binding VisibleItems}"
             SelectedItems="{Binding SelectedItems}"
-            SelectionMode="Single">
+            SelectionMode="Single"
+            ContainerPrepared="OnTreeViewContainerPrepared">
 
             <TreeView.Styles>
-                <Style Selector="TreeViewItem" x:DataType="vm:FolderNode">
+                <Style Selector="TreeViewItem.folder" x:DataType="vm:FolderNode">
                     <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 </Style>
             </TreeView.Styles>

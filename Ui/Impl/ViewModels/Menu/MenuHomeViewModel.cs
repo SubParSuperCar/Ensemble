@@ -39,7 +39,7 @@ public partial class MenuHomeViewModel : ViewModelBase
 
 	private void OnSessionFailed(string reason) =>
 		Notice = string.Create(CultureInfo.InvariantCulture,
-			$"Session ended:\n\"{TruncateToTextElements(reason, 128)}\"\nTime: {GTimeProvider.GetLocalNow():h:mm:ss t z}");
+			$"Session Ended\nReason: \"{TruncateToTextElements(reason, 128)}\"\nTime: {GTimeProvider.GetLocalNow():h:mm:ss tt zz}");
 
 	private static Bitmap? LoadBitmapFromGodotImage(string path)
 	{

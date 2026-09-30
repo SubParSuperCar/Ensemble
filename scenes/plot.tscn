@@ -16,7 +16,7 @@ albedo_color = Color(0.86599994, 1, 0.32999998, 1)
 albedo_texture = ExtResource("2_cyvgl")
 uv1_scale = Vector3(0.25, 0.25, 0.25)
 uv1_triplanar = true
-texture_filter = 5
+texture_filter = 4
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_72cjw"]
 shading_mode = 0

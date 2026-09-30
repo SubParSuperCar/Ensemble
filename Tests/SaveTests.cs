@@ -66,7 +66,7 @@ public sealed class SaveTests : IDisposable
 	private static ISaveSerializer CreateSerializer(string format) =>
 		format is nameof(JsonSaveSerializer) ? new JsonSaveSerializer() : new BinarySaveSerializer();
 
-	private static SaveEncryption CreatePassword() => new SaveEncryption.Password(Password, 8 * 1024, 1, 1);
+	private static SaveEncryption.Password CreatePassword() => new(Password, 8 * 1024, 1, 1);
 
 	private static CreationSaveData CreateSaveData() =>
 		new()

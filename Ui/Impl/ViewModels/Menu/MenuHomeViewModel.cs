@@ -1,3 +1,4 @@
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
@@ -36,7 +37,9 @@ public partial class MenuHomeViewModel : ViewModelBase
 	[RelayCommand]
 	private void GoToWebBrowser() => _navigator.GoTo<MenuWebBrowserViewModel>();
 
-	private void OnSessionFailed(string reason) => Notice = $"Session ended: {reason}";
+	private void OnSessionFailed(string reason) =>
+		Notice = string.Create(CultureInfo.InvariantCulture,
+			$"Session ended:\n\"{TruncateToTextElements(reason, 128)}\"\nTime: {GTimeProvider.GetLocalNow():h:mm:ss t z}");
 
 	private static Bitmap? LoadBitmapFromGodotImage(string path)
 	{
@@ -50,5 +53,19 @@ public partial class MenuHomeViewModel : ViewModelBase
 
 		using var stream = new MemoryStream(file.GetBuffer((long)file.GetLength()));
 		return new Bitmap(stream);
+	}
+
+	private static string TruncateToTextElements(string value, int maxLength)
+	{
+		if (maxLength <= 0)
+			return string.Empty;
+
+		var elements = StringInfo.ParseCombiningCharacters(value);
+
+		if (elements.Length <= maxLength)
+			return value;
+
+		var end = elements[maxLength - 1];
+		return value[..end] + '\u2026';
 	}
 }

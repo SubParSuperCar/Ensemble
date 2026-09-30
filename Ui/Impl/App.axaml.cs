@@ -31,6 +31,10 @@ public class App : Application
 			(_, message) => RequestedThemeVariant = message.Value);
 
 		base.OnFrameworkInitializationCompleted();
+
+#if ENSEMBLE_DEBUG
+		this.AttachDeveloperTools();
+#endif
 	}
 
 	// Sink/mark keystrokes as handled to prevent unintentional UI navigation, and all navigation keys while in-session

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
+using Avalonia.Rendering.Composition;
 using EnsembleRoot.Ui.Impl;
 using Estragonia;
 using Fonts.Avalonia.JetBrainsMono;
@@ -20,7 +21,7 @@ public partial class AvaloniaLoader : Node
 
 	private static void Load()
 	{
-		Console.WriteLine("Loading Avalonia UI...");
+		Console.WriteLine("Configuring Avalonia UI...");
 		var stopwatch = Stopwatch.StartNew();
 
 		try
@@ -29,21 +30,30 @@ public partial class AvaloniaLoader : Node
 				.Configure<App>()
 				.UseGodot()
 				.WithJetBrainsMonoFont()
+				.With(new SkiaOptions
+				{
+					MaxGpuResourceSizeBytes = 32 * 1024 * 1024
+				})
+				.With(new CompositionOptions
+				{
+					// Enabling this reduces FPS by about 13% in some heavy-UI scenarios
+					UseRegionDirtyRectClipping = false
+				})
 				.LogToTrace()
 				.SetupWithGodot();
 
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Loaded Avalonia UI in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
+				$"Configured Avalonia UI in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 		}
 		catch (Exception exception)
 		{
 			if (
 				!Main.AskUser(
-					"Avalonia UI Load Failed",
+					"Avalonia UI Config Failed",
 					Main.FormatFailureMessage(
-						"Avalonia UI failed to load", exception, "Ensemble UI may not appear.")))
+						"Avalonia UI failed to configure", exception, "Ensemble UI may not appear.")))
 				Main.FailFast(exception);
 		}
 	}

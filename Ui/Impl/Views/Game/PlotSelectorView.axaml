@@ -20,7 +20,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Occupancy" />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="ID&#x0a; &#x2193;" ToolTip.Tip="The plot's ID." />
+                <TextBlock Text="ID&#x0a;&#x2193;" ToolTip.Tip="The plot's ID." />
 
                 <TextBlock
                     Grid.Column="2"

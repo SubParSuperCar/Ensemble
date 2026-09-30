@@ -43,7 +43,7 @@ public partial class PlayerListViewModel : ViewModelBase
 		var player = new PlayerItem { Name = gdPlayer.Name, Id = gdPlayer.Id, PeerId = peer?.Id ?? None };
 
 		var index = Players
-			.TakeWhile(other => string.Compare(other.Name, player.Name, StringComparison.Ordinal) < 0)
+			.TakeWhile(other => ComparePlayers(other, player) < 0)
 			.Count();
 
 		Players.Insert(index, player);
@@ -83,6 +83,12 @@ public partial class PlayerListViewModel : ViewModelBase
 
 		if (_unsubscribeByPlayerId.Remove(gdPlayer.Id, out var unsubscribe))
 			unsubscribe();
+	}
+
+	private static int ComparePlayers(PlayerItem a, PlayerItem b)
+	{
+		var nameComparison = string.Compare(a.Name, b.Name, StringComparison.Ordinal);
+		return nameComparison is 0 ? a.PeerId.CompareTo(b.PeerId) : nameComparison;
 	}
 }
 

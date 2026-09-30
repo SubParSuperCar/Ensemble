@@ -59,13 +59,14 @@ public partial class ExeHasher : Node, IAutoload
 				Log.Information("Process executable SHA-256 digest: {Digest}", hashHex);
 			}
 		}
+		catch (OperationCanceledException) { }
 		catch (Exception exception)
 		{
 			Log.Error(exception, "Failed to hash process executable");
 		}
 		finally
 		{
-			QueueFree();
+			Callable.From(QueueFree).CallDeferred();
 		}
 	}
 }

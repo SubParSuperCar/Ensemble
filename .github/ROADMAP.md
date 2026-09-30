@@ -31,8 +31,8 @@ The tool suite, in rough intended order of implementation.
 ## Multiplayer / replication
 
 SessionManager has the infra (sessions, versioned auth handshake, server-assigned player IDs, self-registering RPC
-actions and late-join snapshots, kicks, graceful shutdown notices). Actions live in Actions/ and are submitted with
-`new SetPlotAction(id).Submit()`; both actions and snapshots live in Networking/.
+actions and late-join snapshots, kicks, graceful shutdown notices). Actions and snapshots live in Networking/, and
+actions are submitted with `new SetPlotAction(id).Submit()`.
 
 - [x] (M) Main-menu session sub-menu - Singleplayer / Multiplayer, Host / Join, address, port, password, remembered
   display name
@@ -41,7 +41,7 @@ actions and late-join snapshots, kicks, graceful shutdown notices). Actions live
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
 - (WIP) (S) Peer UI - ping column in the player list done; server info panel and kick button next
-- [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N` (or `--join=A:P`)
+- [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N` (or `--join=HOST:P`)
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
 - [ ] (L) Dynamic instance replication - placed blocks sync + authority model
@@ -66,7 +66,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) SessionManager fully gdignored; Sentinels dependency removed
 - [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
 - [ ] (S) dedicated 3D physics layers - Plot Base, Instances (only World + Character exist today)
-- (WIP) (S) populate Tests/ - Occupants ownership done; HoleyArray, CoreVariant, save-pipeline roundtrip next
+- [x] (S) populate Tests/ - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline roundtrips,
+  HostEndPoint parsing
 - [ ] (S) audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 
 ## Later / big

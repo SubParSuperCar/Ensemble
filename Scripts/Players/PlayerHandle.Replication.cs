@@ -83,7 +83,7 @@ public partial class PlayerHandle
 	private void Relay(Vector3 position, float yaw, int sourcePeerId)
 	{
 		foreach (var peerId in GSessionManager.Peers.Keys)
-			if (peerId != sourcePeerId && peerId != GSessionManager.LocalPeerId)
+			if (peerId != sourcePeerId && GSessionManager.IsPeerSynced(peerId))
 				RpcId(peerId, MethodName.RpcReplicate, position, yaw);
 	}
 }

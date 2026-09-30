@@ -27,7 +27,6 @@ Properties = Dictionary[StringName, Variant]({
 &"_materialId": 0
 })
 MaxInstanceCount = 1250
-BoundaryAabb = null
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=841263352]
 shape = SubResource("ConvexPolygonShape3D_s1ixw")

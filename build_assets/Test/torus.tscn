@@ -25,9 +25,7 @@ ring_segments = 4
 script = ExtResource("1_wpl7w")
 AssetId = 6
 AssetName = &"Torus"
-Properties = null
 MaxInstanceCount = -1
-BoundaryAabb = null
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=1511614985]
 shape = SubResource("ConcavePolygonShape3D_wpl7w")

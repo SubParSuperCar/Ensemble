@@ -60,8 +60,8 @@ Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone mus
   and optionally set a password and a client limit. Share your address with the players joining:
     - **Same network (LAN):** run `log_lan_ip4_addr()` in the console (`` ` `` / `F9`).
     - **Over the internet:** run `log_wan_ip4_addr()`, and forward the UDP port on your router.
-- **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address and port, or a
-  single `<address>:<port>` code.
+- **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address (or host name)
+  and port, or a single `<address>:<port>` code.
 - **Dedicated server:** run the executable headless with user arguments, e.g.
   `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8`.
 
@@ -89,7 +89,7 @@ one using `kick(peer_id, "reason")`. Display names are remembered between sessio
 | Player list                      | `Tab`                                  |
 | Console / system terminal        | `` ` `` or `F9` / `F8`                 |
 | Back (menus)                     | `Backspace`                            |
-| Quick-start a single-player game | `Esc`                                  |
+| Quick-start a single-player game | `Esc` (outside multiplayer)            |
 
 </details>
 

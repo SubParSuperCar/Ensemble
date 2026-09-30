@@ -38,7 +38,7 @@
                 <TextBlock
                     Grid.Column="5"
                     Text="Ping&#x0a;&#x2193; "
-                    ToolTip.Tip="The player's EWMA smoothed round-trip time to the host, in milliseconds (capped at 999)."
+                    ToolTip.Tip="The player's EWMA-smoothed round-trip time to the host, in milliseconds (capped at 999)."
                     Margin="16,0,0,0"
                     TextAlignment="Right"
                     IsVisible="{Binding IsMultiPlayer}" />

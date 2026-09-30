@@ -1,3 +1,4 @@
+using EnsembleRoot.Common.Input;
 using Godot;
 
 namespace EnsembleRoot.Tooling.Tools;
@@ -14,7 +15,7 @@ public abstract partial class ToolBase : Node
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (ToggleAction is not null && @event.IsActionPressed(ToggleAction))
+		if (ToggleAction is not null && !InputSink.IsSunk && @event.IsActionPressed(ToggleAction))
 			Toggle();
 	}
 

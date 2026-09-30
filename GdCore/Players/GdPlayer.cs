@@ -16,7 +16,7 @@ public partial class GdPlayer : RefCounted
 	public string Id => Source.Id.ToString();
 	public string Name => Source.Name;
 
-	public double UtcCreatedAtUnix => Source.UtcCreatedAt.ToUnixTimeSeconds();
+	public double UtcCreatedAtUnix => Source.UtcCreatedAt.ToUnixTimeMilliseconds() / 1000d;
 
 	public static GdPlayer From(IPlayer player) =>
 		Wrappers.GetValue(player, static source => new GdPlayer { Source = source });

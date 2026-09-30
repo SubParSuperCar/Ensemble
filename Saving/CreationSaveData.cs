@@ -9,7 +9,7 @@ public sealed class CreationSaveData
 	public DateTimeOffset UtcCreatedAt { get; init; } = GTimeProvider.GetUtcNow();
 
 #pragma warning disable MA0016
-	public List<SaveInstance> Instances { get; } = [];
+	public List<SaveInstance> Instances { get; init; } = [];
 #pragma warning restore MA0016
 }
 

@@ -14,7 +14,10 @@ public partial class ToolBarViewModel : ViewModelBase
 
 	public ToolBarViewModel()
 	{
+		OnConstructToolIsEnabledChanged(GToolManager.Construct.IsEnabled);
 		GToolManager.Construct.IsEnabledChanged += OnConstructToolIsEnabledChanged;
+
+		OnDestructToolIsEnabledChanged(GToolManager.Destruct.IsEnabled);
 		GToolManager.Destruct.IsEnabledChanged += OnDestructToolIsEnabledChanged;
 
 		OnLocalPlotChanged(LocalPlot);

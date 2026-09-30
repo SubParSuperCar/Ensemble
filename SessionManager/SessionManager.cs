@@ -75,7 +75,7 @@ public partial class SessionManager : Node
 	public bool IsActive { get; private set; }
 
 	public DateTimeOffset UtcStartedAt { get; private set; }
-	public double UtcStartedAtUnix => UtcStartedAt.ToUnixTimeSeconds();
+	public double UtcStartedAtUnix => UtcStartedAt.ToUnixTimeMilliseconds() / 1000d;
 
 	public int LocalPeerId { get; private set; }
 
@@ -110,7 +110,7 @@ public partial class SessionManager : Node
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event))
+		if (!Input.IsActionJustPressedByEvent("test_session_reset", @event) || Mode is SessionMode.MultiPlayer)
 			return;
 
 		Log.Information("Restarting session as single-player (test action)...");

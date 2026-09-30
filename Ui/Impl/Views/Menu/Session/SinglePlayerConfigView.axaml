@@ -19,7 +19,7 @@
             <TextBox
                 Text="{Binding DisplayName}"
                 PlaceholderText="&lt;Short GUID&gt;"
-                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
+                ToolTip.Tip="The name shown on your character. Remembered for next time.&#x0a;Leave empty to derive one from your player ID."
                 MaxLength="24" />
         </StackPanel>
 

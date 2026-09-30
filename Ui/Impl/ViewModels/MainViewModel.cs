@@ -95,7 +95,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		if (Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
 			IsConsoleVisible = !IsConsoleVisible;
-		else if (Input.IsActionJustPressedByEvent("ui_open_terminal", @event))
+		else if (Input.IsActionJustPressedByEvent("ui_open_pty", @event))
 			ShowNewTerminalWindow();
 	}
 

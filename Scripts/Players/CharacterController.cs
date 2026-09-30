@@ -58,10 +58,8 @@ public partial class CharacterController : CharacterBody3D
 
 		if (inputDirection != Vector2.Zero)
 		{
-			var lookDirection = Camera?.GlobalBasis ?? Basis.Identity;
-			var moveDirection = lookDirection * new Vector3(inputDirection.X, 0, inputDirection.Y);
-			moveDirection.Y = 0;
-			moveDirection = moveDirection.Normalized();
+			var cameraYaw = Camera?.GlobalRotation.Y ?? 0;
+			var moveDirection = new Vector3(inputDirection.X, 0, inputDirection.Y).Rotated(Vector3.Up, cameraYaw);
 
 			var speed = Input.IsActionPressed("char_run") ? RunSpeed : WalkSpeed;
 			velocity.X = moveDirection.X * speed;

@@ -40,6 +40,9 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
   Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
   workflow ("Run workflow"), then download the artifacts from the finished run.
 
+On startup, Ensemble asks GitHub for the latest release and offers each newer version once. If Discord is running,
+it also shares your activity (e.g., "In the Main Menu" or "Playing Multi-Player") without names or addresses.
+
 Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files. There is also a single `-jit` ZIP
 for testing and troubleshooting; see [**Platform Support**](#platform-support) before choosing it.
 

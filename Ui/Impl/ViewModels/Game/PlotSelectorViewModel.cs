@@ -23,8 +23,8 @@ public partial class PlotSelectorViewModel : ViewModelBase
 		GPlots.Removed += OnPlotRemoved;
 
 		OnLocalPlotChanged(LocalPlot);
-		LocalPlotChanged += OnLocalPlotChanged;
 
+		LocalPlotChanged += OnLocalPlotChanged;
 		GSessionManager.ActionRejected += OnActionRejected;
 	}
 

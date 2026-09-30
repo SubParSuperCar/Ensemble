@@ -26,7 +26,7 @@ public partial class MenuHomeViewModel : ViewModelBase
 	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;
 
 	[RelayCommand]
-	private static void OpenGitHubPage() => OS.ShellOpen("https://github.com/SubParSuperCar/Ensemble");
+	private static void OpenGitHubPage() => OS.ShellOpen(GitHubRepoUrl);
 
 	[RelayCommand]
 	private void GoToSession() => _navigator.GoTo<SessionModeSelectorViewModel>();

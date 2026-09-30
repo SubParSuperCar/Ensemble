@@ -20,4 +20,7 @@ public static class Constants
 	public const string ShadersDir = ResourceScheme + "shaders/";
 
 	public const string GameIconPath = AssetsDir + "images/ensemble_icon_square_colored.png";
+
+	public const string GitHubRepoPath = "SubParSuperCar/Ensemble";
+	public const string GitHubRepoUrl = "https://github.com/" + GitHubRepoPath;
 }

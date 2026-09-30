@@ -2,12 +2,17 @@ using DiscordRPC;
 using DiscordRPC.Logging;
 using DiscordRPC.Message;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.SessionManager.Api;
 using Godot;
 using Serilog;
 
 namespace EnsembleRoot.Scripts.DiscordRichPresence;
 
 // TODO: Fix benign errors in AOT export builds caused by IPC named pipe socket exceptions
+/// <remarks>
+///     Shares only the activity (menu, single-player, hosting, or joined) and its elapsed time; never names,
+///     addresses, ports, or player counts.
+/// </remarks>
 [GlobalClass]
 [Autoload(
 	Scope = AutoloadScope.RegularClient,
@@ -22,20 +27,32 @@ public partial class DiscordRpc : Node, IAutoload
 	private static readonly TimeSpan MaxRetryDelay = TimeSpan.FromMinutes(2);
 
 	private readonly CancellationTokenSource _cts = new();
-	private readonly Timestamps _timestamps = Timestamps.Now;
+	private readonly Timestamps _launchedAt = Timestamps.Now;
 
 	private DiscordRpcClient? _client;
 	private int _connectionAttemptCount;
 	private int _isReconnectingFlag;
+	private RichPresence _presence = new();
 
 	public void Initialize()
 	{
 		Log.Debug("Discord RPC app ID: {AppId}", AppId);
+
+		UpdatePresence();
+
+		GSessionManager.SessionStarted += UpdatePresence;
+		GSessionManager.SessionStopped += UpdatePresence;
+		GSessionManager.SessionFailed += OnSessionFailed;
+
 		Connect();
 	}
 
 	public override void _ExitTree()
 	{
+		GSessionManager.SessionStarted -= UpdatePresence;
+		GSessionManager.SessionStopped -= UpdatePresence;
+		GSessionManager.SessionFailed -= OnSessionFailed;
+
 		_cts.Cancel();
 
 		DisposeClient();
@@ -58,13 +75,7 @@ public partial class DiscordRpc : Node, IAutoload
 		client.OnReady += OnReady;
 		client.OnConnectionFailed += OnConnectionFailed;
 
-		client.SetPresence(new RichPresence
-		{
-			Timestamps = _timestamps,
-			Details = "By SubParSuperCar on GitHub",
-			DetailsUrl = "https://github.com/SubParSuperCar/Ensemble"
-		});
-
+		client.SetPresence(Volatile.Read(ref _presence));
 		_client = client;
 
 		if (!client.Initialize())
@@ -82,6 +93,35 @@ public partial class DiscordRpc : Node, IAutoload
 		client.OnConnectionFailed -= OnConnectionFailed;
 
 		client.Dispose();
+	}
+
+	private static string GetActivity() =>
+		GSessionManager switch
+		{
+			{ IsActive: false } => "In the Main Menu",
+			{ Mode: SessionMode.SinglePlayer } => "Playing Single-Player",
+			{ Mode: SessionMode.MultiPlayer, IsServer: true } => "Hosting a Multi-Player Session",
+			_ => "Playing Multi-Player"
+		};
+
+	private void OnSessionFailed(string _) => UpdatePresence();
+
+	private void UpdatePresence()
+	{
+		var manager = GSessionManager;
+
+		var presence = new RichPresence
+		{
+			Details = "By SubParSuperCar on GitHub",
+			DetailsUrl = GitHubRepoUrl,
+			State = GetActivity(),
+			Timestamps = manager.IsActive ? new Timestamps(manager.UtcStartedAt.UtcDateTime) : _launchedAt
+		};
+
+		Volatile.Write(ref _presence, presence);
+		Volatile.Read(ref _client)?.SetPresence(presence);
+
+		Log.Debug("Updated Discord presence: {State}", presence.State);
 	}
 
 	private void OnReady(object? sender, ReadyMessage e)

@@ -1,15 +1,9 @@
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace EnsembleRoot.Saving.SerDes;
 
+[JsonSourceGenerationOptions(
+	WriteIndented = true,
+	Converters = [typeof(CoreVariantJsonConverter), typeof(Vector3JsonConverter), typeof(QuaternionJsonConverter)])]
 [JsonSerializable(typeof(CreationSaveData))]
-internal partial class SaveJsonContext : JsonSerializerContext
-{
-	public static readonly SaveJsonContext Instance = new(
-		new JsonSerializerOptions
-		{
-			WriteIndented = true,
-			Converters = { new CoreVariantJsonConverter() }
-		});
-}
+internal partial class SaveJsonContext : JsonSerializerContext;

@@ -23,7 +23,7 @@ public partial class Peer : RefCounted
 	public bool IsLocal { get; internal init; }
 	public bool IsHost => Id == MultiplayerPeer.TargetPeerServer;
 
-	public double UtcJoinedAtUnix { get; } = GTimeProvider.GetUtcNow().ToUnixTimeSeconds();
+	public double UtcJoinedAtUnix { get; } = GTimeProvider.GetUtcNow().ToUnixTimeMilliseconds() / 1000d;
 
 	public int PingMs { get; private set; }
 

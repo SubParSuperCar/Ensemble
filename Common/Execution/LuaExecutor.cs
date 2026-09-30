@@ -20,7 +20,22 @@ public static partial class LuaExecutor
 		InjectCustomFunctions(state.Environment);
 
 		var stopwatch = Stopwatch.StartNew();
-		var results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
+		LuaValue[] results;
+
+		try
+		{
+			results = await state.DoStringAsync(source, cancellationToken: cancellationToken).ConfigureAwait(false);
+		}
+		catch (OperationCanceledException)
+		{
+			Log.Information("< Canceled after {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
+			return [];
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "< Failed after {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
+			return [];
+		}
 
 		stopwatch.Stop();
 		Log.Information(

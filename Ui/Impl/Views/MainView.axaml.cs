@@ -1,8 +1,10 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Rendering;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels;
+#if ENSEMBLE_DEBUG
+using Avalonia;
+using Avalonia.Rendering;
+#endif
 
 namespace EnsembleRoot.Ui.Impl.Views;
 

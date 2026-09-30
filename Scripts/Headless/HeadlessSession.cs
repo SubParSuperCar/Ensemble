@@ -1,6 +1,6 @@
 using System.Globalization;
-using System.Net;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Networking;
 using Godot;
 using Serilog;
 using static EnsembleRoot.SessionManager.SessionManager;
@@ -30,12 +30,13 @@ public partial class HeadlessSession : Node, IAutoload
 		var password = args.GetValueOrDefault("password");
 		GSessionManager.SessionFailed += OnSessionFailed;
 
-		if (args.GetValueOrDefault("join") is { } join && IPEndPoint.TryParse(join, out var endPoint))
-			GSessionManager.JoinMultiPlayer(
-				endPoint.Address.ToString(),
-				endPoint.Port,
-				password,
-				args.GetValueOrDefault("name"));
+		if (args.GetValueOrDefault("join") is { } join)
+		{
+			if (HostEndPoint.TryParse(join, out var endPoint))
+				GSessionManager.JoinMultiPlayer(endPoint.Host, endPoint.Port, password, args.GetValueOrDefault("name"));
+			else
+				Callable.From(() => OnSessionFailed($"Invalid join address: {join}")).CallDeferred();
+		}
 		else
 			GSessionManager.HostMultiPlayer(
 				GetInt(args, "port") ?? DefaultPort,

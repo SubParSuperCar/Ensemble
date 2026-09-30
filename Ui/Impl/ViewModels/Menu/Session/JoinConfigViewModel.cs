@@ -1,6 +1,6 @@
-using System.Net;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
@@ -65,9 +65,7 @@ public partial class JoinConfigViewModel : ViewModelBase
 		if (!IsCodeMethod)
 			return string.IsNullOrWhiteSpace(Address) || Port is not { } port ? null : (Address.Trim(), (int)port);
 
-		return IPEndPoint.TryParse(Code ?? string.Empty, out var endPoint) && endPoint.Port is not 0
-			? (endPoint.Address.ToString(), endPoint.Port)
-			: null;
+		return HostEndPoint.TryParse(Code, out var endPoint) ? (endPoint.Host, endPoint.Port) : null;
 	}
 
 	private void OnSessionFailed(string reason) => Status = reason;

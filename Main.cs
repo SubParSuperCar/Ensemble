@@ -77,7 +77,7 @@ public partial class Main : Node
 		}
 		catch (Exception notifyException)
 		{
-			PCall((Action<Exception, string>)Log.Error, notifyException, "Failed to show crash popup");
+			PCall(() => Log.Error(notifyException, "Failed to show crash popup"));
 		}
 
 		PCall(Log.CloseAndFlush);
@@ -113,9 +113,9 @@ public partial class Main : Node
 			.Replace("'", string.Empty, StringComparison.Ordinal)
 			.Replace("`", string.Empty, StringComparison.Ordinal);
 
-	private static void PCall(Delegate action, params object?[] args)
+	private static void PCall(Action action)
 	{
-		try { action.DynamicInvoke(args); }
+		try { action(); }
 		catch
 		{
 			// Ignore
@@ -170,7 +170,7 @@ public partial class Main : Node
 				e.ExceptionObject);
 
 		if (e.IsTerminating)
-			FailFast();
+			FailFast(e.ExceptionObject as Exception);
 	}
 
 	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
@@ -193,7 +193,7 @@ public partial class Main : Node
 				break;
 
 			case AutoloadFailurePolicy.FailFast:
-				FailFast();
+				FailFast(exception);
 				break;
 
 			case AutoloadFailurePolicy.AskUser:
@@ -204,7 +204,7 @@ public partial class Main : Node
 							$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
 							exception,
 							"Ensemble may be left in an unstable or partially initialized state.")))
-					FailFast();
+					FailFast(exception);
 				break;
 
 			default:

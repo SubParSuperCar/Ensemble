@@ -62,7 +62,7 @@
             <TextBox
                 Text="{Binding Code}"
                 PlaceholderText="&lt;Address&gt;:&lt;Port&gt;"
-                ToolTip.Tip="The host's address and port, separated by a colon." />
+                ToolTip.Tip="The host's address (IPv4, [IPv6], or host name) and port,&#x0a;separated by a colon, e.g., 192.168.1.2:7777." />
         </StackPanel>
 
         <StackPanel>

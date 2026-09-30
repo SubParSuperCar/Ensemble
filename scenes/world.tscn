@@ -172,15 +172,13 @@ TerrainNode = NodePath("../Terrain")
 
 [node name="Asset Registrar" type="Node" parent="." unique_id=633918342]
 script = ExtResource("14_dss4m")
-DefaultMaxInstanceCount = null
 
 [node name="Plots" type="Node" parent="." unique_id=795146723]
 script = ExtResource("15_7t5mc")
-DefaultMaxOccupantCount = null
-DefaultMaxTotalInstanceCount = null
 
 [node name="Plot 1" parent="Plots" unique_id=1176841675 instance=ExtResource("13_munwf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 1, 0)
+Id = 0
 MaxOccupantCount = 4
 MaxTotalInstanceCount = 1000
 metadata/_edit_lock_ = true

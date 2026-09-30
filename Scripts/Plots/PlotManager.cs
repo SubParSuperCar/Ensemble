@@ -28,7 +28,10 @@ public partial class PlotManager : Node
 		foreach (var handle in GetChildren().OfType<PlotHandle>())
 		{
 			Handles.Add(handle.Id, handle);
-			GPlots.Add(handle.Id, handle.MaxOccupantCount, handle.MaxTotalInstanceCount);
+			GPlots.Add(
+				handle.Id,
+				handle.MaxOccupantCount is Default ? DefaultMaxOccupantCount : handle.MaxOccupantCount,
+				handle.MaxTotalInstanceCount is Default ? DefaultMaxTotalInstanceCount : handle.MaxTotalInstanceCount);
 		}
 
 		GPlots.Lock();

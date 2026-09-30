@@ -14,6 +14,6 @@
   <assembly fullname="DiscordRPC" preserve="all"/>
 
   <assembly fullname="Game">
-    <type fullname="Root.Scripts.Logging.Impl.Hooks" preserve="all"/>
+    <type fullname="EnsembleRoot.Scripts.Logging.Impl.Hooks" preserve="all"/>
   </assembly>
 </linker>

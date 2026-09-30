@@ -412,7 +412,7 @@ public static partial class LuaExecutor
 
 			var address = (await Http.Client.GetStringAsync(
 				PublicIPv4AddressSourceUrl,
-				cancellationToken).ConfigureAwait(false)).Trim();
+				cancellationToken).ConfigureAwait(true)).Trim();
 
 			stopwatch.Stop();
 			Log.Information(
@@ -420,7 +420,7 @@ public static partial class LuaExecutor
 				address,
 				stopwatch.Elapsed.TotalMilliseconds);
 		}
-		catch (HttpRequestException exception)
+		catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
 		{
 			Log.Error(exception, "Failed to get public IPv4 address");
 		}

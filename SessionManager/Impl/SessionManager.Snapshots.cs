@@ -10,6 +10,9 @@ public partial class SessionManager
 {
 	private readonly HashSet<int> _syncedPeerIds = [];
 
+	/// <remarks>Server-side only: whether the peer has received its snapshots and so has its world.</remarks>
+	public bool IsPeerSynced(int peerId) => _syncedPeerIds.Contains(peerId);
+
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
 	private void RpcRequestSnapshots()
 	{

@@ -17,7 +17,7 @@ namespace EnsembleRoot.Scripts.Updates;
 [GlobalClass]
 [Autoload(
 	Scope = AutoloadScope.RegularClient,
-	Order = AutoloadOrder.Late,
+	Order = AutoloadOrder.Late + 1,
 	FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class UpdateChecker : Node, IAutoload
 {

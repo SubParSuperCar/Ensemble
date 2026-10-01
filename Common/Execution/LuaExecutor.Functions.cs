@@ -23,7 +23,7 @@ namespace EnsembleRoot.Common.Execution;
 
 public static partial class LuaExecutor
 {
-	private const string PublicIPv4AddressSourceUrl = "https://api.ipify.org";
+	private const string PublicIPv4AddressSourceUrl = HttpsScheme + "api.ipify.org";
 
 	private static void InjectCustomFunctions(LuaTable env)
 	{

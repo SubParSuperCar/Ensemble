@@ -6,7 +6,8 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class DocFileViewModel : ViewModelBase
 {
-	private const string GhMainHeadPath = "https://raw.githubusercontent.com/" + GitHubRepoPath + "/refs/heads/main/";
+	private const string GhMainHeadPath =
+		HttpsScheme + "raw.githubusercontent.com/" + GitHubRepoPath + "/refs/heads/main/";
 
 	public DocFileViewModel()
 	{

@@ -74,7 +74,7 @@
             Background="Black" Foreground="Red"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Padding="2"
-            FontSize="11"
+            FontSize="11.5"
             IsHitTestVisible="False"
             TextOptions.TextRenderingMode="Alias" />
     </Grid>

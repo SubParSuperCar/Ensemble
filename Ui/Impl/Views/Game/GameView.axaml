@@ -52,7 +52,7 @@
         <TransitioningContentControl
             Content="{Binding AssetSelector}"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"
-            Width="480" Height="352">
+            Width="464" Height="352">
 
             <TransitioningContentControl.PageTransition>
                 <CompositePageTransition>

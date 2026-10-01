@@ -322,12 +322,12 @@ jobs:
         run: |
           set -euo pipefail
           dotnet restore Game.csproj
-          dotnet build Game.csproj -c ExportRelease --no-restore
+          dotnet build Game.csproj -c ExportDebug --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
-          "${GODOT}" --headless --path . --export-release "Linux (x86_64)" "${PWD}/out/Ensemble.x86_64"
-          "${GODOT}" --headless --path . --export-release "Microslop Windows (x86_64)" "${PWD}/out/Ensemble.exe"
+          "${GODOT}" --headless --path . --export-debug "Linux (x86_64)" "${PWD}/out/Ensemble.x86_64"
+          "${GODOT}" --headless --path . --export-debug "Microslop Windows (x86_64)" "${PWD}/out/Ensemble.exe"
           test -s out/Ensemble.x86_64
           test -s out/Ensemble.exe
           test -s out/data_Game_linuxbsd_x86_64/Game.dll

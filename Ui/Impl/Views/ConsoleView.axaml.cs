@@ -23,19 +23,17 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 		InitializeComponent();
 		InitializeOutputScroll();
 
-		Dispatcher.UIThread.Post(
-			InitializeEditor,
-			DispatcherPriority.Background);
+		Dispatcher.UIThread.Post(() =>
+		{
+			InitializeEditor();
+
+			Dispatcher.UIThread.Post(
+				() => OutputScroll.ScrollToEnd(),
+				DispatcherPriority.Loaded);
+		}, DispatcherPriority.Background);
 	}
 
-	private void InitializeOutputScroll()
-	{
-		Dispatcher.UIThread.Post(
-			() => OutputScroll.ScrollToEnd(),
-			DispatcherPriority.Render);
-
-		OutputScroll.ScrollChanged += OnOutputScrollChanged;
-	}
+	private void InitializeOutputScroll() => OutputScroll.ScrollChanged += OnOutputScrollChanged;
 
 	private void InitializeEditor()
 	{

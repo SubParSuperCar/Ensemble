@@ -25,7 +25,7 @@ public partial class MainView : UserControl, IViewFor<MainViewModel>
 #endif
 			$")\nBuilt: {BuildInfo.BuildTime}\n" +
 			"By: @SubParSuperCar & Contributors\n" +
-			$"At: {GitHubRepoUrl["https://".Length..]}";
+			$"At: {GitHubRepoUrl[HttpsScheme.Length..]}";
 	}
 
 #if ENSEMBLE_DEBUG

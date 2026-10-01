@@ -70,7 +70,7 @@
         </StackPanel>
 
         <TextBlock
-            Text="&quot;Ensemble&quot; (In-Dev. Build)&#x0a;By: @SubParSuperCar &amp; Contributors"
+            Name="Watermark"
             Background="Black" Foreground="Red"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Padding="2"

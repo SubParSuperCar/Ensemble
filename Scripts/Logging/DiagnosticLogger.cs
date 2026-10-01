@@ -64,6 +64,14 @@ public partial class DiagnosticLogger : Node, IAutoload
 #endif
 		);
 
+		Add(entries, "Build Comp.",
+#if EXPORT && !ENSEMBLE_JIT
+			"Native Ahead-Of-Time (AOT)"
+#else
+			"Just-In-Time (JIT)"
+#endif
+		);
+
 		Add(entries, "Build Version", (string)ProjectSettings.GetSetting("application/config/version", "Unknown"));
 		Add(entries, "Build Time", BuildInfo.BuildTime);
 

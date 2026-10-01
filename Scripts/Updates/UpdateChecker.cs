@@ -21,7 +21,8 @@ namespace EnsembleRoot.Scripts.Updates;
 	FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class UpdateChecker : Node, IAutoload
 {
-	private const string LatestReleaseApiUrl = "https://api.github.com/repos/" + GitHubRepoPath + "/releases/latest";
+	private const string LatestReleaseApiUrl =
+		HttpsScheme + "api.github.com/repos/" + GitHubRepoPath + "/releases/latest";
 
 	private const string Section = "updates";
 	private const string OfferedVersionKey = "offered_version";

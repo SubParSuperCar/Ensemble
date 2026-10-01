@@ -6,6 +6,7 @@ public static class Constants
 {
 	public const string ResourceScheme = "res://";
 	public const string UserScheme = "user://";
+	public const string HttpsScheme = "https://";
 
 	public const string AppSettingsJson = "appsettings.json";
 	public const string AppSettingsPath = ResourceScheme + AppSettingsJson;
@@ -22,5 +23,5 @@ public static class Constants
 	public const string GameIconPath = AssetsDir + "images/ensemble_icon_square_colored.png";
 
 	public const string GitHubRepoPath = "SubParSuperCar/Ensemble";
-	public const string GitHubRepoUrl = "https://github.com/" + GitHubRepoPath;
+	public const string GitHubRepoUrl = HttpsScheme + "github.com/" + GitHubRepoPath;
 }

@@ -15,9 +15,8 @@ public partial class MainView : UserControl, IViewFor<MainViewModel>
 	{
 		InitializeComponent();
 
-		var version = ProjectSettings.GetSetting("application/config/version").AsString();
 		Watermark.Text =
-			$"\"Ensemble\" (v{version}) (" +
+			$"\"Ensemble\" (v{SessionManager.SessionManager.Version}) (" +
 #if EXPORT && !ENSEMBLE_JIT
 			"AOT" +
 #else

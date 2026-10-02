@@ -14,7 +14,7 @@
         <TextBlock Text="Session Mode:" />
 
         <Button
-            Content="Single Player (Offline)"
+            Content="Single-Player (Offline)"
             Command="{Binding GoToSinglePlayerCommand}"
             ToolTip.Tip="Configures a local session only you can play in." />
 

@@ -31,10 +31,7 @@ public partial class DestructTool : ToolBase
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (!IsEnabled || InputSink.IsSunk || !@event.IsActionPressed(ToolCommon.TriggerAction))
-			return;
-
-		if (_selected is null)
+		if (!IsEnabled || InputSink.IsSunk || _selected is null || !@event.IsActionPressed(ToolCommon.TriggerAction))
 			return;
 
 		new RemoveInstanceAction(_selected.InstanceId).Submit();

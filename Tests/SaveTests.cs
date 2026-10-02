@@ -63,6 +63,19 @@ public sealed class SaveTests : IDisposable
 		Assert.Throws<InvalidDataException>(() => serializer.Load(_path));
 	}
 
+	[Fact]
+	public void Load_WithUnknownCompression_Throws()
+	{
+		var serializer = new BinarySaveSerializer();
+		serializer.Save(_path, CreateSaveData());
+
+		var bytes = File.ReadAllBytes(_path);
+		bytes[5] = 0xFF;
+		File.WriteAllBytes(_path, bytes);
+
+		Assert.Throws<InvalidDataException>(() => serializer.Load(_path));
+	}
+
 	private static ISaveSerializer CreateSerializer(string format) =>
 		format is nameof(JsonSaveSerializer) ? new JsonSaveSerializer() : new BinarySaveSerializer();
 

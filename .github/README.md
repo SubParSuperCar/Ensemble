@@ -81,18 +81,18 @@ one using `kick(peer_id, "reason")`. Display names are remembered between sessio
 <details>
   <summary>Click to expand/collapse this section.</summary>
 
-| Action                           | Binding                                |
-|----------------------------------|----------------------------------------|
-| Move / run / jump                | `WASD` or arrows / `Shift` / `Space`   |
-| Orbit / turn / zoom camera       | Right mouse / `Q` `E` / wheel, `I` `O` |
-| Toggle place / delete tool       | `1` / `2`                              |
-| Place or delete (tool trigger)   | Left mouse                             |
-| Rotate placement (X / Y / Z)     | `R` / `T` / `Y`                        |
-| Reset character position         | Hold `H` for 1 second                  |
-| Player list                      | `Tab`                                  |
-| Console / system terminal        | `` ` `` or `F9` / `F8`                 |
-| Back (menus)                     | `Backspace`                            |
-| Quick-start a single-player game | `Esc` (outside multiplayer)            |
+| Action                           | Binding                                                  |
+|----------------------------------|----------------------------------------------------------|
+| Move / run / jump                | `WASD` or `Up` `Down` / `Shift` / `Space`                |
+| Orbit / turn / zoom camera       | Right mouse / `Q` `E` or `Left` `Right` / wheel, `I` `O` |
+| Toggle place / delete tool       | `1` / `2`                                                |
+| Place or delete (tool trigger)   | Left mouse                                               |
+| Rotate placement (X / Y / Z)     | `R` / `T` / `Y`                                          |
+| Reset character position         | Hold `H` for 1 second                                    |
+| Player list                      | `Tab`                                                    |
+| Console / system terminal        | `` ` `` or `F9` / `F8`                                   |
+| Back (menus)                     | `Backspace`                                              |
+| Quick-start a single-player game | `Esc` (outside multiplayer)                              |
 
 </details>
 

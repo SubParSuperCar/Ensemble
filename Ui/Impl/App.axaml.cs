@@ -77,8 +77,7 @@ public class App : Application
 		new()
 		{
 			["HighlightBrush"] = new SolidColorBrush(accent),
-			["HighlightForegroundBrush"] =
-				new SolidColorBrush(accent.ContrastingForeground),
+			["HighlightForegroundBrush"] = new SolidColorBrush(accent.ContrastingForeground),
 			["ThemeAccentBrush"] = new SolidColorBrush(accent, 0.8),
 			["ThemeAccentBrush2"] = new SolidColorBrush(accent, 0.6),
 			["ThemeAccentBrush3"] = new SolidColorBrush(accent, 0.4),

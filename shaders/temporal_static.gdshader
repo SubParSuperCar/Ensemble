@@ -3,7 +3,7 @@ shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear_mipmap;
 
 uniform float highlight_threshold : hint_range(0.0, 1.0) = 0.62;
-uniform float highlight_softness : hint_range(0.001, 0.5) = 0.10;
+uniform float highlight_softness : hint_range(0.001, 0.5) = 0.1;
 uniform float motion_strength : hint_range(0.0, 1.0) = 1.0;
 uniform float motion_variation : hint_range(0.0, 1.0) = 0.25;
 uniform float static_contrast : hint_range(0.1, 4.0) = 1.5;

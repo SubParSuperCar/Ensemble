@@ -170,11 +170,7 @@ public partial class ConstructTool : ToolBase
 	private Vector3 SnapToGrid(Vector3 position, Vector3 extents)
 	{
 		if (SnappingIncrementLinear is { } increment and > 0)
-		{
-			var min = position - extents;
-			min = min.Snapped(Vector3.One * increment);
-			position = min + extents;
-		}
+			position = (position - extents).Snapped(Vector3.One * increment) + extents;
 
 		position.Y = MathF.Max(position.Y, extents.Y);
 		return position;
@@ -224,6 +220,7 @@ public partial class ConstructTool : ToolBase
 			throw new UnreachableException();
 
 		var quota = instances.GetQuota(AssetId);
+
 		if (
 			(quota.MaxCount is not Unlimited && quota.Count >= quota.MaxCount) ||
 			(instances.MaxCount is not Unlimited && instances.Count >= instances.MaxCount))

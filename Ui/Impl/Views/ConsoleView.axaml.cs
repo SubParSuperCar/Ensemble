@@ -27,9 +27,7 @@ public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 		{
 			InitializeEditor();
 
-			Dispatcher.UIThread.Post(
-				() => OutputScroll.ScrollToEnd(),
-				DispatcherPriority.Loaded);
+			Dispatcher.UIThread.Post(() => OutputScroll.ScrollToEnd(), DispatcherPriority.Loaded);
 		}, DispatcherPriority.Background);
 	}
 

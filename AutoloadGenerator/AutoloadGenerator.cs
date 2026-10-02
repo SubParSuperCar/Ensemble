@@ -52,7 +52,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 
 		foreach (var autoload in autoloads.OrderBy(static autoload => autoload.TypeName, StringComparer.Ordinal))
 			source.AppendLine(
-				"\t\t\t\tnew(" +
+				"\t\tnew(" +
 				$"typeof({autoload.TypeName}), " +
 				$"{autoload.Scope}, " +
 				$"{autoload.Order}, " +

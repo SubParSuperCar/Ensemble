@@ -58,13 +58,7 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 
 	public CoreVariant(string? value) : this()
 	{
-		if (value is null)
-		{
-			Type = CoreVariantType.Null;
-			return;
-		}
-
-		Type = CoreVariantType.String;
+		Type = value is null ? CoreVariantType.Null : CoreVariantType.String;
 		_string = value;
 	}
 

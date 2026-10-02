@@ -115,7 +115,10 @@ public partial class Main : Node
 
 	private static void PCall(Action action)
 	{
-		try { action(); }
+		try
+		{
+			action();
+		}
 		catch
 		{
 			// Ignore

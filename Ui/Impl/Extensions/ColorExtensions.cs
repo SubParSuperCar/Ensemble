@@ -91,10 +91,15 @@ public static class ColorExtensions
 		}
 	}
 
-	private static double Linearize(byte channel) =>
-		channel / 255.0 <= 0.04045 ? channel / 255.0 / 12.92 : Math.Pow((channel / 255.0 + 0.055) / 1.055, 2.4);
+	private static double Linearize(byte channel)
+	{
+		var value = channel / 255d;
+		return value <= 0.04045 ? value / 12.92 : Math.Pow((value + 0.055) / 1.055, 2.4);
+	}
 
-	private static byte Encode(double value) =>
-		(byte)Math.Round(255 * Math.Clamp(value <= 0.0031308 ? 12.92 * value : 1.055 * Math.Pow(value, 1 / 2.4) - 0.055,
-			0, 1), MidpointRounding.ToEven);
+	private static byte Encode(double value)
+	{
+		var encoded = value <= 0.0031308 ? 12.92 * value : 1.055 * Math.Pow(value, 1 / 2.4) - 0.055;
+		return (byte)Math.Round(255 * Math.Clamp(encoded, 0, 1), MidpointRounding.ToEven);
+	}
 }

@@ -20,11 +20,11 @@ The tool suite, in rough intended order of implementation.
 - ConstructTool / CtorTool (Place) - place the selected asset (WIP)
     - [x] (M) raycast placement, face/grid snapping, rotation, ghost preview
     - [ ] (M) SAT-based intersection resolution (nudge placement out of overlaps)
-    - [x] (M) Asset Selector UI - grid of placeable assets, feeds the tool
+    - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
 - [ ] TextureTool (Paint) - drives the _colorHex / _materialId asset attributes
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
-- [x] (M) shared ToolConstants (or Tools/Utils.cs) - TriggerAction, RayLength, collision masks, etc.
+- [x] (M) shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [ ] (M) MultiSelector - shared multi-selection state across tools (deferred)
 - [ ] (M) Marquee Selector UI - shift+drag to box-select, ctrl to toggle-select, Baja Builders parity (deferred)
 
@@ -34,7 +34,7 @@ SessionManager has the infra (sessions, versioned auth handshake, server-assigne
 actions and late-join snapshots, kicks, graceful shutdown notices). Actions and snapshots live in Networking/, and
 actions are submitted with `new SetPlotAction(id).Submit()`.
 
-- [x] (M) Main-menu session sub-menu - Singleplayer / Multiplayer, Host / Join, address, port, password, remembered
+- [x] (M) Main-menu session sub-menu - Single-Player / Multi-Player, Host / Join, address, port, password, remembered
   display name
 - [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties), requested by
   the client once its world exists; actions are withheld from a peer until it is synced

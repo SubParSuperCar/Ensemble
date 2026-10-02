@@ -36,7 +36,6 @@ public partial class AssetHandle : RigidBody3D
 		if (collider?.Shape is not { } shape)
 			return default;
 
-		var aabb = shape.GetDebugMesh().GetAabb();
-		return collider.Transform * aabb;
+		return collider.Transform * shape.GetDebugMesh().GetAabb();
 	}
 }

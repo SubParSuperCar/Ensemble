@@ -53,7 +53,9 @@ public partial class AvaloniaLoader : Node
 				!Main.AskUser(
 					"Avalonia UI Config Failed",
 					Main.FormatFailureMessage(
-						"Avalonia UI failed to configure", exception, "Ensemble UI may not appear.")))
+						"Avalonia UI failed to configure",
+						exception,
+						"Ensemble UI may not appear.")))
 				Main.FailFast(exception);
 		}
 	}

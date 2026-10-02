@@ -105,8 +105,8 @@ public partial class Logger : Node, IAutoload
 	}
 
 	/// <summary>
-	///     Copies the embedded defaults if the user copy is missing. If the embedded defaults changed since the user copy
-	///     was last synced and the user copy differs from them, asks once whether to replace it (keeping a backup).
+	///     Copies the embedded defaults if the user copy is missing. If the embedded defaults changed since the user
+	///     copy was last synced and the user copy differs from them, asks once whether to replace it, keeping a backup.
 	/// </summary>
 	private static string? SyncUserAppSettings()
 	{
@@ -152,8 +152,8 @@ public partial class Logger : Node, IAutoload
 			var response = TinyDialogs.MessageBox(
 				"Ensemble Settings Defaults Changed",
 				Main.SanitizeMessageBoxBody(
-					$"This version of Ensemble ships a newer default {AppSettingsJson} than the one in your user data " +
-					"directory, which has been edited or is from an older version.\n\n" +
+					$"This version of Ensemble ships a newer default {AppSettingsJson} than the one in your user " +
+					"data directory, which has been edited or is from an older version.\n\n" +
 					"Replace yours with the new defaults? Your current file will be kept as a .bak backup.\n" +
 					"You will not be asked again until the defaults change."),
 				MessageBoxDialogType.YesNo,

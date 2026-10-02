@@ -79,7 +79,9 @@ public partial class Ui : AvaloniaControl
 				!Main.AskUser(
 					"UI Load Failed",
 					Main.FormatFailureMessage(
-						"Ensemble UI failed to load", exception, "Ensemble UI may not appear.")))
+						"Ensemble UI failed to load",
+						exception,
+						"Ensemble UI may not appear.")))
 				Main.FailFast(exception);
 
 			QueueFree();
@@ -88,6 +90,8 @@ public partial class Ui : AvaloniaControl
 
 	public override void _ExitTree()
 	{
+		Main.AutoloadsReady -= OnAutoloadsReady;
+
 		if (Performance.HasCustomMonitor(ProcessTimeMonitor))
 			Performance.RemoveCustomMonitor(ProcessTimeMonitor);
 

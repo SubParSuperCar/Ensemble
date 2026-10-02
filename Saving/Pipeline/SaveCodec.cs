@@ -15,28 +15,31 @@ internal static class SaveCodec
 			var salt = SaveCrypto.CreateSalt();
 
 			var header = SaveEnvelope.WriteHeader(
-				stream, options.Compression, EncryptionType.Aes256Gcm,
-				SaveFlags.None, default, GetKdfParameters(encryption), salt);
+				stream,
+				options.Compression,
+				EncryptionType.Aes256Gcm,
+				SaveFlags.None,
+				default,
+				GetKdfParameters(encryption),
+				salt);
 
 			SaveCrypto.Encrypt(stream, bytes, header, encryption, salt);
 			return;
 		}
 
+		var checksum = options.UseChecksum ? stackalloc byte[SaveEnvelope.ChecksumSize] : default;
+
 		if (options.UseChecksum)
-		{
-			Span<byte> checksum = stackalloc byte[SaveEnvelope.ChecksumSize];
 			SHA256.HashData(bytes, checksum);
 
-			SaveEnvelope.WriteHeader(
-				stream, options.Compression, EncryptionType.None,
-				SaveFlags.Checksum, checksum, KdfParameters.None, default);
-		}
-		else
-		{
-			SaveEnvelope.WriteHeader(
-				stream, options.Compression, EncryptionType.None,
-				SaveFlags.None, default, KdfParameters.None, default);
-		}
+		SaveEnvelope.WriteHeader(
+			stream,
+			options.Compression,
+			EncryptionType.None,
+			options.UseChecksum ? SaveFlags.Checksum : SaveFlags.None,
+			checksum,
+			KdfParameters.None,
+			default);
 
 		stream.Write(bytes);
 	}

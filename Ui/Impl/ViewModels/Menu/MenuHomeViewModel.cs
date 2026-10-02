@@ -38,8 +38,10 @@ public partial class MenuHomeViewModel : ViewModelBase
 	private void GoToWebBrowser() => _navigator.GoTo<MenuWebBrowserViewModel>();
 
 	private void OnSessionFailed(string reason) =>
-		Notice = string.Create(CultureInfo.InvariantCulture,
-			$"Session Ended\nReason: \"{TruncateToTextElements(reason, 128)}\"\nTime: {GTimeProvider.GetLocalNow():h:mm:ss tt zz}");
+		Notice = string.Create(
+			CultureInfo.InvariantCulture,
+			$"Session Ended\nReason: \"{TruncateToTextElements(reason, 128)}\"\n" +
+			$"Time: {GTimeProvider.GetLocalNow():h:mm:ss tt zz}");
 
 	private static Bitmap? LoadBitmapFromGodotImage(string path)
 	{

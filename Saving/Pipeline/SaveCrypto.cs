@@ -97,8 +97,11 @@ internal static class SaveCrypto
 		{
 			SaveEncryption.Key key => ValidateKey(key.Value.Span),
 			SaveEncryption.Password password => DeriveArgon2IdKey(
-				Encoding.UTF8.GetBytes(password.Secret), salt,
-				password.MemoryKiB, password.Iterations, password.DegreeOfParallelism),
+				Encoding.UTF8.GetBytes(password.Secret),
+				salt,
+				password.MemoryKiB,
+				password.Iterations,
+				password.DegreeOfParallelism),
 			_ => throw new ArgumentOutOfRangeException(nameof(encryption))
 		};
 
@@ -116,7 +119,11 @@ internal static class SaveCrypto
 		};
 
 	private static byte[] DeriveArgon2IdKey(
-		byte[] password, ReadOnlySpan<byte> salt, int memoryKiB, int iterations, int degreeOfParallelism)
+		byte[] password,
+		ReadOnlySpan<byte> salt,
+		int memoryKiB,
+		int iterations,
+		int degreeOfParallelism)
 	{
 		try
 		{

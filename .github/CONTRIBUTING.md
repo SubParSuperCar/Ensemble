@@ -30,5 +30,5 @@
    the following names: `godot`, `godot4`, or `godot-mono`. This allows the **PATH Launcher** run configuration to
    locate your Godot installation automatically without additional configuration.
 
-   Alternatively, you can place the executable in `/bin/` using one of the previously listed names. Creating the
-   directory may be required.
+   Alternatively, you can place the executable in the project's `bin/` directory using one of the previously listed
+   names. Creating the directory may be required.

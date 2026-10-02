@@ -31,6 +31,7 @@ public partial class GdPlot : RefCounted
 			static source =>
 			{
 				var wrapper = new GdPlot { Source = source };
+
 				source.IsSpawnedChanged += isSpawned => wrapper.EmitSignal(SignalName.IsSpawnedChanged, isSpawned);
 
 				return wrapper;

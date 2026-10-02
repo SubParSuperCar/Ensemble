@@ -101,6 +101,9 @@ internal static class SaveEnvelope
 		var encryption = (EncryptionType)prefix[6];
 		var flags = (SaveFlags)prefix[7];
 
+		if (!Enum.IsDefined(compression))
+			throw new InvalidDataException($"Unsupported compression type: {prefix[5]}.");
+
 		using var authenticated = new MemoryStream();
 		authenticated.Write(prefix);
 

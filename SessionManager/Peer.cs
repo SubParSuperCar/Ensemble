@@ -8,7 +8,8 @@ namespace EnsembleRoot.SessionManager;
 /// </summary>
 /// <remarks>
 ///     <see cref="PingMs" /> is the round-trip time to the host in milliseconds, as sampled and broadcast by the host.
-///     <see cref="Address" /> is only known across the host link: the host knows every client's, clients only the host's.
+///     <see cref="Address" /> is only known across the host link: the host knows every client's, and clients only the
+///     host's.
 /// </remarks>
 public partial class Peer : RefCounted
 {

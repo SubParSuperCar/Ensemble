@@ -86,7 +86,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		_dispatcher.UiProcess += OnUiProcess;
 
-		Log.Debug("Started forced render drawing...");
+		Log.Debug("Started forced render drawing");
 
 		Main = _services.GetRequiredService<MenuViewModel>();
 	}
@@ -143,12 +143,7 @@ public partial class MainViewModel : ViewModelBase
 
 		terminal.Show();
 
-		var editor = terminal
-			.GetVisualDescendants()
-			.OfType<TerminalView>()
-			.FirstOrDefault();
-
-		editor?.Focus();
+		terminal.GetVisualDescendants().OfType<TerminalView>().FirstOrDefault()?.Focus();
 		return;
 
 		void OnClosing(object? sender, WindowClosingEventArgs e)

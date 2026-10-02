@@ -6,7 +6,6 @@ namespace EnsembleRoot.Common.Globals;
 public static class GContext
 {
 	private static GdOccupant? _occupant;
-	private static GdPlot? _plot;
 
 	static GContext()
 	{
@@ -38,16 +37,14 @@ public static class GContext
 
 	private static void OnLocalPlotChanged(GdPlot? plot)
 	{
-		if (ReferenceEquals(_plot, plot))
+		if (ReferenceEquals(LocalPlot, plot))
 			return;
 
-		if (_plot is not null)
+		if (LocalPlot is not null)
 		{
-			_plot.Occupants.OwnerChanged -= OnOwnerChanged;
-			_plot.IsSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
+			LocalPlot.Occupants.OwnerChanged -= OnOwnerChanged;
+			LocalPlot.IsSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 		}
-
-		_plot = plot;
 
 		LocalPlot = plot;
 		LocalPlotChanged?.Invoke(plot);

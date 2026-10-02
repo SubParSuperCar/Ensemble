@@ -148,9 +148,7 @@ public partial class DiscordRpc : Node, IAutoload
 
 			if (attemptCount >= MaxConnectionAttemptCount)
 			{
-				Log.Debug(
-					"Gave up on Discord after {Count} connection attempt(s)",
-					attemptCount);
+				Log.Debug("Gave up on Discord after {Count} connection attempt(s)", attemptCount);
 
 				Callable.From(QueueFree).CallDeferred();
 				return;

@@ -55,10 +55,11 @@ public partial class UpdateChecker : Node, IAutoload
 	{
 		try
 		{
-			if (!TryParseVersion(SessionManager.SessionManager.Version, out var current))
+			var currentText = SessionManager.SessionManager.Version;
+
+			if (!TryParseVersion(currentText, out var current))
 			{
-				Log.Warning("Skipped update check: unparsable version {Version}",
-					SessionManager.SessionManager.Version);
+				Log.Warning("Skipped update check: unparsable version {Version}", currentText);
 				return;
 			}
 
@@ -72,6 +73,7 @@ public partial class UpdateChecker : Node, IAutoload
 			var stream = await response.Content.ReadAsStreamAsync(_cts.Token).ConfigureAwait(true);
 			using var document =
 				await JsonDocument.ParseAsync(stream, cancellationToken: _cts.Token).ConfigureAwait(true);
+
 			var release = document.RootElement;
 
 			if (!TryParseVersion(release.GetProperty("tag_name").GetString(), out var latest))

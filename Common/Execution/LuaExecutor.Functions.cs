@@ -102,9 +102,7 @@ public static partial class LuaExecutor
 				axis = position.Normalized();
 			} while (!axis.IsNormalized());
 
-			var rotation = new Quaternion(
-				position.Normalized(),
-				(float)((random.NextDouble() - 0.5) * Math.Tau));
+			var rotation = new Quaternion(axis, (float)((random.NextDouble() - 0.5) * Math.Tau));
 
 			instances.Add(assetId, position, rotation);
 		}
@@ -515,8 +513,7 @@ public static partial class LuaExecutor
 		var isVisible = context.GetArgument<bool>(0);
 		Log.Information("Setting Temporal Static shader visibility to: {IsVisible}", isVisible);
 
-		var temporalShader = GMain.GetNodeOrNull<CanvasLayer>("Temporal Static");
-		temporalShader?.Visible = isVisible;
+		GMain.GetNodeOrNull<CanvasLayer>("Temporal Static")?.Visible = isVisible;
 
 		context.Return();
 		return default;
@@ -616,7 +613,7 @@ public static partial class LuaExecutor
 		if (mode is { } result)
 		{
 			DisplayServer.WindowSetVsyncMode(result);
-			Log.Debug("Set VSync mode to: {Mode}", result);
+			Log.Information("Set VSync mode to: {Mode}", result);
 		}
 		else
 			Log.Error("Invalid VSync mode: {Mode}", argument);
@@ -670,11 +667,11 @@ public static partial class LuaExecutor
 		{
 			var voice = Speaker.Instance.VoiceForCulture(culture);
 
-			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume)
-				.ContinueWith(static task => Log.Error(task.Exception, "TTS failed during playback"),
-					CancellationToken.None,
-					TaskContinuationOptions.OnlyOnFaulted,
-					TaskScheduler.Default);
+			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume).ContinueWith(
+				static task => Log.Error(task.Exception, "TTS failed during playback"),
+				CancellationToken.None,
+				TaskContinuationOptions.OnlyOnFaulted,
+				TaskScheduler.Default);
 		}
 		catch (Exception exception)
 		{

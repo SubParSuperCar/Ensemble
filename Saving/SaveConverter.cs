@@ -1,11 +1,10 @@
 using EnsembleCoreRoot.Api.Assets;
-using EnsembleCoreRoot.Assets;
 
 namespace EnsembleRoot.Saving;
 
 public static class SaveConverter
 {
-	public static CreationSaveData ToSaveData(Instances instances)
+	public static CreationSaveData ToSaveData(IInstances instances)
 	{
 		var save = new CreationSaveData();
 
@@ -35,7 +34,7 @@ public static class SaveConverter
 		return save;
 	}
 
-	public static void FromSaveData(Instances instances, CreationSaveData data)
+	public static void FromSaveData(IInstances instances, CreationSaveData data)
 	{
 		foreach (var instance in data.Instances)
 		{

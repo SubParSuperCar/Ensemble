@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels;
-using Godot;
 #if ENSEMBLE_DEBUG
 using Avalonia;
 using Avalonia.Rendering;
@@ -18,11 +17,11 @@ public partial class MainView : UserControl, IViewFor<MainViewModel>
 		Watermark.Text =
 			$"\"Ensemble\" (v{SessionManager.SessionManager.Version}) (" +
 #if EXPORT && !ENSEMBLE_JIT
-			"AOT" +
+			"AOT"
 #else
-			"JIT" +
+			"JIT"
 #endif
-			$")\nBuilt: {BuildInfo.BuildTime}\n" +
+			+ $")\nBuilt: {BuildInfo.BuildTime}\n" +
 			"By: @SubParSuperCar & Contributors\n" +
 			$"At: {GitHubRepoUrl[HttpsScheme.Length..]}";
 	}

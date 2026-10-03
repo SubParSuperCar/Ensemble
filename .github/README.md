@@ -129,6 +129,19 @@ download and keeps every assembly and debug symbol as a separate file, which hel
 Run `Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux) from the extracted folder; each uses its own self-contained
 .NET runtime in its `data_Game_<platform>_x86_64` folder, so keep those folders next to the executables.
 
+### Debug Symbols
+
+NativeAOT stack traces name each method but have no line numbers, so in NativeAOT builds every logged exception is
+followed by its `Native frames:` as module offsets (e.g., `Game.so+0x7d805b`). The `-debug` ZIPs carry the matching
+symbols to turn those into files and lines. Both ZIPs of a version share the same binaries, so offsets logged by the
+lean build work too:
+
+- **Linux:** pipe the log through the bundled script, e.g., `./symbolize.sh < log.txt` (needs `addr2line`).
+- **Windows:** `llvm-symbolizer --obj=Game.dll --relative-address <offset - 1>`, with `Game.pdb` beside `Game.dll`.
+- **macOS:** `atos -o Game.dylib.dSYM/Contents/Resources/DWARF/Game.dylib -l 0 <offset - 1>`.
+
+The `-jit` ZIP needs none of this: its stack traces already include parameter names and line numbers.
+
 ### Bypassing Gatekeeper on macOS
 
 > [!NOTE]

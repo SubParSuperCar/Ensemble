@@ -19,6 +19,9 @@
     <File Path=".github/README.md"/>
     <File Path=".github/ROADMAP.md"/>
   </Folder>
+  <Folder Name="/Solution Items/GitHub/Scripts/">
+    <File Path=".github/scripts/symbolize.sh"/>
+  </Folder>
   <Folder Name="/Solution Items/GitHub/Workflows/">
     <File Path=".github/workflows/bin.yml"/>
     <File Path=".github/workflows/cloc.yml"/>

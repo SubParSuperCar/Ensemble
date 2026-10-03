@@ -79,8 +79,9 @@ jobs:
         run: |
           set -euo pipefail
           cd out
+          cp ../.github/scripts/symbolize.sh .
           zip -6 -ry "../Ensemble-${ID}-linux-x86_64-debug.zip" .
-          rm -f ./*.pdb ./*.dbg ./*.xml
+          rm -f ./*.pdb ./*.dbg ./*.xml symbolize.sh
           zip -6 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
 
       - name: Smoke test

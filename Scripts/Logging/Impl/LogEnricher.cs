@@ -16,5 +16,8 @@ public sealed class LogEnricher : ILogEventEnricher
 		logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
 			"Frame",
 			Engine.GetProcessFrames()));
+
+		if (logEvent.Exception is { } exception && NativeFrames.Describe(exception) is { } nativeFrames)
+			logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(NativeFrames.PropertyName, nativeFrames));
 	}
 }

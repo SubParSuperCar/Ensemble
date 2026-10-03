@@ -107,14 +107,10 @@ public partial class AssetSelectorViewModel : ViewModelBase
 
 			if (folder is null)
 			{
-				folder = new FolderNode
-				{
-					Name = segment,
-					Path = path,
-					IsExpanded = isExpanded || ExpandedFolderPaths.Contains(path)
-				};
-
+				folder = new FolderNode { Name = segment, Path = path };
 				folder.PropertyChanged += OnFolderPropertyChanged;
+
+				folder.IsExpanded = isExpanded || ExpandedFolderPaths.Contains(path);
 				Insert(children, folder);
 			}
 			else if (isExpanded)

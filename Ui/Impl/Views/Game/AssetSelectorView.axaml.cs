@@ -20,7 +20,12 @@ public partial class AssetSelectorView : UserControl, IViewFor<AssetSelectorView
 
 	private void OnTreeViewContainerPrepared(object? sender, ContainerPreparedEventArgs e)
 	{
-		if (sender is TreeView treeView && e.Container is TreeViewItem item)
-			item.Classes.Set("folder", treeView.ItemFromContainer(e.Container) is FolderNode);
+		if (sender is not ItemsControl owner || e.Container is not TreeViewItem item)
+			return;
+
+		item.Classes.Set("folder", owner.ItemFromContainer(item) is FolderNode);
+
+		item.ContainerPrepared -= OnTreeViewContainerPrepared;
+		item.ContainerPrepared += OnTreeViewContainerPrepared;
 	}
 }

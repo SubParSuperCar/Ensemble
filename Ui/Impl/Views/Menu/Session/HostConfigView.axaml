@@ -25,6 +25,12 @@
                 ShowButtonSpinner="False" />
         </StackPanel>
 
+        <CheckBox
+            Content="Auto Forward Port (UPnP)"
+            IsChecked="{Binding IsUpnpEnabled}"
+            ToolTip.Tip="Asks your router to forward the port so players outside your network can join. Remembered for next time.&#x0a;Uncheck if you forward the port manually, play over LAN, or prefer not to change router settings."
+            FontSize="20" />
+
         <StackPanel>
             <TextBlock Text="Password (Optional):" FontSize="16" />
 
@@ -46,16 +52,6 @@
         </StackPanel>
 
         <StackPanel>
-            <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
-
-            <TextBox
-                Text="{Binding DisplayName}"
-                PlaceholderText="&lt;Short GUID&gt;"
-                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
-                MaxLength="24" />
-        </StackPanel>
-
-        <StackPanel>
             <TextBlock Text="Max Clients (1&#x2014;4,095):" FontSize="16" />
 
             <NumericUpDown
@@ -66,11 +62,15 @@
                 Increment="1" />
         </StackPanel>
 
-        <CheckBox
-            Content="Auto Forward Port (UPnP)"
-            IsChecked="{Binding IsUpnpEnabled}"
-            ToolTip.Tip="Asks your router to forward the port so players outside your network can join. Remembered for next time.&#x0a;Uncheck if you forward the port manually, play over LAN, or prefer not to change router settings."
-            FontSize="20" />
+        <StackPanel>
+            <TextBlock Text="Display Name (Alphanumeric, &#x2264;24):" FontSize="16" />
+
+            <TextBox
+                Text="{Binding DisplayName}"
+                PlaceholderText="&lt;Short GUID&gt;"
+                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
+                MaxLength="24" />
+        </StackPanel>
 
         <TextBlock
             Text="{Binding Status}"

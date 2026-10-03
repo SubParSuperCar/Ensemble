@@ -94,8 +94,7 @@ public static partial class LuaExecutor
 
 			do
 			{
-				// The random position can be the zero vector, which cannot be normalized,
-				// so retry until a valid axis is generated.
+				// Retry if floating-point precision produces a vector that is not recognized as normalized.
 				position = new Vector3(
 					random.Next(-(int)positionRange.X, (int)positionRange.X),
 					random.Next(0, (int)positionRange.Y * 2) + 1,

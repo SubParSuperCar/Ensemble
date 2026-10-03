@@ -5,7 +5,7 @@ using Godot;
 using Godot.Collections;
 using static EnsembleRoot.SessionManager.Actions.ActionValidation;
 
-namespace EnsembleRoot.Networking.Actions;
+namespace EnsembleRoot.Replication.Actions;
 
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct AddInstanceAction(int AssetId, Vector3 Position, Quaternion Rotation)

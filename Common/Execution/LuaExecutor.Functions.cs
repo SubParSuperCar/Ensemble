@@ -295,12 +295,14 @@ public static partial class LuaExecutor
 		var manager = GSessionManager;
 
 		Log.Information(
-			"Session: {Mode} (Version={Version}, Port={Port}, HasPassword={HasPassword}, IsDedicated={IsDedicated})",
+			"Session: {Mode} (Version={Version}, Port={Port}, HasPassword={HasPassword}, IsDedicated={IsDedicated}, " +
+			"PortMapping={PortMapping})",
 			manager.Mode,
 			SessionManager.SessionManager.Version,
 			manager.Port,
 			manager.HasPassword,
-			manager.IsDedicated);
+			manager.IsDedicated,
+			manager.PortMappingState);
 
 		foreach (var peer in manager.Peers.Values.OrderBy(static peer => peer.Id))
 			Log.Information("{$Peer}", peer.ToDict());

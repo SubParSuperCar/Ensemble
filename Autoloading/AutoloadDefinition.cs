@@ -1,5 +1,7 @@
 using Godot;
 
+// ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace EnsembleRoot.Autoloading;
 
 public readonly record struct AutoloadDefinition(

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
@@ -8,6 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace EnsembleCoreRoot.Api.Assets;
 
+[SuppressMessage("Naming", "CA1720")]
 public enum CoreVariantType : byte
 {
 	Null,

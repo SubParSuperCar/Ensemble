@@ -10,7 +10,7 @@ namespace EnsembleRoot.Scripts.Players;
 [GlobalClass]
 public partial class PlayerHandle : Node3D
 {
-	private const double ResetHoldDuration = 1;
+	private const double ResetHoldDuration = 1d;
 
 	private static readonly StringName ResetAction = "char_reset";
 

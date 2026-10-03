@@ -1,8 +1,12 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Common.Networking;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.SessionManager.Api;
 using EnsembleRoot.Ui.Impl.Abstractions;
+using Godot;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -20,6 +24,9 @@ public partial class PlayerListViewModel : ViewModelBase
 
 		GPlayers.Added += OnPlayerAdded;
 		GPlayers.Removed += OnPlayerRemoved;
+
+		OnPortMappingChanged();
+		GSessionManager.PortMappingChanged += OnPortMappingChanged;
 	}
 
 	public ObservableCollection<PlayerItem> Players { get; } = [];
@@ -28,13 +35,58 @@ public partial class PlayerListViewModel : ViewModelBase
 
 	[ObservableProperty] public partial PlayerItem? SelectedPlayer { get; set; }
 
+	[ObservableProperty] public partial string? PortMappingStatus { get; set; }
+	[ObservableProperty] public partial string? PortMappingDetail { get; set; }
+
+	[ObservableProperty]
+	[NotifyCanExecuteChangedFor(nameof(CopyJoinCodeCommand))]
+	public partial string? JoinCode { get; set; }
+
 	protected override void OnDispose()
 	{
 		GPlayers.Added -= OnPlayerAdded;
 		GPlayers.Removed -= OnPlayerRemoved;
+		GSessionManager.PortMappingChanged -= OnPortMappingChanged;
 
 		foreach (var unsubscribe in _unsubscribeByPlayerId.Values)
 			unsubscribe();
+	}
+
+	[RelayCommand(CanExecute = nameof(CanCopyJoinCode))]
+	private void CopyJoinCode() => DisplayServer.ClipboardSet(JoinCode!);
+
+	private bool CanCopyJoinCode() => JoinCode is not null;
+
+	private void OnPortMappingChanged()
+	{
+		var manager = GSessionManager;
+		var port = manager.Port;
+
+		JoinCode = manager is { PortMappingState: PortMappingState.Open, ExternalAddress: not "" }
+			? new HostEndPoint(manager.ExternalAddress, port).ToString()
+			: null;
+
+		PortMappingStatus = manager.PortMappingState switch
+		{
+			PortMappingState.Pending => "UPnP\u2026",
+			PortMappingState.Open => JoinCode is null ? "UPnP OK" : $"Join Code: {JoinCode}",
+			PortMappingState.Failed => "UPnP Failed",
+			_ => null
+		};
+
+		PortMappingDetail = manager.PortMappingState switch
+		{
+			PortMappingState.Pending => "Asking your router to forward the port\u2026",
+			PortMappingState.Open => JoinCode is null
+				? string.Create(
+					CultureInfo.InvariantCulture,
+					$"UDP port {port} forwarded, but the router did not report its address.")
+				: "Share this with players outside your network.",
+			PortMappingState.Failed => string.Create(
+				CultureInfo.InvariantCulture,
+				$"{manager.PortMappingError}\nForward UDP port {port} manually to host over the internet."),
+			_ => null
+		};
 	}
 
 	private void OnPlayerAdded(GdPlayer gdPlayer)

@@ -104,8 +104,11 @@ public partial class SessionManager : Node
 
 	public override void _Notification(int what)
 	{
-		if (what == NotificationWMCloseRequest)
-			StopSession();
+		if (what != NotificationWMCloseRequest)
+			return;
+
+		StopSession();
+		_unmapping.Wait(UnmapTimeout);
 	}
 
 	public override void _UnhandledKeyInput(InputEvent @event)
@@ -134,18 +137,33 @@ public partial class SessionManager : Node
 	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients) =>
 		HostMultiPlayer(port, password, displayName, maxClients, false);
 
-	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients, bool isDedicated)
+	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients, bool isDedicated) =>
+		HostMultiPlayer(port, password, displayName, maxClients, isDedicated, false);
+
+	public void HostMultiPlayer(
+		int port,
+		string? password,
+		string? displayName,
+		int maxClients,
+		bool isDedicated,
+		bool isUpnpEnabled)
 	{
 		Log.Debug(
-			"Hosting {Class}... " +
-			"(Port={Port}, MaxClients={MaxClients}, HasPassword={HasPassword}, IsDedicated={IsDedicated})",
+			"Hosting {Class}... (Port={Port}, MaxClients={MaxClients}, HasPassword={HasPassword}, " +
+			"IsDedicated={IsDedicated}, IsUpnpEnabled={IsUpnpEnabled})",
 			nameof(MultiPlayerSession),
 			port,
 			maxClients is Unlimited ? "Unlimited" : maxClients.ToString(CultureInfo.InvariantCulture),
 			!string.IsNullOrEmpty(password),
-			isDedicated);
+			isDedicated,
+			isUpnpEnabled);
 
-		var config = new HostConfig(port, password, maxClients is Unlimited ? null : maxClients, isDedicated);
+		var config = new HostConfig(
+			port,
+			password,
+			maxClients is Unlimited ? null : maxClients,
+			isDedicated,
+			isUpnpEnabled);
 		Start(new MultiPlayerSession((SceneMultiplayer)Multiplayer, config, Version), displayName);
 	}
 
@@ -234,6 +252,7 @@ public partial class SessionManager : Node
 		session.Failed -= OnSessionFailed;
 		session.StopSession();
 
+		ClosePortMapping();
 		ClearPeers();
 		ClearRpcState();
 
@@ -267,6 +286,7 @@ public partial class SessionManager : Node
 	private void OnSessionStarted()
 	{
 		LocalPeerId = Multiplayer.GetUniqueId();
+		OpenPortMapping();
 
 		if (IsDedicated)
 		{

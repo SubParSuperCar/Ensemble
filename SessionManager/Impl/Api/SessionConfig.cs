@@ -10,7 +10,8 @@ public sealed record HostConfig(
 	int Port,
 	string? Password = null,
 	int? MaxClientCount = null,
-	bool IsDedicated = false) : ISessionConfig;
+	bool IsDedicated = false,
+	bool IsUpnpEnabled = false) : ISessionConfig;
 
 public sealed record JoinConfig(
 	string Address,

@@ -30,6 +30,14 @@ public sealed class LogSink : ILogEventSink
 		if (logEvent.Exception is not null)
 			message = string.Concat(message, Environment.NewLine, logEvent.Exception);
 
+		if (logEvent.Properties.TryGetValue(NativeFrames.PropertyName, out var nativeFrames))
+			message = string.Concat(
+				message,
+				Environment.NewLine,
+				"Native frames:",
+				Environment.NewLine,
+				(nativeFrames as ScalarValue)?.Value);
+
 		switch (logEvent.Level)
 		{
 			case LogEventLevel.Error or LogEventLevel.Fatal:

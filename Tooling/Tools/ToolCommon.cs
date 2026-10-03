@@ -10,7 +10,7 @@ internal static class ToolCommon
 {
 	public const uint SelectableLayers = 1;
 
-	private const float RayLength = 1000;
+	private const float RayLength = 1000f;
 
 	public static readonly StringName TriggerAction = "tool_trigger";
 

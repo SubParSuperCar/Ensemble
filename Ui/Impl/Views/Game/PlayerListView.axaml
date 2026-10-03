@@ -10,7 +10,7 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
-        <Grid RowDefinitions="Auto,*" Grid.IsSharedSizeScope="True">
+        <Grid RowDefinitions="Auto,*,Auto" Grid.IsSharedSizeScope="True">
             <Grid Margin="6,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -77,6 +77,30 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+
+            <Grid
+                Grid.Row="2"
+                ColumnDefinitions="*,Auto"
+                Margin="6,0"
+                ToolTip.Tip="{Binding PortMappingDetail}"
+                IsVisible="{Binding PortMappingStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+
+                <TextBlock
+                    Text="{Binding PortMappingStatus}"
+                    FontSize="12"
+                    Opacity="0.75"
+                    TextTrimming="CharacterEllipsis"
+                    VerticalAlignment="Center" />
+
+                <Button
+                    Grid.Column="1"
+                    Content="Copy"
+                    Command="{Binding CopyJoinCodeCommand}"
+                    ToolTip.Tip="Copies the join code to the clipboard."
+                    FontSize="12"
+                    Padding="6,0"
+                    IsVisible="{Binding JoinCode, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+            </Grid>
         </Grid>
     </Border>
 

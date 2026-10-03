@@ -66,6 +66,12 @@
                 Increment="1" />
         </StackPanel>
 
+        <CheckBox
+            Content="Auto Forward Port (UPnP)"
+            IsChecked="{Binding IsUpnpEnabled}"
+            ToolTip.Tip="Asks your router to forward the port so players outside your network can join. Remembered for next time.&#x0a;Uncheck if you forward the port manually, play over LAN, or prefer not to change router settings."
+            FontSize="20" />
+
         <TextBlock
             Text="{Binding Status}"
             FontSize="16"

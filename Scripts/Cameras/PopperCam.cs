@@ -15,24 +15,24 @@ public partial class PopperCam : SpringArm3D
 
 	[Export] public Node3D Focus { get; set; } = null!;
 
-	[Export] public float OrbitRatio { get; set; } = 2;
+	[Export] public float OrbitRatio { get; set; } = 2f;
 
 	[Export(PropertyHint.Range, "0,90,radians_as_degrees")]
-	public float PitchMinMax { get; set; } = Mathf.DegToRad(80);
+	public float PitchMinMax { get; set; } = Mathf.DegToRad(80f);
 
 	[Export(PropertyHint.None, "radians_as_degrees,suffix:\u00B0/s")]
-	public float YawRate { get; set; } = Mathf.DegToRad(90);
+	public float YawRate { get; set; } = Mathf.DegToRad(90f);
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
 	public float DollyMin { get; set; } = 1.25f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
-	public float DollyMax { get; set; } = 192;
+	public float DollyMax { get; set; } = 192f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
-	public float DollyStep { get; set; } = 8;
+	public float DollyStep { get; set; } = 8f;
 
-	[Export] public float DollyRate { get; set; } = 96;
+	[Export] public float DollyRate { get; set; } = 96f;
 
 	public override void _Ready()
 	{

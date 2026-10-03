@@ -9,10 +9,10 @@ namespace EnsembleRoot.Scripts.Players;
 public partial class CharacterController : CharacterBody3D
 {
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]
-	public float WalkSpeed { get; set; } = 6;
+	public float WalkSpeed { get; set; } = 6f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]
-	public float RunSpeed { get; set; } = 16;
+	public float RunSpeed { get; set; } = 16f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
 	public float JumpHeight { get; set; } = 1.25f;
@@ -21,7 +21,7 @@ public partial class CharacterController : CharacterBody3D
 	public float TurnRate { get; set; } = 11.25f;
 
 	[Export(PropertyHint.Range, "-1,0,or_greater,hide_slider")]
-	public float FirstPersonInvisibleProximityThreshold { get; set; } = 1;
+	public float FirstPersonInvisibleProximityThreshold { get; set; } = 1f;
 
 	[Export] public Camera3D Camera { get; set; } = null!;
 	[Export] public Node3D Terrain { get; set; } = null!;

@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace EnsembleRoot.Common.Networking;
 
 /// <summary>
@@ -18,4 +20,8 @@ public readonly record struct HostEndPoint(string Host, int Port)
 		endPoint = new HostEndPoint(uri.IdnHost, uri.Port);
 		return true;
 	}
+
+	public override string ToString() =>
+		string.Create(CultureInfo.InvariantCulture,
+			$"{(Host.Contains(':', StringComparison.Ordinal) ? $"[{Host}]" : Host)}:{Port}");
 }

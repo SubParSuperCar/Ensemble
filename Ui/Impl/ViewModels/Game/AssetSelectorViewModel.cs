@@ -44,7 +44,8 @@ public partial class AssetSelectorViewModel : ViewModelBase
 	public ObservableCollection<INodeBase> VisibleItems { get; } = [];
 	public ObservableCollection<INodeBase> SelectedItems { get; } = [];
 
-	[ObservableProperty] public partial float LinearSnappingIncrement { get; set; } = Ctor.SnappingIncrementLinear ?? 0;
+	[ObservableProperty]
+	public partial float LinearSnappingIncrement { get; set; } = Ctor.SnappingIncrementLinear ?? 0f;
 
 	[ObservableProperty]
 	public partial float AngularSnappingIncrement { get; set; } = Mathf.RadToDeg(Ctor.SnappingIncrementAngularRadians);

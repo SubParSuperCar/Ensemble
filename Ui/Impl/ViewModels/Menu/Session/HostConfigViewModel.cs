@@ -26,6 +26,8 @@ public partial class HostConfigViewModel : ViewModelBase
 
 	[ObservableProperty] public partial decimal? MaxClients { get; set; }
 
+	[ObservableProperty] public partial bool IsUpnpEnabled { get; set; } = SessionPreferences.IsUpnpEnabled;
+
 	[ObservableProperty] public partial string? Status { get; set; }
 
 	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;
@@ -38,12 +40,15 @@ public partial class HostConfigViewModel : ViewModelBase
 	{
 		Status = null;
 		SessionPreferences.DisplayName = DisplayName ?? string.Empty;
+		SessionPreferences.IsUpnpEnabled = IsUpnpEnabled;
 
 		GSessionManager.HostMultiPlayer(
 			(int)(Port ?? DefaultPort),
 			Password,
 			DisplayName,
-			(int?)MaxClients ?? Unlimited);
+			(int?)MaxClients ?? Unlimited,
+			false,
+			IsUpnpEnabled);
 	}
 
 	private bool CanHost() => IsValidDisplayName(DisplayName);

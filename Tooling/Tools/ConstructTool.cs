@@ -45,7 +45,7 @@ public partial class ConstructTool : ToolBase
 
 	public RotationSpace RotationSpace { get; set; } = RotationSpace.Global;
 
-	public float? SnappingIncrementLinear { get; set; } = 1;
+	public float? SnappingIncrementLinear { get; set; } = 1f;
 	public float SnappingIncrementAngularRadians { get; set; } = MathF.PI / 2;
 
 	public int AssetId { get; private set; }
@@ -272,7 +272,7 @@ public partial class ConstructTool : ToolBase
 	}
 
 	private void Flash() =>
-		CreateTween().TweenProperty(_solidHighlight!, "Tint", Colors.Red, 1f / 8).From(Colors.White);
+		CreateTween().TweenProperty(_solidHighlight!, "Tint", Colors.Red, 1 / 8f).From(Colors.White);
 
 	private void Rotate(Vector3 axis)
 	{

@@ -5,7 +5,7 @@ namespace EnsembleRoot.Ui.Impl.Extensions;
 public static class ColorExtensions
 {
 	private const double VibrantChroma = 0.13;
-	private const double MaxChromaBoost = 2;
+	private const double MaxChromaBoost = 2d;
 	private const double GamutTolerance = 1e-4;
 
 	private static readonly double WhiteBlackCrossoverLuminance = Math.Sqrt(1.05 * 0.05) - 0.05;

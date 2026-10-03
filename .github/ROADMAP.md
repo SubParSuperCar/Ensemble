@@ -41,7 +41,10 @@ actions are submitted with `new SetPlotAction(id).Submit()`.
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
 - (WIP) (S) Peer UI - ping column in the player list done; server info panel and kick button next
-- [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N` (or `--join=HOST:P`)
+- [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or
+  `--join=HOST:P`)
+- [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
+  shown under the player list
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
 - [ ] (L) Dynamic instance replication - placed blocks sync + authority model

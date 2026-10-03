@@ -8,8 +8,8 @@ public partial class PlayerHandle
 	private const int ReplicationChannel = 1;
 	private const double ReplicationInterval = 1 / 20d;
 
-	private const float SmoothingRate = 16;
-	private const float SnapDistance = 8;
+	private const float SmoothingRate = 16f;
+	private const float SnapDistance = 8f;
 
 	private double _sinceLastReplication;
 	private Vector3? _targetPosition;

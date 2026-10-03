@@ -1,5 +1,5 @@
 using EnsembleRoot.Common.Input;
-using EnsembleRoot.Networking.Actions;
+using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.SessionManager.Actions;

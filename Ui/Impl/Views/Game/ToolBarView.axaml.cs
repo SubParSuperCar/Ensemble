@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
-using EnsembleRoot.Networking.Actions;
+using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.SessionManager.Actions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels;

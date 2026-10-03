@@ -1,7 +1,7 @@
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.SessionManager.Actions;
 
-namespace EnsembleRoot.Networking.Actions;
+namespace EnsembleRoot.Replication.Actions;
 
 internal static class ActionSourceExtensions
 {

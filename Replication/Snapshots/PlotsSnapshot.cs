@@ -3,7 +3,7 @@ using EnsembleRoot.SessionManager.Snapshots;
 using Godot;
 using Godot.Collections;
 
-namespace EnsembleRoot.Networking.Snapshots;
+namespace EnsembleRoot.Replication.Snapshots;
 
 internal static class PlotsSnapshot
 {

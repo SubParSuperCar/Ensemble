@@ -4,7 +4,7 @@ using Godot;
 using Godot.Collections;
 using static EnsembleRoot.SessionManager.Actions.ActionValidation;
 
-namespace EnsembleRoot.Networking.Actions;
+namespace EnsembleRoot.Replication.Actions;
 
 public readonly record struct RemoveInstanceAction(int InstanceId) : INetworkAction<RemoveInstanceAction>
 {

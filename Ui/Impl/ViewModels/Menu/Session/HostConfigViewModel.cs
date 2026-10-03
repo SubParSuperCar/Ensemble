@@ -18,15 +18,14 @@ public partial class HostConfigViewModel : ViewModelBase
 	}
 
 	[ObservableProperty] public partial decimal? Port { get; set; }
+	[ObservableProperty] public partial bool IsUpnpEnabled { get; set; } = SessionPreferences.IsUpnpEnabled;
+
 	[ObservableProperty] public partial string? Password { get; set; }
+	[ObservableProperty] public partial decimal? MaxClients { get; set; }
 
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(HostCommand))]
 	public partial string? DisplayName { get; set; } = SessionPreferences.DisplayName;
-
-	[ObservableProperty] public partial decimal? MaxClients { get; set; }
-
-	[ObservableProperty] public partial bool IsUpnpEnabled { get; set; } = SessionPreferences.IsUpnpEnabled;
 
 	[ObservableProperty] public partial string? Status { get; set; }
 

@@ -12,6 +12,18 @@
 
     <UserControl.Resources>
         <e:ZeroEasing x:Key="ZeroEasing" />
+
+        <CompositePageTransition x:Key="SlideUpFadeTransition">
+            <PageSlide
+                Duration="{StaticResource TransitionDuration}"
+                Orientation="Vertical"
+                SlideInEasing="CubicEaseOut"
+                SlideOutEasing="{StaticResource ZeroEasing}" />
+
+            <CrossFade
+                Duration="{StaticResource TransitionDuration}"
+                FadeInEasing="CubicEaseOut" />
+        </CompositePageTransition>
     </UserControl.Resources>
 
     <Grid>
@@ -37,12 +49,8 @@
         <TransitioningContentControl
             Content="{Binding ToolBar}"
             HorizontalAlignment="Center" VerticalAlignment="Bottom"
-            Margin="0,0,0,4">
-
-            <TransitioningContentControl.PageTransition>
-                <CrossFade Duration="{StaticResource TransitionDuration}" />
-            </TransitioningContentControl.PageTransition>
-        </TransitioningContentControl>
+            Margin="0,0,0,4"
+            PageTransition="{StaticResource SlideUpFadeTransition}"/>
 
         <ContentControl
             Content="{Binding PlotSelector}"
@@ -52,22 +60,8 @@
         <TransitioningContentControl
             Content="{Binding AssetSelector}"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"
-            Width="464" Height="352">
-
-            <TransitioningContentControl.PageTransition>
-                <CompositePageTransition>
-                    <PageSlide
-                        Duration="{StaticResource TransitionDuration}"
-                        Orientation="Vertical"
-                        SlideInEasing="CubicEaseOut"
-                        SlideOutEasing="{StaticResource ZeroEasing}" />
-
-                    <CrossFade
-                        Duration="{StaticResource TransitionDuration}"
-                        FadeInEasing="CubicEaseOut" />
-                </CompositePageTransition>
-            </TransitioningContentControl.PageTransition>
-        </TransitioningContentControl>
+            Width="464" Height="352"
+            PageTransition="{StaticResource SlideUpFadeTransition}"/>
 
         <Border
             BorderBrush="Red" BorderThickness="1"

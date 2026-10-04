@@ -63,8 +63,8 @@ jobs:
         timeout-minutes: 45
         run: |
           set -euo pipefail
-          dotnet restore Game.csproj
-          dotnet build Game.csproj -c ExportRelease --no-restore
+          dotnet restore EnsembleGame.csproj
+          dotnet build EnsembleGame.csproj -c ExportRelease --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
@@ -144,8 +144,8 @@ jobs:
         timeout-minutes: 45
         run: |
           set -euo pipefail
-          dotnet restore Game.csproj
-          dotnet build Game.csproj -c ExportRelease --no-restore
+          dotnet restore EnsembleGame.csproj
+          dotnet build EnsembleGame.csproj -c ExportRelease --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
@@ -229,7 +229,7 @@ jobs:
         timeout-minutes: 45
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
-          dotnet build Game.csproj -c ExportRelease
+          dotnet build EnsembleGame.csproj -c ExportRelease
           if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
           dotnet build-server shutdown
           & $env:GODOT --headless --path . --import | Out-Host
@@ -322,8 +322,8 @@ jobs:
         timeout-minutes: 45
         run: |
           set -euo pipefail
-          dotnet restore Game.csproj
-          dotnet build Game.csproj -c ExportDebug --no-restore
+          dotnet restore EnsembleGame.csproj
+          dotnet build EnsembleGame.csproj -c ExportDebug --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
@@ -331,8 +331,8 @@ jobs:
           "${GODOT}" --headless --path . --export-debug "Microslop Windows (x86_64)" "${PWD}/out/Ensemble.exe"
           test -s out/Ensemble.x86_64
           test -s out/Ensemble.exe
-          test -s out/data_Game_linuxbsd_x86_64/Game.dll
-          test -s out/data_Game_windows_x86_64/Game.dll
+          test -s out/data_EnsembleGame_linuxbsd_x86_64/EnsembleGame.dll
+          test -s out/data_EnsembleGame_windows_x86_64/EnsembleGame.dll
           chmod +x out/Ensemble.x86_64 out/Ensemble.sh
 
       - name: Package

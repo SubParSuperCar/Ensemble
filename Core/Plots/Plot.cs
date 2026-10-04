@@ -14,6 +14,7 @@ public class Plot : IPlot
 		Instances = new Instances(assets, maxInstanceCount);
 	}
 
+	// Rider's "Code Cleanup" tool separates Occupants from Instances due to alphabetical ordering; don't fight it
 	public Occupants Occupants { get; }
 
 	public int Id { get; }

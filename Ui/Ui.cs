@@ -177,6 +177,7 @@ public partial class Ui : AvaloniaControl
 			stopwatch.Stop();
 			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
 
+			// Set the initial UI scale for better UX; it doesn't update when viewport resolution changes
 			RenderScaling = GetRenderScale(GetWindow().Size);
 			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), RenderScaling);
 		}

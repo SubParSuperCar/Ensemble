@@ -18,8 +18,7 @@ public static partial class LuaExecutor
 	{
 		Engine.MaxFps = context.GetArgumentOrDefault<int>(0);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> dmp_vsync_modes(
@@ -34,8 +33,7 @@ public static partial class LuaExecutor
 				'\n',
 				modes.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{(int)mode}. {mode}"))));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> set_ui_dark_theme_on(
@@ -54,8 +52,7 @@ public static partial class LuaExecutor
 		Log.Information("Setting UI theme variant to: {$Theme}", theme);
 		WeakReferenceMessenger.Default.Send(new SetUiThemeMessage(theme));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> set_ui_scale(
@@ -67,8 +64,7 @@ public static partial class LuaExecutor
 		Log.Information("Setting UI render scale to: {Scale}", scale);
 		WeakReferenceMessenger.Default.Send(new SetUiRenderScaleMessage(scale));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> set_vsync_mode(
@@ -103,7 +99,6 @@ public static partial class LuaExecutor
 		else
 			Log.Error("Invalid VSync mode: {Mode}", argument);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 }

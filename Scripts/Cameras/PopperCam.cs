@@ -23,6 +23,7 @@ public partial class PopperCam : SpringArm3D
 	[Export(PropertyHint.None, "radians_as_degrees,suffix:\u00B0/s")]
 	public float YawRate { get; set; } = Mathf.DegToRad(90f);
 
+	// The technically correct term is "dolly", not "zoom", because zoom is FOV, and dollying is physical in-out
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
 	public float DollyMin { get; set; } = 1.25f;
 

@@ -24,12 +24,13 @@ public partial class CharacterController : CharacterBody3D
 	public float FirstPersonInvisibleProximityThreshold { get; set; } = 1f;
 
 	[Export] public Camera3D Camera { get; set; } = null!;
-	[Export] public Node3D Terrain { get; set; } = null!;
+	[Export] public Node3D Terrain { get; set; } = null!; // We need a Terrain3D reference to sync the collision probe
 
 	public override void _Ready()
 	{
 		PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
 
+		// Hacky Terrain3D collision probe to fix falling through the ground when dollying/"zooming" out
 		var terrainFocus = new Camera3D { Name = "ShamCam", Current = false };
 		AddChild(terrainFocus);
 

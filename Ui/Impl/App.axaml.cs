@@ -10,6 +10,7 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.Messages;
 using LiveMarkdown.Avalonia;
+using Serilog;
 
 namespace EnsembleRoot.Ui.Impl;
 
@@ -42,7 +43,15 @@ public class App : Application
 		base.OnFrameworkInitializationCompleted();
 
 #if ENSEMBLE_DEBUG
-		this.AttachDeveloperTools();
+		try
+		{
+			// Press F12 to open the Avalonia developer tools (pin keybind gesture)
+			this.AttachDeveloperTools(static options => options.Gesture = KeyGesture.Parse("F12"));
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "Failed to attach Avalonia developer tools");
+		}
 #endif
 
 		ApplyAccentColor();
@@ -64,6 +73,8 @@ public class App : Application
 
 	private void ApplyAccentColor()
 	{
+		// Set the UI accent color for the 'Simple' theme once at startup, because Estragonia doesn't poll for changes
+		// Also boost vibrancy using an advanced color algorithm to make washed-out colors like brown pop out
 		if (PlatformSettings?.GetColorValues().AccentColor1 is not { A: > 0 } accent)
 			return;
 

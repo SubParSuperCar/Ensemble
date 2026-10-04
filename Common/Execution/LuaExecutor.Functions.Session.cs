@@ -33,8 +33,7 @@ public static partial class LuaExecutor
 		foreach (var peer in manager.Peers.Values.OrderBy(static peer => peer.Id))
 			Log.Information("{$Peer}", peer.ToDict());
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> kick(
@@ -43,8 +42,7 @@ public static partial class LuaExecutor
 	{
 		GSessionManager.Kick(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> log_lan_ip4_addr(
@@ -61,8 +59,7 @@ public static partial class LuaExecutor
 
 		Log.Information("Local Area Network (LAN) IPv4 address: {Address}", address);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static async ValueTask<int> log_wan_ip4_addr(
@@ -89,7 +86,6 @@ public static partial class LuaExecutor
 			Log.Error(exception, "Failed to get public IPv4 address");
 		}
 
-		context.Return();
-		return 0;
+		return context.Return();
 	}
 }

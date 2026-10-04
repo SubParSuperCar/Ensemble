@@ -27,14 +27,11 @@ public partial class Logger : Node, IAutoload
 
 	public void Initialize()
 	{
-		var loggerConfig = new LoggerConfiguration()
-			.MinimumLevel.Verbose()
-			.Enrich.With(new LogEnricher())
-			.WriteTo.Sink(new LogSink())
-			.WriteTo.Sink(new VolatileLogHistorySink());
+		LoggerConfiguration loggerConfig;
 
 		string? logDir = null;
 		string? syncNote = null;
+		Exception? userFailure = null;
 		Exception? failure = null;
 
 		try
@@ -42,11 +39,21 @@ public partial class Logger : Node, IAutoload
 			logDir = ProjectSettings.GlobalizePath(LogDir);
 			Directory.CreateDirectory(logDir);
 
-			loggerConfig = loggerConfig.ReadFrom.Configuration(BuildConfiguration(logDir, out syncNote));
+			try
+			{
+				var configuration = BuildConfiguration(logDir, true, out syncNote);
+				loggerConfig = CreateBaseConfig().ReadFrom.Configuration(configuration);
+			}
+			catch (Exception exception)
+			{
+				userFailure = exception;
+				loggerConfig = CreateBaseConfig().ReadFrom.Configuration(BuildConfiguration(logDir, false, out _));
+			}
 		}
 		catch (Exception exception)
 		{
 			failure = exception;
+			loggerConfig = CreateBaseConfig();
 		}
 
 		Log.Logger = loggerConfig.CreateLogger();
@@ -59,12 +66,23 @@ public partial class Logger : Node, IAutoload
 		Factory = _factory;
 
 		if (failure is null)
-			Log.Information("Writing {Class} logs to: {Directory}", nameof(Serilog), logDir);
+			Log.Information(
+				"Writing {Class} log files to {Directory} with name template {NameTemplate}",
+				nameof(Serilog),
+				logDir,
+				LogFileNameTemplate);
 		else
 			Log.Error(failure, "Could not build {Class} configuration", nameof(Serilog));
 
 		if (syncNote is not null)
 			Log.Information("{Note}", syncNote);
+
+		if (userFailure is not null)
+			Log.Warning(
+				userFailure,
+				"Could not apply {Path}; using the default {File} instead",
+				UserAppSettingsPath,
+				AppSettingsJson);
 	}
 
 	public override void _ExitTree()
@@ -78,20 +96,17 @@ public partial class Logger : Node, IAutoload
 		Log.CloseAndFlush();
 	}
 
-	private static IConfiguration BuildConfiguration(string logDir, out string? syncNote)
-	{
-		byte[] bytes;
-		syncNote = null;
+	private static LoggerConfiguration CreateBaseConfig() =>
+		new LoggerConfiguration()
+			.MinimumLevel.Verbose()
+			.Enrich.With(new LogEnricher())
+			.WriteTo.Sink(new LogSink())
+			.WriteTo.Sink(new VolatileLogHistorySink());
 
-		try
-		{
-			syncNote = SyncUserAppSettings();
-			bytes = ReadAllBytesOrThrow(UserAppSettingsPath);
-		}
-		catch
-		{
-			bytes = ReadAllBytesOrThrow(AppSettingsPath);
-		}
+	private static IConfiguration BuildConfiguration(string logDir, bool useUserCopy, out string? syncNote)
+	{
+		syncNote = null;
+		var bytes = useUserCopy ? ReadUserAppSettings(out syncNote) : ReadAllBytesOrThrow(AppSettingsPath);
 
 		var configBuilder = new ConfigurationBuilder();
 
@@ -102,6 +117,21 @@ public partial class Logger : Node, IAutoload
 		});
 
 		return configBuilder.Build();
+	}
+
+	private static byte[] ReadUserAppSettings(out string? syncNote)
+	{
+		syncNote = null;
+
+		try
+		{
+			syncNote = SyncUserAppSettings();
+			return ReadAllBytesOrThrow(UserAppSettingsPath);
+		}
+		catch
+		{
+			return ReadAllBytesOrThrow(AppSettingsPath);
+		}
 	}
 
 	/// <summary>

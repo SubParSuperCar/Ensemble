@@ -2,7 +2,6 @@ using System.Globalization;
 using Godot;
 using Serilog.Core;
 using Serilog.Events;
-using Environment = System.Environment;
 
 namespace EnsembleRoot.Scripts.Logging.Impl;
 
@@ -28,15 +27,10 @@ public sealed class LogSink : ILogEventSink
 			$"[{logEvent.Timestamp:HH:mm:ss.fff}] [{level}] {renderedMessage}");
 
 		if (logEvent.Exception is not null)
-			message = string.Concat(message, Environment.NewLine, logEvent.Exception);
+			message = string.Concat(message, "\n", logEvent.Exception);
 
 		if (logEvent.Properties.TryGetValue(NativeFrames.PropertyName, out var nativeFrames))
-			message = string.Concat(
-				message,
-				Environment.NewLine,
-				"Native frames:",
-				Environment.NewLine,
-				(nativeFrames as ScalarValue)?.Value);
+			message = string.Concat(message, "\nNative frames:\n", (nativeFrames as ScalarValue)?.Value);
 
 		switch (logEvent.Level)
 		{

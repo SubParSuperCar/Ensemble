@@ -25,7 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../Core/Core.csproj"/>
-    <ProjectReference Include="../Game.csproj"/>
+    <ProjectReference Include="../EnsembleGame.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

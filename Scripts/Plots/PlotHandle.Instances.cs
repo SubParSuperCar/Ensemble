@@ -7,6 +7,7 @@ namespace EnsembleRoot.Scripts.Plots;
 
 public partial class PlotHandle
 {
+	// We're only syncing despawned AssetHandle objects for now. Spawning/despawning will come soon(TM).
 	private Node3D _staticInstances = null!;
 
 	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];

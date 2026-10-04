@@ -54,7 +54,7 @@
                 Background="{DynamicResource TranslucentBackgroundBrush}" Foreground="Orange"
                 Padding="4"
                 FontSize="20"
-                TextAlignment="Center" TextWrapping="Wrap" />
+                TextWrapping="Wrap" />
         </Border>
 
         <StackPanel

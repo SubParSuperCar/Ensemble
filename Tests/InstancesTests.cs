@@ -25,7 +25,6 @@ public sealed class InstancesTests
 	public void Add_SkipsIdsTakenByAddAt()
 	{
 		var instances = CreateInstances();
-
 		instances.Add(0, Vector3.Zero, Quaternion.Identity, 1);
 
 		Assert.Equal(0, Add(instances).Id);

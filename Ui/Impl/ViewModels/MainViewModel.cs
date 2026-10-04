@@ -1,4 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,9 +20,16 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
+	private const int TargetTerminalFps = 60;
+
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceProvider _services;
 	private readonly List<TerminalWindow> _terminals = [];
+
+	static MainViewModel()
+	{
+		TerminalRenderThrottle.TargetFrameRate = TargetTerminalFps;
+	}
 
 	public MainViewModel(IServiceProvider services, DispatcherService dispatcher)
 	{
@@ -124,12 +134,28 @@ public partial class MainViewModel : ViewModelBase
 
 	private void ShowNewTerminalWindow()
 	{
+		var app = Application.Current!;
+		var isDark = app.ActualThemeVariant == ThemeVariant.Dark;
+
+		// Sync the appearance to the main UI
+		var fontFamily = app.FindResource("Font") as FontFamily ?? FontFamily.Default;
+		var fontSize = app.FindResource("FontSize") as double? ?? 16d;
+		var cursorColor = (app.FindResource("HighlightBrush") as ISolidColorBrush)?.Color ?? Color.Parse("#40A0FF");
+		var selectionBrush = app.FindResource("ThemeAccentBrush3") as IBrush ?? new SolidColorBrush(cursorColor, 0.4);
+
+		// TODO: Consider adding support for translucent terminal windows. Estragonia is likely the limiting factor.
 		var terminal = new TerminalWindow
 		{
 			Width = 1280,
 			Height = 720,
+			FontFamily = fontFamily,
+			FontSize = fontSize,
+			Foreground = isDark ? Brushes.White : Brushes.Black,
+			Background = isDark ? Brushes.Black : Brushes.White,
+			SelectionBrush = selectionBrush,
+			Ligatures = true,
 			CursorStyle = CursorStyle.Block,
-			CursorColor = Color.Parse("#40A0FF"),
+			CursorColor = cursorColor,
 			CursorBlink = true,
 			CursorBlinkRate = (int)TimeSpan.MillisecondsPerSecond / 3
 		};
@@ -142,8 +168,8 @@ public partial class MainViewModel : ViewModelBase
 		Log.Debug("PTY process created with shell: {Shell}", terminal.Process);
 
 		terminal.Show();
-
 		terminal.GetVisualDescendants().OfType<TerminalView>().FirstOrDefault()?.Focus();
+
 		return;
 
 		void OnClosing(object? sender, WindowClosingEventArgs e)

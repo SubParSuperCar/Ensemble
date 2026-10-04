@@ -1,8 +1,9 @@
-#if ENSEMBLE_DEBUG
+#if ENSEMBLE_DEBUG && !EXPORT
 using Avalonia;
 
 namespace EnsembleRoot.Ui.Impl;
 
+// For Avalonia UI designer support so the UI can be previewed during editing in the IDE, e.g., JetBrains Rider
 public static class Designer
 {
 	public static int Main() =>

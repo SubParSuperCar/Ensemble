@@ -35,6 +35,17 @@ public partial class AvaloniaLoader : Node
 				.WithJetBrainsMonoFont()
 				.With(new SkiaOptions
 				{
+					/* Cap Skia's total GPU resource cache (textures, glyph atlases, etc.) at 32 MiB, up from Avalonia's
+					 * 28.125 MiB default
+					 *
+					 * For reference, a single RGBA8 surface is roughly
+					 * 3.5 MiB @ 1280x720
+					 * 7.9 MiB @ 1920x1080
+					 * 14.1 MiB @ 2560x1440
+					 * 31.6 MiB @ 3840x2160
+					 *
+					 * This value will be optimized later
+					 */
 					MaxGpuResourceSizeBytes = 32 * 1024 * 1024
 				})
 				.With(new CompositionOptions

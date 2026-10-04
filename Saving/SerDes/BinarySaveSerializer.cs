@@ -5,6 +5,10 @@ using Vector3 = System.Numerics.Vector3;
 
 namespace EnsembleRoot.Saving.SerDes;
 
+/// <remarks>
+///     Counts are stored plus one, and floats must be finite, so all-zero and all-one values (the most likely
+///     corruption) are rejected.
+/// </remarks>
 public sealed class BinarySaveSerializer : ISaveSerializer
 {
 	private const byte FormatVersion = 0;
@@ -22,7 +26,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		writer.Write(data.Version);
 		writer.Write(data.UtcCreatedAt.UtcTicks);
 
-		writer.Write(Math.Min(data.Instances.Count, int.MaxValue - 1));
+		writer.Write(Math.Min(data.Instances.Count, int.MaxValue - 1) + 1);
 
 		foreach (var instance in data.Instances)
 		{
@@ -66,14 +70,20 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		if (formatVersion is not FormatVersion)
 			throw new InvalidDataException($"Unsupported save format version: {formatVersion}.");
 
+		var version = reader.ReadByte();
+
+		var utcTicks = reader.ReadInt64();
+		if (utcTicks <= DateTimeOffset.MinValue.UtcTicks || utcTicks > DateTimeOffset.MaxValue.UtcTicks)
+			throw new InvalidDataException("Invalid creation time.");
+
 		var save = new CreationSaveData
 		{
-			Version = reader.ReadByte(),
-			UtcCreatedAt = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero)
+			Version = version,
+			UtcCreatedAt = new DateTimeOffset(utcTicks, TimeSpan.Zero)
 		};
 
 		var instanceCount = reader.ReadInt32();
-		if (instanceCount is < 0 or int.MaxValue)
+		if (instanceCount-- <= 0)
 			throw new InvalidDataException("Invalid instance count.");
 
 		save.Instances.Capacity = Math.Min(instanceCount, MaxPreallocatedCount);
@@ -83,15 +93,18 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			var assetId = reader.ReadUInt16();
 
 			var position = new Vector3(
-				reader.ReadSingle(),
-				reader.ReadSingle(),
-				reader.ReadSingle());
+				ReadFiniteSingle(reader),
+				ReadFiniteSingle(reader),
+				ReadFiniteSingle(reader));
 
 			var rotation = new Quaternion(
-				reader.ReadSingle(),
-				reader.ReadSingle(),
-				reader.ReadSingle(),
-				reader.ReadSingle());
+				ReadFiniteSingle(reader),
+				ReadFiniteSingle(reader),
+				ReadFiniteSingle(reader),
+				ReadFiniteSingle(reader));
+
+			if (rotation.LengthSquared() is 0f)
+				throw new InvalidDataException("Invalid rotation.");
 
 			var propertyCount = reader.ReadUInt16();
 			if (propertyCount-- is 0 or ushort.MaxValue)
@@ -125,4 +138,9 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 		return save;
 	}
+
+	private static float ReadFiniteSingle(BinaryReader reader) =>
+		reader.ReadSingle() is var value && float.IsFinite(value)
+			? value
+			: throw new InvalidDataException("Invalid number.");
 }

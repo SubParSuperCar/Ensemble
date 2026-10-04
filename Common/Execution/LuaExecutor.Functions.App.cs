@@ -27,8 +27,7 @@ public static partial class LuaExecutor
 			GMain.Quit();
 		}
 
-		context.Return();
-		return 0;
+		return context.Return();
 	}
 
 	private static ValueTask<int> restart(
@@ -40,8 +39,7 @@ public static partial class LuaExecutor
 		OS.SetRestartOnExit(true, OS.GetCmdlineArgs());
 		(Engine.GetMainLoop() as SceneTree)?.Quit();
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> tts(
@@ -69,8 +67,7 @@ public static partial class LuaExecutor
 			Log.Error(exception, "TTS failed during setup");
 		}
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static async ValueTask<int> wait(
@@ -82,7 +79,6 @@ public static partial class LuaExecutor
 
 		await Task.Delay(delayMs, cancellationToken).ConfigureAwait(true);
 
-		context.Return();
-		return 0;
+		return context.Return();
 	}
 }

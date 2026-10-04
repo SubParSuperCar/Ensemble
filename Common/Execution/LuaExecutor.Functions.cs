@@ -42,5 +42,7 @@ public static partial class LuaExecutor
 	{
 		private T GetArgumentOrDefault<T>(int index, T fallback = default!) =>
 			context.HasArgument(index) ? context.GetArgument<T>(index) : fallback;
+
+		private ValueTask<int> ReturnNothing() => new(context.Return());
 	}
 }

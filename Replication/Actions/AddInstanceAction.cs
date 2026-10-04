@@ -29,10 +29,11 @@ public readonly record struct AddInstanceAction(int AssetId, Vector3 Position, Q
 
 		var instances = plot.Instances;
 
-		return IsMet(instances.Count, instances.MaxCount) ||
-			   (instances.GetQuota(AssetId) is [var count, var maxCount] && IsMet(count, maxCount))
-			? Reject("Quota met.")
-			: Accept;
+		return
+			IsMet(instances.Count, instances.MaxCount) ||
+			(instances.GetQuota(AssetId) is [var count, var maxCount] && IsMet(count, maxCount))
+				? Reject("Quota met.")
+				: Accept;
 	}
 
 	public void Apply(ActionSource source) => source.Plot!.Instances.Add(AssetId, Position, Rotation);

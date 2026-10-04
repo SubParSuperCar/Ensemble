@@ -164,6 +164,7 @@ public partial class SessionManager : Node
 			maxClients is Unlimited ? null : maxClients,
 			isDedicated,
 			isUpnpEnabled);
+
 		Start(new MultiPlayerSession((SceneMultiplayer)Multiplayer, config, Version), displayName);
 	}
 

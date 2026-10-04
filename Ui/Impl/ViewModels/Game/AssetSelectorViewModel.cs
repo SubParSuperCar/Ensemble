@@ -256,14 +256,18 @@ public partial class FolderNode : ObservableObject, INodeBase
 {
 	public required string Path { get; init; }
 	public IList<INodeBase> Children { get; init; } = new List<INodeBase>();
+
 	[ObservableProperty] public partial bool IsExpanded { get; set; }
+
 	public required string Name { get; init; }
 }
 
 public partial class AssetNode : ObservableObject, INodeBase
 {
 	public int Id { get; init; }
+
 	[ObservableProperty] public partial string Quota { get; set; } = "<Unknown>";
+
 	public required string Name { get; init; }
 }
 

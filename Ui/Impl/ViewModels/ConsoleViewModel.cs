@@ -8,7 +8,6 @@ using EnsembleRoot.Ui.Impl.Messages;
 using EnsembleRoot.Ui.Impl.Services;
 using Godot;
 using Dispatcher = Avalonia.Threading.Dispatcher;
-using Environment = System.Environment;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -66,6 +65,6 @@ public partial class ConsoleViewModel : ViewModelBase
 	private void UpdateOutput()
 	{
 		var history = VolatileLogHistorySink.History;
-		Output = history.Count is 0 ? "<Empty>" : string.Join(Environment.NewLine, history);
+		Output = history.Count is 0 ? "<Empty>" : string.Join('\n', history);
 	}
 }

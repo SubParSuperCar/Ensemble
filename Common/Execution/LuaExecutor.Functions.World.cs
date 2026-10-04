@@ -16,10 +16,7 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		if (!IsSinglePlayer(nameof(add_rand_insts)))
-		{
-			context.Return();
-			return default;
-		}
+			return context.ReturnNothing();
 
 		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgument<int>(1);
@@ -61,8 +58,7 @@ public static partial class LuaExecutor
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> clr_insts(
@@ -70,10 +66,7 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		if (!IsSinglePlayer(nameof(clr_insts)))
-		{
-			context.Return();
-			return default;
-		}
+			return context.ReturnNothing();
 
 		var plotId = context.GetArgument<int>(0);
 		var instances = GPlots.GetPlot(plotId)!.Instances;
@@ -89,8 +82,7 @@ public static partial class LuaExecutor
 			plotId,
 			stopwatch.Elapsed.TotalMilliseconds);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static bool IsSinglePlayer(string function)
@@ -133,8 +125,7 @@ public static partial class LuaExecutor
 			"Performance modification applied. It may need to be reapplied upon session startups. " +
 			"Setting time to midnight is recommended");
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> set_static_shader_on(
@@ -146,8 +137,7 @@ public static partial class LuaExecutor
 
 		GMain.GetNodeOrNull<CanvasLayer>("Temporal Static")?.Visible = isVisible;
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> set_time(
@@ -156,8 +146,7 @@ public static partial class LuaExecutor
 	{
 		SetTimeOfDay(context);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static void SetTimeOfDay(LuaFunctionExecutionContext context)
@@ -176,7 +165,6 @@ public static partial class LuaExecutor
 		}
 
 		var time = context.GetArgument<float>(0) % 24;
-
 		timeOfDay.Set("game_time_enabled", false);
 		timeOfDay.Set("system_sync", false);
 		timeOfDay.Set("current_time", time);
@@ -211,7 +199,6 @@ public static partial class LuaExecutor
 				context.GetArgument<float>(1),
 				context.GetArgument<float>(2)));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 }

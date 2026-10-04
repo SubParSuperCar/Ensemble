@@ -58,6 +58,7 @@ public partial class PlayerHandle : Node3D
 		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
 			return;
 
+		// Hacky method to swap a regular CharacterBody3D for a CharacterController
 		var instanceId = Character.GetInstanceId();
 		Character.SetScript(CharacterControllerScript);
 		Character = null;

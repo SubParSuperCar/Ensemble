@@ -6,6 +6,7 @@ namespace EnsembleCoreRoot.Utils;
 
 internal sealed class HoleyArray<TValue> where TValue : class
 {
+	// The "Hole Punch" is a memorable legacy name for when the '_items' collection would punch nulls to create "holes"
 	private const int MaxHolePunchIndex = 1 << 20;
 
 	private readonly List<TValue?> _items = [];

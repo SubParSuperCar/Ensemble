@@ -152,6 +152,7 @@ public partial class Main : Node
 
 		Log.Debug("Queued children to be freed. Awaiting children removal...");
 
+		// Rider shows an error for awaiting ToSignal, but it compiles and runs fine; it's benign
 		while (tree.Root.GetChildCount() > 1 || GetChildCount() > 0)
 			await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
 

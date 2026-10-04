@@ -20,6 +20,7 @@ public partial class AssetHandle : RigidBody3D
 	{
 		get
 		{
+			// Consideration: If the boundary size is truly zero (unlikely), this will keep recalculating every time
 			if (field.Size == Vector3.Zero)
 				field = CalculateBoundary();
 

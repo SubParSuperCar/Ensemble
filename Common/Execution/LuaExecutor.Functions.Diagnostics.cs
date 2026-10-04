@@ -17,8 +17,7 @@ public static partial class LuaExecutor
 	{
 		Callable.From(VolatileLogHistorySink.Clear).CallDeferred();
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> dmp_asm_info(
@@ -35,8 +34,7 @@ public static partial class LuaExecutor
 			assemblyNames.Length,
 			string.Join('\n', assemblyNames.Select(static name => $"~~> {name}")));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> dmp_env(
@@ -46,8 +44,7 @@ public static partial class LuaExecutor
 		Log.Information("Contents of _ENV:");
 		DumpTable(context.State.Environment, "_ENV", []);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> dmp_inp_map(
@@ -68,8 +65,7 @@ public static partial class LuaExecutor
 				Log.Information("{Index}. {Event}", index++, @event.AsText());
 		}
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static void DumpTable(
@@ -158,8 +154,7 @@ public static partial class LuaExecutor
 			ByteFormat.Humanize((ulong)reclaimed),
 			stopwatch.Elapsed.TotalMilliseconds);
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> help(
@@ -176,8 +171,7 @@ public static partial class LuaExecutor
 
 		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join('\n', functions));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> print(
@@ -186,7 +180,6 @@ public static partial class LuaExecutor
 	{
 		Log.Information("Lua: \"{Message}\"", string.Join(' ', [.. context.Arguments]));
 
-		context.Return();
-		return default;
+		return context.ReturnNothing();
 	}
 }

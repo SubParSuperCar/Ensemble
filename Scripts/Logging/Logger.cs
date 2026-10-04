@@ -21,6 +21,9 @@ public partial class Logger : Node, IAutoload
 	private const string AppSettingsSection = "app_settings";
 	private const string DefaultsHashKey = "defaults_sha256";
 
+	private static readonly string HeaderHookReference =
+		$"{typeof(Hooks).FullName}::{nameof(Hooks.Header)}, {typeof(Hooks).Assembly.GetName().Name}";
+
 	private ILoggerFactory? _factory;
 
 	public static ILoggerFactory? Factory { get; private set; }
@@ -113,7 +116,8 @@ public partial class Logger : Node, IAutoload
 		configBuilder.AddJsonStream(new MemoryStream(bytes));
 		configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
 		{
-			["Serilog:WriteTo:0:Args:path"] = Path.Combine(logDir, LogFileNameTemplate)
+			["Serilog:WriteTo:0:Args:path"] = Path.Combine(logDir, LogFileNameTemplate),
+			["Serilog:WriteTo:0:Args:hooks"] = HeaderHookReference
 		});
 
 		return configBuilder.Build();
@@ -137,6 +141,7 @@ public partial class Logger : Node, IAutoload
 	/// <summary>
 	///     Copies the embedded defaults if the user copy is missing. If the embedded defaults changed since the user
 	///     copy was last synced and the user copy differs from them, asks once whether to replace it, keeping a backup.
+	///     Headless runs never ask, so they leave the question for the next regular launch.
 	/// </summary>
 	private static string? SyncUserAppSettings()
 	{
@@ -155,6 +160,9 @@ public partial class Logger : Node, IAutoload
 			!string.Equals(syncedHash, defaultsHash, StringComparison.Ordinal) &&
 			!ReadAllBytesOrThrow(UserAppSettingsPath).AsSpan().SequenceEqual(defaults))
 		{
+			if (Main.IsHeadlessServer)
+				return $"Kept {UserAppSettingsPath} despite newer defaults (not asked when headless)";
+
 			if (ShouldReplaceUserAppSettings())
 			{
 				Copy(UserAppSettingsPath, UserAppSettingsPath + ".bak");
@@ -174,9 +182,6 @@ public partial class Logger : Node, IAutoload
 
 	private static bool ShouldReplaceUserAppSettings()
 	{
-		if (Main.IsHeadlessServer)
-			return false;
-
 		try
 		{
 			var response = TinyDialogs.MessageBox(

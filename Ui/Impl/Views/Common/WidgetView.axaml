@@ -80,7 +80,8 @@
                     Name="MaximizeButton"
                     Grid.Column="1"
                     Command="{Binding ToggleMaximizedCommand}"
-                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)" />
+                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
+                    CornerRadius="4,0,0,0" />
 
                 <Button
                     Grid.Column="2"
@@ -105,7 +106,7 @@
                 Cursor="BottomRightCorner"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
                 Width="12" Height="12"
-                CornerRadius="6,0,0,0"
+                CornerRadius="6,0,2,0"
                 IsVisible="{Binding Descriptor.IsResizable}" />
         </Grid>
     </Border>

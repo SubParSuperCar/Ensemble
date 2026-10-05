@@ -14,7 +14,7 @@ public static class ServiceProviderExtensions
 		/// </summary>
 		public TViewModel Create<
 			[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
-		TViewModel>()
+			TViewModel>()
 			where TViewModel : ViewModelBase =>
 			ActivatorUtilities.CreateInstance<TViewModel>(services);
 	}

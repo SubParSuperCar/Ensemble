@@ -21,7 +21,7 @@ public partial class ConstructTool : ToolBase
 {
 	private const float LinearSmoothingRate = 40f;
 	private const float AngularSmoothingRate = 32f;
-	private const float PreviewOpacity = 0.75f;
+	private const float PreviewOpacity = 7 / 8f;
 
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";

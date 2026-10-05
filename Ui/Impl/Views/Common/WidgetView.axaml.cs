@@ -19,8 +19,8 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private const double HiddenTilt = -90 * (1 / 4d);
 	private const double TiltDepth = 1000;
 
-	private static readonly Easing EaseIn = new CubicEaseIn();
-	private static readonly Easing EaseOut = new CubicEaseOut();
+	private static readonly Easing ShownEasing = new QuadraticEaseOut();
+	private static readonly Easing HiddenEasing = new LinearEasing();
 
 	private readonly ScaleTransform _scale = new(HiddenScale, HiddenScale);
 	private readonly Rotate3DTransform _tilt = new() { AngleX = HiddenTilt, Depth = TiltDepth };
@@ -52,11 +52,11 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 		if (Application.Current?.TransitionDuration is { } duration)
 		{
 			_transitions.AddRange(
-				[
-					Ease(_scale, ScaleTransform.ScaleXProperty),
-					Ease(_scale, ScaleTransform.ScaleYProperty),
-					Ease(_tilt, Rotate3DTransform.AngleXProperty)
-				]);
+			[
+				Ease(_scale, ScaleTransform.ScaleXProperty),
+				Ease(_scale, ScaleTransform.ScaleYProperty),
+				Ease(_tilt, Rotate3DTransform.AngleXProperty)
+			]);
 		}
 
 		Frame.RenderTransform = new TransformGroup { Children = [_scale, _tilt] };
@@ -80,7 +80,7 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 		var isShown = Frame.Classes.Contains("shown") && !Frame.Classes.Contains("hidden");
 
 		foreach (var transition in _transitions)
-			transition.Easing = isShown ? EaseOut : EaseIn;
+			transition.Easing = isShown ? ShownEasing : HiddenEasing;
 
 		_scale.ScaleX = _scale.ScaleY = isShown ? 1 : HiddenScale;
 		_tilt.AngleX = isShown ? 0 : HiddenTilt;

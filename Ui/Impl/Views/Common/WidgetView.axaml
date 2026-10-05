@@ -11,6 +11,7 @@
 
     <UserControl.Styles>
         <Style Selector="Border#Frame">
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}" />
             <Setter Property="Opacity" Value="0" />
 
             <Setter Property="Transitions">
@@ -33,8 +34,21 @@
             <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
         </Style>
 
+        <Style Selector="Grid#Header">
+            <Setter Property="Background" Value="{DynamicResource ThemeControlMidBrush}" />
+        </Style>
+
         <Style Selector="Border#Frame.active Grid#Header">
-            <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
+            <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource HighlightForegroundBrush}" />
+        </Style>
+
+        <Style Selector="Button#MaximizeButton">
+            <Setter Property="Content" Value="&#x25A1;" />
+        </Style>
+
+        <Style Selector="Border#Frame.maximized Button#MaximizeButton">
+            <Setter Property="Content" Value="&#x25A3;" />
         </Style>
 
         <Style Selector="Grid#Header Button">
@@ -49,14 +63,18 @@
         Name="Frame"
         Classes.active="{Binding IsActive}"
         Classes.closing="{Binding IsClosing}"
-        BorderBrush="{DynamicResource ThemeBorderMidBrush}" BorderThickness="1"
+        Classes.maximized="{Binding IsMaximized}"
+        BorderThickness="1"
         CornerRadius="6" ClipToBounds="True">
+
+        <Border.Effect>
+            <DropShadowEffect OffsetX="0" OffsetY="2" BlurRadius="16" Opacity="0.5" />
+        </Border.Effect>
 
         <Grid RowDefinitions="24,*">
             <Grid
                 Name="Header"
                 ColumnDefinitions="*,Auto,Auto"
-                Background="{DynamicResource ThemeControlMidBrush}"
                 Cursor="SizeAll"
                 ToolTip.Tip="{Binding Descriptor.Description}"
                 PointerPressed="OnHeaderPointerPressed"
@@ -72,8 +90,8 @@
                     TextTrimming="CharacterEllipsis" />
 
                 <Button
+                    Name="MaximizeButton"
                     Grid.Column="1"
-                    Content="&#x25A1;"
                     Command="{Binding ToggleMaximizedCommand}"
                     ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)" />
 

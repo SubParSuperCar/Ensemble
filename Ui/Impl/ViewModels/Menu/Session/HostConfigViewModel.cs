@@ -46,7 +46,7 @@ public partial class HostConfigViewModel : ViewModelBase
 			Password,
 			DisplayName,
 			(int?)MaxClients ?? Unlimited,
-			false,
+			isDedicated: false,
 			IsUpnpEnabled);
 	}
 

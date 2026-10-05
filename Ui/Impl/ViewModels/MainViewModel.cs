@@ -3,18 +3,18 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
+using Color = Avalonia.Media.Color;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Attributes;
+using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.Messages;
 using EnsembleRoot.Ui.Impl.Services;
 using Godot;
 using Iciclecreek.Terminal;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using XTerm.Common;
-using Color = Avalonia.Media.Color;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -36,7 +36,7 @@ public partial class MainViewModel : ViewModelBase
 		_services = services;
 		_dispatcher = dispatcher;
 
-		Stats = services.GetRequiredService<StatViewModel>();
+		Stats = services.Create<StatViewModel>();
 
 		dispatcher.Input += OnInput;
 		dispatcher.Notification += OnNotification;
@@ -91,7 +91,7 @@ public partial class MainViewModel : ViewModelBase
 
 		Log.Debug("Stopped forced render drawing");
 
-		Main = _services.GetRequiredService<GameViewModel>();
+		Main = _services.Create<GameViewModel>();
 	}
 
 	private void OnSessionStopped()
@@ -100,7 +100,7 @@ public partial class MainViewModel : ViewModelBase
 
 		Log.Debug("Started forced render drawing");
 
-		Main = _services.GetRequiredService<MenuViewModel>();
+		Main = _services.Create<MenuViewModel>();
 	}
 
 	private void OnInput(InputEvent @event)
@@ -124,7 +124,7 @@ public partial class MainViewModel : ViewModelBase
 	{
 		if (value)
 		{
-			Console = _services.GetRequiredService<ConsoleViewModel>();
+			Console = _services.Create<ConsoleViewModel>();
 			Log.Debug("Opened {Control}", nameof(ConsoleViewModel));
 		}
 		else

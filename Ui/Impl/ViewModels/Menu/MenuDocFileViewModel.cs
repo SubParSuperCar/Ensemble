@@ -2,8 +2,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Attributes;
+using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.Services;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -14,7 +14,7 @@ public partial class MenuDocFileViewModel : ViewModelBase
 	public MenuDocFileViewModel(IServiceProvider services, NavigatorService navigator)
 	{
 		_navigator = navigator;
-		Content = services.GetRequiredService<DocFileViewModel>();
+		Content = services.Create<DocFileViewModel>();
 	}
 
 	[ObservableProperty]

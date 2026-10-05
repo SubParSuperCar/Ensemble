@@ -57,10 +57,15 @@ public partial class GdPlots : RefCounted
 			maxInstanceCount is Default ? null : maxInstanceCount));
 
 	public void SetPlot(string playerId) => SetPlot(playerId, None);
-	public void SetPlot(string playerId, int plotId) => SetPlot(playerId, plotId, true);
+	public void SetPlot(string playerId, int plotId) =>
+		SetPlot(playerId, plotId, shouldResolveOwnerIfNullOrRelinquishing: true);
 
 	public void SetPlot(string playerId, int plotId, bool shouldResolveOwnerIfNullOrRelinquishing) =>
-		SetPlot(playerId, plotId, shouldResolveOwnerIfNullOrRelinquishing, true);
+		SetPlot(
+			playerId,
+			plotId,
+			shouldResolveOwnerIfNullOrRelinquishing,
+			shouldDespawnAndClearInstancesIfLastToLeave: true);
 
 	public void SetPlot(
 		string playerId,

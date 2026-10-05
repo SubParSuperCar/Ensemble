@@ -34,7 +34,11 @@ internal static class PlotsSnapshot
 				continue;
 
 			foreach (var playerId in dict["occupantIds"].AsStringArray())
-				GPlots.SetPlot(playerId, plot.Id, false, false);
+				GPlots.SetPlot(
+					playerId,
+					plot.Id,
+					shouldResolveOwnerIfNullOrRelinquishing: false,
+					shouldDespawnAndClearInstancesIfLastToLeave: false);
 
 			plot.Occupants.SetOwner(dict["ownerId"].AsString());
 

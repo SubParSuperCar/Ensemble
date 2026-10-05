@@ -1,14 +1,16 @@
+using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Attributes;
-using Microsoft.Extensions.DependencyInjection;
+using EnsembleRoot.Ui.Impl.Extensions;
 
 namespace EnsembleRoot.Ui.Impl.Services;
 
 [INotifyPropertyChanged]
 public partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
 {
-	private readonly Stack<Type> _history = [];
+	private readonly Stack<Func<ViewModelBase>> _history = [];
+	private Func<ViewModelBase>? _createCurrent;
 	private bool _shouldExcludeFromHistory;
 
 	[ObservableProperty]
@@ -17,21 +19,23 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 
 	public bool CanGoBack => _history.Count > 0;
 
-	public void GoTo() => Current = null;
-
-	public void GoTo<TViewModel>(bool shouldExcludeFromHistory = false) where TViewModel : ViewModelBase
+	public void GoTo()
 	{
-		var type = Current?.GetType();
-		if (type == typeof(TViewModel))
+		_createCurrent = null;
+		Current = null;
+	}
+
+	public void GoTo<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TViewModel>(
+		bool shouldExcludeFromHistory = false) where TViewModel : ViewModelBase
+	{
+		if (Current?.GetType() == typeof(TViewModel))
 			return;
 
-		if (type is not null && !_shouldExcludeFromHistory)
-			_history.Push(type);
+		if (_createCurrent is not null && !_shouldExcludeFromHistory)
+			_history.Push(_createCurrent);
 
 		_shouldExcludeFromHistory = shouldExcludeFromHistory;
-
-		Current = services.GetRequiredService<TViewModel>();
-		OnPropertyChanged(nameof(CanGoBack));
+		Show(services.Create<TViewModel>);
 	}
 
 	public void GoBack()
@@ -40,10 +44,15 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 			return;
 
 		_shouldExcludeFromHistory = false;
+		Show(_history.Pop());
+	}
 
-		var type = _history.Pop();
+	// History keeps how to recreate each page rather than the page itself, so pages are disposed once left
+	private void Show(Func<ViewModelBase> create)
+	{
+		_createCurrent = create;
+		Current = create();
 
-		Current = (ViewModelBase)services.GetRequiredService(type);
 		OnPropertyChanged(nameof(CanGoBack));
 	}
 }

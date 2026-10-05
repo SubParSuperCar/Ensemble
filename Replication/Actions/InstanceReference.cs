@@ -7,8 +7,8 @@ using Godot.Collections;
 namespace EnsembleRoot.Replication.Actions;
 
 /// <summary>
-///     Identifies an instance by ID and verifies it by asset and transform. Freed IDs are reused, so an action racing a
-///     removal must not land on whichever instance took the ID next.
+///     Identifies an instance by ID and verifies it by asset and transform. Freed IDs are reused, so an action racing
+///     a removal must not land on whichever instance took the ID next.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct InstanceReference(int Id, int AssetId, Vector3 Position, Quaternion Rotation)

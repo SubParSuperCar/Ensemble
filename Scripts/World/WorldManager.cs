@@ -15,6 +15,8 @@ public partial class WorldManager : Node, IAutoload
 
 	[Export] public PackedScene WorldScene { get; set; } = GD.Load<PackedScene>(ScenesDir + "world.tscn");
 
+	// The ideal setup would be to use DI instead of static globals, but ctors must be usable by Godot (no params),
+	// and ServiceProvider uses ctors (?)
 	public void Initialize()
 	{
 		Instance = this;

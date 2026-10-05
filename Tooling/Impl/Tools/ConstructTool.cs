@@ -195,12 +195,12 @@ public partial class ConstructTool : ToolBase
 		var floor = PlotPlacement.GetBounds(plot).Position.Y;
 		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
 
-		box = Snap(box, cellSize, anchor, normal, Vector3.Zero);
+		box = Snap(box, cellSize, anchor, Vector3.Zero);
 
 		for (var pass = 0; pass <= obstacles.Length; pass++)
 		{
 			var resolved = Resolve(box, obstacles, normal);
-			resolved = Snap(resolved, cellSize, anchor, normal, resolved.Center - box.Center);
+			resolved = Snap(resolved, cellSize, anchor, resolved.Center - box.Center);
 
 			box = RaiseTo(resolved, floor);
 
@@ -238,8 +238,8 @@ public partial class ConstructTool : ToolBase
 		return box;
 	}
 
-	// Snaps along the surface only, aligning whichever edge keeps the box nearest, never rounding back against a push
-	private static Obb Snap(Obb box, float? cellSize, Vector3 anchor, Vector3 normal, Vector3 push)
+	// Aligns whichever edge keeps the box nearest on every axis, never rounding back against a push
+	private static Obb Snap(Obb box, float? cellSize, Vector3 anchor, Vector3 push)
 	{
 		if (cellSize is not { } size)
 			return box;
@@ -249,9 +249,6 @@ public partial class ConstructTool : ToolBase
 
 		for (var axis = 0; axis < 3; axis++)
 		{
-			if (!Mathf.IsZeroApprox(normal[axis]))
-				continue;
-
 			var direction = Mathf.IsZeroApprox(push[axis]) ? 0 : MathF.Sign(push[axis]);
 			var low = SnapEdge(center[axis] - envelope[axis], anchor[axis], size, direction) + envelope[axis];
 			var high = SnapEdge(center[axis] + envelope[axis], anchor[axis], size, direction) - envelope[axis];

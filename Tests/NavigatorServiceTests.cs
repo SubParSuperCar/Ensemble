@@ -43,7 +43,7 @@ public sealed class NavigatorServiceTests
 		var navigator = CreateNavigator();
 
 		navigator.GoTo<FirstPage>();
-		navigator.GoTo<SecondPage>(shouldExcludeFromHistory: true);
+		navigator.GoTo<SecondPage>(true);
 		navigator.GoTo<ThirdPage>();
 		navigator.GoBack();
 

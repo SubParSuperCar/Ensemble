@@ -74,7 +74,7 @@ public sealed partial class WidgetViewModel : ViewModelBase
 	protected override void OnDispose() => Content.Dispose();
 
 	[RelayCommand]
-	private void Close() => _manager.Close(Entry.Type, shouldFade: true);
+	private void Close() => _manager.Close(Entry.Type, true);
 
 	[RelayCommand]
 	private void ToggleMaximized()

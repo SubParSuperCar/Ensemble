@@ -19,7 +19,9 @@ The tool suite, in rough intended order of implementation.
     - [ ] (S) finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
 - ConstructTool / CtorTool (Place) - place the selected asset (WIP)
     - [x] (M) raycast placement, face/grid snapping, rotation, ghost preview
-    - [ ] (M) SAT-based intersection resolution (nudge placement out of overlaps)
+    - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation,
+      snap along the surface with edges aligned to the targeted instance, and never clip
+    - [x] (S) shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
 - [ ] TextureTool (Paint) - drives the _colorHex / _materialId asset attributes
@@ -31,7 +33,7 @@ The tool suite, in rough intended order of implementation.
 ## Multiplayer / replication
 
 SessionManager has the infra (sessions, versioned auth handshake, server-assigned player IDs, self-registering RPC
-actions and late-join snapshots, kicks, graceful shutdown notices). Actions and snapshots live in Networking/, and
+actions and late-join snapshots, kicks, graceful shutdown notices). Actions and snapshots live in Replication/, and
 actions are submitted with `new SetPlotAction(id).Submit()`.
 
 - [x] (M) Main-menu session sub-menu - Single-Player / Multi-Player, Host / Join, address, port, password, remembered
@@ -39,6 +41,9 @@ actions are submitted with `new SetPlotAction(id).Submit()`.
 - [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties), requested by
   the client once its world exists; actions are withheld from a peer until it is synced
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
+- [x] (S) Instance references - actions verify an instance's ID against its asset and transform, since freed IDs are
+  reused
+- [x] (S) SetPropertiesAction - type- and key-checked property edits, ready for AttrTool
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
 - (WIP) (S) Peer UI - ping column in the player list done; server info panel and kick button next
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or
@@ -57,8 +62,9 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 
 - [x] (S) Split DocFileView / WebBrowserView - base views/VMs moved to Views/Common + ViewModels/Common, no
   NavigatorService dependency; MenuDocFileView / MenuWebBrowserView wrappers add the Back button for menu use
-- [ ] (L) Window-widget system - draggable / resizable / minimizable panels (the "utensil drawer") to host browsers,
-  settings, chat, docs
+- (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
+  maximizable frames with fades, a collapsible widget drawer; Plot Selector and Asset Selector are widgets. Next: host
+  browsers, settings, chat, docs, and persist layouts
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 
@@ -67,6 +73,7 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) Saving/ - binary + JSON serializers, Zstd/Brotli compression, AES-256-GCM encryption, SHA-256 integrity
 - [x] (S) Tests/ project scaffold (xUnit v3, MTP)
 - [x] (S) SessionManager fully gdignored; Sentinels dependency removed
+- [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build errors
 - [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
 - [ ] (S) dedicated 3D physics layers - Plot Base, Instances (only World + Character exist today)
 - [x] (S) populate Tests/ - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline roundtrips,

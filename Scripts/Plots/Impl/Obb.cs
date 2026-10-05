@@ -4,8 +4,8 @@ using Godot;
 namespace EnsembleRoot.Scripts.Plots.Impl;
 
 /// <summary>
-///     An oriented bounding box tested with the Separating Axis Theorem: two boxes are disjoint if their projections are
-///     disjoint on any of 15 axes, i.e., each box's 3 face normals and the 9 cross products of their edges.
+///     An oriented bounding box tested with the Separating Axis Theorem: two boxes are disjoint if their projections
+///     are disjoint on any of 15 axes, i.e., each box's 3 face normals and the 9 cross products of their edges.
 ///     Touching boxes do not overlap.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]

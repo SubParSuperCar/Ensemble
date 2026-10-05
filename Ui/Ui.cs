@@ -180,7 +180,7 @@ public partial class Ui : GdControl
 				[],
 				Performance.MonitorType.Time);
 
-			var viewModel = services.GetRequiredService<MainViewModel>();
+			var viewModel = services.Create<MainViewModel>();
 			_host.Control = locator.Build(viewModel);
 
 			stopwatch.Stop();

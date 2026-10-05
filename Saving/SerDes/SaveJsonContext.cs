@@ -6,4 +6,4 @@ namespace EnsembleRoot.Saving.SerDes;
 	WriteIndented = true,
 	Converters = [typeof(CoreVariantJsonConverter), typeof(Vector3JsonConverter), typeof(QuaternionJsonConverter)])]
 [JsonSerializable(typeof(CreationSaveData))]
-internal partial class SaveJsonContext : JsonSerializerContext;
+internal sealed partial class SaveJsonContext : JsonSerializerContext;

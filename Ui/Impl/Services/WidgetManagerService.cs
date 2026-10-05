@@ -4,8 +4,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace EnsembleRoot.Ui.Impl.Services;
 
@@ -32,15 +32,17 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		if (_entriesByType.TryGetValue(typeof(TViewModel), out var entry))
 			return entry;
 
-		// Created outside the container, so the widget owns and disposes its content rather than the scope
 		entry = new WidgetEntry(
 			this,
 			typeof(TViewModel),
 			TViewModel.Descriptor,
-			() => ActivatorUtilities.CreateInstance<TViewModel>(services));
+			services.Create<TViewModel>);
 
 		_entriesByType.Add(entry.Type, entry);
-		Entries.Add(entry);
+		Entries.Insert(
+			Entries.TakeWhile(other => string.Compare(other.Title, entry.Title, StringComparison.OrdinalIgnoreCase) < 0)
+				.Count(),
+			entry);
 
 		return entry;
 	}
@@ -52,7 +54,8 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		where TViewModel : ViewModelBase, IWidget =>
 		(TViewModel)Open(Register<TViewModel>()).Content;
 
-	public bool Close<TViewModel>() where TViewModel : ViewModelBase, IWidget => Close(typeof(TViewModel), true);
+	public bool Close<TViewModel>() where TViewModel : ViewModelBase, IWidget =>
+		Close(typeof(TViewModel), shouldFade: true);
 
 	public bool Toggle<[DynamicallyAccessedMembers(Constructors)] TViewModel>()
 		where TViewModel : ViewModelBase, IWidget =>
@@ -108,7 +111,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 
 	internal bool Toggle(WidgetEntry entry)
 	{
-		if (Close(entry.Type, true))
+		if (Close(entry.Type, shouldFade: true))
 			return false;
 
 		Open(entry);
@@ -130,7 +133,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 	protected override void OnDispose()
 	{
 		foreach (var type in _widgetsByType.Keys.ToArray())
-			Close(type, false);
+			Close(type, shouldFade: false);
 	}
 
 	private void Remove(WidgetViewModel widget)

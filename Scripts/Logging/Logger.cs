@@ -44,13 +44,14 @@ public partial class Logger : Node, IAutoload
 
 			try
 			{
-				var configuration = BuildConfiguration(logDir, true, out syncNote);
+				var configuration = BuildConfiguration(logDir, useUserCopy: true, out syncNote);
 				loggerConfig = CreateBaseConfig().ReadFrom.Configuration(configuration);
 			}
 			catch (Exception exception)
 			{
 				userFailure = exception;
-				loggerConfig = CreateBaseConfig().ReadFrom.Configuration(BuildConfiguration(logDir, false, out _));
+				var configuration = BuildConfiguration(logDir, useUserCopy: false, out _);
+				loggerConfig = CreateBaseConfig().ReadFrom.Configuration(configuration);
 			}
 		}
 		catch (Exception exception)

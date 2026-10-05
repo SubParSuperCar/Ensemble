@@ -9,9 +9,9 @@ namespace EnsembleRoot.Common.Interop;
 ///     functions.
 /// </summary>
 /// <remarks>
-///     System FreeType (used by SkiaSharp, and by distro Godot builds) loads the system HarfBuzz globally on demand, after
-///     which the bundled one's lazily bound calls resolve to it. Destroying a font then runs another HarfBuzz version's
-///     code on the bundled one's data, crashing the process (e.g., when Markdown SVG badges are shaped).
+///     System FreeType (used by SkiaSharp, and by distro Godot builds) loads the system HarfBuzz globally on demand,
+///     after which the bundled one's lazily bound calls resolve to it. Destroying a font then runs another HarfBuzz
+///     version's code on the bundled one's data, crashing the process (e.g., when Markdown SVG badges are shaped).
 /// </remarks>
 internal static class HarfBuzzIsolation
 {

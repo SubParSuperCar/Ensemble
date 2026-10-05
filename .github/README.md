@@ -228,8 +228,8 @@ See [**LICENSE.md**](../LICENSE.md) for an overview of the project's licensing.
 > [!NOTE]
 > Some of these screenshots may be out of date or not fully representative of the current state of the gameplay.
 
-Ensemble's placement tool and variety of placeable objects (assets):
-![Ensemble's Construct Tool & Assets](https://github.com/user-attachments/assets/5aa9ad93-547b-4f7a-aa28-ba491c979839)
+Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets:
+![Ensemble's Construct Tool, Assets, & Widgets](screenshots/construct-tool.webp)
 
 Ensemble's main menu:
 ![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
@@ -241,13 +241,13 @@ Ensemble's web browser displaying Ensemble's official GitHub repository page:
 ![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
 
 Ensemble's blocks during the day with the light-mode UI enabled using the `set_ui_dark_theme_on` Lua function:
-![Ensemble's Blocks During the Day](https://github.com/user-attachments/assets/fc6997e8-1025-4c0b-8325-f84acc14087f)
+![Ensemble's Blocks During the Day](screenshots/light-theme-day.webp)
 
 Ensemble's console, with the output log on the left and the code editor on the right:
 ![Ensemble's Console UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
 
 Ensemble's blocks at night, generated using the `add_rand_insts` Lua function:
-![Ensemble's Blocks at Night](https://github.com/user-attachments/assets/74e1df16-1ce3-4953-bf53-18506cb97394)
+![Ensemble's Blocks at Night](screenshots/random-blocks-night.webp)
 
 Ensemble's test map:
 ![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)

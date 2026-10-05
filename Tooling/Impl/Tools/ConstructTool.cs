@@ -122,6 +122,7 @@ public partial class ConstructTool : ToolBase
 
 		if (IsSnapping)
 			normal = ToGridAxis(normal);
+
 		var surface = plot.WorldToGrid(hit.Position) * PlotHandle.GridToWorldScale;
 
 		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
@@ -194,15 +195,12 @@ public partial class ConstructTool : ToolBase
 		var floor = PlotPlacement.GetBounds(plot).Position.Y;
 		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
 
-		if (cellSize is { } size)
-			box = Snap(box, size, anchor, normal, Vector3.Zero);
+		box = Snap(box, cellSize, anchor, normal, Vector3.Zero);
 
 		for (var pass = 0; pass <= obstacles.Length; pass++)
 		{
 			var resolved = Resolve(box, obstacles, normal);
-
-			if (cellSize is { } resolvedSize)
-				resolved = Snap(resolved, resolvedSize, anchor, normal, resolved.Center - box.Center);
+			resolved = Snap(resolved, cellSize, anchor, normal, resolved.Center - box.Center);
 
 			box = RaiseTo(resolved, floor);
 
@@ -241,8 +239,11 @@ public partial class ConstructTool : ToolBase
 	}
 
 	// Snaps along the surface only, aligning whichever edge keeps the box nearest, never rounding back against a push
-	private static Obb Snap(Obb box, float cellSize, Vector3 anchor, Vector3 normal, Vector3 push)
+	private static Obb Snap(Obb box, float? cellSize, Vector3 anchor, Vector3 normal, Vector3 push)
 	{
+		if (cellSize is not { } size)
+			return box;
+
 		var center = box.Center;
 		var envelope = box.Envelope;
 
@@ -252,8 +253,8 @@ public partial class ConstructTool : ToolBase
 				continue;
 
 			var direction = Mathf.IsZeroApprox(push[axis]) ? 0 : MathF.Sign(push[axis]);
-			var low = SnapEdge(center[axis] - envelope[axis], anchor[axis], cellSize, direction) + envelope[axis];
-			var high = SnapEdge(center[axis] + envelope[axis], anchor[axis], cellSize, direction) - envelope[axis];
+			var low = SnapEdge(center[axis] - envelope[axis], anchor[axis], size, direction) + envelope[axis];
+			var high = SnapEdge(center[axis] + envelope[axis], anchor[axis], size, direction) - envelope[axis];
 
 			center[axis] = MathF.Abs(low - center[axis]) <= MathF.Abs(high - center[axis]) ? low : high;
 		}

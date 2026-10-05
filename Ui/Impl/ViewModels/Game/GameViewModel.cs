@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Attributes;
+using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.Services;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,14 +22,13 @@ public partial class GameViewModel : ViewModelBase
 		_dispatcher = dispatcher;
 
 		Widgets = _scope.ServiceProvider.GetRequiredService<WidgetManagerService>();
-		Widgets.Register<PlotSelectorViewModel>();
-		Widgets.Register<AssetSelectorViewModel>();
+		Widgets.RegisterAll();
 		Widgets.Open<PlotSelectorViewModel>();
 
 		WidgetDrawer = _scope.ServiceProvider.GetRequiredService<WidgetDrawerViewModel>();
 
-		Clock = services.GetRequiredService<ClockViewModel>();
-		PlayerList = services.GetRequiredService<PlayerListViewModel>();
+		Clock = services.Create<ClockViewModel>();
+		PlayerList = services.Create<PlayerListViewModel>();
 
 		dispatcher.Input += OnInput;
 
@@ -72,11 +72,11 @@ public partial class GameViewModel : ViewModelBase
 	private void OnInput(InputEvent @event)
 	{
 		if (!InputSink.IsSunk && Input.IsActionJustPressedByEvent("ui_toggle_player_list", @event))
-			PlayerList = PlayerList is null ? _services.GetRequiredService<PlayerListViewModel>() : null;
+			PlayerList = PlayerList is null ? _services.Create<PlayerListViewModel>() : null;
 	}
 
 	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) =>
-		ToolBar = isSpawned is false ? _services.GetRequiredService<ToolBarViewModel>() : null;
+		ToolBar = isSpawned is false ? _services.Create<ToolBarViewModel>() : null;
 
 	private void OnConstructToolIsEnabledChanged(bool isEnabled)
 	{

@@ -43,7 +43,7 @@ public partial class HeadlessSession : Node, IAutoload
 				password,
 				string.Empty,
 				GetInt(args, "max-clients") ?? Unlimited,
-				true,
+				isDedicated: true,
 				GetFlag(args, "upnp"));
 	}
 

@@ -15,8 +15,8 @@ using Godot;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Dispatcher = Avalonia.Threading.Dispatcher;
-using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using GdControl = Godot.Control;
+using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
 namespace EnsembleRoot.Ui;
@@ -101,15 +101,6 @@ public partial class Ui : GdControl
 		Dispatcher.UIThread.UnhandledException -= OnAvaloniaUnhandledException;
 	}
 
-	private void OnHostProcessing(double delta)
-	{
-		_processStartTicks = Time.GetTicksUsec();
-		WeakReferenceMessenger.Default.Send(new UiProcessMessage(new UiProcessData(delta, GetProcessDeltaTime())));
-	}
-
-	private void OnHostProcessed(double delta) =>
-		_lastUiProcessTime = (Time.GetTicksUsec() - _processStartTicks) / (double)TimeSpan.MicrosecondsPerSecond;
-
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 	public override void _Notification(int what) => WeakReferenceMessenger.Default.Send(new NotificationMessage(what));
 
@@ -152,6 +143,15 @@ public partial class Ui : GdControl
 		args.Handled = true;
 		Log.Error(args.Exception, "Ensemble mitigated an unhandled exception in Avalonia");
 	}
+
+	private void OnHostProcessing(double delta)
+	{
+		_processStartTicks = Time.GetTicksUsec();
+		WeakReferenceMessenger.Default.Send(new UiProcessMessage(new UiProcessData(delta, GetProcessDeltaTime())));
+	}
+
+	private void OnHostProcessed(double delta) =>
+		_lastUiProcessTime = (Time.GetTicksUsec() - _processStartTicks) / (double)TimeSpan.MicrosecondsPerSecond;
 
 	private void OnAutoloadsReady()
 	{

@@ -37,7 +37,7 @@ public partial class CharacterController : CharacterBody3D
 		if (Terrain?.IsClass("Terrain3D") is true)
 			Terrain.Call("set_camera", terrainFocus);
 
-		Camera?.MakeCurrent();
+		Camera.MakeCurrent();
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -59,7 +59,7 @@ public partial class CharacterController : CharacterBody3D
 
 		if (inputDirection != Vector2.Zero)
 		{
-			var cameraYaw = Camera?.GlobalRotation.Y ?? 0;
+			var cameraYaw = Camera.GlobalRotation.Y;
 			var moveDirection = new Vector3(inputDirection.X, 0, inputDirection.Y).Rotated(Vector3.Up, cameraYaw);
 
 			var speed = Input.IsActionPressed("char_run") ? RunSpeed : WalkSpeed;

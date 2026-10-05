@@ -24,9 +24,7 @@ public readonly record struct SetPlotAction(int? PlotId) : INetworkAction<SetPlo
 		if (GPlots.GetPlot(plotId)?.Occupants is not { } occupants)
 			return Reject("Plot not found.");
 
-		return occupants.MaxCount is not Unlimited && occupants.Count >= occupants.MaxCount
-			? Reject("Plot full.")
-			: Accept;
+		return IsLimitReached(occupants.Count, occupants.MaxCount) ? Reject("Plot full.") : Accept;
 	}
 
 	public void Apply(ActionSource source) => GPlots.SetPlot(source.PlayerId, PlotId ?? None);

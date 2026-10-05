@@ -23,6 +23,12 @@ public partial class PlotHandle
 		_plot.Instances.Removed += OnInstanceRemoved;
 	}
 
+	private void ExitInstances()
+	{
+		_plot.Instances.Added -= OnInstanceAdded;
+		_plot.Instances.Removed -= OnInstanceRemoved;
+	}
+
 	private void OnInstanceAdded(GdInstance instance)
 	{
 		var packed = GAssetManager.GetPacked(instance.Asset.Id);

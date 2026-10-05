@@ -37,7 +37,7 @@ public static partial class LuaExecutor
 		Log.Information("Restarting...");
 
 		OS.SetRestartOnExit(true, OS.GetCmdlineArgs());
-		(Engine.GetMainLoop() as SceneTree)?.Quit();
+		GMain.Quit();
 
 		return context.ReturnNothing();
 	}

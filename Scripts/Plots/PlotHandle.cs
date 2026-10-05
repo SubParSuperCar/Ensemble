@@ -40,6 +40,8 @@ public partial class PlotHandle : Node3D
 		ReadyInstances();
 	}
 
+	public override void _ExitTree() => ExitInstances();
+
 	public Vector3 WorldToGrid(Vector3 worldPosition) =>
 		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;
 

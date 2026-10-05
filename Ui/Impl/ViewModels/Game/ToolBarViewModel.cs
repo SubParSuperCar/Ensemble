@@ -21,8 +21,8 @@ public partial class ToolBarViewModel : ViewModelBase
 		GToolManager.Destruct.IsEnabledChanged += OnDestructToolIsEnabledChanged;
 
 		OnLocalPlotChanged(LocalPlot);
-
 		LocalPlotChanged += OnLocalPlotChanged;
+
 		IsPlotOwnerChanged += OnClearAllConditionChanged;
 		IsLocalPlotSpawnedChanged += OnClearAllConditionChanged;
 	}

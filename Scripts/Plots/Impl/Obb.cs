@@ -114,8 +114,8 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 			yield return axis;
 
 		foreach (var axis in axes)
-		foreach (var otherAxis in otherAxes)
-			if (axis.Cross(otherAxis) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
-				yield return cross.Normalized();
+			foreach (var otherAxis in otherAxes)
+				if (axis.Cross(otherAxis) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
+					yield return cross.Normalized();
 	}
 }

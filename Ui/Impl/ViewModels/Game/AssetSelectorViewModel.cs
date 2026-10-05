@@ -56,6 +56,7 @@ public partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 	public static WidgetDescriptor Descriptor { get; } = new(new Rect(0.001, 0.999, 0.242, 0.355))
 	{
+		Description = "Lets you search for, select, and modify the placement asset.",
 		MinSize = new Size(336, 224)
 	};
 

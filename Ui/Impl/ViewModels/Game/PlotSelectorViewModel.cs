@@ -37,6 +37,7 @@ public partial class PlotSelectorViewModel : ViewModelBase, IWidget
 
 	public static WidgetDescriptor Descriptor { get; } = new(new Rect(1 / 8d, 1 / 3d, 0.217, 0.286))
 	{
+		Description = "Lets you select which plot you'd like to occupy, if any.",
 		MinSize = new Size(288, 160)
 	};
 

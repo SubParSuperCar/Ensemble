@@ -20,7 +20,8 @@
         </Style>
 
         <Style Selector="ItemsControl ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush2}" />
+            <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource HighlightForegroundBrush}" />
         </Style>
     </UserControl.Styles>
 

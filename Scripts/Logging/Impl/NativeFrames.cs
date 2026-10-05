@@ -16,9 +16,8 @@ public static class NativeFrames
 {
 	public const string PropertyName = "NativeFrames";
 
-	private static readonly string ModuleName = "EnsembleGame" +
-												(OperatingSystem.IsWindows() ? ".dll" :
-													OperatingSystem.IsMacOS() ? ".dylib" : ".so");
+	private static readonly string ModuleName =
+		"EnsembleGame" + (OperatingSystem.IsWindows() ? ".dll" : OperatingSystem.IsMacOS() ? ".dylib" : ".so");
 
 	public static bool IsSupported => !RuntimeFeature.IsDynamicCodeSupported;
 

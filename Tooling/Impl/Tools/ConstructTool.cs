@@ -19,6 +19,10 @@ public enum RotationSpace : byte
 
 public partial class ConstructTool : ToolBase
 {
+	private const float LinearSmoothingRate = 40f;
+	private const float AngularSmoothingRate = 32f;
+	private const float PreviewOpacity = 0.625f;
+
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
 	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
@@ -30,6 +34,7 @@ public partial class ConstructTool : ToolBase
 	private Quaternion _rotation = Quaternion.Identity;
 	private SolidHighlight? _solidHighlight;
 	private PlacementState? _state;
+	private Transform3D _targetTransform;
 
 	protected override StringName ToggleAction => "tool_construct_toggle";
 
@@ -52,6 +57,24 @@ public partial class ConstructTool : ToolBase
 	{
 		if (IsActive)
 			UpdatePlacement();
+	}
+
+	// Placement stays instant; only the shown preview eases toward it
+	public override void _Process(double delta)
+	{
+		if (_preview is not { Visible: true } preview)
+			return;
+
+		var current = preview.GlobalTransform;
+		var linearWeight = 1 - MathF.Exp(-LinearSmoothingRate * (float)delta);
+		var angularWeight = 1 - MathF.Exp(-AngularSmoothingRate * (float)delta);
+
+		var rotation = current.Basis.GetRotationQuaternion().Normalized()
+			.Slerp(_targetTransform.Basis.GetRotationQuaternion().Normalized(), angularWeight);
+
+		preview.GlobalTransform = new Transform3D(
+			new Basis(rotation) * Basis.FromScale(_targetTransform.Basis.Scale),
+			current.Origin.Lerp(_targetTransform.Origin, linearWeight));
 	}
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -137,7 +160,11 @@ public partial class ConstructTool : ToolBase
 			return;
 		}
 
-		_preview!.GlobalTransform = plot.GridToWorld(_gridPosition, _rotation);
+		_targetTransform = plot.GridToWorld(_gridPosition, _rotation);
+
+		if (!_preview!.Visible)
+			_preview.GlobalTransform = _targetTransform;
+
 		_preview.Visible = true;
 		_axialHighlight!.Visible = CanPlace;
 		_solidHighlight!.Visible = !CanPlace;
@@ -295,12 +322,33 @@ public partial class ConstructTool : ToolBase
 		_preview.Visible = false;
 		AddChild(_preview);
 
+		MakeTranslucent(_preview);
+
 		_previewBounds = _preview.BoundaryAabb;
 
 		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = _previewBounds };
 		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = _previewBounds, Tint = Colors.Red };
 		_preview.AddChild(_axialHighlight);
 		_preview.AddChild(_solidHighlight);
+	}
+
+	// GeometryInstance3D.Transparency is ignored outside Forward+, so the preview gets translucent material copies
+	private static void MakeTranslucent(Node root)
+	{
+		foreach (var node in root.FindChildren("*", nameof(MeshInstance3D), true, false))
+		{
+			var mesh = (MeshInstance3D)node;
+
+			for (var surface = 0; surface < mesh.GetSurfaceOverrideMaterialCount(); surface++)
+			{
+				if (mesh.GetActiveMaterial(surface)?.Duplicate() is not BaseMaterial3D material)
+					continue;
+
+				material.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
+				material.AlbedoColor = material.AlbedoColor with { A = material.AlbedoColor.A * PreviewOpacity };
+				mesh.SetSurfaceOverrideMaterial(surface, material);
+			}
+		}
 	}
 
 	private void DestroyPreview()

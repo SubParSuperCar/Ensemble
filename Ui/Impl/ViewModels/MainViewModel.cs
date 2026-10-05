@@ -37,6 +37,7 @@ public partial class MainViewModel : ViewModelBase
 		_dispatcher = dispatcher;
 
 		Stats = services.Create<StatViewModel>();
+		Toasts = services.Create<ToastListViewModel>();
 
 		dispatcher.Input += OnInput;
 		dispatcher.Notification += OnNotification;
@@ -60,6 +61,10 @@ public partial class MainViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
+	public partial ToastListViewModel? Toasts { get; set; }
+
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
 	public partial ConsoleViewModel? Console { get; set; }
 
 	[ObservableProperty] public partial bool IsConsoleVisible { get; set; }
@@ -75,6 +80,7 @@ public partial class MainViewModel : ViewModelBase
 
 		Main = null;
 		Stats = null;
+		Toasts = null;
 		IsConsoleVisible = false;
 	}
 

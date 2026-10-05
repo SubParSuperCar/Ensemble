@@ -85,7 +85,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 	}
 
 	// Closing widgets stay shown while they fade out, then are removed and disposed
-	internal bool Close(Type type, bool shouldFade = true)
+	internal bool Close(Type type, bool skipAnimations = false)
 	{
 		if (!_widgetsByType.Remove(type, out var widget))
 			return false;
@@ -102,7 +102,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 				Activate(next);
 		}
 
-		if (shouldFade && Application.Current?.FindResource("TransitionDuration") is TimeSpan duration)
+		if (!skipAnimations && Application.Current?.FindResource("TransitionDuration") is TimeSpan duration)
 			DispatcherTimer.RunOnce(() => Remove(widget), duration);
 		else
 			Remove(widget);
@@ -134,7 +134,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 	protected override void OnDispose()
 	{
 		foreach (var type in _widgetsByType.Keys.ToArray())
-			Close(type, false);
+			Close(type, true);
 	}
 
 	private void Remove(WidgetViewModel widget)

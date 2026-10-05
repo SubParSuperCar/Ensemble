@@ -43,6 +43,12 @@
             </TransitioningContentControl>
         </Grid>
 
+        <ContentControl
+            Content="{Binding Toasts}"
+            HorizontalAlignment="Center" VerticalAlignment="Top"
+            Width="512"
+            Margin="0,36,0,0" />
+
         <Border Effect="{DynamicResource StrokeEffect}">
             <li:LoadingIndicator
                 Mode="ArcsRing"

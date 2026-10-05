@@ -1,7 +1,10 @@
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.VisualTree;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Controls;
@@ -11,6 +14,13 @@ namespace EnsembleRoot.Ui.Impl.Views;
 
 public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 {
+	private const double HiddenScale = 3 / 4d;
+	private const double HiddenTilt = -90 * (1 / 4d);
+	private const double TiltDepth = 1000;
+
+	private readonly ScaleTransform _scale = new(HiddenScale, HiddenScale);
+	private readonly Rotate3DTransform _tilt = new() { AngleX = HiddenTilt, Depth = TiltDepth };
+
 	private DragKind _drag;
 	private Rect _dragOrigin;
 	private Point _dragStart;
@@ -18,6 +28,7 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	public WidgetView()
 	{
 		InitializeComponent();
+		InitializeTransform();
 		AddHandler(PointerPressedEvent, OnAnyPointerPressed, RoutingStrategies.Tunnel, true);
 	}
 
@@ -28,6 +39,34 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	{
 		base.OnLoaded(e);
 		Frame.Classes.Add("shown");
+	}
+
+	// Transform strings have no 3D rotations, so the tilt and scale follow the fade's classes from here
+	private void InitializeTransform()
+	{
+		if (Application.Current?.FindResource("TransitionDuration") is TimeSpan duration)
+		{
+			_scale.Transitions = [Ease(ScaleTransform.ScaleXProperty), Ease(ScaleTransform.ScaleYProperty)];
+			_tilt.Transitions = [Ease(Rotate3DTransform.AngleXProperty)];
+		}
+
+		Frame.RenderTransform = new TransformGroup { Children = [_scale, _tilt] };
+		Frame.Classes.CollectionChanged += (_, _) => UpdateTransform();
+
+		return;
+
+		DoubleTransition Ease(AvaloniaProperty property)
+		{
+			return new DoubleTransition { Property = property, Duration = duration, Easing = new CubicEaseOut() };
+		}
+	}
+
+	private void UpdateTransform()
+	{
+		var isShown = Frame.Classes.Contains("shown") && !Frame.Classes.Contains("closing");
+
+		_scale.ScaleX = _scale.ScaleY = isShown ? 1 : HiddenScale;
+		_tilt.AngleX = isShown ? 0 : HiddenTilt;
 	}
 
 	private void OnAnyPointerPressed(object? sender, PointerPressedEventArgs e) => ViewModel?.Activate();

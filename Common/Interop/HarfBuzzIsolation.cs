@@ -43,14 +43,11 @@ internal static class HarfBuzzIsolation
 
 	private static nint Load()
 	{
-		var assemblyDirectory = Path.GetDirectoryName(typeof(Blob).Assembly.Location);
+		var directory = AppContext.BaseDirectory;
 		var rid = "linux-" + RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant();
 
-		var paths = new[] { assemblyDirectory, AppContext.BaseDirectory }
-			.OfType<string>()
-			.Where(static directory => directory.Length is not 0)
-			.SelectMany(directory => new[] { Path.Combine(directory, "runtimes", rid, "native"), directory })
-			.Select(static directory => Path.Combine(directory, LibraryFileName))
+		var paths = new[] { Path.Combine(directory, "runtimes", rid, "native"), directory }
+			.Select(static candidate => Path.Combine(candidate, LibraryFileName))
 			.Where(File.Exists);
 
 		try

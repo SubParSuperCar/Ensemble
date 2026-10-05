@@ -93,7 +93,8 @@
                     Name="MaximizeButton"
                     Grid.Column="1"
                     Command="{Binding ToggleMaximizedCommand}"
-                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)" />
+                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
+                    CornerRadius="3,0,0,0" />
 
                 <Button
                     Grid.Column="2"
@@ -101,6 +102,7 @@
                     Command="{Binding CloseCommand}"
                     ToolTip.Tip="Closes this widget."
                     Background="Red" Foreground="White"
+                    CornerRadius="0,3,0,0"
                     FontWeight="Bold" />
             </Grid>
 

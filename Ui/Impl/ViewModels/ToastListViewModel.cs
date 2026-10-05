@@ -33,13 +33,13 @@ public sealed class ToastListViewModel : ViewModelBase
 		Toasts.Clear();
 	}
 
-	// Closing toasts stay shown while they fade out, then are removed and disposed
-	internal void Close(ToastViewModel toast)
+	// Dismissed toasts stay shown while they fade out, then are removed and disposed
+	internal void Dismiss(ToastViewModel toast)
 	{
-		if (toast.IsClosing)
+		if (toast.IsDismissing)
 			return;
 
-		toast.IsClosing = true;
+		toast.IsDismissing = true;
 		toast.Dispose();
 
 		if (Application.Current?.FindResource("TransitionDuration") is TimeSpan duration)
@@ -59,7 +59,7 @@ public sealed class ToastListViewModel : ViewModelBase
 		if (IsDisposed)
 			return;
 
-		if (Toasts.FirstOrDefault(other => !other.IsClosing && other.IsRepeatOf(entry)) is { } repeated)
+		if (Toasts.FirstOrDefault(other => !other.IsDismissing && other.IsRepeatOf(entry)) is { } repeated)
 		{
 			repeated.Repeat();
 			Toasts.Move(Toasts.IndexOf(repeated), 0);
@@ -68,7 +68,7 @@ public sealed class ToastListViewModel : ViewModelBase
 
 		Toasts.Insert(0, new ToastViewModel(this, entry, Lifetime));
 
-		foreach (var oldest in Toasts.Where(static other => !other.IsClosing).Skip(MaxCount).ToArray())
-			Close(oldest);
+		foreach (var oldest in Toasts.Where(static other => !other.IsDismissing).Skip(MaxCount).ToArray())
+			Dismiss(oldest);
 	}
 }

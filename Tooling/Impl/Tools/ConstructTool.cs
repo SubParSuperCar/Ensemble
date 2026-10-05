@@ -21,7 +21,7 @@ public partial class ConstructTool : ToolBase
 {
 	private const float LinearSmoothingRate = 40f;
 	private const float AngularSmoothingRate = 32f;
-	private const float PreviewOpacity = 0.625f;
+	private const float PreviewOpacity = 0.75f;
 
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
@@ -218,13 +218,13 @@ public partial class ConstructTool : ToolBase
 
 	private Obb Settle(Obb box, PlotHandle plot, Vector3 normal, Vector3 anchor)
 	{
-		var obstacles = PlotPlacement.GetObstacles(plot).ToArray();
+		var obstacles = PlotPlacement.GetObstacles(plot);
 		var floor = PlotPlacement.GetBounds(plot).Position.Y;
 		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
 
 		box = Snap(box, cellSize, anchor, Vector3.Zero);
 
-		for (var pass = 0; pass <= obstacles.Length; pass++)
+		for (var pass = 0; pass <= obstacles.Count; pass++)
 		{
 			var resolved = Resolve(box, obstacles, normal);
 			resolved = Snap(resolved, cellSize, anchor, resolved.Center - box.Center);
@@ -238,9 +238,9 @@ public partial class ConstructTool : ToolBase
 		return box;
 	}
 
-	private static Obb Resolve(Obb box, Obb[] obstacles, Vector3 normal)
+	private static Obb Resolve(Obb box, IReadOnlyCollection<Obb> obstacles, Vector3 normal)
 	{
-		for (var pass = 0; pass <= obstacles.Length; pass++)
+		for (var pass = 0; pass <= obstacles.Count; pass++)
 		{
 			var isMoved = false;
 

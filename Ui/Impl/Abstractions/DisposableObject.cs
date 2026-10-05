@@ -2,14 +2,14 @@ namespace EnsembleRoot.Ui.Impl.Abstractions;
 
 public abstract class DisposableObject : IDisposable
 {
-	private bool _isDisposed;
+	protected bool IsDisposed { get; private set; }
 
 	public void Dispose()
 	{
-		if (_isDisposed)
+		if (IsDisposed)
 			return;
 
-		_isDisposed = true;
+		IsDisposed = true;
 
 		OnDispose();
 		GC.SuppressFinalize(this);

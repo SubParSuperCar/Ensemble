@@ -1,0 +1,87 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="48"
+    x:Class="EnsembleRoot.Ui.Impl.Views.ToastView"
+    x:DataType="vm:ToastViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <UserControl.Styles>
+        <Style Selector="Border#Frame">
+            <Setter Property="Opacity" Value="0" />
+
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border#Frame.shown">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="Border#Frame.closing">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+
+        <Style Selector="Border#Level">
+            <Setter Property="Background" Value="Orange" />
+            <Setter Property="TextElement.Foreground" Value="Black" />
+        </Style>
+
+        <Style Selector="Border#Level[Tag=ERR]">
+            <Setter Property="Background" Value="Red" />
+            <Setter Property="TextElement.Foreground" Value="White" />
+        </Style>
+
+        <Style Selector="Border#Level[Tag=FTL]">
+            <Setter Property="Background" Value="DarkRed" />
+            <Setter Property="TextElement.Foreground" Value="White" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border
+        Name="Frame"
+        Classes.closing="{Binding IsClosing}"
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        BorderBrush="{Binding #Level.Background}" BorderThickness="1"
+        CornerRadius="6" ClipToBounds="True">
+
+        <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+            <Border Name="Level" Tag="{Binding LevelText}" Padding="8,0">
+                <TextBlock Text="{Binding LevelText}" VerticalAlignment="Center" FontWeight="Bold" />
+            </Border>
+
+            <TextBlock
+                Grid.Column="1"
+                Text="{Binding Entry.Message}"
+                ToolTip.Tip="{Binding Entry.Text}"
+                VerticalAlignment="Center"
+                Margin="8,4"
+                TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" />
+
+            <TextBlock
+                Grid.Column="2"
+                Text="{Binding RepeatText}"
+                IsVisible="{Binding IsRepeated}"
+                VerticalAlignment="Center"
+                Margin="0,0,8,0"
+                FontWeight="Bold" />
+
+            <Button
+                Grid.Column="3"
+                Content="X"
+                Command="{Binding CloseCommand}"
+                Background="Red" Foreground="White"
+                FontWeight="Bold"
+                Padding="8,0"
+                VerticalAlignment="Stretch" VerticalContentAlignment="Center" />
+        </Grid>
+    </Border>
+
+</UserControl>

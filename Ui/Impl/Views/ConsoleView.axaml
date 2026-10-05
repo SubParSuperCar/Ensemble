@@ -4,7 +4,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    xmlns:ae="using:AvaloniaEdit"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.ConsoleView"
     x:DataType="vm:ConsoleViewModel"
@@ -89,44 +88,7 @@ Text=" StdOut/Err)" /></Span>
                 Width="4"
                 ResizeDirection="Columns" />
 
-            <Grid Grid.Column="2">
-                <ae:TextEditor
-                    Name="Editor"
-                    Document="{Binding Source}"
-                    FontSize="13"
-                    WordWrap="True"
-                    Watermark="&lt;Empty&gt;"
-                    ShowLineNumbers="True">
-
-                    <ae:TextEditor.Background>
-                        <SolidColorBrush
-                            Color="{DynamicResource ThemeBackgroundColor}"
-                            Opacity="0.375" />
-                    </ae:TextEditor.Background>
-                </ae:TextEditor>
-
-                <StackPanel
-                    Orientation="Horizontal" Spacing="4"
-                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Margin="0,0,22,4">
-
-                    <Border BorderBrush="Red" BorderThickness="1">
-                        <Button
-                            Content="Cancel Runners"
-                            Command="{Binding CancelCommand}"
-                            ToolTip.Tip="Stops all currently running Lua scripts."
-                            Background="Black" Foreground="White" />
-                    </Border>
-
-                    <Border BorderBrush="#40A0FF" BorderThickness="1">
-                        <Button
-                            Content="Execute Script"
-                            Command="{Binding ExecuteCommand}"
-                            ToolTip.Tip="Executes the entered script source code."
-                            Background="Black" Foreground="White" />
-                    </Border>
-                </StackPanel>
-            </Grid>
+            <ContentControl Grid.Column="2" Content="{Binding Editor}" />
         </Grid>
     </Border>
 

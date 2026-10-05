@@ -14,8 +14,18 @@ public static class ServiceProviderExtensions
 		/// </summary>
 		public TViewModel Create<
 			[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
-			TViewModel>()
+		TViewModel>()
 			where TViewModel : ViewModelBase =>
 			ActivatorUtilities.CreateInstance<TViewModel>(services);
+
+		// ReSharper disable once InvalidXmlDocComment
+		/// <inheritdoc cref="Create{TViewModel}()" />
+		/// <param name="argument">A constructor argument the container cannot provide.</param>
+		/// <param name="arguments">Further constructor arguments the container cannot provide.</param>
+		public TViewModel Create<
+			[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+		TViewModel>(object argument, params object[] arguments)
+			where TViewModel : ViewModelBase =>
+			ActivatorUtilities.CreateInstance<TViewModel>(services, [argument, .. arguments]);
 	}
 }

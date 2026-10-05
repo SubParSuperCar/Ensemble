@@ -33,7 +33,7 @@ public sealed class NavigatorServiceTests
 
 		navigator.GoTo<SecondPage>();
 
-		Assert.True(first.IsDisposed);
+		Assert.True(first.WasDisposed);
 		Assert.True(navigator.CanGoBack);
 	}
 
@@ -68,9 +68,7 @@ public sealed class NavigatorServiceTests
 
 	public sealed class FirstPage : ViewModelBase
 	{
-		public bool IsDisposed { get; private set; }
-
-		protected override void OnDispose() => IsDisposed = true;
+		public bool WasDisposed => IsDisposed;
 	}
 
 	public sealed class SecondPage : ViewModelBase;

@@ -56,7 +56,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		where TViewModel : ViewModelBase, IWidget =>
 		(TViewModel)Open(Register<TViewModel>()).Content;
 
-	public bool Close<TViewModel>() where TViewModel : ViewModelBase, IWidget => Close(typeof(TViewModel), true);
+	public bool Close<TViewModel>() where TViewModel : ViewModelBase, IWidget => Close(typeof(TViewModel));
 
 	public bool Toggle<[DynamicallyAccessedMembers(Constructors)] TViewModel>()
 		where TViewModel : ViewModelBase, IWidget =>
@@ -85,7 +85,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 	}
 
 	// Closing widgets stay shown while they fade out, then are removed and disposed
-	internal bool Close(Type type, bool shouldFade)
+	internal bool Close(Type type, bool shouldFade = true)
 	{
 		if (!_widgetsByType.Remove(type, out var widget))
 			return false;
@@ -112,7 +112,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 
 	internal bool Toggle(WidgetEntry entry)
 	{
-		if (Close(entry.Type, true))
+		if (Close(entry.Type))
 			return false;
 
 		Open(entry);

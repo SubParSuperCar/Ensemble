@@ -4,7 +4,13 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     x:Class="EnsembleRoot.Ui.Impl.Views.ToolBarView"
     x:DataType="vm:ToolBarViewModel"
-    FontSize="20" FontWeight="ExtraLight" LetterSpacing="-1">
+    FontSize="20" FontWeight="ExtraLight">
+
+    <UserControl.Styles>
+        <Style Selector="Button, ToggleButton">
+            <Setter Property="LetterSpacing" Value="-1" />
+        </Style>
+    </UserControl.Styles>
 
     <StackPanel HorizontalAlignment="Center" Grid.IsSharedSizeScope="True">
         <Grid ColumnSpacing="4" HorizontalAlignment="Center">

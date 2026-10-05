@@ -39,6 +39,7 @@
             <HyperlinkButton
                 Content="Ensemble - GitHub Page&#x0a;github.com/SubParSuperCar/Ensemble"
                 Command="{Binding OpenGitHubPageCommand}"
+                TextBlock.TextAlignment="Center"
                 ToolTip.Tip="Opens Ensemble's official GitHub repository page.&#x0a;Feel free to star it and/or contribute! :)" />
         </StackPanel>
 

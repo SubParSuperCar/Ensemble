@@ -66,21 +66,21 @@
                         ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)" />
                 </Border>
 
-                <Border Grid.Column="2" BorderBrush="#00FF00" BorderThickness="1">
+                <Border Grid.Column="2" BorderBrush="#00C000" BorderThickness="1">
                     <ToggleButton
                         Content="Edit (3)"
                         IsEnabled="False"
                         ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)" />
                 </Border>
 
-                <Border Grid.Column="3" BorderBrush="#FF00FF" BorderThickness="1">
+                <Border Grid.Column="3" BorderBrush="#E050E0" BorderThickness="1">
                     <ToggleButton
                         Content="Paint (4)"
                         IsEnabled="False"
                         ToolTip.Tip="Toggles the painting (material) tool. (Bound to 4 / Four)" />
                 </Border>
 
-                <Border Grid.Column="4" BorderBrush="#FFFF00" BorderThickness="1">
+                <Border Grid.Column="4" BorderBrush="#E0C000" BorderThickness="1">
                     <ToggleButton
                         Content="Move (5)"
                         IsEnabled="False"

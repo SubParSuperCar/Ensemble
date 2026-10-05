@@ -23,3 +23,6 @@ resharper_csharp_alignment_tab_fill_style = optimal_fill
 resharper_csharp_wrap_before_arrow_with_expressions = false
 resharper_check_namespace_highlighting = none
 resharper_lambda_expression_can_be_made_static_highlighting = suggestion
+
+# noinspection EditorConfigKeyCorrectness
+dotnet_diagnostic.NSDEPCOP01.severity = warning

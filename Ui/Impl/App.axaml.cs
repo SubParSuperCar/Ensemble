@@ -4,11 +4,14 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Reactive;
 using Avalonia.Styling;
+using AvaloniaEdit.Editing;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Common.Messages;
 using EnsembleRoot.Ui.Impl.Extensions;
-using EnsembleRoot.Ui.Impl.Messages;
+using Iciclecreek.Terminal;
 using LiveMarkdown.Avalonia;
 using Serilog;
 
@@ -21,6 +24,8 @@ public class App : Application
 	private const double LightAccentMaxLightness = 0.6;
 	private const double DarkAccentMinLightness = 0.62;
 	private const double DarkAccentMaxLightness = 0.78;
+
+	private static readonly object FocusSinkToken = new();
 
 	private static bool IsInSession => SessionManager.SessionManager.Instance?.IsActive is true;
 
@@ -37,8 +42,17 @@ public class App : Application
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 
+		var focusObserver = new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged);
+		InputElement.GotFocusEvent.Raised.Subscribe(focusObserver);
+		InputElement.LostFocusEvent.Raised.Subscribe(focusObserver);
+
 		WeakReferenceMessenger.Default.Register<SetUiThemeMessage>(this,
-			(_, message) => RequestedThemeVariant = message.Value);
+			(_, message) => RequestedThemeVariant = message.Value switch
+			{
+				true => ThemeVariant.Dark,
+				false => ThemeVariant.Light,
+				_ => ThemeVariant.Default
+			});
 
 		base.OnFrameworkInitializationCompleted();
 
@@ -55,6 +69,18 @@ public class App : Application
 #endif
 
 		ApplyAccentColor();
+	}
+
+	// Sink game input while a text input has focus
+	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)
+	{
+		if (value.Args is not FocusChangedEventArgs focus)
+			return;
+
+		if (focus.NewFocusedElement is TextBox or TextArea or TerminalView)
+			InputSink.Sink.Acquire(FocusSinkToken);
+		else
+			InputSink.Sink.Release(FocusSinkToken);
 	}
 
 	// Sink/mark keystrokes as handled to prevent unintentional UI navigation, and all navigation keys while in-session

@@ -20,6 +20,11 @@ internal static class GodotPlatform
 	private static AvCompositor? _compositor;
 	private static ManualRenderTimer? _renderTimer;
 	private static ulong _lastProcessFrame = ulong.MaxValue;
+	private static ulong _lastPacedFrame = ulong.MaxValue;
+	private static double _processInterval;
+	private static double _sinceLastProcess;
+	private static double _processDelta;
+	private static bool _isProcessFrame;
 	private static GodotApplicationLifetime? _lifetime;
 
 	/// <summary>
@@ -102,6 +107,36 @@ internal static class GodotPlatform
 
 		_renderTimer = renderTimer;
 		_compositor = new AvCompositor(platformGraphics);
+
+		_processInterval = AvaloniaLocator.Current.GetService<GodotPlatformOptions>()?.ProcessInterval ?? 0;
+		_sinceLastProcess = _processInterval;
+	}
+
+	/// <summary>
+	///     Advances the shared process clock once per Godot frame, and returns whether Avalonia processes on this
+	///     frame, so that every <see cref="AvaloniaControl" /> and window ticks together.
+	/// </summary>
+	/// <param name="delta">The Godot process delta, in seconds.</param>
+	/// <param name="processDelta">The time since the last Avalonia process tick, in seconds.</param>
+	public static bool TryBeginProcess(double delta, out double processDelta)
+	{
+		var processFrame = Engine.GetProcessFrames();
+
+		if (processFrame != _lastPacedFrame)
+		{
+			_lastPacedFrame = processFrame;
+			_sinceLastProcess += delta;
+			_isProcessFrame = _sinceLastProcess >= _processInterval;
+
+			if (_isProcessFrame)
+			{
+				_processDelta = _sinceLastProcess;
+				_sinceLastProcess = _processInterval > 0 ? _sinceLastProcess % _processInterval : 0;
+			}
+		}
+
+		processDelta = _processDelta;
+		return _isProcessFrame;
 	}
 
 	public static void TriggerRenderTick()

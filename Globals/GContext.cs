@@ -1,7 +1,7 @@
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.GdCore.Plots;
 
-namespace EnsembleRoot.Common.Globals;
+namespace EnsembleRoot.Globals;
 
 public static class GContext
 {

@@ -118,7 +118,7 @@
                 Grid.Column="4"
                 Content="X"
                 Command="{Binding RotateXCommand}"
-                ToolTip.Tip="Rotates around the X axis."
+                ToolTip.Tip="Rotates around the X axis. (World Y / Up)"
                 Background="#FF0000" Foreground="White"
                 Padding="8,0"
                 FontSize="24" FontWeight="Bold" />
@@ -127,7 +127,7 @@
                 Grid.Column="6"
                 Content="Y"
                 Command="{Binding RotateYCommand}"
-                ToolTip.Tip="Rotates around the Y axis."
+                ToolTip.Tip="Rotates around the Y axis. (World X / Right)"
                 Background="#00FF00" Foreground="Black"
                 Padding="8,0"
                 FontSize="24" FontWeight="Bold" />
@@ -136,7 +136,7 @@
                 Grid.Column="8"
                 Content="Z"
                 Command="{Binding RotateZCommand}"
-                ToolTip.Tip="Rotates around the Z axis."
+                ToolTip.Tip="Rotates around the Z axis. (World Z / Back)"
                 Background="#0000FF" Foreground="White"
                 Padding="8,0"
                 FontSize="24" FontWeight="Bold" />

@@ -5,6 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
+using EnsembleRoot.Common.Messages;
 using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.Messages;
 using EnsembleRoot.Ui.Impl.Services;
@@ -15,19 +16,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
+using GdControl = Godot.Control;
 using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
 namespace EnsembleRoot.Ui;
 
 [GlobalClass]
-public partial class Ui : AvaloniaControl
+public partial class Ui : GdControl
 {
-	private const double UiProcessInterval = 1 / 120d;
+	public const double ProcessInterval = 1 / 120d;
 
 	public static readonly StringName ProcessTimeMonitor = "Ensemble/Time/UIProcess";
 
+	private AvaloniaControl _host = null!;
 	private double _lastUiProcessTime;
-	private double _sinceLastUiFrame = UiProcessInterval;
+	private ulong _processStartTicks;
 
 	public override void _Ready()
 	{
@@ -46,19 +49,18 @@ public partial class Ui : AvaloniaControl
 		{
 			GetWindow().SetImeActive(true);
 
-			Control = new TextBlock
+			_host = new AvaloniaControl
 			{
-				Text = "Loading Ensemble's Autoloads\u2026\nThis shouldn't take long.",
-				FontFamily = new FontFamily("sans-serif"),
-				FontWeight = FontWeight.Regular,
-				FontSize = 48,
-				HorizontalAlignment = HorizontalAlignment.Center,
-				VerticalAlignment = VerticalAlignment.Center,
-				TextAlignment = TextAlignment.Center
+				FocusMode = FocusModeEnum.All,
+				MouseForcePassScrollEvents = false
 			};
-			TextOptions.SetTextRenderingMode(Control, TextRenderingMode.Antialias);
+			_host.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
+			_host.Processing += OnHostProcessing;
+			_host.Processed += OnHostProcessed;
 
-			base._Ready();
+			_host.Control = CreateLoadingScreen();
+
+			AddChild(_host);
 
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
@@ -66,7 +68,7 @@ public partial class Ui : AvaloniaControl
 				$"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 
 			WeakReferenceMessenger.Default.Register<SetUiRenderScaleMessage>(this,
-				(_, message) => RenderScaling = message.Value);
+				(_, message) => _host.RenderScaling = message.Value);
 
 			if (Main.AreAutoloadsLoaded)
 				SwapToRealUi();
@@ -99,27 +101,34 @@ public partial class Ui : AvaloniaControl
 		Dispatcher.UIThread.UnhandledException -= OnAvaloniaUnhandledException;
 	}
 
-	public override void _Process(double delta)
+	private void OnHostProcessing(double delta)
 	{
-		_sinceLastUiFrame += delta;
-
-		if (_sinceLastUiFrame < UiProcessInterval)
-			return;
-
-		var uiDelta = _sinceLastUiFrame;
-		_sinceLastUiFrame %= UiProcessInterval;
-
-		var before = Time.GetTicksUsec();
-
-		WeakReferenceMessenger.Default.Send(new UiProcessMessage(new UiProcessData(uiDelta, delta)));
-		base._Process(uiDelta);
-
-		var after = Time.GetTicksUsec();
-		_lastUiProcessTime = (after - before) / (double)TimeSpan.MicrosecondsPerSecond;
+		_processStartTicks = Time.GetTicksUsec();
+		WeakReferenceMessenger.Default.Send(new UiProcessMessage(new UiProcessData(delta, GetProcessDeltaTime())));
 	}
+
+	private void OnHostProcessed(double delta) =>
+		_lastUiProcessTime = (Time.GetTicksUsec() - _processStartTicks) / (double)TimeSpan.MicrosecondsPerSecond;
 
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 	public override void _Notification(int what) => WeakReferenceMessenger.Default.Send(new NotificationMessage(what));
+
+	private static TextBlock CreateLoadingScreen()
+	{
+		var loadingScreen = new TextBlock
+		{
+			Text = "Loading Ensemble's Autoloads\u2026\nThis shouldn't take long.",
+			FontFamily = new FontFamily("sans-serif"),
+			FontWeight = FontWeight.Regular,
+			FontSize = 48,
+			HorizontalAlignment = HorizontalAlignment.Center,
+			VerticalAlignment = VerticalAlignment.Center,
+			TextAlignment = TextAlignment.Center
+		};
+		TextOptions.SetTextRenderingMode(loadingScreen, TextRenderingMode.Antialias);
+
+		return loadingScreen;
+	}
 
 	private static float GetRenderScale(Vector2I size)
 	{
@@ -172,14 +181,14 @@ public partial class Ui : AvaloniaControl
 				Performance.MonitorType.Time);
 
 			var viewModel = services.GetRequiredService<MainViewModel>();
-			Control = locator.Build(viewModel);
+			_host.Control = locator.Build(viewModel);
 
 			stopwatch.Stop();
 			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
 
 			// Set the initial UI scale for better UX; it doesn't update when viewport resolution changes
-			RenderScaling = GetRenderScale(GetWindow().Size);
-			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), RenderScaling);
+			_host.RenderScaling = GetRenderScale(GetWindow().Size);
+			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), _host.RenderScaling);
 		}
 		catch (Exception exception)
 		{

@@ -7,7 +7,7 @@ using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Tooling;
 
-namespace EnsembleRoot.Common.Globals;
+namespace EnsembleRoot.Globals;
 
 // All members here should be mostly GDScript-friendly, especially GdCore and SessionManager
 public static class Globals

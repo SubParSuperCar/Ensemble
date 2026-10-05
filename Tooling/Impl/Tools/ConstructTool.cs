@@ -221,9 +221,7 @@ public partial class ConstructTool : ToolBase
 
 		var quota = instances.GetQuota(AssetId);
 
-		if (
-			(quota.MaxCount is not Unlimited && quota.Count >= quota.MaxCount) ||
-			(instances.MaxCount is not Unlimited && instances.Count >= instances.MaxCount))
+		if (IsLimitReached(quota.Count, quota.MaxCount) || IsLimitReached(instances.Count, instances.MaxCount))
 			return PlacementState.QuotaMet;
 
 		return PlacementState.Valid;

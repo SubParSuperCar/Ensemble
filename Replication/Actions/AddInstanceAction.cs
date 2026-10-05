@@ -30,15 +30,13 @@ public readonly record struct AddInstanceAction(int AssetId, Vector3 Position, Q
 		var instances = plot.Instances;
 
 		return
-			IsMet(instances.Count, instances.MaxCount) ||
-			(instances.GetQuota(AssetId) is [var count, var maxCount] && IsMet(count, maxCount))
+			IsLimitReached(instances.Count, instances.MaxCount) ||
+			(instances.GetQuota(AssetId) is [var count, var maxCount] && IsLimitReached(count, maxCount))
 				? Reject("Quota met.")
 				: Accept;
 	}
 
 	public void Apply(ActionSource source) => source.Plot!.Instances.Add(AssetId, Position, Rotation);
-
-	private static bool IsMet(int count, int maxCount) => maxCount is not Unlimited && count >= maxCount;
 
 	[ModuleInitializer]
 	internal static void Register() => NetworkActionRegistry.Register<AddInstanceAction>();

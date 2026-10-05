@@ -13,7 +13,4 @@ public sealed record HostConfig(
 	bool IsDedicated = false,
 	bool IsUpnpEnabled = false) : ISessionConfig;
 
-public sealed record JoinConfig(
-	string Address,
-	int Port,
-	string? Password = null) : ISessionConfig;
+public sealed record JoinConfig(string Address, int Port, string? Password = null) : ISessionConfig;

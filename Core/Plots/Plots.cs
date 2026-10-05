@@ -13,10 +13,7 @@ public class Plots : IPlots
 	private readonly int? _defaultMaxOccupantCount;
 	private readonly Dictionary<int, IPlot> _plotsById = [];
 
-	public Plots(
-		IAssets assets,
-		int? defaultMaxOccupantCount = null,
-		int? defaultMaxInstanceCount = null)
+	public Plots(IAssets assets, int? defaultMaxOccupantCount = null, int? defaultMaxInstanceCount = null)
 	{
 		if (defaultMaxOccupantCount is { } occupantCount and not Unlimited)
 			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount);

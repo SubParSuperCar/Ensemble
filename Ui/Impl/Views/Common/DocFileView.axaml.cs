@@ -8,7 +8,6 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 using LiveMarkdown.Avalonia;
 using Markdig;
 using Serilog;
-using TinyDialogsNet;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace EnsembleRoot.Ui.Impl.Views;
@@ -114,17 +113,7 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 			if (!ReferenceEquals(_cts, cts))
 				return;
 
-			Log.Error(exception, "HTTP request failed");
-
-#pragma warning disable MA0040
-			// ReSharper disable once MethodSupportsCancellation
-			_ = Task.Run(() => TinyDialogs.MessageBox(
-#pragma warning restore MA0040
-				"HTTP Request Failed",
-				Main.SanitizeMessageBoxBody($"Failed to load {file.Name} at:\n{file.Uri}\n\n{exception}"),
-				MessageBoxDialogType.Ok,
-				MessageBoxIconType.Warning,
-				MessageBoxButton.Ok));
+			Log.Error(exception, "Failed to load {FileName} from {Uri}", file.Name, file.Uri);
 		}
 		finally
 		{

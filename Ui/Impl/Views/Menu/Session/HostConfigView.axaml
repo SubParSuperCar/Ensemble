@@ -10,7 +10,11 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" MaxWidth="384">
+    <StackPanel
+        Spacing="8"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        MaxWidth="384">
+
         <TextBlock Text="Multi-Player Host Config:" />
 
         <StackPanel>
@@ -34,7 +38,7 @@
         <StackPanel>
             <TextBlock Text="Password (Optional):" FontSize="16" />
 
-            <Grid ColumnDefinitions="*,8,Auto">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                 <TextBox
                     Name="PasswordBox"
                     Text="{Binding Password}"
@@ -43,7 +47,7 @@
                     PasswordChar="*" />
 
                 <CheckBox
-                    Grid.Column="2"
+                    Grid.Column="1"
                     Content="Show"
                     IsChecked="{Binding #PasswordBox.RevealPassword}"
                     ToolTip.Tip="Toggles whether the password is revealed."
@@ -78,17 +82,13 @@
             TextWrapping="Wrap"
             IsVisible="{Binding Status, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
 
-        <Grid ColumnDefinitions="*,8,*">
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
             <Button
                 Content="&lt;- Back"
                 Command="{Binding GoBackCommand}"
                 ToolTip.Tip="Goes back. (Bound to Backspace)" />
 
-            <Border
-                Grid.Column="2"
-                BorderBrush="#40A0FF" BorderThickness="1.5"
-                CornerRadius="8" ClipToBounds="True">
-
+            <Border Grid.Column="1" Classes="primary">
                 <Button
                     Content="Host!"
                     Command="{Binding HostCommand}"

@@ -47,7 +47,6 @@ public partial class NavigatorService(IServiceProvider services) : DisposableObj
 		Show(_history.Pop());
 	}
 
-	// History keeps how to recreate each page rather than the page itself, so pages are disposed once left
 	private void Show(Func<ViewModelBase> create)
 	{
 		_createCurrent = create;

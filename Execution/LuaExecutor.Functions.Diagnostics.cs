@@ -68,10 +68,7 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static void DumpTable(
-		LuaTable table,
-		string path,
-		HashSet<LuaTable> visited)
+	private static void DumpTable(LuaTable table, string path, HashSet<LuaTable> visited)
 	{
 		if (!visited.Add(table))
 		{

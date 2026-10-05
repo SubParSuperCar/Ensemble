@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Threading;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Extensions;
@@ -11,10 +10,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Services;
 
-/// <summary>
-///     Registers, opens, closes, and stacks widgets, at most one per view model type. Widgets live as long as the
-///     manager's service scope, e.g., a session's when owned by <see cref="GameViewModel" />.
-/// </summary>
+/// <summary>Opens, closes, and stacks widgets, at most one per view model type, for its scope's lifetime.</summary>
 public sealed class WidgetManagerService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
 {
 	private const DynamicallyAccessedMemberTypes Constructors = DynamicallyAccessedMemberTypes.PublicConstructors;
@@ -40,11 +36,10 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 			TViewModel.Descriptor,
 			services.Create<TViewModel>);
 
+		var index = Entries.Count(other => StringComparer.OrdinalIgnoreCase.Compare(other.Title, entry.Title) < 0);
+
 		_entriesByType.Add(entry.Type, entry);
-		Entries.Insert(
-			Entries.TakeWhile(other => string.Compare(other.Title, entry.Title, StringComparison.OrdinalIgnoreCase) < 0)
-				.Count(),
-			entry);
+		Entries.Insert(index, entry);
 
 		return entry;
 	}
@@ -84,7 +79,6 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		return widget;
 	}
 
-	// Closing widgets stay shown while they fade out, then are removed and disposed
 	internal bool Close(Type type, bool skipAnimations = false)
 	{
 		if (!_widgetsByType.Remove(type, out var widget))
@@ -102,7 +96,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 				Activate(next);
 		}
 
-		if (!skipAnimations && Application.Current?.FindResource("TransitionDuration") is TimeSpan duration)
+		if (!skipAnimations && Application.Current?.TransitionDuration is { } duration)
 			DispatcherTimer.RunOnce(() => Remove(widget), duration);
 		else
 			Remove(widget);

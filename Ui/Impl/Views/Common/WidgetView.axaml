@@ -12,22 +12,6 @@
     <UserControl.Styles>
         <Style Selector="Border#Frame">
             <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlMidBrush}" />
-            <Setter Property="Opacity" Value="0" />
-
-            <Setter Property="Transitions">
-                <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector="Border#Frame.shown">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
-
-        <Style Selector="Border#Frame.closing">
-            <Setter Property="Opacity" Value="0" />
-            <Setter Property="IsHitTestVisible" Value="False" />
         </Style>
 
         <Style Selector="Border#Frame.active">
@@ -61,27 +45,30 @@
 
     <Border
         Name="Frame"
+        Classes="fade"
         Classes.active="{Binding IsActive}"
-        Classes.closing="{Binding IsClosing}"
+        Classes.hidden="{Binding IsClosing}"
         Classes.maximized="{Binding IsMaximized}"
         BorderThickness="2"
         CornerRadius="6" ClipToBounds="True">
 
         <Border.Effect>
-            <DropShadowEffect OffsetX="0" OffsetY="2" BlurRadius="16" Opacity="0.5" />
+            <DropShadowEffect
+                OffsetX="0" OffsetY="2"
+                BlurRadius="16" Opacity="0.5" />
         </Border.Effect>
 
         <Grid RowDefinitions="24,*">
             <Grid
                 Name="Header"
                 ColumnDefinitions="*,Auto,Auto"
-                Cursor="SizeAll"
-                ToolTip.Tip="{Binding Descriptor.Description}"
                 PointerPressed="OnHeaderPointerPressed"
                 PointerMoved="OnDragPointerMoved"
                 PointerReleased="OnDragPointerReleased"
                 PointerCaptureLost="OnDragPointerCaptureLost"
-                DoubleTapped="OnHeaderDoubleTapped">
+                DoubleTapped="OnHeaderDoubleTapped"
+                ToolTip.Tip="{Binding Descriptor.Description}"
+                Cursor="SizeAll">
 
                 <TextBlock
                     Text="{Binding Title}"
@@ -93,8 +80,7 @@
                     Name="MaximizeButton"
                     Grid.Column="1"
                     Command="{Binding ToggleMaximizedCommand}"
-                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
-                    CornerRadius="3,0,0,0" />
+                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)" />
 
                 <Button
                     Grid.Column="2"
@@ -102,7 +88,7 @@
                     Command="{Binding CloseCommand}"
                     ToolTip.Tip="Closes this widget."
                     Background="Red" Foreground="White"
-                    CornerRadius="0,3,0,0"
+                    CornerRadius="0,4,0,0"
                     FontWeight="Bold" />
             </Grid>
 
@@ -110,17 +96,17 @@
 
             <Border
                 Grid.Row="1"
-                Background="{DynamicResource HighlightBrush}"
-                CornerRadius="6,0,0,0"
-                Width="12" Height="12"
-                HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                Cursor="BottomRightCorner"
-                ToolTip.Tip="Resizes this widget."
-                IsVisible="{Binding Descriptor.IsResizable}"
                 PointerPressed="OnResizeGripPointerPressed"
                 PointerMoved="OnDragPointerMoved"
                 PointerReleased="OnDragPointerReleased"
-                PointerCaptureLost="OnDragPointerCaptureLost" />
+                PointerCaptureLost="OnDragPointerCaptureLost"
+                ToolTip.Tip="Resizes this widget."
+                Background="{DynamicResource HighlightBrush}"
+                Cursor="BottomRightCorner"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Width="12" Height="12"
+                CornerRadius="6,0,0,0"
+                IsVisible="{Binding Descriptor.IsResizable}" />
         </Grid>
     </Border>
 

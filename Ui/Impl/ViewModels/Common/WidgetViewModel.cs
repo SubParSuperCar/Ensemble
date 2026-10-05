@@ -6,11 +6,7 @@ using EnsembleRoot.Ui.Impl.Services;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-/// <summary>An open widget's frame, owning its content.</summary>
-/// <remarks>
-///     <see cref="Bounds" /> is relative to the widget area, from 0 to 1, so widgets keep their place as the viewport
-///     resizes, and is always kept whole within it.
-/// </remarks>
+/// <remarks><see cref="Bounds" /> is relative to the widget area, from 0 to 1, and always kept within it.</remarks>
 public sealed partial class WidgetViewModel : ViewModelBase
 {
 	private static readonly Rect MaximizedBounds = new(0, 0, 1, 1);
@@ -57,7 +53,6 @@ public sealed partial class WidgetViewModel : ViewModelBase
 			.WithY(Math.Clamp(origin.Y + delta.Y / area.Height, 0, 1 - origin.Height));
 	}
 
-	// Resizes by the bottom-right corner, keeping the left and top edges in place
 	public void Resize(Rect origin, Vector delta, Size area)
 	{
 		if (IsMaximized || !Descriptor.IsResizable || !IsValid(area))

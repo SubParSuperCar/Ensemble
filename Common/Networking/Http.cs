@@ -8,17 +8,7 @@ public static class Http
 
 	static Http()
 	{
-		var timeoutHandler = new HttpTimeoutHandler(Timeout)
-		{
-			InnerHandler = new SocketsHttpHandler
-			{
-				ConnectTimeout = Timeout
-			}
-		};
-
-		Client = new HttpClient(timeoutHandler)
-		{
-			Timeout = Timeout
-		};
+		var inner = new SocketsHttpHandler { ConnectTimeout = Timeout };
+		Client = new HttpClient(new HttpTimeoutHandler(Timeout) { InnerHandler = inner }) { Timeout = Timeout };
 	}
 }

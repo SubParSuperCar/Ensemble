@@ -97,7 +97,7 @@ public partial class UpdateChecker : Node, IAutoload
 		catch (OperationCanceledException) when (_cts.IsCancellationRequested) { }
 		catch (Exception exception)
 		{
-			Log.Warning(exception, "Failed to check for updates");
+			Log.Information(exception, "Failed to check for updates");
 		}
 		finally
 		{

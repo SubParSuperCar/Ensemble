@@ -39,8 +39,8 @@
             <HyperlinkButton
                 Content="Ensemble - GitHub Page&#x0a;github.com/SubParSuperCar/Ensemble"
                 Command="{Binding OpenGitHubPageCommand}"
-                TextBlock.TextAlignment="Center"
-                ToolTip.Tip="Opens Ensemble's official GitHub repository page.&#x0a;Feel free to star it and/or contribute! :)" />
+                ToolTip.Tip="Opens Ensemble's official GitHub repository page.&#x0a;Feel free to star it and/or contribute! :)"
+                TextBlock.TextAlignment="Center" />
         </StackPanel>
 
         <Border
@@ -63,10 +63,7 @@
             Spacing="8"
             HorizontalAlignment="Center" VerticalAlignment="Center">
 
-            <Border
-                BorderBrush="#40A0FF" BorderThickness="1.5"
-                CornerRadius="8" ClipToBounds="True">
-
+            <Border Classes="primary">
                 <Button
                     Content="Play (Esc)"
                     Command="{Binding GoToSessionCommand}"
@@ -93,10 +90,7 @@
                 Command="{Binding GoToWebBrowserCommand}"
                 ToolTip.Tip="Opens the web browser.&#x0a;Requires a compatible web rendering component.&#x0a;On Windows 11 and most Windows 10 (1803+) devices, WebView2 is installed by default.&#x0a;On Linux, you may need to install WebKitGTK or WPE WebKit via your package manager." />
 
-            <Border
-                BorderBrush="Red" BorderThickness="1.5"
-                CornerRadius="8" ClipToBounds="True">
-
+            <Border Classes="danger">
                 <Button
                     Content="Quit (2x)"
                     DoubleTapped="OnQuitButtonDoubleTapped"

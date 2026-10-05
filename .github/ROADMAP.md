@@ -63,8 +63,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) Split DocFileView / WebBrowserView - base views/VMs moved to Views/Common + ViewModels/Common, no
   NavigatorService dependency; MenuDocFileView / MenuWebBrowserView wrappers add the Back button for menu use
 - (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
-  maximizable frames with fades, a collapsible widget drawer; Plot Selector and Asset Selector are widgets. Next: host
-  browsers, settings, chat, docs, and persist layouts
+  maximizable frames with fades, a collapsible widget drawer; Plot Selector, Asset Selector, Web Browser, and Lua
+  Editor are widgets. Next: settings, chat, docs, and persist layouts
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 

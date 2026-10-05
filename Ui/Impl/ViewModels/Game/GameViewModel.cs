@@ -54,7 +54,6 @@ public partial class GameViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	public partial ToolBarViewModel? ToolBar { get; set; }
 
-
 	protected override void OnDispose()
 	{
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;

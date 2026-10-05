@@ -4,11 +4,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Ui.Impl.Abstractions;
-using Serilog.Events;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-/// <summary>A shown log entry, dismissing itself once its lifetime passes without repeats.</summary>
 public sealed partial class ToastViewModel : ViewModelBase
 {
 	private readonly ToastListViewModel _owner;
@@ -24,16 +22,7 @@ public sealed partial class ToastViewModel : ViewModelBase
 
 	public LogEntry Entry { get; }
 
-	public string LevelText =>
-		Entry.Level switch
-		{
-			LogEventLevel.Verbose => "VRB",
-			LogEventLevel.Debug => "DBG",
-			LogEventLevel.Information => "INF",
-			LogEventLevel.Warning => "WRN",
-			LogEventLevel.Error => "ERR",
-			_ => "FTL"
-		};
+	public string LevelText => Entry.Level.Abbreviation;
 
 	public string RepeatText => string.Create(CultureInfo.InvariantCulture, $"x{RepeatCount}");
 	public bool IsRepeated => RepeatCount > 1;

@@ -22,6 +22,7 @@ public readonly record struct HostEndPoint(string Host, int Port)
 	}
 
 	public override string ToString() =>
-		string.Create(CultureInfo.InvariantCulture,
+		string.Create(
+			CultureInfo.InvariantCulture,
 			$"{(Host.Contains(':', StringComparison.Ordinal) ? $"[{Host}]" : Host)}:{Port}");
 }

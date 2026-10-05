@@ -11,7 +11,7 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Grid ColumnDefinitions="1*,3*,1*" Margin="4">
-        <Grid Grid.Column="1" RowDefinitions="Auto,4,*">
+        <Grid Grid.Column="1" RowDefinitions="Auto,*" RowSpacing="4">
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                 <TabStrip
                     ItemsSource="{Binding Files}"
@@ -28,7 +28,7 @@
                 </TabStrip>
             </ScrollViewer>
 
-            <ScrollViewer Grid.Row="2" VerticalAlignment="Center">
+            <ScrollViewer Grid.Row="1" VerticalAlignment="Center">
                 <md:MarkdownRenderer Name="MarkdownRenderer" />
             </ScrollViewer>
         </Grid>

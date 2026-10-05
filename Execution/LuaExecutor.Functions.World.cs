@@ -144,16 +144,8 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
 	{
-		SetTimeOfDay(context);
-
-		return context.ReturnNothing();
-	}
-
-	private static void SetTimeOfDay(LuaFunctionExecutionContext context)
-	{
-		var timeOfDay = WorldManager.Instance?.World?.GetNodeOrNull("Sky/TimeOfDay");
-		if (timeOfDay is null)
-			return;
+		if (WorldManager.Instance?.World?.GetNodeOrNull("Sky/TimeOfDay") is not { } timeOfDay)
+			return context.ReturnNothing();
 
 		if (!context.HasArgument(0))
 		{
@@ -161,7 +153,7 @@ public static partial class LuaExecutor
 			timeOfDay.Set("system_sync", true);
 
 			Log.Information("Synced lighting time to system clock");
-			return;
+			return context.ReturnNothing();
 		}
 
 		var time = context.GetArgument<float>(0) % 24;
@@ -170,6 +162,7 @@ public static partial class LuaExecutor
 		timeOfDay.Set("current_time", time);
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
+		return context.ReturnNothing();
 	}
 
 	private static ValueTask<int> tp_char(

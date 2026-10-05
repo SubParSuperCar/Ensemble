@@ -40,15 +40,15 @@ public partial class WorldHandle : Node3D
 #endif
 
 		Log.Debug("{Member} ({Count}):", nameof(GPlayers), GPlayers.Count);
-		foreach (var player in GPlayers.GetAll().OrderBy(static p => p.Id, StringComparer.Ordinal))
+		foreach (var player in GPlayers.GetAll().OrderBy(static player => player.Id, StringComparer.Ordinal))
 			Log.Debug("{$Player}", player.ToDict());
 
 		Log.Debug("{Member} ({Count}):", nameof(GAssets), GAssets.Count);
-		foreach (var asset in GAssets.GetAll().OrderBy(static a => a.Id))
+		foreach (var asset in GAssets.GetAll().OrderBy(static asset => asset.Id))
 			Log.Debug("{$Asset}", asset.ToDict());
 
 		Log.Debug("{Member} ({Count}):", nameof(GPlots), GPlots.Count);
-		foreach (var plot in GPlots.GetAll().OrderBy(static p => p.Id))
+		foreach (var plot in GPlots.GetAll().OrderBy(static plot => plot.Id))
 		{
 			var dict = plot.ToDict();
 			dict.Add("occupants", plot.Occupants.GetAll().Select(static occupant => occupant.Player.Id).ToArray());

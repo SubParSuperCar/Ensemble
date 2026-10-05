@@ -10,25 +10,6 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <UserControl.Styles>
-        <Style Selector="Border#Frame">
-            <Setter Property="Opacity" Value="0" />
-
-            <Setter Property="Transitions">
-                <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector="Border#Frame.shown">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
-
-        <Style Selector="Border#Frame.dismissing">
-            <Setter Property="Opacity" Value="0" />
-            <Setter Property="IsHitTestVisible" Value="False" />
-        </Style>
-
         <Style Selector="Border#Level">
             <Setter Property="Background" Value="Orange" />
             <Setter Property="TextElement.Foreground" Value="Black" />
@@ -47,7 +28,8 @@
 
     <Border
         Name="Frame"
-        Classes.dismissing="{Binding IsDismissing}"
+        Classes="fade"
+        Classes.hidden="{Binding IsDismissing}"
         Background="{DynamicResource TranslucentBackgroundBrush}"
         BorderBrush="{Binding #Level.Background}" BorderThickness="1"
         CornerRadius="6" ClipToBounds="True">
@@ -68,20 +50,20 @@
             <TextBlock
                 Grid.Column="2"
                 Text="{Binding RepeatText}"
-                IsVisible="{Binding IsRepeated}"
                 VerticalAlignment="Center"
                 Margin="0,0,8,0"
-                FontWeight="Bold" />
+                FontWeight="Bold"
+                IsVisible="{Binding IsRepeated}" />
 
             <Button
                 Grid.Column="3"
                 Content="X"
                 Command="{Binding DismissCommand}"
                 Background="Red" Foreground="White"
-                CornerRadius="0,3,3,0"
-                FontWeight="Bold"
+                VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+                CornerRadius="0,5,5,0"
                 Padding="8,0"
-                VerticalAlignment="Stretch" VerticalContentAlignment="Center" />
+                FontWeight="Bold" />
         </Grid>
     </Border>
 

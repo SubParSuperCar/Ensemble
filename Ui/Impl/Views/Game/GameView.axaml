@@ -50,7 +50,7 @@
             Content="{Binding ToolBar}"
             HorizontalAlignment="Center" VerticalAlignment="Bottom"
             Margin="0,0,0,4"
-            PageTransition="{StaticResource SlideUpFadeTransition}"/>
+            PageTransition="{StaticResource SlideUpFadeTransition}" />
 
         <ContentControl
             Content="{Binding PlotSelector}"
@@ -61,7 +61,7 @@
             Content="{Binding AssetSelector}"
             HorizontalAlignment="Left" VerticalAlignment="Bottom"
             Width="464" Height="352"
-            PageTransition="{StaticResource SlideUpFadeTransition}"/>
+            PageTransition="{StaticResource SlideUpFadeTransition}" />
 
         <Border
             BorderBrush="Red" BorderThickness="1"

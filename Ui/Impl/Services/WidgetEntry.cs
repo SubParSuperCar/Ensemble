@@ -36,7 +36,7 @@ public sealed partial class WidgetEntry : ObservableObject
 
 	internal Rect? LastBounds { get; set; }
 
-	[GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])", RegexOptions.None, 100)]
+	[GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])", RegexOptions.None, RegexMatchTimeoutMs)]
 	private static partial Regex WordBoundaryRegex { get; }
 
 	internal ViewModelBase CreateContent() => _createContent();

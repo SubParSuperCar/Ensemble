@@ -135,10 +135,10 @@ public partial class SessionManager : Node
 		HostMultiPlayer(port, password, displayName, Unlimited);
 
 	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients) =>
-		HostMultiPlayer(port, password, displayName, maxClients, isDedicated: false);
+		HostMultiPlayer(port, password, displayName, maxClients, false);
 
 	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients, bool isDedicated) =>
-		HostMultiPlayer(port, password, displayName, maxClients, isDedicated, isUpnpEnabled: false);
+		HostMultiPlayer(port, password, displayName, maxClients, isDedicated, false);
 
 	public void HostMultiPlayer(
 		int port,
@@ -186,7 +186,7 @@ public partial class SessionManager : Node
 		Start(new MultiPlayerSession((SceneMultiplayer)Multiplayer, config, Version), displayName);
 	}
 
-	public void StopSession() => EndSession(failureReason: null);
+	public void StopSession() => EndSession(null);
 
 	public void Kick(int peerId) => Kick(peerId, string.Empty);
 

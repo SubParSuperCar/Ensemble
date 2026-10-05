@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
-using Color = Avalonia.Media.Color;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
@@ -15,6 +14,7 @@ using Godot;
 using Iciclecreek.Terminal;
 using Serilog;
 using XTerm.Common;
+using Color = Avalonia.Media.Color;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 

@@ -7,6 +7,8 @@ using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.ViewModels;
 
+// ReSharper disable UnusedMethodReturnValue.Global
+
 namespace EnsembleRoot.Ui.Impl.Services;
 
 /// <summary>
@@ -54,8 +56,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		where TViewModel : ViewModelBase, IWidget =>
 		(TViewModel)Open(Register<TViewModel>()).Content;
 
-	public bool Close<TViewModel>() where TViewModel : ViewModelBase, IWidget =>
-		Close(typeof(TViewModel), shouldFade: true);
+	public bool Close<TViewModel>() where TViewModel : ViewModelBase, IWidget => Close(typeof(TViewModel), true);
 
 	public bool Toggle<[DynamicallyAccessedMembers(Constructors)] TViewModel>()
 		where TViewModel : ViewModelBase, IWidget =>
@@ -111,7 +112,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 
 	internal bool Toggle(WidgetEntry entry)
 	{
-		if (Close(entry.Type, shouldFade: true))
+		if (Close(entry.Type, true))
 			return false;
 
 		Open(entry);
@@ -133,7 +134,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 	protected override void OnDispose()
 	{
 		foreach (var type in _widgetsByType.Keys.ToArray())
-			Close(type, shouldFade: false);
+			Close(type, false);
 	}
 
 	private void Remove(WidgetViewModel widget)

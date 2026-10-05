@@ -24,7 +24,7 @@
             <Setter Property="Opacity" Value="1" />
         </Style>
 
-        <Style Selector="Border#Frame.closing">
+        <Style Selector="Border#Frame.dismissing">
             <Setter Property="Opacity" Value="0" />
             <Setter Property="IsHitTestVisible" Value="False" />
         </Style>
@@ -47,7 +47,7 @@
 
     <Border
         Name="Frame"
-        Classes.closing="{Binding IsClosing}"
+        Classes.dismissing="{Binding IsDismissing}"
         Background="{DynamicResource TranslucentBackgroundBrush}"
         BorderBrush="{Binding #Level.Background}" BorderThickness="1"
         CornerRadius="6" ClipToBounds="True">
@@ -76,8 +76,9 @@
             <Button
                 Grid.Column="3"
                 Content="X"
-                Command="{Binding CloseCommand}"
+                Command="{Binding DismissCommand}"
                 Background="Red" Foreground="White"
+                CornerRadius="0,3,3,0"
                 FontWeight="Bold"
                 Padding="8,0"
                 VerticalAlignment="Stretch" VerticalContentAlignment="Center" />

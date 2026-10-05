@@ -45,8 +45,7 @@ public static class PlotPlacement
 			GAssetManager.GetBoundary(assetId),
 			new Transform3D(new Basis(rotation), gridPosition * PlotHandle.GridToWorldScale));
 
-	public static IEnumerable<Obb> GetObstacles(PlotHandle plot) =>
-		plot.InstanceHandles.Values.Select(static handle => Obb.From(handle.BoundaryAabb, handle.Transform));
+	public static IReadOnlyCollection<Obb> GetObstacles(PlotHandle plot) => plot.InstanceBoxes;
 
 	public static Aabb GetBounds(PlotHandle plot)
 	{

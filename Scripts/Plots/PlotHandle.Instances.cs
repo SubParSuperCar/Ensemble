@@ -1,6 +1,7 @@
 using System.Globalization;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Plots.Impl;
 using Godot;
 
 namespace EnsembleRoot.Scripts.Plots;
@@ -8,9 +9,13 @@ namespace EnsembleRoot.Scripts.Plots;
 public partial class PlotHandle
 {
 	// We're only syncing despawned AssetHandle objects for now. Spawning/despawning will come soon(TM).
+	private readonly Dictionary<int, Obb> _instanceBoxes = [];
 	private Node3D _staticInstances = null!;
 
 	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
+
+	// Cached since reading every handle back from Godot each physics tick is far slower than testing them
+	internal IReadOnlyCollection<Obb> InstanceBoxes => _instanceBoxes.Values;
 
 	private void ReadyInstances()
 	{
@@ -41,10 +46,13 @@ public partial class PlotHandle
 
 		_staticInstances.AddChild(handle);
 		InstanceHandles.Add(instance.Id, handle);
+		_instanceBoxes.Add(instance.Id, Obb.From(handle.BoundaryAabb, handle.Transform));
 	}
 
 	private void OnInstanceRemoved(GdInstance instance)
 	{
+		_instanceBoxes.Remove(instance.Id);
+
 		if (InstanceHandles.Remove(instance.Id, out var handle))
 			handle.QueueFree();
 	}

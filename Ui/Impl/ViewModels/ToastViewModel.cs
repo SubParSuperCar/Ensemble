@@ -8,7 +8,7 @@ using Serilog.Events;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-/// <summary>A shown log entry, closing itself once its lifetime passes without repeats.</summary>
+/// <summary>A shown log entry, dismissing itself once its lifetime passes without repeats.</summary>
 public sealed partial class ToastViewModel : ViewModelBase
 {
 	private readonly ToastListViewModel _owner;
@@ -42,7 +42,7 @@ public sealed partial class ToastViewModel : ViewModelBase
 	[NotifyPropertyChangedFor(nameof(RepeatText), nameof(IsRepeated))]
 	public partial int RepeatCount { get; private set; } = 1;
 
-	[ObservableProperty] public partial bool IsClosing { get; set; }
+	[ObservableProperty] public partial bool IsDismissing { get; set; }
 
 	internal bool IsRepeatOf(LogEntry entry) =>
 		entry.Level == Entry.Level && string.Equals(entry.Message, Entry.Message, StringComparison.Ordinal);
@@ -58,7 +58,7 @@ public sealed partial class ToastViewModel : ViewModelBase
 	protected override void OnDispose() => _timer.Stop();
 
 	[RelayCommand]
-	private void Close() => _owner.Close(this);
+	private void Dismiss() => _owner.Dismiss(this);
 
-	private void OnTimerTick(object? sender, EventArgs e) => Close();
+	private void OnTimerTick(object? sender, EventArgs e) => Dismiss();
 }

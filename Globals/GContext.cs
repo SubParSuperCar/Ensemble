@@ -9,8 +9,9 @@ public static class GContext
 
 	static GContext()
 	{
-		GPlayers.LocalChanged += OnLocalChanged;
+		// GdCore must be initialized before GContext can be used; otherwise, this will fail
 		OnLocalChanged(GPlayers.Local);
+		GPlayers.LocalChanged += OnLocalChanged;
 	}
 
 	public static GdPlot? LocalPlot { get; private set; }

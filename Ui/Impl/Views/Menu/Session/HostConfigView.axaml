@@ -88,6 +88,7 @@
                 Command="{Binding GoBackCommand}"
                 ToolTip.Tip="Goes back. (Bound to Backspace)" />
 
+            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
             <Border Grid.Column="1" Classes="primary">
                 <Button
                     Content="Host!"

@@ -63,6 +63,15 @@ public class AvaloniaControl : GdControl
 	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
 	public bool AutoConvertUiActionToKeyDown { get; set; } = true;
 
+	/// <summary>
+	///     Occurs before Avalonia processes, at most once per <see cref="GodotPlatformOptions.ProcessInterval" />,
+	///     with the time since the last process tick, in seconds.
+	/// </summary>
+	public event Action<double>? Processing;
+
+	/// <summary>Occurs after Avalonia processes, with the time since the last process tick, in seconds.</summary>
+	public event Action<double>? Processed;
+
 	/// <summary>Gets the underlying Avalonia top-level element.</summary>
 	/// <returns>The Avalonia top-level element.</returns>
 	/// <exception cref="InvalidOperationException">Thrown if the control isn't ready or has been disposed.</exception>
@@ -187,6 +196,10 @@ public class AvaloniaControl : GdControl
 
 	public override void _Process(double delta)
 	{
+		if (!GodotPlatform.TryBeginProcess(delta, out var processDelta))
+			return;
+
+		Processing?.Invoke(processDelta);
 		GodotPlatform.TriggerRenderTick();
 
 		// Process all the queued Avalonia dispatcher work items (layout passes, animations, and so on),
@@ -194,6 +207,7 @@ public class AvaloniaControl : GdControl
 		AvDispatcher.UIThread.RunJobs();
 
 		RenderAvalonia();
+		Processed?.Invoke(processDelta);
 	}
 
 	private PixelSize GetFrameSize() => PixelSize.FromSize(Size.ToAvaloniaSize(), 1.0);

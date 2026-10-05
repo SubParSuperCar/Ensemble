@@ -75,7 +75,7 @@ public partial class StatViewModel : ViewModelBase
 
 		List<(string Key, object Value)> stats =
 		[
-			("Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps} FPS ({frameTimeMs:F3} mspf)")),
+			("3D Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps} FPS ({frameTimeMs:F3} mspf)")),
 			("Process Time", string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
 			("UI Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{uiFps:F3} FPS ({uiFrameTimeMs:F3} mspf)")),

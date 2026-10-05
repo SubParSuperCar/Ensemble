@@ -53,6 +53,10 @@ public partial class AvaloniaLoader : Node
 					// Enabling this reduces FPS by about 13% in some heavy-UI scenarios
 					UseRegionDirtyRectClipping = false
 				})
+				.With(new GodotPlatformOptions
+				{
+					ProcessInterval = Ui.ProcessInterval
+				})
 				.LogToTrace()
 				.SetupWithGodot();
 

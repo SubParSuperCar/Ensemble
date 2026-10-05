@@ -610,7 +610,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		public override void _Process(double delta)
 		{
-			if (_owner._isDisposed)
+			if (_owner._isDisposed || !GodotPlatform.TryBeginProcess(delta, out _))
 				return;
 
 			GodotPlatform.TriggerRenderTick();

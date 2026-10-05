@@ -81,6 +81,8 @@ public partial class MainViewModel : ViewModelBase
 	[RelayCommand]
 	private void OpenTerminal() => ShowNewTerminalWindow();
 
+	// Force Godot to keep rendering to keep the UI going,
+	// even though it normally wouldn't because there's no 3D scene when out of session
 	private static void OnUiProcess(UiProcessData data) => RenderingServer.ForceDraw();
 
 	private void OnSessionStarted()

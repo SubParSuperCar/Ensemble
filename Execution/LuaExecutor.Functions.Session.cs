@@ -8,7 +8,7 @@ using Serilog;
 
 // ReSharper disable InconsistentNaming
 
-namespace EnsembleRoot.Common.Execution;
+namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {

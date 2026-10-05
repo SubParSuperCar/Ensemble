@@ -1,35 +1,8 @@
-using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Reactive;
-using AvaloniaEdit.Editing;
-using Iciclecreek.Terminal;
-
 namespace EnsembleRoot.Common.Input;
 
 public static class InputSink
 {
 	public static readonly OwnershipFlag Sink = new();
 
-	private static readonly object Token = new();
-
-	static InputSink()
-	{
-		var observer = new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged);
-		InputElement.GotFocusEvent.Raised.Subscribe(observer);
-		InputElement.LostFocusEvent.Raised.Subscribe(observer);
-	}
-
 	public static bool IsSunk => Sink.IsSet;
-
-	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)
-	{
-		if (value.Args is not FocusChangedEventArgs focus)
-			return;
-
-		if (focus.NewFocusedElement is TextBox or TextArea or TerminalView)
-			Sink.Acquire(Token);
-		else
-			Sink.Release(Token);
-	}
 }

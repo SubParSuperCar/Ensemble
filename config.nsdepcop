@@ -1,0 +1,92 @@
+<NsDepCopConfig IsEnabled="true" ChildCanDependOnParentImplicitly="true">
+	<!-- Everything is allowed unless disallowed below; Disallowed always wins over Allowed -->
+	<Allowed From="*" To="*" />
+
+	<!-- Foundation -->
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.GdCore.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.SessionManager.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.Replication.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.Scripts.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.Execution.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.Globals.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.GdCore.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.SessionManager.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.Replication.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.Scripts.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.Execution.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.Globals.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.GdCore.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.SessionManager.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.Replication.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.Scripts.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.Execution.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.Globals.*" />
+
+	<!-- GdCore -->
+	<Disallowed From="EnsembleRoot.GdCore.*" To="EnsembleRoot.SessionManager.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="EnsembleRoot.Replication.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="EnsembleRoot.Scripts.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="EnsembleRoot.Execution.*" />
+
+	<!-- SessionManager -->
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.GdCore.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Replication.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Scripts.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Execution.*" />
+
+	<!-- Replication -->
+	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Scripts.*" />
+	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Execution.*" />
+
+	<!-- Scripts -->
+	<Disallowed From="EnsembleRoot.Scripts.*" To="EnsembleRoot.Replication.*" />
+	<Disallowed From="EnsembleRoot.Scripts.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.Scripts.*" To="EnsembleRoot.Execution.*" />
+
+	<!-- Tooling -->
+	<Disallowed From="EnsembleRoot.Tooling.*" To="EnsembleRoot.Execution.*" />
+
+	<!-- Globals -->
+	<Disallowed From="EnsembleRoot.Globals.*" To="EnsembleRoot.Execution.*" />
+
+	<!-- Only Ui may depend on Ui or its frameworks -->
+	<Disallowed From="EnsembleRoot" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Execution.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Execution.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Execution.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Globals.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Globals.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Globals.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Replication.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Replication.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Scripts.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Scripts.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Scripts.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.Tooling.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.Tooling.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.Tooling.*" To="Estragonia.*" />
+</NsDepCopConfig>

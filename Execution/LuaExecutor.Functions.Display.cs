@@ -1,14 +1,13 @@
 using System.Globalization;
-using Avalonia.Styling;
 using CommunityToolkit.Mvvm.Messaging;
-using EnsembleRoot.Ui.Impl.Messages;
+using EnsembleRoot.Common.Messages;
 using Godot;
 using Lua;
 using Serilog;
 
 // ReSharper disable InconsistentNaming
 
-namespace EnsembleRoot.Common.Execution;
+namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
@@ -42,15 +41,8 @@ public static partial class LuaExecutor
 	{
 		bool? useDarkTheme = context.HasArgument(0) ? context.GetArgument<bool>(0) : null;
 
-		var theme = useDarkTheme switch
-		{
-			true => ThemeVariant.Dark,
-			false => ThemeVariant.Light,
-			_ => ThemeVariant.Default
-		};
-
-		Log.Information("Setting UI theme variant to: {$Theme}", theme);
-		WeakReferenceMessenger.Default.Send(new SetUiThemeMessage(theme));
+		Log.Information("Setting UI dark theme to: {UseDarkTheme}", useDarkTheme);
+		WeakReferenceMessenger.Default.Send(new SetUiThemeMessage(useDarkTheme));
 
 		return context.ReturnNothing();
 	}

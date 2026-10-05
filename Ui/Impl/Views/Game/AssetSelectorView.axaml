@@ -19,8 +19,8 @@
                 Name="FilterBox"
                 Text="{Binding FilterQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 PlaceholderText="Filter by Name or ID&#x2026;"
-                ToolTip.Tip="Filters the asset list below by name or internal ID."
-                GotFocus="OnFilterBoxGotFocus" />
+                GotFocus="OnFilterBoxGotFocus"
+                ToolTip.Tip="Filters the asset list below by name or internal ID." />
 
             <TextBlock
                 Grid.Column="1"
@@ -30,20 +30,18 @@
                 Margin="4,0" />
         </Grid>
 
-        <Grid Grid.Row="1" Margin="6,0,10,0">
+        <Grid Grid.Row="1" ColumnSpacing="16" Margin="6,0,10,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="16" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="AssetId" />
-                <ColumnDefinition Width="16" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Quota" />
             </Grid.ColumnDefinitions>
 
             <TextBlock Text="Item &#x2193;" ToolTip.Tip="The asset's name, grouped into folders by category." />
-            <TextBlock Grid.Column="2" Text="&#x2193; ID" ToolTip.Tip="The asset's internal ID." />
+            <TextBlock Grid.Column="1" Text="&#x2193; ID" ToolTip.Tip="The asset's internal ID." />
 
             <TextBlock
-                Grid.Column="4"
+                Grid.Column="2"
                 Text="&#x2195; Quota"
                 ToolTip.Tip="Instances placed for this asset, out of its maximum."
                 TextAlignment="Right" />
@@ -68,24 +66,23 @@
                 </TreeDataTemplate>
 
                 <DataTemplate DataType="vm:AssetNode">
-                    <Grid
+                    <Border
                         ToolTip.Tip="Selects this asset for the placement tool."
-                        Background="{DynamicResource TranslucentBackgroundBrush}">
+                        Background="{DynamicResource TranslucentBackgroundBrush}"
+                        Padding="4,0">
 
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="4" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="16" />
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="AssetId" />
-                            <ColumnDefinition Width="16" />
-                            <ColumnDefinition Width="Auto" SharedSizeGroup="Quota" />
-                            <ColumnDefinition Width="4" />
-                        </Grid.ColumnDefinitions>
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="AssetId" />
+                                <ColumnDefinition Width="Auto" SharedSizeGroup="Quota" />
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="1" Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
-                        <TextBlock Grid.Column="3" Text="{Binding Id}" />
-                        <TextBlock Grid.Column="5" Text="{Binding Quota}" TextAlignment="Right" />
-                    </Grid>
+                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                            <TextBlock Grid.Column="1" Text="{Binding Id}" />
+                            <TextBlock Grid.Column="2" Text="{Binding Quota}" TextAlignment="Right" />
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </TreeView.DataTemplates>
         </TreeView>

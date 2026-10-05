@@ -67,10 +67,7 @@ public partial class DiscordRpc : Node, IAutoload
 		if (_cts.IsCancellationRequested)
 			return;
 
-		var client = new DiscordRpcClient(AppId)
-		{
-			Logger = new ConsoleLogger(LogLevel.Warning, true)
-		};
+		var client = new DiscordRpcClient(AppId) { Logger = new ConsoleLogger(LogLevel.Warning, true) };
 
 		client.OnReady += OnReady;
 		client.OnConnectionFailed += OnConnectionFailed;

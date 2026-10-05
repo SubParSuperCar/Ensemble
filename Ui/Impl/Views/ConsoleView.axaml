@@ -46,8 +46,8 @@
                         SelectionForegroundBrush="Black"
                         Padding="1"
                         FontSize="12" FontWeight="ExtraLight"
-                        TextWrapping="Wrap"
-                        LetterSpacing="-0.375" LineSpacing="3" />
+                        LetterSpacing="-0.375" LineSpacing="3"
+                        TextWrapping="Wrap" />
                 </ScrollViewer>
 
                 <TextBlock

@@ -1,4 +1,3 @@
-using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Logging;
@@ -15,11 +14,6 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 // TODO: Add a ComboBox to select the minimum log severity level to show in Output
 public partial class ConsoleViewModel : ViewModelBase
 {
-	private static readonly TextDocument Source = new(
-		"--[[\nLua 5.2\nReference Manual: https://www.lua.org/manual/5.2/\n" +
-		"(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
-		"print(string.format(\"Hello, %s!\", _VERSION))\nhelp()\n");
-
 	private readonly DispatcherService _dispatcher;
 
 	private byte _updateLogHistoryFlag;
@@ -27,8 +21,7 @@ public partial class ConsoleViewModel : ViewModelBase
 	public ConsoleViewModel(IServiceProvider services, DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
-
-		Editor = services.Create<LuaEditorViewModel>(Source);
+		Editor = services.Create<LuaEditorViewModel>();
 
 		dispatcher.UiProcess += OnUiProcess;
 

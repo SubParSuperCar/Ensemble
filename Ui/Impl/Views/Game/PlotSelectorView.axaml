@@ -10,25 +10,23 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
-        <Grid RowDefinitions="Auto,*,2,Auto" Grid.IsSharedSizeScope="True">
-            <Grid Margin="6,0">
+        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="2" Grid.IsSharedSizeScope="True">
+            <Grid ColumnSpacing="16" Margin="6,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="PlotId" />
-                    <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="16" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Occupancy" />
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="ID&#x0a;&#x2193;" ToolTip.Tip="The plot's ID." />
 
                 <TextBlock
-                    Grid.Column="2"
+                    Grid.Column="1"
                     Text="Owner Name&#x0a; &#x2198;"
                     ToolTip.Tip="The display name of the plot's owner, if any." />
 
                 <TextBlock
-                    Grid.Column="4"
+                    Grid.Column="2"
                     Text="Occupancy&#x0a;&#x2199; "
                     ToolTip.Tip="The plot's occupants, out of its maximum."
                     TextAlignment="Right" />
@@ -43,26 +41,25 @@
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Grid
+                            ColumnSpacing="16"
                             ToolTip.Tip="Requests that you occupy this plot.&#x0a;If no other player occupies the plot,&#x0a;ownership may be assigned to you."
                             Background="Transparent">
 
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="PlotId" />
-                                <ColumnDefinition Width="16" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="16" />
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="Occupancy" />
                             </Grid.ColumnDefinitions>
 
                             <TextBlock Text="{Binding Id}" />
 
                             <TextBlock
-                                Grid.Column="2"
+                                Grid.Column="1"
                                 Text="{Binding OwnerName}"
                                 TextTrimming="CharacterEllipsis" />
 
                             <TextBlock
-                                Grid.Column="4"
+                                Grid.Column="2"
                                 Text="{Binding Occupancy}"
                                 TextAlignment="Right" />
                         </Grid>
@@ -71,7 +68,7 @@
             </ListBox>
 
             <Button
-                Grid.Row="3"
+                Grid.Row="2"
                 Content="Set Plot to None"
                 Command="{Binding SetPlotToNullCommand}"
                 ToolTip.Tip="Requests that you relinquish your occupancy of the current plot.&#x0a;If you own the plot and another player occupies it,&#x0a;ownership may be reassigned to the second-oldest occupant."

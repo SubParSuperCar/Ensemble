@@ -14,9 +14,9 @@
         <ae:TextEditor
             Name="Editor"
             Document="{Binding Source}"
+            Watermark="&lt;Empty&gt;"
             FontSize="13"
             WordWrap="True"
-            Watermark="&lt;Empty&gt;"
             ShowLineNumbers="True">
 
             <ae:TextEditor.Background>
@@ -36,7 +36,7 @@
                     Content="Cancel Runners"
                     Command="{Binding CancelCommand}"
                     ToolTip.Tip="Stops all currently running Lua scripts."
-                    Background="Black" Foreground="White" />
+                    Background="{DynamicResource TranslucentBackgroundBrush}" />
             </Border>
 
             <Border BorderBrush="#40A0FF" BorderThickness="1">
@@ -44,7 +44,7 @@
                     Content="Execute Script"
                     Command="{Binding ExecuteCommand}"
                     ToolTip.Tip="Executes the entered script source code."
-                    Background="Black" Foreground="White" />
+                    Background="{DynamicResource TranslucentBackgroundBrush}" />
             </Border>
         </StackPanel>
     </Grid>

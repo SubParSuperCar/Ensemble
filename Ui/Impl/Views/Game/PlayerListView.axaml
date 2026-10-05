@@ -81,24 +81,24 @@
             <Grid
                 Grid.Row="2"
                 ColumnDefinitions="*,Auto"
-                Margin="6,0"
                 ToolTip.Tip="{Binding PortMappingDetail}"
+                Margin="6,0"
                 IsVisible="{Binding PortMappingStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
 
                 <TextBlock
                     Text="{Binding PortMappingStatus}"
+                    VerticalAlignment="Center"
                     FontSize="12"
-                    Opacity="0.75"
                     TextTrimming="CharacterEllipsis"
-                    VerticalAlignment="Center" />
+                    Opacity="0.75" />
 
                 <Button
                     Grid.Column="1"
                     Content="Copy"
                     Command="{Binding CopyJoinCodeCommand}"
                     ToolTip.Tip="Copies the join code to the clipboard."
-                    FontSize="12"
                     Padding="6,0"
+                    FontSize="12"
                     IsVisible="{Binding JoinCode, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
             </Grid>
         </Grid>

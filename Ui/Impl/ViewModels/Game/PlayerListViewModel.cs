@@ -94,9 +94,7 @@ public partial class PlayerListViewModel : ViewModelBase
 		var peer = GSessionManager.GetPeerByPlayerId(gdPlayer.Id);
 		var player = new PlayerItem { Name = gdPlayer.Name, Id = gdPlayer.Id, PeerId = peer?.Id ?? None };
 
-		var index = Players
-			.TakeWhile(other => ComparePlayers(other, player) < 0)
-			.Count();
+		var index = Players.Count(other => ComparePlayers(other, player) < 0);
 
 		Players.Insert(index, player);
 		_playersById.Add(gdPlayer.Id, player);

@@ -14,7 +14,7 @@ public partial class PlotHandle
 
 	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
 
-	// Cached since reading every handle back from Godot each physics tick is far slower than testing them
+	// Cached, as reading every handle back from Godot each tick is slow
 	internal IReadOnlyCollection<Obb> InstanceBoxes => _instanceBoxes.Values;
 
 	private void ReadyInstances()

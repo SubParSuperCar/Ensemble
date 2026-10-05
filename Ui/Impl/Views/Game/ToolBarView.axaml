@@ -75,29 +75,29 @@
                 <Border Grid.Column="2" BorderBrush="#00C000" BorderThickness="1">
                     <ToggleButton
                         Content="Edit (3)"
-                        IsEnabled="False"
-                        ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)" />
+                        ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)"
+                        IsEnabled="False" />
                 </Border>
 
                 <Border Grid.Column="3" BorderBrush="#E050E0" BorderThickness="1">
                     <ToggleButton
                         Content="Paint (4)"
-                        IsEnabled="False"
-                        ToolTip.Tip="Toggles the painting (material) tool. (Bound to 4 / Four)" />
+                        ToolTip.Tip="Toggles the painting (material) tool. (Bound to 4 / Four)"
+                        IsEnabled="False" />
                 </Border>
 
                 <Border Grid.Column="4" BorderBrush="#E0C000" BorderThickness="1">
                     <ToggleButton
                         Content="Move (5)"
-                        IsEnabled="False"
-                        ToolTip.Tip="Toggles the moving (translate) tool. (Bound to 5 / Five)" />
+                        ToolTip.Tip="Toggles the moving (translate) tool. (Bound to 5 / Five)"
+                        IsEnabled="False" />
                 </Border>
 
                 <!--<Border Grid.Column="5" BorderBrush="#FF8000" BorderThickness="1">
                     <ToggleButton
                         Content="Inspect (6)"
-                        IsEnabled="False"
-                        ToolTip.Tip="Toggles the inspection (inspect) tool. (Bound to 6 / Six)" />
+                        ToolTip.Tip="Toggles the inspection (inspect) tool. (Bound to 6 / Six)"
+                        IsEnabled="False" />
                 </Border>-->
 
                 <CheckBox

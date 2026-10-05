@@ -33,11 +33,7 @@ public class App : Application
 
 	public override void OnFrameworkInitializationCompleted()
 	{
-		AsyncImageLoader.DefaultDecoders =
-		[
-			SvgImageDecoder.Shared,
-			DefaultBitmapDecoder.Shared
-		];
+		AsyncImageLoader.DefaultDecoders = [SvgImageDecoder.Shared, DefaultBitmapDecoder.Shared];
 
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);

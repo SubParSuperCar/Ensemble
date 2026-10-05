@@ -59,7 +59,6 @@ public partial class ConstructTool : ToolBase
 			UpdatePlacement();
 	}
 
-	// Placement stays instant; only the shown preview eases toward it
 	public override void _Process(double delta)
 	{
 		if (_preview is not { Visible: true } preview)
@@ -196,7 +195,6 @@ public partial class ConstructTool : ToolBase
 			Log.Debug("Cannot place asset id {AssetId}: {State}", AssetId, state);
 	}
 
-	// Snapped placements rest against the nearest face of the surface's bounds, matching box-based collision
 	private static Vector3 ToGridAxis(Vector3 normal)
 	{
 		var axis = (int)normal.Abs().MaxAxisIndex();
@@ -206,7 +204,6 @@ public partial class ConstructTool : ToolBase
 		return gridAxis;
 	}
 
-	// Snapping is relative to the targeted instance's corner, so edges line up with it at any increment
 	private static Vector3 GetGridAnchor(Node3D collider)
 	{
 		if (ToolCommon.FindInHierarchy<AssetHandle>(collider) is not { } target || !ToolCommon.IsHandleLocal(target))
@@ -332,7 +329,7 @@ public partial class ConstructTool : ToolBase
 		_preview.AddChild(_solidHighlight);
 	}
 
-	// GeometryInstance3D.Transparency is ignored outside Forward+, so the preview gets translucent material copies
+	// GeometryInstance3D.Transparency is ignored outside Forward+
 	private static void MakeTranslucent(Node root)
 	{
 		foreach (var node in root.FindChildren("*", nameof(MeshInstance3D), true, false))

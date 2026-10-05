@@ -35,17 +35,7 @@ public partial class AvaloniaLoader : Node
 				.WithJetBrainsMonoFont()
 				.With(new SkiaOptions
 				{
-					/* Cap Skia's total GPU resource cache (textures, glyph atlases, etc.) at 32 MiB, up from Avalonia's
-					 * 28.125 MiB default
-					 *
-					 * For reference, a single RGBA8 surface is roughly
-					 * 3.5 MiB @ 1280x720
-					 * 7.9 MiB @ 1920x1080
-					 * 14.1 MiB @ 2560x1440
-					 * 31.6 MiB @ 3840x2160
-					 *
-					 * This value will be optimized later
-					 */
+					// Up from Avalonia's 28.125 MiB default; one 4K RGBA8 surface alone is ~31.6 MiB
 					MaxGpuResourceSizeBytes = 32 * 1024 * 1024
 				})
 				.With(new CompositionOptions
@@ -53,10 +43,7 @@ public partial class AvaloniaLoader : Node
 					// Enabling this reduces FPS by about 13% in some heavy-UI scenarios
 					UseRegionDirtyRectClipping = false
 				})
-				.With(new GodotPlatformOptions
-				{
-					ProcessInterval = Ui.ProcessInterval
-				})
+				.With(new GodotPlatformOptions { ProcessInterval = Ui.ProcessInterval })
 				.LogToTrace()
 				.SetupWithGodot();
 

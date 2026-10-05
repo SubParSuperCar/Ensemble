@@ -11,12 +11,7 @@ public enum PlacementState : byte
 	PlotQuotaMet
 }
 
-/// <summary>
-///     Placement rules for a plot, shared by placement previews and authoritative validation so both agree.
-/// </summary>
-/// <remarks>
-///     Works in the plot's local space, where its instance handles live, with assets as their boundary boxes.
-/// </remarks>
+/// <summary>Placement rules shared by previews and authoritative validation, in a plot's local space.</summary>
 public static class PlotPlacement
 {
 	public static PlacementState Evaluate(PlotHandle plot, int assetId, Vector3 gridPosition, Quaternion rotation)

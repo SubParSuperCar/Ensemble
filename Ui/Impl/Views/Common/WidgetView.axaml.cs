@@ -8,6 +8,7 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Controls;
+using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
@@ -18,8 +19,12 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private const double HiddenTilt = -90 * (1 / 4d);
 	private const double TiltDepth = 1000;
 
+	private static readonly Easing EaseIn = new CubicEaseIn();
+	private static readonly Easing EaseOut = new CubicEaseOut();
+
 	private readonly ScaleTransform _scale = new(HiddenScale, HiddenScale);
 	private readonly Rotate3DTransform _tilt = new() { AngleX = HiddenTilt, Depth = TiltDepth };
+	private readonly List<DoubleTransition> _transitions = [];
 
 	private DragKind _drag;
 	private Rect _dragOrigin;
@@ -41,13 +46,17 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 		Frame.Classes.Add("shown");
 	}
 
-	// Transform strings have no 3D rotations, so the tilt and scale follow the fade's classes from here
+	// Transform strings have no 3D rotations
 	private void InitializeTransform()
 	{
-		if (Application.Current?.FindResource("TransitionDuration") is TimeSpan duration)
+		if (Application.Current?.TransitionDuration is { } duration)
 		{
-			_scale.Transitions = [Ease(ScaleTransform.ScaleXProperty), Ease(ScaleTransform.ScaleYProperty)];
-			_tilt.Transitions = [Ease(Rotate3DTransform.AngleXProperty)];
+			_transitions.AddRange(
+				[
+					Ease(_scale, ScaleTransform.ScaleXProperty),
+					Ease(_scale, ScaleTransform.ScaleYProperty),
+					Ease(_tilt, Rotate3DTransform.AngleXProperty)
+				]);
 		}
 
 		Frame.RenderTransform = new TransformGroup { Children = [_scale, _tilt] };
@@ -55,15 +64,23 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 
 		return;
 
-		DoubleTransition Ease(AvaloniaProperty property)
+		DoubleTransition Ease(Transform target, AvaloniaProperty property)
 		{
-			return new DoubleTransition { Property = property, Duration = duration, Easing = new CubicEaseOut() };
+			var transition = new DoubleTransition { Property = property, Duration = duration };
+
+			target.Transitions ??= [];
+			target.Transitions.Add(transition);
+
+			return transition;
 		}
 	}
 
 	private void UpdateTransform()
 	{
-		var isShown = Frame.Classes.Contains("shown") && !Frame.Classes.Contains("closing");
+		var isShown = Frame.Classes.Contains("shown") && !Frame.Classes.Contains("hidden");
+
+		foreach (var transition in _transitions)
+			transition.Easing = isShown ? EaseOut : EaseIn;
 
 		_scale.ScaleX = _scale.ScaleY = isShown ? 1 : HiddenScale;
 		_tilt.AngleX = isShown ? 0 : HiddenTilt;

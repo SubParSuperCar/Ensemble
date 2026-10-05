@@ -34,23 +34,24 @@ public readonly record struct SetPropertiesAction(InstanceReference Instance, Di
 
 		foreach (var (key, value) in Properties)
 		{
-			if (key.VariantType is not (Variant.Type.String or Variant.Type.StringName) ||
-				!current.TryGetValue(key.AsString(), out var existing))
+			var name = key.VariantType is Variant.Type.String or Variant.Type.StringName ? key.AsString() : null;
+
+			if (name is null || !current.TryGetValue(name, out var existing))
 				return Reject("Property not found.");
 
 			var updated = value.FromGodot();
 
 			if (updated.Type != existing.Type)
-				return Reject($"Property {key.AsString()} must stay {existing.Type}.");
+				return Reject($"Property {name} must stay {existing.Type}.");
 
 			// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
 			switch (updated.Type)
 			{
 				case CoreVariantType.Double when !double.IsFinite((double)updated):
-					return Reject($"Property {key.AsString()} not finite.");
+					return Reject($"Property {name} not finite.");
 
 				case CoreVariantType.String when ((string)updated).Length > MaxStringLength:
-					return Reject($"Property {key.AsString()} too long.");
+					return Reject($"Property {name} too long.");
 			}
 		}
 

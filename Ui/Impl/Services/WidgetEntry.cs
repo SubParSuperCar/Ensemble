@@ -6,7 +6,6 @@ using EnsembleRoot.Ui.Impl.Abstractions;
 
 namespace EnsembleRoot.Ui.Impl.Services;
 
-/// <summary>A widget type registered with a <see cref="WidgetManagerService" />, whether open or not.</summary>
 public sealed partial class WidgetEntry : ObservableObject
 {
 	private const string ViewModelSuffix = "ViewModel";

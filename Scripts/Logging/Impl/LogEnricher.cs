@@ -9,13 +9,8 @@ public sealed class LogEnricher : ILogEventEnricher
 {
 	public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
 	{
-		logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
-			"ThreadId",
-			Environment.CurrentManagedThreadId));
-
-		logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
-			"Frame",
-			Engine.GetProcessFrames()));
+		logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("ThreadId", Environment.CurrentManagedThreadId));
+		logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("Frame", Engine.GetProcessFrames()));
 
 		if (logEvent.Exception is { } exception && NativeFrames.Describe(exception) is { } nativeFrames)
 			logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(NativeFrames.PropertyName, nativeFrames));

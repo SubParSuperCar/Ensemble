@@ -10,7 +10,10 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8">
+    <StackPanel
+        Spacing="8"
+        HorizontalAlignment="Center" VerticalAlignment="Center">
+
         <TextBlock Text="Session Mode:" />
 
         <Button

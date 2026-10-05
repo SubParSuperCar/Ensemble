@@ -10,7 +10,11 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8" MaxWidth="384">
+    <StackPanel
+        Spacing="8"
+        HorizontalAlignment="Center" VerticalAlignment="Center"
+        MaxWidth="384">
+
         <TextBlock Text="Single-Player Config:" />
 
         <StackPanel>
@@ -23,17 +27,13 @@
                 MaxLength="24" />
         </StackPanel>
 
-        <Grid ColumnDefinitions="*,8,*">
+        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
             <Button
                 Content="&lt;- Back"
                 Command="{Binding GoBackCommand}"
                 ToolTip.Tip="Goes back. (Bound to Backspace)" />
 
-            <Border
-                Grid.Column="2"
-                BorderBrush="#40A0FF" BorderThickness="1.5"
-                CornerRadius="8" ClipToBounds="True">
-
+            <Border Grid.Column="1" Classes="primary">
                 <Button
                     Content="Start!"
                     Command="{Binding StartCommand}"

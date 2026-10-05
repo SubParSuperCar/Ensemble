@@ -50,12 +50,12 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var address = NetworkInterface.GetAllNetworkInterfaces()
-			.Where(static ni =>
-				ni.OperationalStatus is OperationalStatus.Up &&
-				ni.NetworkInterfaceType is NetworkInterfaceType.Ethernet or NetworkInterfaceType.Wireless80211)
-			.SelectMany(static ni => ni.GetIPProperties().UnicastAddresses)
-			.Select(static a => a.Address)
-			.FirstOrDefault(static a => a.AddressFamily is AddressFamily.InterNetwork && !IPAddress.IsLoopback(a));
+			.Where(static adapter =>
+				adapter.OperationalStatus is OperationalStatus.Up &&
+				adapter.NetworkInterfaceType is NetworkInterfaceType.Ethernet or NetworkInterfaceType.Wireless80211)
+			.SelectMany(static adapter => adapter.GetIPProperties().UnicastAddresses)
+			.Select(static unicast => unicast.Address)
+			.FirstOrDefault(static ip => ip.AddressFamily is AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip));
 
 		Log.Information("Local Area Network (LAN) IPv4 address: {Address}", address);
 
@@ -71,14 +71,13 @@ public static partial class LuaExecutor
 			Log.Debug("Querying {Url}...", PublicIPv4AddressSourceUrl);
 			var stopwatch = Stopwatch.StartNew();
 
-			var address = (await Http.Client.GetStringAsync(
-				PublicIPv4AddressSourceUrl,
-				cancellationToken).ConfigureAwait(true)).Trim();
+			var response = await Http.Client.GetStringAsync(PublicIPv4AddressSourceUrl, cancellationToken)
+				.ConfigureAwait(true);
 
 			stopwatch.Stop();
 			Log.Information(
 				"Wide Area Network (WAN) IPv4 address: {Address} (RequestMs={RequestMs:F3})",
-				address,
+				response.Trim(),
 				stopwatch.Elapsed.TotalMilliseconds);
 		}
 		catch (Exception exception) when (!cancellationToken.IsCancellationRequested)

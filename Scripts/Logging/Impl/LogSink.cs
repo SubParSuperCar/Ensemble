@@ -1,4 +1,5 @@
 using System.Globalization;
+using EnsembleRoot.Common.Logging;
 using Godot;
 using Serilog.Core;
 using Serilog.Events;
@@ -11,20 +12,9 @@ public sealed class LogSink : ILogEventSink
 	{
 		var renderedMessage = logEvent.RenderMessage(CultureInfo.InvariantCulture);
 
-		var level = logEvent.Level switch
-		{
-			LogEventLevel.Verbose => "VRB",
-			LogEventLevel.Debug => "DBG",
-			LogEventLevel.Information => "INF",
-			LogEventLevel.Warning => "WRN",
-			LogEventLevel.Error => "ERR",
-			LogEventLevel.Fatal => "FTL",
-			_ => "???"
-		};
-
 		var message = string.Create(
 			CultureInfo.InvariantCulture,
-			$"[{logEvent.Timestamp:HH:mm:ss.fff}] [{level}] {renderedMessage}");
+			$"[{logEvent.Timestamp:HH:mm:ss.fff}] [{logEvent.Level.Abbreviation}] {renderedMessage}");
 
 		if (logEvent.Exception is not null)
 			message = string.Concat(message, "\n", logEvent.Exception);

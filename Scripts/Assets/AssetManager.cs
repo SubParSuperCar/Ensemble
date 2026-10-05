@@ -45,12 +45,12 @@ public partial class AssetManager : Node
 
 	public PackedScene? GetPackedOrNull(int assetId) => Scenes.TryGetValue(assetId, out var packed) ? packed : null;
 
-	public Aabb GetBoundary(int assetId) => Boundaries.TryGetValue(assetId, out var boundary) ? boundary : default;
-
 	public PackedScene GetPacked(int assetId) =>
 		GetPackedOrNull(assetId) ?? throw new KeyNotFoundException(string.Create(
 			CultureInfo.InvariantCulture,
 			$"Packed scene with asset id {assetId} not found."));
+
+	public Aabb GetBoundary(int assetId) => Boundaries.TryGetValue(assetId, out var boundary) ? boundary : default;
 
 	private void ScanDirectory(string path)
 	{

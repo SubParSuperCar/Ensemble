@@ -130,7 +130,7 @@ public partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	}
 
 	private static void Insert(IList<INodeBase> nodes, INodeBase node) =>
-		nodes.Insert(nodes.TakeWhile(other => Precedes(other, node)).Count(), node);
+		nodes.Insert(nodes.Count(other => Precedes(other, node)), node);
 
 	private static bool Precedes(INodeBase left, INodeBase right)
 	{

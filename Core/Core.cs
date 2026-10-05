@@ -35,13 +35,7 @@ public class Core : ICore
 			_players.SetLocal(local.Id);
 		}
 
-		_plots = new Plots.Plots(
-			_assets,
-			defaultMaxOccupantCount,
-			defaultMaxInstanceCount)
-		{
-			Occupants = occupants
-		};
+		_plots = new Plots.Plots(_assets, defaultMaxOccupantCount, defaultMaxInstanceCount) { Occupants = occupants };
 	}
 
 	public IPlayers Players => _players;

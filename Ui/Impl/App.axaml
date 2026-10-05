@@ -65,6 +65,25 @@
         <Style Selector="ToolTip:open /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Opacity" Value="1" />
         </Style>
+
+        <Style Selector=":is(Control).fade">
+            <Setter Property="Opacity" Value="0" />
+
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector=":is(Control).fade.shown">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector=":is(Control).fade.hidden">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
     </Application.Styles>
 
 </Application>

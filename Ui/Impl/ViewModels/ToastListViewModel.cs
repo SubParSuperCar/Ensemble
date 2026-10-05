@@ -1,14 +1,13 @@
 using System.Collections.ObjectModel;
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Threading;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Extensions;
 using Serilog.Events;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-/// <summary>Shows warnings and worse as toasts, newest first, merging repeats of the same message.</summary>
 public sealed class ToastListViewModel : ViewModelBase
 {
 	private const LogEventLevel MinimumLevel = LogEventLevel.Warning;
@@ -33,7 +32,6 @@ public sealed class ToastListViewModel : ViewModelBase
 		Toasts.Clear();
 	}
 
-	// Dismissed toasts stay shown while they fade out, then are removed and disposed
 	internal void Dismiss(ToastViewModel toast)
 	{
 		if (toast.IsDismissing)
@@ -42,7 +40,7 @@ public sealed class ToastListViewModel : ViewModelBase
 		toast.IsDismissing = true;
 		toast.Dispose();
 
-		if (Application.Current?.FindResource("TransitionDuration") is TimeSpan duration)
+		if (Application.Current?.TransitionDuration is { } duration)
 			DispatcherTimer.RunOnce(() => Toasts.Remove(toast), duration);
 		else
 			Toasts.Remove(toast);

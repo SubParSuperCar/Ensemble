@@ -25,7 +25,6 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 
 	public bool Overlaps(Obb other)
 	{
-		// Each box lies within the sphere around its extents, so distant pairs skip the axis tests
 		var reach = Extents.Length() + other.Extents.Length();
 
 		if ((other.Center - Center).LengthSquared() >= reach * reach)
@@ -120,8 +119,8 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 			yield return axis;
 
 		foreach (var axis in axes)
-		foreach (var otherAxis in otherAxes)
-			if (axis.Cross(otherAxis) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
-				yield return cross.Normalized();
+			foreach (var otherAxis in otherAxes)
+				if (axis.Cross(otherAxis) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
+					yield return cross.Normalized();
 	}
 }

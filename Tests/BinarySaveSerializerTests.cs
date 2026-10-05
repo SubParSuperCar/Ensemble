@@ -41,7 +41,8 @@ public sealed class BinarySaveSerializerTests
 
 	[Fact]
 	public void Serialize_StoresInstanceCountPlusOne() =>
-		Assert.Equal(2, BinaryPrimitives.ReadInt32LittleEndian(Serialize(CreateSaveData()).AsSpan(InstanceCountOffset)));
+		Assert.Equal(2,
+			BinaryPrimitives.ReadInt32LittleEndian(Serialize(CreateSaveData()).AsSpan(InstanceCountOffset)));
 
 	private static void AssertCorrupt(Action<byte[]> corrupt)
 	{

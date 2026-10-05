@@ -1,0 +1,69 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:s="using:EnsembleRoot.Ui.Impl.Services"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="320"
+    x:Class="EnsembleRoot.Ui.Impl.Views.WidgetDrawerView"
+    x:DataType="vm:WidgetDrawerViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <UserControl.Styles>
+        <Style Selector="ToggleButton#Handle">
+            <Setter Property="Content" Value="&gt;" />
+        </Style>
+
+        <Style Selector="ToggleButton#Handle:checked">
+            <Setter Property="Content" Value="&lt;" />
+        </Style>
+
+        <Style Selector="ItemsControl ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="Auto,Auto">
+        <Border
+            Background="{DynamicResource TranslucentBackgroundBrush}"
+            CornerRadius="0,6,6,0"
+            Padding="4"
+            IsVisible="{Binding IsExpanded}">
+
+            <Grid RowDefinitions="Auto,*" RowSpacing="4">
+                <TextBlock Text="Widgets" ToolTip.Tip="Opens and closes widgets." />
+
+                <ScrollViewer Grid.Row="1" MaxHeight="256">
+                    <ItemsControl ItemsSource="{Binding Entries}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Spacing="4" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="s:WidgetEntry">
+                                <ToggleButton
+                                    Content="{Binding Title}"
+                                    IsChecked="{Binding IsOpen, Mode=OneWay}"
+                                    Command="{Binding ToggleCommand}"
+                                    ToolTip.Tip="{Binding Descriptor.Description}"
+                                    HorizontalAlignment="Stretch" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+        <ToggleButton
+            Name="Handle"
+            Grid.Column="1"
+            IsChecked="{Binding IsExpanded}"
+            ToolTip.Tip="Shows or hides the widget menu."
+            VerticalAlignment="Center"
+            Padding="4,16" />
+    </Grid>
+
+</UserControl>

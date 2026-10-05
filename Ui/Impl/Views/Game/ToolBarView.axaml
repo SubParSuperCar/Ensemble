@@ -45,7 +45,7 @@
             CornerRadius="6"
             Padding="4">
 
-            <Grid ColumnSpacing="4" ToolTip.Tip="ToolBar">
+            <Grid ColumnSpacing="4">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Place" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Delete" />

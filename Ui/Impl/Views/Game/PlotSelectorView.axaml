@@ -10,7 +10,7 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
-        <Grid RowDefinitions="Auto,*,2,Auto" ToolTip.Tip="Plot Selector" Grid.IsSharedSizeScope="True">
+        <Grid RowDefinitions="Auto,*,2,Auto" Grid.IsSharedSizeScope="True">
             <Grid Margin="6,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" SharedSizeGroup="PlotId" />

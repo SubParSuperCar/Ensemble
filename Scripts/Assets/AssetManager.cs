@@ -11,6 +11,7 @@ public partial class AssetManager : Node
 {
 	public Godot.Collections.Dictionary<int, PackedScene> Scenes { get; } = [];
 	public Godot.Collections.Dictionary<int, string> Categories { get; } = [];
+	public Godot.Collections.Dictionary<int, Aabb> Boundaries { get; } = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
@@ -43,6 +44,8 @@ public partial class AssetManager : Node
 	}
 
 	public PackedScene? GetPackedOrNull(int assetId) => Scenes.TryGetValue(assetId, out var packed) ? packed : null;
+
+	public Aabb GetBoundary(int assetId) => Boundaries.TryGetValue(assetId, out var boundary) ? boundary : default;
 
 	public PackedScene GetPacked(int assetId) =>
 		GetPackedOrNull(assetId) ?? throw new KeyNotFoundException(string.Create(
@@ -79,6 +82,7 @@ public partial class AssetManager : Node
 		var name = handle.AssetName;
 		var properties = handle.Properties;
 		var maxInstanceCount = handle.MaxInstanceCount;
+		var boundary = handle.BoundaryAabb;
 
 		instance.Free();
 
@@ -89,6 +93,7 @@ public partial class AssetManager : Node
 		}
 
 		Categories.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
+		Boundaries.Add(id, boundary);
 
 		var converted = new Dictionary();
 		foreach (var (key, value) in properties)

@@ -6,21 +6,22 @@ using static EnsembleRoot.SessionManager.Actions.ActionValidation;
 
 namespace EnsembleRoot.Replication.Actions;
 
-public readonly record struct RemoveInstanceAction(int InstanceId) : INetworkAction<RemoveInstanceAction>
+public readonly record struct RemoveInstanceAction(InstanceReference Instance) : INetworkAction<RemoveInstanceAction>
 {
-	public static RemoveInstanceAction FromPayload(Array<Variant> payload) => new(payload[0].AsInt32());
+	public static RemoveInstanceAction FromPayload(Array<Variant> payload) =>
+		new(InstanceReference.FromPayload(payload));
 
-	public Array<Variant> ToPayload() => [InstanceId];
+	public Array<Variant> ToPayload() => Instance.ToPayload();
 
 	public ActionValidation Validate(ActionSource source)
 	{
 		if (source.Plot is not { IsSpawned: false } plot)
 			return Reject("Plot not editable.");
 
-		return plot.Instances.GetInstance(InstanceId) is null ? Reject("Instance not found.") : Accept;
+		return Instance.Resolve(plot) is null ? Reject("Instance not found.") : Accept;
 	}
 
-	public void Apply(ActionSource source) => source.Plot!.Instances.Remove(InstanceId);
+	public void Apply(ActionSource source) => source.Plot!.Instances.Remove(Instance.Id);
 
 	[ModuleInitializer]
 	internal static void Register() => NetworkActionRegistry.Register<RemoveInstanceAction>();

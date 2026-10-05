@@ -11,16 +11,24 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 public partial class GameViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
+	private readonly IServiceScope _scope;
 	private readonly IServiceProvider _services;
 
 	public GameViewModel(IServiceProvider services, DispatcherService dispatcher)
 	{
 		_services = services;
+		_scope = services.CreateScope();
 		_dispatcher = dispatcher;
+
+		Widgets = _scope.ServiceProvider.GetRequiredService<WidgetManagerService>();
+		Widgets.Register<PlotSelectorViewModel>();
+		Widgets.Register<AssetSelectorViewModel>();
+		Widgets.Open<PlotSelectorViewModel>();
+
+		WidgetDrawer = _scope.ServiceProvider.GetRequiredService<WidgetDrawerViewModel>();
 
 		Clock = services.GetRequiredService<ClockViewModel>();
 		PlayerList = services.GetRequiredService<PlayerListViewModel>();
-		PlotSelector = services.GetRequiredService<PlotSelectorViewModel>();
 
 		dispatcher.Input += OnInput;
 
@@ -30,6 +38,9 @@ public partial class GameViewModel : ViewModelBase
 		OnConstructToolIsEnabledChanged(GToolManager.Construct.IsEnabled);
 		GToolManager.Construct.IsEnabledChanged += OnConstructToolIsEnabledChanged;
 	}
+
+	public WidgetManagerService Widgets { get; }
+	public WidgetDrawerViewModel WidgetDrawer { get; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
@@ -43,13 +54,6 @@ public partial class GameViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	public partial ToolBarViewModel? ToolBar { get; set; }
 
-	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
-	public partial PlotSelectorViewModel? PlotSelector { get; set; }
-
-	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
-	public partial AssetSelectorViewModel? AssetSelector { get; set; }
 
 	protected override void OnDispose()
 	{
@@ -61,8 +65,8 @@ public partial class GameViewModel : ViewModelBase
 		Clock = null;
 		PlayerList = null;
 		ToolBar = null;
-		PlotSelector = null;
-		AssetSelector = null;
+
+		_scope.Dispose();
 	}
 
 	private void OnInput(InputEvent @event)
@@ -74,6 +78,11 @@ public partial class GameViewModel : ViewModelBase
 	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) =>
 		ToolBar = isSpawned is false ? _services.GetRequiredService<ToolBarViewModel>() : null;
 
-	private void OnConstructToolIsEnabledChanged(bool isEnabled) =>
-		AssetSelector = isEnabled ? _services.GetRequiredService<AssetSelectorViewModel>() : null;
+	private void OnConstructToolIsEnabledChanged(bool isEnabled)
+	{
+		if (isEnabled)
+			Widgets.Open<AssetSelectorViewModel>();
+		else
+			Widgets.Close<AssetSelectorViewModel>();
+	}
 }

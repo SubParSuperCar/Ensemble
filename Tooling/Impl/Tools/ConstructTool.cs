@@ -4,6 +4,7 @@ using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots;
+using EnsembleRoot.Scripts.Plots.Impl;
 using EnsembleRoot.SessionManager.Actions;
 using Godot;
 using Serilog;
@@ -16,30 +17,19 @@ public enum RotationSpace : byte
 	Local
 }
 
-internal enum PlacementState : byte
-{
-	Valid,
-	Overlapping,
-	QuotaMet
-}
-
-// TODO: Implement Separating Axis Theorem (SAT)-based placement overlap resolution
 public partial class ConstructTool : ToolBase
 {
-	private const float OverlapProbeInset = 0.02f;
-
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
 	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
 
 	private AxialHighlight? _axialHighlight;
-	private bool _canPlace;
 	private Vector3 _gridPosition;
 	private AssetHandle? _preview;
 	private Aabb _previewBounds;
-	private Shape3D? _previewShape;
 	private Quaternion _rotation = Quaternion.Identity;
 	private SolidHighlight? _solidHighlight;
+	private PlacementState? _state;
 
 	protected override StringName ToggleAction => "tool_construct_toggle";
 
@@ -51,6 +41,9 @@ public partial class ConstructTool : ToolBase
 	public int AssetId { get; private set; }
 
 	public bool IsActive { get; private set; }
+
+	private bool CanPlace => _state is PlacementState.Valid;
+	private bool IsSnapping => SnappingIncrementLinear is > 0;
 
 	public event Action<int>? AssetIdChanged;
 	public event Action<bool>? IsActiveChanged;
@@ -125,29 +118,33 @@ public partial class ConstructTool : ToolBase
 			return;
 		}
 
-		var extents = GridExtents();
 		var normal = (plot.OriginTransform.Basis.Inverse() * hit.Normal).Normalized();
-		var target = plot.WorldToGrid(hit.Position) + normal * extents.Dot(normal.Abs());
-		var position = SnapToGrid(target, extents);
 
-		if (!IsWithin(GridBounds(plot), position, extents))
+		if (IsSnapping)
+			normal = ToGridAxis(normal);
+		var surface = plot.WorldToGrid(hit.Position) * PlotHandle.GridToWorldScale;
+
+		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
+		box = Settle(box.At(surface + normal * box.Radius(normal)), plot, normal, GetGridAnchor(hit.Collider));
+
+		_gridPosition = (box.Center - box.Basis * _previewBounds.GetCenter()) / PlotHandle.GridToWorldScale;
+		_state = PlotPlacement.Evaluate(plot, AssetId, _gridPosition, _rotation);
+
+		if (_state is PlacementState.OutOfBounds)
 		{
-			HidePreview();
+			_preview!.Visible = false;
 			return;
 		}
 
-		_gridPosition = position;
-		_preview!.GlobalTransform = plot.GridToWorld(position, _rotation);
-
-		_canPlace = EvaluateState(plot, position) is PlacementState.Valid;
+		_preview!.GlobalTransform = plot.GridToWorld(_gridPosition, _rotation);
 		_preview.Visible = true;
-		_axialHighlight!.Visible = _canPlace;
-		_solidHighlight!.Visible = !_canPlace;
+		_axialHighlight!.Visible = CanPlace;
+		_solidHighlight!.Visible = !CanPlace;
 	}
 
 	private void TryPlace()
 	{
-		if (_canPlace)
+		if (CanPlace)
 		{
 			new AddInstanceAction(AssetId, _gridPosition, _rotation).Submit();
 			ToolCommon.PlaySound("affirm");
@@ -157,74 +154,131 @@ public partial class ConstructTool : ToolBase
 				AssetId,
 				_gridPosition,
 				_rotation);
+
+			return;
 		}
-		else if (_preview is { Visible: true })
+
+		if (_preview is { Visible: true })
 		{
 			ToolCommon.PlaySound("dissent");
 			Flash();
-
-			Log.Verbose("Cannot place with this state");
 		}
+
+		if (_state is { } state)
+			Log.Debug("Cannot place asset id {AssetId}: {State}", AssetId, state);
 	}
 
-	private Vector3 SnapToGrid(Vector3 position, Vector3 extents)
+	// Snapped placements rest against the nearest face of the surface's bounds, matching box-based collision
+	private static Vector3 ToGridAxis(Vector3 normal)
 	{
-		if (SnappingIncrementLinear is { } increment and > 0)
-			position = (position - extents).Snapped(Vector3.One * increment) + extents;
+		var axis = (int)normal.Abs().MaxAxisIndex();
+		var gridAxis = Vector3.Zero;
+		gridAxis[axis] = MathF.Sign(normal[axis]);
 
-		position.Y = MathF.Max(position.Y, extents.Y);
-		return position;
+		return gridAxis;
 	}
 
-	private Vector3 GridExtents()
+	// Snapping is relative to the targeted instance's corner, so edges line up with it at any increment
+	private static Vector3 GetGridAnchor(Node3D collider)
 	{
-		var basis = new Basis(_rotation);
+		if (ToolCommon.FindInHierarchy<AssetHandle>(collider) is not { } target || !ToolCommon.IsHandleLocal(target))
+			return Vector3.Zero;
 
-		var min = _previewBounds.Position;
-		var max = _previewBounds.End;
-		var local = min.Abs().Max(max.Abs()) / PlotHandle.GridToWorldScale;
-
-		return basis.X.Abs() * local.X + basis.Y.Abs() * local.Y + basis.Z.Abs() * local.Z;
+		var box = Obb.From(target.BoundaryAabb, target.Transform);
+		return box.Center - box.Envelope;
 	}
 
-	private bool IntersectsInstance(PlotHandle plot, Vector3 position)
+	private Obb Settle(Obb box, PlotHandle plot, Vector3 normal, Vector3 anchor)
 	{
-		var probe = plot.GridToWorld(position, _rotation);
-		probe.Basis = probe.Basis.Scaled(Vector3.One * (1 - OverlapProbeInset));
+		var obstacles = PlotPlacement.GetObstacles(plot).ToArray();
+		var floor = PlotPlacement.GetBounds(plot).Position.Y;
+		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
 
-		var query = new PhysicsShapeQueryParameters3D
+		if (cellSize is { } size)
+			box = Snap(box, size, anchor, normal, Vector3.Zero);
+
+		for (var pass = 0; pass <= obstacles.Length; pass++)
 		{
-			Shape = _previewShape,
-			Transform = probe,
-			CollisionMask = ToolCommon.SelectableLayers,
-			CollideWithBodies = true,
-			CollideWithAreas = false,
-			Exclude = [_preview!.GetRid()]
-		};
+			var resolved = Resolve(box, obstacles, normal);
 
-		var hits = GetViewport().GetWorld3D().DirectSpaceState.IntersectShape(query);
+			if (cellSize is { } resolvedSize)
+				resolved = Snap(resolved, resolvedSize, anchor, normal, resolved.Center - box.Center);
 
-		foreach (var hit in hits)
-			if (ToolCommon.FindInHierarchy<AssetHandle>(hit["collider"].As<Node3D>()) is not null)
-				return true;
+			box = RaiseTo(resolved, floor);
 
-		return false;
+			if (!obstacles.Any(box.Overlaps))
+				break;
+		}
+
+		return box;
 	}
 
-	private PlacementState EvaluateState(PlotHandle plot, Vector3 position)
+	private static Obb Resolve(Obb box, Obb[] obstacles, Vector3 normal)
 	{
-		if (IntersectsInstance(plot, position))
-			return PlacementState.Overlapping;
+		for (var pass = 0; pass <= obstacles.Length; pass++)
+		{
+			var isMoved = false;
 
-		if (LocalPlot?.Source.Instances is not { } instances)
-			throw new UnreachableException();
+			foreach (var obstacle in obstacles)
+			{
+				if (!box.Overlaps(obstacle))
+					continue;
 
-		var quota = instances.GetQuota(AssetId);
+				var translation = box.GetMinimumTranslation(obstacle, normal);
 
-		if (IsLimitReached(quota.Count, quota.MaxCount) || IsLimitReached(instances.Count, instances.MaxCount))
-			return PlacementState.QuotaMet;
+				if (translation == Vector3.Zero)
+					continue;
 
-		return PlacementState.Valid;
+				box = box.At(box.Center + translation);
+				isMoved = true;
+			}
+
+			if (!isMoved)
+				break;
+		}
+
+		return box;
+	}
+
+	// Snaps along the surface only, aligning whichever edge keeps the box nearest, never rounding back against a push
+	private static Obb Snap(Obb box, float cellSize, Vector3 anchor, Vector3 normal, Vector3 push)
+	{
+		var center = box.Center;
+		var envelope = box.Envelope;
+
+		for (var axis = 0; axis < 3; axis++)
+		{
+			if (!Mathf.IsZeroApprox(normal[axis]))
+				continue;
+
+			var direction = Mathf.IsZeroApprox(push[axis]) ? 0 : MathF.Sign(push[axis]);
+			var low = SnapEdge(center[axis] - envelope[axis], anchor[axis], cellSize, direction) + envelope[axis];
+			var high = SnapEdge(center[axis] + envelope[axis], anchor[axis], cellSize, direction) - envelope[axis];
+
+			center[axis] = MathF.Abs(low - center[axis]) <= MathF.Abs(high - center[axis]) ? low : high;
+		}
+
+		return box.At(center);
+	}
+
+	private static float SnapEdge(float edge, float anchor, float cellSize, int direction)
+	{
+		var cells = (edge - anchor) / cellSize;
+		var nearest = MathF.Round(cells, MidpointRounding.AwayFromZero);
+
+		var snapped = Mathf.IsEqualApprox(cells, nearest) || direction is 0
+			? nearest
+			: direction > 0
+				? MathF.Ceiling(cells)
+				: MathF.Floor(cells);
+
+		return anchor + snapped * cellSize;
+	}
+
+	private static Obb RaiseTo(Obb box, float floor)
+	{
+		var depth = floor - (box.Center.Y - box.Envelope.Y);
+		return depth > 0 && !Mathf.IsZeroApprox(depth) ? box.At(box.Center + Vector3.Up * depth) : box;
 	}
 
 	private void RebuildPreview()
@@ -243,7 +297,6 @@ public partial class ConstructTool : ToolBase
 		_preview.Visible = false;
 		AddChild(_preview);
 
-		_previewShape = _preview.GetNode<CollisionShape3D>("Collider").Shape;
 		_previewBounds = _preview.BoundaryAabb;
 
 		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = _previewBounds };
@@ -256,17 +309,16 @@ public partial class ConstructTool : ToolBase
 	{
 		_preview?.QueueFree();
 		_preview = null;
-		_previewShape = null;
 		_previewBounds = default;
 		_axialHighlight = null;
 		_solidHighlight = null;
-		_canPlace = false;
+		_state = null;
 	}
 
 	private void HidePreview()
 	{
 		_preview?.Visible = false;
-		_canPlace = false;
+		_state = null;
 	}
 
 	private void Flash() =>
@@ -282,29 +334,5 @@ public partial class ConstructTool : ToolBase
 			RotationSpace.Local => _rotation * increment,
 			_ => throw new UnreachableException()
 		}).Normalized();
-	}
-
-	private static Aabb GridBounds(PlotHandle plot)
-	{
-		var min = plot.WorldToGrid(plot.BoundaryTransform.Origin) - plot.GridBoundarySize / 2;
-		min.Y = MathF.Max(min.Y, 0);
-
-		return new Aabb(min, plot.GridBoundarySize);
-	}
-
-	private static bool IsWithin(Aabb bounds, Vector3 position, Vector3 extents)
-	{
-		const float epsilon = 1e-3f;
-
-		var min = position - extents;
-		var max = position + extents;
-
-		return
-			min.X >= bounds.Position.X - epsilon &&
-			min.Y >= bounds.Position.Y - epsilon &&
-			min.Z >= bounds.Position.Z - epsilon &&
-			max.X <= bounds.End.X + epsilon &&
-			max.Y <= bounds.End.Y + epsilon &&
-			max.Z <= bounds.End.Z + epsilon;
 	}
 }

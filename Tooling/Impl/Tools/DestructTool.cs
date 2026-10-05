@@ -31,10 +31,13 @@ public partial class DestructTool : ToolBase
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (!IsEnabled || InputSink.IsSunk || _selected is null || !@event.IsActionPressed(ToolCommon.TriggerAction))
+		if (
+			!IsEnabled || InputSink.IsSunk || _selected is null ||
+			!@event.IsActionPressed(ToolCommon.TriggerAction) ||
+			LocalPlot?.Instances.GetInstance(_selected.InstanceId) is not { } instance)
 			return;
 
-		new RemoveInstanceAction(_selected.InstanceId).Submit();
+		new RemoveInstanceAction(InstanceReference.From(instance)).Submit();
 		ToolCommon.PlaySound("affirm");
 
 		Log.Verbose("Submitted removal: {InstanceId}", _selected.InstanceId);

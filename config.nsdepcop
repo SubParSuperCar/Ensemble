@@ -40,7 +40,6 @@
 	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Execution.*" />
 
 	<!-- Replication -->
-	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Scripts.*" />
 	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Tooling.*" />
 	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Execution.*" />
 

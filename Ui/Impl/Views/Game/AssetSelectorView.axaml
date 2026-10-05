@@ -11,7 +11,6 @@
 
     <Grid
         RowDefinitions="Auto,Auto,*,Auto"
-        ToolTip.Tip="Asset Selector"
         Background="{DynamicResource TranslucentBackgroundBrush}"
         Grid.IsSharedSizeScope="True">
 

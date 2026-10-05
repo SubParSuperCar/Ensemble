@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
+using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Assets;
@@ -14,7 +15,7 @@ using Dispatcher = Avalonia.Threading.Dispatcher;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class AssetSelectorViewModel : ViewModelBase
+public partial class AssetSelectorViewModel : ViewModelBase, IWidget
 {
 	private static readonly HashSet<string> ExpandedFolderPaths = [];
 
@@ -52,6 +53,11 @@ public partial class AssetSelectorViewModel : ViewModelBase
 
 	public RotationSpace[] RotationSpaces { get; } = Enum.GetValues<RotationSpace>();
 	[ObservableProperty] public partial RotationSpace RotationSpace { get; set; } = Ctor.RotationSpace;
+
+	public static WidgetDescriptor Descriptor { get; } = new(new Rect(0.001, 0.999, 0.242, 0.355))
+	{
+		MinSize = new Size(336, 224)
+	};
 
 	protected override void OnDispose()
 	{

@@ -1,0 +1,107 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="240"
+    x:Class="EnsembleRoot.Ui.Impl.Views.WidgetView"
+    x:DataType="vm:WidgetViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <UserControl.Styles>
+        <Style Selector="Border#Frame">
+            <Setter Property="Opacity" Value="0" />
+
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border#Frame.shown">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+
+        <Style Selector="Border#Frame.closing">
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+
+        <Style Selector="Border#Frame.active">
+            <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
+        </Style>
+
+        <Style Selector="Border#Frame.active Grid#Header">
+            <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
+        </Style>
+
+        <Style Selector="Grid#Header Button">
+            <Setter Property="Padding" Value="8,0" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Cursor" Value="Arrow" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border
+        Name="Frame"
+        Classes.active="{Binding IsActive}"
+        Classes.closing="{Binding IsClosing}"
+        BorderBrush="{DynamicResource ThemeBorderMidBrush}" BorderThickness="1"
+        CornerRadius="6" ClipToBounds="True">
+
+        <Grid RowDefinitions="24,*">
+            <Grid
+                Name="Header"
+                ColumnDefinitions="*,Auto,Auto"
+                Background="{DynamicResource ThemeControlMidBrush}"
+                Cursor="SizeAll"
+                ToolTip.Tip="{Binding Descriptor.Description}"
+                PointerPressed="OnHeaderPointerPressed"
+                PointerMoved="OnDragPointerMoved"
+                PointerReleased="OnDragPointerReleased"
+                PointerCaptureLost="OnDragPointerCaptureLost"
+                DoubleTapped="OnHeaderDoubleTapped">
+
+                <TextBlock
+                    Text="{Binding Title}"
+                    VerticalAlignment="Center"
+                    Margin="8,0"
+                    TextTrimming="CharacterEllipsis" />
+
+                <Button
+                    Grid.Column="1"
+                    Content="&#x25A1;"
+                    Command="{Binding ToggleMaximizedCommand}"
+                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)" />
+
+                <Button
+                    Grid.Column="2"
+                    Content="X"
+                    Command="{Binding CloseCommand}"
+                    ToolTip.Tip="Closes this widget."
+                    Background="Red" Foreground="White"
+                    FontWeight="Bold" />
+            </Grid>
+
+            <ContentControl Grid.Row="1" Content="{Binding Content}" />
+
+            <Border
+                Grid.Row="1"
+                Background="Red"
+                CornerRadius="6,0,0,0"
+                Width="12" Height="12"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Cursor="BottomRightCorner"
+                ToolTip.Tip="Resizes this widget."
+                IsVisible="{Binding Descriptor.IsResizable}"
+                PointerPressed="OnResizeGripPointerPressed"
+                PointerMoved="OnDragPointerMoved"
+                PointerReleased="OnDragPointerReleased"
+                PointerCaptureLost="OnDragPointerCaptureLost" />
+        </Grid>
+    </Border>
+
+</UserControl>

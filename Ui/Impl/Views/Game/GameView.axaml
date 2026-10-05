@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     xmlns:e="using:EnsembleRoot.Ui.Impl.Easings"
+    xmlns:v="using:EnsembleRoot.Ui.Impl.Views"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.GameView"
     x:DataType="vm:GameViewModel"
@@ -27,9 +28,34 @@
     </UserControl.Resources>
 
     <Grid>
-        <ContentControl
-            Content="{Binding Clock}"
-            HorizontalAlignment="Center" VerticalAlignment="Top" />
+        <!-- Widgets render below the ribbon, the ToolBar, and the overlays -->
+        <Grid RowDefinitions="Auto,*,Auto">
+            <Grid>
+                <Border
+                    BorderBrush="Red" BorderThickness="1"
+                    HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                    <Button
+                        Content="&lt;- Menu | Quit Session (2x)"
+                        DoubleTapped="OnMenuButtonDoubleTapped"
+                        ToolTip.Tip="Stops the current session. (Double-click)"
+                        Background="{DynamicResource TranslucentBackgroundBrush}" />
+                </Border>
+
+                <ContentControl
+                    Content="{Binding Clock}"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" />
+            </Grid>
+
+            <v:WidgetDesktopView Grid.Row="1" DataContext="{Binding Widgets}" />
+
+            <TransitioningContentControl
+                Grid.Row="2"
+                Content="{Binding ToolBar}"
+                HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                Margin="0,0,0,4"
+                PageTransition="{StaticResource SlideUpFadeTransition}" />
+        </Grid>
 
         <TransitioningContentControl
             Content="{Binding PlayerList}"
@@ -46,33 +72,9 @@
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
 
-        <TransitioningContentControl
-            Content="{Binding ToolBar}"
-            HorizontalAlignment="Center" VerticalAlignment="Bottom"
-            Margin="0,0,0,4"
-            PageTransition="{StaticResource SlideUpFadeTransition}" />
-
         <ContentControl
-            Content="{Binding PlotSelector}"
-            HorizontalAlignment="Left" VerticalAlignment="Center"
-            MinWidth="288" MaxWidth="416" MaxHeight="256" />
-
-        <TransitioningContentControl
-            Content="{Binding AssetSelector}"
-            HorizontalAlignment="Left" VerticalAlignment="Bottom"
-            Width="464" Height="352"
-            PageTransition="{StaticResource SlideUpFadeTransition}" />
-
-        <Border
-            BorderBrush="Red" BorderThickness="1"
-            HorizontalAlignment="Left" VerticalAlignment="Top">
-
-            <Button
-                Content="&lt;- Menu | Quit Session (2x)"
-                DoubleTapped="OnMenuButtonDoubleTapped"
-                ToolTip.Tip="Stops the current session. (Double-click)"
-                Background="{DynamicResource TranslucentBackgroundBrush}" />
-        </Border>
+            Content="{Binding WidgetDrawer}"
+            HorizontalAlignment="Left" VerticalAlignment="Center" />
     </Grid>
 
 </UserControl>

@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using EnsembleRoot.Scripts.Plots.Impl;
 using EnsembleRoot.SessionManager.Actions;
 using Godot;
 using Godot.Collections;
@@ -27,13 +28,12 @@ public readonly record struct AddInstanceAction(int AssetId, Vector3 Position, Q
 		if (!Position.IsFinite() || !Rotation.IsNormalized())
 			return Reject("Transform invalid.");
 
-		var instances = plot.Instances;
+		if (GPlotManager.GetHandleOrNull(plot.Id) is not { } handle)
+			return Reject("Plot not found.");
 
-		return
-			IsLimitReached(instances.Count, instances.MaxCount) ||
-			(instances.GetQuota(AssetId) is [var count, var maxCount] && IsLimitReached(count, maxCount))
-				? Reject("Quota met.")
-				: Accept;
+		return PlotPlacement.Evaluate(handle, AssetId, Position, Rotation) is var state and not PlacementState.Valid
+			? Reject($"Placement invalid: {state}.")
+			: Accept;
 	}
 
 	public void Apply(ActionSource source) => source.Plot!.Instances.Add(AssetId, Position, Rotation);

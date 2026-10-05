@@ -1,0 +1,29 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:c="using:EnsembleRoot.Ui.Impl.Controls"
+    xmlns:s="using:EnsembleRoot.Ui.Impl.Services"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="EnsembleRoot.Ui.Impl.Views.WidgetDesktopView"
+    x:DataType="s:WidgetManagerService">
+
+    <ItemsControl ItemsSource="{Binding Widgets}">
+        <ItemsControl.ItemContainerTheme>
+            <ControlTheme TargetType="ContentPresenter" x:DataType="vm:WidgetViewModel">
+                <Setter Property="c:WidgetPanel.RelativeBounds" Value="{Binding Bounds}" />
+                <Setter Property="c:WidgetPanel.MinSize" Value="{Binding Descriptor.MinSize}" />
+                <Setter Property="ZIndex" Value="{Binding ZIndex}" />
+            </ControlTheme>
+        </ItemsControl.ItemContainerTheme>
+
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <c:WidgetPanel />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+    </ItemsControl>
+
+</UserControl>

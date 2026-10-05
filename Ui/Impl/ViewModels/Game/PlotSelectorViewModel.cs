@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Plots;
@@ -9,7 +10,7 @@ using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class PlotSelectorViewModel : ViewModelBase
+public partial class PlotSelectorViewModel : ViewModelBase, IWidget
 {
 	private readonly Dictionary<int, PlotItem> _plotsById = [];
 	private readonly Dictionary<int, Action> _unsubscribeByPlotId = [];
@@ -33,6 +34,11 @@ public partial class PlotSelectorViewModel : ViewModelBase
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(SetPlotToNullCommand))]
 	public partial PlotItem? SelectedPlot { get; set; }
+
+	public static WidgetDescriptor Descriptor { get; } = new(new Rect(1 / 8d, 1 / 3d, 0.217, 0.286))
+	{
+		MinSize = new Size(288, 160)
+	};
 
 	protected override void OnDispose()
 	{

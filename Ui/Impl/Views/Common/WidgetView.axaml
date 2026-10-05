@@ -11,7 +11,7 @@
 
     <UserControl.Styles>
         <Style Selector="Border#Frame">
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlMidBrush}" />
             <Setter Property="Opacity" Value="0" />
 
             <Setter Property="Transitions">
@@ -64,7 +64,7 @@
         Classes.active="{Binding IsActive}"
         Classes.closing="{Binding IsClosing}"
         Classes.maximized="{Binding IsMaximized}"
-        BorderThickness="1"
+        BorderThickness="2"
         CornerRadius="6" ClipToBounds="True">
 
         <Border.Effect>

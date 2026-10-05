@@ -11,22 +11,6 @@
     x:DataType="vm:GameViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <UserControl.Resources>
-        <e:ZeroEasing x:Key="ZeroEasing" />
-
-        <CompositePageTransition x:Key="SlideUpFadeTransition">
-            <PageSlide
-                Duration="{StaticResource TransitionDuration}"
-                Orientation="Vertical"
-                SlideInEasing="CubicEaseOut"
-                SlideOutEasing="{StaticResource ZeroEasing}" />
-
-            <CrossFade
-                Duration="{StaticResource TransitionDuration}"
-                FadeInEasing="CubicEaseOut" />
-        </CompositePageTransition>
-    </UserControl.Resources>
-
     <Grid>
         <!-- Widgets render below the ribbon, the ToolBar, and the overlays -->
         <Grid RowDefinitions="Auto,*,Auto">
@@ -53,8 +37,26 @@
                 Grid.Row="2"
                 Content="{Binding ToolBar}"
                 HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                Margin="0,0,0,4"
-                PageTransition="{StaticResource SlideUpFadeTransition}" />
+                Margin="0,0,0,4">
+
+                <TransitioningContentControl.PageTransition>
+                    <CompositePageTransition>
+                        <PageSlide
+                            Duration="{StaticResource TransitionDuration}"
+                            Orientation="Vertical"
+                            SlideInEasing="CubicEaseOut">
+
+                            <PageSlide.SlideOutEasing>
+                                <e:ZeroEasing />
+                            </PageSlide.SlideOutEasing>
+                        </PageSlide>
+
+                        <CrossFade
+                            Duration="{StaticResource TransitionDuration}"
+                            FadeInEasing="CubicEaseOut" />
+                    </CompositePageTransition>
+                </TransitioningContentControl.PageTransition>
+            </TransitioningContentControl>
         </Grid>
 
         <TransitioningContentControl

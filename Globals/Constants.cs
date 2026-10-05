@@ -24,4 +24,6 @@ public static class Constants
 
 	public const string GitHubRepoPath = "SubParSuperCar/Ensemble";
 	public const string GitHubRepoUrl = HttpsScheme + "github.com/" + GitHubRepoPath;
+
+	public const int RegexMatchTimeoutMs = 100;
 }

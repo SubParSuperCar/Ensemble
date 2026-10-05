@@ -16,7 +16,7 @@ public partial class AssetManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
 
-	[GeneratedRegex(@"\.t?scn$", RegexOptions.Compiled, 100)]
+	[GeneratedRegex(@"\.t?scn$", RegexOptions.Compiled, RegexMatchTimeoutMs)]
 	private static partial Regex SceneFileRegex { get; }
 
 	public override void _EnterTree() => GAssetManager = this;

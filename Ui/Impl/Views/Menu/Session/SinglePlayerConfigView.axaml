@@ -29,11 +29,16 @@
                 Command="{Binding GoBackCommand}"
                 ToolTip.Tip="Goes back. (Bound to Backspace)" />
 
-            <Button
+            <Border
                 Grid.Column="2"
-                Content="Start!"
-                Command="{Binding StartCommand}"
-                ToolTip.Tip="Starts a new single-player session." />
+                BorderBrush="#40A0FF" BorderThickness="1.5"
+                CornerRadius="8" ClipToBounds="True">
+
+                <Button
+                    Content="Start!"
+                    Command="{Binding StartCommand}"
+                    ToolTip.Tip="Starts a new single-player session." />
+            </Border>
         </Grid>
     </StackPanel>
 

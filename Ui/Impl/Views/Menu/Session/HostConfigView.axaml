@@ -84,11 +84,16 @@
                 Command="{Binding GoBackCommand}"
                 ToolTip.Tip="Goes back. (Bound to Backspace)" />
 
-            <Button
+            <Border
                 Grid.Column="2"
-                Content="Host!"
-                Command="{Binding HostCommand}"
-                ToolTip.Tip="Starts hosting a new multi-player session." />
+                BorderBrush="#40A0FF" BorderThickness="1.5"
+                CornerRadius="8" ClipToBounds="True">
+
+                <Button
+                    Content="Host!"
+                    Command="{Binding HostCommand}"
+                    ToolTip.Tip="Starts hosting a new multi-player session." />
+            </Border>
         </Grid>
     </StackPanel>
 

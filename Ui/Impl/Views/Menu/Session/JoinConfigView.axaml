@@ -107,11 +107,16 @@
                 Command="{Binding GoBackCommand}"
                 ToolTip.Tip="Goes back. (Bound to Backspace)" />
 
-            <Button
+            <Border
                 Grid.Column="2"
-                Content="Join!"
-                Command="{Binding JoinCommand}"
-                ToolTip.Tip="Connects to the host. Going back cancels a pending join." />
+                BorderBrush="#40A0FF" BorderThickness="1.5"
+                CornerRadius="8" ClipToBounds="True">
+
+                <Button
+                    Content="Join!"
+                    Command="{Binding JoinCommand}"
+                    ToolTip.Tip="Connects to the host. Going back cancels a pending join." />
+            </Border>
         </Grid>
     </StackPanel>
 

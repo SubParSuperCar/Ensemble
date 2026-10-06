@@ -225,7 +225,6 @@ public partial class SessionManager : Node
 		session.StartSession();
 
 		stopwatch.Stop();
-
 		if (ReferenceEquals(_session, session))
 			Log.Debug(
 				"Started {Class} in {ElapsedMs:F3} ms",

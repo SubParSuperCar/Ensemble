@@ -51,7 +51,7 @@ internal sealed class CoreVariantJsonConverter : JsonConverter<CoreVariant>
 
 	private static void WriteDouble(Utf8JsonWriter writer, double value)
 	{
-		if (double.IsNaN(value) || double.IsInfinity(value))
+		if (!double.IsFinite(value))
 			throw new JsonException($"Cannot represent {value.ToString(CultureInfo.InvariantCulture)} in JSON.");
 
 		var text = value.ToString(CultureInfo.InvariantCulture);

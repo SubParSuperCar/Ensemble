@@ -32,7 +32,6 @@ public partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewModel>
 
 		var language = registryOptions.GetLanguageByExtension(LanguageExtension);
 		var scope = registryOptions.GetScopeByLanguageId(language.Id);
-
 		installation.SetGrammar(scope);
 
 		var options = Editor.Options;

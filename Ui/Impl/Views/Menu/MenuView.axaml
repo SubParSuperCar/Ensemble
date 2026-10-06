@@ -9,20 +9,6 @@
         <Style Selector="Button">
             <Setter Property="CornerRadius" Value="8" />
         </Style>
-
-        <Style Selector="Border.primary, Border.danger">
-            <Setter Property="BorderThickness" Value="1.5" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="ClipToBounds" Value="True" />
-        </Style>
-
-        <Style Selector="Border.primary">
-            <Setter Property="BorderBrush" Value="#40A0FF" />
-        </Style>
-
-        <Style Selector="Border.danger">
-            <Setter Property="BorderBrush" Value="Red" />
-        </Style>
     </UserControl.Styles>
 
     <Panel>
@@ -32,11 +18,7 @@
                 Opacity="0.8125" />
         </Panel.Background>
 
-        <TransitioningContentControl
-            Content="{Binding Navigator.Current}"
-            HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-            ClipToBounds="False">
-
+        <TransitioningContentControl Content="{Binding Navigator.Current}" ClipToBounds="False">
             <TransitioningContentControl.PageTransition>
                 <CompositePageTransition>
                     <CrossFade

@@ -11,6 +11,8 @@ namespace EnsembleRoot.Scripts.Plots.Impl;
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 {
+	private const int MaxAxisCount = 15;
+
 	public Vector3 Envelope => new(Radius(Vector3.Right), Radius(Vector3.Up), Radius(Vector3.Back));
 
 	public static Obb From(Aabb bounds, Transform3D transform) =>
@@ -34,8 +36,9 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 			IsSeparatedOn(other, Vector3.Back))
 			return false;
 
-		// ReSharper disable once LoopCanBeConvertedToQuery
-		foreach (var axis in GetAxes(other))
+		Span<Vector3> axes = stackalloc Vector3[MaxAxisCount];
+
+		foreach (var axis in axes[..GetAxes(other, axes)])
 			if (IsSeparatedOn(other, axis))
 				return false;
 
@@ -49,8 +52,9 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 	public float GetSeparationDistance(Obb obstacle, Vector3 direction)
 	{
 		var distance = float.PositiveInfinity;
+		Span<Vector3> axes = stackalloc Vector3[MaxAxisCount];
 
-		foreach (var axis in GetAxes(obstacle))
+		foreach (var axis in axes[..GetAxes(obstacle, axes)])
 		{
 			if (IsSeparatedOn(obstacle, axis))
 				return 0;
@@ -77,8 +81,9 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 	{
 		var translation = Vector3.Zero;
 		var shortest = float.PositiveInfinity;
+		Span<Vector3> axes = stackalloc Vector3[MaxAxisCount];
 
-		foreach (var axis in GetAxes(obstacle))
+		foreach (var axis in axes[..GetAxes(obstacle, axes)])
 		{
 			if (IsSeparatedOn(obstacle, axis))
 				return Vector3.Zero;
@@ -110,17 +115,22 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 		return distance >= reach || Mathf.IsEqualApprox(distance, reach);
 	}
 
-	private IEnumerable<Vector3> GetAxes(Obb other)
+	private int GetAxes(Obb other, Span<Vector3> axes)
 	{
-		Vector3[] axes = [Basis.X, Basis.Y, Basis.Z];
-		Vector3[] otherAxes = [other.Basis.X, other.Basis.Y, other.Basis.Z];
+		axes[0] = Basis.X;
+		axes[1] = Basis.Y;
+		axes[2] = Basis.Z;
+		axes[3] = other.Basis.X;
+		axes[4] = other.Basis.Y;
+		axes[5] = other.Basis.Z;
 
-		foreach (var axis in axes.Concat(otherAxes))
-			yield return axis;
+		var count = 6;
 
-		foreach (var axis in axes)
-		foreach (var otherAxis in otherAxes)
-			if (axis.Cross(otherAxis) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
-				yield return cross.Normalized();
+		for (var i = 0; i < 3; i++)
+		for (var j = 3; j < 6; j++)
+			if (axes[i].Cross(axes[j]) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
+				axes[count++] = cross.Normalized();
+
+		return count;
 	}
 }

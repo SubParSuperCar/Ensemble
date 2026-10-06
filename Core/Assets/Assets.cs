@@ -34,7 +34,8 @@ public class Assets : IAssets
 				CultureInfo.InvariantCulture,
 				$"Asset with id {id} already exists."));
 
-		var asset = new Asset(id, name, properties?.ToFrozenDictionary(), maxInstanceCount);
+		var defaults = properties?.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
+		var asset = new Asset(id, name, defaults, maxInstanceCount);
 
 		_assetsById.Add(id, asset);
 		Added?.Invoke(asset);

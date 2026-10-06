@@ -6,6 +6,7 @@ using Lua;
 using Serilog;
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
 namespace EnsembleRoot.Execution;
 
@@ -82,7 +83,6 @@ public static partial class LuaExecutor
 				? $"{path}[{luaKey}]"
 				: $"{path}.{luaKey}";
 
-			// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 			switch (luaValue.Type)
 			{
 				case LuaValueType.Table:
@@ -132,14 +132,12 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var before = GC.GetTotalMemory(false);
-
 		Log.Information("GC heap size before: {BytesBefore}", ByteFormat.Humanize((ulong)before));
-		var stopwatch = Stopwatch.StartNew();
 
+		var stopwatch = Stopwatch.StartNew();
 		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 		GC.WaitForPendingFinalizers();
 		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
-
 		stopwatch.Stop();
 
 		var after = GC.GetTotalMemory(false);

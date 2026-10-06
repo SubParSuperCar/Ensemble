@@ -14,6 +14,7 @@ public partial class HostConfigViewModel : ViewModelBase
 	public HostConfigViewModel(NavigatorService navigator)
 	{
 		_navigator = navigator;
+
 		GSessionManager.SessionFailed += OnSessionFailed;
 	}
 

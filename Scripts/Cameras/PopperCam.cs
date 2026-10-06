@@ -3,11 +3,20 @@ using Godot;
 using Serilog;
 using MouseButton = Godot.MouseButton;
 
+// ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
+
 namespace EnsembleRoot.Scripts.Cameras;
 
 [GlobalClass]
 public partial class PopperCam : SpringArm3D
 {
+	private static readonly StringName OrbitAction = "cam_orbit";
+	private static readonly StringName YawLeftAction = "cam_yaw_left";
+	private static readonly StringName YawRightAction = "cam_yaw_right";
+	private static readonly StringName DollyInAction = "cam_dolly_in";
+	private static readonly StringName DollyOutAction = "cam_dolly_out";
+
 	private Vector2 _capturedMousePosition;
 	private float _pitch;
 	private float _viewportDiagonal;
@@ -44,6 +53,8 @@ public partial class PopperCam : SpringArm3D
 		GetViewport().SizeChanged += RecalculateViewportDiagonal;
 	}
 
+	public override void _ExitTree() => GetViewport().SizeChanged -= RecalculateViewportDiagonal;
+
 	public override void _Notification(int what)
 	{
 		if (what == NotificationWMWindowFocusOut)
@@ -55,21 +66,20 @@ public partial class PopperCam : SpringArm3D
 		if (InputSink.IsSunk)
 			return;
 
-		if (@event.IsActionPressed("cam_orbit"))
+		if (@event.IsActionPressed(OrbitAction))
 			CaptureMouse();
-		else if (@event.IsActionReleased("cam_orbit"))
+		else if (@event.IsActionReleased(OrbitAction))
 			ReleaseMouse();
 		else
 			switch (@event)
 			{
-				case InputEventMouseMotion motion when Input.IsActionPressed("cam_orbit"):
+				case InputEventMouseMotion motion when Input.IsActionPressed(OrbitAction):
 					var radiansPerPixel = Mathf.Tau * OrbitRatio / _viewportDiagonal;
 					_yaw -= motion.Relative.X * radiansPerPixel;
 					_pitch = Mathf.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
 					break;
 
 				case InputEventMouseButton { Pressed: true } button:
-					// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
 					switch (button.ButtonIndex)
 					{
 						case MouseButton.WheelUp:
@@ -89,18 +99,17 @@ public partial class PopperCam : SpringArm3D
 	{
 		if (!InputSink.IsSunk)
 		{
-			var yawInput = Input.GetAxis("cam_yaw_left", "cam_yaw_right");
+			var yawInput = Input.GetAxis(YawLeftAction, YawRightAction);
 			if (yawInput is not 0)
 				_yaw -= yawInput * YawRate * (float)delta;
 
-			var dollyInput = Input.GetAxis("cam_dolly_in", "cam_dolly_out");
+			var dollyInput = Input.GetAxis(DollyInAction, DollyOutAction);
 			if (dollyInput is not 0)
 				ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
 		}
 
 		_yaw = Mathf.Wrap(_yaw, -Mathf.Pi, Mathf.Pi);
 
-		// ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;
 
 		var rotation = Rotation;

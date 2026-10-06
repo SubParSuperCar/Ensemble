@@ -45,7 +45,6 @@ public static class PatchExport
 		{
 			var target = Path.Combine(destination, Path.GetRelativePath(source, file));
 			Directory.CreateDirectory(Path.GetDirectoryName(target)!);
-
 			File.Move(file, target, true);
 		}
 	}

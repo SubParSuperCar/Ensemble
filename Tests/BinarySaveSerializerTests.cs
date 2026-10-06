@@ -1,5 +1,6 @@
 using System.Buffers.Binary;
 using System.Numerics;
+using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Saving;
 using EnsembleRoot.Saving.SerDes;
 using Xunit;
@@ -43,6 +44,24 @@ public sealed class BinarySaveSerializerTests
 	public void Serialize_StoresInstanceCountPlusOne() =>
 		Assert.Equal(2,
 			BinaryPrimitives.ReadInt32LittleEndian(Serialize(CreateSaveData()).AsSpan(InstanceCountOffset)));
+
+	[Fact]
+	public void Deserialize_DuplicatePropertyKey_Throws()
+	{
+		var data = CreateSaveData();
+		data.Instances[0] = new SaveInstance
+		{
+			AssetId = 1,
+			Position = Vector3.One,
+			Rotation = Quaternion.Identity,
+			Properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { ["a"] = 1, ["b"] = 2 }
+		};
+
+		var bytes = Serialize(data);
+		bytes[Array.LastIndexOf(bytes, (byte)'b')] = (byte)'a';
+
+		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
+	}
 
 	private static void AssertCorrupt(Action<byte[]> corrupt)
 	{

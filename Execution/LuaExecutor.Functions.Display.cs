@@ -6,6 +6,7 @@ using Lua;
 using Serilog;
 
 // ReSharper disable InconsistentNaming
+// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace EnsembleRoot.Execution;
 
@@ -53,6 +54,12 @@ public static partial class LuaExecutor
 	{
 		var scale = context.GetArgument<double>(0);
 
+		if (!double.IsFinite(scale) || scale <= 0)
+		{
+			Log.Error("Invalid UI render scale: {Scale}", scale);
+			return context.ReturnNothing();
+		}
+
 		Log.Information("Setting UI render scale to: {Scale}", scale);
 		WeakReferenceMessenger.Default.Send(new SetUiRenderScaleMessage(scale));
 
@@ -64,10 +71,8 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		var argument = context.GetArgument<LuaValue>(0);
-
 		DisplayServer.VSyncMode? mode = null;
 
-		// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
 		switch (argument.Type)
 		{
 			case LuaValueType.String:

@@ -54,7 +54,7 @@ public partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	public RotationSpace[] RotationSpaces { get; } = Enum.GetValues<RotationSpace>();
 	[ObservableProperty] public partial RotationSpace RotationSpace { get; set; } = Ctor.RotationSpace;
 
-	public static WidgetDescriptor Descriptor { get; } = new(new Rect(0.001, 0.999, 0.242, 0.355))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 10, 4, 6))
 	{
 		Description = "Lets you search for, select, and modify the placement asset.",
 		MinSize = new Size(336, 224)

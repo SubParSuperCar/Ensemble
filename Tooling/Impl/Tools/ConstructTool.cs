@@ -21,11 +21,16 @@ public partial class ConstructTool : ToolBase
 {
 	private const float LinearSmoothingRate = 40f;
 	private const float AngularSmoothingRate = 32f;
-	private const float PreviewOpacity = 7 / 8f;
+	private const float PreviewOpacity = 0.75f;
+	private const int MaxSettlePasses = 3;
+	private const int MaxResolvePasses = 3;
 
+	private static readonly StringName ToggleActionName = "tool_construct_toggle";
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
 	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
+
+	private readonly List<Obb> _candidates = [];
 
 	private AxialHighlight? _axialHighlight;
 	private Vector3 _gridPosition;
@@ -36,7 +41,7 @@ public partial class ConstructTool : ToolBase
 	private PlacementState? _state;
 	private Transform3D _targetTransform;
 
-	protected override StringName ToggleAction => "tool_construct_toggle";
+	protected override StringName ToggleAction => ToggleActionName;
 
 	public RotationSpace RotationSpace { get; set; } = RotationSpace.Global;
 
@@ -105,10 +110,11 @@ public partial class ConstructTool : ToolBase
 		AssetId = id;
 		AssetIdChanged?.Invoke(id);
 
-		if (IsActive)
+		var wasActive = IsActive;
+		UpdateActive();
+
+		if (wasActive && IsActive)
 			RebuildPreview();
-		else
-			UpdateActive();
 	}
 
 	protected override void OnEnable() => UpdateActive();
@@ -146,7 +152,6 @@ public partial class ConstructTool : ToolBase
 			normal = ToGridAxis(normal);
 
 		var surface = plot.WorldToGrid(hit.Position) * PlotHandle.GridToWorldScale;
-
 		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
 		box = Settle(box.At(surface + normal * box.Radius(normal)), plot, normal, GetGridAnchor(hit.Collider));
 
@@ -221,27 +226,29 @@ public partial class ConstructTool : ToolBase
 
 		box = Snap(box, cellSize, anchor, Vector3.Zero);
 
-		for (var pass = 0; pass <= obstacles.Count; pass++)
+		for (var pass = 0; pass < MaxSettlePasses; pass++)
 		{
 			var resolved = Resolve(box, obstacles, normal);
 			resolved = Snap(resolved, cellSize, anchor, resolved.Center - box.Center);
 
 			box = RaiseTo(resolved, floor);
 
-			if (!obstacles.Any(box.Overlaps))
+			if (!obstacles.Overlaps(box))
 				break;
 		}
 
 		return box;
 	}
 
-	private static Obb Resolve(Obb box, IReadOnlyCollection<Obb> obstacles, Vector3 normal)
+	private Obb Resolve(Obb box, ObbGrid obstacles, Vector3 normal)
 	{
-		for (var pass = 0; pass <= obstacles.Count; pass++)
+		for (var pass = 0; pass < MaxResolvePasses; pass++)
 		{
 			var isMoved = false;
+			obstacles.Query(box, _candidates);
 
-			foreach (var obstacle in obstacles)
+			// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+			foreach (var obstacle in _candidates)
 			{
 				if (!box.Overlaps(obstacle))
 					continue;
@@ -317,14 +324,14 @@ public partial class ConstructTool : ToolBase
 		_preview.CollisionMask = 0;
 		_preview.InputRayPickable = false;
 		_preview.Visible = false;
-		AddChild(_preview);
 
+		AddChild(_preview);
 		MakeTranslucent(_preview);
 
 		_previewBounds = _preview.BoundaryAabb;
-
 		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = _previewBounds };
 		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = _previewBounds, Tint = Colors.Red };
+
 		_preview.AddChild(_axialHighlight);
 		_preview.AddChild(_solidHighlight);
 	}

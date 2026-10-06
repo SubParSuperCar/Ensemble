@@ -39,7 +39,6 @@ public partial class DiscordRpc : Node, IAutoload
 		Log.Debug("Discord RPC app ID: {AppId}", AppId);
 
 		UpdatePresence();
-
 		GSessionManager.SessionStarted += UpdatePresence;
 		GSessionManager.SessionStopped += UpdatePresence;
 		GSessionManager.SessionFailed += OnSessionFailed;
@@ -54,9 +53,7 @@ public partial class DiscordRpc : Node, IAutoload
 		GSessionManager.SessionFailed -= OnSessionFailed;
 
 		_cts.Cancel();
-
 		DisposeClient();
-		_cts.Dispose();
 	}
 
 	private static TimeSpan GetRetryDelay(int attemptCount) =>

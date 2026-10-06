@@ -15,12 +15,12 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 public partial class ConsoleViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
-
 	private byte _updateLogHistoryFlag;
 
 	public ConsoleViewModel(IServiceProvider services, DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
+
 		Editor = services.Create<LuaEditorViewModel>();
 
 		dispatcher.UiProcess += OnUiProcess;

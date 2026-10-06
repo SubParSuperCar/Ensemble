@@ -118,7 +118,6 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 		finally
 		{
 			Interlocked.CompareExchange(ref _cts, null, cts);
-			cts.Dispose();
 		}
 	}
 }

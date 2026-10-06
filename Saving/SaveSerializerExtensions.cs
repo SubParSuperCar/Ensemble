@@ -8,8 +8,23 @@ public static class SaveSerializerExtensions
 	{
 		public void Save(string path, CreationSaveData data, SaveOptions? options = null)
 		{
-			using var file = File.Create(path);
-			SaveCodec.Write(serializer, file, data, options ?? SaveOptions.Default);
+			var tempPath = $"{path}.tmp";
+
+			try
+			{
+				using (var file = File.Create(tempPath))
+				{
+					SaveCodec.Write(serializer, file, data, options ?? SaveOptions.Default);
+					file.Flush(true);
+				}
+
+				File.Move(tempPath, path, true);
+			}
+			catch
+			{
+				File.Delete(tempPath);
+				throw;
+			}
 		}
 
 		public CreationSaveData Load(string path, LoadOptions? options = null)

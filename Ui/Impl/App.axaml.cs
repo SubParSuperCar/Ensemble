@@ -34,6 +34,8 @@ public class App : Application
 	public override void OnFrameworkInitializationCompleted()
 	{
 		AsyncImageLoader.DefaultDecoders = [SvgImageDecoder.Shared, DefaultBitmapDecoder.Shared];
+		MarkdownRenderer.ConfigurePipeline += static pipeline => pipeline.UseMermaid();
+		MarkdownNode.Register<MermaidBlockNode>();
 
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);

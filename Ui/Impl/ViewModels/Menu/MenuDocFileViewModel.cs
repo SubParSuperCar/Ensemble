@@ -14,6 +14,7 @@ public partial class MenuDocFileViewModel : ViewModelBase
 	public MenuDocFileViewModel(IServiceProvider services, NavigatorService navigator)
 	{
 		_navigator = navigator;
+
 		Content = services.Create<DocFileViewModel>();
 	}
 

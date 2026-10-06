@@ -28,12 +28,19 @@ public partial class StatViewModel : ViewModelBase
 	public StatViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
+
 		dispatcher.UiProcess += OnUiProcess;
 	}
 
 	[ObservableProperty] public partial string Text { get; set; } = "<Default>";
 
-	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
+	protected override void OnDispose()
+	{
+		_dispatcher.UiProcess -= OnUiProcess;
+#if !ENSEMBLE_DEBUG
+		_process.Dispose();
+#endif
+	}
 
 #pragma warning disable MA0051
 	private void OnUiProcess(UiProcessData data)

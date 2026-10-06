@@ -20,7 +20,9 @@ public sealed partial class WidgetViewModel : ViewModelBase
 
 		Entry = entry;
 		Content = content;
-		Bounds = bounds;
+		Bounds = bounds
+			.WithX(Math.Clamp(bounds.X, 0, 1 - bounds.Width))
+			.WithY(Math.Clamp(bounds.Y, 0, 1 - bounds.Height));
 	}
 
 	public WidgetEntry Entry { get; }

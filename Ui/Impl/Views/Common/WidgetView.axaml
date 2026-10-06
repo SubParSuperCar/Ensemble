@@ -106,7 +106,7 @@
                 Cursor="BottomRightCorner"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
                 Width="12" Height="12"
-                CornerRadius="6,0,2,0"
+                CornerRadius="6,0,4,0"
                 IsVisible="{Binding Descriptor.IsResizable}" />
         </Grid>
     </Border>

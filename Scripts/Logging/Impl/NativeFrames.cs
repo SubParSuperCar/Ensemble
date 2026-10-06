@@ -31,7 +31,6 @@ public static class NativeFrames
 		for (var current = exception; current is not null; current = current.InnerException)
 		{
 			lines.Add(current.GetType().FullName ?? current.GetType().Name);
-
 			lines.AddRange(new StackTrace(current, false)
 				.GetFrames()
 				.Where(static frame => frame.HasNativeImage())

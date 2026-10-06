@@ -17,6 +17,7 @@ public partial class MenuHomeViewModel : ViewModelBase
 	public MenuHomeViewModel(NavigatorService navigator)
 	{
 		_navigator = navigator;
+
 		GSessionManager.SessionFailed += OnSessionFailed;
 	}
 

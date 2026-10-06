@@ -17,8 +17,9 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 {
 	private const double HiddenScale = 3 / 4d;
 	private const double HiddenTilt = -90 * (1 / 4d);
-	private const double TiltDepth = 1000;
+	private const double TiltDepth = 1000d;
 
+	// Asymmetric by design
 	private static readonly Easing ShownEasing = new QuadraticEaseOut();
 	private static readonly Easing HiddenEasing = new LinearEasing();
 
@@ -26,6 +27,7 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private readonly Rotate3DTransform _tilt = new() { AngleX = HiddenTilt, Depth = TiltDepth };
 	private readonly List<DoubleTransition> _transitions = [];
 
+	private bool? _isShown;
 	private DragKind _drag;
 	private Rect _dragOrigin;
 	private Point _dragStart;
@@ -78,6 +80,11 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private void UpdateTransform()
 	{
 		var isShown = Frame.Classes.Contains("shown") && !Frame.Classes.Contains("hidden");
+
+		if (isShown == _isShown)
+			return;
+
+		_isShown = isShown;
 
 		foreach (var transition in _transitions)
 			transition.Easing = isShown ? ShownEasing : HiddenEasing;

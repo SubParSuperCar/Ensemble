@@ -9,13 +9,12 @@ namespace EnsembleRoot.Scripts.Plots;
 public partial class PlotHandle
 {
 	// We're only syncing despawned AssetHandle objects for now. Spawning/despawning will come soon(TM).
-	private readonly Dictionary<int, Obb> _instanceBoxes = [];
 	private Node3D _staticInstances = null!;
 
 	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
 
 	// Cached, as reading every handle back from Godot each tick is slow
-	internal IReadOnlyCollection<Obb> InstanceBoxes => _instanceBoxes.Values;
+	internal ObbGrid InstanceBoxes { get; } = new();
 
 	private void ReadyInstances()
 	{
@@ -46,12 +45,12 @@ public partial class PlotHandle
 
 		_staticInstances.AddChild(handle);
 		InstanceHandles.Add(instance.Id, handle);
-		_instanceBoxes.Add(instance.Id, Obb.From(handle.BoundaryAabb, handle.Transform));
+		InstanceBoxes.Add(instance.Id, Obb.From(handle.BoundaryAabb, handle.Transform));
 	}
 
 	private void OnInstanceRemoved(GdInstance instance)
 	{
-		_instanceBoxes.Remove(instance.Id);
+		InstanceBoxes.Remove(instance.Id);
 
 		if (InstanceHandles.Remove(instance.Id, out var handle))
 			handle.QueueFree();

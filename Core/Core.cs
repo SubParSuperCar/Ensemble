@@ -44,8 +44,8 @@ public class Core : ICore
 
 	public void Reset()
 	{
+		_players.Reset();
 		_plots.Reset();
 		_assets.Reset();
-		_players.Reset();
 	}
 }

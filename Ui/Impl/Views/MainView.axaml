@@ -27,7 +27,6 @@
             <TransitioningContentControl
                 Grid.Row="1" Grid.Column="1"
                 Content="{Binding Console}"
-                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                 ClipToBounds="False">
 
                 <TransitioningContentControl.Effect>
@@ -81,8 +80,8 @@
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Padding="2"
             FontSize="11.5"
-            IsHitTestVisible="False"
-            TextOptions.TextRenderingMode="Alias" />
+            TextOptions.TextRenderingMode="Alias"
+            IsHitTestVisible="False" />
     </Grid>
 
 </UserControl>

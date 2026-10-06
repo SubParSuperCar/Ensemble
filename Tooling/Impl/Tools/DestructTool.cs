@@ -10,10 +10,12 @@ namespace EnsembleRoot.Tooling.Tools;
 
 public partial class DestructTool : ToolBase
 {
+	private static readonly StringName ToggleActionName = "tool_destruct_toggle";
+
 	private readonly SolidHighlight _highlight = new() { Tint = Colors.Red };
 	private AssetHandle? _selected;
 
-	protected override StringName ToggleAction => "tool_destruct_toggle";
+	protected override StringName ToggleAction => ToggleActionName;
 
 	public override void _Ready()
 	{

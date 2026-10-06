@@ -24,11 +24,9 @@ public partial class Watchdog : Node, IAutoload
 	public void Initialize()
 	{
 		Instance = this;
-
 		Heartbeat();
 
 		_cts = new CancellationTokenSource();
-
 		_pollThread = new Thread(WatchdogPollLoop)
 		{
 			IsBackground = true,

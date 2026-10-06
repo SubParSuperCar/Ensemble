@@ -33,6 +33,9 @@ public partial class SessionManager
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
 	private void RpcRequestRegister(string displayName)
 	{
+		if (!IsServer)
+			return;
+
 		var senderId = Multiplayer.GetRemoteSenderId();
 		EnqueueRpc(senderId, 1, () => RegisterPeer(senderId, displayName));
 	}
@@ -64,7 +67,7 @@ public partial class SessionManager
 
 	private void RegisterPeer(int peerId, string displayName)
 	{
-		if (_peersById.ContainsKey(peerId))
+		if (_peersById.ContainsKey(peerId) || (peerId != LocalPeerId && !Multiplayer.GetPeers().Contains(peerId)))
 			return;
 
 		if (!IsValidDisplayName(displayName))
@@ -77,7 +80,6 @@ public partial class SessionManager
 			RpcId(peerId, MethodName.RpcAddPeer, peer.Id, peer.PlayerId, peer.DisplayName);
 
 		var playerId = Guid.NewGuid().ToString();
-
 		AddPeer(peerId, playerId, displayName);
 		RpcRegistered(MethodName.RpcAddPeer, peerId, playerId, displayName);
 	}
@@ -155,7 +157,6 @@ public partial class SessionManager
 		Log.Debug("Peer disconnected: {PeerId}", peerId);
 
 		DisposeRateLimiter((int)peerId);
-
 		if (IsServer && RemovePeer((int)peerId))
 			RpcRegistered(MethodName.RpcRemovePeer, (int)peerId);
 	}

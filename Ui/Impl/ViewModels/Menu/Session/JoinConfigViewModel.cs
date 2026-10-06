@@ -15,6 +15,7 @@ public partial class JoinConfigViewModel : ViewModelBase
 	public JoinConfigViewModel(NavigatorService navigator)
 	{
 		_navigator = navigator;
+
 		GSessionManager.SessionFailed += OnSessionFailed;
 	}
 

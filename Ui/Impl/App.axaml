@@ -37,6 +37,7 @@
 
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Simple/AvaloniaEdit.xaml" />
         <StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml" />
+        <StyleInclude Source="avares://LiveMarkdown.Avalonia.Mermaid/Styles.axaml" />
 
         <Style Selector=":is(TopLevel)">
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
@@ -83,6 +84,20 @@
         <Style Selector=":is(Control).fade.hidden">
             <Setter Property="Opacity" Value="0" />
             <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+
+        <Style Selector="Border.primary, Border.danger">
+            <Setter Property="BorderThickness" Value="1.5" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </Style>
+
+        <Style Selector="Border.primary">
+            <Setter Property="BorderBrush" Value="#40A0FF" />
+        </Style>
+
+        <Style Selector="Border.danger">
+            <Setter Property="BorderBrush" Value="Red" />
         </Style>
     </Application.Styles>
 

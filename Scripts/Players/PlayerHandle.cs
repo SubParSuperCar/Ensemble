@@ -67,7 +67,6 @@ public partial class PlayerHandle : Node3D
 
 		Camera = CameraScene.Instantiate<PopperCam>();
 		AddChild(Camera);
-
 		Camera.Focus = Controller;
 
 		Controller.Camera = Camera.GetNode<Camera3D>("Camera");

@@ -44,11 +44,20 @@ public sealed class InstancesTests
 		Assert.Equal(1, instances.Count);
 	}
 
+	[Fact]
+	public void AssetProperties_IgnoreKeyCase()
+	{
+		var core = new Core();
+		var asset = core.Assets.Add(0, null, new Dictionary<string, CoreVariant> { ["Color"] = CoreVariant.Null });
+
+		Assert.True(asset.Properties.ContainsKey("color"));
+	}
+
 	private static IInstances CreateInstances()
 	{
 		var core = new Core();
-
 		core.Assets.Add(0, maxInstanceCount: 2);
+
 		return core.Plots.Add(0).Instances;
 	}
 

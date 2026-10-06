@@ -27,6 +27,7 @@ public sealed class SaveTests : IDisposable
 		var original = CreateSaveData();
 
 		serializer.Save(_path, original, new SaveOptions { Compression = compression, UseChecksum = true });
+
 		AssertEquivalent(original, serializer.Load(_path));
 	}
 
@@ -38,7 +39,24 @@ public sealed class SaveTests : IDisposable
 		var original = CreateSaveData();
 
 		serializer.Save(_path, original, new SaveOptions { Compression = compression, Encryption = CreatePassword() });
+
 		AssertEquivalent(original, serializer.Load(_path, new LoadOptions { Password = Password }));
+	}
+
+	[Fact]
+	public void Save_Failing_PreservesExistingFile()
+	{
+		var serializer = new BinarySaveSerializer();
+		var original = CreateSaveData();
+		serializer.Save(_path, original);
+
+		Assert.ThrowsAny<Exception>(() => serializer.Save(
+			_path,
+			CreateSaveData(),
+			new SaveOptions { Encryption = new SaveEncryption.Key(new byte[5]) }));
+
+		AssertEquivalent(original, serializer.Load(_path));
+		Assert.False(File.Exists($"{_path}.tmp"));
 	}
 
 	[Fact]

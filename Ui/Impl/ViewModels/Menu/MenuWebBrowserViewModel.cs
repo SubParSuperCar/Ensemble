@@ -14,6 +14,7 @@ public partial class MenuWebBrowserViewModel : ViewModelBase
 	public MenuWebBrowserViewModel(IServiceProvider services, NavigatorService navigator)
 	{
 		_navigator = navigator;
+
 		Content = services.Create<WebBrowserViewModel>();
 	}
 

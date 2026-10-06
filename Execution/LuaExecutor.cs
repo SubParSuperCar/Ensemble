@@ -16,7 +16,6 @@ public static partial class LuaExecutor
 
 		var state = LuaState.Create();
 		state.OpenStandardLibraries();
-
 		InjectCustomFunctions(state.Environment);
 
 		var stopwatch = Stopwatch.StartNew();

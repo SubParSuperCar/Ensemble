@@ -84,9 +84,9 @@ Text=" StdOut/Err)" /></Span>
 
             <GridSplitter
                 Grid.Column="1"
+                ResizeDirection="Columns"
                 Background="YellowGreen"
-                Width="4"
-                ResizeDirection="Columns" />
+                Width="4" />
 
             <ContentControl Grid.Column="2" Content="{Binding Editor}" />
         </Grid>

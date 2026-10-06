@@ -25,7 +25,6 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 	public void StartSession()
 	{
 		var peer = new ENetMultiplayerPeer();
-
 		var result = config switch
 		{
 			HostConfig host => peer.CreateServer(host.Port, host.MaxClientCount ?? MaxClientLimit),
@@ -80,7 +79,6 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 			remote.PeerDisconnectLater();
 
 		var deadline = Time.GetTicksMsec() + CloseTimeoutMs;
-
 		while (
 			remotes.Any(static remote => remote.GetState() is not ENetPacketPeer.PeerState.Disconnected) &&
 			Time.GetTicksMsec() < deadline)

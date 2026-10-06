@@ -63,7 +63,6 @@
             Spacing="8"
             HorizontalAlignment="Center" VerticalAlignment="Center">
 
-            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
             <Border Classes="primary">
                 <Button
                     Content="Play (Esc)"
@@ -91,7 +90,6 @@
                 Command="{Binding GoToWebBrowserCommand}"
                 ToolTip.Tip="Opens the web browser.&#x0a;Requires a compatible web rendering component.&#x0a;On Windows 11 and most Windows 10 (1803+) devices, WebView2 is installed by default.&#x0a;On Linux, you may need to install WebKitGTK or WPE WebKit via your package manager." />
 
-            <!-- ReSharper disable once Xaml.StyleClassNotFound -->
             <Border Classes="danger">
                 <Button
                     Content="Quit (2x)"

@@ -20,14 +20,26 @@ public static partial class LuaExecutor
 
 		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgument<int>(1);
-		var positionRange = GPlotManager.GetHandle(plotId).GridBoundarySize / 2;
 
-		var instances = GPlots.GetPlot(plotId)!.Instances;
+		if (GPlots.GetPlot(plotId) is not { } plot)
+		{
+			Log.Error("Plot not found: {PlotId}", plotId);
+			return context.ReturnNothing();
+		}
+
 		var assetIds = GAssets.GetAll().Select(static asset => asset.Id).ToArray();
+
+		if (assetIds.Length is 0)
+		{
+			Log.Error("No assets loaded");
+			return context.ReturnNothing();
+		}
+
+		var instances = plot.Instances;
+		var positionRange = GPlotManager.GetHandle(plotId).GridBoundarySize / 2;
 		var random = Random.Shared;
 
 		var stopwatch = Stopwatch.StartNew();
-
 		for (var i = 0; i < count; i++)
 		{
 			var assetId = assetIds[random.Next(assetIds.Length)];
@@ -47,7 +59,6 @@ public static partial class LuaExecutor
 			} while (!axis.IsNormalized());
 
 			var rotation = new Quaternion(axis, (float)((random.NextDouble() - 0.5) * Math.Tau));
-
 			instances.Add(assetId, position, rotation);
 		}
 
@@ -69,7 +80,14 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 
 		var plotId = context.GetArgument<int>(0);
-		var instances = GPlots.GetPlot(plotId)!.Instances;
+
+		if (GPlots.GetPlot(plotId) is not { } plot)
+		{
+			Log.Error("Plot not found: {PlotId}", plotId);
+			return context.ReturnNothing();
+		}
+
+		var instances = plot.Instances;
 		var count = instances.Count;
 
 		var stopwatch = Stopwatch.StartNew();

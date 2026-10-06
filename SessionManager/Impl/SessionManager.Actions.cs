@@ -24,8 +24,10 @@ public partial class SessionManager
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
 	private void RpcRequestAction(string actionId, Array<Variant> payload)
 	{
-		var senderId = Multiplayer.GetRemoteSenderId();
+		if (!IsServer)
+			return;
 
+		var senderId = Multiplayer.GetRemoteSenderId();
 		EnqueueRpc(
 			senderId,
 			NetworkActionRegistry.GetTokenCost(actionId),

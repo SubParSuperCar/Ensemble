@@ -176,6 +176,266 @@ You only need to do this once per downloaded build.
 
 ---
 
+## Architecture
+
+A developer-oriented map of the codebase. Each part below is collapsed by default.
+
+<details>
+  <summary><b>Projects and Modules</b></summary>
+
+Ensemble is one Godot C# project (`EnsembleGame.csproj`) plus a few sibling projects listed in `Ensemble.slnx`:
+
+| Project              | Purpose                                                                      |
+|----------------------|------------------------------------------------------------------------------|
+| `EnsembleGame`       | The game itself: everything below except the other projects in this table.   |
+| `EnsembleCore`       | `Core/`: pure C# domain model (assets, instances, plots, players). No Godot. |
+| `EnsembleEstragonia` | `Estragonia/`: the Avalonia-in-Godot bridge (forked).                        |
+| `AutoloadGenerator`  | Source generator that builds `AutoloadRegistry` from `[Autoload]` classes.   |
+| `Tests`              | xUnit v3 tests, run with `dotnet test --solution Ensemble.slnx`.             |
+
+Module layering is enforced at build time by [NsDepCop](https://github.com/realvizu/NsDepCop) (`config.nsdepcop`). The
+diagram is simplified: arrows show the main dependencies, and no module may depend on one above it.
+
+```mermaid
+graph TD
+    Ui["Ui (Avalonia views + view models)"]
+    Execution["Execution (Lua console)"]
+    Tooling["Tooling (Construct/Destruct tools)"]
+    Replication["Replication (network actions)"]
+    Scripts["Scripts (Godot nodes: managers, handles, cameras)"]
+    SessionManager["SessionManager (sessions, peers, RPC)"]
+    GdCore["GdCore (Godot wrappers over Core)"]
+    Foundation["Autoloading / Common / Saving"]
+    Core["EnsembleCore (pure domain)"]
+
+    Ui --> Execution
+    Ui --> Tooling
+    Execution --> Tooling
+    Execution --> Replication
+    Tooling --> Replication
+    Tooling --> Scripts
+    Replication --> Scripts
+    Replication --> SessionManager
+    Replication --> GdCore
+    Scripts --> SessionManager
+    Scripts --> GdCore
+    SessionManager --> Foundation
+    GdCore --> Core
+    GdCore --> Foundation
+```
+
+Only `Ui` may reference `Avalonia.*`, `Estragonia.*`, or `EnsembleRoot.Ui.*`. `Globals` is cross-cutting: it exposes
+the main singletons (see **Globals** below) and is imported everywhere except the foundation modules.
+
+</details>
+
+<details>
+  <summary><b>Boot Sequence</b></summary>
+
+Ensemble does not use Godot's `[autoload]` list for its own systems (only `AvaloniaLoader` is registered there).
+Instead, classes marked `[Autoload]` are discovered at compile time and instantiated by `Main` in `Order`, filtered by
+`Scope` (`RegularClient` and/or `HeadlessServer`). Classes implementing `IAutoload` get `Initialize()` called, with
+failures handled per `AutoloadFailurePolicy`.
+
+```mermaid
+sequenceDiagram
+    participant G as Godot
+    participant AL as AvaloniaLoader
+    participant M as Main
+    participant R as AutoloadRegistry
+
+    G->>AL: load (Godot autoload)
+    AL->>AL: configure Avalonia, show loading screen
+    G->>M: _Ready() in main.tscn
+    M->>M: LoadDeferredAsync(): wait for the UI to draw
+    M->>R: GetAll()
+    R-->>M: definitions (source-generated)
+    loop each definition by Order, matching Scope
+        M->>M: create node, AddChild, Initialize()
+    end
+    M-->>G: AutoloadsReady
+```
+
+| Order          | Autoload           | Scope    | Role                                             |
+|----------------|--------------------|----------|--------------------------------------------------|
+| `First`        | `Logger`           | all      | Serilog setup and sinks                          |
+| `Early`        | `GdCore`           | all      | Owns the Core instance and its Godot wrappers    |
+| `Early + 1`    | `SessionManager`   | all      | Single-player / host / join sessions, peers, RPC |
+| `Early + 2`    | `PlayerSync`       | all      | Mirrors session peers as GdCore players          |
+| `Early + 3`    | `ToolManager`      | client   | Creates and gates tools                          |
+| `Standard`     | `ExeHasher`        | all      | Logs the executable's path, size, and hash       |
+| `Standard + 1` | `DiscordRpc`       | client   | Discord Rich Presence                            |
+| `Standard + 2` | `DiagnosticLogger` | all      | Logs a system report in the background           |
+| `Late`         | `WorldManager`     | all      | Instantiates the world scene                     |
+| `Late + 1`     | `UpdateChecker`    | client   | Checks GitHub for newer releases                 |
+| `Late + 1`     | `HeadlessSession`  | headless | Starts a dedicated server session                |
+| `Last`         | `Watchdog`         | all      | Detects main-thread stalls                       |
+
+</details>
+
+<details>
+  <summary><b>Data Model: Core, GdCore, and Scripts</b></summary>
+
+State lives in three layers. `Core` holds plain data and rules (counts, limits, ownership). `GdCore` wraps it in
+`RefCounted` types so Godot code and the network layer can use it. `Scripts` owns the scene-tree nodes that make it
+visible and physical.
+
+```mermaid
+classDiagram
+    direction LR
+    class ICore {
+        IAssets Assets
+        IPlots Plots
+        IPlayers Players
+    }
+    class IAsset {
+        int Id
+        string Name
+        int MaxInstanceCount
+        Properties
+    }
+    class IPlot {
+        int Id
+        IOccupants Occupants
+        IInstances Instances
+        bool IsSpawned
+    }
+    class IInstances {
+        int Count
+        int MaxCount
+        Add(assetId, position, rotation)
+        TryGet(instanceId)
+    }
+    class GdCore
+    class PlotManager
+    class PlotHandle
+    class AssetManager
+    class AssetHandle
+
+    ICore --> IAsset
+    ICore --> IPlot
+    IPlot --> IInstances
+    GdCore ..> ICore : wraps
+    PlotManager --> PlotHandle : one per plot
+    PlotHandle --> AssetHandle : one per instance
+    AssetManager ..> IAsset : loads meshes
+    PlotHandle ..> IInstances : mirrors
+```
+
+`Sentinels` (`Unlimited = -1`, `None = -1`, `Default = 0`) and `Sentinels.IsLimitReached(count, maxCount)` express
+limits throughout.
+
+</details>
+
+<details>
+  <summary><b>Networking: Sessions and Actions</b></summary>
+
+Every world change is a network action: a `readonly record struct` implementing `INetworkAction<TSelf>` with
+`ToPayload`/`FromPayload`, `Validate`, and `Apply`. Actions self-register in `NetworkActionRegistry` and are sent with
+`action.Submit()`. The server is authoritative: it validates, applies, then broadcasts; clients apply only confirmed
+actions. Remote requests are rate-limited by a per-action `TokenCost`.
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant S as Server (SessionManager)
+    participant O as Other peers
+
+    C->>S: RpcRequestAction(id, payload)
+    S->>S: rate limit (TokenCost)
+    S->>S: Validate(source)
+    alt valid
+        S->>S: Apply(source)
+        S->>C: RpcConfirmAction
+        S->>O: RpcConfirmAction
+        C->>C: Apply(source)
+        O->>O: Apply(source)
+    else invalid
+        S->>C: RpcRejectAction(reason)
+    end
+```
+
+In single-player, the same path runs locally with the player acting as the server.
+
+| Action                 | Effect                                        |
+|------------------------|-----------------------------------------------|
+| `SetPlotAction`        | Claims or releases a plot for the sender      |
+| `AddInstanceAction`    | Places an asset instance on the sender's plot |
+| `RemoveInstanceAction` | Deletes an instance                           |
+| `SetPropertiesAction`  | Changes an instance's properties              |
+| `ClearInstancesAction` | Removes every instance on a plot              |
+
+</details>
+
+<details>
+  <summary><b>Tools</b></summary>
+
+```mermaid
+graph LR
+    ToolBar["ToolBar (Ui)"] --> ToolManager
+    AssetSelector["Asset Selector (Ui)"] --> Construct
+    ToolManager --> Construct["ConstructTool (Place)"]
+    ToolManager --> Destruct["DestructTool (Delete)"]
+    Construct -->|AddInstanceAction| Net[SessionManager]
+    Destruct -->|RemoveInstanceAction| Net
+```
+
+`ToolManager` owns every `ToolBase` and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while
+the local plot is editable (not spawned). `ConstructTool` shows a translucent preview with an axial highlight, snaps
+edges (not centers) to the plot grid, resolves overlaps with oriented bounding boxes (separating axis theorem), and
+supports `RotateX/Y/Z()` and `ResetRotation()` in global or local space.
+
+</details>
+
+<details>
+  <summary><b>UI</b></summary>
+
+The UI is an Avalonia app rendered into a Godot `Control` (`Ui`) through Estragonia. It follows MVVM with
+CommunityToolkit.Mvvm:
+
+- View models derive from `ViewModelBase` and are created through DI (`services.Create<T>()`).
+- Services and view models self-register through marker interfaces (`ITransientObject`, `IScopedObject`,
+  `ISingletonObject`); views bind to view models through `IViewFor<TViewModel>` and `ViewLocatorService`.
+- `NavigatorService` handles menu navigation (`GoTo<TViewModel>()`, `GoBack()`).
+- In-game windows are widgets (`IWidget` + `WidgetDescriptor`) opened and closed by `WidgetManagerService`.
+
+</details>
+
+<details>
+  <summary><b>Lua Console</b></summary>
+
+The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in-game for details. Available functions:
+
+| Group       | Functions                                                                                |
+|-------------|------------------------------------------------------------------------------------------|
+| App         | `quit`, `restart`, `tts`, `wait`                                                         |
+| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`               |
+| Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`   |
+| Session     | `dmp_peers`, `kick`, `log_lan_ip`, `log_wan_ip`                                          |
+| World       | `add_rand_insts`, `clr_insts`, `perf_mod`, `set_static_shader_on`, `set_time`, `tp_char` |
+
+</details>
+
+<details>
+  <summary><b>Globals</b></summary>
+
+`Globals/` is imported everywhere through `global using static`, so these are available without qualification:
+
+| Accessor                                          | Returns                                |
+|---------------------------------------------------|----------------------------------------|
+| `GMain`                                           | The `Main` node                        |
+| `GCore`, `GAssets`, `GPlots`, `GPlayers`          | `GdCore` and its wrappers              |
+| `GSessionManager`                                 | The active `SessionManager`            |
+| `GPlotManager`, `GAssetManager`, `GPlayerManager` | Scene managers in `Scripts`            |
+| `GToolManager`                                    | The `ToolManager`                      |
+| `GTimeProvider`                                   | Wrapped `TimeProvider` (testable time) |
+
+`GContext` exposes local-player state such as `LocalPlot` and `IsLocalPlotSpawned`.
+
+</details>
+
+---
+
 ## Roadmap
 
 Planned systems and their status are tracked in [**ROADMAP.md**](./ROADMAP.md). It is a working checklist, not a

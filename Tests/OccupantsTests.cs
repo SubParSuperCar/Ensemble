@@ -47,6 +47,25 @@ public sealed class OccupantsTests
 			restored.Plots.All[0].Occupants.Owner?.Player.Id);
 	}
 
+	[Fact]
+	public void Reset_RemovesOccupantsBeforePlots()
+	{
+		var (core, ids) = CreateCore(2);
+		var plot = core.Plots.All[0];
+
+		foreach (var id in ids)
+			core.Plots.SetPlot(id, 0, true);
+
+		var removedWhileRegistered = 0;
+		plot.Occupants.Removed += _ => removedWhileRegistered += core.Plots.All.ContainsKey(0) ? 1 : 0;
+
+		core.Reset();
+
+		Assert.Equal(ids.Length, removedWhileRegistered);
+		Assert.Empty(plot.Occupants.All);
+		Assert.Null(plot.Occupants.Owner);
+	}
+
 	private static (Core Core, Guid[] Ids) CreateCore(int playerCount, Guid[]? ids = null)
 	{
 		var core = new Core();

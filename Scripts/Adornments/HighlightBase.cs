@@ -35,6 +35,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 	public override void _Ready()
 	{
 		Material.Shader = Shader;
+		Material.RenderPriority = (int)Godot.Material.RenderPriorityMax;
 
 		Mesh = _box;
 		MaterialOverride = Material;

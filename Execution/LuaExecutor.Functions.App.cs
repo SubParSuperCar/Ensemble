@@ -18,7 +18,6 @@ public static partial class LuaExecutor
 		{
 			Log.Information("Force quitting...");
 			await Log.CloseAndFlushAsync().ConfigureAwait(false);
-
 			Environment.Exit(0);
 		}
 		else

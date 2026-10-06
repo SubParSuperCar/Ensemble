@@ -16,6 +16,9 @@ public partial class SessionManager
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]
 	private void RpcRequestSnapshots()
 	{
+		if (!IsServer)
+			return;
+
 		var senderId = Multiplayer.GetRemoteSenderId();
 		EnqueueRpc(senderId, 1, () => SendSnapshots(senderId));
 	}

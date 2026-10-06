@@ -113,7 +113,6 @@ public partial class Logger : Node, IAutoload
 		var bytes = useUserCopy ? ReadUserAppSettings(out syncNote) : ReadAllBytesOrThrow(AppSettingsPath);
 
 		var configBuilder = new ConfigurationBuilder();
-
 		configBuilder.AddJsonStream(new MemoryStream(bytes));
 		configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
 		{

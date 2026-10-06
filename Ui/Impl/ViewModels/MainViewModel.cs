@@ -94,7 +94,6 @@ public partial class MainViewModel : ViewModelBase
 	private void OnSessionStarted()
 	{
 		_dispatcher.UiProcess -= OnUiProcess;
-
 		Log.Debug("Stopped forced render drawing");
 
 		Main = _services.Create<GameViewModel>();
@@ -103,7 +102,6 @@ public partial class MainViewModel : ViewModelBase
 	private void OnSessionStopped()
 	{
 		_dispatcher.UiProcess += OnUiProcess;
-
 		Log.Debug("Started forced render drawing");
 
 		Main = _services.Create<MenuViewModel>();
@@ -169,7 +167,6 @@ public partial class MainViewModel : ViewModelBase
 		};
 
 		_terminals.Add(terminal);
-
 		terminal.Closing += OnClosing;
 		terminal.ProcessExited += OnProcessExited;
 

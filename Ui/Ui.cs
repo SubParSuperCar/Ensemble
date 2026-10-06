@@ -59,7 +59,6 @@ public partial class Ui : GdControl
 			_host.Processed += OnHostProcessed;
 
 			_host.Control = CreateLoadingScreen();
-
 			AddChild(_host);
 
 			stopwatch.Stop();
@@ -168,7 +167,6 @@ public partial class Ui : GdControl
 		{
 			var collection = new ServiceCollection();
 			collection.AddServices();
-
 			var services = collection.BuildServiceProvider();
 
 			var locator = services.GetRequiredService<ViewLocatorService>();

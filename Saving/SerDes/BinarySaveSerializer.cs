@@ -42,8 +42,12 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			writer.Write(instance.Rotation.W);
 
 			var properties = instance.Properties;
-			var propertyCount = Math.Min(properties?.Count ?? 0, ushort.MaxValue - 2) + 1;
-			writer.Write((ushort)propertyCount);
+			var propertyCount = properties?.Count ?? 0;
+
+			if (propertyCount > ushort.MaxValue - 2)
+				throw new InvalidOperationException("Too many properties.");
+
+			writer.Write((ushort)(propertyCount + 1));
 
 			if (properties is null)
 				continue;
@@ -123,7 +127,8 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 					var key = reader.ReadString();
 					var value = CoreVariantSerializer.Read(reader);
 
-					properties.Add(key, value);
+					if (!properties.TryAdd(key, value))
+						throw new InvalidDataException("Duplicate property key.");
 				}
 			}
 

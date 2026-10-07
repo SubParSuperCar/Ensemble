@@ -1,3 +1,4 @@
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.SessionManager.Api;
 using Godot;
 
@@ -43,7 +44,7 @@ public partial class PlayerHandle
 			return;
 
 		var body = Body;
-		var weight = 1 - MathF.Exp(-SmoothingRate * (float)delta);
+		var weight = Smoothing.GetWeight(SmoothingRate, delta);
 
 		body.GlobalPosition = body.GlobalPosition.DistanceTo(target) > SnapDistance
 			? target

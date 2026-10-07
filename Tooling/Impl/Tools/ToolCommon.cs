@@ -1,3 +1,4 @@
+using EnsembleRoot.Common.Input;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots;
 using Godot;
@@ -37,7 +38,7 @@ internal static class ToolCommon
 		if (viewport.GetCamera3D() is not { } camera)
 			return null;
 
-		var mouse = viewport.GetMousePosition();
+		var mouse = Pointer.GetPosition(viewport);
 		var origin = camera.ProjectRayOrigin(mouse);
 		var end = origin + camera.ProjectRayNormal(mouse) * RayLength;
 

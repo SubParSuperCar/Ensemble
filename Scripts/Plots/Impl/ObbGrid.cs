@@ -9,8 +9,8 @@ public sealed class ObbGrid
 	private const float CellSize = 2f;
 
 	private readonly Dictionary<int, Obb> _boxes = [];
-	private readonly Dictionary<Vector3I, List<int>> _cells = [];
 	private readonly List<Obb> _candidates = [];
+	private readonly Dictionary<Vector3I, List<int>> _cells = [];
 	private readonly HashSet<int> _visited = [];
 
 	public int Count => _boxes.Count;

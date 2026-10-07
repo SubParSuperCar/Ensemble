@@ -17,7 +17,7 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 ---
 
 > [!NOTE]
-> - **Ensemble** is the direct successor to [**Baja Builders**](https://www.roblox.com/games/85484945236913) on Roblox.
+> - **Ensemble** is the direct successor to [Baja Builders](https://www.roblox.com/games/85484945236913) on Roblox.
 > - Code quality may be "sub-par" (pun intended) as the codebase continues to mature.
 
 > [!WARNING]
@@ -49,6 +49,42 @@ for testing and troubleshooting; see [**Platform Support**](#platform-support) b
 > [!IMPORTANT]
 > macOS builds need one extra step before they'll open &mdash; see [**Bypassing Gatekeeper on
 > macOS**](#bypassing-gatekeeper-on-macos) below.
+
+---
+
+## Media
+
+<details open>
+  <summary>Click to expand/collapse this section.</summary>
+
+> [!NOTE]
+> Some of these screenshots may be out of date or not fully representative of the current state of the gameplay.
+
+Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets:
+![Ensemble's Construct Tool, Assets, & Widgets](screenshots/construct-tool.webp)
+
+Ensemble's main menu:
+![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
+
+Ensemble's document file viewer viewing Ensemble's `README.md` file:
+![Ensemble's Document File Viewer UI](https://github.com/user-attachments/assets/bd3e6834-2556-43ea-937a-2819d2b32651)
+
+Ensemble's web browser displaying Ensemble's official GitHub repository page:
+![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
+
+Ensemble's blocks during the day with the light-mode UI enabled using the `set_ui_dark_theme_on` Lua function:
+![Ensemble's Blocks During the Day](screenshots/light-theme-day.webp)
+
+Ensemble's console, with the output log on the left and the code editor on the right:
+![Ensemble's Console UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
+
+Ensemble's blocks at night, generated using the `add_rand_insts` Lua function:
+![Ensemble's Blocks at Night](screenshots/random-blocks-night.webp)
+
+Ensemble's test map:
+![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
+
+</details>
 
 ---
 
@@ -100,6 +136,31 @@ one using `kick(peer_id, "reason")`. Display names are remembered between sessio
 
 ---
 
+## Roadmap
+
+Planned systems and their status are tracked in [**ROADMAP.md**](./ROADMAP.md). It is a working checklist, not a
+commitment.
+
+---
+
+## Naming
+
+<details open>
+  <summary>Click to expand/collapse this section.</summary>
+
+*(Pronounced "**EN-sem**-bull," not "ON-som-bull.")*
+
+This game was originally called **Baja Builders** on Roblox from approximately 2022&ndash;2025. However, the name never
+really resonated with me, and "baja" can be interpreted as "below" or "low" in Spanish. I ultimately renamed it to
+**Ensemble** for two primary reasons:
+
+1. "Ensemble" literally means a group of people, which reflects the game's multiplayer and collaborative nature.
+2. It also sounds like "assemble," making it a fitting name for a building game.
+
+</details>
+
+---
+
 ## Platform Support
 
 <details open>
@@ -113,7 +174,7 @@ one using `kick(peer_id, "reason")`. Display names are remembered between sessio
 
 Ensemble renders through [Godot](https://godotengine.org)'s rendering hardware interface, with an embedded
 [Avalonia UI](https://avaloniaui.net) overlay on top of it (via a heavily modified fork of
-[**Estragonia**](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows
+[Estragonia](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows
 and Linux. On macOS, both default to Apple's native Metal API; if you need to fall back to Vulkan (translated
 through [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) for troubleshooting, set Godot's
 `rendering/rendering_device/driver.macos` project setting to `vulkan`.
@@ -436,31 +497,6 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 
 ---
 
-## Roadmap
-
-Planned systems and their status are tracked in [**ROADMAP.md**](./ROADMAP.md). It is a working checklist, not a
-commitment.
-
----
-
-## Naming
-
-<details open>
-  <summary>Click to expand/collapse this section.</summary>
-
-*(Pronounced "**EN-sem**-bull," not "ON-som-bull.")*
-
-This game was originally called **Baja Builders** on Roblox from approximately 2022&ndash;2025. However, the name never
-really resonated with me, and "baja" can be interpreted as "below" or "low" in Spanish. I ultimately renamed it to
-**Ensemble** for two primary reasons:
-
-1. "Ensemble" literally means a group of people, which reflects the game's multiplayer and collaborative nature.
-2. It also sounds like "assemble," making it a fitting name for a building game.
-
-</details>
-
----
-
 ## Credits
 
 All `OBJ` files under `/assets/meshes/`, except for `plots_base.obj`, were created by **"Shrimp Fried Koishi."** Other
@@ -477,42 +513,6 @@ Ensemble uses separate licenses for its code and non-code assets:
 - **Non-code assets:** [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](./LICENSE-ASSETS.txt)
 
 See [**LICENSE.md**](../LICENSE.md) for an overview of the project's licensing.
-
----
-
-## Media
-
-<details open>
-  <summary>Click to expand/collapse this section.</summary>
-
-> [!NOTE]
-> Some of these screenshots may be out of date or not fully representative of the current state of the gameplay.
-
-Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets:
-![Ensemble's Construct Tool, Assets, & Widgets](screenshots/construct-tool.webp)
-
-Ensemble's main menu:
-![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
-
-Ensemble's document file viewer viewing Ensemble's `README.md` file:
-![Ensemble's Document File Viewer UI](https://github.com/user-attachments/assets/bd3e6834-2556-43ea-937a-2819d2b32651)
-
-Ensemble's web browser displaying Ensemble's official GitHub repository page:
-![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
-
-Ensemble's blocks during the day with the light-mode UI enabled using the `set_ui_dark_theme_on` Lua function:
-![Ensemble's Blocks During the Day](screenshots/light-theme-day.webp)
-
-Ensemble's console, with the output log on the left and the code editor on the right:
-![Ensemble's Console UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
-
-Ensemble's blocks at night, generated using the `add_rand_insts` Lua function:
-![Ensemble's Blocks at Night](screenshots/random-blocks-night.webp)
-
-Ensemble's test map:
-![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
-
-</details>
 
 ---
 

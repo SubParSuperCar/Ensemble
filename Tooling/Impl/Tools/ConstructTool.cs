@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
@@ -70,8 +71,8 @@ public partial class ConstructTool : ToolBase
 			return;
 
 		var current = preview.GlobalTransform;
-		var linearWeight = 1 - MathF.Exp(-LinearSmoothingRate * (float)delta);
-		var angularWeight = 1 - MathF.Exp(-AngularSmoothingRate * (float)delta);
+		var linearWeight = Smoothing.GetWeight(LinearSmoothingRate, delta);
+		var angularWeight = Smoothing.GetWeight(AngularSmoothingRate, delta);
 
 		var rotation = current.Basis.GetRotationQuaternion().Normalized()
 			.Slerp(_targetTransform.Basis.GetRotationQuaternion().Normalized(), angularWeight);

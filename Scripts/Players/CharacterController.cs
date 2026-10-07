@@ -1,4 +1,5 @@
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Common.Utils;
 using Godot;
 
 // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
@@ -75,7 +76,7 @@ public partial class CharacterController : CharacterBody3D
 
 			var rotation = Rotation;
 			var turnAngle = MathF.Atan2(moveDirection.X, moveDirection.Z);
-			rotation.Y = (float)Mathf.LerpAngle(rotation.Y, turnAngle, TurnRate * delta);
+			rotation.Y = Mathf.LerpAngle(rotation.Y, turnAngle, Smoothing.GetWeight(TurnRate, delta));
 
 			Rotation = rotation;
 		}

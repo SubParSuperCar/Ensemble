@@ -23,11 +23,11 @@
                 <CompositePageTransition>
                     <CrossFade
                         Duration="{StaticResource TransitionDuration}"
-                        FadeInEasing="CubicEaseOut" FadeOutEasing="CubicEaseOut" />
+                        FadeInEasing="QuadraticEaseOut" FadeOutEasing="QuadraticEaseInOut" />
 
                     <PageSlide
                         Duration="{StaticResource TransitionDuration}"
-                        SlideInEasing="CubicEaseOut" SlideOutEasing="CubicEaseOut" />
+                        SlideInEasing="QuadraticEaseOut" SlideOutEasing="QuadraticEaseInOut" />
                 </CompositePageTransition>
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>

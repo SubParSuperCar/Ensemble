@@ -6,6 +6,8 @@ using EnsembleRoot.GdCore.Plots;
 using Godot;
 using Serilog;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.GdCore;
 
 /// <inheritdoc cref="EnsembleCoreRoot.Core" />

@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class PlayerListView : UserControl, IViewFor<PlayerListViewModel>
+public sealed partial class PlayerListView : UserControl, IViewFor<PlayerListViewModel>
 {
 	public PlayerListView()
 	{

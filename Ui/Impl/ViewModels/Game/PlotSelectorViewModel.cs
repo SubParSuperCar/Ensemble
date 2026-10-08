@@ -4,13 +4,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Replication.Actions;
+using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.SessionManager.Actions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class PlotSelectorViewModel : ViewModelBase, IWidget
+public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 {
 	private readonly Dictionary<int, PlotItem> _plotsById = [];
 	private readonly Dictionary<int, Action> _unsubscribeByPlotId = [];
@@ -41,6 +42,8 @@ public partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		MinSize = new Size(288, 160)
 	};
 
+	public static void SetHoveredPlot(PlotItem? plot) => PlotOutlines.HoveredPlotId = plot?.Id;
+
 	protected override void OnDispose()
 	{
 		GPlots.Added -= OnPlotAdded;
@@ -51,10 +54,20 @@ public partial class PlotSelectorViewModel : ViewModelBase, IWidget
 
 		foreach (var unsubscribe in _unsubscribeByPlotId.Values)
 			unsubscribe();
+
+		SetHoveredPlot(null);
+	}
+
+	partial void OnSelectedPlotChanged(PlotItem? value)
+	{
+		if (value?.Id != LocalPlot?.Id)
+			new SetPlotAction(value?.Id).Submit();
 	}
 
 	[RelayCommand(CanExecute = nameof(CanSetPlotToNull))]
 	private void SetPlotToNull() => SelectedPlot = null;
+
+	private bool CanSetPlotToNull() => SelectedPlot is not null;
 
 	private void OnPlotAdded(GdPlot gdPlot)
 	{
@@ -113,17 +126,9 @@ public partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		SelectedPlot = plot is null ? null : _plotsById.GetValueOrDefault(plot.Id);
 
 	private void OnActionRejected(string actionId, string reason) => OnLocalPlotChanged(LocalPlot);
-
-	partial void OnSelectedPlotChanged(PlotItem? value)
-	{
-		if (value?.Id != LocalPlot?.Id)
-			new SetPlotAction(value?.Id).Submit();
-	}
-
-	private bool CanSetPlotToNull() => SelectedPlot is not null;
 }
 
-public partial class PlotItem : ObservableObject
+public sealed partial class PlotItem : ObservableObject
 {
 	public int Id { get; init; }
 

@@ -5,13 +5,15 @@ using EnsembleCoreRoot.Api.Assets;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public class Asset(
+public sealed class Asset(
 	int id,
 	string? name = null,
 	FrozenDictionary<string, CoreVariant>? properties = null,
 	int? maxInstanceCount = null)
 	: IAsset
 {
+	private string FormattedProperties => EnsembleCoreRoot.Assets.Properties.Format(Properties);
+
 	public int Id { get; } = id;
 	public string Name { get; } = name ?? string.Create(CultureInfo.InvariantCulture, $"Asset {id}");
 
@@ -21,5 +23,5 @@ public class Asset(
 		properties ?? FrozenDictionary<string, CoreVariant>.Empty;
 
 	public override string ToString() =>
-		$"Asset(id={Id}, name={Name}, maxInstanceCount={MaxInstanceCount}, properties={Properties})";
+		$"Asset(id={Id}, name={Name}, maxInstanceCount={MaxInstanceCount}, properties={FormattedProperties})";
 }

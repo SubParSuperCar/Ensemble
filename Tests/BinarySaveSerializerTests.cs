@@ -17,8 +17,21 @@ public sealed class BinarySaveSerializerTests
 	private static readonly BinarySaveSerializer Serializer = new();
 
 	[Fact]
-	public void Deserialize_Empty_RoundTrips() =>
-		Assert.Empty(Serializer.Deserialize(new MemoryStream(Serialize(new CreationSaveData()))).Instances);
+	public void Serialize_StoresInstanceCountPlusOne()
+	{
+		var bytes = Serialize(CreateSaveData());
+
+		Assert.Equal(2, BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(InstanceCountOffset)));
+	}
+
+	[Fact]
+	public void Deserialize_Empty_RoundTrips()
+	{
+		var bytes = Serialize(new CreationSaveData());
+		var data = Serializer.Deserialize(new MemoryStream(bytes));
+
+		Assert.Empty(data.Instances);
+	}
 
 	[Theory]
 	[InlineData(0x00)]
@@ -39,11 +52,6 @@ public sealed class BinarySaveSerializerTests
 	[Fact]
 	public void Deserialize_ZeroRotation_Throws() =>
 		AssertCorrupt(static bytes => bytes.AsSpan(RotationOffset, 4 * sizeof(float)).Clear());
-
-	[Fact]
-	public void Serialize_StoresInstanceCountPlusOne() =>
-		Assert.Equal(2,
-			BinaryPrimitives.ReadInt32LittleEndian(Serialize(CreateSaveData()).AsSpan(InstanceCountOffset)));
 
 	[Fact]
 	public void Deserialize_DuplicatePropertyKey_Throws()

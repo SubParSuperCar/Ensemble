@@ -1,11 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using Avalonia;
 using Avalonia.Threading;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.ViewModels;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMethodReturnValue.Global
 
 namespace EnsembleRoot.Ui.Impl.Services;
@@ -96,10 +97,10 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 				Activate(next);
 		}
 
-		if (!skipAnimations && Application.Current?.TransitionDuration is { } duration)
-			DispatcherTimer.RunOnce(() => Remove(widget), duration);
-		else
+		if (skipAnimations)
 			Remove(widget);
+		else
+			DispatcherTimer.RunOnce(() => Remove(widget), AnimationDuration);
 
 		return true;
 	}

@@ -92,10 +92,6 @@
     <PackageReference Include="LiveMarkdown.Avalonia.Svg.Skia" Version="2.4.3"/>
     <PackageReference Include="LuaCSharp" Version="0.5.7"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="3.2.0"/>
-    <PackageReference Include="Meziantou.Analyzer" Version="3.0.294">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12"/>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12"/>
     <PackageReference Include="NsDepCop" Version="3.2.0">
@@ -137,11 +133,10 @@
 
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToPublishDirectory="PreserveNewest"/>
-    <None
-      Include="$(MSBuildThisFileDirectory).github/LICENSE-*.txt"
-      Link=".github/%(Filename)%(Extension)"
-      CopyToPublishDirectory="PreserveNewest"/>
-    <None Include="**/*.gd;**/*.gdshader;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
+    <None Include="$(MSBuildThisFileDirectory).github/LICENSE-*.txt" CopyToPublishDirectory="PreserveNewest">
+      <Link>.github/%(Filename)%(Extension)</Link>
+    </None>
+    <None Include="**/*.gd;**/*.gdshader;**/*.gdshaderinc;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>

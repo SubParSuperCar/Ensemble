@@ -1,3 +1,6 @@
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Common.Time;
 
 public sealed class WrappedTimeProvider : TimeProvider

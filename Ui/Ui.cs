@@ -66,8 +66,8 @@ public partial class Ui : GdControl
 				CultureInfo.InvariantCulture,
 				$"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 
-			WeakReferenceMessenger.Default.Register<SetUiRenderScaleMessage>(this,
-				(_, message) => _host.RenderScaling = message.Value);
+			WeakReferenceMessenger.Default.Register<Ui, SetUiRenderScaleMessage>(this,
+				static (ui, message) => ui._host.RenderScaling = message.Value);
 
 			if (Main.AreAutoloadsLoaded)
 				SwapToRealUi();
@@ -100,8 +100,8 @@ public partial class Ui : GdControl
 		Dispatcher.UIThread.UnhandledException -= OnAvaloniaUnhandledException;
 	}
 
-	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 	public override void _Notification(int what) => WeakReferenceMessenger.Default.Send(new NotificationMessage(what));
+	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 
 	private static TextBlock CreateLoadingScreen()
 	{
@@ -124,7 +124,7 @@ public partial class Ui : GdControl
 	{
 		Log.Debug("Window resolution: {Size}", size);
 
-		var diagonal = Math.Sqrt(size.X * size.X + size.Y * size.Y);
+		var diagonal = Math.Sqrt((double)size.X * size.X + (double)size.Y * size.Y);
 		Log.Debug("Window diagonal: {Diagonal:F2}", diagonal);
 
 		return diagonal switch

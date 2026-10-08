@@ -1,7 +1,11 @@
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Tooling.Tools;
 using Godot;
 using Serilog;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace EnsembleRoot.Tooling;
 
@@ -12,7 +16,8 @@ namespace EnsembleRoot.Tooling;
 	FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ToolManager : Node, IAutoload
 {
-	private readonly List<ToolBase> _tools = [];
+	private readonly List<ToolBase> _enabledTools = [];
+	private readonly Dictionary<Type, ToolBase> _tools = [];
 
 	public static ToolManager? Instance
 	{
@@ -31,12 +36,15 @@ public partial class ToolManager : Node, IAutoload
 
 	public bool UseMutex { get; set; } = true;
 
-	public ConstructTool Construct => field ??= CreateTool<ConstructTool>();
-	public DestructTool Destruct => field ??= CreateTool<DestructTool>();
+	public ConstructTool Construct => Get<ConstructTool>();
+	public DestructTool Destruct => Get<DestructTool>();
 
 	private static bool CanEnableTools => IsLocalPlotSpawned is false;
 
 	public void Initialize() => IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
+
+	/// <summary>Raised for every tool, so observers need not create tools just to watch them.</summary>
+	public event Action<ToolBase, bool>? ToolIsEnabledChanged;
 
 	public override void _EnterTree() => Instance = this;
 
@@ -46,6 +54,32 @@ public partial class ToolManager : Node, IAutoload
 
 		if (ReferenceEquals(Instance, this))
 			Instance = null;
+	}
+
+	public override void _UnhandledKeyInput(InputEvent @event)
+	{
+		if (InputSink.IsSunk)
+			return;
+
+		if (@event.IsActionPressed(ConstructTool.ToggleAction))
+			Toggle<ConstructTool>();
+		else if (@event.IsActionPressed(DestructTool.ToggleAction))
+			Toggle<DestructTool>();
+	}
+
+	public TTool Get<TTool>() where TTool : ToolBase, new() =>
+		_tools.TryGetValue(typeof(TTool), out var tool) ? (TTool)tool : CreateTool<TTool>();
+
+	public bool IsEnabled<TTool>() where TTool : ToolBase =>
+		_tools.TryGetValue(typeof(TTool), out var tool) && tool.IsEnabled;
+
+	/// <summary>Toggles a tool, creating it only if it can actually be enabled.</summary>
+	public void Toggle<TTool>() where TTool : ToolBase, new()
+	{
+		if (IsEnabled<TTool>())
+			Get<TTool>().Disable();
+		else if (CanEnableTools)
+			Get<TTool>().Enable();
 	}
 
 	internal static void RequestDisable(ToolBase tool) => tool.DisableInternal();
@@ -61,6 +95,17 @@ public partial class ToolManager : Node, IAutoload
 		tool.EnableInternal();
 	}
 
+	internal void OnToolIsEnabledChanged(ToolBase tool, bool isEnabled)
+	{
+		_enabledTools.Remove(tool);
+
+		if (isEnabled)
+			_enabledTools.Add(tool);
+
+		PlotOutlines.ToolColor = _enabledTools.Count is 0 ? null : _enabledTools[^1].ThemeColor;
+		ToolIsEnabledChanged?.Invoke(tool, isEnabled);
+	}
+
 	private TTool CreateTool<TTool>() where TTool : ToolBase, new()
 	{
 		var name = typeof(TTool).Name;
@@ -68,7 +113,7 @@ public partial class ToolManager : Node, IAutoload
 
 		tool.Initialize(new ToolControl(this, tool));
 
-		_tools.Add(tool);
+		_tools.Add(typeof(TTool), tool);
 		AddChild(tool);
 
 		Log.Debug("Created tool: {Tool}", name);
@@ -84,7 +129,9 @@ public partial class ToolManager : Node, IAutoload
 
 	private void DisableAll(ToolBase? exception = null)
 	{
-		foreach (var tool in _tools.Where(tool => !ReferenceEquals(tool, exception)))
-			tool.DisableInternal();
+		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		foreach (var tool in _tools.Values)
+			if (!ReferenceEquals(tool, exception))
+				tool.DisableInternal();
 	}
 }

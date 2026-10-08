@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class SessionModeSelectorView : UserControl, IViewFor<SessionModeSelectorViewModel>
+public sealed partial class SessionModeSelectorView : UserControl, IViewFor<SessionModeSelectorViewModel>
 {
 	public SessionModeSelectorView()
 	{

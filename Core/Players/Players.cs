@@ -1,9 +1,10 @@
 using EnsembleCoreRoot.Api.Players;
+using EnsembleCoreRoot.Globals;
 
 namespace EnsembleCoreRoot.Players;
 
 /// <inheritdoc />
-public class Players(TimeProvider? timeProvider = null) : IPlayers
+public sealed class Players(TimeProvider? timeProvider = null) : IPlayers
 {
 	private readonly Dictionary<Guid, IPlayer> _playersById = [];
 
@@ -16,7 +17,7 @@ public class Players(TimeProvider? timeProvider = null) : IPlayers
 
 	public IPlayer Add(Guid? id = null, string? name = null)
 	{
-		var playerId = id ?? Guid.NewGuid();
+		var playerId = id ?? Guids.Create();
 
 		if (_playersById.ContainsKey(playerId))
 			throw new InvalidOperationException($"Player with id {playerId} already exists.");
@@ -56,7 +57,7 @@ public class Players(TimeProvider? timeProvider = null) : IPlayers
 
 	internal void Reset()
 	{
-		foreach (var player in _playersById.Values.ToArray())
-			Remove(player.Id);
+		foreach (var id in _playersById.Keys.ToArray())
+			Remove(id);
 	}
 }

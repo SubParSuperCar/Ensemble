@@ -10,7 +10,7 @@ using OS = Godot.OS;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class MenuHomeViewModel : ViewModelBase
+public sealed partial class MenuHomeViewModel : ViewModelBase
 {
 	private readonly NavigatorService _navigator;
 
@@ -21,7 +21,9 @@ public partial class MenuHomeViewModel : ViewModelBase
 		GSessionManager.SessionFailed += OnSessionFailed;
 	}
 
-	[ObservableProperty] public partial Bitmap? Icon { get; set; } = LoadBitmapFromGodotImage(GameIconPath);
+	// Loaded once and shared, as menu pages are recreated on every navigation
+	public static Bitmap? Icon { get; } = LoadBitmapFromGodotImage(GameIconPath);
+
 	[ObservableProperty] public partial string? Notice { get; set; }
 
 	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;

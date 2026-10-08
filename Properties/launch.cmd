@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-echo Runtime context: Windows NT (CMD)
+echo Runtime context: Windows NT (cmd.exe)
 
 set "SCRIPT_DIR=%~dp0"
 set "PROJECT_DIR=%SCRIPT_DIR%.."

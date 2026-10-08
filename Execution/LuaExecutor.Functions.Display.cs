@@ -81,14 +81,14 @@ public static partial class LuaExecutor
 				break;
 
 			case LuaValueType.Number:
-				var value = (long)argument.Read<double>();
+				var number = argument.Read<double>();
 
-				if (Enum.IsDefined((DisplayServer.VSyncMode)value))
-					mode = (DisplayServer.VSyncMode)value;
+				if (double.IsInteger(number))
+					mode = (DisplayServer.VSyncMode)(long)number;
 				break;
 		}
 
-		if (mode is { } result)
+		if (mode is { } result && Enum.IsDefined(result))
 		{
 			DisplayServer.WindowSetVsyncMode(result);
 			Log.Information("Set VSync mode to: {Mode}", result);

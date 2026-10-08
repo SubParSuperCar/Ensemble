@@ -6,6 +6,7 @@ namespace EnsembleRoot.Scripts.Adornments;
 public partial class SolidHighlight : HighlightBase
 {
 	private static readonly Shader HighlightShader = GD.Load<Shader>(ShadersDir + "solid_highlight.gdshader");
+	private static readonly StringName TintParameter = "tint";
 
 	[Export]
 	public Color Tint
@@ -26,5 +27,5 @@ public partial class SolidHighlight : HighlightBase
 		UpdateTint();
 	}
 
-	private void UpdateTint() => Material.SetShaderParameter("tint", new Vector3(Tint.R, Tint.G, Tint.B));
+	private void UpdateTint() => Material.SetShaderParameter(TintParameter, new Vector3(Tint.R, Tint.G, Tint.B));
 }

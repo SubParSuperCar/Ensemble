@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class SinglePlayerConfigView : UserControl, IViewFor<SinglePlayerConfigViewModel>
+public sealed partial class SinglePlayerConfigView : UserControl, IViewFor<SinglePlayerConfigViewModel>
 {
 	public SinglePlayerConfigView()
 	{

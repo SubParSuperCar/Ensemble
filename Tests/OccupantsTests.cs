@@ -1,4 +1,5 @@
 using EnsembleCoreRoot;
+using EnsembleCoreRoot.Globals;
 using Xunit;
 
 namespace EnsembleRoot.Tests;
@@ -71,7 +72,7 @@ public sealed class OccupantsTests
 		var core = new Core();
 		core.Plots.Add(0);
 
-		ids ??= [.. Enumerable.Range(0, playerCount).Select(static _ => Guid.NewGuid())];
+		ids ??= [.. Enumerable.Range(0, playerCount).Select(static _ => Guids.Create())];
 
 		foreach (var id in ids)
 			core.Players.Add(id);

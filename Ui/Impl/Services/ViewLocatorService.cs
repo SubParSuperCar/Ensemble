@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.Abstractions;
 
 namespace EnsembleRoot.Ui.Impl.Services;
 
-public class ViewLocatorService(IServiceProvider services) : ISingletonObject, IServiceBase, IDataTemplate
+public sealed class ViewLocatorService(IServiceProvider services) : ISingletonObject, IServiceBase, IDataTemplate
 {
 	public Control? Build(object? data)
 	{
@@ -20,7 +20,7 @@ public class ViewLocatorService(IServiceProvider services) : ISingletonObject, I
 		if (view is null)
 			return new TextBlock { Text = $"View for {type.Name} not found." };
 
-		view.DataContext = data;
+		view.DataContext = viewModel;
 		return view;
 	}
 

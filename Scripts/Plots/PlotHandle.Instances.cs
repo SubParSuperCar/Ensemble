@@ -8,10 +8,10 @@ namespace EnsembleRoot.Scripts.Plots;
 
 public partial class PlotHandle
 {
+	private readonly Dictionary<int, AssetHandle> _handlesByInstanceId = [];
+
 	// We're only syncing despawned AssetHandle objects for now. Spawning/despawning will come soon(TM).
 	private Node3D _staticInstances = null!;
-
-	public Godot.Collections.Dictionary<int, AssetHandle> InstanceHandles { get; } = [];
 
 	// Cached, as reading every handle back from Godot each tick is slow
 	internal ObbGrid InstanceBoxes { get; } = new();
@@ -35,24 +35,24 @@ public partial class PlotHandle
 
 	private void OnInstanceAdded(GdInstance instance)
 	{
-		var packed = GAssetManager.GetPacked(instance.Asset.Id);
+		var transform = new Transform3D(new Basis(instance.Rotation), instance.Position * GridToWorldScale);
 
-		var handle = packed.Instantiate<AssetHandle>();
+		var handle = GAssetManager.GetPacked(instance.Asset.Id).Instantiate<AssetHandle>();
 		handle.Name = string.Create(CultureInfo.InvariantCulture, $"{instance.Id}-{instance.Asset.Name}");
 		handle.InstanceId = instance.Id;
-		handle.Transform = new Transform3D(new Basis(instance.Rotation), instance.Position * GridToWorldScale);
+		handle.Transform = transform;
 		handle.Freeze = true;
 
 		_staticInstances.AddChild(handle);
-		InstanceHandles.Add(instance.Id, handle);
-		InstanceBoxes.Add(instance.Id, Obb.From(handle.BoundaryAabb, handle.Transform));
+		_handlesByInstanceId.Add(instance.Id, handle);
+		InstanceBoxes.Add(instance.Id, Obb.From(handle.BoundaryAabb, transform));
 	}
 
 	private void OnInstanceRemoved(GdInstance instance)
 	{
 		InstanceBoxes.Remove(instance.Id);
 
-		if (InstanceHandles.Remove(instance.Id, out var handle))
+		if (_handlesByInstanceId.Remove(instance.Id, out var handle))
 			handle.QueueFree();
 	}
 }

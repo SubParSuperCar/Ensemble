@@ -3,6 +3,7 @@ using EnsembleRoot.Common.Utils;
 using Godot;
 
 // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace EnsembleRoot.Scripts.Players;
 

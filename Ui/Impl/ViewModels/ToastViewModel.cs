@@ -12,6 +12,8 @@ public sealed partial class ToastViewModel : ViewModelBase
 	private readonly ToastListViewModel _owner;
 	private readonly DispatcherTimer _timer;
 
+	private int _repeatCount = 1;
+
 	internal ToastViewModel(ToastListViewModel owner, LogEntry entry, TimeSpan lifetime)
 	{
 		_owner = owner;
@@ -24,12 +26,8 @@ public sealed partial class ToastViewModel : ViewModelBase
 
 	public string LevelText => Entry.Level.Abbreviation;
 
-	public string RepeatText => string.Create(CultureInfo.InvariantCulture, $"x{RepeatCount}");
-	public bool IsRepeated => RepeatCount > 1;
-
-	[ObservableProperty]
-	[NotifyPropertyChangedFor(nameof(RepeatText), nameof(IsRepeated))]
-	public partial int RepeatCount { get; private set; } = 1;
+	public string RepeatText => string.Create(CultureInfo.InvariantCulture, $"x{_repeatCount}");
+	public bool IsRepeated => _repeatCount > 1;
 
 	[ObservableProperty] public partial bool IsDismissing { get; set; }
 
@@ -38,7 +36,9 @@ public sealed partial class ToastViewModel : ViewModelBase
 
 	internal void Repeat()
 	{
-		RepeatCount++;
+		_repeatCount++;
+		OnPropertyChanged(nameof(RepeatText));
+		OnPropertyChanged(nameof(IsRepeated));
 
 		_timer.Stop();
 		_timer.Start();

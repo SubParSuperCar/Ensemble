@@ -3,7 +3,7 @@ using EnsembleRoot.Ui.Impl.Abstractions;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public class WebBrowserViewModel : ViewModelBase, IWidget
+public sealed class WebBrowserViewModel : ViewModelBase, IWidget
 {
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(3, 2, 10, 12))
 	{

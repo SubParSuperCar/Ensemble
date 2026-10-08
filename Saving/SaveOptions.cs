@@ -1,3 +1,5 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace EnsembleRoot.Saving;
 
 public enum CompressionType : byte

@@ -1,6 +1,8 @@
 using EnsembleRoot.GdCore.Players;
 using Godot;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Scripts.Players;
 
 [GlobalClass]
@@ -15,15 +17,6 @@ public partial class PlayerManager : Node
 
 	public override void _EnterTree() => GPlayerManager = this;
 
-	public override void _ExitTree()
-	{
-		GPlayers.Added -= OnPlayerAdded;
-		GPlayers.Removed -= OnPlayerRemoved;
-
-		if (ReferenceEquals(GPlayerManager, this))
-			GPlayerManager = null!;
-	}
-
 	public override void _Ready()
 	{
 		foreach (var player in GPlayers.GetAll())
@@ -31,6 +24,15 @@ public partial class PlayerManager : Node
 
 		GPlayers.Added += OnPlayerAdded;
 		GPlayers.Removed += OnPlayerRemoved;
+	}
+
+	public override void _ExitTree()
+	{
+		GPlayers.Added -= OnPlayerAdded;
+		GPlayers.Removed -= OnPlayerRemoved;
+
+		if (ReferenceEquals(GPlayerManager, this))
+			GPlayerManager = null!;
 	}
 
 	public PlayerHandle? GetHandleOrNull(string playerId) =>

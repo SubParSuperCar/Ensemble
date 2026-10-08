@@ -5,7 +5,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class ToastView : UserControl, IViewFor<ToastViewModel>
+public sealed partial class ToastView : UserControl, IViewFor<ToastViewModel>
 {
 	public ToastView()
 	{

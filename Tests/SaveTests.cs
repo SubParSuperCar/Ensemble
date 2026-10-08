@@ -95,7 +95,9 @@ public sealed class SaveTests : IDisposable
 	}
 
 	private static ISaveSerializer CreateSerializer(string format) =>
+#pragma warning disable MA0127
 		format is nameof(JsonSaveSerializer) ? new JsonSaveSerializer() : new BinarySaveSerializer();
+#pragma warning restore MA0127
 
 	private static SaveEncryption.Password CreatePassword() => new(Password, 8 * 1024, 1, 1);
 

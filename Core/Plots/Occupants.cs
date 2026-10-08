@@ -3,7 +3,7 @@ using EnsembleCoreRoot.Api.Plots;
 namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
-public class Occupants : IOccupants
+public sealed class Occupants : IOccupants
 {
 	private readonly OrderedDictionary<Guid, IOccupant> _occupantsByPlayerId = [];
 	private readonly Plot _plot;
@@ -11,7 +11,7 @@ public class Occupants : IOccupants
 	public Occupants(Plot plot, int? maxCount = null)
 	{
 		if (maxCount is { } count and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(maxCount));
 
 		_plot = plot;
 		MaxCount = maxCount ?? Unlimited;

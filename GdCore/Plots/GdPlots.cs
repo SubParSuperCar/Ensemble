@@ -68,22 +68,19 @@ public partial class GdPlots : RefCounted
 		bool shouldResolveOwnerIfNullOrRelinquishing,
 		bool shouldDespawnAndClearInstancesIfLastToLeave)
 	{
-		if (!Guid.TryParse(playerId, out var guid) || (plotId is not None && !Source.All.ContainsKey(plotId)))
+		if (
+			!Guid.TryParse(playerId, out var guid) ||
+			(plotId is not None && !Source.All.ContainsKey(plotId)) ||
+			!TryGetOccupant(guid, out var occupant))
 			return;
 
-		if (shouldDespawnAndClearInstancesIfLastToLeave)
+		if (shouldDespawnAndClearInstancesIfLastToLeave && occupant.Plot is { Occupants.Count: < 2 } current)
 		{
-			if (!TryGetOccupant(guid, out var occupant))
+			if (current.Id == plotId)
 				return;
 
-			if (occupant.Plot is { Occupants.Count: < 2 } current)
-			{
-				if (current.Id == plotId)
-					return;
-
-				current.Despawn();
-				current.Instances.Clear();
-			}
+			current.Despawn();
+			current.Instances.Clear();
 		}
 
 		Source.SetPlot(guid, plotId is None ? null : plotId, shouldResolveOwnerIfNullOrRelinquishing);
@@ -106,13 +103,7 @@ public partial class GdPlots : RefCounted
 
 	private bool TryGetOccupant(Guid guid, [NotNullWhen(true)] out GdOccupant? occupant)
 	{
-		if (!Source.TryGetOccupant(guid, out var found))
-		{
-			occupant = null;
-			return false;
-		}
-
-		occupant = GdOccupant.From(found);
-		return true;
+		occupant = Source.TryGetOccupant(guid, out var found) ? GdOccupant.From(found) : null;
+		return occupant is not null;
 	}
 }

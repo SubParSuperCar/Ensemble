@@ -11,7 +11,7 @@ namespace EnsembleRoot.Autoloading;
 public static class AutoloadOrder
 {
 	public const sbyte First = sbyte.MinValue;
-	public const sbyte Early = unchecked((sbyte)0xC0);
+	public const sbyte Early = -0x40;
 	public const sbyte Standard = 0;
 	public const sbyte Late = 0x40;
 	public const sbyte Last = sbyte.MaxValue;

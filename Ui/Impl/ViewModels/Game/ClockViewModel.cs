@@ -6,7 +6,7 @@ using EnsembleRoot.Ui.Impl.Services;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class ClockViewModel : ViewModelBase
+public sealed partial class ClockViewModel : ViewModelBase
 {
 	private static readonly string LocalTimeZone = TimeZoneInfo.Local.DisplayName;
 

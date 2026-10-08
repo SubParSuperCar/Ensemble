@@ -69,64 +69,6 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static void DumpTable(LuaTable table, string path, HashSet<LuaTable> visited)
-	{
-		if (!visited.Add(table))
-		{
-			Log.Information("{Path} = <already visited>", path);
-			return;
-		}
-
-		foreach (var (luaKey, luaValue) in table.OrderBy(static entry => entry.Key.ToString(), StringComparer.Ordinal))
-		{
-			var childPath = luaKey.Type is LuaValueType.Number
-				? $"{path}[{luaKey}]"
-				: $"{path}.{luaKey}";
-
-			switch (luaValue.Type)
-			{
-				case LuaValueType.Table:
-					var childTable = luaValue.Read<LuaTable>();
-
-					if (visited.Contains(childTable))
-						Log.Information("{Path} = <already visited>", childPath);
-					else
-					{
-						Log.Information("{Path} = <table>", childPath);
-						DumpTable(childTable, childPath, visited);
-					}
-
-					break;
-
-				case LuaValueType.Function:
-					Log.Information("{Path} = <function>", childPath);
-					break;
-
-				case LuaValueType.UserData:
-					Log.Information("{Path} = <userdata>", childPath);
-					break;
-
-				case LuaValueType.Thread:
-					Log.Information("{Path} = <thread>", childPath);
-					break;
-
-				case LuaValueType.String:
-					Log.Information("{Path} = \"{Value}\"", childPath, EscapeString(luaValue.Read<string>()));
-					break;
-
-				default:
-					Log.Information("{Path} = {Value}", childPath, luaValue);
-					break;
-			}
-		}
-	}
-
-	private static string EscapeString(string value) =>
-		value
-			.Replace("\\", @"\\", StringComparison.Ordinal)
-			.Replace("\r", "\\r", StringComparison.Ordinal)
-			.Replace("\n", "\\n", StringComparison.Ordinal);
-
 	private static ValueTask<int> gc(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -177,4 +119,59 @@ public static partial class LuaExecutor
 
 		return context.ReturnNothing();
 	}
+
+	private static void DumpTable(LuaTable table, string path, HashSet<LuaTable> visited)
+	{
+		visited.Add(table);
+
+		foreach (var (luaKey, luaValue) in table.OrderBy(static entry => entry.Key.ToString(), StringComparer.Ordinal))
+		{
+			var childPath = luaKey.Type is LuaValueType.Number
+				? $"{path}[{luaKey}]"
+				: $"{path}.{luaKey}";
+
+			switch (luaValue.Type)
+			{
+				case LuaValueType.Table:
+					var childTable = luaValue.Read<LuaTable>();
+
+					if (visited.Contains(childTable))
+						Log.Information("{Path} = <already visited>", childPath);
+					else
+					{
+						Log.Information("{Path} = <table>", childPath);
+						DumpTable(childTable, childPath, visited);
+					}
+
+					break;
+
+				case LuaValueType.Function:
+					Log.Information("{Path} = <function>", childPath);
+					break;
+
+				case LuaValueType.UserData:
+					Log.Information("{Path} = <userdata>", childPath);
+					break;
+
+				case LuaValueType.Thread:
+					Log.Information("{Path} = <thread>", childPath);
+					break;
+
+				case LuaValueType.String:
+					Log.Information("{Path} = \"{Value}\"", childPath, EscapeString(luaValue.Read<string>()));
+					break;
+
+				default:
+					Log.Information("{Path} = {Value}", childPath, luaValue);
+					break;
+			}
+		}
+	}
+
+	private static string EscapeString(string value) =>
+		value
+			.Replace("\\", @"\\", StringComparison.Ordinal)
+			.Replace("\"", "\\\"", StringComparison.Ordinal)
+			.Replace("\r", "\\r", StringComparison.Ordinal)
+			.Replace("\n", "\\n", StringComparison.Ordinal);
 }

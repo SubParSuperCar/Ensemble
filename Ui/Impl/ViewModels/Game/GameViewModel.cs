@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Attributes;
 using EnsembleRoot.Ui.Impl.Extensions;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class GameViewModel : ViewModelBase
+public sealed partial class GameViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;
@@ -35,8 +36,8 @@ public partial class GameViewModel : ViewModelBase
 		OnIsLocalPlotSpawnedChanged(IsLocalPlotSpawned);
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
 
-		OnConstructToolIsEnabledChanged(GToolManager.Construct.IsEnabled);
-		GToolManager.Construct.IsEnabledChanged += OnConstructToolIsEnabledChanged;
+		OnToolIsEnabledChanged(null, GToolManager.IsEnabled<ConstructTool>());
+		GToolManager.ToolIsEnabledChanged += OnToolIsEnabledChanged;
 	}
 
 	public WidgetManagerService Widgets { get; }
@@ -57,7 +58,7 @@ public partial class GameViewModel : ViewModelBase
 	protected override void OnDispose()
 	{
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
-		GToolManager.Construct.IsEnabledChanged -= OnConstructToolIsEnabledChanged;
+		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
 
 		_dispatcher.Input -= OnInput;
 
@@ -77,8 +78,11 @@ public partial class GameViewModel : ViewModelBase
 	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) =>
 		ToolBar = isSpawned is false ? _services.Create<ToolBarViewModel>() : null;
 
-	private void OnConstructToolIsEnabledChanged(bool isEnabled)
+	private void OnToolIsEnabledChanged(ToolBase? tool, bool isEnabled)
 	{
+		if (tool is not (null or ConstructTool))
+			return;
+
 		if (isEnabled)
 			Widgets.Open<AssetSelectorViewModel>();
 		else

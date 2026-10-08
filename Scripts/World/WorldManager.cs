@@ -3,6 +3,8 @@ using Godot;
 using Serilog;
 using Stopwatch = System.Diagnostics.Stopwatch;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Scripts.World;
 
 [GlobalClass]

@@ -9,15 +9,14 @@ internal readonly record struct ToolRayHit(Vector3 Position, Vector3 Normal, Nod
 
 internal static class ToolCommon
 {
-	public const uint SelectableLayers = 1;
-
+	private const uint SelectableLayers = 1;
 	private const float RayLength = 1000f;
 
 	public static readonly StringName TriggerAction = "tool_trigger";
 
-	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode("SoundManager");
-
 	public static PlotHandle? LocalPlotHandle => LocalPlot?.Id is { } id ? GPlotManager.GetHandleOrNull(id) : null;
+
+	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode("SoundManager");
 
 	public static TNode? FindInHierarchy<TNode>(Node? node) where TNode : Node
 	{
@@ -43,9 +42,6 @@ internal static class ToolCommon
 		var end = origin + camera.ProjectRayNormal(mouse) * RayLength;
 
 		var query = PhysicsRayQueryParameters3D.Create(origin, end, mask);
-		query.CollideWithBodies = true;
-		query.CollideWithAreas = false;
-
 		var result = viewport.GetWorld3D().DirectSpaceState.IntersectRay(query);
 
 		return result.Count is 0

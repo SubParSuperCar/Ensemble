@@ -32,7 +32,7 @@ public static class Converter
 			Variant.Type.Bool => new CoreVariant(variant.AsBool()),
 			Variant.Type.Int => new CoreVariant(variant.AsInt64()),
 			Variant.Type.Float => new CoreVariant(variant.AsDouble()),
-			Variant.Type.String => new CoreVariant(variant.AsString()),
+			Variant.Type.String or Variant.Type.StringName => new CoreVariant(variant.AsString()),
 			_ => CoreVariant.Null
 		};
 

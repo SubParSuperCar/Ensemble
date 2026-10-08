@@ -10,6 +10,9 @@ using EnsembleRoot.SessionManager.Actions;
 using Godot;
 using Serilog;
 
+// ReSharper disable EventNeverSubscribedTo.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Tooling.Tools;
 
 public enum RotationSpace : byte
@@ -26,7 +29,9 @@ public partial class ConstructTool : ToolBase
 	private const int MaxSettlePasses = 3;
 	private const int MaxResolvePasses = 3;
 
-	private static readonly StringName ToggleActionName = "tool_construct_toggle";
+	public static readonly StringName ToggleAction = "tool_construct_toggle";
+	public static readonly Color Theme = new("#40A0FF");
+
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
 	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
@@ -42,7 +47,7 @@ public partial class ConstructTool : ToolBase
 	private PlacementState? _state;
 	private Transform3D _targetTransform;
 
-	protected override StringName ToggleAction => ToggleActionName;
+	public override Color ThemeColor => Theme;
 
 	public RotationSpace RotationSpace { get; set; } = RotationSpace.Global;
 
@@ -59,10 +64,19 @@ public partial class ConstructTool : ToolBase
 	public event Action<int>? AssetIdChanged;
 	public event Action<bool>? IsActiveChanged;
 
-	public override void _PhysicsProcess(double delta)
+	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (IsActive)
-			UpdatePlacement();
+		if (!IsActive || InputSink.IsSunk)
+			return;
+
+		if (@event.IsActionPressed(RotateXAction))
+			RotateX();
+		else if (@event.IsActionPressed(RotateYAction))
+			RotateY();
+		else if (@event.IsActionPressed(RotateZAction))
+			RotateZ();
+		else if (@event.IsActionPressed(ToolCommon.TriggerAction))
+			TryPlace();
 	}
 
 	public override void _Process(double delta)
@@ -82,19 +96,10 @@ public partial class ConstructTool : ToolBase
 			current.Origin.Lerp(_targetTransform.Origin, linearWeight));
 	}
 
-	public override void _UnhandledInput(InputEvent @event)
+	public override void _PhysicsProcess(double delta)
 	{
-		if (!IsActive || InputSink.IsSunk)
-			return;
-
-		if (@event.IsActionPressed(RotateXAction))
-			RotateX();
-		else if (@event.IsActionPressed(RotateYAction))
-			RotateY();
-		else if (@event.IsActionPressed(RotateZAction))
-			RotateZ();
-		else if (@event.IsActionPressed(ToolCommon.TriggerAction))
-			TryPlace();
+		if (IsActive)
+			UpdatePlacement();
 	}
 
 	public void RotateX() => Rotate(Vector3.Up);
@@ -373,7 +378,9 @@ public partial class ConstructTool : ToolBase
 	}
 
 	private void Flash() =>
-		CreateTween().TweenProperty(_solidHighlight!, "Tint", Colors.Red, 1 / 8f).From(Colors.White);
+		_solidHighlight!.CreateTween()
+			.TweenProperty(_solidHighlight, "Tint", Colors.Red, 1 / 8f)
+			.From(Colors.White);
 
 	private void Rotate(Vector3 axis)
 	{

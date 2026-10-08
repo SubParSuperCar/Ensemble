@@ -12,7 +12,7 @@ using Godot;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class StatViewModel : ViewModelBase
+public sealed partial class StatViewModel : ViewModelBase
 {
 	private const double RefreshInterval = 1 / 3d;
 	private const double SampleWindow = 1d;
@@ -61,8 +61,8 @@ public partial class StatViewModel : ViewModelBase
 		var fps = Engine.GetFramesPerSecond();
 		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 
-		var sampleDuration = _uiFrameTimes.Count > 1 ? now - _uiFrameTimes.Peek() : 0;
-		var uiFps = sampleDuration > 0 ? (_uiFrameTimes.Count - 1) / sampleDuration : 0;
+		var sampleDuration = _uiFrameTimes.Count > 1 ? now - _uiFrameTimes.Peek() : 0d;
+		var uiFps = sampleDuration > 0 ? (_uiFrameTimes.Count - 1) / sampleDuration : 0d;
 		var uiFrameTimeMs = uiFps > 0 ? TimeSpan.MillisecondsPerSecond / uiFps : double.PositiveInfinity;
 
 #if ENSEMBLE_DEBUG
@@ -78,7 +78,7 @@ public partial class StatViewModel : ViewModelBase
 
 		var uiProcessTimeMs = Performance.HasCustomMonitor(Ui.ProcessTimeMonitor)
 			? Performance.GetCustomMonitor(Ui.ProcessTimeMonitor).AsDouble() * TimeSpan.MillisecondsPerSecond
-			: 0;
+			: 0d;
 
 		List<(string Key, object Value)> stats =
 		[

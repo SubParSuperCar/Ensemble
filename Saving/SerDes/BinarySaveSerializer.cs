@@ -29,45 +29,14 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		writer.Write(Math.Min(data.Instances.Count, int.MaxValue - 1) + 1);
 
 		foreach (var instance in data.Instances)
-		{
-			writer.Write(instance.AssetId);
-
-			writer.Write(instance.Position.X);
-			writer.Write(instance.Position.Y);
-			writer.Write(instance.Position.Z);
-
-			writer.Write(instance.Rotation.X);
-			writer.Write(instance.Rotation.Y);
-			writer.Write(instance.Rotation.Z);
-			writer.Write(instance.Rotation.W);
-
-			var properties = instance.Properties;
-			var propertyCount = properties?.Count ?? 0;
-
-			if (propertyCount > ushort.MaxValue - 2)
-				throw new InvalidOperationException("Too many properties.");
-
-			writer.Write((ushort)(propertyCount + 1));
-
-			if (properties is null)
-				continue;
-
-			foreach (var (key, value) in properties)
-			{
-				writer.Write(key);
-				CoreVariantSerializer.Write(writer, value);
-			}
-		}
+			WriteInstance(writer, instance);
 	}
 
-#pragma warning disable MA0051
 	public CreationSaveData Deserialize(Stream stream)
-#pragma warning restore MA0051
 	{
 		using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
-		var magic = reader.ReadBytes(Magic.Length);
-		if (!magic.AsSpan().SequenceEqual(Magic))
+		if (!reader.ReadBytes(Magic.Length).AsSpan().SequenceEqual(Magic))
 			throw new InvalidDataException("Invalid save file.");
 
 		var formatVersion = reader.ReadByte();
@@ -80,68 +49,104 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		if (utcTicks <= DateTimeOffset.MinValue.UtcTicks || utcTicks > DateTimeOffset.MaxValue.UtcTicks)
 			throw new InvalidDataException("Invalid creation time.");
 
-		var save = new CreationSaveData
-		{
-			Version = version,
-			UtcCreatedAt = new DateTimeOffset(utcTicks, TimeSpan.Zero)
-		};
-
 		var instanceCount = reader.ReadInt32();
 		if (instanceCount-- <= 0)
 			throw new InvalidDataException("Invalid instance count.");
 
-		save.Instances.Capacity = Math.Min(instanceCount, MaxPreallocatedCount);
+		var save = new CreationSaveData
+		{
+			Version = version,
+			UtcCreatedAt = new DateTimeOffset(utcTicks, TimeSpan.Zero),
+			Instances = new List<SaveInstance>(Math.Min(instanceCount, MaxPreallocatedCount))
+		};
 
 		for (var i = 0; i < instanceCount; i++)
-		{
-			var assetId = reader.ReadUInt16();
-
-			var position = new Vector3(
-				ReadFiniteSingle(reader),
-				ReadFiniteSingle(reader),
-				ReadFiniteSingle(reader));
-
-			var rotation = new Quaternion(
-				ReadFiniteSingle(reader),
-				ReadFiniteSingle(reader),
-				ReadFiniteSingle(reader),
-				ReadFiniteSingle(reader));
-
-			if (rotation.LengthSquared() is 0f)
-				throw new InvalidDataException("Invalid rotation.");
-
-			var propertyCount = reader.ReadUInt16();
-			if (propertyCount-- is 0 or ushort.MaxValue)
-				throw new InvalidDataException("Invalid property count.");
-
-			Dictionary<string, CoreVariant>? properties = null;
-
-			if (propertyCount is not 0)
-			{
-				properties = new Dictionary<string, CoreVariant>(
-					Math.Min((int)propertyCount, MaxPreallocatedCount),
-					StringComparer.Ordinal);
-
-				for (var j = 0; j < propertyCount; j++)
-				{
-					var key = reader.ReadString();
-					var value = CoreVariantSerializer.Read(reader);
-
-					if (!properties.TryAdd(key, value))
-						throw new InvalidDataException("Duplicate property key.");
-				}
-			}
-
-			save.Instances.Add(new SaveInstance
-			{
-				AssetId = assetId,
-				Position = position,
-				Rotation = rotation,
-				Properties = properties
-			});
-		}
+			save.Instances.Add(ReadInstance(reader));
 
 		return save;
+	}
+
+	private static void WriteInstance(BinaryWriter writer, SaveInstance instance)
+	{
+		writer.Write(instance.AssetId);
+
+		writer.Write(instance.Position.X);
+		writer.Write(instance.Position.Y);
+		writer.Write(instance.Position.Z);
+
+		writer.Write(instance.Rotation.X);
+		writer.Write(instance.Rotation.Y);
+		writer.Write(instance.Rotation.Z);
+		writer.Write(instance.Rotation.W);
+
+		var properties = instance.Properties;
+		var propertyCount = properties?.Count ?? 0;
+
+		if (propertyCount > ushort.MaxValue - 2)
+			throw new InvalidOperationException("Too many properties.");
+
+		writer.Write((ushort)(propertyCount + 1));
+
+		if (properties is null)
+			return;
+
+		foreach (var (key, value) in properties)
+		{
+			writer.Write(key);
+			CoreVariantSerializer.Write(writer, value);
+		}
+	}
+
+	private static SaveInstance ReadInstance(BinaryReader reader)
+	{
+		var assetId = reader.ReadUInt16();
+
+		var position = new Vector3(
+			ReadFiniteSingle(reader),
+			ReadFiniteSingle(reader),
+			ReadFiniteSingle(reader));
+
+		var rotation = new Quaternion(
+			ReadFiniteSingle(reader),
+			ReadFiniteSingle(reader),
+			ReadFiniteSingle(reader),
+			ReadFiniteSingle(reader));
+
+		if (rotation.LengthSquared() is 0f)
+			throw new InvalidDataException("Invalid rotation.");
+
+		return new SaveInstance
+		{
+			AssetId = assetId,
+			Position = position,
+			Rotation = rotation,
+			Properties = ReadProperties(reader)
+		};
+	}
+
+	private static Dictionary<string, CoreVariant>? ReadProperties(BinaryReader reader)
+	{
+		var propertyCount = reader.ReadUInt16();
+		if (propertyCount-- is 0 or ushort.MaxValue)
+			throw new InvalidDataException("Invalid property count.");
+
+		if (propertyCount is 0)
+			return null;
+
+		var properties = new Dictionary<string, CoreVariant>(
+			Math.Min((int)propertyCount, MaxPreallocatedCount),
+			StringComparer.Ordinal);
+
+		for (var i = 0; i < propertyCount; i++)
+		{
+			var key = reader.ReadString();
+			var value = CoreVariantSerializer.Read(reader);
+
+			if (!properties.TryAdd(key, value))
+				throw new InvalidDataException("Duplicate property key.");
+		}
+
+		return properties;
 	}
 
 	private static float ReadFiniteSingle(BinaryReader reader) =>

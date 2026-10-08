@@ -51,12 +51,10 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 			""");
 
 		foreach (var autoload in autoloads.OrderBy(static autoload => autoload.TypeName, StringComparer.Ordinal))
+#pragma warning disable MA0028
 			source.AppendLine(
-				"\t\tnew(" +
-				$"typeof({autoload.TypeName}), " +
-				$"{autoload.Scope}, " +
-				$"{autoload.Order}, " +
-				$"{autoload.FailurePolicy}, " +
+#pragma warning restore MA0028
+				$"\t\tnew(typeof({autoload.TypeName}), {autoload.Scope}, {autoload.Order}, {autoload.FailurePolicy}, " +
 				$"static () => new {autoload.TypeName}()),");
 
 		source.AppendLine(
@@ -72,7 +70,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 
 	private static string GetScope(AttributeData attribute) =>
 		TryGetNamedArgument(attribute, ScopePropertyName, out var value)
-			? $"(AutoloadScope){Convert.ToInt32(value, CultureInfo.InvariantCulture)}"
+			? FormatEnumCast("AutoloadScope", value)
 			: "AutoloadScope.RegularClient | AutoloadScope.HeadlessServer";
 
 	private static string GetOrder(AttributeData attribute) =>
@@ -82,8 +80,15 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 
 	private static string GetFailurePolicy(AttributeData attribute) =>
 		TryGetNamedArgument(attribute, FailurePolicyPropertyName, out var value)
-			? $"(AutoloadFailurePolicy){Convert.ToInt32(value, CultureInfo.InvariantCulture)}"
+			? FormatEnumCast("AutoloadFailurePolicy", value)
 			: "AutoloadFailurePolicy.AskUser";
+
+	private static string FormatEnumCast(string type, object? value) =>
+		string.Format(
+			CultureInfo.InvariantCulture,
+			"({0}){1}",
+			type,
+			Convert.ToInt32(value, CultureInfo.InvariantCulture));
 
 	private static bool TryGetNamedArgument(AttributeData attribute, string name, out object? value)
 	{

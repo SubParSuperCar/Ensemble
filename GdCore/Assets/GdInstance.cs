@@ -4,6 +4,8 @@ using EnsembleRoot.GdCore.Utils;
 using Godot;
 using Godot.Collections;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.GdCore.Assets;
 
 /// <inheritdoc cref="IInstance" />

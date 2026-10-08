@@ -36,15 +36,6 @@ public partial class Main : Node
 		TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 	}
 
-	public override void _ExitTree()
-	{
-		AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
-		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
-
-		if (ReferenceEquals(Instance, this))
-			Instance = null;
-	}
-
 	public override void _Ready()
 	{
 		Console.WriteLine($"Starting {nameof(Main)}... (IsHeadlessServer={IsHeadlessServer})");
@@ -53,6 +44,15 @@ public partial class Main : Node
 			Load();
 		else
 			_ = LoadDeferredAsync();
+	}
+
+	public override void _ExitTree()
+	{
+		AppDomain.CurrentDomain.UnhandledException -= OnUnhandledException;
+		TaskScheduler.UnobservedTaskException -= OnUnobservedTaskException;
+
+		if (ReferenceEquals(Instance, this))
+			Instance = null;
 	}
 
 	public override void _Notification(int what)
@@ -125,13 +125,67 @@ public partial class Main : Node
 		}
 	}
 
+	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
+	{
+		if (e.ExceptionObject is Exception exception)
+			Log.Fatal(
+				exception,
+				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating})",
+				e.IsTerminating);
+		else
+			Log.Fatal(
+				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating}):\n{Exception}",
+				e.IsTerminating,
+				e.ExceptionObject);
+
+		if (e.IsTerminating)
+			FailFast(e.ExceptionObject as Exception);
+	}
+
+	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
+	{
+		e.SetObserved();
+		Log.Error(e.Exception, "Ensemble mitigated an unobserved task exception");
+	}
+
+	private static void OnAutoloadFailed(AutoloadDefinition definition, AutoloadLoadStage stage, Exception exception)
+	{
+		Log.Error(exception, "Failed to load {Type} during {Stage} stage", definition.Type.FullName, stage);
+
+		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
+		switch (definition.FailurePolicy)
+		{
+			case AutoloadFailurePolicy.LogAndContinue:
+				break;
+
+			case AutoloadFailurePolicy.FailFast:
+				FailFast(exception);
+				break;
+
+			case AutoloadFailurePolicy.AskUser:
+			{
+				var message = FormatFailureMessage(
+					$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
+					exception,
+					"Ensemble may be left in an unstable or partially initialized state.");
+
+				if (!AskUser("Autoload Initialization Failed", message))
+					FailFast(exception);
+
+				break;
+			}
+
+			default:
+				throw new UnreachableException();
+		}
+	}
+
 	private async Task OnQuitAsync()
 	{
 		if (_isQuitting)
 			return;
 
 		_isQuitting = true;
-
 		Log.Debug("Shutdown notification received. Starting shutdown sequence...");
 
 		var children = GetChildren();
@@ -160,62 +214,6 @@ public partial class Main : Node
 		tree.Quit();
 	}
 
-	private static void OnUnhandledException(object? _, UnhandledExceptionEventArgs e)
-	{
-		if (e.ExceptionObject is Exception exception)
-			Log.Fatal(
-				exception,
-				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating})",
-				e.IsTerminating);
-		else
-			Log.Fatal(
-				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating}):\n{Exception}",
-				e.IsTerminating,
-				e.ExceptionObject);
-
-		if (e.IsTerminating)
-			FailFast(e.ExceptionObject as Exception);
-	}
-
-	private static void OnUnobservedTaskException(object? _, UnobservedTaskExceptionEventArgs e)
-	{
-		e.SetObserved();
-		Log.Error(e.Exception, "Ensemble mitigated an unobserved task exception");
-	}
-
-	private static void OnAutoloadFailed(
-		AutoloadDefinition definition,
-		AutoloadLoadStage stage,
-		Exception exception)
-	{
-		Log.Error(exception, "Failed to load {Type} during {Stage} stage", definition.Type.FullName, stage);
-
-		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-		switch (definition.FailurePolicy)
-		{
-			case AutoloadFailurePolicy.LogAndContinue:
-				break;
-
-			case AutoloadFailurePolicy.FailFast:
-				FailFast(exception);
-				break;
-
-			case AutoloadFailurePolicy.AskUser:
-				if (
-					!AskUser(
-						"Autoload Initialization Failed",
-						FormatFailureMessage(
-							$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
-							exception,
-							"Ensemble may be left in an unstable or partially initialized state.")))
-					FailFast(exception);
-				break;
-
-			default:
-				throw new UnreachableException();
-		}
-	}
-
 	private async Task LoadDeferredAsync()
 	{
 		// TODO: Don't await an arbitrary/magical number of times; use a readiness signal (if available)
@@ -231,9 +229,12 @@ public partial class Main : Node
 
 	private void Load()
 	{
-		Console.WriteLine($"Starting {nameof(Main)} loading sequence (boot-load autoloads)...");
+		// Autoloads added mid-shutdown would never be freed, so the quit sequence would wait on them forever
+		if (_isQuitting)
+			return;
 
-		LoadAutoloads(AutoloadRegistry.GetAll());
+		Console.WriteLine($"Starting {nameof(Main)} loading sequence (boot-load autoloads)...");
+		LoadAutoloads();
 
 		Log.Debug("Finished {Class} loading sequence. Emitting {Event}...", nameof(Main), nameof(AutoloadsReady));
 
@@ -241,40 +242,42 @@ public partial class Main : Node
 		AutoloadsReady?.Invoke();
 	}
 
-	private void LoadAutoloads(AutoloadDefinition[] definitions)
+	private void LoadAutoloads()
 	{
-		var perAutoloadStopwatch = new Stopwatch();
-		var totalStopwatch = Stopwatch.StartNew();
-
-		var loadedCount = definitions
+		var start = Stopwatch.GetTimestamp();
+		var definitions = AutoloadRegistry.GetAll()
 			.Where(static definition => (definition.Scope & RuntimeScope) is not AutoloadScope.None)
-			.OrderBy(static definition => definition.Order)
-			.Count(definition => LoadAutoload(definition, perAutoloadStopwatch));
+			.OrderBy(static definition => definition.Order);
 
-		totalStopwatch.Stop();
+		var loadedCount = 0;
+
+		// ReSharper disable once LoopCanBeConvertedToQuery
+		foreach (var definition in definitions)
+			if (LoadAutoload(definition))
+				loadedCount++;
+
 		Log.Debug(
 			"Loaded {Count} autoload(s) in {ElapsedMs:F3} ms",
 			loadedCount,
-			totalStopwatch.Elapsed.TotalMilliseconds);
+			Stopwatch.GetElapsedTime(start).TotalMilliseconds);
 	}
 
-	private bool LoadAutoload(AutoloadDefinition definition, Stopwatch stopwatch)
+	private bool LoadAutoload(AutoloadDefinition definition)
 	{
+		var fullName = definition.Type.FullName;
 		var stage = AutoloadLoadStage.Factory;
 		Node? instance = null;
 
+		Log.Debug(
+			"Loading {Type}... (Scope={Scope}, Order={Order}, FailurePolicy={FailurePolicy})",
+			fullName,
+			definition.Scope,
+			definition.Order,
+			definition.FailurePolicy);
+
 		try
 		{
-			var fullName = definition.Type.FullName;
-
-			Log.Debug(
-				"Loading {Type}... (Scope={Scope}, Order={Order}, FailurePolicy={FailurePolicy})",
-				fullName,
-				definition.Scope,
-				definition.Order,
-				definition.FailurePolicy);
-
-			stopwatch.Restart();
+			var start = Stopwatch.GetTimestamp();
 			instance = definition.Factory();
 
 			if (fullName is not null)
@@ -287,8 +290,10 @@ public partial class Main : Node
 			if (instance is IAutoload autoload)
 				autoload.Initialize();
 
-			stopwatch.Stop();
-			Log.Debug("Loaded {Type} in {ElapsedMs:F3} ms", fullName, stopwatch.Elapsed.TotalMilliseconds);
+			Log.Debug(
+				"Loaded {Type} in {ElapsedMs:F3} ms",
+				fullName,
+				Stopwatch.GetElapsedTime(start).TotalMilliseconds);
 
 			return true;
 		}

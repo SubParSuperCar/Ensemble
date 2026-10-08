@@ -5,7 +5,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class MenuHomeView : UserControl, IViewFor<MenuHomeViewModel>
+public sealed partial class MenuHomeView : UserControl, IViewFor<MenuHomeViewModel>
 {
 	public MenuHomeView()
 	{

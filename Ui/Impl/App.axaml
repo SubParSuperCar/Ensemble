@@ -1,6 +1,7 @@
 <Application
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:g="clr-namespace:EnsembleRoot.Globals"
     x:Class="EnsembleRoot.Ui.Impl.App"
     RequestedThemeVariant="Default">
 
@@ -12,8 +13,6 @@
 
             <FontWeight x:Key="FontWeight">Light</FontWeight>
             <x:Double x:Key="FontSize">16</x:Double>
-
-            <x:TimeSpan x:Key="TransitionDuration">0.2</x:TimeSpan>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
@@ -58,7 +57,7 @@
 
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
+                    <DoubleTransition Property="Opacity" Duration="{x:Static g:Constants.AnimationDuration}" />
                 </Transitions>
             </Setter>
         </Style>
@@ -72,7 +71,7 @@
 
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{StaticResource TransitionDuration}" />
+                    <DoubleTransition Property="Opacity" Duration="{x:Static g:Constants.AnimationDuration}" />
                 </Transitions>
             </Setter>
         </Style>

@@ -7,4 +7,12 @@
     <Copyright>Copyright (c) 2026-$([System.DateTime]::Now.ToString('yyyy')) $(Authors)</Copyright>
   </PropertyGroup>
 
+  <!-- Estragonia is vendored and keeps upstream's code, so it isn't held to Ensemble's analyzers -->
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'Estragonia'">
+    <PackageReference Include="Meziantou.Analyzer" Version="3.0.294">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>

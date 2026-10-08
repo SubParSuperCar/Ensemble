@@ -10,40 +10,36 @@ namespace EnsembleRoot.Tooling.Tools;
 
 public partial class DestructTool : ToolBase
 {
-	private static readonly StringName ToggleActionName = "tool_destruct_toggle";
+	public static readonly StringName ToggleAction = "tool_destruct_toggle";
+	public static readonly Color Theme = Colors.Red;
 
-	private readonly SolidHighlight _highlight = new() { Tint = Colors.Red };
+	private readonly SolidHighlight _highlight = new() { Name = "Selection Highlight", Tint = Theme, Visible = false };
 	private AssetHandle? _selected;
 
-	protected override StringName ToggleAction => ToggleActionName;
+	public override Color ThemeColor => Theme;
 
-	public override void _Ready()
+	public override void _Ready() => AddChild(_highlight);
+
+	public override void _UnhandledInput(InputEvent @event)
 	{
-		_highlight.Name = "Selection Highlight";
-		_highlight.Visible = false;
+		if (
+			!IsEnabled || InputSink.IsSunk ||
+			_selected is not { } selected || !IsInstanceValid(selected) || selected.IsQueuedForDeletion() ||
+			!@event.IsActionPressed(ToolCommon.TriggerAction) ||
+			LocalPlot?.Instances.GetInstance(selected.InstanceId) is not { } instance)
+			return;
 
-		AddChild(_highlight);
+		new RemoveInstanceAction(InstanceReference.From(instance)).Submit();
+		ToolCommon.PlaySound("affirm");
+
+		Log.Verbose("Submitted removal: {InstanceId}", instance.Id);
+		SetSelected(null);
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		if (IsEnabled)
 			UpdateSelection();
-	}
-
-	public override void _UnhandledInput(InputEvent @event)
-	{
-		if (
-			!IsEnabled || InputSink.IsSunk || _selected is null ||
-			!@event.IsActionPressed(ToolCommon.TriggerAction) ||
-			LocalPlot?.Instances.GetInstance(_selected.InstanceId) is not { } instance)
-			return;
-
-		new RemoveInstanceAction(InstanceReference.From(instance)).Submit();
-		ToolCommon.PlaySound("affirm");
-
-		Log.Verbose("Submitted removal: {InstanceId}", _selected.InstanceId);
-		SetSelected(null);
 	}
 
 	protected override void OnDisable() => SetSelected(null);

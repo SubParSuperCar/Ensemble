@@ -42,6 +42,8 @@
                     <DataTemplate>
                         <Grid
                             ColumnSpacing="16"
+                            PointerEntered="OnItemPointerEntered"
+                            PointerExited="OnItemPointerExited"
                             ToolTip.Tip="Requests that you occupy this plot.&#x0a;If no other player occupies the plot,&#x0a;ownership may be assigned to you."
                             Background="Transparent">
 

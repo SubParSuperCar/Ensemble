@@ -7,7 +7,7 @@ using Serilog;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public class MenuViewModel : ViewModelBase
+public sealed class MenuViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;

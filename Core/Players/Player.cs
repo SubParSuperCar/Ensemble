@@ -1,9 +1,10 @@
+using System.Buffers.Text;
 using EnsembleCoreRoot.Api.Players;
 
 namespace EnsembleCoreRoot.Players;
 
 /// <inheritdoc />
-public class Player(Guid id, string? name = null, TimeProvider? timeProvider = null) : IPlayer
+public sealed class Player(Guid id, string? name = null, TimeProvider? timeProvider = null) : IPlayer
 {
 	public Guid Id { get; } = id;
 	public string Name { get; } = name ?? $"Player {ToShortGuid(id)}";
@@ -12,8 +13,5 @@ public class Player(Guid id, string? name = null, TimeProvider? timeProvider = n
 
 	public override string ToString() => $"Player(id={Id}, name={Name}, utcCreatedAt={UtcCreatedAt})";
 
-	private static string ToShortGuid(Guid guid) =>
-		Convert.ToBase64String(guid.ToByteArray())
-			.Replace('+', '-')
-			.Replace('/', '_')[..22];
+	private static string ToShortGuid(Guid guid) => Base64Url.EncodeToString(guid.ToByteArray());
 }

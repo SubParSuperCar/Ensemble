@@ -52,8 +52,9 @@ public static class PlotPlacement
 
 	private static bool IsWithin(Obb box, Aabb bounds)
 	{
-		var min = box.Center - box.Envelope;
-		var max = box.Center + box.Envelope;
+		var envelope = box.Envelope;
+		var min = box.Center - envelope;
+		var max = box.Center + envelope;
 
 		for (var axis = 0; axis < 3; axis++)
 			if (!IsAtLeast(min[axis], bounds.Position[axis]) || !IsAtLeast(bounds.End[axis], max[axis]))

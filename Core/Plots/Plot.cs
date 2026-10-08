@@ -5,7 +5,7 @@ using EnsembleCoreRoot.Assets;
 namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
-public class Plot : IPlot
+public sealed class Plot : IPlot
 {
 	public Plot(int id, IAssets assets, int? maxOccupantCount = null, int? maxInstanceCount = null)
 	{

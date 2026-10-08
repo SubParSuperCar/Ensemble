@@ -8,12 +8,17 @@ namespace EnsembleRoot.Common.Utils;
 /// </summary>
 public static class UserData
 {
-	public static Variant GetValue(string section, string key, Variant fallback = default) =>
-		Load()?.GetValue(section, key, fallback) ?? fallback;
+	public static Variant GetValue(string section, string key, Variant fallback = default)
+	{
+		using var config = Load();
+		return config?.GetValue(section, key, fallback) ?? fallback;
+	}
 
 	public static void SetValue(string section, string key, Variant value)
 	{
-		if (Load() is not { } config)
+		using var config = Load();
+
+		if (config is null)
 			return;
 
 		config.SetValue(section, key, value);
@@ -30,7 +35,9 @@ public static class UserData
 		if (result is Error.Ok or Error.FileNotFound)
 			return config;
 
+		config.Dispose();
 		Log.Warning("Failed to load {Path}: {Error}", UserDataCfgPath, result);
+
 		return null;
 	}
 }

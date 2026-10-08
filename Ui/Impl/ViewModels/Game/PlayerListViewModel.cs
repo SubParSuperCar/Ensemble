@@ -10,7 +10,7 @@ using Godot;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class PlayerListViewModel : ViewModelBase
+public sealed partial class PlayerListViewModel : ViewModelBase
 {
 	private const int MaxPingMs = 999;
 
@@ -142,7 +142,7 @@ public partial class PlayerListViewModel : ViewModelBase
 	}
 }
 
-public partial class PlayerItem : ObservableObject
+public sealed partial class PlayerItem : ObservableObject
 {
 	public required string Name { get; init; }
 	public required string Id { get; init; }

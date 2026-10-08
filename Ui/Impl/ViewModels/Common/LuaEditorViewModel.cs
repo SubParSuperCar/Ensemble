@@ -6,7 +6,7 @@ using EnsembleRoot.Ui.Impl.Abstractions;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class LuaEditorViewModel : ViewModelBase, IWidget
+public sealed partial class LuaEditorViewModel : ViewModelBase, IWidget
 {
 	private static CancellationTokenSource _cts = new();
 

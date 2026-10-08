@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class MenuDocFileView : UserControl, IViewFor<MenuDocFileViewModel>
+public sealed partial class MenuDocFileView : UserControl, IViewFor<MenuDocFileViewModel>
 {
 	public MenuDocFileView()
 	{

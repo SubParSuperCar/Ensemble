@@ -1,6 +1,8 @@
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
+// ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace EnsembleRoot.Saving.Pipeline;
 
 internal enum KdfFunction : byte

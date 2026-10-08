@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.Services;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class MultiPlayerRoleSelectorViewModel(NavigatorService navigator) : ViewModelBase
+public sealed partial class MultiPlayerRoleSelectorViewModel(NavigatorService navigator) : ViewModelBase
 {
 	[RelayCommand]
 	private void GoToJoin() => navigator.GoTo<JoinConfigViewModel>();

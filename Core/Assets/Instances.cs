@@ -7,7 +7,7 @@ using EnsembleCoreRoot.Utils;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public class Instances : IInstances
+public sealed class Instances : IInstances
 {
 	private readonly IAssets _assets;
 	private readonly Counts<int> _countsByAssetId = new();
@@ -16,7 +16,7 @@ public class Instances : IInstances
 	public Instances(IAssets assets, int? maxCount = null)
 	{
 		if (maxCount is { } count and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(maxCount));
 
 		_assets = assets;
 		MaxCount = maxCount ?? Unlimited;
@@ -55,14 +55,9 @@ public class Instances : IInstances
 	public IInstance Add(int assetId, Vector3 position, Quaternion rotation, int? instanceId = null)
 	{
 		if (instanceId is { } id)
-			ArgumentOutOfRangeException.ThrowIfNegative(id);
+			ArgumentOutOfRangeException.ThrowIfNegative(id, nameof(instanceId));
 
-		if (!_assets.All.TryGetValue(assetId, out var asset))
-			throw new KeyNotFoundException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Asset with id {assetId} not found."));
-
-		var instance = new Instance(asset, position, rotation);
+		var instance = new Instance(GetAsset(assetId), position, rotation);
 
 		if (instanceId is { } slot)
 			_instancesById.AddAt(instance, slot);
@@ -85,15 +80,17 @@ public class Instances : IInstances
 	public void Clear()
 	{
 		foreach (var instance in _instancesById.GetAll().ToArray())
-			Remove(instance.Id);
+			_instancesById.Remove(instance.Id);
 	}
 
-	public Quota GetQuota(int assetId) =>
+	public Quota GetQuota(int assetId) => (_countsByAssetId.Get(assetId), GetAsset(assetId).MaxInstanceCount);
+
+	public IReadOnlyDictionary<int, Quota> GetAllQuotas() => _assets.All.Keys.ToDictionary(static id => id, GetQuota);
+
+	private IAsset GetAsset(int assetId) =>
 		_assets.All.TryGetValue(assetId, out var asset)
-			? (_countsByAssetId.Get(assetId), asset.MaxInstanceCount)
+			? asset
 			: throw new KeyNotFoundException(string.Create(
 				CultureInfo.InvariantCulture,
 				$"Asset with id {assetId} not found."));
-
-	public IReadOnlyDictionary<int, Quota> GetAllQuotas() => _assets.All.Keys.ToDictionary(static id => id, GetQuota);
 }

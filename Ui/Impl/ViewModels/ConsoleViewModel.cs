@@ -12,7 +12,7 @@ using Dispatcher = Avalonia.Threading.Dispatcher;
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 // TODO: Add a ComboBox to select the minimum log severity level to show in Output
-public partial class ConsoleViewModel : ViewModelBase
+public sealed partial class ConsoleViewModel : ViewModelBase
 {
 	private readonly DispatcherService _dispatcher;
 	private byte _updateLogHistoryFlag;

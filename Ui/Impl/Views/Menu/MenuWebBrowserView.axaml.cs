@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class MenuWebBrowserView : UserControl, IViewFor<MenuWebBrowserViewModel>
+public sealed partial class MenuWebBrowserView : UserControl, IViewFor<MenuWebBrowserViewModel>
 {
 	public MenuWebBrowserView()
 	{

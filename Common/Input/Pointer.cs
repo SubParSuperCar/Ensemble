@@ -2,9 +2,10 @@ using Godot;
 
 namespace EnsembleRoot.Common.Input;
 
-// ReSharper disable once IdentifierTypo
 /// <summary>Captures the mouse while keeping its last visible position as the pointer position.</summary>
+#pragma warning disable CA1720
 public static class Pointer
+#pragma warning restore CA1720
 {
 	private static Vector2? _capturedPosition;
 

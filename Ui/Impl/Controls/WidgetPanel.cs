@@ -6,7 +6,7 @@ namespace EnsembleRoot.Ui.Impl.Controls;
 /// <summary>
 ///     Arranges children by bounds relative to its size, from 0 to 1, keeping each whole and at least its minimum size.
 /// </summary>
-public class WidgetPanel : Panel
+public sealed class WidgetPanel : Panel
 {
 	public static readonly AttachedProperty<Rect> RelativeBoundsProperty =
 		AvaloniaProperty.RegisterAttached<WidgetPanel, Control, Rect>("RelativeBounds");

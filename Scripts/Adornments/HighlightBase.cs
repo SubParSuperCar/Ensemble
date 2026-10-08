@@ -4,6 +4,10 @@ namespace EnsembleRoot.Scripts.Adornments;
 
 public abstract partial class HighlightBase : MeshInstance3D
 {
+	private static readonly StringName BoxSizeParameter = "box_size";
+	private static readonly StringName EdgeThicknessParameter = "edge_thickness";
+	private static readonly StringName FaceAlphaParameter = "face_alpha";
+
 	private readonly BoxMesh _box = new();
 
 	protected ShaderMaterial Material { get; } = new();
@@ -30,6 +34,17 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1 / 64f;
 
+	[Export(PropertyHint.Range, "0,1")]
+	public float FaceAlpha
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdateFaceAlpha();
+		}
+	} = 0.1f;
+
 	protected abstract Shader Shader { get; }
 
 	public override void _Ready()
@@ -42,6 +57,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 
 		UpdateMesh();
 		UpdateEdgeThickness();
+		UpdateFaceAlpha();
 	}
 
 	private void UpdateMesh()
@@ -52,8 +68,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 		_box.Size = Aabb.Size;
 		Position = Aabb.Position + Aabb.Size / 2;
 
-		Material.SetShaderParameter("box_size", Aabb.Size);
+		Material.SetShaderParameter(BoxSizeParameter, Aabb.Size);
 	}
 
-	private void UpdateEdgeThickness() => Material.SetShaderParameter("edge_thickness", EdgeThickness);
+	private void UpdateEdgeThickness() => Material.SetShaderParameter(EdgeThicknessParameter, EdgeThickness);
+	private void UpdateFaceAlpha() => Material.SetShaderParameter(FaceAlphaParameter, FaceAlpha);
 }

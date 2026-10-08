@@ -5,6 +5,7 @@ using Serilog;
 using MouseButton = Godot.MouseButton;
 
 // ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
 
 namespace EnsembleRoot.Scripts.Cameras;
@@ -34,7 +35,7 @@ public partial class PopperCam : SpringArm3D
 	[Export(PropertyHint.None, "radians_as_degrees,suffix:\u00B0/s")]
 	public float YawRate { get; set; } = Mathf.DegToRad(90f);
 
-	// The technically correct term is "dolly", not "zoom", because zoom is FOV, and dollying is physical in-out
+	// The technically correct term is "dolly", not "zoom", because zoom is FOV, and dollying is physical in/out
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
 	public float DollyMin { get; set; } = 1.25f;
 
@@ -126,12 +127,7 @@ public partial class PopperCam : SpringArm3D
 		SpringLength = Mathf.Lerp(SpringLength, _targetLength, Smoothing.GetWeight(DollySmoothingRate, delta));
 
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;
-
-		var rotation = Rotation;
-		rotation.Y = _yaw;
-		rotation.X = _pitch;
-
-		Rotation = rotation;
+		Rotation = Rotation with { X = _pitch, Y = _yaw };
 	}
 
 	private void ApplyDollyDelta(float delta)

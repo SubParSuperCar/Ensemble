@@ -6,7 +6,7 @@ using EnsembleCoreRoot.Api.Plots;
 namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
-public class Plots : IPlots
+public sealed class Plots : IPlots
 {
 	private readonly IAssets _assets;
 	private readonly int? _defaultMaxInstanceCount;
@@ -16,10 +16,10 @@ public class Plots : IPlots
 	public Plots(IAssets assets, int? defaultMaxOccupantCount = null, int? defaultMaxInstanceCount = null)
 	{
 		if (defaultMaxOccupantCount is { } occupantCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount);
+			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount, nameof(defaultMaxOccupantCount));
 
 		if (defaultMaxInstanceCount is { } instanceCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount);
+			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount, nameof(defaultMaxInstanceCount));
 
 		_assets = assets;
 		_defaultMaxOccupantCount = defaultMaxOccupantCount;
@@ -46,10 +46,10 @@ public class Plots : IPlots
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
 
 		if (maxOccupantCount is { } occupantCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount);
+			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount, nameof(maxOccupantCount));
 
 		if (maxInstanceCount is { } instanceCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount);
+			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount, nameof(maxInstanceCount));
 
 		if (_plotsById.ContainsKey(id))
 			throw new InvalidOperationException(string.Create(

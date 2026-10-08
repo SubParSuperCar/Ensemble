@@ -22,23 +22,35 @@ public partial class DiagnosticLogger : Node, IAutoload
 	public void Initialize() =>
 		_ = Task.Run(static () =>
 		{
-			Log.Debug("Building {Class} report...", nameof(DiagnosticLogger));
-			var stopwatch = Stopwatch.StartNew();
-
-			var entries = new List<Entry>();
-
-			AddSoftwareInfo(entries);
-			AddHardwareInfo(entries);
-			AddLocaleInfo(entries);
-
-			Log.Information("\n{Report}", BuildReport(entries));
-
-			stopwatch.Stop();
-			Log.Debug(
-				"Built {Class} report in {ElapsedMs:F3} ms",
-				nameof(DiagnosticLogger),
-				stopwatch.Elapsed.TotalMilliseconds);
+			try
+			{
+				LogReport();
+			}
+			catch (Exception exception)
+			{
+				Log.Error(exception, "Failed to build {Class} report", nameof(DiagnosticLogger));
+			}
 		});
+
+	private static void LogReport()
+	{
+		Log.Debug("Building {Class} report...", nameof(DiagnosticLogger));
+		var stopwatch = Stopwatch.StartNew();
+
+		var entries = new List<Entry>();
+
+		AddSoftwareInfo(entries);
+		AddHardwareInfo(entries);
+		AddLocaleInfo(entries);
+
+		Log.Information("\n{Report}", BuildReport(entries));
+
+		stopwatch.Stop();
+		Log.Debug(
+			"Built {Class} report in {ElapsedMs:F3} ms",
+			nameof(DiagnosticLogger),
+			stopwatch.Elapsed.TotalMilliseconds);
+	}
 
 	private static void AddSoftwareInfo(List<Entry> entries)
 	{

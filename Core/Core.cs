@@ -8,7 +8,7 @@ namespace EnsembleCoreRoot;
 
 /// <inheritdoc />
 /// <remarks>Core is non-authoritative; max counts are metadata only and are not enforced.</remarks>
-public class Core : ICore
+public sealed class Core : ICore
 {
 	private readonly Assets.Assets _assets;
 	private readonly Players.Players _players;
@@ -31,8 +31,8 @@ public class Core : ICore
 
 		if (localPlayerId is { } id)
 		{
-			var local = _players.Add(id, localPlayerName);
-			_players.SetLocal(local.Id);
+			_players.Add(id, localPlayerName);
+			_players.SetLocal(id);
 		}
 
 		_plots = new Plots.Plots(_assets, defaultMaxOccupantCount, defaultMaxInstanceCount) { Occupants = occupants };

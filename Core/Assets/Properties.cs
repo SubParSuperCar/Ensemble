@@ -1,13 +1,14 @@
+using System.Collections.Frozen;
 using System.Text;
 using EnsembleCoreRoot.Api.Assets;
 
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties
+public sealed class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties
 {
 	private readonly Dictionary<string, CoreVariant> _valuesByKey =
-		values is null ? [] : new Dictionary<string, CoreVariant>(values, StringComparer.OrdinalIgnoreCase);
+		new(values ?? FrozenDictionary<string, CoreVariant>.Empty, StringComparer.OrdinalIgnoreCase);
 
 	public IReadOnlyDictionary<string, CoreVariant> All => _valuesByKey;
 
@@ -31,14 +32,16 @@ public class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null)
 			Update(key, value);
 	}
 
-	public override string ToString()
+	public override string ToString() => Format(_valuesByKey);
+
+	internal static string Format(IReadOnlyCollection<KeyValuePair<string, CoreVariant>> values)
 	{
-		if (_valuesByKey.Count is 0)
+		if (values.Count is 0)
 			return "{}";
 
 		var builder = new StringBuilder("{");
 
-		foreach (var (key, value) in _valuesByKey)
+		foreach (var (key, value) in values)
 			builder.Append(key).Append(": ").Append(value).Append(", ");
 
 		builder.Length -= 2;

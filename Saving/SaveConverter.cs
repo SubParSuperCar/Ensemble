@@ -1,5 +1,8 @@
 using EnsembleCoreRoot.Api.Assets;
 
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedType.Global
+
 namespace EnsembleRoot.Saving;
 
 public static class SaveConverter

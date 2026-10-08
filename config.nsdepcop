@@ -38,6 +38,13 @@
 	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Scripts.*" />
 	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Tooling.*" />
 	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleRoot.Execution.*" />
+	<!-- Core's domain stays out of reach; only its shared EnsembleCoreRoot.Globals (Guids, Sentinels) is allowed -->
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleCoreRoot" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleCoreRoot.Api.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleCoreRoot.Assets.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleCoreRoot.Players.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleCoreRoot.Plots.*" />
+	<Disallowed From="EnsembleRoot.SessionManager.*" To="EnsembleCoreRoot.Utils.*" />
 
 	<!-- Replication -->
 	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.Tooling.*" />

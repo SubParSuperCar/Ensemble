@@ -1,9 +1,7 @@
 using System.Collections.ObjectModel;
-using Avalonia;
 using Avalonia.Threading;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Extensions;
 using Serilog.Events;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
@@ -40,10 +38,7 @@ public sealed class ToastListViewModel : ViewModelBase
 		toast.IsDismissing = true;
 		toast.Dispose();
 
-		if (Application.Current?.TransitionDuration is { } duration)
-			DispatcherTimer.RunOnce(() => Toasts.Remove(toast), duration);
-		else
-			Toasts.Remove(toast);
+		DispatcherTimer.RunOnce(() => Toasts.Remove(toast), AnimationDuration);
 	}
 
 	private void OnLogEmitted(LogEntry entry)

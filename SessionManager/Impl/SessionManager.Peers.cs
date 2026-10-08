@@ -1,7 +1,10 @@
+using EnsembleCoreRoot.Globals;
 using Godot;
 using Godot.Collections;
 using Serilog;
 using GDictionary = Godot.Collections.Dictionary;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace EnsembleRoot.SessionManager;
 
@@ -79,15 +82,19 @@ public partial class SessionManager
 		foreach (var peer in _peersById.Values)
 			RpcId(peerId, MethodName.RpcAddPeer, peer.Id, peer.PlayerId, peer.DisplayName);
 
-		var playerId = Guid.NewGuid().ToString();
+		var playerId = Guids.Create().ToString();
 		AddPeer(peerId, playerId, displayName);
 		RpcRegistered(MethodName.RpcAddPeer, peerId, playerId, displayName);
 	}
 
 	private void RpcRegistered(StringName method, params Variant[] args)
 	{
-		foreach (var peerId in _peersById.Keys.Where(peerId => peerId != LocalPeerId))
-			RpcId(peerId, method, args);
+		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		foreach (var peerId in _peersById.Keys)
+		{
+			if (peerId != LocalPeerId)
+				RpcId(peerId, method, args);
+		}
 	}
 
 	private void AddPeer(int peerId, string playerId, string displayName)
@@ -132,14 +139,20 @@ public partial class SessionManager
 	{
 		foreach (var peerId in _peersById.Keys.ToArray())
 			RemovePeer(peerId);
+
+		_sinceLastPingUpdate = 0d;
 	}
 
 	private void UpdatePings(double delta)
 	{
-		if (!IsServer || _session is not { } session || (_sinceLastPingUpdate += delta) < PingInterval.TotalSeconds)
+		if (!IsServer || _session is not { } session)
 			return;
 
-		_sinceLastPingUpdate = 0;
+		_sinceLastPingUpdate += delta;
+		if (_sinceLastPingUpdate < PingInterval.TotalSeconds)
+			return;
+
+		_sinceLastPingUpdate = 0d;
 
 		foreach (var peer in _peersById.Values.Where(static peer => !peer.IsHost))
 			peer.SetPing(session.GetPing(peer.Id));
@@ -152,12 +165,14 @@ public partial class SessionManager
 
 	private static void OnPeerConnected(long peerId) => Log.Debug("Peer connected: {PeerId}", peerId);
 
-	private void OnPeerDisconnected(long peerId)
+	private void OnPeerDisconnected(long id)
 	{
-		Log.Debug("Peer disconnected: {PeerId}", peerId);
+		Log.Debug("Peer disconnected: {PeerId}", id);
 
-		DisposeRateLimiter((int)peerId);
-		if (IsServer && RemovePeer((int)peerId))
-			RpcRegistered(MethodName.RpcRemovePeer, (int)peerId);
+		var peerId = (int)id;
+		DisposeRateLimiter(peerId);
+
+		if (IsServer && RemovePeer(peerId))
+			RpcRegistered(MethodName.RpcRemovePeer, peerId);
 	}
 }

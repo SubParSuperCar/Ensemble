@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:g="clr-namespace:EnsembleRoot.Globals"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.ConsoleView"
     x:DataType="vm:ConsoleViewModel"
@@ -13,7 +14,7 @@
         <Style Selector="SelectableTextBlock#Output">
             <Style.Animations>
                 <Animation
-                    Duration="{StaticResource TransitionDuration}"
+                    Duration="{x:Static g:Constants.AnimationDuration}"
                     IterationCount="Infinite"
                     PlaybackDirection="Alternate">
 

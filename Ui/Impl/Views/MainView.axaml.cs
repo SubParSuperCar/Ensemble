@@ -8,7 +8,7 @@ using Avalonia.Rendering;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class MainView : UserControl, IViewFor<MainViewModel>
+public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 {
 	public MainView()
 	{

@@ -33,6 +33,7 @@ public static class GContext
 		_occupant = occupant;
 
 		OnLocalPlotChanged(occupant?.Plot);
+		OnOwnerChanged(LocalPlot?.Occupants.Owner);
 		occupant?.PlotChanged += OnLocalPlotChanged;
 	}
 
@@ -61,7 +62,7 @@ public static class GContext
 	}
 
 	private static void OnOwnerChanged(GdOccupant? owner) =>
-		SetIsPlotOwner(owner is not null && ReferenceEquals(owner, _occupant));
+		SetIsPlotOwner(LocalPlot is null ? null : ReferenceEquals(owner, _occupant));
 
 	private static void OnIsLocalPlotSpawnedChanged(bool isSpawned) => SetIsLocalPlotSpawned(isSpawned);
 

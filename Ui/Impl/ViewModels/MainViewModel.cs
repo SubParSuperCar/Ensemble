@@ -18,7 +18,7 @@ using Color = Avalonia.Media.Color;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class MainViewModel : ViewModelBase
+public sealed partial class MainViewModel : ViewModelBase
 {
 	private const int TargetTerminalFps = 60;
 

@@ -20,14 +20,14 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 	private const int NonceSize = 16;
 
+	private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
+
 	private readonly byte[]? _key = string.IsNullOrEmpty(password) ? null : Encoding.UTF8.GetBytes(password);
 	private readonly Dictionary<long, byte[]> _pendingNoncesByPeerId = [];
 	private readonly byte[] _version = Encoding.UTF8.GetBytes(version);
 
 	private bool _isServer;
 	private SceneMultiplayer? _multiplayer;
-
-	public TimeSpan Timeout { get; init; } = TimeSpan.FromSeconds(5);
 
 	public event Action<string>? Failed;
 

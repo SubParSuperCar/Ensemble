@@ -5,7 +5,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class AssetSelectorView : UserControl, IViewFor<AssetSelectorViewModel>
+public sealed partial class AssetSelectorView : UserControl, IViewFor<AssetSelectorViewModel>
 {
 	public AssetSelectorView()
 	{

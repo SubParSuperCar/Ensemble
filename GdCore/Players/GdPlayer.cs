@@ -3,6 +3,8 @@ using EnsembleCoreRoot.Api.Players;
 using Godot;
 using Godot.Collections;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.GdCore.Players;
 
 /// <inheritdoc cref="IPlayer" />

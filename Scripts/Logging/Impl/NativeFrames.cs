@@ -19,7 +19,7 @@ public static class NativeFrames
 	private static readonly string ModuleName =
 		"EnsembleGame" + (OperatingSystem.IsWindows() ? ".dll" : OperatingSystem.IsMacOS() ? ".dylib" : ".so");
 
-	public static bool IsSupported => !RuntimeFeature.IsDynamicCodeSupported;
+	private static bool IsSupported => !RuntimeFeature.IsDynamicCodeSupported;
 
 	public static string? Describe(Exception exception)
 	{

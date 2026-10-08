@@ -15,7 +15,7 @@ using Dispatcher = Avalonia.Threading.Dispatcher;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class AssetSelectorViewModel : ViewModelBase, IWidget
+public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 {
 	private static readonly HashSet<string> ExpandedFolderPaths = [];
 
@@ -259,22 +259,20 @@ public partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	}
 }
 
-public partial class FolderNode : ObservableObject, INodeBase
+public sealed partial class FolderNode : ObservableObject, INodeBase
 {
 	public required string Path { get; init; }
-	public IList<INodeBase> Children { get; init; } = new List<INodeBase>();
+	public IList<INodeBase> Children { get; init; } = [];
 
 	[ObservableProperty] public partial bool IsExpanded { get; set; }
-
 	public required string Name { get; init; }
 }
 
-public partial class AssetNode : ObservableObject, INodeBase
+public sealed partial class AssetNode : ObservableObject, INodeBase
 {
 	public int Id { get; init; }
 
 	[ObservableProperty] public partial string Quota { get; set; } = "<Unknown>";
-
 	public required string Name { get; init; }
 }
 

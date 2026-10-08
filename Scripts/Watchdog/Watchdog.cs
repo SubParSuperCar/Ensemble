@@ -5,6 +5,8 @@ using Godot;
 using Serilog;
 using TinyDialogsNet;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Scripts.Watchdog;
 
 [GlobalClass]
@@ -16,8 +18,9 @@ public partial class Watchdog : Node, IAutoload
 
 	private static byte _heartbeatFlag;
 
-	private CancellationTokenSource _cts = null!;
-	private Thread _pollThread = null!;
+	private readonly CancellationTokenSource _cts = new();
+
+	private Thread? _pollThread;
 
 	public static Watchdog? Instance { get; private set; }
 
@@ -26,25 +29,18 @@ public partial class Watchdog : Node, IAutoload
 		Instance = this;
 		Heartbeat();
 
-		_cts = new CancellationTokenSource();
-		_pollThread = new Thread(WatchdogPollLoop)
-		{
-			IsBackground = true,
-			Name = nameof(WatchdogPollLoop)
-		};
+		_pollThread = new Thread(WatchdogPollLoop) { IsBackground = true, Name = nameof(WatchdogPollLoop) };
 		_pollThread.Start();
 	}
 
 	public override void _ExitTree()
 	{
 		_cts.Cancel();
-		_pollThread.Join(PollIntervalMs);
+		_pollThread?.Join(PollIntervalMs);
 
 		if (ReferenceEquals(Instance, this))
 			Instance = null;
 	}
-
-	public override void _Process(double delta) => Heartbeat();
 
 #if ENSEMBLE_DEBUG
 	public override void _UnhandledKeyInput(InputEvent @event)
@@ -56,6 +52,8 @@ public partial class Watchdog : Node, IAutoload
 		Thread.Sleep(int.MaxValue);
 	}
 #endif
+
+	public override void _Process(double delta) => Heartbeat();
 
 	public static void Heartbeat() => Volatile.Write(ref _heartbeatFlag, 1);
 

@@ -1,5 +1,7 @@
 using Serilog.Events;
 
+// ReSharper disable NotAccessedPositionalProperty.Global
+
 namespace EnsembleRoot.Common.Logging;
 
 /// <param name="Message">The rendered message alone.</param>

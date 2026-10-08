@@ -17,7 +17,7 @@ using Serilog;
 
 namespace EnsembleRoot.Ui.Impl;
 
-public class App : Application
+public sealed class App : Application
 {
 	// OKLCH lightness bounds keeping the accent >= 3:1 against SimpleTheme's background and its foreground >= 4.5:1
 	private const double LightAccentMinLightness = 0.45;
@@ -44,8 +44,8 @@ public class App : Application
 		InputElement.GotFocusEvent.Raised.Subscribe(focusObserver);
 		InputElement.LostFocusEvent.Raised.Subscribe(focusObserver);
 
-		WeakReferenceMessenger.Default.Register<SetUiThemeMessage>(this,
-			(_, message) => RequestedThemeVariant = message.Value switch
+		WeakReferenceMessenger.Default.Register<App, SetUiThemeMessage>(this,
+			static (app, message) => app.RequestedThemeVariant = message.Value switch
 			{
 				true => ThemeVariant.Dark,
 				false => ThemeVariant.Light,
@@ -82,17 +82,17 @@ public class App : Application
 	}
 
 	// Sink/mark keystrokes as handled to prevent unintentional UI navigation, and all navigation keys while in-session
-	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs e)
+	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs args)
 	{
 		if (InputSink.IsSunk)
 			return;
 
 		if (
-			e.Key is Key.Space or Key.Tab ||
+			args.Key is Key.Space or Key.Tab ||
 			(IsInSession &&
-			 e.Key is Key.Up or Key.Down or Key.Left or Key.Right
+			 args.Key is Key.Up or Key.Down or Key.Left or Key.Right
 				 or Key.PageUp or Key.PageDown or Key.Home or Key.End or Key.Enter))
-			e.Handled = true;
+			args.Handled = true;
 	}
 
 	private void ApplyAccentColor()

@@ -1,24 +1,25 @@
+using Avalonia.Media;
+using Avalonia.Media.Immutable;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Impl.Abstractions;
+using Estragonia;
 using Serilog;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class ToolBarViewModel : ViewModelBase
+public sealed partial class ToolBarViewModel : ViewModelBase
 {
 	private GdInstances? _instances;
 
 	public ToolBarViewModel()
 	{
-		OnConstructToolIsEnabledChanged(GToolManager.Construct.IsEnabled);
-		GToolManager.Construct.IsEnabledChanged += OnConstructToolIsEnabledChanged;
-
-		OnDestructToolIsEnabledChanged(GToolManager.Destruct.IsEnabled);
-		GToolManager.Destruct.IsEnabledChanged += OnDestructToolIsEnabledChanged;
+		IsConstructToolEnabled = GToolManager.IsEnabled<ConstructTool>();
+		IsDestructToolEnabled = GToolManager.IsEnabled<DestructTool>();
+		GToolManager.ToolIsEnabledChanged += OnToolIsEnabledChanged;
 
 		OnLocalPlotChanged(LocalPlot);
 		LocalPlotChanged += OnLocalPlotChanged;
@@ -26,6 +27,9 @@ public partial class ToolBarViewModel : ViewModelBase
 		IsPlotOwnerChanged += OnClearAllConditionChanged;
 		IsLocalPlotSpawnedChanged += OnClearAllConditionChanged;
 	}
+
+	public static IBrush ConstructBrush { get; } = new ImmutableSolidColorBrush(ConstructTool.Theme.ToAvaloniaColor());
+	public static IBrush DestructBrush { get; } = new ImmutableSolidColorBrush(DestructTool.Theme.ToAvaloniaColor());
 
 	[ObservableProperty] public partial bool IsConstructToolEnabled { get; set; }
 	[ObservableProperty] public partial bool IsDestructToolEnabled { get; set; }
@@ -37,8 +41,7 @@ public partial class ToolBarViewModel : ViewModelBase
 
 	protected override void OnDispose()
 	{
-		GToolManager.Construct.IsEnabledChanged -= OnConstructToolIsEnabledChanged;
-		GToolManager.Destruct.IsEnabledChanged -= OnDestructToolIsEnabledChanged;
+		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
 
 		LocalPlotChanged -= OnLocalPlotChanged;
 		IsPlotOwnerChanged -= OnClearAllConditionChanged;
@@ -48,10 +51,10 @@ public partial class ToolBarViewModel : ViewModelBase
 	}
 
 	[RelayCommand]
-	private static void ToggleConstructTool() => GToolManager.Construct.Toggle();
+	private static void ToggleConstructTool() => GToolManager.Toggle<ConstructTool>();
 
 	[RelayCommand]
-	private static void ToggleDestructTool() => GToolManager.Destruct.Toggle();
+	private static void ToggleDestructTool() => GToolManager.Toggle<DestructTool>();
 
 	[RelayCommand]
 	private void ToggleMutexEnforced()
@@ -60,17 +63,21 @@ public partial class ToolBarViewModel : ViewModelBase
 		IsMutexEnforced = GToolManager.UseMutex;
 	}
 
-	private void OnConstructToolIsEnabledChanged(bool isEnabled)
+	private void OnToolIsEnabledChanged(ToolBase tool, bool isEnabled)
 	{
-		Log.Verbose("{Tool}.{Member} set to: {Value}", nameof(ConstructTool), nameof(ToolBase.IsEnabled), isEnabled);
-		IsConstructToolEnabled = isEnabled;
-	}
+		Log.Verbose("{Tool}.{Member} set to: {Value}", tool.Name, nameof(ToolBase.IsEnabled), isEnabled);
 
-	private void OnDestructToolIsEnabledChanged(bool isEnabled)
-	{
-		Log.Verbose("{Tool}.{Member} set to: {Value}", nameof(DestructTool), nameof(ToolBase.IsEnabled), isEnabled);
-		IsDestructToolEnabled = isEnabled;
-		UpdateClearAll();
+		switch (tool)
+		{
+			case ConstructTool:
+				IsConstructToolEnabled = isEnabled;
+				break;
+
+			case DestructTool:
+				IsDestructToolEnabled = isEnabled;
+				UpdateClearAll();
+				break;
+		}
 	}
 
 	private void OnLocalPlotChanged(GdPlot? plot)

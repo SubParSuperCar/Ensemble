@@ -7,7 +7,7 @@ using EnsembleRoot.Ui.Impl.Services;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class MenuDocFileViewModel : ViewModelBase
+public sealed partial class MenuDocFileViewModel : ViewModelBase
 {
 	private readonly NavigatorService _navigator;
 

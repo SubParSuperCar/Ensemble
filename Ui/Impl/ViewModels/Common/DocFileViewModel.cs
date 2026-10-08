@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.Abstractions;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class DocFileViewModel : ViewModelBase
+public sealed partial class DocFileViewModel : ViewModelBase
 {
 	private const string GhMainHeadPath =
 		HttpsScheme + "raw.githubusercontent.com/" + GitHubRepoPath + "/refs/heads/main/";
@@ -27,4 +27,4 @@ public partial class DocFileViewModel : ViewModelBase
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }
 }
 
-public record DocFile(string Name, string Uri);
+public sealed record DocFile(string Name, string Uri);

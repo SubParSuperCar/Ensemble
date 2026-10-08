@@ -39,7 +39,7 @@ public static partial class LuaExecutor
 		stopwatch.Stop();
 		Log.Information(
 			"< [{Results}] ({ElapsedMs:F3} ms)",
-			string.Join(", ", results.Select(static value => value.ToString())),
+			string.Join(", ", results),
 			stopwatch.Elapsed.TotalMilliseconds);
 
 		return results;

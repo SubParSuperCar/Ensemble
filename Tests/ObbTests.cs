@@ -62,7 +62,6 @@ public sealed class ObbTests
 	{
 		// Resting on the ground beside a block, overlapping it slightly: out to the side, not up onto it
 		var mover = Cube(new Vector3(0.8f, 0, 0));
-
 		var translation = mover.GetMinimumTranslation(Cube(Vector3.Zero), Vector3.Up);
 
 		Assert.Equal(0.2f, translation.X, 1e-6f);

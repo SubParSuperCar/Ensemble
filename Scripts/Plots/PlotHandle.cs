@@ -1,5 +1,8 @@
 using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Scripts.Plots.Impl;
 using Godot;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace EnsembleRoot.Scripts.Plots;
 
@@ -9,6 +12,7 @@ public partial class PlotHandle : Node3D
 	public const float GridToWorldScale = 0.5f;
 
 	private Transform3D? _originTransform;
+	private PlotOutline? _outline;
 	private GdPlot _plot = null!;
 
 	[Export(PropertyHint.Range, "0,0,1,or_greater,hide_slider")]
@@ -47,6 +51,26 @@ public partial class PlotHandle : Node3D
 
 	public Transform3D GridToWorld(Vector3 gridPosition, Quaternion rotation) =>
 		OriginTransform * new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale);
+
+	public void SetOutline(Color? color)
+	{
+		if (color is not { } tint)
+		{
+			if (IsInstanceValid(_outline))
+				_outline.Lower();
+
+			return;
+		}
+
+		if (!IsInstanceValid(_outline) || _outline.IsQueuedForDeletion())
+		{
+			_outline = new PlotOutline { Name = "Outline", Bounds = PlotPlacement.GetBounds(this) };
+			AddChild(_outline);
+			_outline.GlobalTransform = OriginTransform;
+		}
+
+		_outline.Raise(tint);
+	}
 
 	private Transform3D CalculateOriginTransform()
 	{

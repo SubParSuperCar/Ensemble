@@ -1,5 +1,8 @@
 using Avalonia;
 
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace EnsembleRoot.Ui.Impl.Abstractions;
 
 /// <param name="InitialBounds">The bounds when first opened, relative to the widget area, from 0 to 1.</param>

@@ -21,6 +21,7 @@ public partial class Logger : Node, IAutoload
 	private const string AppSettingsSection = "app_settings";
 	private const string DefaultsHashKey = "defaults_sha256";
 
+	// Serilog resolves the File sink's hooks by name, and the sink stays configurable in appsettings.json
 	private static readonly string HeaderHookReference =
 		$"{typeof(Hooks).FullName}::{nameof(Hooks.Header)}, {typeof(Hooks).Assembly.GetName().Name}";
 
@@ -44,14 +45,12 @@ public partial class Logger : Node, IAutoload
 
 			try
 			{
-				var configuration = BuildConfiguration(logDir, true, out syncNote);
-				loggerConfig = CreateBaseConfig().ReadFrom.Configuration(configuration);
+				loggerConfig = CreateConfig(logDir, true, out syncNote);
 			}
 			catch (Exception exception)
 			{
 				userFailure = exception;
-				var configuration = BuildConfiguration(logDir, false, out _);
-				loggerConfig = CreateBaseConfig().ReadFrom.Configuration(configuration);
+				loggerConfig = CreateConfig(logDir, false, out _);
 			}
 		}
 		catch (Exception exception)
@@ -107,20 +106,21 @@ public partial class Logger : Node, IAutoload
 			.WriteTo.Sink(new LogSink())
 			.WriteTo.Sink(new VolatileLogHistorySink());
 
-	private static IConfiguration BuildConfiguration(string logDir, bool useUserCopy, out string? syncNote)
+	private static LoggerConfiguration CreateConfig(string logDir, bool useUserCopy, out string? syncNote)
 	{
 		syncNote = null;
 		var bytes = useUserCopy ? ReadUserAppSettings(out syncNote) : ReadAllBytesOrThrow(AppSettingsPath);
 
-		var configBuilder = new ConfigurationBuilder();
-		configBuilder.AddJsonStream(new MemoryStream(bytes));
-		configBuilder.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
-		{
-			["Serilog:WriteTo:0:Args:path"] = Path.Combine(logDir, LogFileNameTemplate),
-			["Serilog:WriteTo:0:Args:hooks"] = HeaderHookReference
-		});
+		var configuration = new ConfigurationBuilder()
+			.AddJsonStream(new MemoryStream(bytes))
+			.AddInMemoryCollection(new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase)
+			{
+				["Serilog:WriteTo:0:Args:path"] = Path.Combine(logDir, LogFileNameTemplate),
+				["Serilog:WriteTo:0:Args:hooks"] = HeaderHookReference
+			})
+			.Build();
 
-		return configBuilder.Build();
+		return CreateBaseConfig().ReadFrom.Configuration(configuration);
 	}
 
 	private static byte[] ReadUserAppSettings(out string? syncNote)
@@ -149,6 +149,8 @@ public partial class Logger : Node, IAutoload
 		var defaultsHash = Convert.ToHexString(SHA256.HashData(defaults));
 
 		var syncedHash = UserData.GetValue(AppSettingsSection, DefaultsHashKey, string.Empty).AsString();
+		var areDefaultsChanged = !string.Equals(syncedHash, defaultsHash, StringComparison.Ordinal);
+
 		string? note = null;
 
 		if (!FileAccess.FileExists(UserAppSettingsPath))
@@ -156,9 +158,7 @@ public partial class Logger : Node, IAutoload
 			Copy(AppSettingsPath, UserAppSettingsPath);
 			note = $"Created {UserAppSettingsPath} from the defaults";
 		}
-		else if (
-			!string.Equals(syncedHash, defaultsHash, StringComparison.Ordinal) &&
-			!ReadAllBytesOrThrow(UserAppSettingsPath).AsSpan().SequenceEqual(defaults))
+		else if (areDefaultsChanged && !ReadAllBytesOrThrow(UserAppSettingsPath).AsSpan().SequenceEqual(defaults))
 		{
 			if (Main.IsHeadlessServer)
 				return $"Kept {UserAppSettingsPath} despite newer defaults (not asked when headless)";
@@ -174,7 +174,7 @@ public partial class Logger : Node, IAutoload
 				note = $"Kept {UserAppSettingsPath} despite newer defaults";
 		}
 
-		if (!string.Equals(syncedHash, defaultsHash, StringComparison.Ordinal))
+		if (areDefaultsChanged)
 			UserData.SetValue(AppSettingsSection, DefaultsHashKey, defaultsHash);
 
 		return note;

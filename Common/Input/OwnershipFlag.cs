@@ -1,3 +1,6 @@
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedMethodReturnValue.Global
+
 namespace EnsembleRoot.Common.Input;
 
 public sealed class OwnershipFlag

@@ -48,7 +48,8 @@ public sealed class InstancesTests
 	public void AssetProperties_IgnoreKeyCase()
 	{
 		var core = new Core();
-		var asset = core.Assets.Add(0, null, new Dictionary<string, CoreVariant> { ["Color"] = CoreVariant.Null });
+		var properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { ["Color"] = CoreVariant.Null };
+		var asset = core.Assets.Add(0, null, properties);
 
 		Assert.True(asset.Properties.ContainsKey("color"));
 	}

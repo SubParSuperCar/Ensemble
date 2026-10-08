@@ -8,7 +8,7 @@ using static EnsembleRoot.SessionManager.SessionManager;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class JoinConfigViewModel : ViewModelBase
+public sealed partial class JoinConfigViewModel : ViewModelBase
 {
 	private readonly NavigatorService _navigator;
 

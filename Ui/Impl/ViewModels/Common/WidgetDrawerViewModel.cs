@@ -5,7 +5,7 @@ using EnsembleRoot.Ui.Impl.Services;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class WidgetDrawerViewModel(WidgetManagerService widgets) : ViewModelBase
+public sealed partial class WidgetDrawerViewModel(WidgetManagerService widgets) : ViewModelBase
 {
 	public ObservableCollection<WidgetEntry> Entries { get; } = widgets.Entries;
 

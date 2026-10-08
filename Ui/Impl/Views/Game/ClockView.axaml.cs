@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class ClockView : UserControl, IViewFor<ClockViewModel>
+public sealed partial class ClockView : UserControl, IViewFor<ClockViewModel>
 {
 	public ClockView()
 	{

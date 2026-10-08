@@ -15,7 +15,7 @@ public static class Globals
 	/// <inheritdoc cref="Main" />
 	public static Main GMain => Main.Instance ?? throw new InvalidOperationException($"{nameof(Main)} is null.");
 
-	/// <inheritdoc cref="GdCore" />
+	/// <inheritdoc cref="GdCore.GdCore" />
 	public static GdCore.GdCore GCore =>
 		GdCore.GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null.");
 

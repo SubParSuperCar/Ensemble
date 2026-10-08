@@ -17,14 +17,14 @@ public sealed class ObbGridTests
 
 		for (var id = 0; id < 500; id++)
 		{
-			var box = Cube(RandomPoint(random), new Basis(RandomAxis(random), random.NextSingle() * Mathf.Tau));
+			var box = RandomCube(random);
 			grid.Add(id, box);
 			boxes.Add(box);
 		}
 
 		for (var i = 0; i < 500; i++)
 		{
-			var probe = Cube(RandomPoint(random), new Basis(RandomAxis(random), random.NextSingle() * Mathf.Tau));
+			var probe = RandomCube(random);
 			Assert.Equal(boxes.Exists(probe.Overlaps), grid.Overlaps(probe));
 		}
 	}
@@ -45,13 +45,16 @@ public sealed class ObbGridTests
 	public void Query_ReturnsSpanningBoxOnce()
 	{
 		var grid = new ObbGrid();
-		grid.Add(0, Obb.From(new Aabb(Vector3.Zero, Vector3.One * 9), Transform3D.Identity));
 		var results = new List<Obb>();
+		grid.Add(0, Obb.From(new Aabb(Vector3.Zero, Vector3.One * 9), Transform3D.Identity));
 
 		grid.Query(Cube(Vector3.One * 4, Basis.Identity), results);
 
 		Assert.Single(results);
 	}
+
+	private static Obb RandomCube(Random random) =>
+		Cube(RandomPoint(random), new Basis(RandomAxis(random), random.NextSingle() * Mathf.Tau));
 
 	private static Vector3 RandomPoint(Random random) =>
 		new(random.NextSingle() * 20 - 10, random.NextSingle() * 20 - 10, random.NextSingle() * 20 - 10);

@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class MultiPlayerRoleSelectorView : UserControl, IViewFor<MultiPlayerRoleSelectorViewModel>
+public sealed partial class MultiPlayerRoleSelectorView : UserControl, IViewFor<MultiPlayerRoleSelectorViewModel>
 {
 	public MultiPlayerRoleSelectorView()
 	{

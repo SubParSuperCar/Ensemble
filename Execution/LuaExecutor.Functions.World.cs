@@ -103,15 +103,6 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static bool IsSinglePlayer(string function)
-	{
-		if (GSessionManager.Mode is SessionMode.SinglePlayer)
-			return true;
-
-		Log.Error("{Function} edits plots directly, so it is single-player only", function);
-		return false;
-	}
-
 	private static ValueTask<int> perf_mod(
 		LuaFunctionExecutionContext context,
 		CancellationToken cancellationToken)
@@ -163,7 +154,10 @@ public static partial class LuaExecutor
 		CancellationToken cancellationToken)
 	{
 		if (WorldManager.Instance?.World?.GetNodeOrNull("Sky/TimeOfDay") is not { } timeOfDay)
+		{
+			Log.Error("Time of day not found");
 			return context.ReturnNothing();
+		}
 
 		if (!context.HasArgument(0))
 		{
@@ -174,7 +168,8 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
-		var time = context.GetArgument<float>(0) % 24;
+		var time = Mathf.PosMod(context.GetArgument<float>(0), 24f);
+
 		timeOfDay.Set("game_time_enabled", false);
 		timeOfDay.Set("system_sync", false);
 		timeOfDay.Set("current_time", time);
@@ -211,5 +206,14 @@ public static partial class LuaExecutor
 				context.GetArgument<float>(2)));
 
 		return context.ReturnNothing();
+	}
+
+	private static bool IsSinglePlayer(string function)
+	{
+		if (GSessionManager.Mode is SessionMode.SinglePlayer)
+			return true;
+
+		Log.Error("{Function} edits plots directly, so it is single-player only", function);
+		return false;
 	}
 }

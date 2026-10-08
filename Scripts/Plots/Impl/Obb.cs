@@ -92,8 +92,9 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 			var penetration = Radius(axis) + obstacle.Radius(axis) - MathF.Abs(offset);
 			var sign = Mathf.IsZeroApprox(offset) ? axis.Dot(normal) >= 0 ? 1 : -1 : MathF.Sign(offset);
 			var push = axis * (sign * penetration);
+			var along = push.Dot(normal);
 
-			if ((push.Dot(normal) < 0 && !Mathf.IsZeroApprox(push.Dot(normal))) || penetration >= shortest)
+			if ((along < 0 && !Mathf.IsZeroApprox(along)) || penetration >= shortest)
 				continue;
 
 			shortest = penetration;
@@ -127,9 +128,9 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 		var count = 6;
 
 		for (var i = 0; i < 3; i++)
-		for (var j = 3; j < 6; j++)
-			if (axes[i].Cross(axes[j]) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
-				axes[count++] = cross.Normalized();
+			for (var j = 3; j < 6; j++)
+				if (axes[i].Cross(axes[j]) is var cross && !Mathf.IsZeroApprox(cross.LengthSquared()))
+					axes[count++] = cross.Normalized();
 
 		return count;
 	}

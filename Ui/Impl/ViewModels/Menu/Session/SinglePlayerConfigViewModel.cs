@@ -7,7 +7,7 @@ using static EnsembleRoot.SessionManager.SessionManager;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class SinglePlayerConfigViewModel(NavigatorService navigator) : ViewModelBase
+public sealed partial class SinglePlayerConfigViewModel(NavigatorService navigator) : ViewModelBase
 {
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(StartCommand))]

@@ -5,7 +5,7 @@ using EnsembleCoreRoot.Api.Assets;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public class Assets : IAssets
+public sealed class Assets : IAssets
 {
 	private readonly Dictionary<int, IAsset> _assetsById = [];
 
@@ -27,7 +27,7 @@ public class Assets : IAssets
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
 
 		if (maxInstanceCount is { } count and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(count);
+			ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(maxInstanceCount));
 
 		if (_assetsById.ContainsKey(id))
 			throw new InvalidOperationException(string.Create(

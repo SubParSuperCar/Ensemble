@@ -59,6 +59,15 @@ public partial class DiscordRpc : Node, IAutoload
 	private static TimeSpan GetRetryDelay(int attemptCount) =>
 		TimeSpan.FromTicks(Math.Min(FirstRetryDelay.Ticks << (attemptCount - 1), MaxRetryDelay.Ticks));
 
+	private static string GetActivity() =>
+		GSessionManager switch
+		{
+			{ IsActive: false } => "In the Main Menu",
+			{ Mode: SessionMode.SinglePlayer } => "Playing Single-Player",
+			{ Mode: SessionMode.MultiPlayer, IsServer: true } => "Hosting a Multi-Player Session",
+			_ => "Playing Multi-Player"
+		};
+
 	private void Connect()
 	{
 		if (_cts.IsCancellationRequested)
@@ -88,15 +97,6 @@ public partial class DiscordRpc : Node, IAutoload
 
 		client.Dispose();
 	}
-
-	private static string GetActivity() =>
-		GSessionManager switch
-		{
-			{ IsActive: false } => "In the Main Menu",
-			{ Mode: SessionMode.SinglePlayer } => "Playing Single-Player",
-			{ Mode: SessionMode.MultiPlayer, IsServer: true } => "Hosting a Multi-Player Session",
-			_ => "Playing Multi-Player"
-		};
 
 	private void OnSessionFailed(string _) => UpdatePresence();
 

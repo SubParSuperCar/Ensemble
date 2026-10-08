@@ -1,5 +1,7 @@
 using Godot;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Scripts.Assets;
 
 [GlobalClass]

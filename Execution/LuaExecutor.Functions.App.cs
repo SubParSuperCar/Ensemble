@@ -76,6 +76,12 @@ public static partial class LuaExecutor
 		const int defaultDelayMs = (int)TimeSpan.MillisecondsPerSecond / 30;
 		var delayMs = context.GetArgumentOrDefault(0, defaultDelayMs);
 
+		if (delayMs < 0)
+		{
+			Log.Error("Invalid delay: {DelayMs} ms", delayMs);
+			return context.Return();
+		}
+
 		await Task.Delay(delayMs, cancellationToken).ConfigureAwait(true);
 
 		return context.Return();

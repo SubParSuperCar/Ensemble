@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:g="clr-namespace:EnsembleRoot.Globals"
     xmlns:e="using:EnsembleRoot.Ui.Impl.Easings"
     xmlns:v="using:EnsembleRoot.Ui.Impl.Views"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -42,7 +43,7 @@
                 <TransitioningContentControl.PageTransition>
                     <CompositePageTransition>
                         <PageSlide
-                            Duration="{StaticResource TransitionDuration}"
+                            Duration="{x:Static g:Constants.AnimationDuration}"
                             Orientation="Vertical"
                             SlideInEasing="CubicEaseOut">
 
@@ -52,7 +53,7 @@
                         </PageSlide>
 
                         <CrossFade
-                            Duration="{StaticResource TransitionDuration}"
+                            Duration="{x:Static g:Constants.AnimationDuration}"
                             FadeInEasing="CubicEaseOut" />
                     </CompositePageTransition>
                 </TransitioningContentControl.PageTransition>
@@ -68,8 +69,10 @@
 
             <TransitioningContentControl.PageTransition>
                 <CompositePageTransition>
-                    <CrossFade Duration="{StaticResource TransitionDuration}" />
-                    <Rotate3DTransition Duration="{StaticResource TransitionDuration}" Orientation="Vertical" />
+                    <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
+                    <Rotate3DTransition
+                        Duration="{x:Static g:Constants.AnimationDuration}"
+                        Orientation="Vertical" />
                 </CompositePageTransition>
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>

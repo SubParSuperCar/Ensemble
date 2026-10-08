@@ -23,15 +23,14 @@ public static class PatchExport
 		try
 		{
 			Console.WriteLine("Patching export layout...");
-			var stopwatch = Stopwatch.StartNew();
+			var start = Stopwatch.GetTimestamp();
 
 			foreach (var dataDir in Directory.EnumerateDirectories(exeDir, "data*", SearchOption.TopDirectoryOnly))
 				MoveContents(dataDir, exeDir);
 
-			stopwatch.Stop();
 			Console.WriteLine(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Patched export layout in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
+				$"Patched export layout in {Stopwatch.GetElapsedTime(start).TotalMilliseconds:F3} ms"));
 		}
 		catch (Exception exception)
 		{

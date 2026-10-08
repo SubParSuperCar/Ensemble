@@ -5,7 +5,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class GameView : UserControl, IViewFor<GameViewModel>
+public sealed partial class GameView : UserControl, IViewFor<GameViewModel>
 {
 	public GameView()
 	{

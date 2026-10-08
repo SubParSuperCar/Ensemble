@@ -8,12 +8,11 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Controls;
-using EnsembleRoot.Ui.Impl.Extensions;
 using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
+public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 {
 	private const double HiddenScale = 3 / 4d;
 	private const double HiddenTilt = -90 * (1 / 4d);
@@ -26,11 +25,11 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private readonly ScaleTransform _scale = new(HiddenScale, HiddenScale);
 	private readonly Rotate3DTransform _tilt = new() { AngleX = HiddenTilt, Depth = TiltDepth };
 	private readonly List<DoubleTransition> _transitions = [];
-
-	private bool? _isShown;
 	private DragKind _drag;
 	private Rect _dragOrigin;
 	private Point _dragStart;
+
+	private bool? _isShown;
 
 	public WidgetView()
 	{
@@ -51,15 +50,12 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	// Transform strings have no 3D rotations
 	private void InitializeTransform()
 	{
-		if (Application.Current?.TransitionDuration is { } duration)
-		{
-			_transitions.AddRange(
-			[
-				Ease(_scale, ScaleTransform.ScaleXProperty),
-				Ease(_scale, ScaleTransform.ScaleYProperty),
-				Ease(_tilt, Rotate3DTransform.AngleXProperty)
-			]);
-		}
+		_transitions.AddRange(
+		[
+			Ease(_scale, ScaleTransform.ScaleXProperty),
+			Ease(_scale, ScaleTransform.ScaleYProperty),
+			Ease(_tilt, Rotate3DTransform.AngleXProperty)
+		]);
 
 		Frame.RenderTransform = new TransformGroup { Children = [_scale, _tilt] };
 		Frame.Classes.CollectionChanged += (_, _) => UpdateTransform();
@@ -68,7 +64,7 @@ public partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 
 		DoubleTransition Ease(Transform target, AvaloniaProperty property)
 		{
-			var transition = new DoubleTransition { Property = property, Duration = duration };
+			var transition = new DoubleTransition { Property = property, Duration = AnimationDuration };
 
 			target.Transitions ??= [];
 			target.Transitions.Add(transition);

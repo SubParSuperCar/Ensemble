@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class StatView : UserControl, IViewFor<StatViewModel>
+public sealed partial class StatView : UserControl, IViewFor<StatViewModel>
 {
 	public StatView()
 	{

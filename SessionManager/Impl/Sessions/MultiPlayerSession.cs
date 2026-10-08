@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using EnsembleRoot.SessionManager.Api;
 using EnsembleRoot.SessionManager.Auth;
 using Godot;
@@ -12,7 +13,8 @@ public sealed class MultiPlayerSession(SceneMultiplayer multiplayer, ISessionCon
 	private const int MaxClientLimit = 4095;
 	private const int CloseTimeoutMs = 500;
 
-	private readonly HandshakeAuthenticator _authenticator = new(version, config.Password);
+	[SuppressMessage("Performance", "CA1859")]
+	private readonly IPeerAuthenticator _authenticator = new HandshakeAuthenticator(version, config.Password);
 
 	public SessionMode Mode => SessionMode.MultiPlayer;
 	public bool IsServer => config is HostConfig;

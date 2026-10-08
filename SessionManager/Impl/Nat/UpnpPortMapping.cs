@@ -57,7 +57,7 @@ public sealed class UpnpPortMapping(int port) : IAsyncDisposable
 			token.ThrowIfCancellationRequested();
 
 			Log.Information(
-				"Forwarded UDP port {Port} via UPnP (ExternalAddress={Address}, LeaseSeconds={LeaseSeconds})",
+				"Forwarded UDP port {Port} via UPnP (ExternalAddress={ExternalAddress}, LeaseSeconds={LeaseSeconds})",
 				port,
 				address,
 				_leaseSeconds);

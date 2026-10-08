@@ -17,13 +17,17 @@ public partial class SessionManager
 		AutoReplenishment = true
 	};
 
-	private readonly ConcurrentQueue<Action> _pendingRpcs = [];
+	private readonly ConcurrentQueue<(int Generation, Action Action)> _pendingRpcs = [];
 	private readonly ConcurrentDictionary<int, TokenBucketRateLimiter> _rateLimitersByPeerId = [];
+
+	// Bumped per session, so leases granted on the thread pool after a session ends can't run in the next one
+	private int _rpcGeneration;
 
 	public override void _Process(double delta)
 	{
-		while (_pendingRpcs.TryDequeue(out var action))
-			RunSafely(action);
+		while (_pendingRpcs.TryDequeue(out var pending))
+			if (pending.Generation == _rpcGeneration)
+				RunSafely(pending.Action);
 
 		UpdatePings(delta);
 	}
@@ -52,6 +56,7 @@ public partial class SessionManager
 			DisposeRateLimiter(peerId);
 
 		_pendingRpcs.Clear();
+		Interlocked.Increment(ref _rpcGeneration);
 	}
 
 	private void EnqueueRpc(int senderId, int tokens, Action action) => _ = EnqueueRpcAsync(senderId, tokens, action);
@@ -61,6 +66,7 @@ public partial class SessionManager
 		if (tokens > RateLimiterOptions.TokenLimit)
 			return;
 
+		var generation = Volatile.Read(ref _rpcGeneration);
 		var limiter = _rateLimitersByPeerId.GetOrAdd(
 			senderId,
 			static _ => new TokenBucketRateLimiter(RateLimiterOptions));
@@ -80,6 +86,6 @@ public partial class SessionManager
 			return;
 		}
 
-		_pendingRpcs.Enqueue(action);
+		_pendingRpcs.Enqueue((generation, action));
 	}
 }

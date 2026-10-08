@@ -26,4 +26,6 @@ public static class Constants
 	public const string GitHubRepoUrl = HttpsScheme + "github.com/" + GitHubRepoPath;
 
 	public const int RegexMatchTimeoutMs = 100;
+
+	public static readonly TimeSpan AnimationDuration = TimeSpan.FromMilliseconds(200);
 }

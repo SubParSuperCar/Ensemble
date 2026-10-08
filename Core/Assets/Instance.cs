@@ -4,7 +4,7 @@ using EnsembleCoreRoot.Api.Assets;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public class Instance(IAsset asset, Vector3 position, Quaternion rotation) : IInstance
+public sealed class Instance(IAsset asset, Vector3 position, Quaternion rotation) : IInstance
 {
 	public int Id { get; internal set; }
 

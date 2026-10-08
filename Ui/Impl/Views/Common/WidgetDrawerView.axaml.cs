@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class WidgetDrawerView : UserControl, IViewFor<WidgetDrawerViewModel>
+public sealed partial class WidgetDrawerView : UserControl, IViewFor<WidgetDrawerViewModel>
 {
 	public WidgetDrawerView()
 	{

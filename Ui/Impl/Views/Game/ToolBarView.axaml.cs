@@ -8,7 +8,7 @@ using Serilog;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class ToolBarView : UserControl, IViewFor<ToolBarViewModel>
+public sealed partial class ToolBarView : UserControl, IViewFor<ToolBarViewModel>
 {
 	public ToolBarView()
 	{

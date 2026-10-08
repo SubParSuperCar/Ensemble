@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Impl.Services;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
-public partial class SessionModeSelectorViewModel(NavigatorService navigator) : ViewModelBase
+public sealed partial class SessionModeSelectorViewModel(NavigatorService navigator) : ViewModelBase
 {
 	[RelayCommand]
 	private void GoToSinglePlayer() => navigator.GoTo<SinglePlayerConfigViewModel>();

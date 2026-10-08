@@ -9,7 +9,7 @@ using TextMateSharp.Grammars;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewModel>
+public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewModel>
 {
 	private const string LanguageExtension = ".lua";
 	private new const ThemeName Theme = ThemeName.OneDark;

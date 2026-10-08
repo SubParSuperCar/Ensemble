@@ -7,10 +7,10 @@
 /.godot
 # *.import
 # *.uid
-# export_presets.cfg
 
 /.idea
 /.vscode
 
+# TODO: Stop ignoring DotSettings and set one up to sync to Git and other future contributors
 *.DotSettings.user
 *.xsd

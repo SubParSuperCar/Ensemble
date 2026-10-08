@@ -5,19 +5,17 @@ using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
+public sealed partial class ConsoleView : UserControl, IViewFor<ConsoleViewModel>
 {
 	private bool _shouldScrollToBottom;
 
 	public ConsoleView()
 	{
 		InitializeComponent();
-		InitializeOutputScroll();
 
-		Dispatcher.UIThread.Post(() => OutputScroll.ScrollToEnd(), DispatcherPriority.Loaded);
+		OutputScroll.ScrollChanged += OnOutputScrollChanged;
+		Dispatcher.UIThread.Post(OutputScroll.ScrollToEnd, DispatcherPriority.Loaded);
 	}
-
-	private void InitializeOutputScroll() => OutputScroll.ScrollChanged += OnOutputScrollChanged;
 
 	private void OnOutputScrollChanged(object? sender, ScrollChangedEventArgs e)
 	{

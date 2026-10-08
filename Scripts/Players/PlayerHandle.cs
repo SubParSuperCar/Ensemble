@@ -5,6 +5,8 @@ using EnsembleRoot.Scripts.Cameras;
 using Godot;
 using Serilog;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Scripts.Players;
 
 [GlobalClass]
@@ -28,14 +30,13 @@ public partial class PlayerHandle : Node3D
 
 	public string Id { get; set; } = null!;
 
-	public CharacterBody3D? Character { get; private set; }
-	public CharacterController? Controller { get; private set; }
-
 	public CharacterBody3D Body => Character ?? Controller!;
 
-	public PopperCam? Camera { get; private set; }
+	private CharacterBody3D? Character { get; set; }
+	private CharacterController? Controller { get; set; }
+	private PopperCam? Camera { get; set; }
 
-	public Vector3 SpawnOffset => _spawnOffset ??= CalculateSpawnOffset();
+	private Vector3 SpawnOffset => _spawnOffset ??= CalculateSpawnOffset();
 
 	public override void _EnterTree()
 	{
@@ -44,8 +45,6 @@ public partial class PlayerHandle : Node3D
 		_occupant = GPlots.GetOccupant(Id)!;
 		_occupant.PlotChanged += OnPlotChanged;
 	}
-
-	public override void _ExitTree() => _occupant.PlotChanged -= OnPlotChanged;
 
 	public override void _Ready()
 	{
@@ -75,6 +74,8 @@ public partial class PlayerHandle : Node3D
 		Controller._Ready();
 		Controller.SetPhysicsProcess(true);
 	}
+
+	public override void _ExitTree() => _occupant.PlotChanged -= OnPlotChanged;
 
 	public override void _Process(double delta)
 	{

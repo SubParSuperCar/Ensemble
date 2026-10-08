@@ -1,6 +1,9 @@
 using System.Globalization;
+using EnsembleRoot.GdCore.Plots;
 using Godot;
 using Serilog;
+
+// ReSharper disable MemberCanBePrivate.Global
 
 namespace EnsembleRoot.Scripts.Plots;
 
@@ -37,8 +40,19 @@ public partial class PlotManager : Node
 		GPlots.Lock();
 	}
 
+	public override void _Ready()
+	{
+		UpdateOutlines();
+
+		PlotOutlines.Changed += UpdateOutlines;
+		LocalPlotChanged += OnLocalPlotChanged;
+	}
+
 	public override void _ExitTree()
 	{
+		PlotOutlines.Changed -= UpdateOutlines;
+		LocalPlotChanged -= OnLocalPlotChanged;
+
 		if (ReferenceEquals(GPlotManager, this))
 			GPlotManager = null!;
 	}
@@ -49,4 +63,12 @@ public partial class PlotManager : Node
 		GetHandleOrNull(plotId) ?? throw new KeyNotFoundException(string.Create(
 			CultureInfo.InvariantCulture,
 			$"Handle with plot id {plotId} not found."));
+
+	private void OnLocalPlotChanged(GdPlot? _) => UpdateOutlines();
+
+	private void UpdateOutlines()
+	{
+		foreach (var (id, handle) in Handles)
+			handle.SetOutline(PlotOutlines.GetColor(id));
+	}
 }

@@ -12,7 +12,7 @@ using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
+public sealed partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 {
 	private CancellationTokenSource? _cts;
 	private DocFileViewModel? _viewModel;
@@ -32,8 +32,6 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
 	{
 		OnDetached();
-		Interlocked.Exchange(ref _cts, null)?.Cancel();
-
 		base.OnDetachedFromVisualTree(e);
 	}
 
@@ -64,6 +62,8 @@ public partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 
 		_viewModel.PropertyChanged -= OnViewModelPropertyChanged;
 		_viewModel = null;
+
+		Interlocked.Exchange(ref _cts, null)?.Cancel();
 	}
 
 	private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)

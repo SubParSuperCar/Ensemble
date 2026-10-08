@@ -1,4 +1,3 @@
-using EnsembleRoot.Common.Input;
 using Godot;
 
 namespace EnsembleRoot.Tooling.Tools;
@@ -9,26 +8,10 @@ public abstract partial class ToolBase : Node
 
 	public bool IsEnabled { get; private set; }
 
-	protected virtual StringName? ToggleAction => null;
-
-	public event Action<bool>? IsEnabledChanged;
-
-	public override void _UnhandledKeyInput(InputEvent @event)
-	{
-		if (ToggleAction is not null && !InputSink.IsSunk && @event.IsActionPressed(ToggleAction))
-			Toggle();
-	}
+	public abstract Color ThemeColor { get; }
 
 	public void Enable() => _control.RequestEnable();
 	public void Disable() => _control.RequestDisable();
-
-	public void Toggle()
-	{
-		if (IsEnabled)
-			Disable();
-		else
-			Enable();
-	}
 
 	internal void Initialize(ToolControl control)
 	{
@@ -44,7 +27,7 @@ public abstract partial class ToolBase : Node
 			return;
 
 		IsEnabled = true;
-		IsEnabledChanged?.Invoke(true);
+		_control.NotifyIsEnabledChanged(true);
 
 		OnEnable();
 	}
@@ -55,7 +38,7 @@ public abstract partial class ToolBase : Node
 			return;
 
 		IsEnabled = false;
-		IsEnabledChanged?.Invoke(false);
+		_control.NotifyIsEnabledChanged(false);
 
 		OnDisable();
 	}

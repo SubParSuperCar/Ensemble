@@ -12,7 +12,7 @@ using Key = Avalonia.Input.Key;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
-public partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
+public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserViewModel>
 {
 	private readonly BindingExpressionBase? _urlBoxBinding;
 	private bool _isNavigating;

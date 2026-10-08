@@ -43,6 +43,7 @@
         </Style>
     </UserControl.Styles>
 
+    <!-- TODO: Make the border draw over the contents so that the contents can't clip over it -->
     <Border
         Name="Frame"
         Classes="fade"

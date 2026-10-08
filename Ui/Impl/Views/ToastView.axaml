@@ -59,7 +59,7 @@
                 Grid.Column="3"
                 Content="X"
                 Command="{Binding DismissCommand}"
-                ToolTip.Tip="Dismisses the toast."
+                ToolTip.Tip="Dismisses this toast."
                 Background="Red" Foreground="White"
                 VerticalAlignment="Stretch" VerticalContentAlignment="Center"
                 CornerRadius="0,5,5,0"

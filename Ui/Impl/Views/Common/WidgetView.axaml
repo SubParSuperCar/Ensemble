@@ -102,7 +102,7 @@
                     PointerReleased="OnDragPointerReleased"
                     PointerCaptureLost="OnDragPointerCaptureLost"
                     ToolTip.Tip="Resizes this widget."
-                    Background="{DynamicResource HighlightBrush}"
+                    Background="{DynamicResource PrimaryBrush}"
                     Cursor="BottomRightCorner"
                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
                     Width="12" Height="12"

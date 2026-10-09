@@ -31,6 +31,12 @@ internal readonly record struct KdfParameters(
 		new(KdfFunction.Argon2Id, memoryKiB, iterations, degreeOfParallelism);
 }
 
+/// <remarks>
+///     Layout: magic, then version, compression, encryption, and flags bytes; the SHA-256 checksum if flagged; and, if
+///     encrypted, the KDF block (function, memory KiB, iterations, parallelism, salt length) followed by the salt.
+///     Integers are little-endian. The whole header is the AES-GCM associated data; the nonce and tag precede the
+///     ciphertext.
+/// </remarks>
 internal static class SaveEnvelope
 {
 	public const int NonceSize = 12;
@@ -44,21 +50,14 @@ internal static class SaveEnvelope
 	private static ReadOnlySpan<byte> Magic => "ENSV"u8;
 
 	public static byte[] WriteHeader(
-		Stream stream,
-		CompressionType compression,
-		EncryptionType encryption,
-		SaveFlags flags,
-		ReadOnlySpan<byte> checksum,
-		KdfParameters kdf,
-		ReadOnlySpan<byte> salt)
+		Stream stream, CompressionType compression, EncryptionType encryption, SaveFlags flags,
+		ReadOnlySpan<byte> checksum, KdfParameters kdf, ReadOnlySpan<byte> salt)
 	{
 		var isEncrypted = encryption is not EncryptionType.None;
 		var hasChecksum = flags.HasFlag(SaveFlags.Checksum);
 
 		var header = new byte[
-			PrefixSize
-			+ (hasChecksum ? ChecksumSize : 0)
-			+ (isEncrypted ? KdfBlockSize + salt.Length : 0)];
+			PrefixSize + (hasChecksum ? ChecksumSize : 0) + (isEncrypted ? KdfBlockSize + salt.Length : 0)];
 
 		Magic.CopyTo(header);
 		header[4] = Version;

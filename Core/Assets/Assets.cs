@@ -30,9 +30,8 @@ public sealed class Assets : IAssets
 			ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(maxInstanceCount));
 
 		if (_assetsById.ContainsKey(id))
-			throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Asset with id {id} already exists."));
+			throw new InvalidOperationException(
+				string.Create(CultureInfo.InvariantCulture, $"Asset with id {id} already exists."));
 
 		var defaults = properties?.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 		var asset = new Asset(id, name, defaults, maxInstanceCount);

@@ -43,7 +43,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 			field = value;
 			UpdateFaceAlpha();
 		}
-	} = 0.1f;
+	} = 1 / 8f;
 
 	protected abstract Shader Shader { get; }
 

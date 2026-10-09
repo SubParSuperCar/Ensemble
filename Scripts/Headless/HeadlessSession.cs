@@ -3,7 +3,7 @@ using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Networking;
 using Godot;
 using Serilog;
-using static EnsembleRoot.SessionManager.SessionManager;
+using static EnsembleRoot.Sessions.SessionManager;
 
 namespace EnsembleRoot.Scripts.Headless;
 
@@ -27,8 +27,9 @@ public partial class HeadlessSession : Node, IAutoload
 			if (arg.Split('=', 2) is [var key, .. var rest])
 				args[key.TrimStart('-')] = rest is [var value] ? value : string.Empty;
 
-		var password = args.GetValueOrDefault("password");
 		GSessionManager.SessionFailed += OnSessionFailed;
+
+		var password = args.GetValueOrDefault("password");
 
 		if (args.GetValueOrDefault("join") is { } join)
 		{
@@ -39,12 +40,8 @@ public partial class HeadlessSession : Node, IAutoload
 		}
 		else
 			GSessionManager.HostMultiPlayer(
-				GetInt(args, "port") ?? DefaultPort,
-				password,
-				string.Empty,
-				GetInt(args, "max-clients") ?? Unlimited,
-				true,
-				GetFlag(args, "upnp"));
+				GetInt(args, "port") ?? DefaultPort, password, string.Empty,
+				GetInt(args, "max-clients") ?? Unlimited, true, GetFlag(args, "upnp"));
 	}
 
 	public override void _ExitTree() => GSessionManager.SessionFailed -= OnSessionFailed;

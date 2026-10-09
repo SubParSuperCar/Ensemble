@@ -36,9 +36,8 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
   Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or
   `Ensemble.app` (macOS) &mdash; no install, no runtime needed.
 
-- **Latest commit:** trigger the [**Build
-  Binaries**](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
-  workflow ("Run workflow"), then download the artifacts from the finished run.
+- **Latest commit:** run the [Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
+  workflow ("Run workflow"; on a fork if you lack write access), then download the artifacts from the finished run.
 
 On startup, Ensemble asks GitHub for the latest release and offers each newer version once. If Discord is running,
 it also shares your activity (e.g., "In the Main Menu" or "Playing Multi-Player") without names or addresses.
@@ -66,7 +65,7 @@ Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector
 Ensemble's main menu:
 ![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
 
-Ensemble's document file viewer viewing Ensemble's `README.md` file:
+Ensemble's document file viewer showing Ensemble's `README.md` file:
 ![Ensemble's Document File Viewer UI](https://github.com/user-attachments/assets/bd3e6834-2556-43ea-937a-2819d2b32651)
 
 Ensemble's web browser displaying Ensemble's official GitHub repository page:
@@ -96,14 +95,14 @@ Ensemble's test map:
 Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone must run the **same version**.
 
 - **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`),
-  and optionally set a password and a client limit. Share your address with the players joining:
+  and optionally set a password and a client limit. Share your address with joining players:
     - **Same network (LAN):** run `log_lan_ip4_addr()` in the console (`` ` `` / `F9`).
     - **Over the internet:** keep *Auto Forward Port (UPnP)* checked, and share the join code shown under the player
       list (`Tab`). If your router has UPnP disabled, or is behind another NAT (e.g., CGNAT), forward the UDP port
       manually and share the address from `log_wan_ip4_addr()` instead.
 - **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address (or host name)
   and port, or a single `<address>:<port>` code.
-- **Dedicated server:** run the executable headless with user arguments, e.g.
+- **Dedicated server:** run the executable headless with user arguments, e.g.,
   `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port).
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are
@@ -121,7 +120,7 @@ one using `kick(peer_id, "reason")`. Display names are remembered between sessio
 
 | Action                           | Binding                                                  |
 |----------------------------------|----------------------------------------------------------|
-| Move / run / jump                | `WASD` or `Up` `Down` / `Shift` / `Space`                |
+| Move / run / jump                | `WASD` or `Up` `Down` / `Shift` / `Space` or `Ctrl`      |
 | Orbit / turn / zoom camera       | Right mouse / `Q` `E` or `Left` `Right` / wheel, `I` `O` |
 | Toggle place / delete tool       | `1` / `2`                                                |
 | Place or delete (tool trigger)   | Left mouse                                               |
@@ -131,6 +130,9 @@ one using `kick(peer_id, "reason")`. Display names are remembered between sessio
 | Console / system terminal        | `` ` `` or `F9` / `F8`                                   |
 | Back (menus)                     | `Backspace`                                              |
 | Quick-start a single-player game | `Esc` (outside multiplayer)                              |
+
+The camera also zooms with `-` `=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run
+`dmp_inp_map()` in the console for the full input map.
 
 </details>
 
@@ -264,7 +266,7 @@ graph TD
     Tooling["Tooling (Construct/Destruct tools)"]
     Replication["Replication (network actions)"]
     Scripts["Scripts (Godot nodes: managers, handles, cameras)"]
-    SessionManager["SessionManager (sessions, peers, RPC)"]
+    Sessions["Sessions (SessionManager, transports, peers, RPC)"]
     GdCore["GdCore (Godot wrappers over Core)"]
     Foundation["Autoloading / Common / Saving"]
     Core["EnsembleCore (pure domain)"]
@@ -276,11 +278,11 @@ graph TD
     Tooling --> Replication
     Tooling --> Scripts
     Replication --> Scripts
-    Replication --> SessionManager
+    Replication --> Sessions
     Replication --> GdCore
-    Scripts --> SessionManager
+    Scripts --> Sessions
     Scripts --> GdCore
-    SessionManager --> Foundation
+    Sessions --> Foundation
     GdCore --> Core
     GdCore --> Foundation
 ```
@@ -293,10 +295,10 @@ the main singletons (see **Globals** below) and is imported everywhere except th
 <details>
   <summary><b>Boot Sequence</b></summary>
 
-Ensemble does not use Godot's `[autoload]` list for its own systems (only `AvaloniaLoader` is registered there).
-Instead, classes marked `[Autoload]` are discovered at compile time and instantiated by `Main` in `Order`, filtered by
-`Scope` (`RegularClient` and/or `HeadlessServer`). Classes implementing `IAutoload` get `Initialize()` called, with
-failures handled per `AutoloadFailurePolicy`.
+Ensemble does not use Godot's `[autoload]` list for its own systems (only `AvaloniaLoader` is registered there,
+alongside the Resonate addon's `SoundManager` and `MusicManager`). Instead, classes marked `[Autoload]` are discovered
+at compile time and instantiated by `Main` in `Order`, filtered by `Scope` (`RegularClient` and/or `HeadlessServer`).
+Classes implementing `IAutoload` have `Initialize()` called, with failures handled per `AutoloadFailurePolicy`.
 
 ```mermaid
 sequenceDiagram
@@ -345,9 +347,9 @@ visible and physical.
 classDiagram
     direction LR
     class ICore {
+        IPlayers Players
         IAssets Assets
         IPlots Plots
-        IPlayers Players
     }
     class IAsset {
         int Id
@@ -416,7 +418,10 @@ sequenceDiagram
     end
 ```
 
-In single-player, the same path runs locally with the player acting as the server.
+`SessionManager` drives one `ISession` transport at a time: `EnetSession` (ENet, multi-player, which also owns UPnP
+through the optional `IPortMappingSession` capability) or `OfflineSession` (single-player). Other transports can be
+plugged in through `SessionManager.StartSession(ISession)`. In single-player, the same path runs locally, with the
+player acting as the server.
 
 | Action                 | Effect                                        |
 |------------------------|-----------------------------------------------|
@@ -458,7 +463,8 @@ CommunityToolkit.Mvvm:
 - Services and view models self-register through marker interfaces (`ITransientObject`, `IScopedObject`,
   `ISingletonObject`); views bind to view models through `IViewFor<TViewModel>` and `ViewLocatorService`.
 - `NavigatorService` handles menu navigation (`GoTo<TViewModel>()`, `GoBack()`).
-- In-game windows are widgets (`IWidget` + `WidgetDescriptor`) opened and closed by `WidgetManagerService`.
+- In-game windows are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed by
+  `WidgetManagerService`: Plot Selector, Asset Selector, Lua Editor, Log Output, and Web Browser.
 
 </details>
 
@@ -472,7 +478,7 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 | App         | `quit`, `restart`, `tts`, `wait`                                                         |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`               |
 | Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`   |
-| Session     | `dmp_peers`, `kick`, `log_lan_ip`, `log_wan_ip`                                          |
+| Session     | `dmp_peers`, `kick`, `log_lan_ip4_addr`, `log_wan_ip4_addr`                              |
 | World       | `add_rand_insts`, `clr_insts`, `perf_mod`, `set_static_shader_on`, `set_time`, `tp_char` |
 
 </details>
@@ -486,12 +492,13 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 |---------------------------------------------------|----------------------------------------|
 | `GMain`                                           | The `Main` node                        |
 | `GCore`, `GAssets`, `GPlots`, `GPlayers`          | `GdCore` and its wrappers              |
-| `GSessionManager`                                 | The active `SessionManager`            |
+| `GSessionManager`                                 | The `SessionManager` autoload          |
 | `GPlotManager`, `GAssetManager`, `GPlayerManager` | Scene managers in `Scripts`            |
-| `GToolManager`                                    | The `ToolManager`                      |
+| `GToolManager`                                    | The `ToolManager` autoload             |
 | `GTimeProvider`                                   | Wrapped `TimeProvider` (testable time) |
 
-`GContext` exposes local-player state such as `LocalPlot` and `IsLocalPlotSpawned`.
+`GContext` exposes local-player state such as `LocalPlot` and `IsLocalPlotSpawned`. `Constants` (e.g.,
+`AnimationDuration` and `GameVersion`) and Core's `Sentinels` are imported the same way.
 
 </details>
 
@@ -509,8 +516,9 @@ their respective licenses and are subject to their respective authors' or copyri
 
 Ensemble uses separate licenses for its code and non-code assets:
 
-- **Code:** [GNU General Public License v3.0 or later](./LICENSE-CODE.txt)
-- **Non-code assets:** [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](./LICENSE-ASSETS.txt)
+- **Code:** [**GNU General Public License v3.0 or later**](./LICENSE-CODE.txt)
+- **Non-code assets:**
+  [**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International**](./LICENSE-ASSETS.txt)
 
 See [**LICENSE.md**](../LICENSE.md) for an overview of the project's licensing.
 

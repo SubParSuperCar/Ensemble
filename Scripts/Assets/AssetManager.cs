@@ -1,8 +1,8 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Godot;
+using Godot.Collections;
 using Serilog;
-using GDictionary = Godot.Collections.Dictionary;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -11,14 +11,13 @@ namespace EnsembleRoot.Scripts.Assets;
 [GlobalClass]
 public partial class AssetManager : Node
 {
-	private readonly Dictionary<int, Aabb> _boundariesByAssetId = [];
-	private readonly Dictionary<int, string> _categoriesByAssetId = [];
-	private readonly Dictionary<int, PackedScene> _scenesByAssetId = [];
+	// C# collections avoid interop on the placement hot path; GDScript reads them through the methods below
+	private readonly System.Collections.Generic.Dictionary<int, Aabb> _boundariesByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, string> _categoriesByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, PackedScene> _scenesByAssetId = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
-
-	public IReadOnlyDictionary<int, string> Categories => _categoriesByAssetId;
 
 	[GeneratedRegex(@"\.t?scn$", RegexOptions.None, RegexMatchTimeoutMs)]
 	private static partial Regex SceneFileRegex { get; }
@@ -33,7 +32,7 @@ public partial class AssetManager : Node
 			return;
 		}
 
-		Log.Debug("Scanning and registering assets from: {Directory}", BuildAssetsDir);
+		Log.Debug("Registering assets from {Directory}...", BuildAssetsDir);
 
 		ScanDirectory(BuildAssetsDir);
 		GAssets.Lock();
@@ -50,11 +49,11 @@ public partial class AssetManager : Node
 	public PackedScene? GetPackedOrNull(int assetId) => _scenesByAssetId.GetValueOrDefault(assetId);
 
 	public PackedScene GetPacked(int assetId) =>
-		GetPackedOrNull(assetId) ?? throw new KeyNotFoundException(string.Create(
-			CultureInfo.InvariantCulture,
-			$"Packed scene with asset id {assetId} not found."));
+		GetPackedOrNull(assetId) ?? throw new KeyNotFoundException(
+			string.Create(CultureInfo.InvariantCulture, $"Packed scene with asset id {assetId} not found."));
 
 	public Aabb GetBoundary(int assetId) => _boundariesByAssetId.GetValueOrDefault(assetId);
+	public string GetCategory(int assetId) => _categoriesByAssetId.GetValueOrDefault(assetId, string.Empty);
 
 	private void ScanDirectory(string path)
 	{
@@ -92,21 +91,18 @@ public partial class AssetManager : Node
 
 		if (!_scenesByAssetId.TryAdd(id, scene))
 		{
-			Log.Warning("Duplicate asset id {AssetId} at: {Path}", id, path);
+			Log.Warning("Skipped duplicate asset ID {AssetId} at {Path}", id, path);
 			return;
 		}
 
 		_categoriesByAssetId.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
 		_boundariesByAssetId.Add(id, boundary);
 
-		var converted = new GDictionary();
+		var converted = new Dictionary();
+
 		foreach (var (key, value) in properties)
 			converted.Add(key.ToString(), value);
 
-		GAssets.Add(
-			id,
-			name,
-			converted,
-			maxInstanceCount is Default ? DefaultMaxInstanceCount : maxInstanceCount);
+		GAssets.Add(id, name, converted, maxInstanceCount is Default ? DefaultMaxInstanceCount : maxInstanceCount);
 	}
 }

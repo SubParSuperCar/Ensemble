@@ -1,3 +1,4 @@
+using System.Globalization;
 using EnsembleCoreRoot.Api.Players;
 using EnsembleCoreRoot.Api.Plots;
 
@@ -13,7 +14,8 @@ public sealed class Occupant(IPlayer player) : IOccupant
 
 	public event Action<IPlot?>? PlotChanged;
 
-	public override string ToString() => $"Occupant(playerId={Player.Id}, plotId={Plot?.Id})";
+	public override string ToString() =>
+		string.Create(CultureInfo.InvariantCulture, $"Occupant(playerId={Player.Id}, plotId={Plot?.Id})");
 
 	internal void SetPlot(Plot? plot)
 	{

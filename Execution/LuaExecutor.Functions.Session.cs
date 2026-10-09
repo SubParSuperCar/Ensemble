@@ -14,20 +14,14 @@ public static partial class LuaExecutor
 {
 	private const string PublicIPv4AddressSourceUrl = HttpsScheme + "api.ipify.org";
 
-	private static ValueTask<int> dmp_peers(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> dmp_peers(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var manager = GSessionManager;
 
 		Log.Information(
 			"Session: {Mode} (Version={Version}, Port={Port}, HasPassword={HasPassword}, IsDedicated={IsDedicated}, " +
 			"PortMapping={PortMapping})",
-			manager.Mode,
-			SessionManager.SessionManager.Version,
-			manager.Port,
-			manager.HasPassword,
-			manager.IsDedicated,
+			manager.Mode, GameVersion, manager.Port, manager.HasPassword, manager.IsDedicated,
 			manager.PortMappingState);
 
 		foreach (var peer in manager.Peers.Values.OrderBy(static peer => peer.Id))
@@ -36,9 +30,7 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> kick(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> kick(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		GSessionManager.Kick(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
 
@@ -46,8 +38,7 @@ public static partial class LuaExecutor
 	}
 
 	private static ValueTask<int> log_lan_ip4_addr(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var address = NetworkInterface.GetAllNetworkInterfaces()
 			.Where(static adapter =>
@@ -63,8 +54,7 @@ public static partial class LuaExecutor
 	}
 
 	private static async ValueTask<int> log_wan_ip4_addr(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -76,13 +66,12 @@ public static partial class LuaExecutor
 
 			stopwatch.Stop();
 			Log.Information(
-				"Wide Area Network (WAN) IPv4 address: {Address} (RequestMs={RequestMs:F3})",
-				response.Trim(),
-				stopwatch.Elapsed.TotalMilliseconds);
+				"Wide Area Network (WAN) IPv4 address: {Address} (queried in {ElapsedMs:F3} ms)",
+				response.Trim(), stopwatch.Elapsed.TotalMilliseconds);
 		}
 		catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
 		{
-			Log.Error(exception, "Failed to get public IPv4 address");
+			Log.Error(exception, "Failed to query WAN IPv4 address");
 		}
 
 		return context.Return();

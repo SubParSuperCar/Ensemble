@@ -7,9 +7,7 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
-	public static async Task<LuaValue[]> ExecuteAsync(
-		string source,
-		CancellationToken cancellationToken = default)
+	public static async Task<LuaValue[]> ExecuteAsync(string source, CancellationToken cancellationToken = default)
 	{
 		source = source.Trim();
 		Log.Information(">\n{Source}", source);
@@ -38,9 +36,7 @@ public static partial class LuaExecutor
 
 		stopwatch.Stop();
 		Log.Information(
-			"< [{Results}] ({ElapsedMs:F3} ms)",
-			string.Join(", ", results),
-			stopwatch.Elapsed.TotalMilliseconds);
+			"< [{Results}] ({ElapsedMs:F3} ms)", string.Join(", ", results), stopwatch.Elapsed.TotalMilliseconds);
 
 		return results;
 	}

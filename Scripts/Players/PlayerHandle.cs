@@ -57,7 +57,8 @@ public partial class PlayerHandle : Node3D
 		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
 			return;
 
-		// Hacky method to swap a regular CharacterBody3D for a CharacterController
+		// Only the local body is controlled, so its script is swapped in place. Swapping invalidates the managed
+		// wrapper, so the node is fetched again by instance ID.
 		var instanceId = Character.GetInstanceId();
 		Character.SetScript(CharacterControllerScript);
 		Character = null;
@@ -71,6 +72,7 @@ public partial class PlayerHandle : Node3D
 		Controller.Camera = Camera.GetNode<Camera3D>("Camera");
 		Controller.Terrain = TerrainNode;
 
+		// The node was already ready before the swap, so the new script is started by hand
 		Controller._Ready();
 		Controller.SetPhysicsProcess(true);
 	}
@@ -124,7 +126,7 @@ public partial class PlayerHandle : Node3D
 
 		var handle = GPlotManager.GetHandle(plot.Id);
 
-		if (!IsIntersectingCuboid(Body.GlobalPosition, handle.BoundaryTransform, handle.BoundarySize))
+		if (!IsInsideCuboid(Body.GlobalPosition, handle.BoundaryTransform, handle.BoundarySize))
 			Body.GlobalPosition = GetPlotSpawn(plot);
 	}
 
@@ -138,14 +140,11 @@ public partial class PlayerHandle : Node3D
 		return new Vector3(0, -aabb.Position.Y, 0);
 	}
 
-	private static bool IsIntersectingCuboid(Vector3 point, Transform3D transform, Vector3 size)
+	private static bool IsInsideCuboid(Vector3 point, Transform3D transform, Vector3 size)
 	{
-		var localPoint = transform.AffineInverse() * point;
+		var localPoint = (transform.AffineInverse() * point).Abs();
 		var halfSize = size / 2;
 
-		return
-			Mathf.Abs(localPoint.X) < halfSize.X &&
-			Mathf.Abs(localPoint.Y) < halfSize.Y &&
-			Mathf.Abs(localPoint.Z) < halfSize.Z;
+		return localPoint.X < halfSize.X && localPoint.Y < halfSize.Y && localPoint.Z < halfSize.Z;
 	}
 }

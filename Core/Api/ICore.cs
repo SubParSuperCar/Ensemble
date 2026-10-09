@@ -7,11 +7,8 @@ using EnsembleCoreRoot.Api.Plots;
 namespace EnsembleCoreRoot.Api;
 
 /// <summary>
-///     The Godot-agnostic data model for Ensemble.
-///     Provides resources for managing
-///     <see cref="IPlayer" />,
-///     <see cref="IAsset" />, [Asset] <see cref="IInstance" />,
-///     <see cref="IPlot" />, and [Plot] <see cref="IOccupant" /> objects.
+///     The Godot-agnostic data model for Ensemble. Manages <see cref="IPlayer" />, <see cref="IAsset" />, and
+///     <see cref="IPlot" /> objects, plus each plot's <see cref="IInstance" /> and <see cref="IOccupant" /> objects.
 /// </summary>
 public interface ICore
 {

@@ -56,8 +56,9 @@ internal sealed class CoreVariantJsonConverter : JsonConverter<CoreVariant>
 
 		var text = value.ToString(CultureInfo.InvariantCulture);
 
+		// Keeps integral doubles from reading back as Int64
 		if (!text.Contains('.', StringComparison.Ordinal) && !text.Contains('E', StringComparison.Ordinal))
-			text = string.Concat(text, ".0");
+			text += ".0";
 
 		writer.WriteRawValue(text);
 	}

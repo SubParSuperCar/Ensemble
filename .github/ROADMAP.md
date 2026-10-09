@@ -3,7 +3,7 @@
 A living checklist. Not exhaustive, not ordered by priority within a section, and subject to change.
 
 - `[ ]` not started, `[x]` done, `(WIP)` in progress, `(deferred)` parked
-- `(S)` ~a session, `(M)` a few sessions, `(L)` a week or more
+- `(S)` about a session, `(M)` a few sessions, `(L)` a week or more
 
 ---
 
@@ -13,28 +13,28 @@ The tool suite, in rough intended order of implementation.
 
 - DestructTool (Delete) - remove instances from the local plot (WIP)
     - [x] (S) SolidHighlight, a flat-color variant of AxialHighlight, red for destruct
-    - [x] (S) raycast collision mask - hit World only, ignore characters
+    - [x] (S) Raycast collision mask - hit World only, ignore characters
     - [x] (S) "Clear All" toolbar button - visible only with DestructTool on, owner, not spawned; disabled at 0
       instances; double-click to confirm; disables DestructTool after use
-    - [ ] (S) finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
+    - [ ] (S) Finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
 - ConstructTool / CtorTool (Place) - place the selected asset (WIP)
-    - [x] (M) raycast placement, face/grid snapping, rotation, ghost preview
+    - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
     - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation,
       snap along the surface with edges aligned to the targeted instance, and never clip
-    - [x] (S) shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
+    - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
-- [ ] TextureTool (Paint) - drives the _colorHex / _materialId asset attributes
+- [ ] TextureTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
-- [x] (M) shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
+- [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [ ] (M) MultiSelector - shared multi-selection state across tools (deferred)
-- [ ] (M) Marquee Selector UI - shift+drag to box-select, ctrl to toggle-select, Baja Builders parity (deferred)
+- [ ] (M) Marquee Selector UI - Shift+drag to box-select, Ctrl to toggle-select, Baja Builders parity (deferred)
 
 ## Multiplayer / replication
 
-SessionManager has the infra (sessions, versioned auth handshake, server-assigned player IDs, self-registering RPC
-actions and late-join snapshots, kicks, graceful shutdown notices). Actions and snapshots live in Replication/, and
-actions are submitted with `new SetPlotAction(id).Submit()`.
+SessionManager (Sessions/) has the infra (pluggable transports, versioned auth handshake, server-assigned player IDs,
+self-registering RPC actions and late-join snapshots, kicks, graceful shutdown notices). Actions and snapshots live in
+Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 
 - [x] (M) Main-menu session sub-menu - Single-Player / Multi-Player, Host / Join, address, port, password, remembered
   display name
@@ -63,8 +63,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) Split DocFileView / WebBrowserView - base views/VMs moved to Views/Common + ViewModels/Common, no
   NavigatorService dependency; MenuDocFileView / MenuWebBrowserView wrappers add the Back button for menu use
 - (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
-  maximizable frames with fades, a collapsible widget drawer; Plot Selector, Asset Selector, Web Browser, and Lua
-  Editor are widgets. Next: settings, chat, docs, and persist layouts
+  maximizable frames with fades, a collapsible widget drawer; Plot Selector, Asset Selector, Web Browser, Lua
+  Editor, and Log Output are widgets. Next: settings, chat, docs, and persisted layouts
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 
@@ -72,17 +72,17 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 
 - [x] (S) Saving/ - binary + JSON serializers, Zstd/Brotli compression, AES-256-GCM encryption, SHA-256 integrity
 - [x] (S) Tests/ project scaffold (xUnit v3, MTP)
-- [x] (S) SessionManager fully gdignored; Sentinels dependency removed
-- [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build errors
+- [x] (S) Sessions/Impl gdignored; Sentinels dependency removed
+- [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build warnings
 - [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
-- [ ] (S) dedicated 3D physics layers - Plot Base, Instances (only World + Character exist today)
-- [x] (S) populate Tests/ - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline roundtrips,
-  HostEndPoint parsing
-- [ ] (S) audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
+- [ ] (S) Dedicated 3D physics layers - Plot Base, Instances (only World + Character exist today)
+- [x] (S) Populate Tests/ - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline roundtrips,
+  HostEndPoint parsing, OBB/grid math, NavigatorService
+- [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 
 ## Later / big
 
-- [ ] (M) Save envelope: optional plaintext metadata block (name, thumbnail, timestamps, instance count) so a browser
+- [ ] (M) Save envelope - optional plaintext metadata block (name, thumbnail, timestamps, instance count) so a browser
   can list encrypted saves (deferred)
 - [ ] (L) Comprehensive Saves UI - browser, thumbnails, autosave ring buffer, per-save password prompt, soft delete
   (deferred)

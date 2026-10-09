@@ -4,6 +4,8 @@ namespace EnsembleRoot.Ui.Impl.ViewModels.Utils;
 
 internal static class QuotaFormat
 {
+	public const string Unknown = "<Unknown>";
+
 	public static string Fraction(int count, int max) =>
 		string.Create(
 			CultureInfo.InvariantCulture,

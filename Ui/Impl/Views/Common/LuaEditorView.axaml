@@ -31,7 +31,7 @@
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Margin="0,0,22,4">
 
-            <Border BorderBrush="Red" BorderThickness="1">
+            <Border BorderBrush="{StaticResource DangerBrush}" BorderThickness="1">
                 <Button
                     Content="Cancel Runners"
                     Command="{Binding CancelCommand}"
@@ -39,7 +39,7 @@
                     Background="{DynamicResource TranslucentBackgroundBrush}" />
             </Border>
 
-            <Border BorderBrush="#40A0FF" BorderThickness="1">
+            <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1">
                 <Button
                     Content="Execute Script"
                     Command="{Binding ExecuteCommand}"

@@ -47,17 +47,12 @@ public partial class DiagnosticLogger : Node, IAutoload
 
 		stopwatch.Stop();
 		Log.Debug(
-			"Built {Class} report in {ElapsedMs:F3} ms",
-			nameof(DiagnosticLogger),
-			stopwatch.Elapsed.TotalMilliseconds);
+			"Built {Class} report in {ElapsedMs:F3} ms", nameof(DiagnosticLogger), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private static void AddSoftwareInfo(List<Entry> entries)
 	{
-		/* Though potentially useful for manual LAN discovery for MP w/ family, logging this might be unsafe. Disable
-		Add(entries, "Machine Name", Environment.MachineName);
-		Add(entries, "User Name", Environment.UserName);*/
-
+		// Machine and user names are omitted on purpose: they could aid manual LAN discovery, but logs get shared
 		Add(entries, "OS", RuntimeInformation.OSDescription);
 		Add(entries, "OS Arch.", RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant());
 		Add(entries, ".NET", RuntimeInformation.FrameworkDescription);
@@ -84,7 +79,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 #endif
 		);
 
-		Add(entries, "Build Version", SessionManager.SessionManager.Version);
+		Add(entries, "Build Version", GameVersion);
 		Add(entries, "Build Time", BuildInfo.BuildTime);
 
 		if (OperatingSystem.IsLinux())
@@ -96,7 +91,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 			}
 			catch (Exception exception)
 			{
-				Log.Error(exception, "Failed to read Linux kernel version file at: {Path}", LinuxKernelVersionFilePath);
+				Log.Error(exception, "Failed to read the Linux kernel version from {Path}", LinuxKernelVersionFilePath);
 			}
 
 			Add(entries, "Shell", Environment.GetEnvironmentVariable("SHELL"));

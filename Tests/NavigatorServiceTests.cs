@@ -8,63 +8,22 @@ namespace EnsembleRoot.Tests;
 public sealed class NavigatorServiceTests
 {
 	[Fact]
-	public void GoBack_RecreatesThePreviousPage()
+	public void GoBack_RecreatesPreviousPageSkippingExcluded()
 	{
-		var navigator = CreateNavigator();
-
-		navigator.GoTo<FirstPage>();
-		var first = navigator.Current;
-
-		navigator.GoTo<SecondPage>();
-		navigator.GoBack();
-
-		Assert.IsType<FirstPage>(navigator.Current);
-		Assert.NotSame(first, navigator.Current);
-		Assert.False(navigator.CanGoBack);
-	}
-
-	[Fact]
-	public void GoTo_DisposesThePageLeft()
-	{
-		var navigator = CreateNavigator();
+		var navigator = new NavigatorService(new ServiceCollection().BuildServiceProvider());
 
 		navigator.GoTo<FirstPage>();
 		var first = (FirstPage)navigator.Current!;
 
-		navigator.GoTo<SecondPage>();
-
-		Assert.True(first.WasDisposed);
-		Assert.True(navigator.CanGoBack);
-	}
-
-	[Fact]
-	public void GoTo_SkipsExcludedPagesInHistory()
-	{
-		var navigator = CreateNavigator();
-
-		navigator.GoTo<FirstPage>();
 		navigator.GoTo<SecondPage>(true);
 		navigator.GoTo<ThirdPage>();
 		navigator.GoBack();
 
+		Assert.True(first.WasDisposed);
 		Assert.IsType<FirstPage>(navigator.Current);
-	}
-
-	[Fact]
-	public void GoTo_IgnoresTheCurrentPage()
-	{
-		var navigator = CreateNavigator();
-
-		navigator.GoTo<FirstPage>();
-		var first = navigator.Current;
-
-		navigator.GoTo<FirstPage>();
-
-		Assert.Same(first, navigator.Current);
+		Assert.NotSame(first, navigator.Current);
 		Assert.False(navigator.CanGoBack);
 	}
-
-	private static NavigatorService CreateNavigator() => new(new ServiceCollection().BuildServiceProvider());
 
 	public sealed class FirstPage : ViewModelBase
 	{

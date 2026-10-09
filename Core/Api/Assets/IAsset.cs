@@ -6,15 +6,14 @@ namespace EnsembleCoreRoot.Api.Assets;
 /// </summary>
 public interface IAsset
 {
-	/// Asset ID.
 	int Id { get; }
 
 	string Name { get; }
 
 	int MaxInstanceCount { get; }
 
-	/// Read-only until copied to an
-	/// <see cref="IInstance" />
-	/// object.
+	/// <summary>
+	///     The default property values, read-only until copied to an <see cref="IInstance" />.
+	/// </summary>
 	IReadOnlyDictionary<string, CoreVariant> Properties { get; }
 }

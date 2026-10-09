@@ -54,13 +54,10 @@ public partial class AvaloniaLoader : Node
 		}
 		catch (Exception exception)
 		{
-			if (
-				!Main.AskUser(
-					"Avalonia UI Config Failed",
-					Main.FormatFailureMessage(
-						"Avalonia UI failed to configure",
-						exception,
-						"Ensemble UI may not appear.")))
+			var message = Main.FormatFailureMessage(
+				"Avalonia UI failed to configure", exception, "Ensemble UI may not appear.");
+
+			if (!Main.AskUser("Avalonia UI Config Failed", message))
 				Main.FailFast(exception);
 		}
 	}

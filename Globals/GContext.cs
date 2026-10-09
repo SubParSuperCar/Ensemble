@@ -9,7 +9,7 @@ public static class GContext
 
 	static GContext()
 	{
-		// GdCore must be initialized before GContext can be used; otherwise, this will fail
+		// Throws unless GdCore is initialized before GContext's first use
 		OnLocalChanged(GPlayers.Local);
 		GPlayers.LocalChanged += OnLocalChanged;
 	}

@@ -3,8 +3,8 @@
 namespace EnsembleRoot.Autoloading;
 
 /// <summary>
-///     Marks a game component to be instantiated automatically when the game loads.
-///     For initialization errors to be caught, pair this attribute with <see cref="IAutoload" />.
+///     Marks a node to be instantiated automatically when the game loads.
+///     Implement <see cref="IAutoload" /> to have initialization errors caught.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public sealed class AutoloadAttribute : Attribute

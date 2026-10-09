@@ -53,13 +53,13 @@ public sealed class WidgetPanel : Panel
 		var bounds = GetRelativeBounds(child);
 		var minSize = GetMinSize(child);
 
+		// Not Math.Clamp, which throws when the minimum exceeds the available size
 		var width = Math.Min(Math.Max(bounds.Width * size.Width, minSize.Width), size.Width);
 		var height = Math.Min(Math.Max(bounds.Height * size.Height, minSize.Height), size.Height);
 
-		return new Rect(
-			Math.Clamp(bounds.X * size.Width, 0, size.Width - width),
-			Math.Clamp(bounds.Y * size.Height, 0, size.Height - height),
-			width,
-			height);
+		var x = Math.Clamp(bounds.X * size.Width, 0, size.Width - width);
+		var y = Math.Clamp(bounds.Y * size.Height, 0, size.Height - height);
+
+		return new Rect(x, y, width, height);
 	}
 }

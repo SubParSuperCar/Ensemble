@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Utils;
 using Godot;
 using Serilog;
 using TinyDialogsNet;
@@ -9,27 +10,42 @@ using TinyDialogsNet;
 
 namespace EnsembleRoot.Scripts.Watchdog;
 
+/// <summary>
+///     Fails fast when the main thread stops sending heartbeats for too long, i.e., when it hangs.
+/// </summary>
+/// <remarks>
+///     Heartbeats come from <see cref="_Process" />, which keeps running while the scene tree is paused. To block the
+///     main thread on purpose, hold <see cref="Suspension" /> for the duration. An attached debugger also suspends it.
+/// </remarks>
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Last, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class Watchdog : Node, IAutoload
 {
 	private const int PollIntervalMs = (int)TimeSpan.MillisecondsPerSecond;
-	private const int TimeoutMissCountThreshold = 20;
+	private const int TimeoutMissCount = 20;
+
+#if ENSEMBLE_DEBUG
+	private static readonly StringName HangAction = "test_hang";
+#endif
 
 	private static byte _heartbeatFlag;
 
 	private readonly CancellationTokenSource _cts = new();
-
 	private Thread? _pollThread;
 
 	public static Watchdog? Instance { get; private set; }
 
+	/// <summary>Suspends hang detection while held by any owner. Thread-safe.</summary>
+	public static OwnershipFlag Suspension { get; } = new();
+
 	public void Initialize()
 	{
 		Instance = this;
+		ProcessMode = ProcessModeEnum.Always;
+
 		Heartbeat();
 
-		_pollThread = new Thread(WatchdogPollLoop) { IsBackground = true, Name = nameof(WatchdogPollLoop) };
+		_pollThread = new Thread(Poll) { IsBackground = true, Name = $"{nameof(Watchdog)}.{nameof(Poll)}" };
 		_pollThread.Start();
 	}
 
@@ -45,11 +61,11 @@ public partial class Watchdog : Node, IAutoload
 #if ENSEMBLE_DEBUG
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (!Input.IsActionJustPressedByEvent("test_hang", @event))
+		if (!Input.IsActionJustPressedByEvent(HangAction, @event))
 			return;
 
 		Log.Warning("Hanging main thread (test action)...");
-		Thread.Sleep(int.MaxValue);
+		Thread.Sleep(Timeout.Infinite);
 	}
 #endif
 
@@ -59,19 +75,14 @@ public partial class Watchdog : Node, IAutoload
 
 	private static void OnMissed(int missCount)
 	{
-		Log.Warning(
-			"{Class} heartbeat missed: {Count} / {MaxCount}",
-			nameof(Watchdog),
-			missCount,
-			TimeoutMissCountThreshold);
+		Log.Warning("{Class} heartbeat missed: {Count} / {MaxCount}", nameof(Watchdog), missCount, TimeoutMissCount);
 
-		if (missCount < TimeoutMissCountThreshold)
+		if (missCount < TimeoutMissCount)
 			return;
 
-		var elapsedMs = missCount * PollIntervalMs;
 		var message = string.Create(
 			CultureInfo.InvariantCulture,
-			$"Main thread missed {missCount} heartbeat(s) in ~{elapsedMs} ms.");
+			$"Main thread missed {missCount} heartbeat(s) in ~{missCount * PollIntervalMs} ms.");
 
 		try
 		{
@@ -88,7 +99,7 @@ public partial class Watchdog : Node, IAutoload
 		}
 	}
 
-	private void WatchdogPollLoop()
+	private void Poll()
 	{
 		try
 		{
@@ -96,7 +107,7 @@ public partial class Watchdog : Node, IAutoload
 
 			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
 			{
-				if (Interlocked.Exchange(ref _heartbeatFlag, 0) is 1 || Debugger.IsAttached)
+				if (Interlocked.Exchange(ref _heartbeatFlag, 0) is 1 || Suspension.IsSet || Debugger.IsAttached)
 					missCount = 0;
 				else
 					OnMissed(++missCount);

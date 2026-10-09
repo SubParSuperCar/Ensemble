@@ -43,9 +43,7 @@ public partial class UpdateChecker : Node, IAutoload
 			Main.SanitizeMessageBoxBody(
 				$"Ensemble v{latest} is available (you have v{current}).\n\n" +
 				"Open its release page to download it?\nYou will not be asked again for this version."),
-			MessageBoxDialogType.YesNo,
-			MessageBoxIconType.Question,
-			MessageBoxButton.Yes);
+			MessageBoxDialogType.YesNo, MessageBoxIconType.Question, MessageBoxButton.Yes);
 
 		if (response is MessageBoxButton.Yes)
 			Callable.From(() => OS.ShellOpen(url)).CallDeferred();
@@ -55,7 +53,7 @@ public partial class UpdateChecker : Node, IAutoload
 	{
 		try
 		{
-			var currentText = SessionManager.SessionManager.Version;
+			var currentText = GameVersion;
 
 			if (!TryParseVersion(currentText, out var current))
 			{

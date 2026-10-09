@@ -71,11 +71,9 @@ public partial class Logger : Node, IAutoload
 		if (failure is null)
 			Log.Information(
 				"Writing {Class} log files to {Directory} with name template {NameTemplate}",
-				nameof(Serilog),
-				logDir,
-				LogFileNameTemplate);
+				nameof(Serilog), logDir, LogFileNameTemplate);
 		else
-			Log.Error(failure, "Could not build {Class} configuration", nameof(Serilog));
+			Log.Error(failure, "Failed to build {Class} configuration", nameof(Serilog));
 
 		if (syncNote is not null)
 			Log.Information("{Note}", syncNote);
@@ -83,9 +81,7 @@ public partial class Logger : Node, IAutoload
 		if (userFailure is not null)
 			Log.Warning(
 				userFailure,
-				"Could not apply {Path}; using the default {File} instead",
-				UserAppSettingsPath,
-				AppSettingsJson);
+				"Failed to apply {Path}; using the default {File} instead", UserAppSettingsPath, AppSettingsJson);
 	}
 
 	public override void _ExitTree()
@@ -191,9 +187,7 @@ public partial class Logger : Node, IAutoload
 					"data directory, which has been edited or is from an older version.\n\n" +
 					"Replace yours with the new defaults? Your current file will be kept as a .bak backup.\n" +
 					"You will not be asked again until the defaults change."),
-				MessageBoxDialogType.YesNo,
-				MessageBoxIconType.Question,
-				MessageBoxButton.No);
+				MessageBoxDialogType.YesNo, MessageBoxIconType.Question, MessageBoxButton.No);
 
 			return response is MessageBoxButton.Yes;
 		}
@@ -206,6 +200,7 @@ public partial class Logger : Node, IAutoload
 	private static void Copy(string from, string to)
 	{
 		var result = DirAccess.CopyAbsolute(from, to);
+
 		if (result is not Error.Ok)
 			throw new IOException($"Could not copy {from} to {to}: {result}.");
 	}

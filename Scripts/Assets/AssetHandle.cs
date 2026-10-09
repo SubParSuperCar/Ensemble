@@ -7,6 +7,8 @@ namespace EnsembleRoot.Scripts.Assets;
 [GlobalClass]
 public partial class AssetHandle : RigidBody3D
 {
+	private bool _isBoundaryCalculated;
+
 	[Export(PropertyHint.Range, "0,0,1,or_greater,hide_slider")]
 	public int AssetId { get; set; }
 
@@ -17,16 +19,17 @@ public partial class AssetHandle : RigidBody3D
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int MaxInstanceCount { get; set; }
 
+	// A zero size means unset; the flag keeps a calculated zero size (e.g., no collider) from recalculating
 	[Export]
 	public Aabb BoundaryAabb
 	{
 		get
 		{
-			// Consideration: If the boundary size is truly zero (unlikely), this will keep recalculating every time
-			if (field.Size == Vector3.Zero)
-				field = CalculateBoundary();
+			if (_isBoundaryCalculated || field.Size != Vector3.Zero)
+				return field;
 
-			return field;
+			_isBoundaryCalculated = true;
+			return field = CalculateBoundary();
 		}
 		set;
 	}
@@ -36,9 +39,6 @@ public partial class AssetHandle : RigidBody3D
 	private Aabb CalculateBoundary()
 	{
 		var collider = GetNodeOrNull<CollisionShape3D>("Collider");
-		if (collider?.Shape is not { } shape)
-			return default;
-
-		return collider.Transform * shape.GetDebugMesh().GetAabb();
+		return collider?.Shape is { } shape ? collider.Transform * shape.GetDebugMesh().GetAabb() : default;
 	}
 }

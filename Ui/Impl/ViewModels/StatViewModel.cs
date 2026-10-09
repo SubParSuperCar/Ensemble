@@ -32,7 +32,7 @@ public sealed partial class StatViewModel : ViewModelBase
 		dispatcher.UiProcess += OnUiProcess;
 	}
 
-	[ObservableProperty] public partial string Text { get; set; } = "<Default>";
+	[ObservableProperty] public partial string Text { get; private set; } = "<Default>";
 
 	protected override void OnDispose()
 	{
@@ -42,9 +42,7 @@ public sealed partial class StatViewModel : ViewModelBase
 #endif
 	}
 
-#pragma warning disable MA0051
 	private void OnUiProcess(UiProcessData data)
-#pragma warning restore MA0051
 	{
 		var now = Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
 		_uiFrameTimes.Enqueue(now);
@@ -72,10 +70,8 @@ public sealed partial class StatViewModel : ViewModelBase
 		var dram = $"{ByteFormat.Humanize((ulong)_process.PrivateMemorySize64)} (PWS)";
 #endif
 
-		var processTimeMs = Performance.GetMonitor(Performance.Monitor.TimeProcess) * TimeSpan.MillisecondsPerSecond;
-		var physicsTimeMs =
-			Performance.GetMonitor(Performance.Monitor.TimePhysicsProcess) * TimeSpan.MillisecondsPerSecond;
-
+		var processTimeMs = GetMonitorMs(Performance.Monitor.TimeProcess);
+		var physicsTimeMs = GetMonitorMs(Performance.Monitor.TimePhysicsProcess);
 		var uiProcessTimeMs = Performance.HasCustomMonitor(Ui.ProcessTimeMonitor)
 			? Performance.GetCustomMonitor(Ui.ProcessTimeMonitor).AsDouble() * TimeSpan.MillisecondsPerSecond
 			: 0d;
@@ -108,4 +104,7 @@ public sealed partial class StatViewModel : ViewModelBase
 		var width = stats.Max(static stat => stat.Key.Length);
 		Text = string.Join('\n', stats.Select(stat => $"{stat.Key.PadRight(width)} = {stat.Value}"));
 	}
+
+	private static double GetMonitorMs(Performance.Monitor monitor) =>
+		Performance.GetMonitor(monitor) * TimeSpan.MillisecondsPerSecond;
 }

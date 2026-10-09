@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-using EnsembleRoot.SessionManager.Snapshots;
+using EnsembleRoot.Sessions.Snapshots;
 using Godot;
 using Godot.Collections;
 

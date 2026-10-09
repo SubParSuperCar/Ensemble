@@ -13,11 +13,10 @@ public sealed class ViewLocatorService(IServiceProvider services) : ISingletonOb
 
 		var type = viewModel.GetType();
 #pragma warning disable IL3050
-		var viewInterface = typeof(IViewFor<>).MakeGenericType(type);
+		var viewType = typeof(IViewFor<>).MakeGenericType(type);
 #pragma warning restore IL3050
-		var view = (Control?)services.GetService(viewInterface);
 
-		if (view is null)
+		if (services.GetService(viewType) is not Control view)
 			return new TextBlock { Text = $"View for {type.Name} not found." };
 
 		view.DataContext = viewModel;

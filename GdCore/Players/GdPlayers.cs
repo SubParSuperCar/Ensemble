@@ -45,15 +45,7 @@ public partial class GdPlayers : RefCounted
 			? GdPlayer.From(player)
 			: null;
 
-	public Array<GdPlayer> GetAll()
-	{
-		var result = new Array<GdPlayer>();
-
-		foreach (var player in Source.All.Values)
-			result.Add(GdPlayer.From(player));
-
-		return result;
-	}
+	public Array<GdPlayer> GetAll() => [.. Source.All.Values.Select(GdPlayer.From)];
 
 	public GdPlayer Add() => Add(string.Empty);
 	public GdPlayer Add(string id) => Add(id, string.Empty);
@@ -82,13 +74,6 @@ public partial class GdPlayers : RefCounted
 		Source.SetLocal(guid);
 	}
 
-	public Array<Dictionary> GetAllDicts()
-	{
-		var result = new Array<Dictionary>();
-
-		foreach (var player in Source.All.Values)
-			result.Add(GdPlayer.From(player).ToDict());
-
-		return result;
-	}
+	public Array<Dictionary> GetAllDicts() =>
+		[.. Source.All.Values.Select(static player => GdPlayer.From(player).ToDict())];
 }

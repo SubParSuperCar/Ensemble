@@ -27,10 +27,7 @@ public partial class ToolManager : Node, IAutoload
 			field = value;
 
 			Log.Debug(
-				"{Class}.{Member} set (Hash={Hash})",
-				nameof(ToolManager),
-				nameof(Instance),
-				value?.GetHashCode());
+				"{Class}.{Member} set (Hash={Hash})", nameof(ToolManager), nameof(Instance), value?.GetHashCode());
 		}
 	}
 
@@ -116,7 +113,7 @@ public partial class ToolManager : Node, IAutoload
 		_tools.Add(typeof(TTool), tool);
 		AddChild(tool);
 
-		Log.Debug("Created tool: {Tool}", name);
+		Log.Debug("Created tool {Tool}", name);
 
 		return tool;
 	}

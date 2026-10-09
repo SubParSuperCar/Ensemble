@@ -12,6 +12,8 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class GameViewModel : ViewModelBase
 {
+	private static readonly StringName TogglePlayerListAction = "ui_toggle_player_list";
+
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;
 	private readonly IServiceProvider _services;
@@ -27,7 +29,6 @@ public sealed partial class GameViewModel : ViewModelBase
 		Widgets.Open<PlotSelectorViewModel>();
 
 		WidgetDrawer = _scope.ServiceProvider.GetRequiredService<WidgetDrawerViewModel>();
-
 		Clock = services.Create<ClockViewModel>();
 		PlayerList = services.Create<PlayerListViewModel>();
 
@@ -57,10 +58,9 @@ public sealed partial class GameViewModel : ViewModelBase
 
 	protected override void OnDispose()
 	{
+		_dispatcher.Input -= OnInput;
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
-
-		_dispatcher.Input -= OnInput;
 
 		Clock = null;
 		PlayerList = null;
@@ -71,7 +71,7 @@ public sealed partial class GameViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
-		if (!InputSink.IsSunk && Input.IsActionJustPressedByEvent("ui_toggle_player_list", @event))
+		if (!InputSink.IsSunk && Input.IsActionJustPressedByEvent(TogglePlayerListAction, @event))
 			PlayerList = PlayerList is null ? _services.Create<PlayerListViewModel>() : null;
 	}
 

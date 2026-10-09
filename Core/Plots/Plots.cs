@@ -52,15 +52,11 @@ public sealed class Plots : IPlots
 			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount, nameof(maxInstanceCount));
 
 		if (_plotsById.ContainsKey(id))
-			throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Plot with id {id} already exists."));
+			throw new InvalidOperationException(
+				string.Create(CultureInfo.InvariantCulture, $"Plot with id {id} already exists."));
 
 		var plot = new Plot(
-			id,
-			_assets,
-			maxOccupantCount ?? _defaultMaxOccupantCount,
-			maxInstanceCount ?? _defaultMaxInstanceCount);
+			id, _assets, maxOccupantCount ?? _defaultMaxOccupantCount, maxInstanceCount ?? _defaultMaxInstanceCount);
 
 		_plotsById.Add(id, plot);
 		Added?.Invoke(plot);
@@ -76,9 +72,8 @@ public sealed class Plots : IPlots
 		IPlot? plot = null;
 
 		if (plotId is { } id && !_plotsById.TryGetValue(id, out plot))
-			throw new KeyNotFoundException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Plot with id {id} not found."));
+			throw new KeyNotFoundException(
+				string.Create(CultureInfo.InvariantCulture, $"Plot with id {id} not found."));
 
 		if (occupant.Plot is { } current)
 		{

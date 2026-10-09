@@ -4,6 +4,8 @@ namespace EnsembleRoot.Common.Utils;
 
 public static class ByteFormat
 {
+	private const double UnitScale = 1024d;
+
 	private static readonly string[] Units = ["B", "KiB", "MiB", "GiB", "TiB"];
 
 	public static string Humanize(ulong bytes)
@@ -11,9 +13,9 @@ public static class ByteFormat
 		double value = bytes;
 		var unitIndex = 0;
 
-		while (value >= 1024 && unitIndex < Units.Length - 1)
+		while (value >= UnitScale && unitIndex < Units.Length - 1)
 		{
-			value /= 1024;
+			value /= UnitScale;
 			unitIndex++;
 		}
 

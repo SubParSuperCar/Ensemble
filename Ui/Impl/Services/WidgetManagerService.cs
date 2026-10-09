@@ -31,12 +31,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		if (_entriesByType.TryGetValue(typeof(TViewModel), out var entry))
 			return entry;
 
-		entry = new WidgetEntry(
-			this,
-			typeof(TViewModel),
-			TViewModel.Descriptor,
-			services.Create<TViewModel>);
-
+		entry = new WidgetEntry(this, typeof(TViewModel), TViewModel.Descriptor, services.Create<TViewModel>);
 		var index = Entries.Count(other => StringComparer.OrdinalIgnoreCase.Compare(other.Title, entry.Title) < 0);
 
 		_entriesByType.Add(entry.Type, entry);
@@ -67,10 +62,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		}
 
 		var widget = new WidgetViewModel(
-			this,
-			entry,
-			entry.CreateContent(),
-			entry.LastBounds ?? entry.Descriptor.InitialBounds);
+			this, entry, entry.CreateContent(), entry.LastBounds ?? entry.Descriptor.InitialBounds);
 
 		_widgetsByType.Add(entry.Type, widget);
 		Widgets.Add(widget);

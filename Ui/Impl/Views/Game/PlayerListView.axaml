@@ -11,37 +11,35 @@
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
         <Grid RowDefinitions="Auto,*,Auto" Grid.IsSharedSizeScope="True">
-            <Grid Margin="6,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="16" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="PeerId" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Ping" />
-                </Grid.ColumnDefinitions>
-
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="16" Margin="6,0">
                 <TextBlock Text="Name&#x0a; &#x2198;" ToolTip.Tip="The player's display name." />
 
                 <TextBlock
-                    Grid.Column="2"
+                    Grid.Column="1"
                     Text="Player List (Tab)"
                     ToolTip.Tip="Everyone in this session, sorted by name. (Bound to Tab)"
                     HorizontalAlignment="Center" />
 
-                <TextBlock
-                    Grid.Column="4"
-                    Text="Peer ID&#x0a;&#x2193;"
-                    ToolTip.Tip="The player's connection ID in this session. The host is always 1."
-                    TextAlignment="Right" />
+                <!-- Ping uses a margin instead of spacing so the gap hides with it in single-player -->
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="PeerId" />
+                        <ColumnDefinition Width="Auto" SharedSizeGroup="Ping" />
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock
-                    Grid.Column="5"
-                    Text="Ping&#x0a;&#x2193; "
-                    ToolTip.Tip="The player's EWMA-smoothed round-trip time to the host, in milliseconds (capped at 999)."
-                    Margin="16,0,0,0"
-                    TextAlignment="Right"
-                    IsVisible="{Binding IsMultiPlayer}" />
+                    <TextBlock
+                        Text="Peer ID&#x0a;&#x2193;"
+                        ToolTip.Tip="The player's connection ID in this session. The host is always 1."
+                        TextAlignment="Right" />
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="Ping&#x0a;&#x2193; "
+                        ToolTip.Tip="The player's EWMA-smoothed round-trip time to the host, in milliseconds (capped at 999)."
+                        Margin="16,0,0,0"
+                        TextAlignment="Right"
+                        IsVisible="{Binding IsMultiPlayer}" />
+                </Grid>
             </Grid>
 
             <ListBox
@@ -52,27 +50,28 @@
 
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Grid ToolTip.Tip="{Binding Id, StringFormat='Player ID: {0}'}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="16" />
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="PeerId" />
-                                <ColumnDefinition Width="Auto" SharedSizeGroup="Ping" />
-                            </Grid.ColumnDefinitions>
+                        <Grid
+                            ColumnDefinitions="*,Auto"
+                            ColumnSpacing="16"
+                            ToolTip.Tip="{Binding Id, StringFormat='Player ID: {0}'}">
 
                             <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
 
-                            <TextBlock
-                                Grid.Column="2"
-                                Text="{Binding PeerId}"
-                                TextAlignment="Right" />
+                            <Grid Grid.Column="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="PeerId" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Ping" />
+                                </Grid.ColumnDefinitions>
 
-                            <TextBlock
-                                Grid.Column="3"
-                                Text="{Binding PingMs, StringFormat='{}{0:000}'}"
-                                Margin="16,0,0,0"
-                                TextAlignment="Right"
-                                IsVisible="{Binding $parent[ListBox].((vm:PlayerListViewModel)DataContext).IsMultiPlayer, FallbackValue=False}" />
+                                <TextBlock Text="{Binding PeerId}" TextAlignment="Right" />
+
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{Binding PingMs, StringFormat='{}{0:000}'}"
+                                    Margin="16,0,0,0"
+                                    TextAlignment="Right"
+                                    IsVisible="{Binding $parent[ListBox].((vm:PlayerListViewModel)DataContext).IsMultiPlayer, FallbackValue=False}" />
+                            </Grid>
                         </Grid>
                     </DataTemplate>
                 </ListBox.ItemTemplate>

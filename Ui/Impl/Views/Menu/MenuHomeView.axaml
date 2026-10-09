@@ -10,7 +10,7 @@
     TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
-    <Grid RowDefinitions="1*,1*,1*,1*,1*">
+    <Grid RowDefinitions="*,*,*,*,*">
         <StackPanel
             Grid.Row="1"
             Spacing="8"
@@ -51,7 +51,7 @@
 
             <TextBlock
                 Text="{Binding Notice}"
-                ToolTip.Tip="Why your last session ended."
+                ToolTip.Tip="The reason your last session ended."
                 Background="{DynamicResource TranslucentBackgroundBrush}" Foreground="Orange"
                 Padding="4"
                 FontSize="20"

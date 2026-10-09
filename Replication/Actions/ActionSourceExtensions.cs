@@ -1,5 +1,5 @@
 using EnsembleRoot.GdCore.Plots;
-using EnsembleRoot.SessionManager.Actions;
+using EnsembleRoot.Sessions.Actions;
 
 namespace EnsembleRoot.Replication.Actions;
 

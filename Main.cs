@@ -8,9 +8,8 @@ using Environment = System.Environment;
 namespace EnsembleRoot;
 
 /// <summary>
-///     The main entry point for Ensemble's code-behind.
-///     Handles boot-loading Node-inheriting classes marked with <see cref="AutoloadAttribute" />
-///     and provides resources for handling errors and managing the application lifetime and shutdown.
+///     The entry point of Ensemble's code-behind. Boot-loads the nodes marked with <see cref="AutoloadAttribute" />
+///     and owns error reporting, the application lifetime, and shutdown.
 /// </summary>
 public partial class Main : Node
 {
@@ -70,8 +69,7 @@ public partial class Main : Node
 			TinyDialogs.Beep();
 
 			TinyDialogs.NotifyPopup(
-				NotificationIconType.Error,
-				"Ensemble Crashed",
+				NotificationIconType.Error, "Ensemble Crashed",
 				"Ensemble crashed. Please contact the developer(s) or review the logs. " +
 				"Run the game in a console (Command Prompt, PowerShell, Terminal, etc.) to view stdout/stderr.");
 		}
@@ -89,11 +87,8 @@ public partial class Main : Node
 		try
 		{
 			var response = TinyDialogs.MessageBox(
-				topic,
-				SanitizeMessageBoxBody(prompt),
-				MessageBoxDialogType.YesNo,
-				MessageBoxIconType.Error,
-				MessageBoxButton.No);
+				topic, SanitizeMessageBoxBody(prompt),
+				MessageBoxDialogType.YesNo, MessageBoxIconType.Error, MessageBoxButton.No);
 
 			return response is MessageBoxButton.Yes;
 		}
@@ -121,7 +116,7 @@ public partial class Main : Node
 		}
 		catch
 		{
-			// Ignore
+			// Best effort: there is nowhere left to report a failure
 		}
 	}
 
@@ -130,13 +125,11 @@ public partial class Main : Node
 		if (e.ExceptionObject is Exception exception)
 			Log.Fatal(
 				exception,
-				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating})",
-				e.IsTerminating);
+				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating})", e.IsTerminating);
 		else
 			Log.Fatal(
 				"Ensemble intercepted an unhandled exception (IsTerminating={IsTerminating}):\n{Exception}",
-				e.IsTerminating,
-				e.ExceptionObject);
+				e.IsTerminating, e.ExceptionObject);
 
 		if (e.IsTerminating)
 			FailFast(e.ExceptionObject as Exception);
@@ -152,7 +145,6 @@ public partial class Main : Node
 	{
 		Log.Error(exception, "Failed to load {Type} during {Stage} stage", definition.Type.FullName, stage);
 
-		// ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 		switch (definition.FailurePolicy)
 		{
 			case AutoloadFailurePolicy.LogAndContinue:
@@ -165,8 +157,7 @@ public partial class Main : Node
 			case AutoloadFailurePolicy.AskUser:
 			{
 				var message = FormatFailureMessage(
-					$"Failed to load the {definition.Type.Name} autoload during the {stage} stage",
-					exception,
+					$"Failed to load the {definition.Type.Name} autoload during the {stage} stage", exception,
 					"Ensemble may be left in an unstable or partially initialized state.");
 
 				if (!AskUser("Autoload Initialization Failed", message))
@@ -206,7 +197,7 @@ public partial class Main : Node
 
 		Log.Debug("Queued children to be freed. Awaiting children removal...");
 
-		// Rider shows an error for awaiting ToSignal, but it compiles and runs fine; it's benign
+		// Rider flags awaiting ToSignal as an error; it is a known false positive
 		while (tree.Root.GetChildCount() > 1 || GetChildCount() > 0)
 			await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
 
@@ -216,8 +207,8 @@ public partial class Main : Node
 
 	private async Task LoadDeferredAsync()
 	{
-		// TODO: Don't await an arbitrary/magical number of times; use a readiness signal (if available)
-		// Testing showed it takes exactly 3 frames for the Avalonia UI to appear. The reason is unclear.
+		// TODO: Await a readiness signal (if one exists) instead of a magic number of frames
+		// Testing showed that the Avalonia UI takes exactly 3 frames to appear, for unclear reasons.
 		for (var i = 0; i < 3; i++)
 		{
 			RenderingServer.ForceDraw();
@@ -258,8 +249,7 @@ public partial class Main : Node
 
 		Log.Debug(
 			"Loaded {Count} autoload(s) in {ElapsedMs:F3} ms",
-			loadedCount,
-			Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+			loadedCount, Stopwatch.GetElapsedTime(start).TotalMilliseconds);
 	}
 
 	private bool LoadAutoload(AutoloadDefinition definition)
@@ -270,10 +260,7 @@ public partial class Main : Node
 
 		Log.Debug(
 			"Loading {Type}... (Scope={Scope}, Order={Order}, FailurePolicy={FailurePolicy})",
-			fullName,
-			definition.Scope,
-			definition.Order,
-			definition.FailurePolicy);
+			fullName, definition.Scope, definition.Order, definition.FailurePolicy);
 
 		try
 		{
@@ -291,9 +278,7 @@ public partial class Main : Node
 				autoload.Initialize();
 
 			Log.Debug(
-				"Loaded {Type} in {ElapsedMs:F3} ms",
-				fullName,
-				Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+				"Loaded {Type} in {ElapsedMs:F3} ms", fullName, Stopwatch.GetElapsedTime(start).TotalMilliseconds);
 
 			return true;
 		}

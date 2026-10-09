@@ -3,7 +3,7 @@ using Avalonia;
 
 namespace EnsembleRoot.Ui.Impl;
 
-// For Avalonia UI designer support so the UI can be previewed during editing in the IDE, e.g., JetBrains Rider
+// Entry points for the Avalonia designer, so IDEs (e.g., JetBrains Rider) can preview the UI
 public static class Designer
 {
 	public static int Main() =>
@@ -11,11 +11,7 @@ public static class Designer
 			"This project is not meant to be run; it exists only for Avalonia designer support.");
 
 	// ReSharper disable once UnusedMember.Global
-	public static AppBuilder BuildAvaloniaApp() =>
-		AppBuilder
-			.Configure<App>()
-			.UseSkia()
-			.UseHarfBuzz();
+	public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>().UseSkia().UseHarfBuzz();
 }
 
 #endif

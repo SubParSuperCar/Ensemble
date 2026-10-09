@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Plots;
-using EnsembleRoot.SessionManager.Actions;
+using EnsembleRoot.Sessions.Actions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 
@@ -82,15 +82,14 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		occupants.OwnerChanged += OnOwnerChanged;
 
 		Plots.Insert(Plots.TakeWhile(other => other.Id < plot.Id).Count(), plot);
-
 		_plotsById.Add(gdPlot.Id, plot);
 		_unsubscribeByPlotId.Add(gdPlot.Id, Unsubscribe);
 
 		return;
 
-		void OnOwnerChanged(GdOccupant? owner)
+		void UpdateOccupancy()
 		{
-			plot.OwnerName = owner is null ? "<None>" : owner.Player.Name;
+			plot.Occupancy = QuotaFormat.Fraction(occupants.Count, occupants.MaxCount);
 		}
 
 		void OnOccupantChanged(GdOccupant _)
@@ -98,16 +97,16 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 			UpdateOccupancy();
 		}
 
-		void UpdateOccupancy()
+		void OnOwnerChanged(GdOccupant? owner)
 		{
-			plot.Occupancy = QuotaFormat.Fraction(occupants.Count, occupants.MaxCount);
+			plot.OwnerName = owner?.Player.Name ?? "<None>";
 		}
 
 		void Unsubscribe()
 		{
-			occupants.OwnerChanged -= OnOwnerChanged;
 			occupants.Added -= OnOccupantChanged;
 			occupants.Removed -= OnOccupantChanged;
+			occupants.OwnerChanged -= OnOwnerChanged;
 		}
 	}
 

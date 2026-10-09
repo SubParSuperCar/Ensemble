@@ -7,7 +7,6 @@ namespace EnsembleCoreRoot.Api.Assets;
 /// </summary>
 public interface IInstance
 {
-	/// Instance ID.
 	int Id { get; }
 
 	/// <inheritdoc cref="IAsset" />

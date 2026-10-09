@@ -37,15 +37,7 @@ public partial class GdPlots : RefCounted
 
 	public GdPlot? GetPlot(int id) => Source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
 
-	public Array<GdPlot> GetAll()
-	{
-		var result = new Array<GdPlot>();
-
-		foreach (var plot in Source.All.Values)
-			result.Add(GdPlot.From(plot));
-
-		return result;
-	}
+	public Array<GdPlot> GetAll() => [.. Source.All.Values.Select(GdPlot.From)];
 
 	public GdPlot Add(int id) => Add(id, Default);
 	public GdPlot Add(int id, int maxOccupantCount) => Add(id, maxOccupantCount, Default);
@@ -91,15 +83,7 @@ public partial class GdPlots : RefCounted
 
 	public void Lock() => Source.Lock();
 
-	public Array<Dictionary> GetAllDicts()
-	{
-		var result = new Array<Dictionary>();
-
-		foreach (var plot in Source.All.Values)
-			result.Add(GdPlot.From(plot).ToDict());
-
-		return result;
-	}
+	public Array<Dictionary> GetAllDicts() => [.. Source.All.Values.Select(static plot => GdPlot.From(plot).ToDict())];
 
 	private bool TryGetOccupant(Guid guid, [NotNullWhen(true)] out GdOccupant? occupant)
 	{

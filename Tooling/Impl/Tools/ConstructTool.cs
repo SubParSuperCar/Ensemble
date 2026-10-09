@@ -6,7 +6,7 @@ using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Plots.Impl;
-using EnsembleRoot.SessionManager.Actions;
+using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Serilog;
 
@@ -25,7 +25,10 @@ public partial class ConstructTool : ToolBase
 {
 	private const float LinearSmoothingRate = 40f;
 	private const float AngularSmoothingRate = 32f;
+
 	private const float PreviewOpacity = 0.75f;
+	private const double FlashDuration = 1 / 8d;
+
 	private const int MaxSettlePasses = 3;
 	private const int MaxResolvePasses = 3;
 
@@ -35,6 +38,8 @@ public partial class ConstructTool : ToolBase
 	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
 	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
 	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
+
+	private static readonly Color InvalidTint = Colors.Red;
 
 	private readonly List<Obb> _candidates = [];
 
@@ -144,9 +149,7 @@ public partial class ConstructTool : ToolBase
 
 	private void UpdatePlacement()
 	{
-		if (
-			ToolCommon.LocalPlotHandle is not { } plot ||
-			ToolCommon.CastCursorRay(GetViewport()) is not { } hit)
+		if (ToolCommon.LocalPlotHandle is not { } plot || ToolCommon.CastCursorRay(GetViewport()) is not { } hit)
 		{
 			HidePreview();
 			return;
@@ -185,25 +188,23 @@ public partial class ConstructTool : ToolBase
 		if (CanPlace)
 		{
 			new AddInstanceAction(AssetId, _gridPosition, _rotation).Submit();
-			ToolCommon.PlaySound("affirm");
+			ToolCommon.PlaySound(ToolCommon.AffirmSound);
 
 			Log.Verbose(
-				"Submitted asset id: {AssetId} (Position={Position}, Rotation={Rotation})",
-				AssetId,
-				_gridPosition,
-				_rotation);
+				"Submitted placement of asset {AssetId} (Position={Position}, Rotation={Rotation})",
+				AssetId, _gridPosition, _rotation);
 
 			return;
 		}
 
 		if (_preview is { Visible: true })
 		{
-			ToolCommon.PlaySound("dissent");
+			ToolCommon.PlaySound(ToolCommon.DissentSound);
 			Flash();
 		}
 
 		if (_state is { } state)
-			Log.Debug("Cannot place asset id {AssetId}: {State}", AssetId, state);
+			Log.Debug("Cannot place asset {AssetId}: {State}", AssetId, state);
 	}
 
 	private static Vector3 ToGridAxis(Vector3 normal)
@@ -336,7 +337,7 @@ public partial class ConstructTool : ToolBase
 
 		_previewBounds = _preview.BoundaryAabb;
 		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = _previewBounds };
-		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = _previewBounds, Tint = Colors.Red };
+		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = _previewBounds, Tint = InvalidTint };
 
 		_preview.AddChild(_axialHighlight);
 		_preview.AddChild(_solidHighlight);
@@ -379,7 +380,7 @@ public partial class ConstructTool : ToolBase
 
 	private void Flash() =>
 		_solidHighlight!.CreateTween()
-			.TweenProperty(_solidHighlight, "Tint", Colors.Red, 1 / 8f)
+			.TweenProperty(_solidHighlight, nameof(SolidHighlight.Tint), InvalidTint, FlashDuration)
 			.From(Colors.White);
 
 	private void Rotate(Vector3 axis)

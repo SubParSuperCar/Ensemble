@@ -1,13 +1,12 @@
 namespace EnsembleRoot.Autoloading;
 
 /// <summary>
-///     The order in which this Autoload is instantiated,
-///     where lower values are earlier and higher values are later.
-///     Ranges from -128 (<see cref="sbyte.MinValue" />) to 127 (<see cref="sbyte.MaxValue" />).
-///     If more than one Autoload has the same order,
-///     their order of instantiation is resolved by the ordinal ordering of their fully qualified type names,
-///     so "A" runs before "Z", which runs before "a", which runs before "z".
+///     The order in which this Autoload is instantiated, from -128 (<see cref="sbyte.MinValue" />, first) to 127
+///     (<see cref="sbyte.MaxValue" />, last).
 /// </summary>
+/// <remarks>
+///     Ties are broken by the ordinal order of fully qualified type names ("A" before "Z" before "a" before "z").
+/// </remarks>
 public static class AutoloadOrder
 {
 	public const sbyte First = sbyte.MinValue;

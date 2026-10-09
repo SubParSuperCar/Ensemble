@@ -8,19 +8,18 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.WebBrowserView"
     x:DataType="vm:WebBrowserViewModel"
-    x:Name="Root"
     TextOptions.TextRenderingMode="Antialias">
 
     <Grid>
         <TextBlock
-            Text="The Web View is not rendering.&#x0a;Do you have WebView2, WebKitGTK, or WPE WebKit?"
+            Text="The web view is not rendering.&#x0a;Is WebView2, WebKitGTK, or WPE WebKit installed?"
             HorizontalAlignment="Center" VerticalAlignment="Center"
             FontSize="32" FontWeight="SemiBold"
             TextAlignment="Center" />
 
         <NativeWebView
             Name="WebView"
-            Source="https://www.google.com/"
+            Source="{Binding Source, Mode=TwoWay}"
             GotFocus="OnWebViewGotFocus"
             LostFocus="OnWebViewLostFocus"
             NavigationStarted="OnWebViewNavigationStarted"
@@ -34,11 +33,11 @@
             HorizontalAlignment="Center" VerticalAlignment="Top"
             Margin="2">
 
-            <Button Content="&lt;-" Command="{Binding #Root.GoBackCommand}" ToolTip.Tip="Goes back. (Undo)" />
-            <Button Content="-&gt;" Command="{Binding #Root.GoForwardCommand}" ToolTip.Tip="Goes forward. (Redo)" />
+            <Button Content="&lt;-" Command="{Binding GoBackCommand}" ToolTip.Tip="Goes back to the previous page." />
+            <Button Content="-&gt;" Command="{Binding GoForwardCommand}" ToolTip.Tip="Goes forward to the next page." />
 
             <Button
-                Command="{Binding #Root.RefreshOrStopCommand}"
+                Command="{Binding RefreshOrStopCommand}"
                 ToolTip.Tip="Refreshes the page or stops loading it."
                 Width="32" Height="32">
 
@@ -49,12 +48,17 @@
             </Button>
 
             <TextBox
-                Name="UrlBox"
-                Text="{Binding #WebView.Source, Mode=TwoWay, UpdateSourceTrigger=Explicit}"
+                Text="{Binding Address}"
                 PlaceholderText="Type URI here &amp; press Enter to navigate"
-                KeyDown="OnUrlBoxKeyDown"
-                ToolTip.Tip="The current URI. Type and press Enter to navigate.&#x0a;Use the 'file://' scheme to browse local files."
-                MinWidth="256" MaxWidth="512" />
+                GotFocus="OnAddressBoxGotFocus"
+                LostFocus="OnAddressBoxLostFocus"
+                ToolTip.Tip="Shows the current URI. Type one and press Enter to navigate.&#x0a;Use the 'file://' scheme to browse local files."
+                MinWidth="256" MaxWidth="512">
+
+                <TextBox.KeyBindings>
+                    <KeyBinding Command="{Binding NavigateCommand}" Gesture="Enter" />
+                </TextBox.KeyBindings>
+            </TextBox>
         </StackPanel>
     </Grid>
 

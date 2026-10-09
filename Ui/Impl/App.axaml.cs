@@ -10,6 +10,7 @@ using AvaloniaEdit.Editing;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Messages;
+using EnsembleRoot.Sessions;
 using EnsembleRoot.Ui.Impl.Extensions;
 using Iciclecreek.Terminal;
 using LiveMarkdown.Avalonia;
@@ -27,7 +28,7 @@ public sealed class App : Application
 
 	private static readonly object FocusSinkToken = new();
 
-	private static bool IsInSession => SessionManager.SessionManager.Instance?.IsActive is true;
+	private static bool IsInSession => SessionManager.Instance?.IsActive is true;
 
 	public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
@@ -57,7 +58,7 @@ public sealed class App : Application
 #if ENSEMBLE_DEBUG
 		try
 		{
-			// Press F12 to open the Avalonia developer tools (pin keybind gesture)
+			// F12 opens the Avalonia developer tools
 			this.AttachDeveloperTools(static options => options.Gesture = KeyGesture.Parse("F12"));
 		}
 		catch (Exception exception)
@@ -69,7 +70,7 @@ public sealed class App : Application
 		ApplyAccentColor();
 	}
 
-	// Sink game input while a text input has focus
+	// Sinks game input while a text input has focus
 	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)
 	{
 		if (value.Args is not FocusChangedEventArgs focus)
@@ -81,24 +82,24 @@ public sealed class App : Application
 			InputSink.Sink.Release(FocusSinkToken);
 	}
 
-	// Sink/mark keystrokes as handled to prevent unintentional UI navigation, and all navigation keys while in-session
+	// Swallows Space and Tab, and all navigation keys while in session, to prevent unintended UI navigation
 	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs args)
 	{
 		if (InputSink.IsSunk)
 			return;
 
-		if (
-			args.Key is Key.Space or Key.Tab ||
-			(IsInSession &&
-			 args.Key is Key.Up or Key.Down or Key.Left or Key.Right
-				 or Key.PageUp or Key.PageDown or Key.Home or Key.End or Key.Enter))
+		if (args.Key is Key.Space or Key.Tab || (IsInSession && IsNavigationKey(args.Key)))
 			args.Handled = true;
 	}
 
+	private static bool IsNavigationKey(Key key) =>
+		key is Key.Up or Key.Down or Key.Left or Key.Right or Key.PageUp or Key.PageDown or Key.Home or Key.End
+			or Key.Enter;
+
+	// Applied once at startup, since Estragonia doesn't poll for changes. The accent is made more vibrant in OKLCH so
+	// washed-out system colors (e.g., brown) still stand out.
 	private void ApplyAccentColor()
 	{
-		// Set the UI accent color for the 'Simple' theme once at startup, because Estragonia doesn't poll for changes
-		// Also boost vibrancy using an advanced color algorithm to make washed-out colors like brown pop out
 		if (PlatformSettings?.GetColorValues().AccentColor1 is not { A: > 0 } accent)
 			return;
 
@@ -108,6 +109,7 @@ public sealed class App : Application
 			CreateAccentResources(accent.ToVibrant(DarkAccentMinLightness, DarkAccentMaxLightness));
 	}
 
+	// Mirrors SimpleTheme's own accent opacity ramp
 	private static ResourceDictionary CreateAccentResources(Color accent) =>
 		new()
 		{

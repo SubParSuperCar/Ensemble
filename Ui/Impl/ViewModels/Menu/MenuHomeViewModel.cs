@@ -12,6 +12,8 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class MenuHomeViewModel : ViewModelBase
 {
+	private const int MaxReasonLength = 128;
+
 	private readonly NavigatorService _navigator;
 
 	public MenuHomeViewModel(NavigatorService navigator)
@@ -43,7 +45,7 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	private void OnSessionFailed(string reason) =>
 		Notice = string.Create(
 			CultureInfo.InvariantCulture,
-			$"Session Ended\nReason: \"{TruncateToTextElements(reason, 128)}\"\n" +
+			$"Session Ended\nReason: \"{TruncateToTextElements(reason, MaxReasonLength)}\"\n" +
 			$"Time: {GTimeProvider.GetLocalNow():h:mm:ss tt zz}");
 
 	private static Bitmap? LoadBitmapFromGodotImage(string path)

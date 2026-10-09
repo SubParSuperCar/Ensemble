@@ -7,17 +7,17 @@ namespace EnsembleRoot.Autoloading;
 public enum AutoloadScope : byte
 {
 	/// <summary>
-	///     This Autoload is never run, effectively disabling it.
+	///     Never instantiated, which disables the Autoload.
 	/// </summary>
 	None = 0,
 
 	/// <summary>
-	///     This Autoload is run on regular clients, where rendering is enabled.
+	///     Instantiated on regular clients, which render.
 	/// </summary>
 	RegularClient = 1 << 0,
 
 	/// <summary>
-	///     This Autoload is run on headless servers, where rendering is disabled.
+	///     Instantiated on headless servers, which don't render.
 	/// </summary>
 	HeadlessServer = 1 << 1
 }

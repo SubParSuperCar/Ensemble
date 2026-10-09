@@ -25,7 +25,8 @@ internal sealed class QuaternionJsonConverter : JsonConverter<Quaternion>
 		Span<float> values = stackalloc float[4];
 		FloatArray.Read(ref reader, values);
 
-		return new Quaternion(values[0], values[1], values[2], values[3]);
+		var rotation = new Quaternion(values[0], values[1], values[2], values[3]);
+		return rotation.LengthSquared() is 0f ? throw new JsonException("Invalid rotation.") : rotation;
 	}
 
 	public override void Write(Utf8JsonWriter writer, Quaternion value, JsonSerializerOptions options) =>
@@ -45,6 +46,10 @@ file static class FloatArray
 				throw new JsonException($"Expected an array of {values.Length} numbers.");
 
 			value = reader.GetSingle();
+
+			// Matches the binary serializer, which rejects non-finite values as corruption
+			if (!float.IsFinite(value))
+				throw new JsonException("Invalid floating-point value.");
 		}
 
 		if (!reader.Read() || reader.TokenType is not JsonTokenType.EndArray)

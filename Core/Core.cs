@@ -7,7 +7,9 @@ using EnsembleCoreRoot.Plots;
 namespace EnsembleCoreRoot;
 
 /// <inheritdoc />
-/// <remarks>Core is non-authoritative; max counts are metadata only and are not enforced.</remarks>
+/// <remarks>
+///     Core is non-authoritative; max counts are metadata only and are not enforced.
+/// </remarks>
 public sealed class Core : ICore
 {
 	private readonly Assets.Assets _assets;
@@ -21,11 +23,9 @@ public sealed class Core : ICore
 		int? defaultMaxInstanceCount = null,
 		TimeProvider? timeProvider = null)
 	{
-		_players = new Players.Players(timeProvider);
-		_assets = new Assets.Assets();
-
 		var occupants = new OccupantRegistry();
 
+		_players = new Players.Players(timeProvider);
 		_players.Added += occupants.Add;
 		_players.Removed += occupants.Remove;
 
@@ -35,6 +35,7 @@ public sealed class Core : ICore
 			_players.SetLocal(id);
 		}
 
+		_assets = new Assets.Assets();
 		_plots = new Plots.Plots(_assets, defaultMaxOccupantCount, defaultMaxInstanceCount) { Occupants = occupants };
 	}
 

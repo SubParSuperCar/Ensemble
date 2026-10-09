@@ -42,9 +42,14 @@ public partial class PlotHandle : Node3D
 		GridBoundarySize = BoundarySize / GridToWorldScale;
 
 		ReadyInstances();
+		ReadySpawning();
 	}
 
-	public override void _ExitTree() => ExitInstances();
+	public override void _ExitTree()
+	{
+		ExitSpawning();
+		ExitInstances();
+	}
 
 	public Vector3 WorldToGrid(Vector3 worldPosition) =>
 		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;

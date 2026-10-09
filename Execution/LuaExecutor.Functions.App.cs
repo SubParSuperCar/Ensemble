@@ -10,9 +10,9 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
-	private static async ValueTask<int> quit(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private const int DefaultWaitDelayMs = (int)TimeSpan.MillisecondsPerSecond / 30;
+
+	private static async ValueTask<int> quit(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		if (context.HasArgument(0))
 		{
@@ -29,9 +29,7 @@ public static partial class LuaExecutor
 		return context.Return();
 	}
 
-	private static ValueTask<int> restart(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> restart(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Log.Information("Restarting...");
 
@@ -41,9 +39,7 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> tts(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> tts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var text = context.GetArgument<string>(0);
 		var culture = context.GetArgumentOrDefault(1, "en");
@@ -56,25 +52,20 @@ public static partial class LuaExecutor
 			var voice = Speaker.Instance.VoiceForCulture(culture);
 
 			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume).ContinueWith(
-				static task => Log.Error(task.Exception, "TTS failed during playback"),
-				CancellationToken.None,
-				TaskContinuationOptions.OnlyOnFaulted,
-				TaskScheduler.Default);
+				static task => Log.Error(task.Exception, "Failed to play TTS"),
+				CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "TTS failed during setup");
+			Log.Error(exception, "Failed to set up TTS");
 		}
 
 		return context.ReturnNothing();
 	}
 
-	private static async ValueTask<int> wait(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static async ValueTask<int> wait(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		const int defaultDelayMs = (int)TimeSpan.MillisecondsPerSecond / 30;
-		var delayMs = context.GetArgumentOrDefault(0, defaultDelayMs);
+		var delayMs = context.GetArgumentOrDefault(0, DefaultWaitDelayMs);
 
 		if (delayMs < 0)
 		{

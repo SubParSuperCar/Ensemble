@@ -1,5 +1,5 @@
 using EnsembleRoot.Common.Utils;
-using EnsembleRoot.SessionManager.Api;
+using EnsembleRoot.Sessions.Api;
 using Godot;
 
 namespace EnsembleRoot.Scripts.Players;

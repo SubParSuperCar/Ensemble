@@ -11,7 +11,7 @@
 
     <TextBlock
         Text="{Binding Text}"
-        ToolTip.Tip="Clock (Real Time - Time Zone - Session Duration)"
+        ToolTip.Tip="The local time, time zone, and session duration."
         Background="{DynamicResource TranslucentBackgroundBrush}"
         HorizontalAlignment="Center" VerticalAlignment="Center"
         Padding="2" />

@@ -6,7 +6,7 @@ public static partial class LuaExecutor
 {
 	private static void InjectCustomFunctions(LuaTable env)
 	{
-		#region Injection Monotonous Boilerplate
+		#region Function Registrations
 
 		env[nameof(add_rand_insts)] = new LuaFunction(add_rand_insts);
 		env[nameof(cap_fps)] = new LuaFunction(cap_fps);

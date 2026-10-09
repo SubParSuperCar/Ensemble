@@ -1,25 +1,23 @@
 namespace EnsembleRoot.Autoloading;
 
 /// <summary>
-///     The policy to apply if this Autoload fails and cannot be instantiated.
+///     What to do if this Autoload fails to be instantiated, added to the tree, or initialized.
 /// </summary>
 public enum AutoloadFailurePolicy : byte
 {
 	/// <summary>
-	///     Log the event and attempt to ask the user, through a shell dialog, whether to continue loading.
-	///     Best used for noncritical components that may degrade the user's experience.
+	///     Log the failure and ask the user, through a native dialog, whether to continue loading; terminate if they
+	///     decline or the dialog fails. Best for noncritical components whose loss degrades the experience.
 	/// </summary>
 	AskUser,
 
 	/// <summary>
-	///     Log the event and continue with loading.
-	///     Best used for noncritical components that have a negligible impact on the user's experience.
+	///     Log the failure and continue loading. Best for components whose loss is negligible.
 	/// </summary>
 	LogAndContinue,
 
 	/// <summary>
-	///     Log the event and immediately terminate the application.
-	///     Best used for critical components that the application cannot function without.
+	///     Log the failure and terminate immediately. Best for critical components the application can't run without.
 	/// </summary>
 	FailFast
 }

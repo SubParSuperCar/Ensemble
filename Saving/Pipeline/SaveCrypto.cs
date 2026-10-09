@@ -10,6 +10,7 @@ internal static class SaveCrypto
 	private const int KeySize = 32;
 	private const int SaltSize = 16;
 
+	// Bounds the cost a crafted header can demand before authentication
 	private const int MinArgon2MemoryKiB = 8 * 1024;
 	private const int MaxArgon2MemoryKiB = 2 * 1024 * 1024;
 	private const int MinArgon2Iterations = 1;
@@ -25,10 +26,7 @@ internal static class SaveCrypto
 	}
 
 	public static void Encrypt(
-		Stream stream,
-		ReadOnlySpan<byte> plaintext,
-		ReadOnlySpan<byte> associatedData,
-		SaveEncryption encryption,
+		Stream stream, ReadOnlySpan<byte> plaintext, ReadOnlySpan<byte> associatedData, SaveEncryption encryption,
 		ReadOnlySpan<byte> salt)
 	{
 		var key = DeriveKey(encryption, salt);
@@ -80,8 +78,7 @@ internal static class SaveCrypto
 			catch (AuthenticationTagMismatchException exception)
 			{
 				throw new InvalidDataException(
-					"Wrong key or password, or the save file has been tampered with.",
-					exception);
+					"Wrong key or password, or the save file has been tampered with.", exception);
 			}
 
 			return plaintext;
@@ -95,12 +92,9 @@ internal static class SaveCrypto
 	private static byte[] DeriveKey(SaveEncryption encryption, ReadOnlySpan<byte> salt) =>
 		encryption switch
 		{
-			SaveEncryption.Key key => ValidateKey(key.Value.Span),
+			SaveEncryption.Key key => ValidateKey(key.Value.Span, nameof(encryption)),
 			SaveEncryption.Password password => DeriveArgon2IdKey(
-				Encoding.UTF8.GetBytes(password.Secret),
-				salt,
-				password.MemoryKiB,
-				password.Iterations,
+				Encoding.UTF8.GetBytes(password.Secret), salt, password.MemoryKiB, password.Iterations,
 				password.DegreeOfParallelism),
 			_ => throw new ArgumentOutOfRangeException(nameof(encryption))
 		};
@@ -108,42 +102,24 @@ internal static class SaveCrypto
 	private static byte[] DeriveKey(SaveEnvelope.Header header, LoadOptions options) =>
 		header.Kdf.Function switch
 		{
-			KdfFunction.None => ValidateKey((options.Key ?? throw Missing("raw key", nameof(options))).Span),
+			KdfFunction.None => ValidateKey(
+				(options.Key ?? throw Missing("raw key", nameof(options))).Span, nameof(options)),
 			KdfFunction.Argon2Id => DeriveArgon2IdKey(
-				Encoding.UTF8.GetBytes(options.Password ?? throw Missing("password", nameof(options))),
-				header.Salt,
-				header.Kdf.MemoryKiB,
-				header.Kdf.Iterations,
-				header.Kdf.DegreeOfParallelism),
-			_ => throw new InvalidDataException($"Unknown key derivation function: {(byte)header.Kdf.Function}.")
+				Encoding.UTF8.GetBytes(options.Password ?? throw Missing("password", nameof(options))), header.Salt,
+				header.Kdf.MemoryKiB, header.Kdf.Iterations, header.Kdf.DegreeOfParallelism),
+			_ => throw new InvalidDataException($"Unsupported key derivation function: {(byte)header.Kdf.Function}.")
 		};
 
 	private static byte[] DeriveArgon2IdKey(
-		byte[] password,
-		ReadOnlySpan<byte> salt,
-		int memoryKiB,
-		int iterations,
-		int degreeOfParallelism)
+		byte[] password, ReadOnlySpan<byte> salt, int memoryKiB, int iterations, int degreeOfParallelism)
 	{
 		try
 		{
-			if (memoryKiB is < MinArgon2MemoryKiB or > MaxArgon2MemoryKiB)
-				throw new InvalidDataException(string.Create(
-					CultureInfo.InvariantCulture,
-					$"Argon2id memory cost must be between {MinArgon2MemoryKiB} and {MaxArgon2MemoryKiB} KiB, " +
-					$"got {memoryKiB}."));
-
-			if (iterations is < MinArgon2Iterations or > MaxArgon2Iterations)
-				throw new InvalidDataException(string.Create(
-					CultureInfo.InvariantCulture,
-					$"Argon2id iteration count must be between {MinArgon2Iterations} and {MaxArgon2Iterations}, " +
-					$"got {iterations}."));
-
-			if (degreeOfParallelism is < MinArgon2DegreeOfParallelism or > MaxArgon2DegreeOfParallelism)
-				throw new InvalidDataException(string.Create(
-					CultureInfo.InvariantCulture,
-					$"Argon2id degree of parallelism must be between {MinArgon2DegreeOfParallelism} and " +
-					$"{MaxArgon2DegreeOfParallelism}, got {degreeOfParallelism}."));
+			ThrowIfOutOfRange(memoryKiB, MinArgon2MemoryKiB, MaxArgon2MemoryKiB, "memory cost (KiB)");
+			ThrowIfOutOfRange(iterations, MinArgon2Iterations, MaxArgon2Iterations, "iteration count");
+			ThrowIfOutOfRange(
+				degreeOfParallelism, MinArgon2DegreeOfParallelism, MaxArgon2DegreeOfParallelism,
+				"degree of parallelism");
 
 			using var argon2 = new Argon2id(password);
 			argon2.Salt = [.. salt];
@@ -159,10 +135,17 @@ internal static class SaveCrypto
 		}
 	}
 
-	private static byte[] ValidateKey(ReadOnlySpan<byte> key) =>
+	private static void ThrowIfOutOfRange(int value, int min, int max, string parameter)
+	{
+		if (value < min || value > max)
+			throw new InvalidDataException(string.Create(
+				CultureInfo.InvariantCulture, $"Argon2id {parameter} must be between {min} and {max}, got {value}."));
+	}
+
+	private static byte[] ValidateKey(ReadOnlySpan<byte> key, string paramName) =>
 		key.Length is KeySize
 			? key.ToArray()
-			: throw new ArgumentException($"Encryption key must be exactly {KeySize} bytes.", nameof(key));
+			: throw new ArgumentException($"Encryption key must be exactly {KeySize} bytes.", paramName);
 
 	private static ArgumentException Missing(string material, string paramName) =>
 		new($"This save file is encrypted; a {material} is required to load it.", paramName);

@@ -1,7 +1,5 @@
 using EnsembleCoreRoot.Api.Assets;
 
-// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
-
 namespace EnsembleRoot.Saving.SerDes;
 
 internal static class CoreVariantSerializer
@@ -17,7 +15,7 @@ internal static class CoreVariantSerializer
 			CoreVariantType.Int64 => new CoreVariant(reader.ReadInt64()),
 			CoreVariantType.Double => new CoreVariant(reader.ReadDouble()),
 			CoreVariantType.String => new CoreVariant(reader.ReadString()),
-			_ => throw new InvalidDataException($"Unknown variant type: {type}.")
+			_ => throw new InvalidDataException($"Unsupported variant type: {type}.")
 		};
 	}
 

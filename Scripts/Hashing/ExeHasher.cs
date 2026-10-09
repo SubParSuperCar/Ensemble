@@ -41,12 +41,7 @@ public partial class ExeHasher : Node, IAutoload
 			var stopwatch = Stopwatch.StartNew();
 
 			var stream = new FileStream(
-				exePath,
-				FileMode.Open,
-				FileAccess.Read,
-				FileShare.Read,
-				BufferSize,
-				FileOptions.Asynchronous);
+				exePath, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize, FileOptions.Asynchronous);
 
 			await using (stream.ConfigureAwait(false))
 			{

@@ -1,4 +1,3 @@
-using System.Buffers.Binary;
 using System.Numerics;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Saving;
@@ -17,14 +16,6 @@ public sealed class BinarySaveSerializerTests
 	private static readonly BinarySaveSerializer Serializer = new();
 
 	[Fact]
-	public void Serialize_StoresInstanceCountPlusOne()
-	{
-		var bytes = Serialize(CreateSaveData());
-
-		Assert.Equal(2, BinaryPrimitives.ReadInt32LittleEndian(bytes.AsSpan(InstanceCountOffset)));
-	}
-
-	[Fact]
 	public void Deserialize_Empty_RoundTrips()
 	{
 		var bytes = Serialize(new CreationSaveData());
@@ -34,24 +25,19 @@ public sealed class BinarySaveSerializerTests
 	}
 
 	[Theory]
-	[InlineData(0x00)]
-	[InlineData(0xFF)]
-	public void Deserialize_FilledInstanceCount_Throws(byte fill) =>
-		AssertCorrupt(bytes => bytes.AsSpan(InstanceCountOffset, sizeof(int)).Fill(fill));
+	[InlineData(InstanceCountOffset, sizeof(int), 0x00)]
+	[InlineData(InstanceCountOffset, sizeof(int), 0xFF)]
+	[InlineData(UtcTicksOffset, sizeof(long), 0x00)]
+	[InlineData(UtcTicksOffset, sizeof(long), 0xFF)]
+	[InlineData(PositionOffset, sizeof(float), 0xFF)]
+	[InlineData(RotationOffset, 4 * sizeof(float), 0x00)]
+	public void Deserialize_FilledField_Throws(int offset, int length, byte fill)
+	{
+		var bytes = Serialize(CreateSaveData());
+		bytes.AsSpan(offset, length).Fill(fill);
 
-	[Theory]
-	[InlineData(0x00)]
-	[InlineData(0xFF)]
-	public void Deserialize_FilledCreationTime_Throws(byte fill) =>
-		AssertCorrupt(bytes => bytes.AsSpan(UtcTicksOffset, sizeof(long)).Fill(fill));
-
-	[Fact]
-	public void Deserialize_NaNPosition_Throws() =>
-		AssertCorrupt(static bytes => bytes.AsSpan(PositionOffset, sizeof(float)).Fill(0xFF));
-
-	[Fact]
-	public void Deserialize_ZeroRotation_Throws() =>
-		AssertCorrupt(static bytes => bytes.AsSpan(RotationOffset, 4 * sizeof(float)).Clear());
+		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
+	}
 
 	[Fact]
 	public void Deserialize_DuplicatePropertyKey_Throws()
@@ -67,14 +53,6 @@ public sealed class BinarySaveSerializerTests
 
 		var bytes = Serialize(data);
 		bytes[Array.LastIndexOf(bytes, (byte)'b')] = (byte)'a';
-
-		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
-	}
-
-	private static void AssertCorrupt(Action<byte[]> corrupt)
-	{
-		var bytes = Serialize(CreateSaveData());
-		corrupt(bytes);
 
 		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
 	}

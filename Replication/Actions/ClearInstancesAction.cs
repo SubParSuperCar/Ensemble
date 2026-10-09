@@ -8,6 +8,8 @@ namespace EnsembleRoot.Replication.Actions;
 
 public readonly record struct ClearInstancesAction : INetworkAction<ClearInstancesAction>
 {
+	public static int TokenCost { get; } = 25;
+
 	public static ClearInstancesAction FromPayload(Array<Variant> payload) => new();
 
 	public Array<Variant> ToPayload() => [];

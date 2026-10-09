@@ -14,6 +14,8 @@ public readonly record struct SetPropertiesAction(InstanceReference Instance, Di
 {
 	private const int MaxStringLength = 256;
 
+	public static int TokenCost { get; } = 5;
+
 	public static SetPropertiesAction FromPayload(Array<Variant> payload) =>
 		new(InstanceReference.FromPayload(payload[0].AsGodotArray<Variant>()), payload[1].AsGodotDictionary());
 

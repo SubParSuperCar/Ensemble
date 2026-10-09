@@ -12,6 +12,8 @@ namespace EnsembleRoot.Replication.Actions;
 public readonly record struct AddInstanceAction(int AssetId, Vector3 Position, Quaternion Rotation)
 	: INetworkAction<AddInstanceAction>
 {
+	public static int TokenCost { get; } = 2;
+
 	public static AddInstanceAction FromPayload(Array<Variant> payload) =>
 		new(payload[0].AsInt32(), payload[1].AsVector3(), payload[2].AsQuaternion());
 

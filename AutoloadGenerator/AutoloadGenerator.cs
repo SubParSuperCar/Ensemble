@@ -10,6 +10,7 @@ namespace AutoloadGenerator;
 public sealed class AutoloadGenerator : IIncrementalGenerator
 {
 	private const string AttributeMetadataName = "EnsembleRoot.Autoloading.AutoloadAttribute";
+	private const string HintName = "AutoloadRegistry.g.cs";
 
 	private const string ScopePropertyName = "Scope";
 	private const string OrderPropertyName = "Order";
@@ -63,9 +64,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 			}
 			""");
 
-		context.AddSource(
-			"AutoloadRegistry.g.cs",
-			SourceText.From(source.ToString(), Encoding.UTF8));
+		context.AddSource(HintName, SourceText.From(source.ToString(), Encoding.UTF8));
 	}
 
 	private static string GetScope(AttributeData attribute) =>
@@ -85,10 +84,7 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 
 	private static string FormatEnumCast(string type, object? value) =>
 		string.Format(
-			CultureInfo.InvariantCulture,
-			"({0}){1}",
-			type,
-			Convert.ToInt32(value, CultureInfo.InvariantCulture));
+			CultureInfo.InvariantCulture, "({0}){1}", type, Convert.ToInt32(value, CultureInfo.InvariantCulture));
 
 	private static bool TryGetNamedArgument(AttributeData attribute, string name, out object? value)
 	{

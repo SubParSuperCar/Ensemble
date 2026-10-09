@@ -10,7 +10,6 @@ public partial class PlotHandle
 {
 	private readonly Dictionary<int, AssetHandle> _handlesByInstanceId = [];
 
-	// We're only syncing despawned AssetHandle objects for now. Spawning/despawning will come soon(TM).
 	private Node3D _staticInstances = null!;
 
 	// Cached, as reading every handle back from Godot each tick is slow

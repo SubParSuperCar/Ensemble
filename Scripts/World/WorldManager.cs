@@ -1,7 +1,7 @@
+using System.Diagnostics;
 using EnsembleRoot.Autoloading;
 using Godot;
 using Serilog;
-using Stopwatch = System.Diagnostics.Stopwatch;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -11,14 +11,14 @@ namespace EnsembleRoot.Scripts.World;
 [Autoload(Order = AutoloadOrder.Late, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class WorldManager : Node, IAutoload
 {
+	private const string WorldFailureReason = "The world failed to load.";
+
 	public static WorldManager? Instance { get; private set; }
 
 	public WorldHandle? World { get; private set; }
 
 	[Export] public PackedScene WorldScene { get; set; } = GD.Load<PackedScene>(ScenesDir + "world.tscn");
 
-	// The ideal setup would be to use DI instead of static globals, but ctors must be usable by Godot (no params),
-	// and ServiceProvider uses ctors (?)
 	public void Initialize()
 	{
 		Instance = this;
@@ -41,14 +41,28 @@ public partial class WorldManager : Node, IAutoload
 		Log.Debug("Instantiating and adding {Class}...", nameof(WorldHandle));
 		var stopwatch = Stopwatch.StartNew();
 
-		World = WorldScene.Instantiate<WorldHandle>();
-		AddChild(World);
+		try
+		{
+			World = WorldScene.Instantiate<WorldHandle>();
+			AddChild(World);
+
+			// Godot only logs exceptions thrown in node callbacks, so check that the world's managers registered
+			_ = GPlayerManager;
+			_ = GAssetManager;
+			_ = GPlotManager;
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "Failed to load {Class}", nameof(WorldHandle));
+			GSessionManager.FailSession(WorldFailureReason);
+
+			return;
+		}
 
 		stopwatch.Stop();
 		Log.Debug(
 			"Instantiated and added {Class} in {ElapsedMs:F3} ms",
-			nameof(WorldHandle),
-			stopwatch.Elapsed.TotalMilliseconds);
+			nameof(WorldHandle), stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private void OnSessionStopped()

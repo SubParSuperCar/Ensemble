@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
-using EnsembleRoot.SessionManager.Actions;
+using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;
-using static EnsembleRoot.SessionManager.Actions.ActionValidation;
+using static EnsembleRoot.Sessions.Actions.ActionValidation;
 
 namespace EnsembleRoot.Replication.Actions;
 

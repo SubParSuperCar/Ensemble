@@ -5,56 +5,79 @@ using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Scripts.Plots;
+using EnsembleRoot.Sessions;
 using EnsembleRoot.Tooling;
 
 namespace EnsembleRoot.Globals;
 
-// All members here should be mostly GDScript-friendly, especially GdCore and SessionManager
+/// <summary>
+///     Ensemble's main components, globally accessible. Each accessor throws a descriptive
+///     <see cref="InvalidOperationException" /> instead of returning null while its component doesn't exist.
+/// </summary>
 public static class Globals
 {
+	private const string MainLifetime = "It is main.tscn's root script, so it exists while main.tscn is in the tree.";
+
+	private const string AutoloadLifetime =
+		"It is an autoload, so it exists from when autoloads load (see Main.AutoloadsReady) until shutdown, " +
+		"unless it failed to load (see the log).";
+
+	private const string ClientAutoloadLifetime =
+		"It is a client-only autoload, so it never exists on headless servers; otherwise, it exists from when " +
+		"autoloads load (see Main.AutoloadsReady) until shutdown, unless it failed to load (see the log).";
+
+	private const string WorldLifetime =
+		"It belongs to the world scene, which only exists during an active session (see SessionManager.IsActive).";
+
+	private const string CoreLifetime = "GdCore creates it when it initializes, right after it loads.";
+
 	/// <inheritdoc cref="Main" />
-	public static Main GMain => Main.Instance ?? throw new InvalidOperationException($"{nameof(Main)} is null.");
+	public static Main GMain => Main.Instance ?? throw Unavailable(nameof(Main), MainLifetime);
 
 	/// <inheritdoc cref="GdCore.GdCore" />
-	public static GdCore.GdCore GCore =>
-		GdCore.GdCore.Instance ?? throw new InvalidOperationException($"{nameof(GdCore)} is null.");
+	public static GdCore.GdCore GCore => GdCore.GdCore.Instance ?? throw Unavailable(nameof(GdCore), AutoloadLifetime);
 
 	/// <inheritdoc cref="GdPlayers" />
-	public static GdPlayers GPlayers =>
-		GCore.Players ?? throw new InvalidOperationException($"{nameof(GdPlayers)} is null.");
+	public static GdPlayers GPlayers => GCore.Players ?? throw Unavailable(nameof(GdPlayers), CoreLifetime);
 
 	/// <inheritdoc cref="GdAssets" />
-	public static GdAssets GAssets =>
-		GCore.Assets ?? throw new InvalidOperationException($"{nameof(GdAssets)} is null.");
+	public static GdAssets GAssets => GCore.Assets ?? throw Unavailable(nameof(GdAssets), CoreLifetime);
 
 	/// <inheritdoc cref="GdPlots" />
-	public static GdPlots GPlots => GCore.Plots ?? throw new InvalidOperationException($"{nameof(GdPlots)} is null.");
+	public static GdPlots GPlots => GCore.Plots ?? throw Unavailable(nameof(GdPlots), CoreLifetime);
 
-	/// <inheritdoc cref="SessionManager.SessionManager" />
-	public static SessionManager.SessionManager GSessionManager =>
-		SessionManager.SessionManager.Instance ??
-		throw new InvalidOperationException($"{nameof(SessionManager.SessionManager)} is null.");
+	/// <inheritdoc cref="SessionManager" />
+	public static SessionManager GSessionManager =>
+		SessionManager.Instance ?? throw Unavailable(nameof(SessionManager), AutoloadLifetime);
 
+	/// <inheritdoc cref="PlayerManager" />
 	public static PlayerManager GPlayerManager
 	{
-		get => field ?? throw new InvalidOperationException($"{nameof(PlayerManager)} is null.");
+		get => field ?? throw Unavailable(nameof(PlayerManager), WorldLifetime);
 		set;
 	} = null!;
 
+	/// <inheritdoc cref="AssetManager" />
 	public static AssetManager GAssetManager
 	{
-		get => field ?? throw new InvalidOperationException($"{nameof(AssetManager)} is null.");
+		get => field ?? throw Unavailable(nameof(AssetManager), WorldLifetime);
 		set;
 	} = null!;
 
+	/// <inheritdoc cref="PlotManager" />
 	public static PlotManager GPlotManager
 	{
-		get => field ?? throw new InvalidOperationException($"{nameof(PlotManager)} is null.");
+		get => field ?? throw Unavailable(nameof(PlotManager), WorldLifetime);
 		set;
 	} = null!;
 
+	/// <inheritdoc cref="ToolManager" />
 	public static ToolManager GToolManager =>
-		ToolManager.Instance ?? throw new InvalidOperationException($"{nameof(ToolManager)} is null.");
+		ToolManager.Instance ?? throw Unavailable(nameof(ToolManager), ClientAutoloadLifetime);
 
+	/// <inheritdoc cref="WrappedTimeProvider" />
 	public static WrappedTimeProvider GTimeProvider { get; } = new();
+
+	private static InvalidOperationException Unavailable(string component, string lifetime) =>
+		new($"{component} is unavailable. {lifetime}");
 }

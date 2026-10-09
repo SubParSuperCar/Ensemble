@@ -2,7 +2,7 @@ using DiscordRPC;
 using DiscordRPC.Logging;
 using DiscordRPC.Message;
 using EnsembleRoot.Autoloading;
-using EnsembleRoot.SessionManager.Api;
+using EnsembleRoot.Sessions.Api;
 using Godot;
 using Serilog;
 
@@ -28,6 +28,9 @@ public partial class DiscordRpc : Node, IAutoload
 
 	private readonly CancellationTokenSource _cts = new();
 	private readonly Timestamps _launchedAt = Timestamps.Now;
+
+	// Guards the client and presence: reconnects run on the thread pool, presence updates on the main thread
+	private readonly Lock _lock = new();
 
 	private DiscordRpcClient? _client;
 	private int _connectionAttemptCount;
@@ -70,24 +73,40 @@ public partial class DiscordRpc : Node, IAutoload
 
 	private void Connect()
 	{
-		if (_cts.IsCancellationRequested)
-			return;
+		bool isInitialized;
 
-		var client = new DiscordRpcClient(AppId) { Logger = new ConsoleLogger(LogLevel.Error, true) };
+		lock (_lock)
+		{
+			// Checked under the lock, so a client created during shutdown is never left undisposed
+			if (_cts.IsCancellationRequested)
+				return;
 
-		client.OnReady += OnReady;
-		client.OnConnectionFailed += OnConnectionFailed;
+			var client = new DiscordRpcClient(AppId) { Logger = new ConsoleLogger(LogLevel.Error, true) };
 
-		client.SetPresence(Volatile.Read(ref _presence));
-		_client = client;
+			client.OnReady += OnReady;
+			client.OnConnectionFailed += OnConnectionFailed;
 
-		if (!client.Initialize())
+			client.SetPresence(_presence);
+			_client = client;
+
+			isInitialized = client.Initialize();
+		}
+
+		if (!isInitialized)
 			ScheduleReconnect();
 	}
 
 	private void DisposeClient()
 	{
-		if (Interlocked.Exchange(ref _client, null) is not { } client)
+		DiscordRpcClient? client;
+
+		lock (_lock)
+		{
+			client = _client;
+			_client = null;
+		}
+
+		if (client is null)
 			return;
 
 		Log.Debug("Terminating {$Client}...", client);
@@ -112,8 +131,11 @@ public partial class DiscordRpc : Node, IAutoload
 			Timestamps = manager.IsActive ? new Timestamps(manager.UtcStartedAt.UtcDateTime) : _launchedAt
 		};
 
-		Volatile.Write(ref _presence, presence);
-		Volatile.Read(ref _client)?.SetPresence(presence);
+		lock (_lock)
+		{
+			_presence = presence;
+			_client?.SetPresence(presence);
+		}
 
 		Log.Debug("Updated Discord presence: {State}", presence.State);
 	}
@@ -152,9 +174,7 @@ public partial class DiscordRpc : Node, IAutoload
 
 			Log.Verbose(
 				"Connection to Discord failed. Reconnecting in {Delay:g}... (Attempt={Attempt}/{MaxAttemptCount})",
-				delay,
-				attemptCount + 1,
-				MaxConnectionAttemptCount);
+				delay, attemptCount + 1, MaxConnectionAttemptCount);
 
 			await Task.Delay(delay, GTimeProvider, _cts.Token).ConfigureAwait(false);
 

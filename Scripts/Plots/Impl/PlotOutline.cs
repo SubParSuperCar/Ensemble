@@ -37,9 +37,10 @@ public partial class PlotOutline : Node3D
 	{
 		_tween?.Kill();
 
+		var duration = AnimationDuration.TotalSeconds * MathF.Abs(height - _height);
+
 		_tween = CreateTween().SetTrans(Tween.TransitionType.Quad).SetEase(ease);
-		_tween.TweenMethod(Callable.From<float>(SetHeight), _height, height,
-			AnimationDuration.TotalSeconds * MathF.Abs(height - _height));
+		_tween.TweenMethod(Callable.From<float>(SetHeight), _height, height, duration);
 	}
 
 	private void SetHeight(float height)

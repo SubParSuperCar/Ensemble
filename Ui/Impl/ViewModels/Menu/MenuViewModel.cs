@@ -9,6 +9,8 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed class MenuViewModel : ViewModelBase
 {
+	private static readonly StringName BackAction = "ui_back";
+
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;
 
@@ -18,10 +20,9 @@ public sealed class MenuViewModel : ViewModelBase
 		_dispatcher = dispatcher;
 
 		Navigator = _scope.ServiceProvider.GetRequiredService<NavigatorService>();
+		Navigator.GoTo<MenuHomeViewModel>();
 
 		dispatcher.Input += OnInput;
-
-		Navigator.GoTo<MenuHomeViewModel>();
 	}
 
 	public NavigatorService Navigator { get; }
@@ -31,13 +32,12 @@ public sealed class MenuViewModel : ViewModelBase
 		_dispatcher.Input -= OnInput;
 
 		Navigator.GoTo();
-
 		_scope.Dispose();
 	}
 
 	private void OnInput(InputEvent @event)
 	{
-		if (!@event.IsActionPressed("ui_back") || !Navigator.CanGoBack || InputSink.IsSunk)
+		if (!@event.IsActionPressed(BackAction) || !Navigator.CanGoBack || InputSink.IsSunk)
 			return;
 
 		Log.Debug("Navigating back from {ViewModel}...", Navigator.Current?.GetType().Name);

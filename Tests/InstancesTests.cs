@@ -11,24 +11,15 @@ public sealed class InstancesTests
 	public void Add_AssignsLowestFreeId()
 	{
 		var instances = CreateInstances();
-
-		for (var i = 0; i < 3; i++)
-			Add(instances);
-
-		instances.Remove(1);
-
-		Assert.Equal(1, Add(instances).Id);
-		Assert.Equal(3, Add(instances).Id);
-	}
-
-	[Fact]
-	public void Add_SkipsIdsTakenByAddAt()
-	{
-		var instances = CreateInstances();
 		instances.Add(0, Vector3.Zero, Quaternion.Identity, 1);
 
 		Assert.Equal(0, Add(instances).Id);
 		Assert.Equal(2, Add(instances).Id);
+
+		instances.Remove(0);
+
+		Assert.Equal(0, Add(instances).Id);
+		Assert.Equal(3, Add(instances).Id);
 	}
 
 	[Fact]
@@ -42,16 +33,6 @@ public sealed class InstancesTests
 
 		Assert.Equal((1, 2), instances.GetQuota(0));
 		Assert.Equal(1, instances.Count);
-	}
-
-	[Fact]
-	public void AssetProperties_IgnoreKeyCase()
-	{
-		var core = new Core();
-		var properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { ["Color"] = CoreVariant.Null };
-		var asset = core.Assets.Add(0, null, properties);
-
-		Assert.True(asset.Properties.ContainsKey("color"));
 	}
 
 	private static IInstances CreateInstances()

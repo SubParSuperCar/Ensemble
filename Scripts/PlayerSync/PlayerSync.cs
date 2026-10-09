@@ -1,6 +1,6 @@
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.GdCore.Players;
-using EnsembleRoot.SessionManager;
+using EnsembleRoot.Sessions;
 using Godot;
 using Serilog;
 

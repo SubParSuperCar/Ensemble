@@ -37,17 +37,9 @@ public partial class GdAssets : RefCounted
 
 	public GdAsset? GetAsset(int id) => Source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
 
-	public Array<GdAsset> GetAll()
-	{
-		var result = new Array<GdAsset>();
+	public Array<GdAsset> GetAll() => [.. Source.All.Values.Select(GdAsset.From)];
 
-		foreach (var asset in Source.All.Values)
-			result.Add(GdAsset.From(asset));
-
-		return result;
-	}
-
-	// Use explicit overloads so that GdCore can be used by GDScript, which does not support C# default args
+	// Explicit overloads instead of default arguments, which GDScript callers can't omit
 	public GdAsset Add(int id) => Add(id, string.Empty);
 	public GdAsset Add(int id, string name) => Add(id, name, null, Default);
 	public GdAsset Add(int id, string name, Dictionary properties) => Add(id, name, properties, Default);
@@ -61,13 +53,6 @@ public partial class GdAssets : RefCounted
 
 	public void Lock() => Source.Lock();
 
-	public Array<Dictionary> GetAllDicts()
-	{
-		var result = new Array<Dictionary>();
-
-		foreach (var asset in Source.All.Values)
-			result.Add(GdAsset.From(asset).ToDict());
-
-		return result;
-	}
+	public Array<Dictionary> GetAllDicts() =>
+		[.. Source.All.Values.Select(static asset => GdAsset.From(asset).ToDict())];
 }

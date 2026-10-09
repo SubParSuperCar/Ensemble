@@ -8,7 +8,7 @@ insert_final_newline = true
 [*.{slnx,csproj,props,xml}]
 indent_size = 2
 
-[*.{cs,gd,gdshader}]
+[*.{cs,gd,gdshader,gdshaderinc}]
 indent_style = tab
 indent_size = 4
 max_line_length = 120
@@ -18,13 +18,14 @@ max_line_length = 120
 csharp_prefer_braces = false
 csharp_preserve_single_line_blocks = true
 csharp_style_expression_bodied_methods = true:suggestion
-csharp_keep_existing_expr_member_arrangement = false
 
+csharp_keep_existing_expr_member_arrangement = false
 resharper_csharp_alignment_tab_fill_style = optimal_fill
 resharper_csharp_indent_nested_for_stmt = true
 resharper_csharp_indent_nested_foreach_stmt = true
 resharper_csharp_indent_nested_while_stmt = true
 resharper_csharp_wrap_before_arrow_with_expressions = false
+
 resharper_check_namespace_highlighting = none
 resharper_lambda_expression_can_be_made_static_highlighting = suggestion
 

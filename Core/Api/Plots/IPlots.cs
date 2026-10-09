@@ -14,10 +14,7 @@ public interface IPlots
 	event Action<IPlot> Added;
 	event Action<IPlot> Removed;
 
-	IPlot Add(
-		int id,
-		int? maxOccupantCount = null,
-		int? maxInstanceCount = null);
+	IPlot Add(int id, int? maxOccupantCount = null, int? maxInstanceCount = null);
 
 	void SetPlot(Guid playerId, int? plotId = null, bool shouldResolveOwnerIfNullOrRelinquishing = false);
 	bool TryGetOccupant(Guid playerId, [NotNullWhen(true)] out IOccupant? occupant);

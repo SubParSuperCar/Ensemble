@@ -20,7 +20,7 @@ public sealed record WidgetDescriptor(Rect InitialBounds)
 	public Size MinSize { get; init; } = new(192, 128);
 	public bool IsResizable { get; init; } = true;
 
-	/// <summary>Gets bounds in cells of a square <see cref="GridSize" />-cell grid over the widget area.</summary>
+	/// <summary>Converts cells of a <see cref="GridSize" />-square grid over the widget area to bounds.</summary>
 	public static Rect Cells(int x, int y, int width, int height) =>
 		new((double)x / GridSize, (double)y / GridSize, (double)width / GridSize, (double)height / GridSize);
 }

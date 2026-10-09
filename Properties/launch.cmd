@@ -19,7 +19,7 @@ for %%G in (%GD_CANDIDATES%) do (
 
 for %%G in (%GD_CANDIDATES%) do (
     for /f "delims=" %%P in ('where %%G 2^>nul') do (
-        echo Found via PATH (%%G): %%P
+        echo Found via PATH ^(%%G^): %%P
         "%%P" %*
         exit /b
     )

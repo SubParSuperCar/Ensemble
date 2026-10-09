@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using Avalonia;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Assets;
@@ -10,8 +11,6 @@ using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
-using Godot;
-using Dispatcher = Avalonia.Threading.Dispatcher;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -40,7 +39,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	private static ConstructTool Ctor => GToolManager.Construct;
 
 	[ObservableProperty] public partial string FilterQuery { get; set; } = string.Empty;
-	[ObservableProperty] public partial string TotalQuota { get; set; } = "<Unknown>";
+	[ObservableProperty] public partial string TotalQuota { get; set; } = QuotaFormat.Unknown;
 
 	public ObservableCollection<INodeBase> VisibleItems { get; } = [];
 	public ObservableCollection<INodeBase> SelectedItems { get; } = [];
@@ -49,7 +48,8 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	public partial float LinearSnappingIncrement { get; set; } = Ctor.SnappingIncrementLinear ?? 0f;
 
 	[ObservableProperty]
-	public partial float AngularSnappingIncrement { get; set; } = Mathf.RadToDeg(Ctor.SnappingIncrementAngularRadians);
+	public partial float AngularSnappingIncrement { get; set; } =
+		float.RadiansToDegrees(Ctor.SnappingIncrementAngularRadians);
 
 	public RotationSpace[] RotationSpaces { get; } = Enum.GetValues<RotationSpace>();
 	[ObservableProperty] public partial RotationSpace RotationSpace { get; set; } = Ctor.RotationSpace;
@@ -72,7 +72,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		Ctor.SnappingIncrementLinear = value is 0 ? null : value;
 
 	partial void OnAngularSnappingIncrementChanging(float value) =>
-		Ctor.SnappingIncrementAngularRadians = Mathf.DegToRad(value);
+		Ctor.SnappingIncrementAngularRadians = float.DegreesToRadians(value);
 
 	partial void OnRotationSpaceChanging(RotationSpace value) => Ctor.RotationSpace = value;
 
@@ -93,7 +93,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 	private void AddAssetNode(GdAsset asset)
 	{
-		var category = GAssetManager.Categories.TryGetValue(asset.Id, out var path) ? path : string.Empty;
+		var category = GAssetManager.GetCategory(asset.Id);
 		var node = new AssetNode { Name = asset.Name, Id = asset.Id };
 
 		_nodesByAssetId.Add(asset.Id, node);
@@ -130,7 +130,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	}
 
 	private static void Insert(IList<INodeBase> nodes, INodeBase node) =>
-		nodes.Insert(nodes.Count(other => Precedes(other, node)), node);
+		nodes.Insert(nodes.TakeWhile(other => Precedes(other, node)).Count(), node);
 
 	private static bool Precedes(INodeBase left, INodeBase right)
 	{
@@ -190,9 +190,14 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		return result.Children.Count is 0 ? null : result;
 	}
 
-	private bool Matches(AssetNode asset) =>
-		asset.Name.Contains(FilterQuery, StringComparison.OrdinalIgnoreCase) ||
-		asset.Id.ToString(CultureInfo.InvariantCulture).Contains(FilterQuery, StringComparison.OrdinalIgnoreCase);
+	private bool Matches(AssetNode asset)
+	{
+		var query = FilterQuery.Trim();
+
+		return
+			asset.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+			asset.Id.ToString(CultureInfo.InvariantCulture).Contains(query, StringComparison.Ordinal);
+	}
 
 	private void OnSelectedItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
@@ -244,7 +249,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	private void UpdateTotalQuota() =>
 		TotalQuota = _instances is { } instances
 			? QuotaFormat.Fraction(instances.Count, instances.MaxCount)
-			: "<Unknown>";
+			: QuotaFormat.Unknown;
 
 	private void UpdateAssetQuota(int assetId)
 	{
@@ -272,7 +277,7 @@ public sealed partial class AssetNode : ObservableObject, INodeBase
 {
 	public int Id { get; init; }
 
-	[ObservableProperty] public partial string Quota { get; set; } = "<Unknown>";
+	[ObservableProperty] public partial string Quota { get; set; } = QuotaFormat.Unknown;
 	public required string Name { get; init; }
 }
 

@@ -37,15 +37,7 @@ public partial class GdInstances : RefCounted
 
 	public GdInstance? GetInstance(int id) => Source.TryGet(id, out var instance) ? GdInstance.From(instance) : null;
 
-	public Array<GdInstance> GetAll()
-	{
-		var result = new Array<GdInstance>();
-
-		foreach (var instance in Source.All)
-			result.Add(GdInstance.From(instance));
-
-		return result;
-	}
+	public Array<GdInstance> GetAll() => [.. Source.All.Select(GdInstance.From)];
 
 	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation) =>
 		GdInstance.From(Source.Add(assetId, position.FromGodot(), rotation.FromGodot()));
@@ -72,13 +64,6 @@ public partial class GdInstances : RefCounted
 		return result;
 	}
 
-	public Array<Dictionary> GetAllDicts()
-	{
-		var result = new Array<Dictionary>();
-
-		foreach (var instance in Source.All)
-			result.Add(GdInstance.From(instance).ToDict());
-
-		return result;
-	}
+	public Array<Dictionary> GetAllDicts() =>
+		[.. Source.All.Select(static instance => GdInstance.From(instance).ToDict())];
 }

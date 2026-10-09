@@ -25,26 +25,26 @@
                     Name="ManualRadioButton"
                     Content="Manual"
                     IsChecked="True"
-                    ToolTip.Tip="Enter the host's address and port separately."
+                    ToolTip.Tip="Uses the host's address and port, entered separately."
                     FontSize="20" />
 
                 <RadioButton
                     Name="CodeRadioButton"
                     Content="Code"
                     IsChecked="{Binding IsCodeMethod}"
-                    ToolTip.Tip="Enter the host's address and port as a single code."
+                    ToolTip.Tip="Uses a single code containing the host's address and port."
                     FontSize="20" />
             </StackPanel>
         </StackPanel>
 
         <StackPanel Spacing="8" IsVisible="{Binding #ManualRadioButton.IsChecked}">
             <StackPanel>
-                <TextBlock Text="Address (IPv4):" FontSize="16" />
+                <TextBlock Text="Address:" FontSize="16" />
 
                 <TextBox
                     Text="{Binding Address}"
-                    PlaceholderText="X.X.X.X"
-                    ToolTip.Tip="The host's IPv4 address (or host name)." />
+                    PlaceholderText="&lt;Address&gt;"
+                    ToolTip.Tip="The host's IP address (IPv4 or IPv6) or host name." />
             </StackPanel>
 
             <StackPanel>
@@ -52,7 +52,7 @@
 
                 <NumericUpDown
                     Value="{Binding Port}"
-                    PlaceholderText="1024&#x2014;65,535"
+                    PlaceholderText="1024&#x2013;65,535"
                     ToolTip.Tip="The host's UDP port."
                     Minimum="1024" Maximum="65535"
                     Increment="1"

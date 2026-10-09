@@ -26,7 +26,7 @@
 
             <Border
                 Grid.Column="1"
-                BorderBrush="Red" BorderThickness="1"
+                BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
                 Margin="0,0,0,4"
                 IsVisible="{Binding IsClearAllVisible}">
 

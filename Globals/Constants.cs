@@ -1,3 +1,5 @@
+using Godot;
+
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace EnsembleRoot.Globals;
@@ -27,5 +29,8 @@ public static class Constants
 
 	public const int RegexMatchTimeoutMs = 100;
 
-	public static readonly TimeSpan AnimationDuration = TimeSpan.FromMilliseconds(200);
+	public static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(3 / 16d);
+
+	/// <remarks>Also the multi-player handshake version: peers must match exactly.</remarks>
+	public static string GameVersion => field ??= ProjectSettings.GetSetting("application/config/version").AsString();
 }

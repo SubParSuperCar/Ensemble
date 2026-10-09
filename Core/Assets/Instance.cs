@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using EnsembleCoreRoot.Api.Assets;
 
@@ -15,6 +16,8 @@ public sealed class Instance(IAsset asset, Vector3 position, Quaternion rotation
 	public Quaternion Rotation { get; } = rotation;
 
 	public override string ToString() =>
-		$"Instance(instanceId={Id}, assetId={Asset.Id}, position={Position}, " +
-		$"rotation={Rotation}, properties={Properties})";
+		string.Create(
+			CultureInfo.InvariantCulture,
+			$"Instance(instanceId={Id}, assetId={Asset.Id}, position={Position}, rotation={Rotation}, " +
+			$"properties={Properties})");
 }

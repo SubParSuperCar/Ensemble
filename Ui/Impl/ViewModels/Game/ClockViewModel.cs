@@ -29,7 +29,6 @@ public sealed partial class ClockViewModel : ViewModelBase
 		var duration = sessionDuration.ToString(@"d\:hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
 		Text = string.Create(
-			CultureInfo.CurrentCulture,
-			$"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {duration}");
+			CultureInfo.CurrentCulture, $"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {duration}");
 	}
 }

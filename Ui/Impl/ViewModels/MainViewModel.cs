@@ -14,13 +14,18 @@ using Godot;
 using Iciclecreek.Terminal;
 using Serilog;
 using XTerm.Common;
-using Color = Avalonia.Media.Color;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class MainViewModel : ViewModelBase
 {
 	private const int TargetTerminalFps = 60;
+	private const int TerminalWidth = 1280;
+	private const int TerminalHeight = 720;
+	private const int TerminalCursorBlinkRateMs = (int)TimeSpan.MillisecondsPerSecond / 3;
+
+	private static readonly StringName ToggleConsoleAction = "ui_toggle_console";
+	private static readonly StringName OpenPtyAction = "ui_open_pty";
 
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceProvider _services;
@@ -84,11 +89,7 @@ public sealed partial class MainViewModel : ViewModelBase
 		IsConsoleVisible = false;
 	}
 
-	[RelayCommand]
-	private void OpenTerminal() => ShowNewTerminalWindow();
-
-	// Force Godot to keep rendering to keep the UI going,
-	// even though it normally wouldn't because there's no 3D scene when out of session
+	// Forces Godot to keep drawing out of session, where there's no 3D scene that would keep the UI updating
 	private static void OnUiProcess(UiProcessData data) => RenderingServer.ForceDraw();
 
 	private void OnSessionStarted()
@@ -109,10 +110,10 @@ public sealed partial class MainViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
-		if (Input.IsActionJustPressedByEvent("ui_toggle_console", @event))
+		if (Input.IsActionJustPressedByEvent(ToggleConsoleAction, @event))
 			IsConsoleVisible = !IsConsoleVisible;
-		else if (Input.IsActionJustPressedByEvent("ui_open_pty", @event))
-			ShowNewTerminalWindow();
+		else if (Input.IsActionJustPressedByEvent(OpenPtyAction, @event))
+			OpenTerminal();
 	}
 
 	private void OnNotification(int what)
@@ -138,7 +139,8 @@ public sealed partial class MainViewModel : ViewModelBase
 		}
 	}
 
-	private void ShowNewTerminalWindow()
+	[RelayCommand]
+	private void OpenTerminal()
 	{
 		var app = Application.Current!;
 		var isDark = app.ActualThemeVariant == ThemeVariant.Dark;
@@ -146,14 +148,15 @@ public sealed partial class MainViewModel : ViewModelBase
 		// Sync the appearance to the main UI
 		var fontFamily = app.FindResource("Font") as FontFamily ?? FontFamily.Default;
 		var fontSize = app.FindResource("FontSize") as double? ?? 16d;
-		var cursorColor = (app.FindResource("HighlightBrush") as ISolidColorBrush)?.Color ?? Color.Parse("#40A0FF");
-		var selectionBrush = app.FindResource("ThemeAccentBrush3") as IBrush ?? new SolidColorBrush(cursorColor, 0.4);
+		var accent = app.FindResource("HighlightBrush") as ISolidColorBrush ??
+					 (ISolidColorBrush)app.FindResource("PrimaryBrush")!;
+		var selectionBrush = app.FindResource("ThemeAccentBrush3") as IBrush ?? new SolidColorBrush(accent.Color, 0.4);
 
 		// TODO: Consider adding support for translucent terminal windows. Estragonia is likely the limiting factor.
 		var terminal = new TerminalWindow
 		{
-			Width = 1280,
-			Height = 720,
+			Width = TerminalWidth,
+			Height = TerminalHeight,
 			FontFamily = fontFamily,
 			FontSize = fontSize,
 			Foreground = isDark ? Brushes.White : Brushes.Black,
@@ -161,16 +164,16 @@ public sealed partial class MainViewModel : ViewModelBase
 			SelectionBrush = selectionBrush,
 			Ligatures = true,
 			CursorStyle = CursorStyle.Block,
-			CursorColor = cursorColor,
+			CursorColor = accent.Color,
 			CursorBlink = true,
-			CursorBlinkRate = (int)TimeSpan.MillisecondsPerSecond / 3
+			CursorBlinkRate = TerminalCursorBlinkRateMs
 		};
 
 		_terminals.Add(terminal);
 		terminal.Closing += OnClosing;
 		terminal.ProcessExited += OnProcessExited;
 
-		Log.Debug("PTY process created with shell: {Shell}", terminal.Process);
+		Log.Debug("Created PTY process (Shell={Shell})", terminal.Process);
 
 		terminal.Show();
 		terminal.GetVisualDescendants().OfType<TerminalView>().FirstOrDefault()?.Focus();
@@ -184,5 +187,5 @@ public sealed partial class MainViewModel : ViewModelBase
 	}
 
 	private static void OnProcessExited(object? sender, ProcessExitedEventArgs e) =>
-		Log.Debug("PTY process exited with code: {ExitCode}", e.ExitCode);
+		Log.Debug("PTY process exited (ExitCode={ExitCode})", e.ExitCode);
 }

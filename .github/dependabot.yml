@@ -1,11 +1,11 @@
 version: 2
 updates:
-  - package-ecosystem: "nuget"
-    directory: "/"
+  - package-ecosystem: 'nuget'
+    directory: '/'
     schedule:
-      interval: "cron"
-      cronjob: "0 0 */3 * *"
-  - package-ecosystem: "github-actions"
-    directory: "/"
+      interval: 'cron'
+      cronjob: '0 0 */3 * *'
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'

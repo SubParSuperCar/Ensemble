@@ -12,18 +12,14 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
-	private static ValueTask<int> clr_log(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> clr_log(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Callable.From(VolatileLogHistorySink.Clear).CallDeferred();
 
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> dmp_asm_info(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> dmp_asm_info(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var assemblyNames = AppDomain.CurrentDomain.GetAssemblies()
 			.Select(static assembly => assembly.GetName())
@@ -32,15 +28,12 @@ public static partial class LuaExecutor
 
 		Log.Information(
 			"Loaded assemblies ({Count}):\n{Assemblies}",
-			assemblyNames.Length,
-			string.Join('\n', assemblyNames.Select(static name => $"~~> {name}")));
+			assemblyNames.Length, string.Join('\n', assemblyNames.Select(static name => $"~~> {name}")));
 
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> dmp_env(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> dmp_env(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Log.Information("Contents of _ENV:");
 		DumpTable(context.State.Environment, "_ENV", []);
@@ -48,16 +41,13 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> dmp_inp_map(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> dmp_inp_map(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
+		var actions = InputMap.GetActions().Select(static action => action.ToString()).Order(StringComparer.Ordinal);
+
 		Log.Information("Contents of InputMap:");
 
-		foreach (
-			var action in InputMap.GetActions()
-				.Select(static action => action.ToString())
-				.Order(StringComparer.Ordinal))
+		foreach (var action in actions)
 		{
 			Log.Information("{Action}:", action);
 
@@ -69,34 +59,30 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> gc(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> gc(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var before = GC.GetTotalMemory(false);
-		Log.Information("GC heap size before: {BytesBefore}", ByteFormat.Humanize((ulong)before));
 
+		Log.Information("GC heap size before: {BytesBefore}", ByteFormat.Humanize((ulong)before));
 		var stopwatch = Stopwatch.StartNew();
+
 		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
 		GC.WaitForPendingFinalizers();
 		GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
-		stopwatch.Stop();
 
+		stopwatch.Stop();
 		var after = GC.GetTotalMemory(false);
 		var reclaimed = Math.Max(0, before - after);
 
 		Log.Information(
 			"GC heap size after: {BytesAfter} (reclaimed {BytesReclaimed} in {ElapsedMs:F3} ms)",
-			ByteFormat.Humanize((ulong)after),
-			ByteFormat.Humanize((ulong)reclaimed),
+			ByteFormat.Humanize((ulong)after), ByteFormat.Humanize((ulong)reclaimed),
 			stopwatch.Elapsed.TotalMilliseconds);
 
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> help(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> help(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var env = new LuaTable();
 		InjectCustomFunctions(env);
@@ -111,9 +97,7 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> print(
-		LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> print(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Log.Information("Lua: \"{Message}\"", string.Join(' ', [.. context.Arguments]));
 
@@ -126,9 +110,7 @@ public static partial class LuaExecutor
 
 		foreach (var (luaKey, luaValue) in table.OrderBy(static entry => entry.Key.ToString(), StringComparer.Ordinal))
 		{
-			var childPath = luaKey.Type is LuaValueType.Number
-				? $"{path}[{luaKey}]"
-				: $"{path}.{luaKey}";
+			var childPath = luaKey.Type is LuaValueType.Number ? $"{path}[{luaKey}]" : $"{path}.{luaKey}";
 
 			switch (luaValue.Type)
 			{

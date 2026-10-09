@@ -11,7 +11,7 @@
    ```
 
 3. Download and install [Godot Mono 4.7.2 or newer](https://godotengine.org/download/archive/4.7.2-stable/). Be sure
-   to download the **.NET (Mono)** version for your operating system and system architecture.
+   to download the **.NET (Mono)** version for your operating system and architecture.
 
 4. Download and install the [.NET SDK 10.0.100 or newer](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/).
    The .NET SDK is required to build and run the project's C# code.
@@ -26,12 +26,12 @@
 
    ### Rider PATH Configuration
 
-   If you use JetBrains Rider, it is recommended that you add the Godot executable to your system's `PATH` using one of
-   the following names: `godot`, `godot4`, or `godot-mono`. This allows the **PATH Launcher** run configuration to
-   locate your Godot installation automatically without additional configuration.
+   If you use JetBrains Rider, it is recommended that you add the Godot executable to your system's `PATH` under one of
+   the following names: `godot`, `godot4`, or `godot-mono` (with `.exe` on Windows). This allows the **PATH Launcher**
+   run configurations to locate your Godot installation automatically, without additional configuration.
 
-   Alternatively, you can place the executable in the project's `bin/` directory using one of the previously listed
-   names. Creating the directory may be required.
+   Alternatively, you can place the executable in the project's `bin/` directory under one of the previously listed
+   names. The directory is created by the first build.
 
 ## Guidelines
 

@@ -1,3 +1,4 @@
+using System.Globalization;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleCoreRoot.Api.Plots;
 using EnsembleCoreRoot.Assets;
@@ -14,7 +15,7 @@ public sealed class Plot : IPlot
 		Instances = new Instances(assets, maxInstanceCount);
 	}
 
-	// Rider's "Code Cleanup" tool separates Occupants from Instances due to alphabetical ordering; don't fight it
+	// Rider's Code Cleanup moves Occupants apart from Instances; don't fight it
 	public Occupants Occupants { get; }
 
 	public int Id { get; }
@@ -51,5 +52,6 @@ public sealed class Plot : IPlot
 		Instances.Clear();
 	}
 
-	public override string ToString() => $"Plot(id={Id}, isSpawned={IsSpawned})";
+	public override string ToString() =>
+		string.Create(CultureInfo.InvariantCulture, $"Plot(id={Id}, isSpawned={IsSpawned})");
 }

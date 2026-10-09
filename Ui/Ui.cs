@@ -14,15 +14,15 @@ using Estragonia;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Control = Godot.Control;
 using Dispatcher = Avalonia.Threading.Dispatcher;
-using GdControl = Godot.Control;
 using HorizontalAlignment = Avalonia.Layout.HorizontalAlignment;
 using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
 namespace EnsembleRoot.Ui;
 
 [GlobalClass]
-public partial class Ui : GdControl
+public partial class Ui : Control
 {
 	public const double ProcessInterval = 1 / 120d;
 
@@ -66,8 +66,8 @@ public partial class Ui : GdControl
 				CultureInfo.InvariantCulture,
 				$"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 
-			WeakReferenceMessenger.Default.Register<Ui, SetUiRenderScaleMessage>(this,
-				static (ui, message) => ui._host.RenderScaling = message.Value);
+			WeakReferenceMessenger.Default.Register<Ui, SetUiRenderScaleMessage>(
+				this, static (ui, message) => ui._host.RenderScaling = message.Value);
 
 			if (Main.AreAutoloadsLoaded)
 				SwapToRealUi();
@@ -76,13 +76,10 @@ public partial class Ui : GdControl
 		}
 		catch (Exception exception)
 		{
-			if (
-				!Main.AskUser(
-					"UI Load Failed",
-					Main.FormatFailureMessage(
-						"Ensemble UI failed to load",
-						exception,
-						"Ensemble UI may not appear.")))
+			var message = Main.FormatFailureMessage(
+				"Ensemble UI failed to load", exception, "Ensemble UI may not appear.");
+
+			if (!Main.AskUser("UI Load Failed", message))
 				Main.FailFast(exception);
 
 			QueueFree();
@@ -120,19 +117,23 @@ public partial class Ui : GdControl
 		return loadingScreen;
 	}
 
+	// Buckets by diagonal, expressed as the height of a 16:9 window with the same diagonal, so the thresholds sit
+	// halfway between standard resolutions (720p, 900p, 1080p, 1440p, and 2160p)
 	private static float GetRenderScale(Vector2I size)
 	{
-		Log.Debug("Window resolution: {Size}", size);
-
 		var diagonal = Math.Sqrt((double)size.X * size.X + (double)size.Y * size.Y);
-		Log.Debug("Window diagonal: {Diagonal:F2}", diagonal);
+		var height = diagonal * 9 / Math.Sqrt(16 * 16 + 9 * 9);
 
-		return diagonal switch
+		Log.Debug(
+			"Window resolution: {Size} (Diagonal={Diagonal:F2}, EquivalentHeight={EquivalentHeight:F2})",
+			size, diagonal, height);
+
+		return height switch
 		{
-			< 1652.18 => 0.75f,
-			< 2019.33 => 0.875f,
-			< 2570.06 => 1f,
-			< 3671.51 => 1.25f,
+			< (720 + 900) / 2d => 0.75f,
+			< (900 + 1080) / 2d => 0.875f,
+			< (1080 + 1440) / 2d => 1f,
+			< (1440 + 2160) / 2d => 1.25f,
 			_ => 1.5f
 		};
 	}
@@ -190,13 +191,10 @@ public partial class Ui : GdControl
 		}
 		catch (Exception exception)
 		{
-			if (
-				!Main.AskUser(
-					"UI Swap Failed",
-					Main.FormatFailureMessage(
-						"Ensemble UI failed to swap to the real UI",
-						exception,
-						"Ensemble UI may not appear as the real UI.")))
+			var message = Main.FormatFailureMessage(
+				"Ensemble UI failed to swap to the real UI", exception, "Ensemble UI may not appear as the real UI.");
+
+			if (!Main.AskUser("UI Swap Failed", message))
 				Main.FailFast(exception);
 
 			QueueFree();

@@ -16,8 +16,6 @@ public sealed class ObbGrid
 	private readonly Dictionary<Vector3I, List<int>> _cells = [];
 	private readonly HashSet<int> _visited = [];
 
-	public int Count => _boxes.Count;
-
 	public void Add(int id, Obb box)
 	{
 		_boxes.Add(id, box);

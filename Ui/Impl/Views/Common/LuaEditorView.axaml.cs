@@ -12,7 +12,7 @@ namespace EnsembleRoot.Ui.Impl.Views;
 public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewModel>
 {
 	private const string LanguageExtension = ".lua";
-	private new const ThemeName Theme = ThemeName.OneDark;
+	private const ThemeName SyntaxTheme = ThemeName.OneDark;
 	private const int IndentationSize = 2;
 	private const int RulerPosition = 60;
 
@@ -27,7 +27,7 @@ public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewM
 		Log.Debug("Initializing {Control}...", nameof(Editor));
 		var stopwatch = Stopwatch.StartNew();
 
-		var registryOptions = new RegistryOptions(Theme);
+		var registryOptions = new RegistryOptions(SyntaxTheme);
 		var installation = Editor.InstallTextMate(registryOptions);
 
 		var language = registryOptions.GetLanguageByExtension(LanguageExtension);

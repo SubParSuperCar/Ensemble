@@ -9,7 +9,7 @@ internal static class SaveCompression
 		type switch
 		{
 			CompressionType.None => null,
-			CompressionType.ZStandard => level is { } value
+			CompressionType.Zstandard => level is { } value
 				? new CompressionStream(target, value, leaveOpen: true)
 				: new CompressionStream(target, leaveOpen: true),
 			CompressionType.Brotli => new BrotliStream(target, ToBrotliLevel(level), true),
@@ -20,7 +20,7 @@ internal static class SaveCompression
 		type switch
 		{
 			CompressionType.None => null,
-			CompressionType.ZStandard => new DecompressionStream(source, leaveOpen: true),
+			CompressionType.Zstandard => new DecompressionStream(source, leaveOpen: true),
 			CompressionType.Brotli => new BrotliStream(source, CompressionMode.Decompress, true),
 			_ => throw new ArgumentOutOfRangeException(nameof(type))
 		};

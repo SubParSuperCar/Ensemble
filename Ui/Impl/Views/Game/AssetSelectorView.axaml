@@ -25,7 +25,7 @@
             <TextBlock
                 Grid.Column="1"
                 Text="{Binding TotalQuota}"
-                ToolTip.Tip="Total instances placed on this plot, out of the plot's maximum."
+                ToolTip.Tip="The total instances placed on this plot, out of its maximum."
                 VerticalAlignment="Center"
                 Margin="4,0" />
         </Grid>
@@ -43,7 +43,7 @@
             <TextBlock
                 Grid.Column="2"
                 Text="&#x2195; Quota"
-                ToolTip.Tip="Instances placed for this asset, out of its maximum."
+                ToolTip.Tip="The instances placed for this asset, out of its maximum."
                 TextAlignment="Right" />
         </Grid>
 
@@ -87,11 +87,11 @@
             </TreeView.DataTemplates>
         </TreeView>
 
-        <Grid Grid.Row="3" ColumnDefinitions="*,*,Auto,4,Auto,2,Auto,2,Auto,4,Auto">
+        <Grid Grid.Row="3" ColumnDefinitions="*,*,Auto">
             <NumericUpDown
                 Value="{Binding LinearSnappingIncrement}"
                 PlaceholderText="&lt;Lin. Incr.&gt;"
-                ToolTip.Tip="Grid snapping increment, in units. (0 disables snapping)"
+                ToolTip.Tip="The grid snapping increment, in units. Zero disables snapping."
                 Minimum="0" Maximum="10"
                 Increment="0.125" />
 
@@ -99,49 +99,48 @@
                 Grid.Column="1"
                 Value="{Binding AngularSnappingIncrement}"
                 PlaceholderText="&lt;Rot. Incr. Deg.&gt;"
-                ToolTip.Tip="Rotation snapping increment, in degrees."
+                ToolTip.Tip="The rotation snapping increment, in degrees."
                 Minimum="-180" Maximum="180"
                 Increment="11.25"
                 ButtonSpinnerLocation="Left" />
 
-            <ComboBox
-                Grid.Column="2"
-                ItemsSource="{Binding RotationSpaces}"
-                SelectedItem="{Binding RotationSpace}"
-                ToolTip.Tip="Rotates around local or global axes." />
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                <ComboBox
+                    ItemsSource="{Binding RotationSpaces}"
+                    SelectedItem="{Binding RotationSpace}"
+                    ToolTip.Tip="Selects whether the buttons rotate around global or local axes." />
 
-            <Button
-                Grid.Column="4"
-                Content="X"
-                Command="{Binding RotateXCommand}"
-                ToolTip.Tip="Rotates around the X axis. (World Y / Up)"
-                Background="#FF0000" Foreground="White"
-                Padding="8,0"
-                FontSize="24" FontWeight="Bold" />
+                <StackPanel Orientation="Horizontal" Spacing="2">
+                    <Button
+                        Content="X"
+                        Command="{Binding RotateXCommand}"
+                        ToolTip.Tip="Rotates around the X axis. (World Y / Up)"
+                        Background="#FF0000" Foreground="White"
+                        Padding="8,0"
+                        FontSize="24" FontWeight="Bold" />
 
-            <Button
-                Grid.Column="6"
-                Content="Y"
-                Command="{Binding RotateYCommand}"
-                ToolTip.Tip="Rotates around the Y axis. (World X / Right)"
-                Background="#00FF00" Foreground="Black"
-                Padding="8,0"
-                FontSize="24" FontWeight="Bold" />
+                    <Button
+                        Content="Y"
+                        Command="{Binding RotateYCommand}"
+                        ToolTip.Tip="Rotates around the Y axis. (World X / Right)"
+                        Background="#00FF00" Foreground="Black"
+                        Padding="8,0"
+                        FontSize="24" FontWeight="Bold" />
 
-            <Button
-                Grid.Column="8"
-                Content="Z"
-                Command="{Binding RotateZCommand}"
-                ToolTip.Tip="Rotates around the Z axis. (World Z / Back)"
-                Background="#0000FF" Foreground="White"
-                Padding="8,0"
-                FontSize="24" FontWeight="Bold" />
+                    <Button
+                        Content="Z"
+                        Command="{Binding RotateZCommand}"
+                        ToolTip.Tip="Rotates around the Z axis. (World Z / Back)"
+                        Background="#0000FF" Foreground="White"
+                        Padding="8,0"
+                        FontSize="24" FontWeight="Bold" />
+                </StackPanel>
 
-            <Button
-                Grid.Column="10"
-                Content="Reset Rot."
-                Command="{Binding ResetRotationCommand}"
-                ToolTip.Tip="Resets the rotation to identity." />
+                <Button
+                    Content="Reset Rot."
+                    Command="{Binding ResetRotationCommand}"
+                    ToolTip.Tip="Resets the rotation to identity." />
+            </StackPanel>
         </Grid>
     </Grid>
 

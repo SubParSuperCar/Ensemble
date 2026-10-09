@@ -1,123 +1,13 @@
-using System.ComponentModel;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Threading;
-using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels;
-using LiveMarkdown.Avalonia;
-using Markdig;
-using Serilog;
-using Stopwatch = System.Diagnostics.Stopwatch;
 
 namespace EnsembleRoot.Ui.Impl.Views;
 
 public sealed partial class DocFileView : UserControl, IViewFor<DocFileViewModel>
 {
-	private CancellationTokenSource? _cts;
-	private DocFileViewModel? _viewModel;
-
 	public DocFileView()
 	{
 		InitializeComponent();
-		DataContextChanged += OnDataContextChanged;
-	}
-
-	protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-	{
-		base.OnAttachedToVisualTree(e);
-		OnAttached();
-	}
-
-	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-	{
-		OnDetached();
-		base.OnDetachedFromVisualTree(e);
-	}
-
-	private void OnDataContextChanged(object? sender, EventArgs e)
-	{
-		if (ReferenceEquals(_viewModel, DataContext))
-			return;
-
-		OnDetached();
-		OnAttached();
-	}
-
-	private void OnAttached()
-	{
-		if (DataContext is not DocFileViewModel viewModel || ReferenceEquals(_viewModel, viewModel))
-			return;
-
-		_viewModel = viewModel;
-		viewModel.PropertyChanged += OnViewModelPropertyChanged;
-
-		_ = LoadFileAsync(viewModel.SelectedFile);
-	}
-
-	private void OnDetached()
-	{
-		if (_viewModel is null)
-			return;
-
-		_viewModel.PropertyChanged -= OnViewModelPropertyChanged;
-		_viewModel = null;
-
-		Interlocked.Exchange(ref _cts, null)?.Cancel();
-	}
-
-	private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
-	{
-		if (!string.Equals(e.PropertyName, nameof(DocFileViewModel.SelectedFile), StringComparison.Ordinal))
-			return;
-
-		if (sender is DocFileViewModel viewModel && ReferenceEquals(viewModel, _viewModel))
-			_ = LoadFileAsync(viewModel.SelectedFile);
-	}
-
-	private async Task LoadFileAsync(DocFile file)
-	{
-		Log.Debug("Loading {FileName}...", file.Name);
-		var stopwatch = Stopwatch.StartNew();
-
-		var cts = new CancellationTokenSource();
-		var oldCts = Interlocked.Exchange(ref _cts, cts);
-
-		try
-		{
-			if (oldCts is not null)
-				await oldCts.CancelAsync().ConfigureAwait(false);
-
-			var markdown = await Http.Client.GetStringAsync(file.Uri, cts.Token).ConfigureAwait(false);
-			cts.Token.ThrowIfCancellationRequested();
-
-			var document = Markdown.Parse(markdown, MarkdownUpdateProducer.DefaultPipeline);
-
-			await Dispatcher.UIThread.InvokeAsync(() =>
-			{
-				cts.Token.ThrowIfCancellationRequested();
-
-				if (!ReferenceEquals(_cts, cts))
-					return;
-
-				MarkdownRenderer.ImageBasePath = new Uri(new Uri(file.Uri), ".").ToString();
-				MarkdownRenderer.DocumentUpdate = new MarkdownDocumentUpdate.Full(document);
-
-				stopwatch.Stop();
-				Log.Debug("Loaded {FileName} in {ElapsedMs:F3} ms", file.Name, stopwatch.Elapsed.TotalMilliseconds);
-			});
-		}
-		catch (OperationCanceledException) when (cts.IsCancellationRequested) { }
-		catch (Exception exception) when (exception is HttpRequestException or OperationCanceledException)
-		{
-			if (!ReferenceEquals(_cts, cts))
-				return;
-
-			Log.Error(exception, "Failed to load {FileName} from {Uri}", file.Name, file.Uri);
-		}
-		finally
-		{
-			Interlocked.CompareExchange(ref _cts, null, cts);
-		}
 	}
 }

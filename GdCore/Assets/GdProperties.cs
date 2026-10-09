@@ -3,7 +3,6 @@ using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.GdCore.Utils;
 using Godot;
 using Godot.Collections;
-using Variant = Godot.Variant;
 
 namespace EnsembleRoot.GdCore.Assets;
 

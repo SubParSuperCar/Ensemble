@@ -24,6 +24,9 @@
                 Color="{DynamicResource ThemeBackgroundColor}"
                 Opacity="0.625" />
 
+            <SolidColorBrush x:Key="PrimaryBrush" Color="#40A0FF" />
+            <SolidColorBrush x:Key="DangerBrush" Color="Red" />
+
             <DropShadowEffect
                 x:Key="StrokeEffect"
                 OffsetX="0" OffsetY="0"
@@ -92,11 +95,11 @@
         </Style>
 
         <Style Selector="Border.primary">
-            <Setter Property="BorderBrush" Value="#40A0FF" />
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
         </Style>
 
         <Style Selector="Border.danger">
-            <Setter Property="BorderBrush" Value="Red" />
+            <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}" />
         </Style>
     </Application.Styles>
 

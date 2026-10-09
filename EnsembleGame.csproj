@@ -12,12 +12,12 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <!-- Strip exception paths to the working directory instead of the FS root for privacy and brevity -->
+    <!-- Makes embedded source paths relative to the project directory, for privacy and brevity -->
     <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
-    <!-- Ensures that all the assemblies (particularly NuGet ones) are copied over to the output directory -->
+    <!-- Copies every assembly (particularly NuGet ones) to the output directory -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
@@ -70,7 +70,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia.AvaloniaEdit" Version="12.0.0"/>
     <PackageReference Include="Avalonia.Controls.WebView" Version="12.1.0"/>
-    <!-- Override Avalonia.Skia with our custom patched one referenced below. All other assemblies must use it. -->
+    <!-- Excluded in favor of the patched Avalonia.Skia referenced below, which every assembly must use -->
     <PackageReference Include="Avalonia.Skia" Version="12.1.3" IncludeAssets="none"/>
     <PackageReference Include="Avalonia.Themes.Simple" Version="12.1.3"/>
     <PackageReference Include="Avalonia.Wayland" Version="12.1.3"/>
@@ -175,8 +175,8 @@
 
   <Target Name="PrepareGodotExport" BeforeTargets="Build">
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/linux"/>
-    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
     <MakeDir Directories="$(MSBuildProjectDirectory)/bin/macos"/>
+    <MakeDir Directories="$(MSBuildProjectDirectory)/bin/windows"/>
 
     <WriteLinesToFile File="$(MSBuildProjectDirectory)/bin/.gdignore" Lines="" Overwrite="false"/>
   </Target>

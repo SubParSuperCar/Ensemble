@@ -33,13 +33,14 @@ public partial class CharacterController : CharacterBody3D
 	public float FirstPersonInvisibleProximityThreshold { get; set; } = 1f;
 
 	[Export] public Camera3D Camera { get; set; } = null!;
-	[Export] public Node3D Terrain { get; set; } = null!; // We need a Terrain3D reference to sync the collision probe
+	[Export] public Node3D Terrain { get; set; } = null!; // Terrain3D, which has no C# bindings
 
 	public override void _Ready()
 	{
 		PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
 
-		// Hacky Terrain3D collision probe to fix falling through the ground when dollying/"zooming" out
+		// Terrain3D only generates collision around its camera, so this probe camera keeps it under the body while the
+		// view camera dollies away; otherwise, the body falls through the ground
 		var terrainFocus = new Camera3D { Name = "ShamCam", Current = false };
 		AddChild(terrainFocus);
 
@@ -58,13 +59,11 @@ public partial class CharacterController : CharacterBody3D
 		if (!IsOnFloor())
 			velocity += GetGravity() * (float)delta;
 		else if (!InputSink.IsSunk && Input.IsActionPressed(JumpAction))
-			velocity.Y = MathF.Sqrt(JumpHeight * 2 * -GetGravity().Y);
+			velocity.Y = MathF.Sqrt(2 * JumpHeight * -GetGravity().Y);
 
-		var inputDirection = !InputSink.IsSunk
-			? Input.GetVector(
-				StrafeLeftAction, StrafeRightAction,
-				MoveForwardAction, MoveBackwardAction)
-			: Vector2.Zero;
+		var inputDirection = InputSink.IsSunk
+			? Vector2.Zero
+			: Input.GetVector(StrafeLeftAction, StrafeRightAction, MoveForwardAction, MoveBackwardAction);
 
 		if (inputDirection != Vector2.Zero)
 		{

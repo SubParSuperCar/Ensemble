@@ -17,13 +17,13 @@
         <Grid RowDefinitions="Auto,*,Auto">
             <Grid>
                 <Border
-                    BorderBrush="Red" BorderThickness="1"
+                    BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
                     HorizontalAlignment="Left" VerticalAlignment="Top">
 
                     <Button
                         Content="&lt;- Menu | Quit Session (2x)"
                         DoubleTapped="OnMenuButtonDoubleTapped"
-                        ToolTip.Tip="Stops the current session. (Double-click)"
+                        ToolTip.Tip="Stops the current session and returns to the menu. (Double-click)"
                         Background="{DynamicResource TranslucentBackgroundBrush}" />
                 </Border>
 
@@ -43,8 +43,8 @@
                 <TransitioningContentControl.PageTransition>
                     <CompositePageTransition>
                         <PageSlide
-                            Duration="{x:Static g:Constants.AnimationDuration}"
                             Orientation="Vertical"
+                            Duration="{x:Static g:Constants.AnimationDuration}"
                             SlideInEasing="CubicEaseOut">
 
                             <PageSlide.SlideOutEasing>
@@ -71,8 +71,8 @@
                 <CompositePageTransition>
                     <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
                     <Rotate3DTransition
-                        Duration="{x:Static g:Constants.AnimationDuration}"
-                        Orientation="Vertical" />
+                        Orientation="Vertical"
+                        Duration="{x:Static g:Constants.AnimationDuration}" />
                 </CompositePageTransition>
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>

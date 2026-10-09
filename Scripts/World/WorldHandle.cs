@@ -1,7 +1,7 @@
 using Godot;
 using Serilog;
 #if ENSEMBLE_DEBUG
-using EnsembleRoot.SessionManager.Api;
+using EnsembleRoot.Sessions.Api;
 #endif
 
 namespace EnsembleRoot.Scripts.World;
@@ -13,30 +13,7 @@ public partial class WorldHandle : Node3D
 	{
 #if ENSEMBLE_DEBUG
 		if (GSessionManager.Mode is SessionMode.SinglePlayer)
-		{
-			const int plotId = 2;
-			const float y = 0.5f;
-
-			var instances = GPlots.GetPlot(plotId)!.Instances;
-
-			var assets = GAssets.GetAll();
-			var count = assets.Count;
-
-			for (var i = 0; i < count; i++)
-			{
-				var asset = assets[i];
-				var angle = i * Mathf.Tau / count;
-
-				var position = new Vector3(Mathf.Cos(angle) * count, y, Mathf.Sin(angle) * count);
-				position = (position - Vector3.One * 0.5f).Round() + Vector3.One * 0.5f;
-
-				instances.Add(asset.Id, position, Quaternion.Identity);
-			}
-
-			GPlayers.Add(string.Empty, "Foo - Larpje139 (Test)");
-			GPlayers.Add(string.Empty, "Bar - Diet Dr. Thunder Enjoyer (Test)");
-			GPlayers.Add(string.Empty, "Baz - Dr. Jr. (Test)");
-		}
+			AddTestData();
 #endif
 
 		Log.Debug("{Member} ({Count}):", nameof(GPlayers), GPlayers.Count);
@@ -58,4 +35,31 @@ public partial class WorldHandle : Node3D
 			Log.Debug("{$Plot}", dict);
 		}
 	}
+
+#if ENSEMBLE_DEBUG
+	// Places every asset in a ring on a test plot (radius = asset count, snapped to cell centers) and adds fake players
+	private static void AddTestData()
+	{
+		var instances = GPlots.GetPlot(TestPlotId)!.Instances;
+		var assets = GAssets.GetAll();
+		var count = assets.Count;
+
+		for (var i = 0; i < count; i++)
+		{
+			var angle = i * float.Tau / count;
+			var position = new Vector3(MathF.Cos(angle) * count, 0.5f, MathF.Sin(angle) * count);
+
+			instances.Add(assets[i].Id, (position - HalfCell).Round() + HalfCell, Quaternion.Identity);
+		}
+
+		GPlayers.Add(string.Empty, "Foo - Larpje139 (Test)");
+		GPlayers.Add(string.Empty, "Bar - Diet Dr. Thunder Enjoyer (Test)");
+		GPlayers.Add(string.Empty, "Baz - Dr. Jr. (Test)");
+	}
+#endif
+#if ENSEMBLE_DEBUG
+	private const int TestPlotId = 2;
+
+	private static readonly Vector3 HalfCell = Vector3.One * 0.5f;
+#endif
 }

@@ -12,8 +12,6 @@ public sealed class Asset(
 	int? maxInstanceCount = null)
 	: IAsset
 {
-	private string FormattedProperties => EnsembleCoreRoot.Assets.Properties.Format(Properties);
-
 	public int Id { get; } = id;
 	public string Name { get; } = name ?? string.Create(CultureInfo.InvariantCulture, $"Asset {id}");
 
@@ -23,5 +21,8 @@ public sealed class Asset(
 		properties ?? FrozenDictionary<string, CoreVariant>.Empty;
 
 	public override string ToString() =>
-		$"Asset(id={Id}, name={Name}, maxInstanceCount={MaxInstanceCount}, properties={FormattedProperties})";
+		string.Create(
+			CultureInfo.InvariantCulture,
+			$"Asset(id={Id}, name={Name}, maxInstanceCount={MaxInstanceCount}, " +
+			$"properties={EnsembleCoreRoot.Assets.Properties.Format(Properties)})");
 }

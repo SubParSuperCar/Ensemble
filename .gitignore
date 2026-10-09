@@ -11,6 +11,6 @@
 /.idea
 /.vscode
 
-# TODO: Stop ignoring DotSettings and set one up to sync to Git and other future contributors
+# TODO: Commit a shared (non-user) DotSettings file for future contributors
 *.DotSettings.user
 *.xsd

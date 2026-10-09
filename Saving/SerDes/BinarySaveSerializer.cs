@@ -1,7 +1,7 @@
+using System.Globalization;
+using System.Numerics;
 using System.Text;
 using EnsembleCoreRoot.Api.Assets;
-using Quaternion = System.Numerics.Quaternion;
-using Vector3 = System.Numerics.Vector3;
 
 namespace EnsembleRoot.Saving.SerDes;
 
@@ -13,6 +13,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 {
 	private const byte FormatVersion = 0;
 	private const int MaxPreallocatedCount = 1 << 12;
+	private const int MaxPropertyCount = ushort.MaxValue - 2;
 
 	private static ReadOnlySpan<byte> Magic => "ENSB"u8;
 
@@ -26,7 +27,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		writer.Write(data.Version);
 		writer.Write(data.UtcCreatedAt.UtcTicks);
 
-		writer.Write(Math.Min(data.Instances.Count, int.MaxValue - 1) + 1);
+		writer.Write(data.Instances.Count + 1);
 
 		foreach (var instance in data.Instances)
 			WriteInstance(writer, instance);
@@ -37,7 +38,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		using var reader = new BinaryReader(stream, Encoding.UTF8, true);
 
 		if (!reader.ReadBytes(Magic.Length).AsSpan().SequenceEqual(Magic))
-			throw new InvalidDataException("Invalid save file.");
+			throw new InvalidDataException("Unrecognized save data.");
 
 		var formatVersion = reader.ReadByte();
 		if (formatVersion is not FormatVersion)
@@ -82,8 +83,10 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		var properties = instance.Properties;
 		var propertyCount = properties?.Count ?? 0;
 
-		if (propertyCount > ushort.MaxValue - 2)
-			throw new InvalidOperationException("Too many properties.");
+		if (propertyCount > MaxPropertyCount)
+			throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture,
+				$"Instance has {propertyCount} properties, but at most {MaxPropertyCount} are supported."));
 
 		writer.Write((ushort)(propertyCount + 1));
 
@@ -101,16 +104,10 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 	{
 		var assetId = reader.ReadUInt16();
 
-		var position = new Vector3(
-			ReadFiniteSingle(reader),
-			ReadFiniteSingle(reader),
-			ReadFiniteSingle(reader));
+		var position = new Vector3(ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader));
 
 		var rotation = new Quaternion(
-			ReadFiniteSingle(reader),
-			ReadFiniteSingle(reader),
-			ReadFiniteSingle(reader),
-			ReadFiniteSingle(reader));
+			ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader));
 
 		if (rotation.LengthSquared() is 0f)
 			throw new InvalidDataException("Invalid rotation.");
@@ -134,8 +131,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			return null;
 
 		var properties = new Dictionary<string, CoreVariant>(
-			Math.Min((int)propertyCount, MaxPreallocatedCount),
-			StringComparer.Ordinal);
+			Math.Min((int)propertyCount, MaxPreallocatedCount), StringComparer.Ordinal);
 
 		for (var i = 0; i < propertyCount; i++)
 		{
@@ -143,7 +139,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			var value = CoreVariantSerializer.Read(reader);
 
 			if (!properties.TryAdd(key, value))
-				throw new InvalidDataException("Duplicate property key.");
+				throw new InvalidDataException($"Duplicate property key: {key}.");
 		}
 
 		return properties;
@@ -152,5 +148,5 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 	private static float ReadFiniteSingle(BinaryReader reader) =>
 		reader.ReadSingle() is var value && float.IsFinite(value)
 			? value
-			: throw new InvalidDataException("Invalid number.");
+			: throw new InvalidDataException("Invalid floating-point value.");
 }

@@ -30,12 +30,12 @@ public partial class PopperCam : SpringArm3D
 	[Export] public float OrbitRatio { get; set; } = 2f;
 
 	[Export(PropertyHint.Range, "0,90,radians_as_degrees")]
-	public float PitchMinMax { get; set; } = Mathf.DegToRad(80f);
+	public float PitchMinMax { get; set; } = float.DegreesToRadians(80f);
 
 	[Export(PropertyHint.None, "radians_as_degrees,suffix:\u00B0/s")]
-	public float YawRate { get; set; } = Mathf.DegToRad(90f);
+	public float YawRate { get; set; } = float.DegreesToRadians(90f);
 
-	// The technically correct term is "dolly", not "zoom", because zoom is FOV, and dollying is physical in/out
+	// "Dolly", not "zoom": zooming changes the FOV, while dollying moves the camera
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
 	public float DollyMin { get; set; } = 1.25f;
 
@@ -84,14 +84,15 @@ public partial class PopperCam : SpringArm3D
 		else
 			switch (@event)
 			{
+				// Capturing warps the cursor to the center, which can arrive as one large motion event
 				case InputEventMouseMotion when _isCaptureSettling:
 					_isCaptureSettling = false;
 					break;
 
 				case InputEventMouseMotion motion when Input.IsActionPressed(OrbitAction):
-					var radiansPerPixel = Mathf.Tau * OrbitRatio / _viewportDiagonal;
+					var radiansPerPixel = float.Tau * OrbitRatio / _viewportDiagonal;
 					_yaw -= motion.Relative.X * radiansPerPixel;
-					_pitch = Mathf.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
+					_pitch = Math.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
 					break;
 
 				case InputEventMouseButton { Pressed: true } button:
@@ -123,8 +124,8 @@ public partial class PopperCam : SpringArm3D
 				ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
 		}
 
-		_yaw = Mathf.Wrap(_yaw, -Mathf.Pi, Mathf.Pi);
-		SpringLength = Mathf.Lerp(SpringLength, _targetLength, Smoothing.GetWeight(DollySmoothingRate, delta));
+		_yaw = Mathf.Wrap(_yaw, -float.Pi, float.Pi);
+		SpringLength = float.Lerp(SpringLength, _targetLength, Smoothing.GetWeight(DollySmoothingRate, delta));
 
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;
 		Rotation = Rotation with { X = _pitch, Y = _yaw };
@@ -136,9 +137,7 @@ public partial class PopperCam : SpringArm3D
 		var maxLog = MathF.Log(DollyMax);
 		var scale = (maxLog - minLog) / (DollyMax - DollyMin);
 
-		var logLength = Mathf.Clamp(
-			MathF.Log(MathF.Max(_targetLength, DollyMin)) + delta * scale,
-			minLog, maxLog);
+		var logLength = Math.Clamp(MathF.Log(MathF.Max(_targetLength, DollyMin)) + delta * scale, minLog, maxLog);
 
 		var length = MathF.Exp(logLength);
 		_targetLength = delta < 0 && length <= DollyMin ? 0 : length;
@@ -150,7 +149,6 @@ public partial class PopperCam : SpringArm3D
 		_viewportDiagonal = MathF.Max(size.Length(), 1);
 	}
 
-	// Capturing warps the cursor to the center, which can arrive as one large motion event
 	private void CaptureMouse()
 	{
 		if (Pointer.IsCaptured)
@@ -159,7 +157,7 @@ public partial class PopperCam : SpringArm3D
 		Pointer.Capture(GetViewport());
 		_isCaptureSettling = true;
 
-		Log.Verbose("Mouse captured at: {$Position}", Pointer.GetPosition(GetViewport()));
+		Log.Verbose("Captured mouse at {$Position}", Pointer.GetPosition(GetViewport()));
 	}
 
 	private void ReleaseMouse()
@@ -170,6 +168,6 @@ public partial class PopperCam : SpringArm3D
 		Pointer.Release();
 		_isCaptureSettling = false;
 
-		Log.Verbose("Mouse released");
+		Log.Verbose("Released mouse");
 	}
 }

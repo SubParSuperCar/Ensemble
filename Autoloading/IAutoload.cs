@@ -3,10 +3,8 @@ namespace EnsembleRoot.Autoloading;
 public interface IAutoload
 {
 	/// <summary>
-	///     Called and observed for errors by the Autoload system.
-	///     Functionally equivalent to <see cref="Godot.Node._Ready" />.
-	///     If this method throws, the Autoload is declared a failure
-	///     and its <see cref="AutoloadFailurePolicy" /> is applied.
+	///     Called by the Autoload system once the node is in the tree (after <see cref="Godot.Node._Ready" />).
+	///     If it throws, the Autoload fails and its <see cref="AutoloadFailurePolicy" /> is applied.
 	/// </summary>
 	void Initialize() { }
 }

@@ -15,7 +15,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 		InitializeComponent();
 
 		Watermark.Text =
-			$"\"Ensemble\" (v{SessionManager.SessionManager.Version}) (" +
+			$"\"Ensemble\" (v{GameVersion}) (" +
 #if EXPORT && !ENSEMBLE_JIT
 			"AOT"
 #else

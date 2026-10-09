@@ -37,9 +37,7 @@
                 <TransitioningContentControl.PageTransition>
                     <CompositePageTransition>
                         <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
-                        <Rotate3DTransition
-                            Duration="{x:Static g:Constants.AnimationDuration}"
-                            Orientation="Vertical" />
+                        <Rotate3DTransition Orientation="Vertical" Duration="{x:Static g:Constants.AnimationDuration}" />
                     </CompositePageTransition>
                 </TransitioningContentControl.PageTransition>
             </TransitioningContentControl>

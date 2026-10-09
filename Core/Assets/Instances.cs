@@ -25,7 +25,6 @@ public sealed class Instances : IInstances
 		{
 			instance.Id = id;
 			_countsByAssetId.Increment(instance.Asset.Id);
-
 			Added?.Invoke(instance);
 		};
 
@@ -70,9 +69,8 @@ public sealed class Instances : IInstances
 	public void Remove(int instanceId)
 	{
 		if (!TryGet(instanceId, out _))
-			throw new KeyNotFoundException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Instance with id {instanceId} not found."));
+			throw new KeyNotFoundException(
+				string.Create(CultureInfo.InvariantCulture, $"Instance with id {instanceId} not found."));
 
 		_instancesById.Remove(instanceId);
 	}
@@ -90,7 +88,6 @@ public sealed class Instances : IInstances
 	private IAsset GetAsset(int assetId) =>
 		_assets.All.TryGetValue(assetId, out var asset)
 			? asset
-			: throw new KeyNotFoundException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Asset with id {assetId} not found."));
+			: throw new KeyNotFoundException(
+				string.Create(CultureInfo.InvariantCulture, $"Asset with id {assetId} not found."));
 }

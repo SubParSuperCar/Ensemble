@@ -4,7 +4,7 @@ using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
-using static EnsembleRoot.SessionManager.SessionManager;
+using static EnsembleRoot.Sessions.SessionManager;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -49,7 +49,7 @@ public sealed partial class JoinConfigViewModel : ViewModelBase
 	{
 		if (GetEndPoint() is not var (address, port))
 		{
-			Status = "Invalid address or port.";
+			Status = IsCodeMethod ? "Invalid code." : "Invalid address or port.";
 			return;
 		}
 

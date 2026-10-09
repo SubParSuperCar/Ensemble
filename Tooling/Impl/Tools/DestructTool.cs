@@ -2,7 +2,7 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
-using EnsembleRoot.SessionManager.Actions;
+using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Serilog;
 
@@ -14,6 +14,7 @@ public partial class DestructTool : ToolBase
 	public static readonly Color Theme = Colors.Red;
 
 	private readonly SolidHighlight _highlight = new() { Name = "Selection Highlight", Tint = Theme, Visible = false };
+
 	private AssetHandle? _selected;
 
 	public override Color ThemeColor => Theme;
@@ -30,9 +31,9 @@ public partial class DestructTool : ToolBase
 			return;
 
 		new RemoveInstanceAction(InstanceReference.From(instance)).Submit();
-		ToolCommon.PlaySound("affirm");
+		ToolCommon.PlaySound(ToolCommon.AffirmSound);
 
-		Log.Verbose("Submitted removal: {InstanceId}", instance.Id);
+		Log.Verbose("Submitted removal of instance {InstanceId}", instance.Id);
 		SetSelected(null);
 	}
 

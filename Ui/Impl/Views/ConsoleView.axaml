@@ -4,84 +4,20 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    xmlns:g="clr-namespace:EnsembleRoot.Globals"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.ConsoleView"
     x:DataType="vm:ConsoleViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <UserControl.Styles>
-        <Style Selector="SelectableTextBlock#Output">
-            <Style.Animations>
-                <Animation
-                    Duration="{x:Static g:Constants.AnimationDuration}"
-                    IterationCount="Infinite"
-                    PlaybackDirection="Alternate">
-
-                    <KeyFrame Cue="0%">
-                        <Setter Property="SelectionBrush" Value="Yellow" />
-                    </KeyFrame>
-
-                    <KeyFrame Cue="100%">
-                        <Setter Property="SelectionBrush" Value="Orange" />
-                    </KeyFrame>
-                </Animation>
-            </Style.Animations>
-        </Style>
-    </UserControl.Styles>
-
     <Border BorderBrush="GreenYellow" BorderThickness="2">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.0625*" MinWidth="320" />
+                <ColumnDefinition Width="1.0625*" MinWidth="400" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" MinWidth="352" />
             </Grid.ColumnDefinitions>
 
-            <Grid>
-                <ScrollViewer Name="OutputScroll" HorizontalScrollBarVisibility="Disabled">
-                    <SelectableTextBlock
-                        Name="Output"
-                        Text="{Binding Output}"
-                        Background="Black" Foreground="White"
-                        SelectionForegroundBrush="Black"
-                        Padding="1"
-                        FontSize="12" FontWeight="ExtraLight"
-                        LetterSpacing="-0.375" LineSpacing="3"
-                        TextWrapping="Wrap" />
-                </ScrollViewer>
-
-                <TextBlock
-                    Background="#80000000" Foreground="Cyan"
-                    HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Margin="0,2,20,0"
-                    FontSize="10" FontWeight="ExtraLight" FontStyle="Italic">
-
-                    <!-- @formatter:off -->
-<Span xml:space="preserve"><Run Text="&#x2199; Serilog Output (" /><Underline><Bold><Run Text="Not" /></Bold></Underline><Run
-Text=" StdOut/Err)" /></Span>
-                    <!-- @formatter:on -->
-                </TextBlock>
-
-                <StackPanel
-                    Orientation="Horizontal" Spacing="4"
-                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Margin="0,0,22,4">
-
-                    <Button
-                        Content="Open User Data Dir."
-                        Command="{Binding OpenUserDataDirCommand}"
-                        ToolTip.Tip="Opens the directory where user data are stored."
-                        Background="{DynamicResource TranslucentBackgroundBrush}" />
-
-                    <NumericUpDown
-                        Value="{Binding #Output.FontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                        PlaceholderText="&lt;Font Size Pt.&gt;"
-                        ToolTip.Tip="Font Size (Points)"
-                        Background="{DynamicResource TranslucentBackgroundBrush}"
-                        Increment="0.5" />
-                </StackPanel>
-            </Grid>
+            <ContentControl Content="{Binding Output}" />
 
             <GridSplitter
                 Grid.Column="1"

@@ -14,13 +14,22 @@ namespace EnsembleRoot.Ui.Impl.Views;
 
 public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 {
+	private const string ShownClass = "shown";
+	private const string HiddenClass = "hidden";
+
 	private const double HiddenScale = 3 / 4d;
-	private const double HiddenTilt = -90 * (1 / 4d);
+	private const double HiddenTilt = -90 / 4d;
 	private const double TiltDepth = 1000d;
+
+	// Matches Border#Outline's CornerRadius
+	private const double FrameCornerRadius = 6d;
 
 	// Asymmetric by design
 	private static readonly Easing ShownEasing = new QuadraticEaseOut();
 	private static readonly Easing HiddenEasing = new LinearEasing();
+
+	// Border's ClipToBounds left the corners square here, so the body gets an explicit rounded clip
+	private readonly RectangleGeometry _bodyClip = new() { RadiusX = FrameCornerRadius, RadiusY = FrameCornerRadius };
 
 	private readonly ScaleTransform _scale = new(HiddenScale, HiddenScale);
 	private readonly Rotate3DTransform _tilt = new() { AngleX = HiddenTilt, Depth = TiltDepth };
@@ -35,6 +44,8 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	{
 		InitializeComponent();
 		InitializeTransform();
+
+		Body.Clip = _bodyClip;
 		AddHandler(PointerPressedEvent, OnAnyPointerPressed, RoutingStrategies.Tunnel, true);
 	}
 
@@ -44,10 +55,10 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	protected override void OnLoaded(RoutedEventArgs e)
 	{
 		base.OnLoaded(e);
-		Frame.Classes.Add("shown");
+		Frame.Classes.Add(ShownClass);
 	}
 
-	// Transform strings have no 3D rotations
+	// Built in code, since transform strings can't express 3D rotations
 	private void InitializeTransform()
 	{
 		_transitions.AddRange(
@@ -75,7 +86,7 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 
 	private void UpdateTransform()
 	{
-		var isShown = Frame.Classes.Contains("shown") && !Frame.Classes.Contains("hidden");
+		var isShown = Frame.Classes.Contains(ShownClass) && !Frame.Classes.Contains(HiddenClass);
 
 		if (isShown == _isShown)
 			return;
@@ -88,6 +99,8 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 		_scale.ScaleX = _scale.ScaleY = isShown ? 1 : HiddenScale;
 		_tilt.AngleX = isShown ? 0 : HiddenTilt;
 	}
+
+	private void OnBodySizeChanged(object? sender, SizeChangedEventArgs e) => _bodyClip.Rect = new Rect(e.NewSize);
 
 	private void OnAnyPointerPressed(object? sender, PointerPressedEventArgs e) => ViewModel?.Activate();
 	private void OnHeaderPointerPressed(object? sender, PointerPressedEventArgs e) => BeginDrag(DragKind.Move, e);

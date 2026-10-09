@@ -18,7 +18,7 @@
         <TextBlock Text="Multi-Player Host Config:" />
 
         <StackPanel>
-            <TextBlock Text="Port Number (1024&#x2014;65,535):" FontSize="16" />
+            <TextBlock Text="Port Number (1024&#x2013;65,535):" FontSize="16" />
 
             <NumericUpDown
                 Value="{Binding Port}"
@@ -56,7 +56,7 @@
         </StackPanel>
 
         <StackPanel>
-            <TextBlock Text="Max Clients (1&#x2014;4,095):" FontSize="16" />
+            <TextBlock Text="Max Clients (1&#x2013;4,095):" FontSize="16" />
 
             <NumericUpDown
                 Value="{Binding MaxClients}"

@@ -47,28 +47,13 @@ public partial class GdOccupants : RefCounted
 			? GdOccupant.From(occupant)
 			: null;
 
-	public Array<GdOccupant> GetAll()
-	{
-		var result = new Array<GdOccupant>();
-
-		foreach (var occupant in Source.All.Values)
-			result.Add(GdOccupant.From(occupant));
-
-		return result;
-	}
+	public Array<GdOccupant> GetAll() => [.. Source.All.Values.Select(GdOccupant.From)];
 
 	public void SetOwner() => SetOwner(string.Empty);
 	public void SetOwner(string playerId) => Source.SetOwner(Guid.TryParse(playerId, out var guid) ? guid : null);
 
 	public void Clear() => Source.Clear();
 
-	public Array<Dictionary> GetAllDicts()
-	{
-		var result = new Array<Dictionary>();
-
-		foreach (var occupant in Source.All.Values)
-			result.Add(GdOccupant.From(occupant).ToDict());
-
-		return result;
-	}
+	public Array<Dictionary> GetAllDicts() =>
+		[.. Source.All.Values.Select(static occupant => GdOccupant.From(occupant).ToDict())];
 }

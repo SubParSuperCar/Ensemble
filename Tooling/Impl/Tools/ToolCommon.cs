@@ -9,14 +9,21 @@ internal readonly record struct ToolRayHit(Vector3 Position, Vector3 Normal, Nod
 
 internal static class ToolCommon
 {
+	public const string AffirmSound = "affirm";
+	public const string DissentSound = "dissent";
+
 	private const uint SelectableLayers = 1;
 	private const float RayLength = 1000f;
+	private const string SoundBus = "master";
 
 	public static readonly StringName TriggerAction = "tool_trigger";
 
+	private static readonly NodePath SoundManagerPath = "SoundManager";
+	private static readonly StringName PlayMethod = "play";
+
 	public static PlotHandle? LocalPlotHandle => LocalPlot?.Id is { } id ? GPlotManager.GetHandleOrNull(id) : null;
 
-	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode("SoundManager");
+	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode(SoundManagerPath);
 
 	public static TNode? FindInHierarchy<TNode>(Node? node) where TNode : Node
 	{
@@ -27,7 +34,7 @@ internal static class ToolCommon
 		return null;
 	}
 
-	public static void PlaySound(string name) => SoundManager.Call("play", "master", name);
+	public static void PlaySound(string name) => SoundManager.Call(PlayMethod, SoundBus, name);
 
 	public static bool IsHandleLocal(AssetHandle handle) =>
 		LocalPlotHandle is { } plot && ReferenceEquals(FindInHierarchy<PlotHandle>(handle), plot);
@@ -47,8 +54,6 @@ internal static class ToolCommon
 		return result.Count is 0
 			? null
 			: new ToolRayHit(
-				result["position"].AsVector3(),
-				result["normal"].AsVector3(),
-				result["collider"].As<Node3D>());
+				result["position"].AsVector3(), result["normal"].AsVector3(), result["collider"].As<Node3D>());
 	}
 }

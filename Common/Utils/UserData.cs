@@ -3,9 +3,7 @@ using Serilog;
 
 namespace EnsembleRoot.Common.Utils;
 
-/// <summary>
-///     Reads and writes persistent values in <see cref="UserDataCfgPath" />. Main thread only.
-/// </summary>
+/// <summary>Reads and writes persistent values in <see cref="UserDataCfgPath" />. Main thread only.</summary>
 public static class UserData
 {
 	public static Variant GetValue(string section, string key, Variant fallback = default)

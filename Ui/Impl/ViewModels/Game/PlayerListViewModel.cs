@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.GdCore.Players;
-using EnsembleRoot.SessionManager.Api;
+using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using Godot;
 
@@ -94,9 +94,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 		var peer = GSessionManager.GetPeerByPlayerId(gdPlayer.Id);
 		var player = new PlayerItem { Name = gdPlayer.Name, Id = gdPlayer.Id, PeerId = peer?.Id ?? None };
 
-		var index = Players.Count(other => ComparePlayers(other, player) < 0);
-
-		Players.Insert(index, player);
+		Players.Insert(Players.TakeWhile(other => ComparePlayers(other, player) < 0).Count(), player);
 		_playersById.Add(gdPlayer.Id, player);
 
 		if (ReferenceEquals(gdPlayer, GPlayers.Local))
@@ -137,8 +135,12 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 	private static int ComparePlayers(PlayerItem a, PlayerItem b)
 	{
-		var nameComparison = string.Compare(a.Name, b.Name, StringComparison.Ordinal);
-		return nameComparison is 0 ? a.PeerId.CompareTo(b.PeerId) : nameComparison;
+		var order = string.Compare(a.Name, b.Name, StringComparison.OrdinalIgnoreCase);
+
+		if (order is 0)
+			order = string.CompareOrdinal(a.Name, b.Name);
+
+		return order is 0 ? a.PeerId.CompareTo(b.PeerId) : order;
 	}
 }
 

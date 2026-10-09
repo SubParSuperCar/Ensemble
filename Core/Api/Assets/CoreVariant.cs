@@ -1,15 +1,12 @@
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
-// ReSharper disable UnusedMember.Global
 
 namespace EnsembleCoreRoot.Api.Assets;
 
-[SuppressMessage("Naming", "CA1720")]
 public enum CoreVariantType : byte
 {
 	Null,
@@ -20,11 +17,10 @@ public enum CoreVariantType : byte
 }
 
 /// <summary>
-///     A Godot-agnostic Variant type that supports only primitives, easily converted to and from Godot's Variant.
+///     A Godot-agnostic Variant that supports only primitives and converts easily to and from Godot's Variant.
 /// </summary>
 /// <remarks>
-///     Uses 24 bytes in memory: 17 bytes of fields plus 7 bytes of padding for 8-byte alignment,
-///     matching the size of Godot's Variant.
+///     Occupies 24 bytes (17 bytes of fields plus 7 bytes of alignment padding), the same size as Godot's Variant.
 /// </remarks>
 [StructLayout(LayoutKind.Explicit)]
 public readonly struct CoreVariant : IEquatable<CoreVariant>

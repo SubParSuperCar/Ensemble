@@ -8,6 +8,8 @@ namespace EnsembleRoot.Replication.Actions;
 
 public readonly record struct SetPlotAction(int? PlotId) : INetworkAction<SetPlotAction>
 {
+	public static int TokenCost { get; } = 20;
+
 	public static SetPlotAction FromPayload(Array<Variant> payload) =>
 		new(payload[0].AsInt32() is var plotId and not None ? plotId : null);
 

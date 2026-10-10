@@ -36,10 +36,10 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 	[NotifyCanExecuteChangedFor(nameof(SetPlotToNullCommand))]
 	public partial PlotItem? SelectedPlot { get; set; }
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(2, 5, 4, 5))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(2, 5, 3, 4))
 	{
 		Description = "Lets you select which plot you'd like to occupy, if any.",
-		MinSize = new Size(288, 160)
+		MinSize = new Size(256, 192)
 	};
 
 	public static void SetHoveredPlot(PlotItem? plot) => PlotOutlines.HoveredPlotId = plot?.Id;

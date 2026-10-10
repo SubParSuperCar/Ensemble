@@ -3,6 +3,7 @@ using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Chat;
 using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Sessions;
@@ -49,6 +50,10 @@ public static class Globals
 	/// <inheritdoc cref="SessionManager" />
 	public static SessionManager GSessionManager =>
 		SessionManager.Instance ?? throw Unavailable(nameof(SessionManager), AutoloadLifetime);
+
+	/// <inheritdoc cref="ChatManager" />
+	public static ChatManager GChatManager =>
+		ChatManager.Instance ?? throw Unavailable(nameof(ChatManager), AutoloadLifetime);
 
 	/// <inheritdoc cref="PlayerManager" />
 	public static PlayerManager GPlayerManager

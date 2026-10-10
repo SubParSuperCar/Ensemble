@@ -88,6 +88,11 @@
             <Setter Property="IsHitTestVisible" Value="False" />
         </Style>
 
+        <Style Selector="ToggleButton:checked:not(.plain) /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource HighlightForegroundBrush}" />
+        </Style>
+
         <Style Selector="Border.primary, Border.danger">
             <Setter Property="BorderThickness" Value="1.5" />
             <Setter Property="CornerRadius" Value="8" />

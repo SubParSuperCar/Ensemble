@@ -136,10 +136,15 @@
     <None Include="$(MSBuildThisFileDirectory).github/LICENSE-*.txt" CopyToPublishDirectory="PreserveNewest">
       <Link>.github/%(Filename)%(Extension)</Link>
     </None>
+    <None Include="Common/Text/ProfanityList.LICENSE.txt"/>
     <None Include="**/*.gd;**/*.gdshader;**/*.gdshaderinc;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Common/Text/ProfanityList.gz.b64" LogicalName="EnsembleRoot.Common.Text.ProfanityList.gz.b64"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -21,6 +21,7 @@
     <File Path=".github/ROADMAP.md"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Scripts/">
+    <File Path=".github/scripts/profanity-list.sh"/>
     <File Path=".github/scripts/symbolize.sh"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Workflows/">

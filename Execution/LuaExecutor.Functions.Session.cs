@@ -3,6 +3,9 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using EnsembleRoot.Common.Networking;
+using EnsembleRoot.Replication.Actions;
+using EnsembleRoot.Scripts.Chat;
+using EnsembleRoot.Sessions.Actions;
 using Lua;
 using Serilog;
 
@@ -13,6 +16,29 @@ namespace EnsembleRoot.Execution;
 public static partial class LuaExecutor
 {
 	private const string PublicIPv4AddressSourceUrl = HttpsScheme + "api.ipify.org";
+
+	private static ValueTask<int> chat(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		SendChatMessageAction.Send(context.GetArgument<string>(0));
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> dmp_chat(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var manager = GChatManager;
+
+		Log.Information(
+			"Chat: {Count} message(s) (IsFilterEnabled={IsFilterEnabled}, IsFilterPreferred={IsFilterPreferred}, " +
+			"IsFileLoggingEnabled={IsFileLoggingEnabled})",
+			manager.Messages.Count, manager.IsFilterEnabled, ChatManager.IsFilterPreferred,
+			manager.IsFileLoggingEnabled);
+
+		foreach (var message in manager.Messages)
+			Log.Information("{$Message}", message.ToDict());
+
+		return context.ReturnNothing();
+	}
 
 	private static ValueTask<int> dmp_peers(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -75,5 +101,37 @@ public static partial class LuaExecutor
 		}
 
 		return context.Return();
+	}
+
+	private static ValueTask<int> set_chat_filter_on(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var isEnabled = context.GetArgument<bool>(0);
+
+		if (GSessionManager is { IsActive: true, IsServer: false })
+		{
+			Log.Warning("Only the host can toggle the chat filter");
+			return context.ReturnNothing();
+		}
+
+		ChatManager.IsFilterPreferred = isEnabled;
+
+		if (GSessionManager.IsActive)
+			new SetChatFilterAction(isEnabled).Submit();
+
+		Log.Information("Set chat filter to {IsEnabled}", isEnabled);
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_chat_log_on(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var isEnabled = context.GetArgument<bool>(0);
+		GChatManager.IsFileLoggingEnabled = isEnabled;
+
+		Log.Information("Set chat file logging to {IsEnabled}", isEnabled);
+
+		return context.ReturnNothing();
 	}
 }

@@ -12,5 +12,12 @@ public interface INetworkAction<out TSelf> where TSelf : INetworkAction<TSelf>
 	Array<Variant> ToPayload();
 
 	ActionValidation Validate(ActionSource source);
+
+	/// <summary>
+	///     Lets the host rewrite a validated action (e.g., to filter its text) before applying it. Peers receive and
+	///     apply the rewritten action, which must still pass <see cref="Validate" />.
+	/// </summary>
+	TSelf Rewrite() => (TSelf)this;
+
 	void Apply(ActionSource source);
 }

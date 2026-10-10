@@ -34,7 +34,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(3, 3, 6, 9))
 	{
 		Description = "Shows the recent log output, filtered by minimum severity level.",
-		MinSize = new Size(400, 240)
+		MinSize = new Size(448, 256)
 	};
 
 	protected override void OnDispose()

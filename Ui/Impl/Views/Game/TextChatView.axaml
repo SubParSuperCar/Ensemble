@@ -1,0 +1,72 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:t="using:EnsembleRoot.Common.Text"
+    mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+    x:Class="EnsembleRoot.Ui.Impl.Views.TextChatView"
+    x:DataType="vm:TextChatViewModel"
+    TextOptions.TextRenderingMode="Antialias">
+
+    <Grid RowDefinitions="*,Auto">
+        <Grid.Background>
+            <SolidColorBrush
+                Color="{DynamicResource ThemeBackgroundColor}"
+                Opacity="0.75" />
+        </Grid.Background>
+
+        <ScrollViewer Name="ChatScroll" HorizontalScrollBarVisibility="Disabled">
+            <!-- Filled in code-behind, since inlines can't be bound -->
+            <SelectableTextBlock
+                Name="ChatLog"
+                Margin="2"
+                FontSize="12" FontWeight="ExtraLight"
+                TextWrapping="Wrap" />
+        </ScrollViewer>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto,2,Auto">
+            <TextBox
+                Name="MessageBox"
+                Text="{Binding Message}"
+                PlaceholderText="Click here or press '/' to chat&#x2026;"
+                KeyDown="OnMessageBoxKeyDown"
+                ToolTip.Tip="Type a message, then press Enter to send it. (Esc to stop typing)"
+                MaxLength="{x:Static t:ChatText.MaxLength}" />
+
+            <Border Grid.Column="1" BorderBrush="{DynamicResource PrimaryBrush}" BorderThickness="1.5">
+                <Button Command="{Binding SendCommand}" ToolTip.Tip="Sends your message. (Enter)">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <TextBlock Text="Send" />
+
+                        <Path
+                            VerticalAlignment="Center"
+                            Data="M 0,0 L 10,4 L 0,8 L 2,4 Z"
+                            Fill="{Binding $parent[Button].Foreground}" />
+                    </StackPanel>
+                </Button>
+            </Border>
+
+            <DropDownButton Grid.Column="3" ToolTip.Tip="Chat options.">
+                <DropDownButton.Flyout>
+                    <Flyout Placement="TopEdgeAlignedRight" HorizontalOffset="-2" VerticalOffset="-2">
+                        <StackPanel Spacing="4">
+                            <CheckBox
+                                Content="Filter Profanity"
+                                IsChecked="{Binding IsFilterEnabled}"
+                                ToolTip.Tip="Masks profanity in everyone's messages. (Host only)"
+                                IsVisible="{Binding IsHost}" />
+
+                            <CheckBox
+                                Content="Log to File"
+                                IsChecked="{Binding IsFileLoggingEnabled}"
+                                ToolTip.Tip="Saves each session's chat to a text file in the user data folder." />
+                        </StackPanel>
+                    </Flyout>
+                </DropDownButton.Flyout>
+            </DropDownButton>
+        </Grid>
+    </Grid>
+
+</UserControl>

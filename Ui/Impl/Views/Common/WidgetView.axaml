@@ -43,7 +43,7 @@
         </Style>
     </UserControl.Styles>
 
-    <!-- Unclipped, since Avalonia clips a visual before applying its effect; the outline is layered above the content -->
+    <!-- The outline is layered above the content -->
     <Panel
         Name="Frame"
         Classes="fade"
@@ -51,67 +51,59 @@
         Classes.hidden="{Binding IsClosing}"
         Classes.maximized="{Binding IsMaximized}">
 
-        <Panel.Effect>
-            <DropShadowEffect
-                OffsetX="0" OffsetY="2"
-                BlurRadius="16" Opacity="0.5" />
-        </Panel.Effect>
+        <Grid RowDefinitions="24,*" Margin="1.5">
+            <Grid
+                Name="Header"
+                ColumnDefinitions="*,Auto,Auto"
+                PointerPressed="OnHeaderPointerPressed"
+                PointerMoved="OnDragPointerMoved"
+                PointerReleased="OnDragPointerReleased"
+                PointerCaptureLost="OnDragPointerCaptureLost"
+                DoubleTapped="OnHeaderDoubleTapped"
+                ToolTip.Tip="{Binding Descriptor.Description}"
+                Cursor="SizeAll">
 
-        <Border Name="Body" SizeChanged="OnBodySizeChanged">
-            <Grid RowDefinitions="24,*" Margin="2">
-                <Grid
-                    Name="Header"
-                    ColumnDefinitions="*,Auto,Auto"
-                    PointerPressed="OnHeaderPointerPressed"
-                    PointerMoved="OnDragPointerMoved"
-                    PointerReleased="OnDragPointerReleased"
-                    PointerCaptureLost="OnDragPointerCaptureLost"
-                    DoubleTapped="OnHeaderDoubleTapped"
-                    ToolTip.Tip="{Binding Descriptor.Description}"
-                    Cursor="SizeAll">
+                <TextBlock
+                    Text="{Binding Title}"
+                    VerticalAlignment="Center"
+                    Margin="8,0"
+                    TextTrimming="CharacterEllipsis" />
 
-                    <TextBlock
-                        Text="{Binding Title}"
-                        VerticalAlignment="Center"
-                        Margin="8,0"
-                        TextTrimming="CharacterEllipsis" />
+                <Button
+                    Name="MaximizeButton"
+                    Grid.Column="1"
+                    Command="{Binding ToggleMaximizedCommand}"
+                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
+                    CornerRadius="4.5,0,0,0" />
 
-                    <Button
-                        Name="MaximizeButton"
-                        Grid.Column="1"
-                        Command="{Binding ToggleMaximizedCommand}"
-                        ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
-                        CornerRadius="4,0,0,0" />
-
-                    <Button
-                        Grid.Column="2"
-                        Content="X"
-                        Command="{Binding CloseCommand}"
-                        ToolTip.Tip="Closes this widget."
-                        Background="Red" Foreground="White"
-                        CornerRadius="0,4,0,0"
-                        FontWeight="Bold" />
-                </Grid>
-
-                <ContentControl Grid.Row="1" Content="{Binding Content}" />
-
-                <Border
-                    Grid.Row="1"
-                    PointerPressed="OnResizeGripPointerPressed"
-                    PointerMoved="OnDragPointerMoved"
-                    PointerReleased="OnDragPointerReleased"
-                    PointerCaptureLost="OnDragPointerCaptureLost"
-                    ToolTip.Tip="Resizes this widget."
-                    Background="{DynamicResource PrimaryBrush}"
-                    Cursor="BottomRightCorner"
-                    HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                    Width="12" Height="12"
-                    CornerRadius="6,0,4,0"
-                    IsVisible="{Binding Descriptor.IsResizable}" />
+                <Button
+                    Grid.Column="2"
+                    Content="X"
+                    Command="{Binding CloseCommand}"
+                    ToolTip.Tip="Closes this widget."
+                    Background="Red" Foreground="White"
+                    CornerRadius="0,4.5,0,0"
+                    FontWeight="Bold" />
             </Grid>
-        </Border>
 
-        <Border Name="Outline" BorderThickness="2" CornerRadius="6" />
+            <ContentControl Grid.Row="1" Content="{Binding Content}" />
+
+            <Border
+                Grid.Row="1"
+                PointerPressed="OnResizeGripPointerPressed"
+                PointerMoved="OnDragPointerMoved"
+                PointerReleased="OnDragPointerReleased"
+                PointerCaptureLost="OnDragPointerCaptureLost"
+                ToolTip.Tip="Resizes this widget."
+                Background="{DynamicResource PrimaryBrush}"
+                Cursor="BottomRightCorner"
+                HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Width="12" Height="12"
+                CornerRadius="6,0,4.5,0"
+                IsVisible="{Binding Descriptor.IsResizable}" />
+        </Grid>
+
+        <Border Name="Outline" BorderThickness="1.5" CornerRadius="6" />
     </Panel>
 
 </UserControl>

@@ -7,6 +7,8 @@ namespace EnsembleRoot.Sessions;
 
 public partial class SessionManager
 {
+	private const string RateLimitedReason = "Too many requests. Slow down.";
+
 	internal void Submit<TAction>(TAction action) where TAction : INetworkAction<TAction>
 	{
 		if (!IsActive)
@@ -30,13 +32,15 @@ public partial class SessionManager
 		var senderId = Multiplayer.GetRemoteSenderId();
 		var tokenCost = NetworkActionRegistry.GetTokenCost(actionId);
 
-		EnqueueRpc(senderId, tokenCost, () => HandleAction(actionId, payload, senderId));
+		EnqueueRpc(
+			senderId, tokenCost, () => HandleAction(actionId, payload, senderId),
+			() => RejectAction(actionId, RateLimitedReason, senderId));
 	}
 
 	[Rpc]
 	private void RpcConfirmAction(string actionId, Array<Variant> payload, int sourcePeerId)
 	{
-		var result = ExecuteAction(actionId, payload, sourcePeerId);
+		var result = ExecuteAction(actionId, ref payload, sourcePeerId, false);
 
 		if (!result.IsValid)
 			Log.Warning(
@@ -50,7 +54,7 @@ public partial class SessionManager
 
 	private void HandleAction(string actionId, Array<Variant> payload, int sourcePeerId)
 	{
-		var result = ExecuteAction(actionId, payload, sourcePeerId);
+		var result = ExecuteAction(actionId, ref payload, sourcePeerId, true);
 
 		if (result.IsValid)
 		{
@@ -61,6 +65,11 @@ public partial class SessionManager
 		var reason = result.Reason ?? string.Empty;
 		Log.Debug("Rejected action {ActionId} from peer {PeerId}: {Reason}", actionId, sourcePeerId, reason);
 
+		RejectAction(actionId, reason, sourcePeerId);
+	}
+
+	private void RejectAction(string actionId, string reason, int sourcePeerId)
+	{
 		// The sender may have disconnected while its request waited on the rate limiter
 		if (sourcePeerId == LocalPeerId)
 			EmitSignal(SignalName.ActionRejected, actionId, reason);
@@ -68,8 +77,13 @@ public partial class SessionManager
 			RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, reason);
 	}
 
-	private ActionValidation ExecuteAction(string actionId, Array<Variant> payload, int sourcePeerId) =>
-		_peersById.TryGetValue(sourcePeerId, out var peer)
-			? NetworkActionRegistry.Execute(actionId, payload, new ActionSource(sourcePeerId, peer.PlayerId))
-			: ActionValidation.Reject("Peer not registered.");
+	private ActionValidation ExecuteAction(
+		string actionId, ref Array<Variant> payload, int sourcePeerId, bool isHost)
+	{
+		if (!_peersById.TryGetValue(sourcePeerId, out var peer))
+			return ActionValidation.Reject("Peer not registered.");
+
+		var source = new ActionSource(sourcePeerId, peer.PlayerId);
+		return NetworkActionRegistry.Execute(actionId, ref payload, source, isHost);
+	}
 }

@@ -54,7 +54,19 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
 - [ ] (L) Dynamic instance replication - placed blocks sync + authority model
 - (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction + occupant/owner checks done
-- [ ] (S) Text chat (multiplayer only) - chat RPC action + chat box UI
+- [x] (S) Text chat - Text Chat widget (opens in multiplayer, `/` to type, Roblox-style nametag colors, join / leave
+  notices, unread count in the drawer), chat action with a host-toggled profanity filter (masks with `#`, or
+  `<Redacted>` if nothing else remains), late-join history snapshot, optional per-session file logs, and Lua functions
+- [ ] (M) Chat bubbles over players
+- [ ] (L) Physics replication - plot-owner authority, possibly over custom RPCs
+
+## Gameplay / content
+
+- [ ] (M) Plot spawn / despawn - `PlotHandle.Spawning` stubs are in place
+- [ ] (L) Live asset logic - infrastructure for assets with behavior
+- [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
+- [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
+- [ ] (L) A real map, built with Unibuilder
 
 ## UI / UX framework
 
@@ -63,8 +75,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) Split DocFileView / WebBrowserView - base views/VMs moved to Views/Common + ViewModels/Common, no
   NavigatorService dependency; MenuDocFileView / MenuWebBrowserView wrappers add the Back button for menu use
 - (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
-  maximizable frames with fades, a collapsible widget drawer; Plot Selector, Asset Selector, Web Browser, Lua
-  Editor, and Log Output are widgets. Next: settings, chat, docs, and persisted layouts
+  maximizable frames with fades, a collapsible widget drawer with badges; Plot Selector, Asset Selector, Web Browser,
+  Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and persisted layouts
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 

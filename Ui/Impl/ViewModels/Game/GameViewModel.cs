@@ -1,5 +1,8 @@
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Scripts.Chat;
+using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Attributes;
@@ -17,6 +20,7 @@ public sealed partial class GameViewModel : ViewModelBase
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;
 	private readonly IServiceProvider _services;
+	private readonly WidgetEntry _textChat;
 
 	public GameViewModel(IServiceProvider services, DispatcherService dispatcher)
 	{
@@ -26,6 +30,15 @@ public sealed partial class GameViewModel : ViewModelBase
 
 		Widgets = _scope.ServiceProvider.GetRequiredService<WidgetManagerService>();
 		Widgets.RegisterAll();
+
+		_textChat = Widgets.Register<TextChatViewModel>();
+		_textChat.PropertyChanged += OnTextChatPropertyChanged;
+		GChatManager.MessageAdded += OnChatMessageAdded;
+
+		// Opened first, so the plot selector ends up active
+		if (GSessionManager.Mode is SessionMode.MultiPlayer)
+			Widgets.Open<TextChatViewModel>();
+
 		Widgets.Open<PlotSelectorViewModel>();
 
 		WidgetDrawer = _scope.ServiceProvider.GetRequiredService<WidgetDrawerViewModel>();
@@ -61,6 +74,8 @@ public sealed partial class GameViewModel : ViewModelBase
 		_dispatcher.Input -= OnInput;
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
+		GChatManager.MessageAdded -= OnChatMessageAdded;
+		_textChat.PropertyChanged -= OnTextChatPropertyChanged;
 
 		Clock = null;
 		PlayerList = null;
@@ -87,5 +102,20 @@ public sealed partial class GameViewModel : ViewModelBase
 			Widgets.Open<AssetSelectorViewModel>();
 		else
 			Widgets.Close<AssetSelectorViewModel>();
+	}
+
+	// Counts other players' messages that arrive while the chat is closed
+	private void OnChatMessageAdded(ChatMessage message)
+	{
+		var isOwn = string.Equals(message.SenderId, GSessionManager.LocalPeer?.PlayerId, StringComparison.Ordinal);
+
+		if (!_textChat.IsOpen && !message.IsNotice && !isOwn)
+			_textChat.BadgeCount++;
+	}
+
+	private void OnTextChatPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(WidgetEntry.IsOpen) && _textChat.IsOpen)
+			_textChat.BadgeCount = 0;
 	}
 }

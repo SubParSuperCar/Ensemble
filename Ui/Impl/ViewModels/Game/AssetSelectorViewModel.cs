@@ -57,7 +57,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 10, 4, 6))
 	{
 		Description = "Lets you search for, select, and modify the placement asset.",
-		MinSize = new Size(336, 224)
+		MinSize = new Size(384, 256)
 	};
 
 	protected override void OnDispose()

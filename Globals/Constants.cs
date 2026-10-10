@@ -16,6 +16,7 @@ public static class Constants
 
 	public const string UserDataCfgPath = UserScheme + "user_data.cfg";
 	public const string LogDir = UserScheme + "ensemble_logs/";
+	public const string ChatLogDir = UserScheme + "chat_logs/";
 
 	public const string AssetsDir = ResourceScheme + "assets/";
 	public const string BuildAssetsDir = ResourceScheme + "build_assets/";

@@ -13,11 +13,11 @@
     TextOptions.TextRenderingMode="Antialias">
 
     <Grid>
-        <!-- Widgets render below the ribbon, the ToolBar, and the overlays -->
-        <Grid RowDefinitions="Auto,*,Auto">
+        <!-- Widgets render below the ribbon, the ToolBar, the player list, and the overlays -->
+        <Grid RowDefinitions="Auto,4,*,Auto">
             <Grid>
                 <Border
-                    BorderBrush="{StaticResource DangerBrush}" BorderThickness="1"
+                    BorderBrush="{StaticResource DangerBrush}" BorderThickness="1.5"
                     HorizontalAlignment="Left" VerticalAlignment="Top">
 
                     <Button
@@ -32,13 +32,30 @@
                     HorizontalAlignment="Center" VerticalAlignment="Top" />
             </Grid>
 
-            <v:WidgetDesktopView Grid.Row="1" DataContext="{Binding Widgets}" />
+            <Grid Grid.Row="2">
+                <v:WidgetDesktopView DataContext="{Binding Widgets}" />
+
+                <TransitioningContentControl
+                    Content="{Binding PlayerList}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    MinWidth="288" MaxWidth="512" MaxHeight="384"
+                    ClipToBounds="False">
+
+                    <TransitioningContentControl.PageTransition>
+                        <CompositePageTransition>
+                            <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
+                            <Rotate3DTransition
+                                Orientation="Vertical"
+                                Duration="{x:Static g:Constants.AnimationDuration}" />
+                        </CompositePageTransition>
+                    </TransitioningContentControl.PageTransition>
+                </TransitioningContentControl>
+            </Grid>
 
             <TransitioningContentControl
-                Grid.Row="2"
+                Grid.Row="3"
                 Content="{Binding ToolBar}"
-                HorizontalAlignment="Center" VerticalAlignment="Bottom"
-                Margin="0,0,0,4">
+                HorizontalAlignment="Center" VerticalAlignment="Bottom">
 
                 <TransitioningContentControl.PageTransition>
                     <CompositePageTransition>
@@ -59,23 +76,6 @@
                 </TransitioningContentControl.PageTransition>
             </TransitioningContentControl>
         </Grid>
-
-        <TransitioningContentControl
-            Content="{Binding PlayerList}"
-            HorizontalAlignment="Right" VerticalAlignment="Top"
-            MinWidth="288" MaxWidth="512" MaxHeight="384"
-            Margin="0,36,0,0"
-            ClipToBounds="False">
-
-            <TransitioningContentControl.PageTransition>
-                <CompositePageTransition>
-                    <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
-                    <Rotate3DTransition
-                        Orientation="Vertical"
-                        Duration="{x:Static g:Constants.AnimationDuration}" />
-                </CompositePageTransition>
-            </TransitioningContentControl.PageTransition>
-        </TransitioningContentControl>
 
         <ContentControl
             Content="{Binding WidgetDrawer}"

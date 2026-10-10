@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -29,6 +30,14 @@ public sealed partial class WidgetEntry : ObservableObject
 	public string Title { get; }
 
 	[ObservableProperty] public partial bool IsOpen { get; internal set; }
+
+	/// <summary>A count shown next to the title while positive, e.g., of unread messages.</summary>
+	[ObservableProperty]
+	[NotifyPropertyChangedFor(nameof(Label))]
+	public partial int BadgeCount { get; set; }
+
+	public string Label =>
+		BadgeCount > 0 ? string.Create(CultureInfo.InvariantCulture, $"{Title} ({BadgeCount})") : Title;
 
 	internal Rect? LastBounds { get; set; }
 

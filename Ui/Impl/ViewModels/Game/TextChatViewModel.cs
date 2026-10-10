@@ -70,6 +70,13 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 	private bool CanSend() => !string.IsNullOrWhiteSpace(Message);
 
+	// Keeps pasted line breaks from growing the single-line input
+	partial void OnMessageChanged(string value)
+	{
+		if (value.AsSpan().ContainsAny('\r', '\n'))
+			Message = value.ReplaceLineEndings(" ");
+	}
+
 	partial void OnIsFilterEnabledChanged(bool value)
 	{
 		if (value == GChatManager.IsFilterEnabled)

@@ -14,7 +14,8 @@ public sealed partial class WidgetViewModel : ViewModelBase
 	private readonly WidgetManagerService _manager;
 	private Rect? _restoreBounds;
 
-	internal WidgetViewModel(WidgetManagerService manager, WidgetEntry entry, ViewModelBase content, Rect bounds)
+	internal WidgetViewModel(
+		WidgetManagerService manager, WidgetEntry entry, ViewModelBase content, Rect bounds, bool isMaximized)
 	{
 		_manager = manager;
 
@@ -23,6 +24,9 @@ public sealed partial class WidgetViewModel : ViewModelBase
 		Bounds = bounds
 			.WithX(Math.Clamp(bounds.X, 0, 1 - bounds.Width))
 			.WithY(Math.Clamp(bounds.Y, 0, 1 - bounds.Height));
+
+		if (isMaximized)
+			ToggleMaximized();
 	}
 
 	public WidgetEntry Entry { get; }

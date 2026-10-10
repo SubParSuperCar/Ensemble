@@ -39,13 +39,6 @@
             IsHitTestVisible="False" />
 
         <Grid ColumnDefinitions="1*,4*,1*" RowDefinitions="1*,4*,1*">
-            <!-- A sibling, since the console's transition clips box shadows (and an effect would also shade it) -->
-            <Border
-                Grid.Row="1" Grid.Column="1"
-                Classes="fade"
-                Classes.shown="{Binding IsConsoleVisible}"
-                BoxShadow="0 0 24 0 Black" />
-
             <TransitioningContentControl
                 Grid.Row="1" Grid.Column="1"
                 Content="{Binding Console}"

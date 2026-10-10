@@ -40,6 +40,7 @@ public sealed partial class WidgetEntry : ObservableObject
 		BadgeCount > 0 ? string.Create(CultureInfo.InvariantCulture, $"{Title} ({BadgeCount})") : Title;
 
 	internal Rect? LastBounds { get; set; }
+	internal bool WasMaximized { get; set; }
 
 	[GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])", RegexOptions.None, RegexMatchTimeoutMs)]
 	private static partial Regex WordBoundaryRegex { get; }

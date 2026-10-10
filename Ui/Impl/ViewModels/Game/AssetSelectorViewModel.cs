@@ -98,6 +98,9 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 		_nodesByAssetId.Add(asset.Id, node);
 		Insert(GetOrCreateFolder(category, asset.Id == Ctor.AssetId), node);
+
+		// Per-asset limits don't depend on a plot, unlike the total
+		UpdateAssetQuota(asset.Id);
 	}
 
 	private IList<INodeBase> GetOrCreateFolder(string category, bool isExpanded)

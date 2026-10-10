@@ -62,7 +62,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		}
 
 		var widget = new WidgetViewModel(
-			this, entry, entry.CreateContent(), entry.LastBounds ?? entry.Descriptor.InitialBounds);
+			this, entry, entry.CreateContent(), entry.LastBounds ?? entry.Descriptor.InitialBounds, entry.WasMaximized);
 
 		_widgetsByType.Add(entry.Type, widget);
 		Widgets.Add(widget);
@@ -78,6 +78,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 			return false;
 
 		widget.Entry.LastBounds = widget.RestoredBounds;
+		widget.Entry.WasMaximized = widget.IsMaximized;
 		widget.Entry.IsOpen = false;
 		widget.IsClosing = true;
 

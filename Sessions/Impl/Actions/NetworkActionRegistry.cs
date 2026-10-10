@@ -29,14 +29,19 @@ public static class NetworkActionRegistry
 	internal static int GetTokenCost(string actionId) =>
 		EntriesByActionId.TryGetValue(actionId, out var entry) ? entry.TokenCost : DefaultTokenCost;
 
-	internal static ActionValidation Execute(string actionId, Array<Variant> payload, ActionSource source)
+	/// <summary>
+	///     Validates and applies an action. As host, rewrites it first, replacing <paramref name="payload" /> with the
+	///     rewritten action's.
+	/// </summary>
+	internal static ActionValidation Execute(
+		string actionId, ref Array<Variant> payload, ActionSource source, bool isHost)
 	{
 		if (!EntriesByActionId.TryGetValue(actionId, out var entry))
 			return ActionValidation.Reject($"Action with id {actionId} not found.");
 
 		try
 		{
-			return entry.Execute(payload, source);
+			return entry.Execute(ref payload, source, isHost);
 		}
 		catch (Exception exception)
 		{
@@ -45,15 +50,22 @@ public static class NetworkActionRegistry
 		}
 	}
 
-	private static ActionValidation Execute<TAction>(Array<Variant> payload, ActionSource source)
+	private static ActionValidation Execute<TAction>(ref Array<Variant> payload, ActionSource source, bool isHost)
 		where TAction : INetworkAction<TAction>
 	{
 		var action = TAction.FromPayload(payload);
 		var validation = action.Validate(source);
 
-		if (validation.IsValid)
-			action.Apply(source);
+		if (!validation.IsValid)
+			return validation;
 
+		if (isHost)
+		{
+			action = action.Rewrite();
+			payload = action.ToPayload();
+		}
+
+		action.Apply(source);
 		return validation;
 	}
 
@@ -62,6 +74,8 @@ public static class NetworkActionRegistry
 		public void Submit() => GSessionManager.Submit(action);
 	}
 
+	private delegate ActionValidation ExecuteHandler(ref Array<Variant> payload, ActionSource source, bool isHost);
+
 	// ReSharper disable once MemberHidesStaticFromOuterClass
-	private readonly record struct Entry(int TokenCost, Func<Array<Variant>, ActionSource, ActionValidation> Execute);
+	private readonly record struct Entry(int TokenCost, ExecuteHandler Execute);
 }

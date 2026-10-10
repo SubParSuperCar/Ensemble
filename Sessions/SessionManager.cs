@@ -243,11 +243,13 @@ public partial class SessionManager : Node
 
 		_stopping = Task.WhenAll(_stopping, ObserveStopAsync(session.StopSession()));
 
+		// Inactive first, so the peers' teardown doesn't look like players leaving
+		var wasActive = IsActive;
+		IsActive = false;
+
 		ClearPeers();
 		ClearRpcState();
 
-		var wasActive = IsActive;
-		IsActive = false;
 		UtcStartedAt = default;
 		LocalPeerId = 0;
 

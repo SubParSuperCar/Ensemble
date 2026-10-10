@@ -103,11 +103,19 @@ Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone mus
 - **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address (or host name)
   and port, or a single `<address>:<port>` code.
 - **Dedicated server:** run the executable headless with user arguments, e.g.,
-  `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port).
+  `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port, or
+  `--chat-filter=false` to turn off the profanity filter).
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are
 synchronized, and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove
 one using `kick(peer_id, "reason")`. Display names are remembered between sessions.
+
+Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored
+per display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive
+the recent history. Hosts filter
+profanity by default (masked with `#`, or `<Redacted>` if nothing else remains); dedicated servers take
+`--chat-filter=false`. The widget's options can also save each session's chat to `user://chat_logs/`. The console
+offers `chat("message")`, `dmp_chat()`, `set_chat_filter_on(false)`, and `set_chat_log_on(true)`.
 
 </details>
 
@@ -127,6 +135,7 @@ one using `kick(peer_id, "reason")`. Display names are remembered between sessio
 | Rotate placement (X / Y / Z)     | `R` / `T` / `Y`                                          |
 | Reset character position         | Hold `H` for 1 second                                    |
 | Player list                      | `Tab`                                                    |
+| Chat (with the widget open)      | `/` to type, `Enter` to send, `Esc` to stop typing       |
 | Console / system terminal        | `` ` `` or `F9` / `F8`                                   |
 | Back (menus)                     | `Backspace`                                              |
 | Quick-start a single-player game | `Esc` (outside multiplayer)                              |
@@ -393,10 +402,12 @@ limits throughout.
 <details>
   <summary><b>Networking: Sessions and Actions</b></summary>
 
-Every world change is a network action: a `readonly record struct` implementing `INetworkAction<TSelf>` with
-`ToPayload`/`FromPayload`, `Validate`, and `Apply`. Actions self-register in `NetworkActionRegistry` and are sent with
-`action.Submit()`. The server is authoritative: it validates, applies, then broadcasts; clients apply only confirmed
-actions. Remote requests are rate-limited by a per-action `TokenCost`.
+Every world change (and chat message) is a network action: a `readonly record struct` implementing
+`INetworkAction<TSelf>` with `ToPayload`/`FromPayload`, `Validate`, and `Apply`. Actions self-register in
+`NetworkActionRegistry` and are sent with `action.Submit()`. The server is authoritative: it validates, optionally
+rewrites (`Rewrite`, e.g., to filter chat), applies, then broadcasts; clients apply only confirmed actions. Remote
+requests are rate-limited by a per-action `TokenCost`: each peer has a 100-token bucket that refills in 5 seconds, so
+costs read as percentages. Requests beyond it queue for up to another bucket's worth, and are then rejected.
 
 ```mermaid
 sequenceDiagram
@@ -408,6 +419,7 @@ sequenceDiagram
     S->>S: rate limit (TokenCost)
     S->>S: Validate(source)
     alt valid
+        S->>S: Rewrite()
         S->>S: Apply(source)
         S->>C: RpcConfirmAction
         S->>O: RpcConfirmAction
@@ -423,13 +435,15 @@ through the optional `IPortMappingSession` capability) or `OfflineSession` (sing
 plugged in through `SessionManager.StartSession(ISession)`. In single-player, the same path runs locally, with the
 player acting as the server.
 
-| Action                 | Effect                                        |
-|------------------------|-----------------------------------------------|
-| `SetPlotAction`        | Claims or releases a plot for the sender      |
-| `AddInstanceAction`    | Places an asset instance on the sender's plot |
-| `RemoveInstanceAction` | Deletes an instance                           |
-| `SetPropertiesAction`  | Changes an instance's properties              |
-| `ClearInstancesAction` | Removes every instance on a plot              |
+| Action                  | Effect                                        |
+|-------------------------|-----------------------------------------------|
+| `SetPlotAction`         | Claims or releases a plot for the sender      |
+| `AddInstanceAction`     | Places an asset instance on the sender's plot |
+| `RemoveInstanceAction`  | Deletes an instance                           |
+| `SetPropertiesAction`   | Changes an instance's properties              |
+| `ClearInstancesAction`  | Removes every instance on a plot              |
+| `SendChatMessageAction` | Posts a chat message (filtered by the host)   |
+| `SetChatFilterAction`   | Toggles the profanity filter (host only)      |
 
 </details>
 
@@ -478,7 +492,8 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 | App         | `quit`, `restart`, `tts`, `wait`                                                         |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`               |
 | Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`   |
-| Session     | `dmp_peers`, `kick`, `log_lan_ip4_addr`, `log_wan_ip4_addr`                              |
+| Session     | `chat`, `dmp_chat`, `dmp_peers`, `kick`, `log_lan_ip4_addr`, `log_wan_ip4_addr`,         |
+|             | `set_chat_filter_on`, `set_chat_log_on`                                                  |
 | World       | `add_rand_insts`, `clr_insts`, `perf_mod`, `set_static_shader_on`, `set_time`, `tp_char` |
 
 </details>
@@ -493,6 +508,7 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 | `GMain`                                           | The `Main` node                        |
 | `GCore`, `GAssets`, `GPlots`, `GPlayers`          | `GdCore` and its wrappers              |
 | `GSessionManager`                                 | The `SessionManager` autoload          |
+| `GChatManager`                                    | The `ChatManager` autoload             |
 | `GPlotManager`, `GAssetManager`, `GPlayerManager` | Scene managers in `Scripts`            |
 | `GToolManager`                                    | The `ToolManager` autoload             |
 | `GTimeProvider`                                   | Wrapped `TimeProvider` (testable time) |
@@ -508,7 +524,11 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 
 All `OBJ` files under `/assets/meshes/`, except for `plots_base.obj`, were created by **"Shrimp Fried Koishi."** Other
 third-party resources, including NuGet packages and files under `/addons/` and `/Estragonia/`, are distributed under
-their respective licenses and are subject to their respective authors' or copyright holders' terms.
+their respective licenses and are subject to their respective authors' or copyright holders' terms. The chat's
+profanity filter uses David Sojevic's [profanity-list](https://github.com/dsojevic/profanity-list) (MIT; see
+`/Common/Text/ProfanityList.LICENSE.txt`), with `allow_partial` set on entries that misfire inside ordinary words. It's
+stored encoded, so its terms aren't readable in the source; see `/.github/scripts/profanity-list.sh`. Chat nametag
+colors use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
 
 ---
 

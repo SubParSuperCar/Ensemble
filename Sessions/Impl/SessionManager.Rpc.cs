@@ -6,11 +6,13 @@ namespace EnsembleRoot.Sessions;
 
 public partial class SessionManager
 {
+	// A drained bucket refills in 5 s, so token costs read as percentages of a peer's 5-second budget. Requests beyond
+	// it wait in a queue of up to another bucket's worth, and only then get dropped.
 	private static readonly TokenBucketRateLimiterOptions RateLimiterOptions = new()
 	{
 		TokenLimit = 100,
-		QueueLimit = 10,
-		TokensPerPeriod = 1,
+		QueueLimit = 100,
+		TokensPerPeriod = 2,
 		ReplenishmentPeriod = TimeSpan.FromMilliseconds(100),
 		AutoReplenishment = true
 	};
@@ -58,14 +60,23 @@ public partial class SessionManager
 		_rpcGeneration++;
 	}
 
-	private void EnqueueRpc(int senderId, int tokens, Action action) => _ = EnqueueRpcAsync(senderId, tokens, action);
+	/// <summary>
+	///     Runs <paramref name="action" /> on the main thread once the sender's rate limiter allows it, or
+	///     <paramref name="onDropped" /> instead if it drops the request.
+	/// </summary>
+	private void EnqueueRpc(int senderId, int tokens, Action action, Action? onDropped = null) =>
+		_ = EnqueueRpcAsync(senderId, tokens, action, onDropped);
 
-	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action)
+	private async Task EnqueueRpcAsync(int senderId, int tokens, Action action, Action? onDropped)
 	{
-		if (tokens > RateLimiterOptions.TokenLimit)
-			return;
-
 		var generation = _rpcGeneration;
+
+		if (tokens > RateLimiterOptions.TokenLimit)
+		{
+			Drop();
+			return;
+		}
+
 		var limiter = _rateLimitersByPeerId.GetOrAdd(
 			senderId, static _ => new TokenBucketRateLimiter(RateLimiterOptions));
 
@@ -76,6 +87,8 @@ public partial class SessionManager
 			if (!lease.IsAcquired)
 			{
 				Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
+				Drop();
+
 				return;
 			}
 		}
@@ -85,5 +98,12 @@ public partial class SessionManager
 		}
 
 		_pendingRpcs.Enqueue((generation, action));
+		return;
+
+		void Drop()
+		{
+			if (onDropped is not null)
+				_pendingRpcs.Enqueue((generation, onDropped));
+		}
 	}
 }

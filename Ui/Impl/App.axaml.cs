@@ -20,12 +20,6 @@ namespace EnsembleRoot.Ui.Impl;
 
 public sealed class App : Application
 {
-	// OKLCH lightness bounds keeping the accent >= 3:1 against SimpleTheme's background and its foreground >= 4.5:1
-	private const double LightAccentMinLightness = 0.45;
-	private const double LightAccentMaxLightness = 0.6;
-	private const double DarkAccentMinLightness = 0.62;
-	private const double DarkAccentMaxLightness = 0.78;
-
 	private static readonly object FocusSinkToken = new();
 
 	private static bool IsInSession => SessionManager.Instance?.IsActive is true;
@@ -103,10 +97,8 @@ public sealed class App : Application
 		if (PlatformSettings?.GetColorValues().AccentColor1 is not { A: > 0 } accent)
 			return;
 
-		Resources.ThemeDictionaries[ThemeVariant.Default] =
-			CreateAccentResources(accent.ToVibrant(LightAccentMinLightness, LightAccentMaxLightness));
-		Resources.ThemeDictionaries[ThemeVariant.Dark] =
-			CreateAccentResources(accent.ToVibrant(DarkAccentMinLightness, DarkAccentMaxLightness));
+		Resources.ThemeDictionaries[ThemeVariant.Default] = CreateAccentResources(accent.ToReadable(false));
+		Resources.ThemeDictionaries[ThemeVariant.Dark] = CreateAccentResources(accent.ToReadable(true));
 	}
 
 	// Mirrors SimpleTheme's own accent opacity ramp

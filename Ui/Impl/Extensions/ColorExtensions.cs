@@ -8,6 +8,12 @@ public static class ColorExtensions
 	private const double MaxChromaBoost = 2d;
 	private const double GamutTolerance = 1e-4;
 
+	// OKLCH lightness bounds keeping a color >= 3:1 against SimpleTheme's background, and its foreground >= 4.5:1
+	private const double LightMinLightness = 0.45;
+	private const double LightMaxLightness = 0.6;
+	private const double DarkMinLightness = 0.62;
+	private const double DarkMaxLightness = 0.78;
+
 	private static readonly double WhiteBlackCrossoverLuminance = Math.Sqrt(1.05 * 0.05) - 0.05;
 
 	extension(Color source)
@@ -19,7 +25,13 @@ public static class ColorExtensions
 		public Color ContrastingForeground =>
 			source.RelativeLuminance < WhiteBlackCrossoverLuminance ? Colors.White : Colors.Black;
 
-		public Color ToVibrant(double minLightness, double maxLightness)
+		/// <summary>Keeps the hue, but makes the color stand out against the light or dark theme.</summary>
+		public Color ToReadable(bool isDark) =>
+			isDark
+				? source.ToVibrant(DarkMinLightness, DarkMaxLightness)
+				: source.ToVibrant(LightMinLightness, LightMaxLightness);
+
+		private Color ToVibrant(double minLightness, double maxLightness)
 		{
 			var (lightness, a, b) = ToOklab(Linearize(source.R), Linearize(source.G), Linearize(source.B));
 			var chroma = Math.Sqrt(a * a + b * b);

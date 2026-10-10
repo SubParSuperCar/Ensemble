@@ -22,7 +22,7 @@
             <ae:TextEditor.Background>
                 <SolidColorBrush
                     Color="{DynamicResource ThemeBackgroundColor}"
-                    Opacity="0.375" />
+                    Opacity="0.5" />
             </ae:TextEditor.Background>
         </ae:TextEditor>
 
@@ -31,7 +31,7 @@
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
             Margin="0,0,22,4">
 
-            <Border BorderBrush="{StaticResource DangerBrush}" BorderThickness="1">
+            <Border BorderBrush="{StaticResource DangerBrush}" BorderThickness="1.5">
                 <Button
                     Content="Cancel Runners"
                     Command="{Binding CancelCommand}"
@@ -39,7 +39,7 @@
                     Background="{DynamicResource TranslucentBackgroundBrush}" />
             </Border>
 
-            <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1">
+            <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1.5">
                 <Button
                     Content="Execute Script"
                     Command="{Binding ExecuteCommand}"

@@ -18,11 +18,6 @@
         <Style Selector="ToggleButton#Handle:checked">
             <Setter Property="Content" Value="&lt;" />
         </Style>
-
-        <Style Selector="ItemsControl ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource HighlightForegroundBrush}" />
-        </Style>
     </UserControl.Styles>
 
     <Grid ColumnDefinitions="Auto,Auto">
@@ -46,7 +41,7 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate x:DataType="s:WidgetEntry">
                                 <ToggleButton
-                                    Content="{Binding Title}"
+                                    Content="{Binding Label}"
                                     IsChecked="{Binding IsOpen, Mode=OneWay}"
                                     Command="{Binding ToggleCommand}"
                                     ToolTip.Tip="{Binding Descriptor.Description}"
@@ -58,9 +53,11 @@
             </Grid>
         </Border>
 
+        <!-- ReSharper disable once Xaml.StyleClassNotFound -->
         <ToggleButton
             Name="Handle"
             Grid.Column="1"
+            Classes="plain"
             IsChecked="{Binding IsExpanded}"
             ToolTip.Tip="Shows or hides the widget menu."
             VerticalAlignment="Center"

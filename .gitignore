@@ -11,6 +11,9 @@
 /.idea
 /.vscode
 
+# The profanity list is only committed encoded (see .github/scripts/profanity-list.sh)
+/Common/Text/ProfanityList.json
+
 # TODO: Commit a shared (non-user) DotSettings file for future contributors
 *.DotSettings.user
 *.xsd

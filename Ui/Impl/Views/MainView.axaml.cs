@@ -20,6 +20,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 	public MainView()
 	{
 		InitializeComponent();
+
 		_hoverTimer.Tick += OnHoverTimerTick;
 
 		Watermark.Text =

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Logging;
@@ -7,6 +8,9 @@ using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 using TinyDialogsNet;
 using FileAccess = Godot.FileAccess;
 
@@ -24,6 +28,12 @@ public partial class Logger : Node, IAutoload
 	// Serilog resolves the File sink's hooks by name, and the sink stays configurable in appsettings.json
 	private static readonly string HeaderHookReference =
 		$"{typeof(Hooks).FullName}::{nameof(Hooks.Header)}, {typeof(Hooks).Assembly.GetName().Name}";
+
+	// Matches LogSink's format; themes are only applied when the output isn't redirected
+	private static readonly ExpressionTemplate ConsoleFormatter = new(
+		"[{@t:HH:mm:ss.fff}] [{@l:u3}] {@m}\n{#if @x is not null}{@x}\n{#end}" +
+		$"{{#if {NativeFrames.PropertyName} is not null}}Native frames:\n{{{NativeFrames.PropertyName}}}\n{{#end}}",
+		CultureInfo.InvariantCulture, theme: TemplateTheme.Literate);
 
 	private ILoggerFactory? _factory;
 
@@ -95,12 +105,18 @@ public partial class Logger : Node, IAutoload
 		Log.CloseAndFlush();
 	}
 
-	private static LoggerConfiguration CreateBaseConfig() =>
-		new LoggerConfiguration()
+	private static LoggerConfiguration CreateBaseConfig()
+	{
+		var config = new LoggerConfiguration()
 			.MinimumLevel.Verbose()
 			.Enrich.With(new LogEnricher())
-			.WriteTo.Sink(new LogSink())
 			.WriteTo.Sink(new VolatileLogHistorySink());
+
+		// The editor's Output panel only shows Godot's prints, which drop ANSI colors, so other runs skip Godot
+		return EngineDebugger.IsActive()
+			? config.WriteTo.Sink(new LogSink())
+			: config.WriteTo.Console(ConsoleFormatter, standardErrorFromLevel: LogEventLevel.Warning);
+	}
 
 	private static LoggerConfiguration CreateConfig(string logDir, bool useUserCopy, out string? syncNote)
 	{

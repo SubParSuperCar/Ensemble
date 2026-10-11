@@ -1,4 +1,4 @@
-using BogaNet.TTS;
+using EnsembleRoot.Common.Audio;
 using Godot;
 using Lua;
 using Serilog;
@@ -47,18 +47,7 @@ public static partial class LuaExecutor
 		var pitch = context.GetArgumentOrDefault(3, 1f);
 		var volume = context.GetArgumentOrDefault(4, 1f);
 
-		try
-		{
-			var voice = Speaker.Instance.VoiceForCulture(culture);
-
-			_ = Speaker.Instance.SpeakAsync(text, voice, rate, pitch, volume).ContinueWith(
-				static task => Log.Error(task.Exception, "Failed to play TTS"),
-				CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "Failed to set up TTS");
-		}
+		TextToSpeech.Speak(text, culture, rate, pitch, volume);
 
 		return context.ReturnNothing();
 	}

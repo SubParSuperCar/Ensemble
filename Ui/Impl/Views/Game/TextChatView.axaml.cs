@@ -21,8 +21,8 @@ public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewMod
 	public TextChatView()
 	{
 		InitializeComponent();
-		ChatScroll.ScrollChanged += OnChatScrollChanged;
 
+		ChatScroll.ScrollChanged += OnChatScrollChanged;
 		ActualThemeVariantChanged += OnActualThemeVariantChanged;
 	}
 

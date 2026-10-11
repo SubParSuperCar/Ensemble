@@ -30,6 +30,7 @@ public static partial class LuaExecutor
 		env[nameof(restart)] = new LuaFunction(restart);
 		env[nameof(set_chat_filter_on)] = new LuaFunction(set_chat_filter_on);
 		env[nameof(set_chat_log_on)] = new LuaFunction(set_chat_log_on);
+		env[nameof(set_chat_tts_on)] = new LuaFunction(set_chat_tts_on);
 		env[nameof(set_static_shader_on)] = new LuaFunction(set_static_shader_on);
 		env[nameof(set_time)] = new LuaFunction(set_time);
 		env[nameof(set_ui_dark_theme_on)] = new LuaFunction(set_ui_dark_theme_on);

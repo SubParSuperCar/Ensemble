@@ -113,10 +113,10 @@ session: they can clear any plot they occupy, and their chat messages bypass the
 
 Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored
 per display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive
-the recent history. Hosts filter
-profanity by default (masked with `#`, or `<Redacted>` if nothing else remains); dedicated servers take
-`--chat-filter=false`. The widget's options can also save each session's chat to `user://chat_logs/`. The console
-offers `chat("message")`, `dmp_chat()`, `set_chat_filter_on(false)`, and `set_chat_log_on(true)`.
+the recent history. Hosts filter profanity by default (masked with `#`, or `<Redacted>` if nothing else remains);
+dedicated servers take `--chat-filter=false`. The widget's options can also save each session's chat to
+`user://chat_logs/` and read new messages aloud. The console offers `chat("message")`, `dmp_chat()`,
+`set_chat_filter_on(false)`, `set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
 
 </details>
 
@@ -280,7 +280,6 @@ graph TD
     GdCore["GdCore (Godot wrappers over Core)"]
     Foundation["Autoloading / Common / Saving"]
     Core["EnsembleCore (pure domain)"]
-
     Ui --> Execution
     Ui --> Tooling
     Execution --> Tooling
@@ -478,8 +477,8 @@ CommunityToolkit.Mvvm:
 - Services and view models self-register through marker interfaces (`ITransientObject`, `IScopedObject`,
   `ISingletonObject`); views bind to view models through `IViewFor<TViewModel>` and `ViewLocatorService`.
 - `NavigatorService` handles menu navigation (`GoTo<TViewModel>()`, `GoBack()`).
-- In-game windows are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed by
-  `WidgetManagerService`: Plot Selector, Asset Selector, Lua Editor, Log Output, and Web Browser.
+- In-game windows (e.g., Plot Selector, Text Chat) are widgets (`IWidget` + `WidgetDescriptor`), registered
+  automatically and opened and closed by `WidgetManagerService`.
 
 </details>
 
@@ -494,7 +493,7 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`               |
 | Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`   |
 | Session     | `chat`, `dmp_chat`, `dmp_peers`, `kick`, `log_lan_ip4_addr`, `log_wan_ip4_addr`,         |
-|             | `set_chat_filter_on`, `set_chat_log_on`                                                  |
+|             | `set_chat_filter_on`, `set_chat_log_on`, `set_chat_tts_on`                               |
 | World       | `add_rand_insts`, `clr_insts`, `perf_mod`, `set_static_shader_on`, `set_time`, `tp_char` |
 
 </details>

@@ -22,8 +22,8 @@ public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewM
 	public LuaEditorView()
 	{
 		InitializeComponent();
-		Dispatcher.UIThread.Post(InitializeEditor, DispatcherPriority.Background);
 
+		Dispatcher.UIThread.Post(InitializeEditor, DispatcherPriority.Background);
 		Editor.TemplateApplied += OnEditorTemplateApplied;
 	}
 

@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     xmlns:li="using:LoadingIndicators.Avalonia"
-    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="384"
     x:Class="EnsembleRoot.Ui.Impl.Views.WebBrowserView"
     x:DataType="vm:WebBrowserViewModel"
     TextOptions.TextRenderingMode="Antialias">

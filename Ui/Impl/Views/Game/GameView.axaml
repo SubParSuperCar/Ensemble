@@ -16,6 +16,11 @@
         <!-- Widgets render below the ribbon, the ToolBar, the player list, and the overlays -->
         <Grid RowDefinitions="Auto,4,*,Auto">
             <Grid>
+                <ContentControl
+                    Content="{Binding Clock}"
+                    HorizontalAlignment="Center" VerticalAlignment="Top" />
+
+                <!-- Drawn above the clock, so leaving the session is never blocked -->
                 <Border
                     BorderBrush="{StaticResource DangerBrush}" BorderThickness="1.5"
                     HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -26,10 +31,6 @@
                         ToolTip.Tip="Stops the current session and returns to the menu. (Double-click)"
                         Background="{DynamicResource TranslucentBackgroundBrush}" />
                 </Border>
-
-                <ContentControl
-                    Content="{Binding Clock}"
-                    HorizontalAlignment="Center" VerticalAlignment="Top" />
             </Grid>
 
             <Grid Grid.Row="2">

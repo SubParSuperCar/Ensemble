@@ -19,8 +19,9 @@ public readonly record struct SendChatMessageAction(string Text) : INetworkActio
 	public ActionValidation Validate(ActionSource source) =>
 		ChatText.IsValid(Text) ? Accept : Reject("Invalid chat message.");
 
-	public SendChatMessageAction Rewrite() =>
-		GChatManager.IsFilterEnabled ? new SendChatMessageAction(ProfanityFilter.Censor(Text)) : this;
+	// The host's own messages aren't filtered
+	public SendChatMessageAction Rewrite(ActionSource source) =>
+		GChatManager.IsFilterEnabled && !source.IsHost ? new SendChatMessageAction(ProfanityFilter.Censor(Text)) : this;
 
 	public void Apply(ActionSource source) =>
 		GChatManager.Add(

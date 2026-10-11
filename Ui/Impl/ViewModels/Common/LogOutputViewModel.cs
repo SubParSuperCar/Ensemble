@@ -31,7 +31,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 	[ObservableProperty] public partial string Output { get; private set; } = "<Default>";
 	[ObservableProperty] public partial LogEventLevel MinimumLevel { get; set; } = LogEventLevel.Debug;
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(3, 3, 6, 9))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(6, 6, 12, 18))
 	{
 		Description = "Shows the recent log output, filtered by minimum severity level.",
 		MinSize = new Size(448, 256)

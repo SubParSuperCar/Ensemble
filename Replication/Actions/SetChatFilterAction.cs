@@ -15,9 +15,7 @@ public readonly record struct SetChatFilterAction(bool IsEnabled) : INetworkActi
 	public Array<Variant> ToPayload() => [IsEnabled];
 
 	public ActionValidation Validate(ActionSource source) =>
-		source.PeerId == MultiplayerPeer.TargetPeerServer
-			? Accept
-			: Reject("Only the host can toggle the chat filter.");
+		source.IsHost ? Accept : Reject("Only the host can toggle the chat filter.");
 
 	public void Apply(ActionSource source) => GChatManager.SetFilterEnabled(IsEnabled, true);
 

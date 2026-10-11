@@ -61,7 +61,7 @@ public static class NetworkActionRegistry
 
 		if (isHost)
 		{
-			action = action.Rewrite();
+			action = action.Rewrite(source);
 			payload = action.ToPayload();
 		}
 

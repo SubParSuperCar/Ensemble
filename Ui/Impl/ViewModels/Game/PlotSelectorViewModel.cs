@@ -36,7 +36,7 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 	[NotifyCanExecuteChangedFor(nameof(SetPlotToNullCommand))]
 	public partial PlotItem? SelectedPlot { get; set; }
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(2, 5, 3, 4))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(4, 10, 5, 8))
 	{
 		Description = "Lets you select which plot you'd like to occupy, if any.",
 		MinSize = new Size(256, 192)

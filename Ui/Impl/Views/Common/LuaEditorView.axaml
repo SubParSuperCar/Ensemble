@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     xmlns:ae="using:AvaloniaEdit"
-    mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
+    mc:Ignorable="d" d:DesignWidth="384" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.LuaEditorView"
     x:DataType="vm:LuaEditorViewModel"
     TextOptions.TextRenderingMode="Antialias">
@@ -27,9 +27,10 @@
         </ae:TextEditor>
 
         <StackPanel
+            Name="Actions"
             Orientation="Horizontal" Spacing="4"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
-            Margin="0,0,22,4">
+            Margin="0,0,4,4">
 
             <Border BorderBrush="{StaticResource DangerBrush}" BorderThickness="1.5">
                 <Button

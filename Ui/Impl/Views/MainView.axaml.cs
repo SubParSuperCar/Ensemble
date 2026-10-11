@@ -58,7 +58,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 	}
 
 	// Dims the watermark while hovered, so it's less in the way. Polls Godot's cursor, since the watermark ignores hit
-	// tests and Avalonia only sees the pointer over its own hit-testable controls.
+	// tests, so it gets no pointer events.
 	private void OnHoverTimerTick(object? sender, EventArgs e)
 	{
 		if (_topLevel is null || Engine.GetMainLoop() is not SceneTree tree)

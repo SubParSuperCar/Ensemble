@@ -17,7 +17,7 @@ public interface INetworkAction<out TSelf> where TSelf : INetworkAction<TSelf>
 	///     Lets the host rewrite a validated action (e.g., to filter its text) before applying it. Peers receive and
 	///     apply the rewritten action, which must still pass <see cref="Validate" />.
 	/// </summary>
-	TSelf Rewrite() => (TSelf)this;
+	TSelf Rewrite(ActionSource source) => (TSelf)this;
 
 	void Apply(ActionSource source);
 }

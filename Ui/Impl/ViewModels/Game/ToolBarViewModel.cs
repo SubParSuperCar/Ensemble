@@ -121,7 +121,8 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 
 	private void UpdateClearAll()
 	{
-		var isVisible = IsDestructToolEnabled && IsPlotOwner is true && IsLocalPlotSpawned is not true;
+		var canClear = IsPlotOwner is true || GSessionManager.IsServer;
+		var isVisible = IsDestructToolEnabled && canClear && IsLocalPlotSpawned is not true;
 
 		IsClearAllVisible = isVisible;
 		IsClearAllEnabled = isVisible && _instances is { Count: > 0 };

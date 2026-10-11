@@ -60,9 +60,9 @@
                 Content="X"
                 Command="{Binding DismissCommand}"
                 ToolTip.Tip="Dismisses this toast."
-                Background="Red" Foreground="White"
+                Background="{StaticResource DangerBrush}" Foreground="White"
                 VerticalAlignment="Stretch" VerticalContentAlignment="Center"
-                CornerRadius="0,5,5,0"
+                CornerRadius="0,4.5,4.5,0"
                 Padding="8,0"
                 FontWeight="Bold" />
         </Grid>

@@ -15,7 +15,7 @@ public sealed partial class LuaEditorViewModel : ViewModelBase, IWidget
 		"(Powered by: Lua-CSharp, AvaloniaEdit, & TextMate) ]]\n\n" +
 		"print(string.format(\"Hello, %s!\", _VERSION))\nhelp()\n");
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(9, 3, 4, 6))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(18, 6, 8, 12))
 	{
 		Description = "Lets you write and run Lua scripts, sharing the console's source.",
 		MinSize = new Size(384, 256)

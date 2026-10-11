@@ -33,7 +33,7 @@ public sealed partial class WebBrowserViewModel : ViewModelBase, IWidget
 
 	public bool IsEditingAddress { get; set; }
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(3, 2, 10, 12))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(6, 4, 20, 24))
 	{
 		Description = "Lets you browse the web without leaving Ensemble.",
 		MinSize = new Size(512, 384)

@@ -8,9 +8,9 @@ namespace EnsembleRoot.Ui.Impl.Abstractions;
 /// <param name="InitialBounds">The bounds when first opened, relative to the widget area, from 0 to 1.</param>
 public sealed record WidgetDescriptor(Rect InitialBounds)
 {
-	public const int GridSize = 16;
+	public const int GridSize = 32;
 
-	public static WidgetDescriptor Default { get; } = new(Cells(4, 4, 8, 8));
+	public static WidgetDescriptor Default { get; } = new(Cells(8, 8, 16, 16));
 
 	/// <summary>The header text, or <see langword="null" /> to derive it from the view model's type name.</summary>
 	public string? Title { get; init; }

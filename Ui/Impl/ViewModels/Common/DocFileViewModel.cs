@@ -1,10 +1,13 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using Godot;
 using LiveMarkdown.Avalonia;
 using Markdig;
+using Markdig.Syntax;
+using Markdig.Syntax.Inlines;
 using Serilog;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 
@@ -37,7 +40,6 @@ public sealed partial class DocFileViewModel : ViewModelBase
 
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }
 	[ObservableProperty] public partial MarkdownDocumentUpdate? Document { get; private set; }
-	[ObservableProperty] public partial string? ImageBasePath { get; private set; }
 
 	protected override void OnDispose() => CancelAndDispose(Interlocked.Exchange(ref _cts, null));
 
@@ -58,7 +60,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 			var (markdown, source) = await ReadAsync(file, token).ConfigureAwait(false);
 
 			var document = await Task
-				.Run(() => Markdown.Parse(markdown, MarkdownUpdateProducer.DefaultPipeline), token)
+				.Run(() => ResolveUrls(Markdown.Parse(markdown, MarkdownUpdateProducer.DefaultPipeline), file), token)
 				.ConfigureAwait(false);
 
 			await Dispatcher.UIThread.InvokeAsync(() =>
@@ -67,8 +69,6 @@ public sealed partial class DocFileViewModel : ViewModelBase
 				if (token.IsCancellationRequested)
 					return;
 
-				// Relative images resolve against the repository even for local copies
-				ImageBasePath = new Uri(new Uri(file.Uri), ".").ToString();
 				Document = new MarkdownDocumentUpdate.Full(document);
 
 				stopwatch.Stop();
@@ -88,6 +88,33 @@ public sealed partial class DocFileViewModel : ViewModelBase
 			if (ReferenceEquals(Interlocked.CompareExchange(ref _cts, null, cts), cts))
 				cts.Dispose();
 		}
+	}
+
+	[RelayCommand]
+	private static void OpenLink(LinkClickedEventArgs e)
+	{
+		if (e.HRef is { IsAbsoluteUri: true } href)
+			OS.ShellOpen(href.AbsoluteUri);
+	}
+
+	/// <summary>
+	///     Points relative URLs at the repository on GitHub, even for local copies: images at their raw files, and
+	///     links at their pages. LiveMarkdown would otherwise resolve them as local file paths.
+	/// </summary>
+	private static MarkdownDocument ResolveUrls(MarkdownDocument document, DocFile file)
+	{
+		foreach (var link in document.Descendants<LinkInline>())
+		{
+			if (link.Url is not { Length: > 0 } url || Uri.IsWellFormedUriString(url, UriKind.Absolute))
+				continue;
+
+			var root = link.IsImage ? DocFile.RepositoryRawUrl : DocFile.RepositoryBlobUrl;
+
+			// Like on GitHub, a leading "/" starts from the repository's root
+			link.Url = url.StartsWith('/') ? root + url[1..] : new Uri(new Uri(root + file.Path), url).ToString();
+		}
+
+		return document;
 	}
 
 	// Prefers a local copy, falling back to the repository on GitHub
@@ -117,8 +144,10 @@ public sealed partial class DocFileViewModel : ViewModelBase
 /// <param name="Path">The repository-relative path, also used to find a local copy.</param>
 public sealed record DocFile(string Name, string Path)
 {
-	private const string RepositoryRawUrl =
+	public const string RepositoryRawUrl =
 		HttpsScheme + "raw.githubusercontent.com/" + GitHubRepoPath + "/refs/heads/main/";
+
+	public const string RepositoryBlobUrl = HttpsScheme + "github.com/" + GitHubRepoPath + "/blob/main/";
 
 	public string Uri => RepositoryRawUrl + Path;
 }

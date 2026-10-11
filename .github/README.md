@@ -63,7 +63,7 @@ Two Ensemble clients connected to a headless host with widgets and a Bash pseudo
 ![Ensemble's Widgets & Multiplayer](https://github.com/user-attachments/assets/a317a9a8-99a5-4e05-b29c-49bc69074b48)
 
 Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets:
-![Ensemble's Construct Tool, Assets, & Widgets](screenshots/construct-tool.webp)
+![Ensemble's Construct Tool, Assets, & Widgets](./screenshots/construct-tool.webp)
 
 Ensemble's main menu:
 ![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
@@ -75,13 +75,13 @@ Ensemble's web browser displaying Ensemble's official GitHub repository page:
 ![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
 
 Ensemble's blocks during the day with the light-mode UI enabled using the `set_ui_dark_theme_on` Lua function:
-![Ensemble's Blocks During the Day](screenshots/light-theme-day.webp)
+![Ensemble's Blocks During the Day](./screenshots/light-theme-day.webp)
 
 Ensemble's console, with the output log on the left and the code editor on the right:
 ![Ensemble's Console UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
 
 Ensemble's blocks at night, generated using the `add_rand_insts` Lua function:
-![Ensemble's Blocks at Night](screenshots/random-blocks-night.webp)
+![Ensemble's Blocks at Night](./screenshots/random-blocks-night.webp)
 
 Ensemble's test map:
 ![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)

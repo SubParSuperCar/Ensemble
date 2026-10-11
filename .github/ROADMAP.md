@@ -19,8 +19,8 @@ The tool suite, in rough intended order of implementation.
     - [ ] (S) Finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
 - ConstructTool / CtorTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
-    - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation,
-      snap along the surface with edges aligned to the targeted instance, and never clip
+    - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation, snap
+      along the surface with edges aligned to the targeted instance, and never clip
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
@@ -38,16 +38,15 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 
 - [x] (M) Main-menu session sub-menu - Single-Player / Multi-Player, Host / Join, address, port, password, remembered
   display name
-- [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties), requested by
-  the client once its world exists; actions are withheld from a peer until it is synced
+- [x] (M) Late-join state sync - PlotsSnapshot (occupants, owner, spawn state, instances + properties), requested by the
+  client once its world exists; actions are withheld from a peer until it is synced
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
 - [x] (S) Instance references - actions verify an instance's ID against its asset and transform, since freed IDs are
   reused
 - [x] (S) SetPropertiesAction - type- and key-checked property edits, ready for AttrTool
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
 - (WIP) (S) Peer UI - ping column in the player list done; server info panel and kick button next
-- [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or
-  `--join=HOST:P`)
+- [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or `--join=HOST:P`)
 - [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
   shown under the player list
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)

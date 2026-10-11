@@ -29,7 +29,7 @@ public partial class Logger : Node, IAutoload
 	private static readonly string HeaderHookReference =
 		$"{typeof(Hooks).FullName}::{nameof(Hooks.Header)}, {typeof(Hooks).Assembly.GetName().Name}";
 
-	// Matches LogSink's format; themes are only applied when the output isn't redirected
+	// Matches LogSink's layout, but strings render unquoted; themes only apply when the output isn't redirected
 	private static readonly ExpressionTemplate ConsoleFormatter = new(
 		"[{@t:HH:mm:ss.fff}] [{@l:u3}] {@m}\n{#if @x is not null}{@x}\n{#end}" +
 		$"{{#if {NativeFrames.PropertyName} is not null}}Native frames:\n{{{NativeFrames.PropertyName}}}\n{{#end}}",

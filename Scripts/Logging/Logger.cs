@@ -33,7 +33,7 @@ public partial class Logger : Node, IAutoload
 	private static readonly ExpressionTemplate ConsoleFormatter = new(
 		"[{@t:HH:mm:ss.fff}] [{@l:u3}] {@m}\n{#if @x is not null}{@x}\n{#end}" +
 		$"{{#if {NativeFrames.PropertyName} is not null}}Native frames:\n{{{NativeFrames.PropertyName}}}\n{{#end}}",
-		CultureInfo.InvariantCulture, theme: TemplateTheme.Literate);
+		CultureInfo.InvariantCulture, theme: TemplateTheme.Code);
 
 	private ILoggerFactory? _factory;
 

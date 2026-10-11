@@ -59,7 +59,7 @@ for testing and troubleshooting; see [**Platform Support**](#platform-support) b
 > [!NOTE]
 > Some of these screenshots may be out of date or not fully representative of the current state of the gameplay.
 
-Two Ensemble clients connected to one headless server with widgets opened and one pseudo-terminal window (Bash):
+Two Ensemble clients connected to a headless host with widgets and a Bash pseudo-terminal window opened:
 ![Ensemble's Widgets & Multiplayer](https://github.com/user-attachments/assets/a317a9a8-99a5-4e05-b29c-49bc69074b48)
 
 Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets:

@@ -33,14 +33,14 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 > Ensemble has very little gameplay. These builds exist for testing and feedback.
 
 - **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
-  Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or
-  `Ensemble.app` (macOS) &mdash; no install, no runtime needed.
+  Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or `Ensemble.app`
+  (macOS) &mdash; no install, no runtime needed.
 
 - **Latest commit:** run the [Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
   workflow ("Run workflow"; on a fork if you lack write access), then download the artifacts from the finished run.
 
-On startup, Ensemble asks GitHub for the latest release and offers each newer version once. If Discord is running,
-it also shares your activity (e.g., "In the Main Menu" or "Playing Multi-Player") without names or addresses.
+On startup, Ensemble asks GitHub for the latest release and offers each newer version once. If Discord is running, it
+also shares your activity (e.g., "In the Main Menu" or "Playing Multi-Player") without names or addresses.
 
 Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files. There is also a single `-jit` ZIP
 for testing and troubleshooting; see [**Platform Support**](#platform-support) before choosing it.
@@ -94,29 +94,29 @@ Ensemble's test map:
 
 Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone must run the **same version**.
 
-- **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`),
-  and optionally set a password and a client limit. Share your address with joining players:
+- **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`), and
+  optionally set a password and a client limit. Share your address with joining players:
     - **Same network (LAN):** run `log_lan_ip4_addr()` in the console (`` ` `` / `F9`).
     - **Over the internet:** keep *Auto Forward Port (UPnP)* checked, and share the join code shown under the player
       list (`Tab`). If your router has UPnP disabled, or is behind another NAT (e.g., CGNAT), forward the UDP port
       manually and share the address from `log_wan_ip4_addr()` instead.
-- **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address (or host name)
-  and port, or a single `<address>:<port>` code.
+- **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address (or host name) and
+  port, or a single `<address>:<port>` code.
 - **Dedicated server:** run the executable headless with user arguments, e.g.,
   `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port, or
   `--chat-filter=false` to turn off the profanity filter).
 
-Players who join late receive the current state of every plot. Plot changes, placements, and deletions are
-synchronized, and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove
-one using `kick(peer_id, "reason")`. Display names are remembered between sessions. The host has authority over the
-session: they can clear any plot they occupy, and their chat messages bypass the profanity filter.
+Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
+and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove one using
+`kick(peer_id, "reason")`. Display names are remembered between sessions. The host has authority over the session: they
+can clear any plot they occupy, and their chat messages bypass the profanity filter.
 
-Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored
-per display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive
-the recent history. Hosts filter profanity by default (masked with `#`, or `<Redacted>` if nothing else remains);
-dedicated servers take `--chat-filter=false`. The widget's options can also save each session's chat to
-`user://chat_logs/` and read new messages aloud. The console offers `chat("message")`, `dmp_chat()`,
-`set_chat_filter_on(false)`, `set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
+Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored per
+display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive the
+recent history. Hosts filter profanity by default (masked with `#`, or `<Redacted>` if nothing else remains); dedicated
+servers take `--chat-filter=false`. The widget's options can also save each session's chat to `user://chat_logs/` and
+read new messages aloud. The console offers `chat("message")`, `dmp_chat()`, `set_chat_filter_on(false)`,
+`set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
 
 </details>
 
@@ -184,23 +184,23 @@ really resonated with me, and "baja" can be interpreted as "below" or "low" in S
 | Linux    | `x86_64`                       | Vulkan                                                          |
 | macOS    | Universal (`x86_64` + `arm64`) | Metal (native, default), with Vulkan-via-MoltenVK as a fallback |
 
-Ensemble renders through [Godot](https://godotengine.org)'s rendering hardware interface, with an embedded
-[Avalonia UI](https://avaloniaui.net) overlay on top of it (via a heavily modified fork of
-[Estragonia](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows
-and Linux. On macOS, both default to Apple's native Metal API; if you need to fall back to Vulkan (translated
-through [MoltenVK](https://github.com/KhronosGroup/MoltenVK)) for troubleshooting, set Godot's
+Ensemble renders through [Godot](https://godotengine.org)'s rendering hardware interface, with an embedded [Avalonia
+UI](https://avaloniaui.net) overlay on top of it (via a heavily modified fork of
+[Estragonia](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows and
+Linux. On macOS, both default to Apple's native Metal API; if you need to fall back to Vulkan (translated through
+[MoltenVK](https://github.com/KhronosGroup/MoltenVK)) for troubleshooting, set Godot's
 `rendering/rendering_device/driver.macos` project setting to `vulkan`.
 
 Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple Silicon.
 
 ### JIT Build
 
-The regular builds are compiled ahead of time with NativeAOT: fast to start and run, but one download per platform.
-The `-jit` ZIP instead runs Ensemble's code on the regular .NET runtime, which compiles it just in time (JIT). It is
-slower to start, larger, and **not recommended for playing**, but it bundles both Windows and Linux (`x86_64`) in one
-download and keeps every assembly and debug symbol as a separate file, which helps with testing and troubleshooting.
-Run `Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux) from the extracted folder; each uses its own self-contained
-.NET runtime in its `data_EnsembleGame_<platform>_x86_64` folder, so keep those folders next to the executables.
+The regular builds are compiled ahead of time with NativeAOT: fast to start and run, but one download per platform. The
+`-jit` ZIP instead runs Ensemble's code on the regular .NET runtime, which compiles it just in time (JIT). It is slower
+to start, larger, and **not recommended for playing**, but it bundles both Windows and Linux (`x86_64`) in one download
+and keeps every assembly and debug symbol as a separate file, which helps with testing and troubleshooting. Run
+`Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux) from the extracted folder; each uses its own self-contained .NET
+runtime in its `data_EnsembleGame_<platform>_x86_64` folder, so keep those folders next to the executables.
 
 ### Debug Symbols
 
@@ -219,9 +219,9 @@ The `-jit` ZIP needs none of this: its stack traces already include parameter na
 ### Bypassing Gatekeeper on macOS
 
 > [!NOTE]
-> Proper Apple code signing and notarization cost $99/year. Ensemble is free and open-source, so its macOS build is
-> only **ad-hoc signed** &mdash; enough for the app to actually run, but not enough for Apple to vouch for it to
-> Gatekeeper. This is expected, and isn't a sign that anything is wrong with the build.
+> Proper Apple code signing and notarization cost $99/year. Ensemble is free and open-source, so its macOS build is only
+> **ad-hoc signed** &mdash; enough for the app to actually run, but not enough for Apple to vouch for it to Gatekeeper.
+> This is expected, and isn't a sign that anything is wrong with the build.
 
 Try these in order &mdash; which step you need depends on your macOS version:
 
@@ -296,8 +296,8 @@ graph TD
     GdCore --> Foundation
 ```
 
-Only `Ui` may reference `Avalonia.*`, `Estragonia.*`, or `EnsembleRoot.Ui.*`. `Globals` is cross-cutting: it exposes
-the main singletons (see **Globals** below) and is imported everywhere except the foundation modules.
+Only `Ui` may reference `Avalonia.*`, `Estragonia.*`, or `EnsembleRoot.Ui.*`. `Globals` is cross-cutting: it exposes the
+main singletons (see **Globals** below) and is imported everywhere except the foundation modules.
 
 </details>
 
@@ -460,10 +460,10 @@ graph LR
     Destruct -->|RemoveInstanceAction| Net
 ```
 
-`ToolManager` owns every `ToolBase` and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while
-the local plot is editable (not spawned). `ConstructTool` shows a translucent preview with an axial highlight, snaps
-edges (not centers) to the plot grid, resolves overlaps with oriented bounding boxes (separating axis theorem), and
-supports `RotateX/Y/Z()` and `ResetRotation()` in global or local space.
+`ToolManager` owns every `ToolBase` and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while the
+local plot is editable (not spawned). `ConstructTool` shows a translucent preview with an axial highlight, snaps edges
+(not centers) to the plot grid, resolves overlaps with oriented bounding boxes (separating axis theorem), and supports
+`RotateX/Y/Z()` and `ResetRotation()` in global or local space.
 
 </details>
 
@@ -524,8 +524,8 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 
 All `OBJ` files under `/assets/meshes/`, except for `plots_base.obj`, were created by **"Shrimp Fried Koishi."** Other
 third-party resources, including NuGet packages and files under `/addons/` and `/Estragonia/`, are distributed under
-their respective licenses and are subject to their respective authors' or copyright holders' terms. The chat's
-profanity filter uses David Sojevic's [profanity-list](https://github.com/dsojevic/profanity-list) (MIT; see
+their respective licenses and are subject to their respective authors' or copyright holders' terms. The chat's profanity
+filter uses David Sojevic's [profanity-list](https://github.com/dsojevic/profanity-list) (MIT; see
 `/Common/Text/ProfanityList.LICENSE.txt`), with `allow_partial` set on entries that misfire inside ordinary words. It's
 stored encoded, so its terms aren't readable in the source; see `/.github/scripts/profanity-list.sh`. Chat nametag
 colors use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
@@ -537,8 +537,8 @@ colors use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
 Ensemble uses separate licenses for its code and non-code assets:
 
 - **Code:** [**GNU General Public License v3.0 or later**](./LICENSE-CODE.txt)
-- **Non-code assets:**
-  [**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International**](./LICENSE-ASSETS.txt)
+- **Non-code assets:** [**Creative Commons Attribution-NonCommercial-ShareAlike 4.0
+  International**](./LICENSE-ASSETS.txt)
 
 See [**LICENSE.md**](../LICENSE.md) for an overview of the project's licensing.
 

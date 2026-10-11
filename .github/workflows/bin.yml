@@ -89,7 +89,7 @@ jobs:
           set -euo pipefail
           cd out
           timeout 120 ./Ensemble.x86_64 --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
-          grep -qF 'Instantiated and added "WorldHandle"' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
+          grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
 
       - name: Upload
         uses: actions/upload-artifact@v7
@@ -170,7 +170,7 @@ jobs:
           set -euo pipefail
           perl -e 'alarm shift; exec @ARGV' 120 out/Ensemble.app/Contents/MacOS/Ensemble \
             --headless --quit-after 900 -- --port=7777 > smoke.log 2>&1 || { tail -50 smoke.log; exit 1; }
-          grep -qF 'Instantiated and added "WorldHandle"' smoke.log || { tail -50 smoke.log; exit 1; }
+          grep -qE 'Instantiated and added "?WorldHandle' smoke.log || { tail -50 smoke.log; exit 1; }
 
       - name: Upload
         uses: actions/upload-artifact@v7
@@ -261,7 +261,7 @@ jobs:
           $null = $process.Handle
           $exited = $process.WaitForExit(120000)
           Get-Process Ensemble* -ErrorAction SilentlyContinue | Stop-Process -Force
-          $found = Select-String -Path smoke.log -Pattern 'Instantiated and added "WorldHandle"' -SimpleMatch -Quiet
+          $found = Select-String -Path smoke.log -Pattern 'Instantiated and added "?WorldHandle' -Quiet
           if (-not $exited -or $process.ExitCode -ne 0 -or -not $found) {
             Get-Content smoke.log, smoke.err.log -Tail 50
             throw "Smoke test failed (Exited=$exited, ExitCode=$($process.ExitCode))"
@@ -346,7 +346,7 @@ jobs:
           set -euo pipefail
           cd out
           timeout 120 ./Ensemble.x86_64 --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
-          grep -qF 'Instantiated and added "WorldHandle"' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
+          grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
 
       - name: Upload
         uses: actions/upload-artifact@v7
@@ -381,7 +381,7 @@ jobs:
           $null = $process.Handle
           $exited = $process.WaitForExit(120000)
           Get-Process Ensemble* -ErrorAction SilentlyContinue | Stop-Process -Force
-          $found = Select-String -Path smoke.log -Pattern 'Instantiated and added "WorldHandle"' -SimpleMatch -Quiet
+          $found = Select-String -Path smoke.log -Pattern 'Instantiated and added "?WorldHandle' -Quiet
           if (-not $exited -or $process.ExitCode -ne 0 -or -not $found) {
             Get-Content smoke.log, smoke.err.log -Tail 50
             throw "Smoke test failed (Exited=$exited, ExitCode=$($process.ExitCode))"

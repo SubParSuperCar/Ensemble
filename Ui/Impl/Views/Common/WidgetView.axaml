@@ -81,7 +81,7 @@
                     Content="X"
                     Command="{Binding CloseCommand}"
                     ToolTip.Tip="Closes this widget."
-                    Background="Red" Foreground="White"
+                    Background="{StaticResource DangerBrush}" Foreground="White"
                     CornerRadius="0,4.5,0,0"
                     FontWeight="Bold" />
             </Grid>
@@ -95,7 +95,7 @@
                 PointerReleased="OnDragPointerReleased"
                 PointerCaptureLost="OnDragPointerCaptureLost"
                 ToolTip.Tip="Resizes this widget."
-                Background="{DynamicResource PrimaryBrush}"
+                Background="{StaticResource PrimaryBrush}"
                 Cursor="BottomRightCorner"
                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
                 Width="12" Height="12"

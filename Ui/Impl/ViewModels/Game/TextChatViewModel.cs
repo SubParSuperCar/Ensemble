@@ -44,10 +44,10 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	[ObservableProperty] public partial bool IsFilterEnabled { get; set; } = GChatManager.IsFilterEnabled;
 	[ObservableProperty] public partial bool IsFileLoggingEnabled { get; set; } = GChatManager.IsFileLoggingEnabled;
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(12, 10, 4, 5))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(26, 21, 6, 9))
 	{
 		Description = "Sends and shows this session's text chat messages.",
-		MinSize = new Size(384, 256)
+		MinSize = new Size(320, 256)
 	};
 
 	/// <summary>Raised when the player presses the focus key (/) while not typing elsewhere.</summary>

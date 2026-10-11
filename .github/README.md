@@ -108,7 +108,8 @@ Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone mus
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are
 synchronized, and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove
-one using `kick(peer_id, "reason")`. Display names are remembered between sessions.
+one using `kick(peer_id, "reason")`. Display names are remembered between sessions. The host has authority over the
+session: they can clear any plot they occupy, and their chat messages bypass the profanity filter.
 
 Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored
 per display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive

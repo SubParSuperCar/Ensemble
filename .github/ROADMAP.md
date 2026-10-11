@@ -58,6 +58,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
   notices, unread count in the drawer), chat action with a host-toggled profanity filter (masks with `#`, or
   `<Redacted>` if nothing else remains), late-join history snapshot, optional per-session file logs, and Lua functions
 - [ ] (M) Chat bubbles over players
+- [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override), kicking
+  occupants (owner or host), and Player List context menus for kicking peers
 - [ ] (L) Physics replication - plot-owner authority, possibly over custom RPCs
 
 ## Gameplay / content
@@ -79,6 +81,7 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
   Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and persisted layouts
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
+- [ ] (S) Main menu personality - community links (e.g., Discord) and randomized flavor text
 
 ## Housekeeping / infra
 
@@ -90,6 +93,7 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [ ] (S) Dedicated 3D physics layers - Plot Base, Instances (only World + Character exist today)
 - [x] (S) Populate Tests/ - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline roundtrips,
   HostEndPoint parsing, OBB/grid math, NavigatorService
+- [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 
 ## Later / big

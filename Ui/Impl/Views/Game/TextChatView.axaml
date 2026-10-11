@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     xmlns:t="using:EnsembleRoot.Common.Text"
-    mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+    mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.TextChatView"
     x:DataType="vm:TextChatViewModel"
     TextOptions.TextRenderingMode="Antialias">
@@ -33,7 +33,7 @@
                     VerticalContentAlignment="Center"
                     MaxLength="{x:Static t:ChatText.MaxLength}" />
 
-                <Border Grid.Column="1" BorderBrush="{DynamicResource PrimaryBrush}" BorderThickness="1.5">
+                <Border Grid.Column="1" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1.5">
                     <Button Command="{Binding SendCommand}" ToolTip.Tip="Sends your message. (Enter)">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <TextBlock Text="Send" />

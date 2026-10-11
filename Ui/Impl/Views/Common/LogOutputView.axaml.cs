@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Controls;
 using EnsembleRoot.Ui.Impl.ViewModels;
 
 namespace EnsembleRoot.Ui.Impl.Views;
@@ -13,6 +14,7 @@ public sealed partial class LogOutputView : UserControl, IViewFor<LogOutputViewM
 	{
 		InitializeComponent();
 		OutputScroll.ScrollChanged += OnOutputScrollChanged;
+		ScrollBarInset.Apply(OutputScroll, SourceLabel, Actions);
 	}
 
 	// Sticks to the bottom while output arrives or the view resizes, until the user scrolls up

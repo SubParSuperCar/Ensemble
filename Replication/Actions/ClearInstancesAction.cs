@@ -19,9 +19,10 @@ public readonly record struct ClearInstancesAction : INetworkAction<ClearInstanc
 		if (source.Plot is not { IsSpawned: false } plot)
 			return Reject("Plot not editable.");
 
-		return string.Equals(plot.Occupants.Owner?.Player.Id, source.PlayerId, StringComparison.Ordinal)
-			? Accept
-			: Reject("Player not the owner.");
+		var isOwner = string.Equals(plot.Occupants.Owner?.Player.Id, source.PlayerId, StringComparison.Ordinal);
+
+		// The host has authority over every plot
+		return isOwner || source.IsHost ? Accept : Reject("Player not the owner.");
 	}
 
 	public void Apply(ActionSource source) => source.Plot!.Instances.Clear();

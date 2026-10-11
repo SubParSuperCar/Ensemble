@@ -31,6 +31,7 @@ resharper_lambda_expression_can_be_made_static_highlighting = suggestion
 
 dotnet_diagnostic.NSDEPCOP01.severity = warning
 
+dotnet_diagnostic.CA1720.severity = none
 dotnet_diagnostic.MA0003.severity = none
 dotnet_diagnostic.MA0007.severity = none
 dotnet_diagnostic.MA0026.severity = none
@@ -39,6 +40,7 @@ dotnet_diagnostic.MA0041.severity = none
 dotnet_diagnostic.MA0046.severity = none
 dotnet_diagnostic.MA0048.severity = none
 dotnet_diagnostic.MA0049.severity = none
+dotnet_diagnostic.MA0127.severity = none
 dotnet_diagnostic.MA0136.severity = none
 dotnet_diagnostic.MA0197.severity = none
 dotnet_diagnostic.MA0219.severity = none

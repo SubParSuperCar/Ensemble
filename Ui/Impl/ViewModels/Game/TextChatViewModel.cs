@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Chat;
+using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Sessions.Actions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
@@ -28,8 +29,8 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 			OnMessageAdded(message);
 
 		GChatManager.MessageAdded += OnMessageAdded;
-		GChatManager.FilterEnabledChanged += OnFilterEnabledChanged;
 
+		GProfanityFilterManager.EnabledChanged += OnProfanityFilterEnabledChanged;
 		GSessionManager.ActionRejected += OnActionRejected;
 		dispatcher.Input += OnInput;
 	}
@@ -42,7 +43,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 	public bool IsHost { get; } = GSessionManager.IsServer;
 
-	[ObservableProperty] public partial bool IsFilterEnabled { get; set; } = GChatManager.IsFilterEnabled;
+	[ObservableProperty] public partial bool IsProfanityFilterEnabled { get; set; } = GProfanityFilterManager.IsEnabled;
 	[ObservableProperty] public partial bool IsFileLoggingEnabled { get; set; } = GChatManager.IsFileLoggingEnabled;
 
 	// ReSharper disable once UnusedMember.Global
@@ -60,8 +61,8 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	protected override void OnDispose()
 	{
 		GChatManager.MessageAdded -= OnMessageAdded;
-		GChatManager.FilterEnabledChanged -= OnFilterEnabledChanged;
 
+		GProfanityFilterManager.EnabledChanged -= OnProfanityFilterEnabledChanged;
 		GSessionManager.ActionRejected -= OnActionRejected;
 		_dispatcher.Input -= OnInput;
 	}
@@ -82,13 +83,13 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 			Message = value.ReplaceLineEndings(" ");
 	}
 
-	partial void OnIsFilterEnabledChanged(bool value)
+	partial void OnIsProfanityFilterEnabledChanged(bool value)
 	{
-		if (value == GChatManager.IsFilterEnabled)
+		if (value == GProfanityFilterManager.IsEnabled)
 			return;
 
-		ChatManager.IsFilterPreferred = value;
-		new SetChatFilterAction(value).Submit();
+		ProfanityFilterManager.IsPreferred = value;
+		new SetProfanityFilterAction(value).Submit();
 	}
 
 	partial void OnIsFileLoggingEnabledChanged(bool value) => GChatManager.IsFileLoggingEnabled = value;
@@ -104,11 +105,11 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	// Local only, so the sender learns why a message went nowhere
 	private void OnActionRejected(string actionId, string reason)
 	{
-		if (actionId is nameof(SendChatMessageAction) or nameof(SetChatFilterAction))
+		if (actionId is nameof(SendChatMessageAction) or nameof(SetProfanityFilterAction))
 			AddLine(new TextChatLine(null, default, reason));
 	}
 
-	private void OnFilterEnabledChanged(bool isEnabled) => IsFilterEnabled = isEnabled;
+	private void OnProfanityFilterEnabledChanged(bool isEnabled) => IsProfanityFilterEnabled = isEnabled;
 
 	private void OnInput(InputEvent @event)
 	{

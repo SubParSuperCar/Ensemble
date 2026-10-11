@@ -144,7 +144,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Common/Text/ProfanityList.gz.b64" LogicalName="EnsembleRoot.Common.Text.ProfanityList.gz.b64"/>
+    <EmbeddedResource Include="Common/Text/ProfanityList.json.gz" LogicalName="EnsembleRoot.Common.Text.ProfanityList.json.gz"/>
   </ItemGroup>
 
   <ItemGroup>

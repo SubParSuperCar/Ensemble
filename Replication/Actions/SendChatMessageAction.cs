@@ -21,7 +21,7 @@ public readonly record struct SendChatMessageAction(string Text) : INetworkActio
 
 	// The host's own messages aren't filtered
 	public SendChatMessageAction Rewrite(ActionSource source) =>
-		GChatManager.IsFilterEnabled && !source.IsHost ? new SendChatMessageAction(ProfanityFilter.Censor(Text)) : this;
+		source.IsHost ? this : new SendChatMessageAction(GProfanityFilterManager.Filter(Text));
 
 	public void Apply(ActionSource source) =>
 		GChatManager.Add(

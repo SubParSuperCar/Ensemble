@@ -1,7 +1,7 @@
 using System.Globalization;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Networking;
-using EnsembleRoot.Scripts.Chat;
+using EnsembleRoot.Scripts.Profanity;
 using Godot;
 using Serilog;
 using static EnsembleRoot.Sessions.SessionManager;
@@ -10,7 +10,7 @@ namespace EnsembleRoot.Scripts.Headless;
 
 /// <summary>
 ///     Hosts a dedicated session, or joins one as a client, from user args, e.g.:
-///     <c lang="shell">--headless -- --port=7777 --password=abc --max-clients=8 --upnp --chat-filter=false</c> or
+///     <c lang="shell">--headless -- --port=7777 --password=abc --max-clients=8 --upnp --profanity-filter=false</c> or
 ///     <c lang="shell">--headless -- --join=127.0.0.1:7777 --password=abc --name=Bot</c>.
 /// </summary>
 [GlobalClass]
@@ -41,7 +41,7 @@ public partial class HeadlessSession : Node, IAutoload
 		}
 		else
 		{
-			ChatManager.FilterOverride = GetBool(args, "chat-filter");
+			ProfanityFilterManager.Override = GetBool(args, "profanity-filter");
 
 			GSessionManager.HostMultiPlayer(
 				GetInt(args, "port") ?? DefaultPort, password, string.Empty,

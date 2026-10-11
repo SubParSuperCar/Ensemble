@@ -25,6 +25,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 	private readonly Dictionary<long, byte[]> _pendingNoncesByPeerId = [];
 	private readonly byte[] _version = Encoding.UTF8.GetBytes(version);
 
+	private bool _hasSentPassword;
 	private bool _isServer;
 	private SceneMultiplayer? _multiplayer;
 
@@ -34,6 +35,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 	{
 		_multiplayer = multiplayer;
 		_isServer = isServer;
+		_hasSentPassword = false;
 
 		multiplayer.AuthTimeout = AuthTimeout.TotalSeconds;
 		multiplayer.AuthCallback = Callable.From<long, byte[]>(OnAuthMessage);
@@ -124,6 +126,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 			}
 
 			_multiplayer!.SendAuth((int)peerId, HMACSHA256.HashData(_key, data.AsSpan(1, NonceSize)));
+			_hasSentPassword = true;
 		}
 
 		_multiplayer!.CompleteAuth((int)peerId);
@@ -135,7 +138,8 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 		if (_isServer)
 			Log.Warning("Peer {PeerId} timed out or was rejected during authentication", peerId);
+		// Hosts only drop clients that answered the challenge when the password is wrong
 		else
-			Failed?.Invoke("Authentication failed.");
+			Failed?.Invoke(_hasSentPassword ? "Incorrect password." : "Authentication failed.");
 	}
 }

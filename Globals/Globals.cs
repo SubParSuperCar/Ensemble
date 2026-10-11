@@ -6,6 +6,7 @@ using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Chat;
 using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Scripts.Plots;
+using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Sessions;
 using EnsembleRoot.Tooling;
 
@@ -54,6 +55,10 @@ public static class Globals
 	/// <inheritdoc cref="ChatManager" />
 	public static ChatManager GChatManager =>
 		ChatManager.Instance ?? throw Unavailable(nameof(ChatManager), AutoloadLifetime);
+
+	/// <inheritdoc cref="ProfanityFilterManager" />
+	public static ProfanityFilterManager GProfanityFilterManager =>
+		ProfanityFilterManager.Instance ?? throw Unavailable(nameof(ProfanityFilterManager), AutoloadLifetime);
 
 	/// <inheritdoc cref="PlayerManager" />
 	public static PlayerManager GPlayerManager

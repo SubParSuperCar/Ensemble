@@ -4,7 +4,7 @@ using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Replication.Actions;
-using EnsembleRoot.Scripts.Chat;
+using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Sessions.Actions;
 using Lua;
 using Serilog;
@@ -29,10 +29,8 @@ public static partial class LuaExecutor
 		var manager = GChatManager;
 
 		Log.Information(
-			"Chat: {Count} message(s) (IsFilterEnabled={IsFilterEnabled}, IsFilterPreferred={IsFilterPreferred}, " +
-			"IsFileLoggingEnabled={IsFileLoggingEnabled})",
-			manager.Messages.Count, manager.IsFilterEnabled, ChatManager.IsFilterPreferred,
-			manager.IsFileLoggingEnabled);
+			"Chat: {Count} message(s) (IsFileLoggingEnabled={IsFileLoggingEnabled}, IsTtsEnabled={IsTtsEnabled})",
+			manager.Messages.Count, manager.IsFileLoggingEnabled, manager.IsTtsEnabled);
 
 		foreach (var message in manager.Messages)
 			Log.Information("{$Message}", message.ToDict());
@@ -46,9 +44,10 @@ public static partial class LuaExecutor
 
 		Log.Information(
 			"Session: {Mode} (Version={Version}, Port={Port}, HasPassword={HasPassword}, IsDedicated={IsDedicated}, " +
-			"PortMapping={PortMapping})",
+			"PortMapping={PortMapping}, IsProfanityFilterEnabled={IsProfanityFilterEnabled}, " +
+			"IsProfanityFilterPreferred={IsProfanityFilterPreferred})",
 			manager.Mode, GameVersion, manager.Port, manager.HasPassword, manager.IsDedicated,
-			manager.PortMappingState);
+			manager.PortMappingState, GProfanityFilterManager.IsEnabled, ProfanityFilterManager.IsPreferred);
 
 		foreach (var peer in manager.Peers.Values.OrderBy(static peer => peer.Id))
 			Log.Information("{$Peer}", peer.ToDict());
@@ -103,27 +102,6 @@ public static partial class LuaExecutor
 		return context.Return();
 	}
 
-	private static ValueTask<int> set_chat_filter_on(
-		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
-	{
-		var isEnabled = context.GetArgument<bool>(0);
-
-		if (GSessionManager is { IsActive: true, IsServer: false })
-		{
-			Log.Warning("Only the host can toggle the chat filter");
-			return context.ReturnNothing();
-		}
-
-		ChatManager.IsFilterPreferred = isEnabled;
-
-		if (GSessionManager.IsActive)
-			new SetChatFilterAction(isEnabled).Submit();
-
-		Log.Information("Set chat filter to {IsEnabled}", isEnabled);
-
-		return context.ReturnNothing();
-	}
-
 	private static ValueTask<int> set_chat_log_on(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -142,6 +120,27 @@ public static partial class LuaExecutor
 		GChatManager.IsTtsEnabled = isEnabled;
 
 		Log.Information("Set chat TTS to {IsEnabled}", isEnabled);
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_profanity_filter_on(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var isEnabled = context.GetArgument<bool>(0);
+
+		if (GSessionManager is { IsActive: true, IsServer: false })
+		{
+			Log.Warning("Only the host can toggle the profanity filter");
+			return context.ReturnNothing();
+		}
+
+		ProfanityFilterManager.IsPreferred = isEnabled;
+
+		if (GSessionManager.IsActive)
+			new SetProfanityFilterAction(isEnabled).Submit();
+
+		Log.Information("Set profanity filter to {IsEnabled}", isEnabled);
 
 		return context.ReturnNothing();
 	}

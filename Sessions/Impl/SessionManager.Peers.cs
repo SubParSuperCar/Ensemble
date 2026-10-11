@@ -18,6 +18,12 @@ public partial class SessionManager
 
 	private double _sinceLastPingUpdate;
 
+	/// <summary>
+	///     Host-side check of joining players' display names (e.g., a profanity filter). Rejected names are replaced
+	///     with an empty one, as if none was entered.
+	/// </summary>
+	public Func<string, bool>? DisplayNameFilter { get; set; }
+
 	public IReadOnlyDictionary<int, Peer> Peers => _peersById;
 	public Peer? LocalPeer => GetPeer(LocalPeerId);
 
@@ -75,6 +81,12 @@ public partial class SessionManager
 		if (!IsValidDisplayName(displayName))
 		{
 			Log.Debug("Discarded invalid display name from peer {PeerId}: {DisplayName}", peerId, displayName);
+			displayName = string.Empty;
+		}
+		// The host's own name isn't filtered, like its chat messages
+		else if (peerId != LocalPeerId && DisplayNameFilter?.Invoke(displayName) is false)
+		{
+			Log.Debug("Discarded filtered display name from peer {PeerId}: {DisplayName}", peerId, displayName);
 			displayName = string.Empty;
 		}
 

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
@@ -18,11 +19,14 @@ public sealed partial class HostConfigViewModel : ViewModelBase
 		GSessionManager.SessionFailed += OnSessionFailed;
 	}
 
-	[ObservableProperty] public partial decimal? Port { get; set; }
+	[ObservableProperty] public partial decimal? Port { get; set; } = SessionPreferences.HostPort;
 	[ObservableProperty] public partial bool IsUpnpEnabled { get; set; } = SessionPreferences.IsUpnpEnabled;
 
 	[ObservableProperty] public partial string? Password { get; set; }
 	[ObservableProperty] public partial decimal? MaxClients { get; set; }
+
+	[ObservableProperty]
+	public partial bool IsProfanityFilterEnabled { get; set; } = ProfanityFilterManager.IsPreferred;
 
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(HostCommand))]
@@ -41,6 +45,8 @@ public sealed partial class HostConfigViewModel : ViewModelBase
 		Status = null;
 		SessionPreferences.DisplayName = DisplayName ?? string.Empty;
 		SessionPreferences.IsUpnpEnabled = IsUpnpEnabled;
+		SessionPreferences.HostPort = (int?)Port;
+		ProfanityFilterManager.IsPreferred = IsProfanityFilterEnabled;
 
 		GSessionManager.HostMultiPlayer(
 			(int)(Port ?? DefaultPort), Password, DisplayName, (int?)MaxClients ?? Unlimited, false, IsUpnpEnabled);

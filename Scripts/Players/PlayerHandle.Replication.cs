@@ -8,10 +8,17 @@ public partial class PlayerHandle
 {
 	private const int ReplicationChannel = 1;
 	private const double ReplicationInterval = 1 / 20d;
+	private const double IdleReplicationInterval = 1d;
+
+	// Below these, a character counts as idle and only sends keepalives, which also recover from lost packets
+	private const float MinReplicatedDistance = 1 / 128f;
+	private const float MinReplicatedYaw = 1 / 128f;
 
 	private const float SmoothingRate = 16f;
 	private const float SnapDistance = 8f;
 
+	private Vector3 _lastReplicatedPosition;
+	private float _lastReplicatedYaw;
 	private double _sinceLastReplication;
 	private Vector3? _targetPosition;
 	private float _targetYaw;
@@ -27,10 +34,19 @@ public partial class PlayerHandle
 		if (_sinceLastReplication < ReplicationInterval)
 			return;
 
-		_sinceLastReplication = 0;
-
 		var position = Body.GlobalPosition;
 		var yaw = Body.GlobalRotation.Y;
+
+		var isIdle =
+			position.DistanceTo(_lastReplicatedPosition) < MinReplicatedDistance &&
+			Math.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw;
+
+		if (isIdle && _sinceLastReplication < IdleReplicationInterval)
+			return;
+
+		_sinceLastReplication = 0;
+		_lastReplicatedPosition = position;
+		_lastReplicatedYaw = yaw;
 
 		if (GSessionManager.IsServer)
 			Relay(position, yaw, GSessionManager.LocalPeerId);

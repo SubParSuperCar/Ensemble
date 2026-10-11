@@ -182,5 +182,9 @@ public partial class DiscordRpc : Node, IAutoload
 			Connect();
 		}
 		catch (OperationCanceledException) { }
+		catch (Exception exception)
+		{
+			Log.Warning(exception, "Failed to reconnect to Discord");
+		}
 	}
 }

@@ -28,14 +28,12 @@ internal static class ChatSnapshot
 			messages.Insert(0, message.ToDict());
 		}
 
-		return [GChatManager.IsFilterEnabled, messages];
+		return [messages];
 	}
 
 	private static void Restore(Array<Variant> payload)
 	{
-		GChatManager.SetFilterEnabled(payload[0].AsBool(), false);
-
-		foreach (var message in payload[1].AsGodotArray<Dictionary>())
+		foreach (var message in payload[0].AsGodotArray<Dictionary>())
 			GChatManager.Add(ChatMessage.FromDict(message), true);
 	}
 

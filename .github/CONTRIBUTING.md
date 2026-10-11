@@ -40,8 +40,8 @@
   `.editorconfig`), keep lines within 120 columns, and use ASCII only. Comments are kept to a minimum: explain why, not
   what.
 - **Respect the module boundaries.** Layering is enforced at build time by NsDepCop (`config.nsdepcop`); see
-  [**Architecture**](./README.md#architecture). `Core` stays plain C# with no Godot dependencies.
+  [**Architecture**](/.github/README.md#architecture). `Core` stays plain C# with no Godot dependencies.
 - **Build cleanly and test.** The solution must build without warnings, and `dotnet test --solution Ensemble.slnx` must
   pass. Add tests for real behavior and regressions rather than trivial operations.
 - **License your contributions.** By contributing, you agree that your code is licensed under GPL-3.0-or-later and your
-  non-code assets under CC BY-NC-SA 4.0, as described in [**LICENSE.md**](../LICENSE.md).
+  non-code assets under CC BY-NC-SA 4.0, as described in [**LICENSE.md**](/LICENSE.md).

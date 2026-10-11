@@ -29,7 +29,7 @@
             </ScrollViewer>
 
             <ScrollViewer Grid.Row="1" VerticalAlignment="Center">
-                <md:MarkdownRenderer ImageBasePath="{Binding ImageBasePath}" DocumentUpdate="{Binding Document}" />
+                <md:MarkdownRenderer DocumentUpdate="{Binding Document}" LinkCommand="{Binding OpenLinkCommand}" />
             </ScrollViewer>
         </Grid>
     </Grid>

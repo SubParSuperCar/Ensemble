@@ -46,6 +46,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 	{
 		GPlayers.Added -= OnPlayerAdded;
 		GPlayers.Removed -= OnPlayerRemoved;
+
 		GSessionManager.PortMappingChanged -= OnPortMappingChanged;
 
 		foreach (var unsubscribe in _unsubscribeByPlayerId.Values)

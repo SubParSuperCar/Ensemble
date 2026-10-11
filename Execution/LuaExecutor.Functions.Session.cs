@@ -134,4 +134,15 @@ public static partial class LuaExecutor
 
 		return context.ReturnNothing();
 	}
+
+	private static ValueTask<int> set_chat_tts_on(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var isEnabled = context.GetArgument<bool>(0);
+		GChatManager.IsTtsEnabled = isEnabled;
+
+		Log.Information("Set chat TTS to {IsEnabled}", isEnabled);
+
+		return context.ReturnNothing();
+	}
 }

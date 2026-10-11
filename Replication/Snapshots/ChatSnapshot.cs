@@ -36,7 +36,7 @@ internal static class ChatSnapshot
 		GChatManager.SetFilterEnabled(payload[0].AsBool(), false);
 
 		foreach (var message in payload[1].AsGodotArray<Dictionary>())
-			GChatManager.Add(ChatMessage.FromDict(message));
+			GChatManager.Add(ChatMessage.FromDict(message), true);
 	}
 
 	[ModuleInitializer]

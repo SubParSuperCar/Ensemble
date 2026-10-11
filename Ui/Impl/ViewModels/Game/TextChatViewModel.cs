@@ -29,6 +29,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 		GChatManager.MessageAdded += OnMessageAdded;
 		GChatManager.FilterEnabledChanged += OnFilterEnabledChanged;
+
 		GSessionManager.ActionRejected += OnActionRejected;
 		dispatcher.Input += OnInput;
 	}
@@ -44,6 +45,9 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	[ObservableProperty] public partial bool IsFilterEnabled { get; set; } = GChatManager.IsFilterEnabled;
 	[ObservableProperty] public partial bool IsFileLoggingEnabled { get; set; } = GChatManager.IsFileLoggingEnabled;
 
+	// ReSharper disable once UnusedMember.Global
+	[ObservableProperty] public partial bool IsTtsEnabled { get; set; } = GChatManager.IsTtsEnabled;
+
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(26, 21, 6, 9))
 	{
 		Description = "Sends and shows this session's text chat messages.",
@@ -57,6 +61,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	{
 		GChatManager.MessageAdded -= OnMessageAdded;
 		GChatManager.FilterEnabledChanged -= OnFilterEnabledChanged;
+
 		GSessionManager.ActionRejected -= OnActionRejected;
 		_dispatcher.Input -= OnInput;
 	}
@@ -87,6 +92,8 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	}
 
 	partial void OnIsFileLoggingEnabledChanged(bool value) => GChatManager.IsFileLoggingEnabled = value;
+
+	partial void OnIsTtsEnabledChanged(bool value) => GChatManager.IsTtsEnabled = value;
 
 	private void OnMessageAdded(ChatMessage message) =>
 		AddLine(

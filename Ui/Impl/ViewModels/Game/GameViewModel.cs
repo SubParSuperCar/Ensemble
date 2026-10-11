@@ -71,11 +71,13 @@ public sealed partial class GameViewModel : ViewModelBase
 
 	protected override void OnDispose()
 	{
+		_textChat.PropertyChanged -= OnTextChatPropertyChanged;
+		GChatManager.MessageAdded -= OnChatMessageAdded;
+
 		_dispatcher.Input -= OnInput;
+
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
-		GChatManager.MessageAdded -= OnChatMessageAdded;
-		_textChat.PropertyChanged -= OnTextChatPropertyChanged;
 
 		Clock = null;
 		PlayerList = null;

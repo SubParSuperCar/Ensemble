@@ -60,6 +60,11 @@
                                     Content="Log to File"
                                     IsChecked="{Binding IsFileLoggingEnabled}"
                                     ToolTip.Tip="Saves each session's chat to a text file in the user data folder." />
+
+                                <CheckBox
+                                    Content="Read Aloud"
+                                    IsChecked="{Binding IsTtsEnabled}"
+                                    ToolTip.Tip="Reads new messages aloud with text-to-speech." />
                             </StackPanel>
                         </Flyout>
                     </DropDownButton.Flyout>

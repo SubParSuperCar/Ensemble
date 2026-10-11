@@ -13,6 +13,7 @@ public sealed partial class LogOutputView : UserControl, IViewFor<LogOutputViewM
 	public LogOutputView()
 	{
 		InitializeComponent();
+
 		OutputScroll.ScrollChanged += OnOutputScrollChanged;
 		ScrollBarInset.Apply(OutputScroll, SourceLabel, Actions);
 	}

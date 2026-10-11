@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Audio;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Players;
 using Godot;
@@ -12,7 +13,7 @@ namespace EnsembleRoot.Scripts.Chat;
 /// <summary>
 ///     Keeps the current session's chat: its latest <see cref="MaxHistoryCount" /> messages, oldest first, and whether
 ///     the host filters profanity. Optionally appends messages to a plain-text file per session in
-///     <see cref="ChatLogDir" />, up to <see cref="MaxLogFileBytes" />.
+///     <see cref="ChatLogDir" />, up to <see cref="MaxLogFileBytes" />, and reads new messages aloud.
 /// </summary>
 /// <remarks>
 ///     Messages and filter changes arrive as network actions, and late joiners receive the history as a snapshot (see
@@ -35,10 +36,12 @@ public partial class ChatManager : Node, IAutoload
 	private const string Section = "chat";
 	private const string IsFilterPreferredKey = "filter_enabled";
 	private const string IsFileLoggingEnabledKey = "log_to_file";
+	private const string IsTtsEnabledKey = "tts_enabled";
 
 	private readonly Queue<ChatMessage> _messages = [];
 	private bool _isFileLoggingEnabled;
 	private bool _isLogStopped;
+	private bool _isTtsEnabled;
 	private StreamWriter? _log;
 
 	public static ChatManager? Instance { get; private set; }
@@ -70,13 +73,32 @@ public partial class ChatManager : Node, IAutoload
 		}
 	}
 
+	/// <summary>Whether to read new messages aloud. Persisted.</summary>
+	public bool IsTtsEnabled
+	{
+		get => _isTtsEnabled;
+		set
+		{
+			_isTtsEnabled = value;
+			UserData.SetValue(Section, IsTtsEnabledKey, value);
+
+			if (!value)
+				TextToSpeech.Silence();
+		}
+	}
+
 	public void Initialize()
 	{
 		Instance = this;
+
 		_isFileLoggingEnabled = UserData.GetValue(Section, IsFileLoggingEnabledKey, false).AsBool();
+
+		// Dedicated hosts share the user data but have no listener
+		_isTtsEnabled = !Main.IsHeadlessServer && UserData.GetValue(Section, IsTtsEnabledKey, false).AsBool();
 
 		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
+
 		GPlayers.Added += OnPlayerAdded;
 		GPlayers.Removed += OnPlayerRemoved;
 	}
@@ -85,6 +107,7 @@ public partial class ChatManager : Node, IAutoload
 	{
 		GSessionManager.SessionStarted -= OnSessionStarted;
 		GSessionManager.SessionStopped -= OnSessionStopped;
+
 		GPlayers.Added -= OnPlayerAdded;
 		GPlayers.Removed -= OnPlayerRemoved;
 
@@ -96,13 +119,17 @@ public partial class ChatManager : Node, IAutoload
 
 	public Array<ChatMessage> GetAllMessages() => [.. _messages];
 
-	internal void Add(ChatMessage message)
+	/// <summary>Adds a message, reading it aloud unless it's <paramref name="isHistory" /> from before joining.</summary>
+	internal void Add(ChatMessage message, bool isHistory = false)
 	{
 		if (_messages.Count >= MaxHistoryCount)
 			_messages.Dequeue();
 
 		_messages.Enqueue(message);
 		WriteToLog(message);
+
+		if (IsTtsEnabled && !isHistory)
+			TextToSpeech.Speak(message.IsNotice ? message.Text : $"{message.SenderName} said: {message.Text}");
 
 		EmitSignal(SignalName.MessageAdded, message);
 	}

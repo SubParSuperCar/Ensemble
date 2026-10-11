@@ -315,7 +315,6 @@ sequenceDiagram
     participant AL as AvaloniaLoader
     participant M as Main
     participant R as AutoloadRegistry
-
     G->>AL: load (Godot autoload)
     AL->>AL: configure Avalonia, show loading screen
     G->>M: _Ready() in main.tscn

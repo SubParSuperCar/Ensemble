@@ -8,6 +8,10 @@ namespace EnsembleRoot.Common.Audio;
 ///     Reads text aloud one utterance at a time, in order, dropping new text while <see cref="MaxQueuedCount" /> are
 ///     waiting. Never throws: speech depends on each platform's voices and helper binaries, which have gone missing.
 /// </summary>
+/// <remarks>
+///     Canceling an utterance's token skips it while it waits, or stops it mid-speech, so a caller (e.g., the chat)
+///     can silence its own text without cutting off anyone else's.
+/// </remarks>
 public static class TextToSpeech
 {
 	// ReSharper disable once MemberCanBePrivate.Global
@@ -21,17 +25,46 @@ public static class TextToSpeech
 		_ = Task.Run(SpeakQueuedAsync);
 	}
 
-	public static void Speak(string text, string culture = "en", float rate = 1f, float pitch = 1f, float volume = 1f)
+	public static void Speak(
+		string text, string culture = "en", float rate = 1f, float pitch = 1f, float volume = 1f,
+		CancellationToken token = default)
 	{
-		if (!Queue.Writer.TryWrite(new Utterance(text, culture, rate, pitch, volume)))
+		if (!Queue.Writer.TryWrite(new Utterance(text, culture, rate, pitch, volume, token)))
 			Log.Debug("Skipped TTS, since too much text is waiting");
 	}
 
-	/// <summary>Stops the current utterance and drops the waiting ones.</summary>
-	public static void Silence()
+	private static async Task SpeakQueuedAsync()
 	{
-		while (Queue.Reader.TryRead(out _)) { }
+		await foreach (
+			var (text, culture, rate, pitch, volume, token) in Queue.Reader.ReadAllAsync().ConfigureAwait(false))
+		{
+			if (token.IsCancellationRequested)
+				continue;
 
+			try
+			{
+				var speaker = Speaker.Instance;
+				var voice = speaker.VoiceForCulture(culture);
+
+				// Only this utterance is speaking, so silencing the speaker stops nothing else
+				var registration = token.Register(Silence);
+
+				await using (registration.ConfigureAwait(false))
+				{
+					if (!await speaker.SpeakAsync(text, voice, rate, pitch, volume).ConfigureAwait(false) &&
+						!token.IsCancellationRequested)
+						Log.Warning("Failed to play TTS");
+				}
+			}
+			catch (Exception exception)
+			{
+				Log.Error(exception, "Failed to play TTS");
+			}
+		}
+	}
+
+	private static void Silence()
+	{
 		try
 		{
 			Speaker.Instance.Silence();
@@ -42,24 +75,11 @@ public static class TextToSpeech
 		}
 	}
 
-	private static async Task SpeakQueuedAsync()
-	{
-		await foreach (var (text, culture, rate, pitch, volume) in Queue.Reader.ReadAllAsync().ConfigureAwait(false))
-		{
-			try
-			{
-				var speaker = Speaker.Instance;
-				var voice = speaker.VoiceForCulture(culture);
-
-				if (!await speaker.SpeakAsync(text, voice, rate, pitch, volume).ConfigureAwait(false))
-					Log.Warning("Failed to play TTS");
-			}
-			catch (Exception exception)
-			{
-				Log.Error(exception, "Failed to play TTS");
-			}
-		}
-	}
-
-	private readonly record struct Utterance(string Text, string Culture, float Rate, float Pitch, float Volume);
+	private readonly record struct Utterance(
+		string Text,
+		string Culture,
+		float Rate,
+		float Pitch,
+		float Volume,
+		CancellationToken Token);
 }

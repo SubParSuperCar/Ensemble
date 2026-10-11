@@ -107,7 +107,7 @@ Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone mus
   port, or a single `<address>:<port>` code.
 - **Dedicated server:** run the executable headless with user arguments, e.g.,
   `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port, or
-  `--chat-filter=false` to turn off the profanity filter).
+  `--profanity-filter=false` to turn off the profanity filter).
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
 and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove one using
@@ -116,10 +116,13 @@ can clear any plot they occupy, and their chat messages bypass the profanity fil
 
 Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored per
 display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive the
-recent history. Hosts filter profanity by default (masked with `#`, or `<Redacted>` if nothing else remains); dedicated
-servers take `--chat-filter=false`. The widget's options can also save each session's chat to `user://chat_logs/` and
-read new messages aloud. The console offers `chat("message")`, `dmp_chat()`, `set_chat_filter_on(false)`,
-`set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
+recent history. The widget's options can also save each session's chat to `user://chat_logs/` and read new messages
+aloud. The console offers `chat("message")`, `dmp_chat()`, `set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
+
+The profanity filter masks profane words in chat (with `#`, or `<Redacted>` if nothing else remains) and gives joining
+players with inappropriate display names the default name instead. Hosts choose it in the host menu (on by default and
+remembered; dedicated servers take `--profanity-filter=false`), and can toggle it mid-session in the chat's options or
+with `set_profanity_filter_on(false)`.
 
 </details>
 
@@ -437,15 +440,15 @@ through the optional `IPortMappingSession` capability) or `OfflineSession` (sing
 plugged in through `SessionManager.StartSession(ISession)`. In single-player, the same path runs locally, with the
 player acting as the server.
 
-| Action                  | Effect                                        |
-|-------------------------|-----------------------------------------------|
-| `SetPlotAction`         | Claims or releases a plot for the sender      |
-| `AddInstanceAction`     | Places an asset instance on the sender's plot |
-| `RemoveInstanceAction`  | Deletes an instance                           |
-| `SetPropertiesAction`   | Changes an instance's properties              |
-| `ClearInstancesAction`  | Removes every instance on a plot              |
-| `SendChatMessageAction` | Posts a chat message (filtered by the host)   |
-| `SetChatFilterAction`   | Toggles the profanity filter (host only)      |
+| Action                     | Effect                                        |
+|----------------------------|-----------------------------------------------|
+| `SetPlotAction`            | Claims or releases a plot for the sender      |
+| `AddInstanceAction`        | Places an asset instance on the sender's plot |
+| `RemoveInstanceAction`     | Deletes an instance                           |
+| `SetPropertiesAction`      | Changes an instance's properties              |
+| `ClearInstancesAction`     | Removes every instance on a plot              |
+| `SendChatMessageAction`    | Posts a chat message (filtered by the host)   |
+| `SetProfanityFilterAction` | Toggles the profanity filter (host only)      |
 
 </details>
 
@@ -495,7 +498,7 @@ The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`               |
 | Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`   |
 | Session     | `chat`, `dmp_chat`, `dmp_peers`, `kick`, `log_lan_ip4_addr`, `log_wan_ip4_addr`,         |
-|             | `set_chat_filter_on`, `set_chat_log_on`, `set_chat_tts_on`                               |
+|             | `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`                          |
 | World       | `add_rand_insts`, `clr_insts`, `perf_mod`, `set_static_shader_on`, `set_time`, `tp_char` |
 
 </details>
@@ -529,7 +532,7 @@ third-party resources, including NuGet packages and files under `/addons/` and `
 their respective licenses and are subject to their respective authors' or copyright holders' terms. The chat's profanity
 filter uses David Sojevic's [profanity-list](https://github.com/dsojevic/profanity-list) (MIT; see
 `/Common/Text/ProfanityList.LICENSE.txt`), with `allow_partial` set on entries that misfire inside ordinary words. It's
-stored encoded, so its terms aren't readable in the source; see `/.github/scripts/profanity-list.sh`. Chat nametag
+stored compressed, so its terms aren't readable in the source; see `/.github/scripts/profanity-list.sh`. Chat nametag
 colors use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
 
 ---

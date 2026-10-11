@@ -1,14 +1,15 @@
 using System.IO.Compression;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Serilog;
 
 namespace EnsembleRoot.Common.Text;
 
 /// <summary>
-///     Masks profanity in text (e.g., chat messages) with "#" characters, or replaces the text with
-///     <see cref="Redacted" /> if nothing else would remain. Thread-safe.
+///     Masks profanity in text (e.g., chat messages) with <see cref="Mask" /> characters, or replaces the text with
+///     <see cref="Redacted" /> if nothing else would remain (or <see cref="Failed" /> if matching times out).
+///     Thread-safe.
 /// </summary>
 /// <remarks>
 ///     Uses David Sojevic's English profanity-list (MIT; see ProfanityList.LICENSE.txt), matching case-insensitively
@@ -17,17 +18,19 @@ namespace EnsembleRoot.Common.Text;
 ///     ordinary words (e.g., "class" or "grape"); those only match as words, optionally inflected. Each entry's
 ///     exceptions (e.g., "sp*" for "sparse") are honored.
 ///     <para>
-///         The list is embedded GZip-compressed and Base64-encoded, so its terms can't be read or searched in the
-///         source. Convert it with .github/scripts/profanity-list.sh.
+///         The list is embedded GZip-compressed, so its terms can't be read or searched in the source. Convert it
+///         with .github/scripts/profanity-list.sh.
 ///     </para>
 /// </remarks>
 public static class ProfanityFilter
 {
+	// ReSharper disable once MemberCanBePrivate.Global
+	public const char Mask = '#';
+
 	public const string Redacted = "<Redacted>";
+	public const string Failed = "<Filter Error>";
 
-	private const char Mask = '#';
-
-	private const string ListResourceName = "EnsembleRoot.Common.Text.ProfanityList.gz.b64";
+	private const string ListResourceName = "EnsembleRoot.Common.Text.ProfanityList.json.gz";
 	private const string CoreGroup = "core";
 
 	private const string WordStart = @"(?<![\p{L}\p{N}])";
@@ -56,9 +59,23 @@ public static class ProfanityFilter
 
 	private static readonly Lazy<Entry[]> Entries = new(Load);
 
+	/// <summary>Loads the list on the thread pool, so the first <see cref="Censor" /> call doesn't stall.</summary>
+	public static void Preload() =>
+		_ = Task.Run(static () =>
+		{
+			try
+			{
+				_ = Entries.Value;
+			}
+			catch (Exception exception)
+			{
+				Log.Error(exception, "Failed to load the profanity list");
+			}
+		});
+
 	/// <summary>
 	///     Masks the profanity in <paramref name="text" />, or returns <see cref="Redacted" /> if no letter or digit
-	///     would remain unmasked (or if matching times out).
+	///     would remain unmasked, or <see cref="Failed" /> if matching times out.
 	/// </summary>
 	public static string Censor(string text)
 	{
@@ -83,9 +100,10 @@ public static class ProfanityFilter
 					censored.AsSpan(start, end - start).Fill(Mask);
 				}
 		}
-		catch (RegexMatchTimeoutException)
+		catch (RegexMatchTimeoutException exception)
 		{
-			return Redacted;
+			Log.Warning(exception, "Profanity filter timed out (Length={Length})", text.Length);
+			return Failed;
 		}
 
 		if (censored is null)
@@ -107,12 +125,9 @@ public static class ProfanityFilter
 
 	private static Entry[] Load()
 	{
-		using var base64 =
+		using var compressed =
 			typeof(ProfanityFilter).Assembly.GetManifestResourceStream(ListResourceName) ??
 			throw new InvalidOperationException($"Embedded resource {ListResourceName} not found.");
-
-		using var compressed = new CryptoStream(
-			base64, new FromBase64Transform(FromBase64TransformMode.IgnoreWhiteSpaces), CryptoStreamMode.Read);
 
 		using var json = new GZipStream(compressed, CompressionMode.Decompress);
 		using var document = JsonDocument.Parse(json);

@@ -36,17 +36,25 @@ public partial class UpdateChecker : Node, IAutoload
 	private static bool TryParseVersion(string? text, out Version version) =>
 		Version.TryParse(text?.TrimStart('v', 'V'), out version!);
 
+	// Runs on the thread pool, unobserved, and dialogs can fail (e.g., without a dialog tool on Linux)
 	private static void Offer(Version latest, Version current, string url)
 	{
-		var response = TinyDialogs.MessageBox(
-			"Ensemble Update Available",
-			Main.SanitizeMessageBoxBody(
-				$"Ensemble v{latest} is available (you have v{current}).\n\n" +
-				"Open its release page to download it?\nYou will not be asked again for this version."),
-			MessageBoxDialogType.YesNo, MessageBoxIconType.Question, MessageBoxButton.Yes);
+		try
+		{
+			var response = TinyDialogs.MessageBox(
+				"Ensemble Update Available",
+				Main.SanitizeMessageBoxBody(
+					$"Ensemble v{latest} is available (you have v{current}).\n\n" +
+					"Open its release page to download it?\nYou will not be asked again for this version."),
+				MessageBoxDialogType.YesNo, MessageBoxIconType.Question, MessageBoxButton.Yes);
 
-		if (response is MessageBoxButton.Yes)
-			Callable.From(() => OS.ShellOpen(url)).CallDeferred();
+			if (response is MessageBoxButton.Yes)
+				Callable.From(() => OS.ShellOpen(url)).CallDeferred();
+		}
+		catch (Exception exception)
+		{
+			Log.Warning(exception, "Failed to offer update v{Latest}", latest);
+		}
 	}
 
 	private async Task CheckAsync()

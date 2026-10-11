@@ -51,9 +51,9 @@
                         <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-2">
                             <StackPanel Spacing="4">
                                 <CheckBox
-                                    Content="Filter Profanity"
-                                    IsChecked="{Binding IsFilterEnabled}"
-                                    ToolTip.Tip="Masks profanity in everyone's messages. (Host only)"
+                                    Content="Profanity Filter"
+                                    IsChecked="{Binding IsProfanityFilterEnabled}"
+                                    ToolTip.Tip="Masks profanity in chat and replaces inappropriate player names. (Host only)"
                                     IsVisible="{Binding IsHost}" />
 
                                 <CheckBox

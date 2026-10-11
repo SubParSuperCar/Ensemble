@@ -54,8 +54,9 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - [ ] (L) Dynamic instance replication - placed blocks sync + authority model
 - (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction + occupant/owner checks done
 - [x] (S) Text chat - Text Chat widget (opens in multiplayer, `/` to type, Roblox-style nametag colors, join / leave
-  notices, unread count in the drawer), chat action with a host-toggled profanity filter (masks with `#`, or
-  `<Redacted>` if nothing else remains), late-join history snapshot, optional per-session file logs, and Lua functions
+  notices, unread count in the drawer), chat action with the host's profanity filter (masks with `#`, or `<Redacted>` if
+  nothing else remains), late-join history snapshot, optional per-session file logs, and Lua functions
+- [x] (S) Profanity filter - host-chosen (remembered), masks chat profanity and replaces inappropriate display names
 - [ ] (M) Chat bubbles over players
 - [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override), kicking
   occupants (owner or host), and Player List context menus for kicking peers

@@ -47,7 +47,7 @@ public static partial class LuaExecutor
 		var pitch = context.GetArgumentOrDefault(3, 1f);
 		var volume = context.GetArgumentOrDefault(4, 1f);
 
-		TextToSpeech.Speak(text, culture, rate, pitch, volume);
+		TextToSpeech.Speak(text, culture, rate, pitch, volume, cancellationToken);
 
 		return context.ReturnNothing();
 	}

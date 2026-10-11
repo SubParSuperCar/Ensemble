@@ -77,8 +77,8 @@ public sealed partial class DocFileViewModel : ViewModelBase
 					file.Name, source, stopwatch.Elapsed.TotalMilliseconds);
 			});
 		}
+		// Nothing observes this task, so every failure ends here
 		catch (Exception exception)
-			when (exception is HttpRequestException or IOException or OperationCanceledException)
 		{
 			if (!token.IsCancellationRequested)
 				Log.Error(exception, "Failed to load {FileName} from {Uri}", file.Name, file.Uri);

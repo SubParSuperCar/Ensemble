@@ -16,10 +16,17 @@ public sealed partial class JoinConfigViewModel : ViewModelBase
 	{
 		_navigator = navigator;
 
+		if (SessionPreferences.JoinEndPoint is { } endPoint)
+		{
+			Address = endPoint.Host;
+			Port = endPoint.Port;
+			Code = endPoint.ToString();
+		}
+
 		GSessionManager.SessionFailed += OnSessionFailed;
 	}
 
-	[ObservableProperty] public partial bool IsCodeMethod { get; set; }
+	[ObservableProperty] public partial bool IsCodeMethod { get; set; } = SessionPreferences.IsJoinByCode;
 
 	[ObservableProperty] public partial string? Address { get; set; }
 	[ObservableProperty] public partial decimal? Port { get; set; }
@@ -54,7 +61,10 @@ public sealed partial class JoinConfigViewModel : ViewModelBase
 		}
 
 		Status = "Joining\u2026";
+
 		SessionPreferences.DisplayName = DisplayName ?? string.Empty;
+		SessionPreferences.JoinEndPoint = new HostEndPoint(address, port);
+		SessionPreferences.IsJoinByCode = IsCodeMethod;
 
 		GSessionManager.JoinMultiPlayer(address, port, Password, DisplayName);
 	}

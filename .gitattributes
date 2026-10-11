@@ -1,5 +1,6 @@
 * text=auto eol=lf
 *.cmd text eol=crlf
+*.gz binary
 
 addons/** linguist-vendored
 Estragonia/** linguist-vendored

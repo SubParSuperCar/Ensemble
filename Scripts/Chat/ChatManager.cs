@@ -1,7 +1,9 @@
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Audio;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Players;
 using Godot;
@@ -11,22 +13,18 @@ using Serilog;
 namespace EnsembleRoot.Scripts.Chat;
 
 /// <summary>
-///     Keeps the current session's chat: its latest <see cref="MaxHistoryCount" /> messages, oldest first, and whether
-///     the host filters profanity. Optionally appends messages to a plain-text file per session in
-///     <see cref="ChatLogDir" />, up to <see cref="MaxLogFileBytes" />, and reads new messages aloud.
+///     Keeps the current session's chat: its latest <see cref="MaxHistoryCount" /> messages, oldest first. Optionally
+///     appends messages to a plain-text file per session in <see cref="ChatLogDir" />, up to
+///     <see cref="MaxLogFileBytes" />, and reads new messages aloud.
 /// </summary>
 /// <remarks>
-///     Messages and filter changes arrive as network actions, and late joiners receive the history as a snapshot (see
-///     Replication). When hosting, the filter starts as <see cref="FilterOverride" />, if set, or
-///     <see cref="IsFilterPreferred" />.
+///     Messages arrive as network actions, and late joiners receive the history as a snapshot (see Replication). The
+///     host's profanity filter masks them first (see <see cref="Profanity.ProfanityFilterManager" />).
 /// </remarks>
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Standard, FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class ChatManager : Node, IAutoload
 {
-	[Signal]
-	public delegate void FilterEnabledChangedEventHandler(bool isEnabled);
-
 	[Signal]
 	public delegate void MessageAddedEventHandler(ChatMessage message);
 
@@ -34,7 +32,6 @@ public partial class ChatManager : Node, IAutoload
 	public const long MaxLogFileBytes = 4 * 1024 * 1024;
 
 	private const string Section = "chat";
-	private const string IsFilterPreferredKey = "filter_enabled";
 	private const string IsFileLoggingEnabledKey = "log_to_file";
 	private const string IsTtsEnabledKey = "tts_enabled";
 
@@ -44,20 +41,15 @@ public partial class ChatManager : Node, IAutoload
 	private bool _isTtsEnabled;
 	private StreamWriter? _log;
 
+	// Never disposed: waiting utterances still read its token on the speech thread, and it has no timer to release
+	private CancellationTokenSource _speechCts = new();
+
+	[GeneratedRegex("#{2,}", RegexOptions.None, RegexMatchTimeoutMs)]
+	private static partial Regex MaskRunRegex { get; }
+
 	public static ChatManager? Instance { get; private set; }
 
 	public IReadOnlyCollection<ChatMessage> Messages => _messages;
-	public bool IsFilterEnabled { get; private set; }
-
-	/// <summary>Whether to filter profanity when hosting. Persisted.</summary>
-	public static bool IsFilterPreferred
-	{
-		get => UserData.GetValue(Section, IsFilterPreferredKey, true).AsBool();
-		set => UserData.SetValue(Section, IsFilterPreferredKey, value);
-	}
-
-	/// <summary>Overrides <see cref="IsFilterPreferred" /> without persisting it (e.g., from user args).</summary>
-	public static bool? FilterOverride { get; set; }
 
 	/// <summary>Whether to append messages to a file per session in <see cref="ChatLogDir" />. Persisted.</summary>
 	public bool IsFileLoggingEnabled
@@ -83,7 +75,7 @@ public partial class ChatManager : Node, IAutoload
 			UserData.SetValue(Section, IsTtsEnabledKey, value);
 
 			if (!value)
-				TextToSpeech.Silence();
+				StopSpeech();
 		}
 	}
 
@@ -96,7 +88,6 @@ public partial class ChatManager : Node, IAutoload
 		// Dedicated hosts share the user data but have no listener
 		_isTtsEnabled = !Main.IsHeadlessServer && UserData.GetValue(Section, IsTtsEnabledKey, false).AsBool();
 
-		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
 
 		GPlayers.Added += OnPlayerAdded;
@@ -105,13 +96,13 @@ public partial class ChatManager : Node, IAutoload
 
 	public override void _ExitTree()
 	{
-		GSessionManager.SessionStarted -= OnSessionStarted;
 		GSessionManager.SessionStopped -= OnSessionStopped;
 
 		GPlayers.Added -= OnPlayerAdded;
 		GPlayers.Removed -= OnPlayerRemoved;
 
 		CloseLog();
+		StopSpeech();
 
 		if (ReferenceEquals(Instance, this))
 			Instance = null;
@@ -119,7 +110,7 @@ public partial class ChatManager : Node, IAutoload
 
 	public Array<ChatMessage> GetAllMessages() => [.. _messages];
 
-	/// <summary>Adds a message, reading it aloud unless it's <paramref name="isHistory" /> from before joining.</summary>
+	/// <summary>Adds a message, reading it aloud unless it predates joining (<paramref name="isHistory" />).</summary>
 	internal void Add(ChatMessage message, bool isHistory = false)
 	{
 		if (_messages.Count >= MaxHistoryCount)
@@ -129,27 +120,9 @@ public partial class ChatManager : Node, IAutoload
 		WriteToLog(message);
 
 		if (IsTtsEnabled && !isHistory)
-			TextToSpeech.Speak(message.IsNotice ? message.Text : $"{message.SenderName} said: {message.Text}");
+			TextToSpeech.Speak(ToSpeech(message), token: _speechCts.Token);
 
 		EmitSignal(SignalName.MessageAdded, message);
-	}
-
-	internal void SetFilterEnabled(bool isEnabled, bool announce)
-	{
-		if (IsFilterEnabled == isEnabled)
-			return;
-
-		IsFilterEnabled = isEnabled;
-		EmitSignal(SignalName.FilterEnabledChanged, isEnabled);
-
-		if (announce)
-			Add(new ChatMessage { Text = $"The host turned the profanity filter {(isEnabled ? "on" : "off")}." });
-	}
-
-	private void OnSessionStarted()
-	{
-		if (GSessionManager.IsServer)
-			SetFilterEnabled(FilterOverride ?? IsFilterPreferred, false);
 	}
 
 	// Only while active, so neither players registered while joining (the roster and the local player) nor the
@@ -169,7 +142,7 @@ public partial class ChatManager : Node, IAutoload
 	private void OnSessionStopped()
 	{
 		_messages.Clear();
-		SetFilterEnabled(false, false);
+		StopSpeech();
 
 		CloseLog();
 		_isLogStopped = false;
@@ -216,6 +189,12 @@ public partial class ChatManager : Node, IAutoload
 		return new StreamWriter(path, true, new UTF8Encoding(false)) { AutoFlush = true };
 	}
 
+	private void StopSpeech()
+	{
+		_speechCts.Cancel();
+		_speechCts = new CancellationTokenSource();
+	}
+
 	private void StopLog()
 	{
 		_isLogStopped = true;
@@ -226,5 +205,18 @@ public partial class ChatManager : Node, IAutoload
 	{
 		_log?.Dispose();
 		_log = null;
+	}
+
+	// Masks would be read aloud symbol by symbol, and placeholders with their brackets
+	private static string ToSpeech(ChatMessage message)
+	{
+		if (message.IsNotice)
+			return message.Text;
+
+		var text = message.Text is ProfanityFilter.Redacted or ProfanityFilter.Failed
+			? message.Text[1..^1]
+			: MaskRunRegex.Replace(message.Text, string.Empty);
+
+		return $"{message.SenderName} said: {text}";
 	}
 }

@@ -84,8 +84,9 @@ public sealed class UpnpPortMapping(int port) : IAsyncDisposable
 					Log.Warning("Failed to renew UPnP port mapping (Port={Port}, Result={Result})", port, result);
 			}
 		}
-		catch (OperationCanceledException) when (token.IsCancellationRequested) { }
-		catch (InvalidOperationException exception) when (!token.IsCancellationRequested)
+		// Nothing observes this task, and failures after closing (e.g., a slow discovery's) no longer matter
+		catch (Exception) when (token.IsCancellationRequested) { }
+		catch (InvalidOperationException exception)
 		{
 			Log.Warning(exception, "Failed to forward UDP port {Port} via UPnP", port);
 			Failed?.Invoke(exception.Message);

@@ -39,7 +39,7 @@ public static class ProfanityFilter
 
 	private const RegexOptions PatternOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
-	private static readonly TimeSpan MatchTimeout = TimeSpan.FromMilliseconds(100);
+	private static readonly TimeSpan MatchTimeout = TimeSpan.FromMilliseconds(RegexMatchTimeoutMs);
 
 	private static readonly Dictionary<char, string> Substitutes = new()
 	{

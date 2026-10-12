@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Utils;
 using Godot;
 using Serilog;
 using TinyDialogsNet;
@@ -197,9 +198,8 @@ public partial class Main : Node
 
 		Log.Debug("Queued children to be freed. Awaiting children removal...");
 
-		// Rider flags awaiting ToSignal as an error; it is a known false positive
 		while (tree.Root.GetChildCount() > 1 || GetChildCount() > 0)
-			await ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+			await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame).ConfigureAwait(true);
 
 		Console.WriteLine("All children removed. Quitting the application...");
 		tree.Quit();
@@ -209,10 +209,12 @@ public partial class Main : Node
 	{
 		// TODO: Await a readiness signal (if one exists) instead of a magic number of frames
 		// Testing showed that the Avalonia UI takes exactly 3 frames to appear, for unclear reasons.
+		var renderingServer = RenderingServer.Singleton;
+
 		for (var i = 0; i < 3; i++)
 		{
 			RenderingServer.ForceDraw();
-			await ToSignal(RenderingServer.Singleton, RenderingServer.SignalName.FramePostDraw);
+			await renderingServer.ToSignalAsync(RenderingServer.SignalName.FramePostDraw).ConfigureAwait(true);
 		}
 
 		CallDeferred(nameof(Load));

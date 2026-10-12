@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using EnsembleRoot.Scripts.Chat;
 using EnsembleRoot.Sessions.Actions;
@@ -43,7 +44,8 @@ public readonly record struct KickOccupantAction(string PlayerId) : INetworkActi
 		var name = GPlayers.GetPlayer(PlayerId)?.Name;
 
 		GPlots.SetPlot(PlayerId, None);
-		GChatManager.Add(new ChatMessage { Text = $"{name} was kicked from plot {plotId}." });
+		GChatManager.Add(new ChatMessage
+			{ Text = string.Create(CultureInfo.InvariantCulture, $"{name} was kicked from plot {plotId}.") });
 	}
 
 	[ModuleInitializer]

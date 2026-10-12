@@ -91,7 +91,9 @@ public static partial class LuaExecutor
 		}
 
 		var start = Stopwatch.GetTimestamp();
+#pragma warning disable MA0166
 		await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken).ConfigureAwait(true);
+#pragma warning restore MA0166
 
 		return context.Return(Stopwatch.GetElapsedTime(start).TotalSeconds);
 	}

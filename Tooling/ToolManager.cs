@@ -1,6 +1,6 @@
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Input;
-using EnsembleRoot.Scripts.Plots;
+using EnsembleRoot.Scripts.Plots.Impl;
 using EnsembleRoot.Tooling.Tools;
 using Godot;
 using Serilog;
@@ -25,7 +25,6 @@ public partial class ToolManager : Node, IAutoload
 		private set
 		{
 			field = value;
-
 			Log.Debug(
 				"{Class}.{Member} set (Hash={Hash})", nameof(ToolManager), nameof(Instance), value?.GetHashCode());
 		}

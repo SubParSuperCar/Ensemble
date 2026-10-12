@@ -1,6 +1,3 @@
-#if !ENSEMBLE_DEBUG
-using System.Diagnostics;
-#endif
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Common.Input;
@@ -9,6 +6,9 @@ using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Messages;
 using EnsembleRoot.Ui.Impl.Services;
 using Godot;
+#if !ENSEMBLE_DEBUG
+using System.Diagnostics;
+#endif
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -37,6 +37,7 @@ public sealed partial class StatViewModel : ViewModelBase
 	protected override void OnDispose()
 	{
 		_dispatcher.UiProcess -= OnUiProcess;
+
 #if !ENSEMBLE_DEBUG
 		_process.Dispose();
 #endif

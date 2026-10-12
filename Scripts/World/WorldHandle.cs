@@ -37,6 +37,10 @@ public partial class WorldHandle : Node3D
 	}
 
 #if ENSEMBLE_DEBUG
+	private const int TestPlotId = 2;
+
+	private static readonly Vector3 HalfCell = Vector3.One * 0.5f;
+
 	// Places every asset in a ring on a test plot (radius = asset count, snapped to cell centers) and adds fake players
 	private static void AddTestData()
 	{
@@ -56,10 +60,5 @@ public partial class WorldHandle : Node3D
 		GPlayers.Add(string.Empty, "Bar - Diet Dr. Thunder Enjoyer (Test)");
 		GPlayers.Add(string.Empty, "Baz - Dr. Jr. (Test)");
 	}
-#endif
-#if ENSEMBLE_DEBUG
-	private const int TestPlotId = 2;
-
-	private static readonly Vector3 HalfCell = Vector3.One * 0.5f;
 #endif
 }

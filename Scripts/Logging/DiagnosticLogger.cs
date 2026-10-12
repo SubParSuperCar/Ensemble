@@ -72,7 +72,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		);
 
 		Add(entries, "Build Comp.",
-#if EXPORT && !ENSEMBLE_JIT
+#if ENSEMBLE_AOT
 			"Native Ahead-Of-Time (AOT)"
 #else
 			"Just-In-Time (JIT)"
@@ -80,6 +80,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		);
 
 		Add(entries, "Build Version", GameVersion);
+		Add(entries, "Build Commit", GameCommit);
 		Add(entries, "Build Time", BuildInfo.BuildTime);
 
 		if (OperatingSystem.IsLinux())

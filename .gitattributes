@@ -2,5 +2,6 @@
 *.cmd text eol=crlf
 *.gz binary
 
+# Don't count vendored resources towards GitHub language statistics
 addons/** linguist-vendored
 Estragonia/** linguist-vendored

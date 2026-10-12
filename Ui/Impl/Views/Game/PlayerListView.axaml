@@ -93,9 +93,9 @@
 
                 <Button
                     Grid.Column="1"
-                    Content="Copy"
+                    Content="Copy Join Code"
                     Command="{Binding CopyJoinCodeCommand}"
-                    ToolTip.Tip="Copies the join code to the clipboard."
+                    ToolTip.Tip="Copies the join code (your public address and port) to the clipboard."
                     Padding="6,0"
                     FontSize="12"
                     IsVisible="{Binding JoinCode, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

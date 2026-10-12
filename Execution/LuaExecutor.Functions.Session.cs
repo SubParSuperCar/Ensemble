@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using EnsembleRoot.Common.Networking;
+using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Sessions.Actions;
@@ -27,13 +29,13 @@ public static partial class LuaExecutor
 	private static ValueTask<int> dmp_chat(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var manager = GChatManager;
+		var messages = manager.Messages.Select(static message => string.Create(
+			CultureInfo.InvariantCulture, $"[{message.UtcPostedAt.ToLocalTime():HH:mm:ss}] {message}"));
 
 		Log.Information(
-			"Chat: {Count} message(s) (IsFileLoggingEnabled={IsFileLoggingEnabled}, IsTtsEnabled={IsTtsEnabled})",
-			manager.Messages.Count, manager.IsFileLoggingEnabled, manager.IsTtsEnabled);
-
-		foreach (var message in manager.Messages)
-			Log.Information("{$Message}", message.ToDict());
+			"Chat: {Count} message(s) (IsFileLoggingEnabled={IsFileLoggingEnabled}, IsTtsEnabled={IsTtsEnabled})\n" +
+			"{Messages}",
+			manager.Messages.Count, manager.IsFileLoggingEnabled, manager.IsTtsEnabled, string.Join('\n', messages));
 
 		return context.ReturnNothing();
 	}
@@ -41,21 +43,33 @@ public static partial class LuaExecutor
 	private static ValueTask<int> dmp_peers(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var manager = GSessionManager;
+		var peers = manager.Peers.Values.OrderBy(static peer => peer.Id).Select(static peer => peer.ToDict());
 
 		Log.Information(
 			"Session: {Mode} (Version={Version}, Port={Port}, HasPassword={HasPassword}, IsDedicated={IsDedicated}, " +
 			"PortMapping={PortMapping}, IsProfanityFilterEnabled={IsProfanityFilterEnabled}, " +
-			"IsProfanityFilterPreferred={IsProfanityFilterPreferred})",
+			"IsProfanityFilterPreferred={IsProfanityFilterPreferred})\n{Peers}",
 			manager.Mode, GameVersion, manager.Port, manager.HasPassword, manager.IsDedicated,
-			manager.PortMappingState, GProfanityFilterManager.IsEnabled, ProfanityFilterManager.IsPreferred);
-
-		foreach (var peer in manager.Peers.Values.OrderBy(static peer => peer.Id))
-			Log.Information("{$Peer}", peer.ToDict());
+			manager.PortMappingState, GProfanityFilterManager.IsEnabled, ProfanityFilterManager.IsPreferred,
+			string.Join('\n', peers));
 
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> kick(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	private static ValueTask<int> kick_occupant(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var query = context.GetArgument<string>(0);
+
+		if (FindPlayer(query) is { } player)
+			new KickOccupantAction(player.Id).Submit();
+		else
+			Log.Error("Player with id or name {Query} not found", query);
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> kick_peer(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		GSessionManager.Kick(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
 
@@ -65,11 +79,14 @@ public static partial class LuaExecutor
 	private static ValueTask<int> log_lan_ip4_addr(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
+		// Only the adapter facing the LAN has a gateway; virtual ones (e.g., Docker bridges) can also report Ethernet
 		var address = NetworkInterface.GetAllNetworkInterfaces()
 			.Where(static adapter =>
 				adapter.OperationalStatus is OperationalStatus.Up &&
 				adapter.NetworkInterfaceType is NetworkInterfaceType.Ethernet or NetworkInterfaceType.Wireless80211)
-			.SelectMany(static adapter => adapter.GetIPProperties().UnicastAddresses)
+			.Select(static adapter => adapter.GetIPProperties())
+			.Where(static properties => properties.GatewayAddresses.Count > 0)
+			.SelectMany(static properties => properties.UnicastAddresses)
 			.Select(static unicast => unicast.Address)
 			.FirstOrDefault(static ip => ip.AddressFamily is AddressFamily.InterNetwork && !IPAddress.IsLoopback(ip));
 
@@ -144,4 +161,10 @@ public static partial class LuaExecutor
 
 		return context.ReturnNothing();
 	}
+
+	/// <summary>Finds a player by ID or display name.</summary>
+	private static GdPlayer? FindPlayer(string query) =>
+		GPlayers.GetAll().FirstOrDefault(player =>
+			string.Equals(player.Id, query, StringComparison.Ordinal) ||
+			string.Equals(player.Name, query, StringComparison.Ordinal));
 }

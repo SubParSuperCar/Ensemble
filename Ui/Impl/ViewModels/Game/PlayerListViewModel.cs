@@ -70,7 +70,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 		PortMappingStatus = manager.PortMappingState switch
 		{
 			PortMappingState.Pending => "UPnP\u2026",
-			PortMappingState.Open => JoinCode is null ? "UPnP OK" : $"Join Code: {JoinCode}",
+			PortMappingState.Open => "UPnP OK",
 			PortMappingState.Failed => "UPnP Failed",
 			_ => null
 		};
@@ -82,7 +82,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 				? string.Create(
 					CultureInfo.InvariantCulture,
 					$"UDP port {port} forwarded, but the router did not report its address.")
-				: "Share this with players outside your network.",
+				: "Share the join code with players outside your network. It's hidden, since it contains your IP.",
 			PortMappingState.Failed => string.Create(
 				CultureInfo.InvariantCulture,
 				$"{manager.PortMappingError}\nForward UDP port {port} manually to host over the internet."),

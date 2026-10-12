@@ -7,13 +7,23 @@ namespace EnsembleRoot.Saving.SerDes;
 
 /// <remarks>
 ///     Counts are stored plus one, and floats must be finite, so all-zero and all-one values (the most likely
-///     corruption) are rejected.
+///     corruption) are rejected. Counts and string lengths are also bounded, so a malicious save can't exhaust memory.
+///     <para>
+///         <see cref="FormatVersion" /> versions this binary layout, and <see cref="CreationSaveData.Version" /> the
+///         content (e.g., what asset IDs mean): bump the former to change the layout, keeping a reader per old one, and
+///         the latter to migrate loaded data. Instance IDs aren't saved, so they can change freely; asset IDs can't.
+///     </para>
 /// </remarks>
 public sealed class BinarySaveSerializer : ISaveSerializer
 {
 	private const byte FormatVersion = 0;
 	private const int MaxPreallocatedCount = 1 << 12;
+	private const int MaxInstanceCount = 1 << 20;
 	private const int MaxPropertyCount = ushort.MaxValue - 2;
+	private const int MaxKeyByteCount = 256;
+
+	// Like Godot's Quaternion.IsNormalized(), which validates placements
+	private const float NormalizedTolerance = 1 / 1024f;
 
 	private static ReadOnlySpan<byte> Magic => "ENSB"u8;
 
@@ -26,6 +36,10 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 		writer.Write(data.Version);
 		writer.Write(data.UtcCreatedAt.UtcTicks);
+
+		if (data.Instances.Count > MaxInstanceCount)
+			throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture, $"Saves support at most {MaxInstanceCount} instances."));
 
 		writer.Write(data.Instances.Count + 1);
 
@@ -51,7 +65,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			throw new InvalidDataException("Invalid creation time.");
 
 		var instanceCount = reader.ReadInt32();
-		if (instanceCount-- <= 0)
+		if (instanceCount-- <= 0 || instanceCount > MaxInstanceCount)
 			throw new InvalidDataException("Invalid instance count.");
 
 		var save = new CreationSaveData
@@ -95,7 +109,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 		foreach (var (key, value) in properties)
 		{
-			writer.Write(key);
+			CoreVariantSerializer.WriteString(writer, key, MaxKeyByteCount);
 			CoreVariantSerializer.Write(writer, value);
 		}
 	}
@@ -116,7 +130,9 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		{
 			AssetId = assetId,
 			Position = position,
-			Rotation = rotation,
+			Rotation = MathF.Abs(rotation.LengthSquared() - 1f) < NormalizedTolerance
+				? rotation
+				: Quaternion.Normalize(rotation),
 			Properties = ReadProperties(reader)
 		};
 	}
@@ -135,7 +151,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 		for (var i = 0; i < propertyCount; i++)
 		{
-			var key = reader.ReadString();
+			var key = CoreVariantSerializer.ReadString(reader, MaxKeyByteCount);
 			var value = CoreVariantSerializer.Read(reader);
 
 			if (!properties.TryAdd(key, value))

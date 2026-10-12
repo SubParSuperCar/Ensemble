@@ -1,4 +1,4 @@
-#if EXPORT && !ENSEMBLE_JIT
+#if ENSEMBLE_AOT
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace EnsembleRoot.Scripts.Plots;
+namespace EnsembleRoot.Scripts.Plots.Impl;
 
 /// <summary>
 ///     Decides which plot outlines show: a hovered plot (white) takes precedence over the local plot's active tool

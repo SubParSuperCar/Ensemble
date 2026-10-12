@@ -1,3 +1,4 @@
+using System.Reflection;
 using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -34,4 +35,11 @@ public static class Constants
 
 	/// <remarks>Also the multi-player handshake version: peers must match exactly.</remarks>
 	public static string GameVersion => field ??= ProjectSettings.GetSetting("application/config/version").AsString();
+
+	/// <summary>The source commit, which the SDK appends to the informational version (e.g., 1.0.0+abc123).</summary>
+	public static string GameCommit { get; } =
+		typeof(Constants).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+			.Split('+') is [_, var commit]
+			? commit
+			: "Unknown";
 }

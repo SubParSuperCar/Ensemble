@@ -6,6 +6,7 @@ using static EnsembleRoot.Sessions.Actions.ActionValidation;
 
 namespace EnsembleRoot.Replication.Actions;
 
+// TODO: Add a bounded bulk variant with MultiSelector, with a token cost that scales with its count
 public readonly record struct RemoveInstanceAction(InstanceReference Instance) : INetworkAction<RemoveInstanceAction>
 {
 	public static RemoveInstanceAction FromPayload(Array<Variant> payload) =>

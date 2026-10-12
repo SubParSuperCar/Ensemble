@@ -59,7 +59,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - [x] (S) Profanity filter - host-chosen (remembered), masks chat profanity and replaces inappropriate display names
 - [ ] (M) Chat bubbles over players
 - [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override), kicking
-  occupants (owner or host), and Player List context menus for kicking peers
+  occupants (owner or host; `KickOccupantAction` and `kick_occupant` done), and Player List context menus for kicking
+  peers
 - [ ] (L) Physics replication - plot-owner authority, possibly over custom RPCs
 
 ## Gameplay / content

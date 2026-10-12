@@ -26,6 +26,7 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 	public PortMappingState PortMappingState { get; private set; }
 	public string ExternalAddress { get; private set; } = string.Empty;
 	public string PortMappingError { get; private set; } = string.Empty;
+
 	public event Action? PortMappingChanged;
 
 	public SessionMode Mode => SessionMode.MultiPlayer;

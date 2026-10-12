@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Utils;
 using Godot;
@@ -14,7 +15,10 @@ namespace EnsembleRoot;
 /// </summary>
 public partial class Main : Node
 {
+	private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(3);
+
 	private bool _isQuitting;
+	private bool _isShutDown;
 
 	public static Main? Instance { get; private set; }
 
@@ -198,8 +202,23 @@ public partial class Main : Node
 
 		Log.Debug("Queued children to be freed. Awaiting children removal...");
 
+		// Doesn't rely on this method resuming, so a stuck teardown can't keep the game open (the logger is gone)
+		tree.CreateTimer(ShutdownTimeout.TotalSeconds, true, false, true).Timeout += () =>
+		{
+			if (_isShutDown)
+				return;
+
+			Console.Error.WriteLine(string.Create(
+				CultureInfo.InvariantCulture,
+				$"Shutdown didn't finish within {ShutdownTimeout.TotalSeconds} s. Quitting anyway..."));
+
+			tree.Quit();
+		};
+
 		while (tree.Root.GetChildCount() > 1 || GetChildCount() > 0)
-			await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame).ConfigureAwait(true);
+			await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame);
+
+		_isShutDown = true;
 
 		Console.WriteLine("All children removed. Quitting the application...");
 		tree.Quit();
@@ -214,7 +233,7 @@ public partial class Main : Node
 		for (var i = 0; i < 3; i++)
 		{
 			RenderingServer.ForceDraw();
-			await renderingServer.ToSignalAsync(RenderingServer.SignalName.FramePostDraw).ConfigureAwait(true);
+			await renderingServer.ToSignalAsync(RenderingServer.SignalName.FramePostDraw);
 		}
 
 		CallDeferred(nameof(Load));

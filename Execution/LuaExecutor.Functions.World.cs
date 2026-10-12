@@ -190,7 +190,7 @@ public static partial class LuaExecutor
 
 			for (var last = Stopwatch.GetTimestamp(); Stopwatch.GetElapsedTime(start).TotalSeconds < seconds;)
 			{
-				await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame).ConfigureAwait(true);
+				await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame);
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var now = Stopwatch.GetTimestamp();

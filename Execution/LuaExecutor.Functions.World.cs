@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.World;
 using EnsembleRoot.Sessions.Api;
@@ -189,7 +190,7 @@ public static partial class LuaExecutor
 
 			for (var last = Stopwatch.GetTimestamp(); Stopwatch.GetElapsedTime(start).TotalSeconds < seconds;)
 			{
-				await tree.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+				await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame).ConfigureAwait(true);
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var now = Stopwatch.GetTimestamp();

@@ -12,7 +12,7 @@
     <Border BorderBrush="GreenYellow" BorderThickness="1.5">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.0625*" MinWidth="448" />
+                <ColumnDefinition Width="1.5*" MinWidth="448" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" MinWidth="384" />
             </Grid.ColumnDefinitions>

@@ -5,7 +5,8 @@
 [![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
 
 A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12. This project is created
-and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
+and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar). New here? Start with the
+[**introduction**](./INTRODUCTION.md), written for players and developers alike.
 
 <img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made w/ Inkscape)" alt="Ensemble's Icon">
 
@@ -336,20 +337,22 @@ sequenceDiagram
     M-->>G: AutoloadsReady
 ```
 
-| Order          | Autoload           | Scope    | Role                                             |
-|----------------|--------------------|----------|--------------------------------------------------|
-| `First`        | `Logger`           | all      | Serilog setup and sinks                          |
-| `Early`        | `GdCore`           | all      | Owns the Core instance and its Godot wrappers    |
-| `Early + 1`    | `SessionManager`   | all      | Single-player / host / join sessions, peers, RPC |
-| `Early + 2`    | `PlayerSync`       | all      | Mirrors session peers as GdCore players          |
-| `Early + 3`    | `ToolManager`      | client   | Creates and gates tools                          |
-| `Standard`     | `ExeHasher`        | all      | Logs the executable's path, size, and hash       |
-| `Standard + 1` | `DiscordRpc`       | client   | Discord Rich Presence                            |
-| `Standard + 2` | `DiagnosticLogger` | all      | Logs a system report in the background           |
-| `Late`         | `WorldManager`     | all      | Instantiates the world scene                     |
-| `Late + 1`     | `UpdateChecker`    | client   | Checks GitHub for newer releases                 |
-| `Late + 1`     | `HeadlessSession`  | headless | Starts a dedicated server session                |
-| `Last`         | `Watchdog`         | all      | Detects main-thread stalls                       |
+| Order          | Autoload                 | Scope    | Role                                             |
+|----------------|--------------------------|----------|--------------------------------------------------|
+| `First`        | `Logger`                 | all      | Serilog setup and sinks                          |
+| `Early`        | `GdCore`                 | all      | Owns the Core instance and its Godot wrappers    |
+| `Early + 1`    | `SessionManager`         | all      | Single-player / host / join sessions, peers, RPC |
+| `Early + 2`    | `PlayerSync`             | all      | Mirrors session peers as GdCore players          |
+| `Early + 3`    | `ToolManager`            | client   | Creates and gates tools                          |
+| `Standard`     | `ChatManager`            | all      | Chat history, logs, and read-aloud               |
+| `Standard`     | `ExeHasher`              | all      | Logs the executable's path, size, and hash       |
+| `Standard`     | `ProfanityFilterManager` | all      | The host's profanity filter for chat and names   |
+| `Standard + 1` | `DiscordRpc`             | client   | Discord Rich Presence                            |
+| `Standard + 2` | `DiagnosticLogger`       | all      | Logs a system report in the background           |
+| `Late`         | `WorldManager`           | all      | Instantiates the world scene                     |
+| `Late + 1`     | `UpdateChecker`          | client   | Checks GitHub for newer releases                 |
+| `Late + 1`     | `HeadlessSession`        | headless | Starts a dedicated server session                |
+| `Last`         | `Watchdog`               | all      | Detects main-thread stalls                       |
 
 </details>
 
@@ -520,6 +523,7 @@ Available functions:
 | `GCore`, `GAssets`, `GPlots`, `GPlayers`          | `GdCore` and its wrappers              |
 | `GSessionManager`                                 | The `SessionManager` autoload          |
 | `GChatManager`                                    | The `ChatManager` autoload             |
+| `GProfanityFilterManager`                         | The `ProfanityFilterManager` autoload  |
 | `GPlotManager`, `GAssetManager`, `GPlayerManager` | Scene managers in `Scripts`            |
 | `GToolManager`                                    | The `ToolManager` autoload             |
 | `GTimeProvider`                                   | Wrapped `TimeProvider` (testable time) |

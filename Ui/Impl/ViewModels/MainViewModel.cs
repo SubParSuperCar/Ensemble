@@ -148,8 +148,11 @@ public sealed partial class MainViewModel : ViewModelBase
 		// Sync the appearance to the main UI
 		var fontFamily = app.FindResource("Font") as FontFamily ?? FontFamily.Default;
 		var fontSize = app.FindResource("FontSize") as double? ?? 16d;
-		var accent = app.FindResource("HighlightBrush") as ISolidColorBrush ??
-					 (ISolidColorBrush)app.FindResource("PrimaryBrush")!;
+
+		var accent =
+			app.FindResource("HighlightBrush") as ISolidColorBrush ??
+			(ISolidColorBrush)app.FindResource("PrimaryBrush")!;
+
 		var selectionBrush = app.FindResource("ThemeAccentBrush3") as IBrush ?? new SolidColorBrush(accent.Color, 0.4);
 
 		// TODO: Consider adding support for translucent terminal windows. Estragonia is likely the limiting factor.

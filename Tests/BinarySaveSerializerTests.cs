@@ -57,6 +57,50 @@ public sealed class BinarySaveSerializerTests
 		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
 	}
 
+	[Fact]
+	public void Deserialize_UnnormalizedRotation_IsNormalized()
+	{
+		var data = CreateSaveData();
+		data.Instances[0] = new SaveInstance { AssetId = 1, Rotation = new Quaternion(0f, 0f, 0f, 2f) };
+
+		var instance = Serializer.Deserialize(new MemoryStream(Serialize(data))).Instances[0];
+
+		Assert.Equal(Quaternion.Identity, instance.Rotation);
+	}
+
+	[Fact]
+	public void Serialize_OversizedKey_Throws()
+	{
+		var data = CreateSaveData();
+		data.Instances[0] = new SaveInstance
+		{
+			AssetId = 1,
+			Rotation = Quaternion.Identity,
+			Properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { [new string('k', 257)] = 1 }
+		};
+
+		Assert.Throws<InvalidOperationException>(() => Serialize(data));
+	}
+
+	[Fact]
+	public void Deserialize_OversizedStringLength_Throws()
+	{
+		var data = CreateSaveData();
+		data.Instances[0] = new SaveInstance
+		{
+			AssetId = 1,
+			Rotation = Quaternion.Identity,
+			Properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { ["k"] = "v" }
+		};
+
+		var bytes = Serialize(data);
+
+		// Swaps the value's one-byte length prefix for a 7-bit-encoded length of 2 MiB - 1
+		byte[] corrupted = [.. bytes[..^2], 0xFF, 0xFF, 0x7F, .. bytes[^1..]];
+
+		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(corrupted)));
+	}
+
 	private static byte[] Serialize(CreationSaveData data)
 	{
 		using var stream = new MemoryStream();

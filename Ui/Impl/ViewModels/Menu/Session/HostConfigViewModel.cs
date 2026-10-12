@@ -43,6 +43,7 @@ public sealed partial class HostConfigViewModel : ViewModelBase
 	private void Host()
 	{
 		Status = null;
+
 		SessionPreferences.DisplayName = DisplayName ?? string.Empty;
 		SessionPreferences.IsUpnpEnabled = IsUpnpEnabled;
 		SessionPreferences.HostPort = (int?)Port;

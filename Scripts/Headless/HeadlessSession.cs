@@ -11,7 +11,8 @@ namespace EnsembleRoot.Scripts.Headless;
 /// <summary>
 ///     Hosts a dedicated session, or joins one as a client, from user args, e.g.:
 ///     <c lang="shell">--headless -- --port=7777 --password=abc --max-clients=8 --upnp --profanity-filter=false</c> or
-///     <c lang="shell">--headless -- --join=127.0.0.1:7777 --password=abc --name=Bot</c>.
+///     <c lang="shell">--headless -- --join=127.0.0.1:7777 --password=abc --name=Bot</c>. Each arg also has a short
+///     form (see <see cref="ArgAliases" />), e.g., <c lang="shell">--p=7777 --pw=abc</c>.
 /// </summary>
 [GlobalClass]
 [Autoload(
@@ -20,13 +21,29 @@ namespace EnsembleRoot.Scripts.Headless;
 	FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class HeadlessSession : Node, IAutoload
 {
+	private static readonly Dictionary<string, string> ArgAliases = new(StringComparer.OrdinalIgnoreCase)
+	{
+		["j"] = "join",
+		["mc"] = "max-clients",
+		["n"] = "name",
+		["p"] = "port",
+		["pf"] = "profanity-filter",
+		["pw"] = "password",
+		["u"] = "upnp"
+	};
+
 	public void Initialize()
 	{
 		var args = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 		foreach (var arg in OS.GetCmdlineUserArgs())
-			if (arg.Split('=', 2) is [var key, .. var rest])
-				args[key.TrimStart('-')] = rest is [var value] ? value : string.Empty;
+		{
+			if (arg.Split('=', 2) is not [var key, .. var rest])
+				continue;
+
+			var name = key.TrimStart('-');
+			args[ArgAliases.GetValueOrDefault(name, name)] = rest is [var value] ? value : string.Empty;
+		}
 
 		GSessionManager.SessionFailed += OnSessionFailed;
 

@@ -4,43 +4,49 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
+	// Shown by help(); "?" marks optional parameters, and "|" separates alternatives
+	private static readonly (LuaFunction Function, string Parameters)[] Functions =
+	[
+		(new LuaFunction(nameof(add_rand_insts), add_rand_insts), "plot_id, count"),
+		(new LuaFunction(nameof(cap_fps), cap_fps), "fps?"),
+		(new LuaFunction(nameof(chat), chat), "message"),
+		(new LuaFunction(nameof(clr_insts), clr_insts), "plot_id"),
+		(new LuaFunction(nameof(clr_log), clr_log), ""),
+		(new LuaFunction(nameof(dmp_asm_info), dmp_asm_info), ""),
+		(new LuaFunction(nameof(dmp_chat), dmp_chat), ""),
+		(new LuaFunction(nameof(dmp_env), dmp_env), ""),
+		(new LuaFunction(nameof(dmp_inp_map), dmp_inp_map), ""),
+		(new LuaFunction(nameof(dmp_peers), dmp_peers), ""),
+		(new LuaFunction(nameof(dmp_vsync_modes), dmp_vsync_modes), ""),
+		(new LuaFunction(nameof(gc), gc), ""),
+		(new LuaFunction(nameof(help), help), ""),
+		(new LuaFunction(nameof(kick_occupant), kick_occupant), "player"),
+		(new LuaFunction(nameof(kick_peer), kick_peer), "peer_id, reason?"),
+		(new LuaFunction(nameof(log_lan_ip4_addr), log_lan_ip4_addr), ""),
+		(new LuaFunction(nameof(log_wan_ip4_addr), log_wan_ip4_addr), ""),
+		(new LuaFunction(nameof(perf_mod), perf_mod), ""),
+		(new LuaFunction(nameof(print), print), "..."),
+		(new LuaFunction(nameof(quit), quit), "force?"),
+		(new LuaFunction(nameof(restart), restart), ""),
+		(new LuaFunction(nameof(set_chat_log_on), set_chat_log_on), "is_on"),
+		(new LuaFunction(nameof(set_chat_tts_on), set_chat_tts_on), "is_on"),
+		(new LuaFunction(nameof(set_clock_offset), set_clock_offset), "seconds?"),
+		(new LuaFunction(nameof(set_profanity_filter_on), set_profanity_filter_on), "is_on"),
+		(new LuaFunction(nameof(set_sky_time), set_sky_time), "hours?"),
+		(new LuaFunction(nameof(set_static_shader_on), set_static_shader_on), "is_on"),
+		(new LuaFunction(nameof(set_ui_dark_theme_on), set_ui_dark_theme_on), "is_on?"),
+		(new LuaFunction(nameof(set_ui_scale), set_ui_scale), "scale"),
+		(new LuaFunction(nameof(set_vsync_mode), set_vsync_mode), "mode"),
+		(new LuaFunction(nameof(stress_test), stress_test), "plot_id, count?, seconds?"),
+		(new LuaFunction(nameof(tp_char), tp_char), "player? | x, y, z"),
+		(new LuaFunction(nameof(tts), tts), "text, culture?, rate?, pitch?, volume?"),
+		(new LuaFunction(nameof(wait), wait), "seconds?")
+	];
+
 	private static void InjectCustomFunctions(LuaTable env)
 	{
-		#region Function Registrations
-
-		env[nameof(add_rand_insts)] = new LuaFunction(add_rand_insts);
-		env[nameof(cap_fps)] = new LuaFunction(cap_fps);
-		env[nameof(chat)] = new LuaFunction(chat);
-		env[nameof(clr_insts)] = new LuaFunction(clr_insts);
-		env[nameof(clr_log)] = new LuaFunction(clr_log);
-		env[nameof(dmp_asm_info)] = new LuaFunction(dmp_asm_info);
-		env[nameof(dmp_chat)] = new LuaFunction(dmp_chat);
-		env[nameof(dmp_env)] = new LuaFunction(dmp_env);
-		env[nameof(dmp_inp_map)] = new LuaFunction(dmp_inp_map);
-		env[nameof(dmp_peers)] = new LuaFunction(dmp_peers);
-		env[nameof(dmp_vsync_modes)] = new LuaFunction(dmp_vsync_modes);
-		env[nameof(gc)] = new LuaFunction(gc);
-		env[nameof(help)] = new LuaFunction(help);
-		env[nameof(kick)] = new LuaFunction(kick);
-		env[nameof(log_lan_ip4_addr)] = new LuaFunction(log_lan_ip4_addr);
-		env[nameof(log_wan_ip4_addr)] = new LuaFunction(log_wan_ip4_addr);
-		env[nameof(perf_mod)] = new LuaFunction(perf_mod);
-		env[nameof(print)] = new LuaFunction(print);
-		env[nameof(quit)] = new LuaFunction(quit);
-		env[nameof(restart)] = new LuaFunction(restart);
-		env[nameof(set_chat_log_on)] = new LuaFunction(set_chat_log_on);
-		env[nameof(set_chat_tts_on)] = new LuaFunction(set_chat_tts_on);
-		env[nameof(set_profanity_filter_on)] = new LuaFunction(set_profanity_filter_on);
-		env[nameof(set_static_shader_on)] = new LuaFunction(set_static_shader_on);
-		env[nameof(set_time)] = new LuaFunction(set_time);
-		env[nameof(set_ui_dark_theme_on)] = new LuaFunction(set_ui_dark_theme_on);
-		env[nameof(set_ui_scale)] = new LuaFunction(set_ui_scale);
-		env[nameof(set_vsync_mode)] = new LuaFunction(set_vsync_mode);
-		env[nameof(tp_char)] = new LuaFunction(tp_char);
-		env[nameof(tts)] = new LuaFunction(tts);
-		env[nameof(wait)] = new LuaFunction(wait);
-
-		#endregion
+		foreach (var (function, _) in Functions)
+			env[function.Name] = function;
 	}
 
 	extension(LuaFunctionExecutionContext context)

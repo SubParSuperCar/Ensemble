@@ -1,4 +1,8 @@
 <linker>
+  <assembly fullname="EnsembleGame">
+    <type fullname="EnsembleRoot.Scripts.Logging.Impl.Hooks" preserve="all"/>
+  </assembly>
+
   <assembly fullname="EnsembleEstragonia" preserve="all"/>
 
   <assembly fullname="Avalonia.Skia" preserve="all"/>
@@ -12,8 +16,4 @@
 
   <assembly fullname="BogaNet.TTS" preserve="all"/>
   <assembly fullname="DiscordRPC" preserve="all"/>
-
-  <assembly fullname="EnsembleGame">
-    <type fullname="EnsembleRoot.Scripts.Logging.Impl.Hooks" preserve="all"/>
-  </assembly>
 </linker>

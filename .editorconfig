@@ -5,9 +5,11 @@ charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 
+# XML-like, excluding Avalonia XAML
 [*.{slnx,csproj,props,xml}]
 indent_size = 2
 
+# Source code
 [*.{cs,gd,gdshader,gdshaderinc}]
 indent_style = tab
 indent_size = 4

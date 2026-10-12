@@ -1,5 +1,6 @@
 using System.Globalization;
 using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Scripts.Plots.Impl;
 using Godot;
 using Serilog;
 

@@ -1,4 +1,5 @@
-Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.
+Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.<br>
+https://github.com/SubParSuperCar/Ensemble
 
 Copyright (c) 2026-present Elliot Grimm, also known as SubParSuperCar and NoodleSnake.
 

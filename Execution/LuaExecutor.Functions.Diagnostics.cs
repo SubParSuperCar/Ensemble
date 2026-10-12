@@ -1,12 +1,15 @@
 using System.Diagnostics;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Text;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Common.Utils;
 using Godot;
 using Lua;
 using Serilog;
+using Environment = System.Environment;
 
 // ReSharper disable InconsistentNaming
-// ReSharper disable SwitchStatementHandlesSomeKnownEnumValuesWithDefault
 
 namespace EnsembleRoot.Execution;
 
@@ -14,6 +17,7 @@ public static partial class LuaExecutor
 {
 	private static ValueTask<int> clr_log(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
+		// Deferred so the Lua executor return log message is cleared too
 		Callable.From(VolatileLogHistorySink.Clear).CallDeferred();
 
 		return context.ReturnNothing();
@@ -27,6 +31,11 @@ public static partial class LuaExecutor
 			.ToArray();
 
 		Log.Information(
+			"Game: v{Version} (Commit={Commit}, BuildTime={BuildTime}, Compilation={Compilation}, Runtime={Runtime})",
+			GameVersion, GameCommit, BuildInfo.BuildTime, RuntimeFeature.IsDynamicCodeSupported ? "JIT" : "AOT",
+			Environment.Version);
+
+		Log.Information(
 			"Loaded assemblies ({Count}):\n{Assemblies}",
 			assemblyNames.Length, string.Join('\n', assemblyNames.Select(static name => $"~~> {name}")));
 
@@ -35,8 +44,10 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> dmp_env(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		Log.Information("Contents of _ENV:");
-		DumpTable(context.State.Environment, "_ENV", []);
+		var lines = new StringBuilder();
+		DumpTable(lines, context.State.Environment, "_ENV", []);
+
+		Log.Information("Contents of _ENV:\n{Contents}", lines.ToString().TrimEnd());
 
 		return context.ReturnNothing();
 	}
@@ -44,17 +55,18 @@ public static partial class LuaExecutor
 	private static ValueTask<int> dmp_inp_map(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var actions = InputMap.GetActions().Select(static action => action.ToString()).Order(StringComparer.Ordinal);
-
-		Log.Information("Contents of InputMap:");
+		var lines = new StringBuilder();
 
 		foreach (var action in actions)
 		{
-			Log.Information("{Action}:", action);
+			lines.Append(action).Append(":\n");
 
 			var index = 1;
 			foreach (var @event in InputMap.ActionGetEvents(action))
-				Log.Information("{Index}. {Event}", index++, @event.AsText());
+				lines.Append(CultureInfo.InvariantCulture, $"{index++}. {@event.AsText()}\n");
 		}
+
+		Log.Information("Contents of InputMap:\n{Contents}", lines.ToString().TrimEnd());
 
 		return context.ReturnNothing();
 	}
@@ -84,15 +96,10 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> help(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var env = new LuaTable();
-		InjectCustomFunctions(env);
+		var functions = Functions.Select(static entry => $"-> {entry.Function.Name}({entry.Parameters})");
 
-		var functions = env
-			.Where(static entry => entry.Value.Type is LuaValueType.Function)
-			.Select(static entry => $"-> {entry.Key.Read<string>()}")
-			.Order(StringComparer.Ordinal);
-
-		Log.Information("Custom injected functions in _ENV:\n{Functions}", string.Join('\n', functions));
+		Log.Information(
+			"Custom functions (\"?\" = optional, \"|\" = or):\n{Functions}", string.Join('\n', functions));
 
 		return context.ReturnNothing();
 	}
@@ -104,49 +111,30 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static void DumpTable(LuaTable table, string path, HashSet<LuaTable> visited)
+	private static void DumpTable(StringBuilder lines, LuaTable table, string path, HashSet<LuaTable> visited)
 	{
 		visited.Add(table);
 
 		foreach (var (luaKey, luaValue) in table.OrderBy(static entry => entry.Key.ToString(), StringComparer.Ordinal))
 		{
 			var childPath = luaKey.Type is LuaValueType.Number ? $"{path}[{luaKey}]" : $"{path}.{luaKey}";
+			var childTable = luaValue.Type is LuaValueType.Table ? luaValue.Read<LuaTable>() : null;
+			var isNewTable = childTable is not null && !visited.Contains(childTable);
 
-			switch (luaValue.Type)
+			var value = luaValue.Type switch
 			{
-				case LuaValueType.Table:
-					var childTable = luaValue.Read<LuaTable>();
+				LuaValueType.Table => isNewTable ? "<table>" : "<already visited>",
+				LuaValueType.Function => "<function>",
+				LuaValueType.UserData => "<userdata>",
+				LuaValueType.Thread => "<thread>",
+				LuaValueType.String => $"\"{EscapeString(luaValue.Read<string>())}\"",
+				_ => luaValue.ToString()
+			};
 
-					if (visited.Contains(childTable))
-						Log.Information("{Path} = <already visited>", childPath);
-					else
-					{
-						Log.Information("{Path} = <table>", childPath);
-						DumpTable(childTable, childPath, visited);
-					}
+			lines.Append(childPath).Append(" = ").Append(value).Append('\n');
 
-					break;
-
-				case LuaValueType.Function:
-					Log.Information("{Path} = <function>", childPath);
-					break;
-
-				case LuaValueType.UserData:
-					Log.Information("{Path} = <userdata>", childPath);
-					break;
-
-				case LuaValueType.Thread:
-					Log.Information("{Path} = <thread>", childPath);
-					break;
-
-				case LuaValueType.String:
-					Log.Information("{Path} = \"{Value}\"", childPath, EscapeString(luaValue.Read<string>()));
-					break;
-
-				default:
-					Log.Information("{Path} = {Value}", childPath, luaValue);
-					break;
-			}
+			if (isNewTable)
+				DumpTable(lines, childTable!, childPath, visited);
 		}
 	}
 

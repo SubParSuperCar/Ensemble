@@ -60,8 +60,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 
 	private void UpdateOutput()
 	{
-		var minimumLevel = MinimumLevel;
-		var entries = VolatileLogHistorySink.History.Where(entry => entry.Level >= minimumLevel);
+		var entries = VolatileLogHistorySink.History.Where(entry => entry.Level >= MinimumLevel);
 		var text = string.Join('\n', entries.Select(static entry => entry.Text));
 
 		Output = text.Length is 0 ? "<Empty>" : text;

@@ -18,6 +18,7 @@ public static class SaveConverter
 
 			foreach (var (key, value) in instance.Properties.All)
 			{
+				// Only write properties that differ from the defaults for efficiency
 				if (value == defaults[key])
 					continue;
 

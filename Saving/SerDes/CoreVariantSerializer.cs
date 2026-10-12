@@ -1,9 +1,13 @@
+using System.Globalization;
+using System.Text;
 using EnsembleCoreRoot.Api.Assets;
 
 namespace EnsembleRoot.Saving.SerDes;
 
 internal static class CoreVariantSerializer
 {
+	private const int MaxStringByteCount = 64 * 1024;
+
 	public static CoreVariant Read(BinaryReader reader)
 	{
 		var type = (CoreVariantType)reader.ReadByte();
@@ -14,9 +18,20 @@ internal static class CoreVariantSerializer
 			CoreVariantType.Boolean => new CoreVariant(reader.ReadBoolean()),
 			CoreVariantType.Int64 => new CoreVariant(reader.ReadInt64()),
 			CoreVariantType.Double => new CoreVariant(reader.ReadDouble()),
-			CoreVariantType.String => new CoreVariant(reader.ReadString()),
+			CoreVariantType.String => new CoreVariant(ReadString(reader, MaxStringByteCount)),
 			_ => throw new InvalidDataException($"Unsupported variant type: {type}.")
 		};
+	}
+
+	/// <summary>Reads a string written by <see cref="WriteString" />, up to a byte count.</summary>
+	public static string ReadString(BinaryReader reader, int maxByteCount)
+	{
+		var byteCount = reader.Read7BitEncodedInt();
+		if (byteCount < 0 || byteCount > maxByteCount)
+			throw new InvalidDataException("Invalid string length.");
+
+		var bytes = reader.ReadBytes(byteCount);
+		return bytes.Length == byteCount ? Encoding.UTF8.GetString(bytes) : throw new EndOfStreamException();
 	}
 
 	public static void Write(BinaryWriter writer, CoreVariant variant)
@@ -41,11 +56,21 @@ internal static class CoreVariantSerializer
 				break;
 
 			case CoreVariantType.String:
-				writer.Write((string)variant);
+				WriteString(writer, (string)variant, MaxStringByteCount);
 				break;
 
 			default:
 				throw new InvalidOperationException($"Unsupported variant type: {variant.Type}.");
 		}
+	}
+
+	/// <summary>Writes a string like <see cref="BinaryWriter.Write(string)" />, up to a byte count.</summary>
+	public static void WriteString(BinaryWriter writer, string value, int maxByteCount)
+	{
+		if (Encoding.UTF8.GetByteCount(value) > maxByteCount)
+			throw new InvalidOperationException(
+				string.Create(CultureInfo.InvariantCulture, $"String exceeds {maxByteCount} UTF-8 bytes."));
+
+		writer.Write(value);
 	}
 }

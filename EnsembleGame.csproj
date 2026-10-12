@@ -36,8 +36,9 @@
     <TrimMode>full</TrimMode>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(EnsembleJit)' == 'true'">
-    <DefineConstants>$(DefineConstants);ENSEMBLE_JIT</DefineConstants>
+  <!-- Only release exports are NativeAOT; everything else, including debug exports, is JIT-compiled -->
+  <PropertyGroup Condition="'$(Configuration)' == 'ExportRelease' And '$(EnsembleJit)' != 'true'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_AOT</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
@@ -131,15 +132,20 @@
     </Reference>
   </ItemGroup>
 
+  <!-- Published beside the executable, for the in-game document viewer -->
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)LICENSE.md" CopyToPublishDirectory="PreserveNewest"/>
     <None Include="$(MSBuildThisFileDirectory).github/LICENSE-*.txt" CopyToPublishDirectory="PreserveNewest">
       <Link>.github/%(Filename)%(Extension)</Link>
     </None>
-    <None Include="Common/Text/ProfanityList.LICENSE.txt"/>
+  </ItemGroup>
+
+  <!-- Shown in the IDE only -->
+  <ItemGroup>
     <None Include="**/*.gd;**/*.gdshader;**/*.gdshaderinc;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
+    <None Include="Common/Text/ProfanityList.LICENSE.txt"/>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>
   </ItemGroup>
 
@@ -159,7 +165,12 @@
     <EmbeddedResource Remove="Tests/**"/>
   </ItemGroup>
 
-  <Target Name="GenerateBuildInfo" BeforeTargets="BeforeCompile">
+  <!-- Regenerated only when the build's inputs change, so up-to-date builds don't recompile for a new time -->
+  <Target
+    Name="GenerateBuildInfo"
+    Inputs="@(Compile);@(AvaloniaXaml);@(ReferencePath);$(MSBuildAllProjects)"
+    Outputs="$(IntermediateOutputPath)BuildInfo.g.cs">
+
     <PropertyGroup>
       <BuildTime>$([System.DateTime]::UtcNow.ToString("yyyy-MM-dd HH:mm:ss UTC"))</BuildTime>
     </PropertyGroup>
@@ -172,7 +183,9 @@
     </ItemGroup>
 
     <WriteLinesToFile File="$(IntermediateOutputPath)BuildInfo.g.cs" Lines="@(BuildInfoLines)" Overwrite="true"/>
+  </Target>
 
+  <Target Name="IncludeBuildInfo" BeforeTargets="BeforeCompile" DependsOnTargets="GenerateBuildInfo">
     <ItemGroup>
       <Compile Include="$(IntermediateOutputPath)BuildInfo.g.cs"/>
     </ItemGroup>

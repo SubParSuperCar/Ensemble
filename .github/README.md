@@ -100,19 +100,22 @@ Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone mus
 - **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`), and
   optionally set a password and a client limit. Share your address with joining players:
     - **Same network (LAN):** run `log_lan_ip4_addr()` in the console (`` ` `` / `F9`).
-    - **Over the internet:** keep *Auto Forward Port (UPnP)* checked, and share the join code shown under the player
-      list (`Tab`). If your router has UPnP disabled, or is behind another NAT (e.g., CGNAT), forward the UDP port
-      manually and share the address from `log_wan_ip4_addr()` instead.
+    - **Over the internet:** keep *Auto Forward Port (UPnP)* checked, then copy the join code from under the player list
+      (`Tab`; it isn't shown, since it contains your public IP address) and share it. If your router has UPnP disabled,
+      or is behind another NAT (e.g., CGNAT), forward the UDP port manually and share the address from
+      `log_wan_ip4_addr()` instead.
 - **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address (or host name) and
   port, or a single `<address>:<port>` code.
 - **Dedicated server:** run the executable headless with user arguments, e.g.,
   `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port, or
-  `--profanity-filter=false` to turn off the profanity filter).
+  `--profanity-filter=false` to turn off the profanity filter). Every argument has a short form, e.g.,
+  `--p=7777 --pw=abc` (`j`, `mc`, `n`, `p`, `pf`, `pw`, and `u`).
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
 and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove one using
-`kick(peer_id, "reason")`. Display names are remembered between sessions. The host has authority over the session: they
-can clear any plot they occupy, and their chat messages bypass the profanity filter.
+`kick_peer(peer_id, "reason")`, and kick players off plots with `kick_occupant("name or id")`, which plot owners can
+also use on their own plots. Display names are remembered between sessions. The host has authority over the session:
+they can clear any plot they occupy, and their chat messages bypass the profanity filter.
 
 Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored per
 display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive the
@@ -440,15 +443,16 @@ through the optional `IPortMappingSession` capability) or `OfflineSession` (sing
 plugged in through `SessionManager.StartSession(ISession)`. In single-player, the same path runs locally, with the
 player acting as the server.
 
-| Action                     | Effect                                        |
-|----------------------------|-----------------------------------------------|
-| `SetPlotAction`            | Claims or releases a plot for the sender      |
-| `AddInstanceAction`        | Places an asset instance on the sender's plot |
-| `RemoveInstanceAction`     | Deletes an instance                           |
-| `SetPropertiesAction`      | Changes an instance's properties              |
-| `ClearInstancesAction`     | Removes every instance on a plot              |
-| `SendChatMessageAction`    | Posts a chat message (filtered by the host)   |
-| `SetProfanityFilterAction` | Toggles the profanity filter (host only)      |
+| Action                     | Effect                                           |
+|----------------------------|--------------------------------------------------|
+| `SetPlotAction`            | Claims or releases a plot for the sender         |
+| `AddInstanceAction`        | Places an asset instance on the sender's plot    |
+| `RemoveInstanceAction`     | Deletes an instance                              |
+| `SetPropertiesAction`      | Changes an instance's properties                 |
+| `ClearInstancesAction`     | Removes every instance on a plot                 |
+| `KickOccupantAction`       | Removes a player from their plot (owner or host) |
+| `SendChatMessageAction`    | Posts a chat message (filtered by the host)      |
+| `SetProfanityFilterAction` | Toggles the profanity filter (host only)         |
 
 </details>
 
@@ -490,16 +494,18 @@ CommunityToolkit.Mvvm:
 <details>
   <summary><b>Lua Console</b></summary>
 
-The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in-game for details. Available functions:
+The in-game console runs Lua through `LuaExecutor.ExecuteAsync`. Run `help()` in-game for each function's parameters.
+Available functions:
 
-| Group       | Functions                                                                                |
-|-------------|------------------------------------------------------------------------------------------|
-| App         | `quit`, `restart`, `tts`, `wait`                                                         |
-| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`               |
-| Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`   |
-| Session     | `chat`, `dmp_chat`, `dmp_peers`, `kick`, `log_lan_ip4_addr`, `log_wan_ip4_addr`,         |
-|             | `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`                          |
-| World       | `add_rand_insts`, `clr_insts`, `perf_mod`, `set_static_shader_on`, `set_time`, `tp_char` |
+| Group       | Functions                                                                              |
+|-------------|----------------------------------------------------------------------------------------|
+| App         | `quit`, `restart`, `set_clock_offset`, `tts`, `wait`                                   |
+| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`             |
+| Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode` |
+| Session     | `chat`, `dmp_chat`, `dmp_peers`, `kick_occupant`, `kick_peer`, `log_lan_ip4_addr`,     |
+|             | `log_wan_ip4_addr`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`    |
+| World       | `add_rand_insts`, `clr_insts`, `perf_mod`, `set_sky_time`, `set_static_shader_on`,     |
+|             | `stress_test`, `tp_char`                                                               |
 
 </details>
 

@@ -15,7 +15,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class GameViewModel : ViewModelBase
 {
-	private static readonly StringName TogglePlayerListAction = "ui_toggle_player_list";
+	private static readonly StringName TogglePlayerListAction = "ui_player_list_toggle";
 
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;

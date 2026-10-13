@@ -35,9 +35,15 @@ public partial class ToolManager : Node, IAutoload
 	public ConstructTool Construct => Get<ConstructTool>();
 	public DestructTool Destruct => Get<DestructTool>();
 
+	public MultiSelector Selector { get; } = new();
+
 	private static bool CanEnableTools => IsLocalPlotSpawned is false;
 
-	public void Initialize() => IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
+	public void Initialize()
+	{
+		Selector.Initialize();
+		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
+	}
 
 	/// <summary>Raised for every tool, so observers need not create tools just to watch them.</summary>
 	public event Action<ToolBase, bool>? ToolIsEnabledChanged;
@@ -46,6 +52,7 @@ public partial class ToolManager : Node, IAutoload
 
 	public override void _ExitTree()
 	{
+		Selector.Dispose();
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 
 		if (ReferenceEquals(Instance, this))
@@ -119,8 +126,11 @@ public partial class ToolManager : Node, IAutoload
 
 	private void OnIsLocalPlotSpawnedChanged(bool? _)
 	{
-		if (!CanEnableTools)
-			DisableAll();
+		if (CanEnableTools)
+			return;
+
+		DisableAll();
+		Selector.Clear();
 	}
 
 	private void DisableAll(ToolBase? exception = null)

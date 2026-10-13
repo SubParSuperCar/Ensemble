@@ -10,6 +10,8 @@ public abstract partial class ToolBase : Node
 
 	public abstract Color ThemeColor { get; }
 
+	protected MultiSelector Selector => _control.Selector;
+
 	public void Enable() => _control.RequestEnable();
 	public void Disable() => _control.RequestDisable();
 

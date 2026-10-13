@@ -17,6 +17,7 @@ internal static class ToolCommon
 	private const string SoundBus = "master";
 
 	public static readonly StringName TriggerAction = "tool_trigger";
+	public static readonly StringName SelectionToggleAction = "tool_selection_toggle";
 
 	private static readonly NodePath SoundManagerPath = "SoundManager";
 	private static readonly StringName PlayMethod = "play";

@@ -16,6 +16,8 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Raycast collision mask - hit World only, ignore characters
     - [x] (S) "Clear All" toolbar button - visible only with DestructTool on, owner, not spawned; disabled at 0
       instances; double-click to confirm; disables DestructTool after use
+    - [x] (M) Multi-selection - `Shift`-click to toggle, click a selected instance to delete them all, bulk
+      `RemoveInstancesAction` (up to 256, token cost scales with count)
     - [ ] (S) Finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
 - ConstructTool / CtorTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
@@ -27,8 +29,8 @@ The tool suite, in rough intended order of implementation.
 - [ ] TextureTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
-- [ ] (M) MultiSelector - shared multi-selection state across tools (deferred)
-- [ ] (M) Marquee Selector UI - Shift+drag to box-select, Ctrl to toggle-select, Baja Builders parity (deferred)
+- [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
+- [ ] (M) Marquee Selector UI - drag to box-select, Shift+drag to toggle-select, Baja Builders parity (deferred)
 
 ## Multiplayer / replication
 

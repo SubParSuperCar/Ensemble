@@ -9,7 +9,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed class MenuViewModel : ViewModelBase
 {
-	private static readonly StringName BackAction = "ui_back";
+	private static readonly StringName BackAction = "ui_menu_back";
 
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceScope _scope;

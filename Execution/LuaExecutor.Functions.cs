@@ -7,6 +7,7 @@ public static partial class LuaExecutor
 	// Shown by help(); "?" marks optional parameters, and "|" separates alternatives
 	private static readonly (LuaFunction Function, string Parameters)[] Functions =
 	[
+		(new LuaFunction(nameof(add_inst), add_inst), "asset_id, x?, y?, z?, rx?, ry?, rz?"),
 		(new LuaFunction(nameof(add_rand_insts), add_rand_insts), "plot_id, count"),
 		(new LuaFunction(nameof(cap_fps), cap_fps), "fps?"),
 		(new LuaFunction(nameof(chat), chat), "message"),
@@ -16,6 +17,7 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(dmp_chat), dmp_chat), ""),
 		(new LuaFunction(nameof(dmp_env), dmp_env), ""),
 		(new LuaFunction(nameof(dmp_inp_map), dmp_inp_map), ""),
+		(new LuaFunction(nameof(dmp_insts), dmp_insts), ""),
 		(new LuaFunction(nameof(dmp_peers), dmp_peers), ""),
 		(new LuaFunction(nameof(dmp_vsync_modes), dmp_vsync_modes), ""),
 		(new LuaFunction(nameof(gc), gc), ""),
@@ -28,9 +30,11 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(print), print), "..."),
 		(new LuaFunction(nameof(quit), quit), "force?"),
 		(new LuaFunction(nameof(restart), restart), ""),
+		(new LuaFunction(nameof(rm_insts), rm_insts), "instance_id, ..."),
 		(new LuaFunction(nameof(set_chat_log_on), set_chat_log_on), "is_on"),
 		(new LuaFunction(nameof(set_chat_tts_on), set_chat_tts_on), "is_on"),
 		(new LuaFunction(nameof(set_clock_offset), set_clock_offset), "seconds?"),
+		(new LuaFunction(nameof(set_inst_prop), set_inst_prop), "instance_id, key, value"),
 		(new LuaFunction(nameof(set_profanity_filter_on), set_profanity_filter_on), "is_on"),
 		(new LuaFunction(nameof(set_sky_time), set_sky_time), "hours?"),
 		(new LuaFunction(nameof(set_static_shader_on), set_static_shader_on), "is_on"),
@@ -51,8 +55,11 @@ public static partial class LuaExecutor
 
 	extension(LuaFunctionExecutionContext context)
 	{
+		// An explicit nil skips an optional argument, too
 		private T GetArgumentOrDefault<T>(int index, T fallback = default!) =>
-			context.HasArgument(index) ? context.GetArgument<T>(index) : fallback;
+			context.HasArgument(index) && context.GetArgument<LuaValue>(index).Type is not LuaValueType.Nil
+				? context.GetArgument<T>(index)
+				: fallback;
 
 		private ValueTask<int> ReturnNothing() => new(context.Return());
 	}

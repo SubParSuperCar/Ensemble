@@ -8,9 +8,8 @@ uniform vec3 tint : source_color = vec3(1.0);
 
 void fragment()
 {
-	vec3 d = face_distances(local_position);
-
-	float line = max(edge_mask(max(d.y, d.z)), max(edge_mask(max(d.x, d.z)), edge_mask(max(d.x, d.y))));
+	vec3 lines = edge_masks(face_distances(local_position));
+	float line = max(lines.x, max(lines.y, lines.z));
 
 	ALBEDO = tint;
 	ALPHA = FRONT_FACING ? mix(face_alpha, 1.0, line) : line;

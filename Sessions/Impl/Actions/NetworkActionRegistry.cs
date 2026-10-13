@@ -26,6 +26,9 @@ public static class NetworkActionRegistry
 			throw new InvalidOperationException($"Action with id {actionId} is already registered.");
 	}
 
+	public static void Submit<TAction>(this TAction action) where TAction : INetworkAction<TAction> =>
+		GSessionManager.Submit(action);
+
 	internal static int GetTokenCost(string actionId, Array<Variant> payload) =>
 		EntriesByActionId.TryGetValue(actionId, out var entry)
 			? Math.Max(entry.GetCost(payload), DefaultTokenCost)
@@ -69,11 +72,6 @@ public static class NetworkActionRegistry
 
 		action.Apply(source);
 		return validation;
-	}
-
-	extension<TAction>(TAction action) where TAction : INetworkAction<TAction>
-	{
-		public void Submit() => GSessionManager.Submit(action);
 	}
 
 	private delegate ActionValidation ExecuteHandler(ref Array<Variant> payload, ActionSource source, bool isHost);

@@ -50,6 +50,7 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		GPlots.Removed -= OnPlotRemoved;
 
 		LocalPlotChanged -= OnLocalPlotChanged;
+
 		GSessionManager.ActionRejected -= OnActionRejected;
 
 		foreach (var unsubscribe in _unsubscribeByPlotId.Values)

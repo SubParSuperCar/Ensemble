@@ -233,7 +233,9 @@ public partial class ConstructTool : ToolBase
 		return anchor;
 	}
 
-	/// <summary>Moves a box resting against the hit surface to the nearest free spot, grid-aligned while snapping.</summary>
+	/// <summary>
+	///     Moves a box resting against the hit surface to the nearest free spot, grid-aligned while snapping.
+	/// </summary>
 	/// <remarks>
 	///     The placement pipeline, in the plot's local space:
 	///     <list type="number">

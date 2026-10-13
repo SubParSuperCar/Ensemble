@@ -42,12 +42,15 @@ public sealed partial class MarqueeViewModel : ViewModelBase
 
 		Area = new Rect(position.X, position.Y, size.X, size.Y);
 
-		if (GToolManager.Marquee.Color is var color && color == _color)
+		var color = GToolManager.Marquee.Color;
+
+		if (color == _color)
 			return;
 
 		_color = color;
 
-		Fill = new ImmutableSolidColorBrush(color.ToAvaloniaColor(), FillOpacity);
-		Stroke = new ImmutableSolidColorBrush(color.ToAvaloniaColor(), StrokeOpacity);
+		var avaloniaColor = color.ToAvaloniaColor();
+		Fill = new ImmutableSolidColorBrush(avaloniaColor, FillOpacity);
+		Stroke = new ImmutableSolidColorBrush(avaloniaColor, StrokeOpacity);
 	}
 }

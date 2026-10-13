@@ -15,8 +15,26 @@ public static class NetworkSnapshotRegistry
 			throw new InvalidOperationException($"Snapshot with id {snapshotId} is already registered.");
 	}
 
-	internal static IEnumerable<(string SnapshotId, Array<Variant> Payload)> CaptureAll() =>
-		EntriesBySnapshotId.Select(static entry => (entry.Key, entry.Value.Capture()));
+	// A failed snapshot is skipped, so the peer still receives the others
+	internal static IEnumerable<(string SnapshotId, Array<Variant> Payload)> CaptureAll()
+	{
+		foreach (var (snapshotId, entry) in EntriesBySnapshotId)
+		{
+			Array<Variant> payload;
+
+			try
+			{
+				payload = entry.Capture();
+			}
+			catch (Exception exception)
+			{
+				Log.Error(exception, "Failed to capture snapshot {SnapshotId}", snapshotId);
+				continue;
+			}
+
+			yield return (snapshotId, payload);
+		}
+	}
 
 	internal static void Restore(string snapshotId, Array<Variant> payload)
 	{

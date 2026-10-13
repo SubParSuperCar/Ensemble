@@ -4,7 +4,8 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     x:Class="EnsembleRoot.Ui.Impl.Views.ToolBarView"
     x:DataType="vm:ToolBarViewModel"
-    FontSize="20" FontWeight="ExtraLight" Margin="0,4">
+    Margin="0,4"
+    FontSize="20" FontWeight="ExtraLight">
 
     <UserControl.Styles>
         <Style Selector="Button, ToggleButton">
@@ -63,8 +64,10 @@
                         ToolTip.Tip="Toggles the placement (construct/ctor) tool. (Bound to 1 / One)" />
                 </Border>
 
-                <Border Grid.Column="1" BorderBrush="{x:Static vm:ToolBarViewModel.DestructBrush}"
-                        BorderThickness="1.5">
+                <Border
+                    Grid.Column="1"
+                    BorderBrush="{x:Static vm:ToolBarViewModel.DestructBrush}" BorderThickness="1.5">
+
                     <ToggleButton
                         Content="Delete (2)"
                         Command="{Binding ToggleDestructToolCommand}"

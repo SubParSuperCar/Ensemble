@@ -17,11 +17,12 @@ public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserVie
 	private const string WpeLibraryName = "libWPEWebKit-2.0.so.1";
 	private const string WpeLegacyBackendExport = "webkit_web_view_backend_new";
 
-	// Avalonia's WPE adapter (as of 12.1.1) needs WPE WebKit's legacy libwpe backend API, which 2.54 dropped
-	private static readonly Lazy<bool> IsWpeLegacyBackendMissing = new(static () =>
+	// Estragonia has no native window to host web views in, so only WPE WebKit's offscreen adapter can render. That
+	// adapter (as of Avalonia 12.1.1) also needs WPE WebKit's legacy libwpe backend API, which 2.54 dropped.
+	private static readonly Lazy<bool> IsSupported = new(static () =>
 		OperatingSystem.IsLinux() &&
 		NativeLibrary.TryLoad(WpeLibraryName, out var handle) &&
-		!NativeLibrary.TryGetExport(handle, WpeLegacyBackendExport, out _));
+		NativeLibrary.TryGetExport(handle, WpeLegacyBackendExport, out _));
 
 	private WebBrowserViewModel? _viewModel;
 
@@ -29,11 +30,16 @@ public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserVie
 	{
 		InitializeComponent();
 
-		if (!IsWpeLegacyBackendMissing.Value)
+		if (IsSupported.Value)
+		{
+			WebView.AdapterPreference = [WebViewAdapterType.WpeWebKit];
 			return;
+		}
 
-		Log.Information("{Library} lacks {Export}; preferring WebKitGTK", WpeLibraryName, WpeLegacyBackendExport);
-		WebView.AdapterPreference = [WebViewAdapterType.WebKitGtk];
+		// Never attached, it never starts an adapter, which leaves the explanation beneath it showing
+		Log.Information(
+			"Web view unsupported: needs Linux and {Library} with {Export}", WpeLibraryName, WpeLegacyBackendExport);
+		((Panel)WebView.Parent!).Children.Remove(WebView);
 	}
 
 	protected override void OnDataContextChanged(EventArgs e)
@@ -86,25 +92,8 @@ public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserVie
 	private void SyncNavigationState(bool isNavigating) =>
 		_viewModel?.SyncNavigationState(isNavigating, WebView.CanGoBack, WebView.CanGoForward);
 
-	private void OnWebViewEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e)
-	{
+	private void OnWebViewEnvironmentRequested(object? sender, WebViewEnvironmentRequestedEventArgs e) =>
 		e.EnableDevTools = true;
-
-		switch (e)
-		{
-			case WindowsWebView2EnvironmentRequestedEventArgs args:
-				args.IsInPrivateModeEnabled = true;
-				break;
-
-			case AppleWKWebViewEnvironmentRequestedEventArgs args:
-				args.NonPersistentDataStore = true;
-				break;
-
-			case GtkWebViewEnvironmentRequestedEventArgs args:
-				args.EphemeralDataManager = true;
-				break;
-		}
-	}
 
 	private void OnWebViewAdapterCreated(object? sender, WebViewAdapterEventArgs e)
 	{

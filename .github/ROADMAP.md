@@ -31,6 +31,12 @@ The tool suite, in rough intended order of implementation.
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
 - [x] (M) Marquee Selector - Alt+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
+- [x] (S) Scripted building - Lua `add_inst`, `rm_insts`, `set_inst_prop`, and `dmp_insts` work on the local plot
+  through the same actions (and validation) as the tools, so they also work in multiplayer
+- [ ] (M) Build share codes - `copy_build()` / `paste_build(code)` turn a plot into a short compressed text code to
+  paste in chat (reuses the save pipeline)
+- [ ] (M) Build replays - record a plot's add / remove / property actions and replay them as a time-lapse; groundwork
+  for undo / redo
 
 ## Multiplayer / replication
 
@@ -72,6 +78,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
 - [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
 - [ ] (L) A real map, built with Unibuilder
+- [ ] (L) Speaker asset (and/or a music player widget) - plays audio to nearby players. Open problems: moderating
+  inappropriate audio, replicating playback, and storing / fetching the audio in the first place
 
 ## UI / UX framework
 
@@ -85,6 +93,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 - [ ] (S) Main menu personality - community links (e.g., Discord) and randomized flavor text
+- [ ] (S) Web browser on WPE WebKit 2.54+ - blocked on Avalonia's WPE adapter moving to the WPEPlatform API; it only
+  renders on Linux with WPE WebKit 2.52 or older (other engines need native windows Estragonia doesn't have)
 
 ## Housekeeping / infra
 
@@ -105,3 +115,6 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
   can list encrypted saves (deferred)
 - [ ] (L) Comprehensive Saves UI - browser, thumbnails, autosave ring buffer, per-save password prompt, soft delete
   (deferred)
+- [ ] (L) In-world screens (low priority) - Avalonia UI rendered onto 3D meshes, e.g., a "monitor" asset showing the
+  console, Lua editor, chat, or system terminal, for whole in-game workstations (with speakers). Estragonia is brittle
+  about when Avalonia controls get instantiated, so the timing needs care first

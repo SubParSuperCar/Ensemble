@@ -88,7 +88,7 @@
             <Button
                 Content="Web Browser"
                 Command="{Binding GoToWebBrowserCommand}"
-                ToolTip.Tip="Opens the web browser.&#x0a;Requires a compatible web rendering component.&#x0a;On Windows 11 and most Windows 10 (1803+) devices, WebView2 is installed by default.&#x0a;On Linux, you may need to install WebKitGTK or WPE WebKit via your package manager." />
+                ToolTip.Tip="Opens the web browser.&#x0a;It currently needs Linux and WPE WebKit 2.52 or older (install it via your package manager)." />
 
             <Border Classes="danger">
                 <Button

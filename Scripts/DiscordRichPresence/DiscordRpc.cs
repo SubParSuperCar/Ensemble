@@ -16,7 +16,7 @@ namespace EnsembleRoot.Scripts.DiscordRichPresence;
 [GlobalClass]
 [Autoload(
 	Scope = AutoloadScope.RegularClient,
-	Order = AutoloadOrder.Standard + 1,
+	Order = AutoloadOrder.Standard + 3,
 	FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class DiscordRpc : Node, IAutoload
 {

@@ -15,7 +15,7 @@ namespace EnsembleRoot.Scripts.Profanity;
 ///     hosting, the filter starts as <see cref="Override" />, if set, or <see cref="IsPreferred" />.
 /// </remarks>
 [GlobalClass]
-[Autoload(Order = AutoloadOrder.Standard, FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
+[Autoload(Order = AutoloadOrder.Standard + 1, FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
 public partial class ProfanityFilterManager : Node, IAutoload
 {
 	[Signal]

@@ -17,6 +17,7 @@ internal static class ToolCommon
 	private const string SoundBus = "master";
 
 	public static readonly StringName TriggerAction = "tool_trigger";
+	public static readonly StringName SelectionMarqueeAction = "tool_selection_marquee";
 	public static readonly StringName SelectionToggleAction = "tool_selection_toggle";
 
 	private static readonly NodePath SoundManagerPath = "SoundManager";
@@ -37,6 +38,10 @@ internal static class ToolCommon
 
 	public static void PlaySound(string name) => SoundManager.Call(PlayMethod, SoundBus, name);
 
+	// Presses with the marquee key held start a marquee instead
+	public static bool IsTriggerPressed(InputEvent @event) =>
+		@event.IsActionPressed(TriggerAction) && !Input.IsActionPressed(SelectionMarqueeAction);
+
 	public static bool IsHandleLocal(AssetHandle handle) =>
 		LocalPlotHandle is { } plot && ReferenceEquals(FindInHierarchy<PlotHandle>(handle), plot);
 
@@ -56,5 +61,27 @@ internal static class ToolCommon
 			? null
 			: new ToolRayHit(
 				result["position"].AsVector3(), result["normal"].AsVector3(), result["collider"].As<Node3D>());
+	}
+
+	/// <summary>Finds the local plot's instances whose boundary centers project within a viewport area.</summary>
+	public static List<int> FindInstancesInArea(Viewport viewport, Rect2 area)
+	{
+		if (viewport.GetCamera3D() is not { } camera || LocalPlot is not { } plot || LocalPlotHandle is not { } handle)
+			return [];
+
+		List<int> instanceIds = [];
+
+		foreach (var instance in plot.Instances.Source.All)
+		{
+			if (handle.GetInstanceHandle(instance.Id) is not { } asset)
+				continue;
+
+			var center = asset.GlobalTransform * asset.BoundaryAabb.GetCenter();
+
+			if (!camera.IsPositionBehind(center) && area.HasPoint(camera.UnprojectPosition(center)))
+				instanceIds.Add(instance.Id);
+		}
+
+		return instanceIds;
 	}
 }

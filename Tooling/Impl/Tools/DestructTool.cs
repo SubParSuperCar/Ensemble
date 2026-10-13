@@ -21,12 +21,13 @@ public partial class DestructTool : ToolBase
 	private AssetHandle? _hovered;
 
 	public override Color ThemeColor => Theme;
+	public override bool UsesSelection => true;
 
 	public override void _Ready() => AddChild(_hoverHighlight);
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (!IsEnabled || InputSink.IsSunk || !@event.IsActionPressed(ToolCommon.TriggerAction) ||
+		if (!IsEnabled || InputSink.IsSunk || !ToolCommon.IsTriggerPressed(@event) ||
 			LocalPlot is not { } plot)
 			return;
 

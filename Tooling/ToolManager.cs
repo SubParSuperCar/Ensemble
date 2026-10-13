@@ -36,12 +36,19 @@ public partial class ToolManager : Node, IAutoload
 	public DestructTool Destruct => Get<DestructTool>();
 
 	public MultiSelector Selector { get; } = new();
+	public MarqueeSelector Marquee { get; } = new() { Name = nameof(MarqueeSelector) };
+
+	internal IReadOnlyList<ToolBase> EnabledTools => _enabledTools;
 
 	private static bool CanEnableTools => IsLocalPlotSpawned is false;
 
 	public void Initialize()
 	{
 		Selector.Initialize();
+
+		Marquee.Initialize(this);
+		AddChild(Marquee);
+
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
 	}
 

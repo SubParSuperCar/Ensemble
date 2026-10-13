@@ -236,7 +236,7 @@ public partial class Main : Node
 			await renderingServer.ToSignalAsync(RenderingServer.SignalName.FramePostDraw);
 		}
 
-		CallDeferred(nameof(Load));
+		CallDeferred(MethodName.Load);
 	}
 
 	private void Load()

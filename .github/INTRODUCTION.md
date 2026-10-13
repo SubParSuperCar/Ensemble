@@ -198,7 +198,7 @@ per-session text files and read aloud with text-to-speech, which stops when you 
 
 ### Diagnostics and Scripting
 
-- **Lua console**: over 30 functions for the session, world, display, and diagnostics, listed with their parameters by
+- **Lua console**: over 40 functions for the session, world, display, and diagnostics, listed with their parameters by
   `help()`.
 - **Logging**: Serilog writes colored console output, rolling JSON files, an in-game log view, and toasts for warnings.
 - **Watchdog**: a background thread that fails fast if the main thread stops responding for 20 seconds, instead of

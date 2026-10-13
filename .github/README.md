@@ -347,10 +347,10 @@ sequenceDiagram
 | `Early + 2`    | `PlayerSync`             | all      | Mirrors session peers as GdCore players          |
 | `Early + 3`    | `ToolManager`            | client   | Creates and gates tools                          |
 | `Standard`     | `ChatManager`            | all      | Chat history, logs, and read-aloud               |
-| `Standard`     | `ExeHasher`              | all      | Logs the executable's path, size, and hash       |
-| `Standard`     | `ProfanityFilterManager` | all      | The host's profanity filter for chat and names   |
-| `Standard + 1` | `DiscordRpc`             | client   | Discord Rich Presence                            |
-| `Standard + 2` | `DiagnosticLogger`       | all      | Logs a system report in the background           |
+| `Standard + 1` | `ProfanityFilterManager` | all      | The host's profanity filter for chat and names   |
+| `Standard + 2` | `ExeHasher`              | all      | Logs the executable's path, size, and hash       |
+| `Standard + 3` | `DiscordRpc`             | client   | Discord Rich Presence                            |
+| `Standard + 4` | `DiagnosticLogger`       | all      | Logs a system report in the background           |
 | `Late`         | `WorldManager`           | all      | Instantiates the world scene                     |
 | `Late + 1`     | `UpdateChecker`          | client   | Checks GitHub for newer releases                 |
 | `Late + 1`     | `HeadlessSession`        | headless | Starts a dedicated server session                |

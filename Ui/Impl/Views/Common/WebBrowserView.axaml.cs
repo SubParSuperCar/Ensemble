@@ -17,16 +17,23 @@ public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserVie
 	private const string WpeLibraryName = "libWPEWebKit-2.0.so.1";
 	private const string WpeLegacyBackendExport = "webkit_web_view_backend_new";
 
-	// Avalonia's WPE adapter needs WPE WebKit's legacy libwpe backend API, which newer releases (e.g., 2.54) dropped
-	private static readonly Lazy<bool> HasWpeLegacyBackend = new(static () =>
+	// Avalonia's WPE adapter (as of 12.1.1) needs WPE WebKit's legacy libwpe backend API, which 2.54 dropped
+	private static readonly Lazy<bool> IsWpeLegacyBackendMissing = new(static () =>
+		OperatingSystem.IsLinux() &&
 		NativeLibrary.TryLoad(WpeLibraryName, out var handle) &&
-		NativeLibrary.TryGetExport(handle, WpeLegacyBackendExport, out _));
+		!NativeLibrary.TryGetExport(handle, WpeLegacyBackendExport, out _));
 
 	private WebBrowserViewModel? _viewModel;
 
 	public WebBrowserView()
 	{
 		InitializeComponent();
+
+		if (!IsWpeLegacyBackendMissing.Value)
+			return;
+
+		Log.Information("{Library} lacks {Export}; preferring WebKitGTK", WpeLibraryName, WpeLegacyBackendExport);
+		WebView.AdapterPreference = [WebViewAdapterType.WebKitGtk];
 	}
 
 	protected override void OnDataContextChanged(EventArgs e)
@@ -95,12 +102,6 @@ public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserVie
 
 			case GtkWebViewEnvironmentRequestedEventArgs args:
 				args.EphemeralDataManager = true;
-				break;
-
-			case LinuxWpeWebViewEnvironmentRequestedEventArgs args when !HasWpeLegacyBackend.Value:
-				Log.Information(
-					"{Library} lacks {Export}; falling back to WebKitGTK", WpeLibraryName, WpeLegacyBackendExport);
-				args.PreferWebKitGtkInstead = true;
 				break;
 		}
 	}

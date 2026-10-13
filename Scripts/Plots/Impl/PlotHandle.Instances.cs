@@ -15,6 +15,8 @@ public partial class PlotHandle
 	// Cached, as reading every handle back from Godot each tick is slow
 	internal ObbGrid InstanceBoxes { get; } = new();
 
+	public AssetHandle? GetInstanceHandle(int instanceId) => _handlesByInstanceId.GetValueOrDefault(instanceId);
+
 	private void ReadyInstances()
 	{
 		_staticInstances = GetNode<Node3D>("Instances/Static");

@@ -10,12 +10,12 @@ namespace EnsembleRoot.Scripts.Players;
 [GlobalClass]
 public partial class CharacterController : CharacterBody3D
 {
-	private static readonly StringName JumpAction = "char_jump";
-	private static readonly StringName RunAction = "char_run";
-	private static readonly StringName StrafeLeftAction = "char_strafe_left";
-	private static readonly StringName StrafeRightAction = "char_strafe_right";
-	private static readonly StringName MoveForwardAction = "char_move_forward";
-	private static readonly StringName MoveBackwardAction = "char_move_backward";
+	private static readonly StringName JumpAction = "character_jump";
+	private static readonly StringName RunAction = "character_run";
+	private static readonly StringName MoveLeftAction = "character_move_left";
+	private static readonly StringName MoveRightAction = "character_move_right";
+	private static readonly StringName MoveForwardAction = "character_move_forward";
+	private static readonly StringName MoveBackwardAction = "character_move_backward";
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m/s")]
 	public float WalkSpeed { get; set; } = 6f;
@@ -63,7 +63,7 @@ public partial class CharacterController : CharacterBody3D
 
 		var inputDirection = InputSink.IsSunk
 			? Vector2.Zero
-			: Input.GetVector(StrafeLeftAction, StrafeRightAction, MoveForwardAction, MoveBackwardAction);
+			: Input.GetVector(MoveLeftAction, MoveRightAction, MoveForwardAction, MoveBackwardAction);
 
 		if (inputDirection != Vector2.Zero)
 		{

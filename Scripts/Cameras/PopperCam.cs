@@ -13,11 +13,11 @@ namespace EnsembleRoot.Scripts.Cameras;
 [GlobalClass]
 public partial class PopperCam : SpringArm3D
 {
-	private static readonly StringName OrbitAction = "cam_orbit";
-	private static readonly StringName YawLeftAction = "cam_yaw_left";
-	private static readonly StringName YawRightAction = "cam_yaw_right";
-	private static readonly StringName DollyInAction = "cam_dolly_in";
-	private static readonly StringName DollyOutAction = "cam_dolly_out";
+	private static readonly StringName OrbitAction = "camera_orbit";
+	private static readonly StringName YawLeftAction = "camera_yaw_left";
+	private static readonly StringName YawRightAction = "camera_yaw_right";
+	private static readonly StringName DollyInAction = "camera_dolly_in";
+	private static readonly StringName DollyOutAction = "camera_dolly_out";
 
 	private bool _isCaptureSettling;
 	private float _pitch;

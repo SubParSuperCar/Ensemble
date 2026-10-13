@@ -31,13 +31,14 @@ public partial class ConstructTool : ToolBase
 
 	private const int MaxSettlePasses = 3;
 	private const int MaxResolvePasses = 3;
+	private const float SnapTolerance = 1 / 32f;
 
 	public static readonly StringName ToggleAction = "tool_construct_toggle";
 	public static readonly Color Theme = new("#40A0FF");
 
-	private static readonly StringName RotateXAction = "tool_ctor_rot_x";
-	private static readonly StringName RotateYAction = "tool_ctor_rot_y";
-	private static readonly StringName RotateZAction = "tool_ctor_rot_z";
+	private static readonly StringName RotateXAction = "tool_construct_rotate_x";
+	private static readonly StringName RotateYAction = "tool_construct_rotate_y";
+	private static readonly StringName RotateZAction = "tool_construct_rotate_z";
 
 	private static readonly Color InvalidTint = Colors.Red;
 
@@ -162,7 +163,7 @@ public partial class ConstructTool : ToolBase
 
 		var surface = plot.WorldToGrid(hit.Position) * PlotHandle.GridToWorldScale;
 		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
-		box = Settle(box.At(surface + normal * box.Radius(normal)), plot, normal, GetGridAnchor(hit.Collider));
+		box = Settle(box.At(surface + normal * box.Radius(normal)), plot, normal, hit.Collider);
 
 		_gridPosition = (box.Center - box.Basis * _previewBounds.GetCenter()) / PlotHandle.GridToWorldScale;
 		_state = PlotPlacement.Evaluate(plot, AssetId, _gridPosition, _rotation);
@@ -216,22 +217,52 @@ public partial class ConstructTool : ToolBase
 		return gridAxis;
 	}
 
-	private static Vector3 GetGridAnchor(Node3D collider)
+	// The touched face anchors the normal axis, so contact stays flush with off-grid assets
+	private static Vector3 GetGridAnchor(Node3D collider, Vector3 normal, float cellSize)
 	{
 		if (ToolCommon.FindInHierarchy<AssetHandle>(collider) is not { } target || !ToolCommon.IsHandleLocal(target))
 			return Vector3.Zero;
 
 		var box = Obb.From(target.BoundaryAabb, target.Transform);
-		return box.Center - box.Envelope;
+		var anchor = box.Center;
+		var envelope = box.Envelope;
+
+		for (var axis = 0; axis < 3; axis++)
+			anchor[axis] += (normal[axis] > 0 ? 1 : -1) * GetSnapExtent(envelope[axis], cellSize);
+
+		return anchor;
 	}
 
-	private Obb Settle(Obb box, PlotHandle plot, Vector3 normal, Vector3 anchor)
+	/// <summary>Moves a box resting against the hit surface to the nearest free spot, grid-aligned while snapping.</summary>
+	/// <remarks>
+	///     The placement pipeline, in the plot's local space:
+	///     <list type="number">
+	///         <item>
+	///             Contact (<see cref="UpdatePlacement" />): while snapping, the hit normal is rounded to its dominant
+	///             grid axis, so a curved surface steeper than 45 degrees counts as a side. The box is pushed out along
+	///             the normal by its projected radius, just touching the hit point's tangent plane.
+	///         </item>
+	///         <item>
+	///             Resolve: each overlapping obstacle pushes the box out by its SAT minimum translation, never against
+	///             the normal (see <see cref="Obb.GetMinimumTranslation" />).
+	///         </item>
+	///         <item>
+	///             Snap: per axis, whichever box edge lands nearer a grid line wins, so thin boxes can share a cell.
+	///             Edges round away from the obstacles Resolve pushed out of. Spans within <see cref="SnapTolerance" />
+	///             of whole cells snap as exactly whole, centering their slack. The grid is anchored to the hovered
+	///             asset, if any.
+	///         </item>
+	///         <item>Raise: the box is lifted onto the plot floor if below it.</item>
+	///     </list>
+	///     Snapping can land the box in another obstacle, so the steps repeat; a box still overlapping is left for
+	///     validation to reject.
+	/// </remarks>
+	private Obb Settle(Obb box, PlotHandle plot, Vector3 normal, Node3D collider)
 	{
 		var obstacles = PlotPlacement.GetObstacles(plot);
 		var floor = PlotPlacement.GetBounds(plot).Position.Y;
 		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
-
-		box = Snap(box, cellSize, anchor, Vector3.Zero);
+		var anchor = cellSize is { } size ? GetGridAnchor(collider, normal, size) : Vector3.Zero;
 
 		for (var pass = 0; pass < MaxSettlePasses; pass++)
 		{
@@ -288,13 +319,22 @@ public partial class ConstructTool : ToolBase
 		for (var axis = 0; axis < 3; axis++)
 		{
 			var direction = Mathf.IsZeroApprox(push[axis]) ? 0 : MathF.Sign(push[axis]);
-			var low = SnapEdge(center[axis] - envelope[axis], anchor[axis], size, direction) + envelope[axis];
-			var high = SnapEdge(center[axis] + envelope[axis], anchor[axis], size, direction) - envelope[axis];
+			var extent = GetSnapExtent(envelope[axis], size);
+			var low = SnapEdge(center[axis] - extent, anchor[axis], size, direction) + extent;
+			var high = SnapEdge(center[axis] + extent, anchor[axis], size, direction) - extent;
 
 			center[axis] = MathF.Abs(low - center[axis]) <= MathF.Abs(high - center[axis]) ? low : high;
 		}
 
 		return box.At(center);
+	}
+
+	private static float GetSnapExtent(float extent, float cellSize)
+	{
+		var cells = 2 * extent / cellSize;
+		var whole = MathF.Round(cells, MidpointRounding.AwayFromZero);
+
+		return whole > 0 && MathF.Abs(cells - whole) <= SnapTolerance ? whole * cellSize / 2 : extent;
 	}
 
 	private static float SnapEdge(float edge, float anchor, float cellSize, int direction)

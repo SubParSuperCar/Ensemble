@@ -44,7 +44,7 @@ public partial class SessionManager : Node
 
 	private const int Unlimited = -1;
 
-	private static readonly StringName ResetAction = "test_session_reset";
+	private static readonly StringName RestartAction = "debug_session_restart";
 
 	private static readonly TimeSpan RegistrationTimeout = TimeSpan.FromSeconds(10);
 	private static readonly TimeSpan KickTimeout = TimeSpan.FromSeconds(2);
@@ -109,10 +109,10 @@ public partial class SessionManager : Node
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (!Input.IsActionJustPressedByEvent(ResetAction, @event) || Mode is SessionMode.MultiPlayer)
+		if (!Input.IsActionJustPressedByEvent(RestartAction, @event) || Mode is SessionMode.MultiPlayer)
 			return;
 
-		Log.Information("Restarting session as single-player (test action)...");
+		Log.Information("Restarting session as single-player (debug action)...");
 		StartSinglePlayer();
 	}
 

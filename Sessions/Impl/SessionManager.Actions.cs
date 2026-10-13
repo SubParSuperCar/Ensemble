@@ -30,7 +30,7 @@ public partial class SessionManager
 			return;
 
 		var senderId = Multiplayer.GetRemoteSenderId();
-		var tokenCost = NetworkActionRegistry.GetTokenCost(actionId);
+		var tokenCost = NetworkActionRegistry.GetTokenCost(actionId, payload);
 
 		EnqueueRpc(
 			senderId, tokenCost, () => HandleAction(actionId, payload, senderId),

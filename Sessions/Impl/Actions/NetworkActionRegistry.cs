@@ -22,12 +22,14 @@ public static class NetworkActionRegistry
 				CultureInfo.InvariantCulture,
 				$"Token cost of action with id {actionId} must be positive, got {tokenCost}."));
 
-		if (!EntriesByActionId.TryAdd(actionId, new Entry(tokenCost, Execute<TAction>)))
+		if (!EntriesByActionId.TryAdd(actionId, new Entry(TAction.GetTokenCost, Execute<TAction>)))
 			throw new InvalidOperationException($"Action with id {actionId} is already registered.");
 	}
 
-	internal static int GetTokenCost(string actionId) =>
-		EntriesByActionId.TryGetValue(actionId, out var entry) ? entry.TokenCost : DefaultTokenCost;
+	internal static int GetTokenCost(string actionId, Array<Variant> payload) =>
+		EntriesByActionId.TryGetValue(actionId, out var entry)
+			? Math.Max(entry.GetTokenCost(payload), DefaultTokenCost)
+			: DefaultTokenCost;
 
 	/// <summary>
 	///     Validates and applies an action. As host, rewrites it first, replacing <paramref name="payload" /> with the
@@ -77,5 +79,5 @@ public static class NetworkActionRegistry
 	private delegate ActionValidation ExecuteHandler(ref Array<Variant> payload, ActionSource source, bool isHost);
 
 	// ReSharper disable once MemberHidesStaticFromOuterClass
-	private readonly record struct Entry(int TokenCost, ExecuteHandler Execute);
+	private readonly record struct Entry(Func<Array<Variant>, int> GetTokenCost, ExecuteHandler Execute);
 }

@@ -24,8 +24,8 @@ public sealed partial class MainViewModel : ViewModelBase
 	private const int TerminalHeight = 720;
 	private const int TerminalCursorBlinkRateMs = (int)TimeSpan.MillisecondsPerSecond / 3;
 
-	private static readonly StringName ToggleConsoleAction = "ui_toggle_console";
-	private static readonly StringName OpenPtyAction = "ui_open_pty";
+	private static readonly StringName ToggleConsoleAction = "ui_console_toggle";
+	private static readonly StringName OpenTerminalAction = "ui_terminal_open";
 
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceProvider _services;
@@ -112,7 +112,7 @@ public sealed partial class MainViewModel : ViewModelBase
 	{
 		if (Input.IsActionJustPressedByEvent(ToggleConsoleAction, @event))
 			IsConsoleVisible = !IsConsoleVisible;
-		else if (Input.IsActionJustPressedByEvent(OpenPtyAction, @event))
+		else if (Input.IsActionJustPressedByEvent(OpenTerminalAction, @event))
 			OpenTerminal();
 	}
 

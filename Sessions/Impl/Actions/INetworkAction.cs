@@ -8,6 +8,9 @@ public interface INetworkAction<out TSelf> where TSelf : INetworkAction<TSelf>
 	static virtual string Id => typeof(TSelf).Name;
 	static virtual int TokenCost => NetworkActionRegistry.DefaultTokenCost;
 
+	/// <summary>Prices a request before it is deserialized, so it must not trust the payload's shape.</summary>
+	static virtual int GetTokenCost(Array<Variant> payload) => TSelf.TokenCost;
+
 	static abstract TSelf FromPayload(Array<Variant> payload);
 	Array<Variant> ToPayload();
 

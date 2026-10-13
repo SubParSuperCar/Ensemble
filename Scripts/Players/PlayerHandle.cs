@@ -14,7 +14,7 @@ public partial class PlayerHandle : Node3D
 {
 	private const double ResetHoldDuration = 1d;
 
-	private static readonly StringName ResetAction = "char_reset";
+	private static readonly StringName ResetAction = "character_reset";
 
 	private GdOccupant _occupant = null!;
 	private GdPlayer _player = null!;

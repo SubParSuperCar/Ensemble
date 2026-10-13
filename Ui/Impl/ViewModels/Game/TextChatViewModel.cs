@@ -17,7 +17,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 {
-	private static readonly StringName FocusAction = "ui_focus_chat";
+	private static readonly StringName FocusAction = "ui_chat_focus";
 
 	private readonly DispatcherService _dispatcher;
 

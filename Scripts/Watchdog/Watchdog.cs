@@ -25,7 +25,7 @@ public partial class Watchdog : Node, IAutoload
 	private const int TimeoutMissCount = 20;
 
 #if ENSEMBLE_DEBUG
-	private static readonly StringName HangAction = "test_hang";
+	private static readonly StringName HangAction = "debug_hang";
 #endif
 
 	private static byte _heartbeatFlag;
@@ -64,7 +64,7 @@ public partial class Watchdog : Node, IAutoload
 		if (!Input.IsActionJustPressedByEvent(HangAction, @event))
 			return;
 
-		Log.Warning("Hanging main thread (test action)...");
+		Log.Warning("Hanging main thread (debug action)...");
 		Thread.Sleep(Timeout.Infinite);
 	}
 #endif

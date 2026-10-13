@@ -143,6 +143,7 @@ with `set_profanity_filter_on(false)`.
 | Orbit / turn / zoom camera       | Right mouse / `Q` `E` or `Left` `Right` / wheel, `I` `O` |
 | Toggle place / delete tool       | `1` / `2`                                                |
 | Place or delete (tool trigger)   | Left mouse                                               |
+| Toggle selection (delete tool)   | `Shift` + left mouse                                     |
 | Rotate placement (X / Y / Z)     | `R` / `T` / `Y`                                          |
 | Reset character position         | Hold `H` for 1 second                                    |
 | Player list                      | `Tab`                                                    |
@@ -450,7 +451,7 @@ player acting as the server.
 |----------------------------|--------------------------------------------------|
 | `SetPlotAction`            | Claims or releases a plot for the sender         |
 | `AddInstanceAction`        | Places an asset instance on the sender's plot    |
-| `RemoveInstanceAction`     | Deletes an instance                              |
+| `RemoveInstancesAction`    | Deletes up to 256 instances                      |
 | `SetPropertiesAction`      | Changes an instance's properties                 |
 | `ClearInstancesAction`     | Removes every instance on a plot                 |
 | `KickOccupantAction`       | Removes a player from their plot (owner or host) |
@@ -469,13 +470,17 @@ graph LR
     ToolManager --> Construct["ConstructTool (Place)"]
     ToolManager --> Destruct["DestructTool (Delete)"]
     Construct -->|AddInstanceAction| Net[SessionManager]
-    Destruct -->|RemoveInstanceAction| Net
+    ToolManager --> Selector[MultiSelector]
+    Destruct --> Selector
+    Destruct -->|RemoveInstancesAction| Net
 ```
 
 `ToolManager` owns every `ToolBase` and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while the
 local plot is editable (not spawned). `ConstructTool` shows a translucent preview with an axial highlight, snaps edges
 (not centers) to the plot grid, resolves overlaps with oriented bounding boxes (separating axis theorem), and supports
-`RotateX/Y/Z()` and `ResetRotation()` in global or local space.
+`RotateX/Y/Z()` and `ResetRotation()` in global or local space. `MultiSelector` holds a selection shared across tools:
+`Shift`-clicking toggles an instance, clicking a selected instance acts on the whole selection, and clicking anything
+else clears it (Baja Builders parity).
 
 </details>
 

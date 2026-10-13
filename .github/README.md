@@ -144,6 +144,7 @@ with `set_profanity_filter_on(false)`.
 | Toggle place / delete tool       | `1` / `2`                                                |
 | Place or delete (tool trigger)   | Left mouse                                               |
 | Toggle selection (delete tool)   | `Shift` + left mouse                                     |
+| Box-select (delete tool)         | `Alt` + drag (`Shift` toggles, `Esc` cancels)            |
 | Rotate placement (X / Y / Z)     | `R` / `T` / `Y`                                          |
 | Reset character position         | Hold `H` for 1 second                                    |
 | Player list                      | `Tab`                                                    |
@@ -480,7 +481,7 @@ local plot is editable (not spawned). `ConstructTool` shows a translucent previe
 (not centers) to the plot grid, resolves overlaps with oriented bounding boxes (separating axis theorem), and supports
 `RotateX/Y/Z()` and `ResetRotation()` in global or local space. `MultiSelector` holds a selection shared across tools:
 `Shift`-clicking toggles an instance, clicking a selected instance acts on the whole selection, and clicking anything
-else clears it (Baja Builders parity).
+else clears it; `MarqueeSelector` box-selects by `Alt`-dragging (Baja Builders parity).
 
 </details>
 

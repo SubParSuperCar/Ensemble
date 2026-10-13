@@ -127,7 +127,7 @@ public partial class PlayerHandle : Node3D
 		var handle = GPlotManager.GetHandle(plot.Id);
 
 		if (!IsInsideCuboid(Body.GlobalPosition, handle.BoundaryTransform, handle.BoundarySize))
-			Body.GlobalPosition = GetPlotSpawn(plot);
+			Teleport(GetPlotSpawn(plot));
 	}
 
 	private Vector3 GetPlotSpawn(GdPlot plot) => GPlotManager.GetHandle(plot.Id).OriginTransform.Origin + SpawnOffset;

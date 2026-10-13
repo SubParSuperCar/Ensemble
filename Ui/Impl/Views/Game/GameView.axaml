@@ -81,6 +81,9 @@
         <ContentControl
             Content="{Binding WidgetDrawer}"
             HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+        <!-- Drawn above the rest of the game view -->
+        <ContentControl Content="{Binding Marquee}" IsHitTestVisible="False" />
     </Grid>
 
 </UserControl>

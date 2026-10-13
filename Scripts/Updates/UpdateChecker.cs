@@ -61,11 +61,9 @@ public partial class UpdateChecker : Node, IAutoload
 	{
 		try
 		{
-			var currentText = GameVersion;
-
-			if (!TryParseVersion(currentText, out var current))
+			if (!TryParseVersion(GameVersion, out var current))
 			{
-				Log.Warning("Skipped update check: unparsable version {Version}", currentText);
+				Log.Warning("Skipped update check: unparsable version {Version}", GameVersion);
 				return;
 			}
 

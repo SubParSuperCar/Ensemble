@@ -48,7 +48,7 @@ public partial class PopperCam : SpringArm3D
 	[Export] public float DollyRate { get; set; } = 96f;
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
-	public float DollySmoothingRate { get; set; } = 28f;
+	public float DollySmoothingRate { get; set; } = 32f;
 
 	public override void _Ready()
 	{

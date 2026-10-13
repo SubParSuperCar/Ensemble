@@ -28,7 +28,7 @@ public static class NetworkActionRegistry
 
 	internal static int GetTokenCost(string actionId, Array<Variant> payload) =>
 		EntriesByActionId.TryGetValue(actionId, out var entry)
-			? Math.Max(entry.GetTokenCost(payload), DefaultTokenCost)
+			? Math.Max(entry.GetCost(payload), DefaultTokenCost)
 			: DefaultTokenCost;
 
 	/// <summary>
@@ -43,7 +43,7 @@ public static class NetworkActionRegistry
 
 		try
 		{
-			return entry.Execute(ref payload, source, isHost);
+			return entry.Run(ref payload, source, isHost);
 		}
 		catch (Exception exception)
 		{
@@ -78,6 +78,5 @@ public static class NetworkActionRegistry
 
 	private delegate ActionValidation ExecuteHandler(ref Array<Variant> payload, ActionSource source, bool isHost);
 
-	// ReSharper disable once MemberHidesStaticFromOuterClass
-	private readonly record struct Entry(Func<Array<Variant>, int> GetTokenCost, ExecuteHandler Execute);
+	private readonly record struct Entry(Func<Array<Variant>, int> GetCost, ExecuteHandler Run);
 }

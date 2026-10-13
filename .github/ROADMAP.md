@@ -30,7 +30,7 @@ The tool suite, in rough intended order of implementation.
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
-- [ ] (M) Marquee Selector UI - drag to box-select, Shift+drag to toggle-select, Baja Builders parity (deferred)
+- [x] (M) Marquee Selector - Alt+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
 
 ## Multiplayer / replication
 

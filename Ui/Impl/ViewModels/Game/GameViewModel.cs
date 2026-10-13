@@ -44,6 +44,7 @@ public sealed partial class GameViewModel : ViewModelBase
 		WidgetDrawer = _scope.ServiceProvider.GetRequiredService<WidgetDrawerViewModel>();
 		Clock = services.Create<ClockViewModel>();
 		PlayerList = services.Create<PlayerListViewModel>();
+		Marquee = services.Create<MarqueeViewModel>();
 
 		dispatcher.Input += OnInput;
 
@@ -69,6 +70,10 @@ public sealed partial class GameViewModel : ViewModelBase
 	[property: DisposeOldObservableValueOnChanging]
 	public partial ToolBarViewModel? ToolBar { get; set; }
 
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial MarqueeViewModel? Marquee { get; set; }
+
 	protected override void OnDispose()
 	{
 		_textChat.PropertyChanged -= OnTextChatPropertyChanged;
@@ -82,6 +87,7 @@ public sealed partial class GameViewModel : ViewModelBase
 		Clock = null;
 		PlayerList = null;
 		ToolBar = null;
+		Marquee = null;
 
 		_scope.Dispose();
 	}

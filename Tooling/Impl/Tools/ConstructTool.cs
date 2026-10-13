@@ -81,7 +81,7 @@ public partial class ConstructTool : ToolBase
 			RotateY();
 		else if (@event.IsActionPressed(RotateZAction))
 			RotateZ();
-		else if (@event.IsActionPressed(ToolCommon.TriggerAction))
+		else if (ToolCommon.IsTriggerPressed(@event))
 			TryPlace();
 	}
 

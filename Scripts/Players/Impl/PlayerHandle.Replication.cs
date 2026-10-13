@@ -39,7 +39,7 @@ public partial class PlayerHandle
 
 		var isIdle =
 			position.DistanceTo(_lastReplicatedPosition) < MinReplicatedDistance &&
-			Math.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw;
+			MathF.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw;
 
 		if (isIdle && _sinceLastReplication < IdleReplicationInterval)
 			return;

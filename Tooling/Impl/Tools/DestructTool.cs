@@ -27,11 +27,12 @@ public partial class DestructTool : ToolBase
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (!IsEnabled || InputSink.IsSunk || !ToolCommon.IsTriggerPressed(@event) ||
+		if (
+			!IsEnabled || InputSink.IsSunk || !ToolCommon.IsTriggerPressed(@event) ||
 			LocalPlot is not { } plot)
 			return;
 
-		var hoveredId = _hovered is { } hovered && IsLive(hovered) ? hovered.InstanceId : (int?)null;
+		int? hoveredId = _hovered is { } hovered && IsLive(hovered) ? hovered.InstanceId : null;
 		var targets = Selector.Trigger(hoveredId, Input.IsActionPressed(ToolCommon.SelectionToggleAction));
 
 		InstanceReference[] references =

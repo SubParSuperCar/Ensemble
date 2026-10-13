@@ -10,9 +10,7 @@ using TinyDialogsNet;
 
 namespace EnsembleRoot.Scripts.Updates;
 
-/// <summary>
-///     Checks GitHub for a newer release on startup and offers to open its page.
-/// </summary>
+/// <summary>Checks GitHub for a newer release on startup and offers to open its page.</summary>
 /// <remarks>Each newer version is only offered once; the last offered version is kept in the user data.</remarks>
 [GlobalClass]
 [Autoload(

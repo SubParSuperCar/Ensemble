@@ -34,18 +34,19 @@ public readonly record struct KickOccupantAction(string PlayerId) : INetworkActi
 		if (!string.Equals(plot.Occupants.Owner?.Player.Id, source.PlayerId, StringComparison.Ordinal))
 			return Reject("Player not the owner.");
 
-		var peer = GSessionManager.GetPeerByPlayerId(PlayerId);
-		return peer is { IsHost: true } ? Reject("Host can't be kicked.") : Accept;
+		return GSessionManager.GetPeerByPlayerId(PlayerId) is { IsHost: true }
+			? Reject("Host can't be kicked.")
+			: Accept;
 	}
 
 	public void Apply(ActionSource source)
 	{
 		var plotId = GPlots.GetOccupant(PlayerId)!.Plot!.Id;
 		var name = GPlayers.GetPlayer(PlayerId)?.Name;
+		var text = string.Create(CultureInfo.InvariantCulture, $"{name} was kicked from plot {plotId}.");
 
 		GPlots.SetPlot(PlayerId, None);
-		GChatManager.Add(new ChatMessage
-			{ Text = string.Create(CultureInfo.InvariantCulture, $"{name} was kicked from plot {plotId}.") });
+		GChatManager.Add(new ChatMessage { Text = text });
 	}
 
 	[ModuleInitializer]

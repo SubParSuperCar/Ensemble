@@ -8,7 +8,7 @@ A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, 
 and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar). New here? Start with the
 [**introduction**](./INTRODUCTION.md), written for players and developers alike.
 
-<img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made w/ Inkscape)" alt="Ensemble's Icon">
+<img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made with Inkscape)" alt="Ensemble's Icon">
 
 > *"Nothing is Arbitrary; Everything is Relative."*<br>
 > <small>&mdash; *Ensemble's motto*</small>
@@ -118,8 +118,8 @@ and characters are replicated. Hosts can list peers (with their ping) using `dmp
 also use on their own plots. Display names are remembered between sessions. The host has authority over the session:
 they can clear any plot they occupy, and their chat messages bypass the profanity filter.
 
-Chat in the Text Chat widget (it opens in multiplayer; press `/` to type and `Enter` to send). Nametags are colored per
-display name, like in Roblox's legacy chat, players joining and leaving are announced, and late joiners receive the
+Chat happens in the Text Chat widget, which opens in multiplayer: press `/` to type and `Enter` to send. Nametags are
+colored per display name, like in Roblox's legacy chat, joins and leaves are announced, and late joiners receive the
 recent history. The widget's options can also save each session's chat to `user://chat_logs/` and read new messages
 aloud. The console offers `chat("message")`, `dmp_chat()`, `set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
 

@@ -183,7 +183,7 @@ that:
 
 - **MVVM** with source-generated observable properties and commands, dependency injection, and self-registering
   services.
-- **Widgets**: in-game windows that drag, resize, maximize, snap to a grid, and reopen where you left them.
+- **Widgets**: in-game windows that drag, resize, maximize, and reopen where you left them.
 - **Theming** that follows the OS's light or dark mode and accent color, with colors adjusted in the Oklab color space
   to keep text readable.
 - **Rich tools**: a Markdown document viewer (with Mermaid diagrams), a Lua editor with syntax highlighting, a native

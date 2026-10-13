@@ -50,7 +50,7 @@ public sealed partial class HostConfigViewModel : ViewModelBase
 		ProfanityFilterManager.IsPreferred = IsProfanityFilterEnabled;
 
 		GSessionManager.HostMultiPlayer(
-			(int)(Port ?? DefaultPort), Password, DisplayName, (int?)MaxClients ?? Unlimited, false, IsUpnpEnabled);
+			(int?)Port ?? DefaultPort, Password, DisplayName, (int?)MaxClients ?? Unlimited, false, IsUpnpEnabled);
 	}
 
 	private bool CanHost() => IsValidDisplayName(DisplayName);

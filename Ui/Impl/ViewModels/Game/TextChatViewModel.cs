@@ -45,8 +45,6 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 	[ObservableProperty] public partial bool IsProfanityFilterEnabled { get; set; } = GProfanityFilterManager.IsEnabled;
 	[ObservableProperty] public partial bool IsFileLoggingEnabled { get; set; } = GChatManager.IsFileLoggingEnabled;
-
-	// ReSharper disable once UnusedMember.Global
 	[ObservableProperty] public partial bool IsTtsEnabled { get; set; } = GChatManager.IsTtsEnabled;
 
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(26, 21, 6, 9))

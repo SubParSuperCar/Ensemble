@@ -36,7 +36,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		LocalPlotChanged += OnLocalPlotChanged;
 	}
 
-	private static ConstructTool Ctor => GToolManager.Construct;
+	private static ConstructTool Construct => GToolManager.Construct;
 
 	[ObservableProperty] public partial string FilterQuery { get; set; } = string.Empty;
 	[ObservableProperty] public partial string TotalQuota { get; set; } = QuotaFormat.Unknown;
@@ -45,14 +45,14 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	public ObservableCollection<INodeBase> SelectedItems { get; } = [];
 
 	[ObservableProperty]
-	public partial float LinearSnappingIncrement { get; set; } = Ctor.SnappingIncrementLinear ?? 0f;
+	public partial float LinearSnappingIncrement { get; set; } = Construct.SnappingIncrementLinear ?? 0f;
 
 	[ObservableProperty]
 	public partial float AngularSnappingIncrement { get; set; } =
-		float.RadiansToDegrees(Ctor.SnappingIncrementAngularRadians);
+		float.RadiansToDegrees(Construct.SnappingIncrementAngularRadians);
 
 	public RotationSpace[] RotationSpaces { get; } = Enum.GetValues<RotationSpace>();
-	[ObservableProperty] public partial RotationSpace RotationSpace { get; set; } = Ctor.RotationSpace;
+	[ObservableProperty] public partial RotationSpace RotationSpace { get; set; } = Construct.RotationSpace;
 
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 21, 7, 11))
 	{
@@ -69,27 +69,27 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	}
 
 	partial void OnLinearSnappingIncrementChanging(float value) =>
-		Ctor.SnappingIncrementLinear = value is 0 ? null : value;
+		Construct.SnappingIncrementLinear = value is 0f ? null : value;
 
 	partial void OnAngularSnappingIncrementChanging(float value) =>
-		Ctor.SnappingIncrementAngularRadians = float.DegreesToRadians(value);
+		Construct.SnappingIncrementAngularRadians = float.DegreesToRadians(value);
 
-	partial void OnRotationSpaceChanging(RotationSpace value) => Ctor.RotationSpace = value;
+	partial void OnRotationSpaceChanging(RotationSpace value) => Construct.RotationSpace = value;
 
 	// ReSharper disable once UnusedParameterInPartialMethod
 	partial void OnFilterQueryChanged(string value) => Filter();
 
 	[RelayCommand]
-	private static void RotateX() => Ctor.RotateX();
+	private static void RotateX() => Construct.RotateX();
 
 	[RelayCommand]
-	private static void RotateY() => Ctor.RotateY();
+	private static void RotateY() => Construct.RotateY();
 
 	[RelayCommand]
-	private static void RotateZ() => Ctor.RotateZ();
+	private static void RotateZ() => Construct.RotateZ();
 
 	[RelayCommand]
-	private static void ResetRotation() => Ctor.ResetRotation();
+	private static void ResetRotation() => Construct.ResetRotation();
 
 	private void AddAssetNode(GdAsset asset)
 	{
@@ -97,7 +97,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		var node = new AssetNode { Name = asset.Name, Id = asset.Id };
 
 		_nodesByAssetId.Add(asset.Id, node);
-		Insert(GetOrCreateFolder(category, asset.Id == Ctor.AssetId), node);
+		Insert(GetOrCreateFolder(category, asset.Id == Construct.AssetId), node);
 
 		// Per-asset limits don't depend on a plot, unlike the total
 		UpdateAssetQuota(asset.Id);
@@ -160,7 +160,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 	private void SelectInitialAsset()
 	{
-		if (_nodesByAssetId.TryGetValue(Ctor.AssetId, out var node))
+		if (_nodesByAssetId.TryGetValue(Construct.AssetId, out var node))
 			SelectedItems.Add(node);
 	}
 
@@ -207,7 +207,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		switch (SelectedItems.SingleOrDefault())
 		{
 			case AssetNode asset:
-				Ctor.SetAsset(asset.Id);
+				Construct.SetAsset(asset.Id);
 				break;
 
 			case FolderNode folder:

@@ -4,47 +4,27 @@ render_mode unshaded, cull_disabled, blend_mix, depth_draw_never, depth_test_dis
 
 #include "res://shaders/highlight.gdshaderinc"
 
-vec3 axis_color(float position, vec3 color)
+// One-hot mask of the largest component; ties go to the earlier axis
+vec3 argmax(vec3 v)
 {
-	return mix(vec3(1.0), color, sqrt(position));
+	float x = step(v.y, v.x) * step(v.z, v.x);
+	float y = (1.0 - x) * step(v.z, v.y);
+
+	return vec3(x, y, 1.0 - x - y);
 }
 
 void fragment()
 {
-	vec3 half_size = box_size * 0.5;
 	vec3 d = face_distances(local_position);
+	vec3 lines = edge_masks(d);
 
-	float x_line = edge_mask(max(d.y, d.z));
-	float y_line = edge_mask(max(d.x, d.z));
-	float z_line = edge_mask(max(d.x, d.y));
+	vec3 face_axis = argmax(-d);
+	vec3 edge_axis = argmax(lines);
 
-	vec3 face_color;
+	float position = dot(edge_axis, local_position) / dot(edge_axis, box_size) + 0.5;
+	vec3 edge_color = mix(vec3(1.0), edge_axis, sqrt(position));
+	float line = dot(edge_axis, lines);
 
-	if (d.x <= d.y && d.x <= d.z) {
-		face_color = vec3(1.0, 0.0, 0.0);
-	} else if (d.y <= d.z) {
-		face_color = vec3(0.0, 1.0, 0.0);
-	} else {
-		face_color = vec3(0.0, 0.0, 1.0);
-	}
-
-	vec3 edge_color;
-	float line;
-
-	if (x_line >= y_line && x_line >= z_line) {
-		float position = (local_position.x + half_size.x) / box_size.x;
-		edge_color = axis_color(position, vec3(1.0, 0.0, 0.0));
-		line = x_line;
-	} else if (y_line >= z_line) {
-		float position = (local_position.y + half_size.y) / box_size.y;
-		edge_color = axis_color(position, vec3(0.0, 1.0, 0.0));
-		line = y_line;
-	} else {
-		float position = (local_position.z + half_size.z) / box_size.z;
-		edge_color = axis_color(position, vec3(0.0, 0.0, 1.0));
-		line = z_line;
-	}
-
-	ALBEDO = mix(face_color, edge_color, line);
+	ALBEDO = mix(face_axis, edge_color, line);
 	ALPHA = FRONT_FACING ? mix(face_alpha, 1.0, line) : line;
 }

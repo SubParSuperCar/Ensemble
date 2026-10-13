@@ -167,7 +167,6 @@ public partial class SessionManager : Node
 		StartSession(new EnetSession((SceneMultiplayer)Multiplayer, config, GameVersion), displayName);
 	}
 
-	// ReSharper disable once UnusedMember.Global
 	public void StartSession(ISession session) => StartSession(session, string.Empty);
 
 	/// <summary>Stops the current session, if any, and starts <paramref name="session" />.</summary>

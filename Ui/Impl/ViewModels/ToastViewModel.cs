@@ -31,6 +31,8 @@ public sealed partial class ToastViewModel : ViewModelBase
 
 	[ObservableProperty] public partial bool IsDismissing { get; set; }
 
+	protected override void OnDispose() => _timer.Stop();
+
 	internal bool IsRepeatOf(LogEntry entry) =>
 		entry.Level == Entry.Level && string.Equals(entry.Message, Entry.Message, StringComparison.Ordinal);
 
@@ -43,8 +45,6 @@ public sealed partial class ToastViewModel : ViewModelBase
 		_timer.Stop();
 		_timer.Start();
 	}
-
-	protected override void OnDispose() => _timer.Stop();
 
 	[RelayCommand]
 	private void Dismiss() => _owner.Dismiss(this);

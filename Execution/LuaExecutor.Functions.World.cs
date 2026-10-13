@@ -146,12 +146,12 @@ public static partial class LuaExecutor
 
 		if (GMain.GetNodeOrNull<CanvasLayer>(TemporalStaticPath) is not { } temporalStatic)
 		{
-			Log.Error("Temporal Static shader not found");
+			Log.Error("{Node} shader not found", TemporalStaticPath);
 			return context.ReturnNothing();
 		}
 
 		temporalStatic.Visible = isVisible;
-		Log.Information("Set Temporal Static shader visibility to {IsVisible}", isVisible);
+		Log.Information("Set {Node} shader visibility to {IsVisible}", TemporalStaticPath, isVisible);
 
 		return context.ReturnNothing();
 	}

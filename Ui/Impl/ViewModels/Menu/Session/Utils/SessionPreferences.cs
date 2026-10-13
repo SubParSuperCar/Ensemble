@@ -3,6 +3,7 @@ using EnsembleRoot.Common.Utils;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels.Utils;
 
+// Passwords aren't remembered, since the user data is plain text
 internal static class SessionPreferences
 {
 	private const string Section = "session";
@@ -24,7 +25,6 @@ internal static class SessionPreferences
 		set => UserData.SetValue(Section, IsUpnpEnabledKey, value);
 	}
 
-	// Passwords aren't remembered, since the user data is plain text
 	public static int? HostPort
 	{
 		get => UserData.GetValue(Section, HostPortKey, 0).AsInt32() is var port and > 0 ? port : null;

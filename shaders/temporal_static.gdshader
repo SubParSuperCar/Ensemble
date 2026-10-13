@@ -34,7 +34,7 @@ float luminance(vec3 c)
 
 void fragment()
 {
-	ivec2 px = ivec2(int(FRAGCOORD.x), int(FRAGCOORD.y));
+	uvec2 px = uvec2(FRAGCOORD.xy);
 
 	vec3 scene_sharp = textureLod(screen_texture, SCREEN_UV, 0.0).rgb;
 	vec3 scene_soft = textureLod(screen_texture, SCREEN_UV, 3.0).rgb;
@@ -48,15 +48,13 @@ void fragment()
 
 	float activity = max(highlight, highlight_soft * 0.65);
 
-	uvec2 px_u = uvec2(uint(px.x), uint(px.y));
-	float variation = unit_float(pcg2d(px_u).x);
+	float variation = unit_float(pcg2d(px).x);
 	float movement = activity * mix(1.0, variation, motion_variation) * motion_strength;
 
 	float frame = floor(TIME * scroll_speed);
 	int row_offset = int(floor(frame * movement));
 
-	uvec2 lattice = uvec2(uint(px.x), uint(px.y + row_offset));
-	float noise = unit_float(pcg2d(lattice).x);
+	float noise = unit_float(pcg2d(px + uvec2(0u, uint(row_offset))).x);
 
 	noise = clamp((noise - 0.5) * static_contrast + static_brightness, 0.0, 1.0);
 

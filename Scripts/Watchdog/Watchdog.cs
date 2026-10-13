@@ -10,9 +10,7 @@ using TinyDialogsNet;
 
 namespace EnsembleRoot.Scripts.Watchdog;
 
-/// <summary>
-///     Fails fast when the main thread stops sending heartbeats for too long, i.e., when it hangs.
-/// </summary>
+/// <summary>Fails fast when the main thread stops sending heartbeats for too long, i.e., when it hangs.</summary>
 /// <remarks>
 ///     Heartbeats come from <see cref="_Process" />, which keeps running while the scene tree is paused. To block the
 ///     main thread on purpose, hold <see cref="Suspension" /> for the duration. An attached debugger also suspends it.

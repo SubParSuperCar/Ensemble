@@ -123,14 +123,15 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		var rotation = new Quaternion(
 			ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader));
 
-		if (rotation.LengthSquared() is 0f)
+		var lengthSquared = rotation.LengthSquared();
+		if (lengthSquared is 0f)
 			throw new InvalidDataException("Invalid rotation.");
 
 		return new SaveInstance
 		{
 			AssetId = assetId,
 			Position = position,
-			Rotation = MathF.Abs(rotation.LengthSquared() - 1f) < NormalizedTolerance
+			Rotation = MathF.Abs(lengthSquared - 1f) < NormalizedTolerance
 				? rotation
 				: Quaternion.Normalize(rotation),
 			Properties = ReadProperties(reader)

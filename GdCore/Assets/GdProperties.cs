@@ -53,9 +53,9 @@ public partial class GdProperties : RefCounted
 		var converted = value.FromGodot();
 
 		if (
-			Source.All.TryGetValue(key, out var current) &&
-			(converted.Type != current.Type ||
-			 (converted.Type is CoreVariantType.Null && value.VariantType is not Variant.Type.Nil)))
+			Source.All.TryGetValue(key, out var current) && (
+				converted.Type != current.Type ||
+				(converted.Type is CoreVariantType.Null && value.VariantType is not Variant.Type.Nil)))
 			throw new ArgumentException($"Property {key} must stay {current.Type}.", nameof(value));
 	}
 }

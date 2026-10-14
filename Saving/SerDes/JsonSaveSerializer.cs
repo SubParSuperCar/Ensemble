@@ -9,8 +9,9 @@ public sealed class JsonSaveSerializer : ISaveSerializer
 
 	public CreationSaveData Deserialize(Stream stream)
 	{
-		var data = JsonSerializer.Deserialize(stream, SaveJsonContext.Default.CreationSaveData)
-				   ?? throw new InvalidDataException("Failed to deserialize save data.");
+		var data =
+			JsonSerializer.Deserialize(stream, SaveJsonContext.Default.CreationSaveData)
+			?? throw new InvalidDataException("Failed to deserialize save data.");
 
 		SaveValidation.Validate(data);
 		return data;

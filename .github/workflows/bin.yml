@@ -7,7 +7,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: bin-${{ github.ref }}
@@ -24,7 +24,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Identify build
         run: |
@@ -34,7 +36,7 @@ jobs:
           echo "ID=${id}" >> "${GITHUB_ENV}"
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           global-json-file: global.json
 
@@ -45,6 +47,13 @@ jobs:
           base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
           curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
           curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          curl -fsSL -o SHA512-SUMS.txt "${base}/SHA512-SUMS.txt"
+          verify() {
+            [ "$(grep " ${2}\$" SHA512-SUMS.txt | cut -d' ' -f1)" = "$(shasum -a 512 "${1}" | cut -d' ' -f1)" ] ||
+              { echo "Checksum mismatch: ${2}" >&2; exit 1; }
+          }
+          verify godot.zip "Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+          verify templates.tpz "Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
           unzip -q godot.zip -d "${HOME}/godot"
           unzip -q templates.tpz -d "${HOME}/tpl"
           mkdir -p "${HOME}/.local/share/godot/export_templates"
@@ -92,7 +101,7 @@ jobs:
           grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
 
       - name: Upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: Ensemble-${{ env.ID }}-linux-x86_64
           path: Ensemble-${{ env.ID }}-linux-x86_64*.zip
@@ -105,7 +114,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Identify build
         run: |
@@ -115,7 +126,7 @@ jobs:
           echo "ID=${id}" >> "${GITHUB_ENV}"
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           global-json-file: global.json
 
@@ -125,6 +136,13 @@ jobs:
           base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
           curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_macos.universal.zip"
           curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          curl -fsSL -o SHA512-SUMS.txt "${base}/SHA512-SUMS.txt"
+          verify() {
+            [ "$(grep " ${2}\$" SHA512-SUMS.txt | cut -d' ' -f1)" = "$(shasum -a 512 "${1}" | cut -d' ' -f1)" ] ||
+              { echo "Checksum mismatch: ${2}" >&2; exit 1; }
+          }
+          verify godot.zip "Godot_v${GODOT_VERSION}-stable_mono_macos.universal.zip"
+          verify templates.tpz "Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
           unzip -q godot.zip -d "${HOME}/godot"
           unzip -q templates.tpz -d "${HOME}/tpl"
           template_dir="${HOME}/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable.mono"
@@ -173,7 +191,7 @@ jobs:
           grep -qE 'Instantiated and added "?WorldHandle' smoke.log || { tail -50 smoke.log; exit 1; }
 
       - name: Upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: Ensemble-${{ env.ID }}-macos-universal
           path: Ensemble-${{ env.ID }}-macos-universal*.zip
@@ -188,12 +206,11 @@ jobs:
       run:
         shell: pwsh
 
-    env:
-      GODOT_USER_DIR: C:\Users\runneradmin\AppData\Roaming\Godot
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Identify build
         run: |
@@ -201,7 +218,7 @@ jobs:
           "ID=$id" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           global-json-file: global.json
 
@@ -210,9 +227,19 @@ jobs:
           $base = "https://github.com/godotengine/godot-builds/releases/download/$env:GODOT_VERSION-stable"
           Invoke-WebRequest "$base/Godot_v$env:GODOT_VERSION-stable_mono_win64.zip" -OutFile godot.zip
           Invoke-WebRequest "$base/Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz" -OutFile templates.tpz
+          Invoke-WebRequest "$base/SHA512-SUMS.txt" -OutFile SHA512-SUMS.txt
+          $sums = Get-Content SHA512-SUMS.txt
+          $files = @{
+            'godot.zip' = "Godot_v$env:GODOT_VERSION-stable_mono_win64.zip"
+            'templates.tpz' = "Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz"
+          }
+          foreach ($file in $files.GetEnumerator()) {
+            $expected = (($sums | Where-Object { $_.EndsWith("  $($file.Value)") }) -split ' ')[0]
+            if ((Get-FileHash $file.Key -Algorithm SHA512).Hash -ne $expected) { throw "Checksum mismatch: $($file.Value)" }
+          }
           Expand-Archive godot.zip -DestinationPath C:\godot -Force
           Expand-Archive templates.tpz -DestinationPath C:\tpl -Force
-          $dest = "$env:GODOT_USER_DIR\export_templates\$env:GODOT_VERSION.stable.mono"
+          $dest = "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
           New-Item -ItemType Directory -Force $dest | Out-Null
           Move-Item C:\tpl\templates\* $dest -Force
           $exe = (Get-ChildItem C:\godot -Recurse -Filter *_win64.console.exe | Select-Object -First 1) ??
@@ -268,7 +295,7 @@ jobs:
           }
 
       - name: Upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: Ensemble-${{ env.ID }}-windows-x86_64
           path: Ensemble-${{ env.ID }}-windows-x86_64*.zip
@@ -279,12 +306,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
-    env:
-      EnsembleJit: 'true'
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Identify build
         run: |
@@ -294,7 +320,7 @@ jobs:
           echo "ID=${id}" >> "${GITHUB_ENV}"
 
       - name: Set up .NET
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           global-json-file: global.json
 
@@ -304,6 +330,13 @@ jobs:
           base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
           curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
           curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
+          curl -fsSL -o SHA512-SUMS.txt "${base}/SHA512-SUMS.txt"
+          verify() {
+            [ "$(grep " ${2}\$" SHA512-SUMS.txt | cut -d' ' -f1)" = "$(shasum -a 512 "${1}" | cut -d' ' -f1)" ] ||
+              { echo "Checksum mismatch: ${2}" >&2; exit 1; }
+          }
+          verify godot.zip "Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
+          verify templates.tpz "Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
           unzip -q godot.zip -d "${HOME}/godot"
           unzip -q templates.tpz -d "${HOME}/tpl"
           mkdir -p "${HOME}/.local/share/godot/export_templates"
@@ -349,7 +382,7 @@ jobs:
           grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
 
       - name: Upload
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: Ensemble-${{ env.ID }}-jit
           path: Ensemble-${{ env.ID }}-jit.zip
@@ -367,7 +400,7 @@ jobs:
 
     steps:
       - name: Download
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: Ensemble-*-jit
           merge-multiple: true
@@ -394,9 +427,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
+    permissions:
+      contents: write
+
     steps:
       - name: Download
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           path: dist
           merge-multiple: true

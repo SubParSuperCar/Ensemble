@@ -5,6 +5,17 @@ updates:
     schedule:
       interval: 'cron'
       cronjob: '0 0 */3 * *'
+    # Bumped by hand: Estragonia/Lib/Avalonia.Skia.dll is patched against Avalonia 12.1.4 and its SkiaSharp, and
+    # GodotSharp must match Godot.NET.Sdk and CI's GODOT_VERSION
+    ignore:
+      - dependency-name: 'Avalonia'
+      - dependency-name: 'Avalonia.HarfBuzz'
+      - dependency-name: 'Avalonia.Skia'
+      - dependency-name: 'Avalonia.Themes.Simple'
+      - dependency-name: 'Avalonia.Wayland'
+      - dependency-name: 'Avalonia.X11'
+      - dependency-name: 'GodotSharp'
+      - dependency-name: 'SkiaSharp*'
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:

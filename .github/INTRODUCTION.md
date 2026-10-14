@@ -198,7 +198,7 @@ per-session text files and read aloud with text-to-speech, which stops when you 
 
 ### Diagnostics and Scripting
 
-- **Lua console**: over 40 functions for the session, world, display, and diagnostics, listed with their parameters by
+- **Lua console**: nearly 40 functions for the session, world, display, and diagnostics, listed with their parameters by
   `help()`.
 - **Logging**: Serilog writes colored console output, rolling JSON files, an in-game log view, and toasts for warnings.
 - **Watchdog**: a background thread that fails fast if the main thread stops responding for 20 seconds, instead of
@@ -211,9 +211,9 @@ per-session text files and read aloud with text-to-speech, which stops when you 
 
 The save format is finished, though the game doesn't use it yet. Creations serialize to a compact binary format (or
 JSON), wrapped in an envelope with optional Zstandard or Brotli compression, an optional SHA-256 checksum, and optional
-AES-GCM encryption keyed with Argon2id. Readers reject corrupt data and bound every count and string, so a malicious
-file can't exhaust memory. Separate layout and content versions leave room to migrate old saves, such as when asset IDs
-change.
+AES-GCM encryption keyed with Argon2id. Readers reject corrupt data and bound the file size, the decompressed size, and
+every count and string, so a malicious file can't exhaust memory. Separate layout and content versions leave room to
+migrate old saves, such as when asset IDs change.
 
 ### Builds and CI
 

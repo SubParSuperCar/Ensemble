@@ -20,7 +20,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Prepare source
         run: |
@@ -29,7 +31,7 @@ jobs:
           rsync -a . src/ --exclude='.git' --exclude='src'
 
       - name: Create deterministic archive
-        uses: timo-reymann/deterministic-zip-gh-action@v1
+        uses: timo-reymann/deterministic-zip-gh-action@7a36eed588fb801feb8f7ed7e75dd290b2d05b4f # v1
         with:
           source: src
           target: src.zip
@@ -45,7 +47,15 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh release create "src-${GITHUB_SHA::12}" \
+          tag="src-${GITHUB_SHA::12}"
+
+          # The same commit can be pushed again, e.g., on a new branch
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "Release $tag already exists"
+            exit 0
+          fi
+
+          gh release create "$tag" \
             --target "${GITHUB_SHA}" \
             --prerelease \
             --generate-notes \

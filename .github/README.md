@@ -96,7 +96,8 @@ Ensemble's test map:
 <details open>
   <summary>Click to expand/collapse this section.</summary>
 
-Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone must run the **same version**.
+Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone must run the **same version**. A host
+password only controls who can join: traffic isn't encrypted, so don't use a password that matters elsewhere.
 
 - **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`), and
   optionally set a password and a client limit. Share your address with joining players:
@@ -194,14 +195,15 @@ really resonated with me, and "baja" can be interpreted as "below" or "low" in S
 |----------|--------------------------------|-----------------------------------------------------------------|
 | Windows  | `x86_64`                       | Vulkan                                                          |
 | Linux    | `x86_64`                       | Vulkan                                                          |
-| macOS    | Universal (`x86_64` + `arm64`) | Metal (native, default), with Vulkan-via-MoltenVK as a fallback |
+| macOS    | Universal (`x86_64` + `arm64`) | Metal (native, default); Vulkan via MoltenVK renders without UI |
 
 Ensemble renders through [Godot](https://godotengine.org)'s rendering hardware interface, with an embedded [Avalonia
 UI](https://avaloniaui.net) overlay on top of it (via a heavily modified fork of
 [Estragonia](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows and
-Linux. On macOS, both default to Apple's native Metal API; if you need to fall back to Vulkan (translated through
-[MoltenVK](https://github.com/KhronosGroup/MoltenVK)) for troubleshooting, set Godot's
-`rendering/rendering_device/driver.macos` project setting to `vulkan`.
+Linux. On macOS, both default to Apple's native Metal API. For troubleshooting, setting Godot's
+`rendering/rendering_device/driver.macos` project setting to `vulkan` renders the 3D scene through
+[MoltenVK](https://github.com/KhronosGroup/MoltenVK) instead, but without the Avalonia UI, since SkiaSharp's macOS
+build has no Vulkan support.
 
 Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple Silicon.
 
@@ -210,9 +212,11 @@ Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple 
 The regular builds are compiled ahead of time with NativeAOT: fast to start and run, but one download per platform. The
 `-jit` ZIP instead runs Ensemble's code on the regular .NET runtime, which compiles it just in time (JIT). It is slower
 to start, larger, and **not recommended for playing**, but it bundles both Windows and Linux (`x86_64`) in one download
-and keeps every assembly and debug symbol as a separate file, which helps with testing and troubleshooting. Run
-`Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux) from the extracted folder; each uses its own self-contained .NET
-runtime in its `data_EnsembleGame_<platform>_x86_64` folder, so keep those folders next to the executables.
+and keeps every assembly and debug symbol as a separate file, which helps with testing and troubleshooting. It is also a
+debug build: `F12` opens Avalonia's developer tools, the UI shows render overlays, and `Pause` deliberately hangs the
+main thread to test the watchdog, which then ends the game. Run `Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux)
+from the extracted folder; each uses its own self-contained .NET runtime in its `data_EnsembleGame_<platform>_x86_64`
+folder, so keep those folders next to the executables.
 
 ### Debug Symbols
 

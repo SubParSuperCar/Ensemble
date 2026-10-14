@@ -74,13 +74,18 @@ public partial class PopperCam : SpringArm3D
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
+		// The release still counts while sunk, or the cursor would stay captured
+		if (@event.IsActionReleased(OrbitAction))
+		{
+			ReleaseMouse();
+			return;
+		}
+
 		if (InputSink.IsSunk)
 			return;
 
 		if (@event.IsActionPressed(OrbitAction))
 			CaptureMouse();
-		else if (@event.IsActionReleased(OrbitAction))
-			ReleaseMouse();
 		else
 			switch (@event)
 			{

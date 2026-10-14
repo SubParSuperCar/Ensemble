@@ -31,6 +31,11 @@ public partial class UpdateChecker : Node, IAutoload
 
 	public override void _ExitTree() => _cts.Cancel();
 
+	// The page opens in the browser, so it must stay on GitHub
+	private static bool IsGitHubUrl(string? url) =>
+		Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
+		uri is { Scheme: "https", Host: "github.com" };
+
 	private static bool TryParseVersion(string? text, out Version version) =>
 		Version.TryParse(text?.TrimStart('v', 'V'), out version!);
 
@@ -45,6 +50,9 @@ public partial class UpdateChecker : Node, IAutoload
 					$"Ensemble v{latest} is available (you have v{current}).\n\n" +
 					"Open its release page to download it?\nYou will not be asked again for this version."),
 				MessageBoxDialogType.YesNo, MessageBoxIconType.Question, MessageBoxButton.Yes);
+
+			// Only once answered, so a failed dialog asks again next launch
+			Callable.From(() => UserData.SetValue(Section, OfferedVersionKey, latest.ToString())).CallDeferred();
 
 			if (response is MessageBoxButton.Yes)
 				Callable.From(() => OS.ShellOpen(url)).CallDeferred();
@@ -91,10 +99,9 @@ public partial class UpdateChecker : Node, IAutoload
 			}
 
 			Log.Information("Update available: v{Latest} (current v{Current})", latest, current);
-			UserData.SetValue(Section, OfferedVersionKey, latest.ToString());
 
 			var url = release.TryGetProperty("html_url", out var htmlUrl) ? htmlUrl.GetString() : null;
-			_ = Task.Run(() => Offer(latest, current, url ?? GitHubRepoUrl + "/releases/latest"));
+			_ = Task.Run(() => Offer(latest, current, IsGitHubUrl(url) ? url! : GitHubRepoUrl + "/releases/latest"));
 		}
 		catch (OperationCanceledException) when (_cts.IsCancellationRequested) { }
 		catch (Exception exception)

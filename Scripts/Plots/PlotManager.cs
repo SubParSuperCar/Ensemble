@@ -11,6 +11,9 @@ namespace EnsembleRoot.Scripts.Plots;
 [GlobalClass]
 public partial class PlotManager : Node
 {
+	// The Godot dictionary is for GDScript and Lua; lookups use the C# one, which doesn't marshal
+	private readonly Dictionary<int, PlotHandle> _handlesById = [];
+
 	public Godot.Collections.Dictionary<int, PlotHandle> Handles { get; } = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
@@ -32,6 +35,8 @@ public partial class PlotManager : Node
 		foreach (var handle in GetChildren().OfType<PlotHandle>())
 		{
 			Handles.Add(handle.Id, handle);
+			_handlesById.Add(handle.Id, handle);
+
 			GPlots.Add(
 				handle.Id,
 				handle.MaxOccupantCount is Default ? DefaultMaxOccupantCount : handle.MaxOccupantCount,
@@ -58,7 +63,7 @@ public partial class PlotManager : Node
 			GPlotManager = null!;
 	}
 
-	public PlotHandle? GetHandleOrNull(int plotId) => Handles.TryGetValue(plotId, out var handle) ? handle : null;
+	public PlotHandle? GetHandleOrNull(int plotId) => _handlesById.GetValueOrDefault(plotId);
 
 	public PlotHandle GetHandle(int plotId) =>
 		GetHandleOrNull(plotId) ?? throw new KeyNotFoundException(

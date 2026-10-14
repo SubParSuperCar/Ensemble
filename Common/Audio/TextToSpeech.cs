@@ -51,6 +51,10 @@ public static class TextToSpeech
 
 				await using (registration.ConfigureAwait(false))
 				{
+					// Canceled before registering, Silence already ran and would stop nothing
+					if (token.IsCancellationRequested)
+						continue;
+
 					if (!await speaker.SpeakAsync(text, voice, rate, pitch, volume).ConfigureAwait(false) &&
 						!token.IsCancellationRequested)
 						Log.Warning("Failed to play TTS");

@@ -4,6 +4,7 @@ using EnsembleRoot.Scripts.Chat;
 using EnsembleRoot.Sessions.Snapshots;
 using Godot;
 using Godot.Collections;
+using Serilog;
 
 namespace EnsembleRoot.Replication.Snapshots;
 
@@ -33,8 +34,11 @@ internal static class ChatSnapshot
 
 	private static void Restore(Array<Variant> payload)
 	{
-		foreach (var message in payload[0].AsGodotArray<Dictionary>())
-			GChatManager.Add(ChatMessage.FromDict(message), true);
+		foreach (var dict in payload[0].AsGodotArray<Dictionary>())
+			if (ChatMessage.TryFromDict(dict) is { } message)
+				GChatManager.Add(message, true);
+			else
+				Log.Warning("Skipped malformed chat message in snapshot");
 	}
 
 	[ModuleInitializer]

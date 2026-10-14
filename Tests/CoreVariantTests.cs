@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using EnsembleCoreRoot.Api.Assets;
 using Xunit;
 
@@ -7,7 +7,7 @@ namespace EnsembleRoot.Tests;
 public sealed class CoreVariantTests
 {
 	[Fact]
-	public void CoreVariant_HasExpectedSize() => Assert.Equal(24, Marshal.SizeOf<CoreVariant>());
+	public void CoreVariant_HasExpectedSize() => Assert.Equal(24, Unsafe.SizeOf<CoreVariant>());
 
 	[Fact]
 	public void Equals_ComparesTypeAndValue()

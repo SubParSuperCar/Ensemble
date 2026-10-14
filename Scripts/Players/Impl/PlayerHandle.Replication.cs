@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Sessions.Api;
 using Godot;
@@ -17,6 +18,11 @@ public partial class PlayerHandle
 	private const float SmoothingRate = 16f;
 	private const float SnapDistance = 8f;
 
+	// Bounds what the host relays, since every update goes out to all other peers
+	private const double MinRelayInterval = ReplicationInterval / 2;
+	private const float MaxReplicatedCoordinate = 64 * 1024f;
+
+	private long _lastRelayTimestamp;
 	private Vector3 _lastReplicatedPosition;
 	private float _lastReplicatedYaw;
 	private double _sinceLastReplication;
@@ -77,16 +83,19 @@ public partial class PlayerHandle
 		TransferChannel = ReplicationChannel)]
 	private void RpcReplicate(Vector3 position, float yaw)
 	{
-		if (!position.IsFinite() || !float.IsFinite(yaw))
+		if (!IsWithinWorld(position) || !float.IsFinite(yaw))
 			return;
 
 		var senderId = Multiplayer.GetRemoteSenderId();
 
 		if (GSessionManager.IsServer)
 		{
-			if (GSessionManager.GetPeerByPlayerId(Id)?.Id != senderId)
+			if (
+				GSessionManager.GetPeerByPlayerId(Id)?.Id != senderId ||
+				Stopwatch.GetElapsedTime(_lastRelayTimestamp).TotalSeconds < MinRelayInterval)
 				return;
 
+			_lastRelayTimestamp = Stopwatch.GetTimestamp();
 			Relay(position, yaw, senderId);
 		}
 		else if (senderId != MultiplayerPeer.TargetPeerServer)
@@ -95,6 +104,13 @@ public partial class PlayerHandle
 		_targetPosition = position;
 		_targetYaw = yaw;
 	}
+
+	// Also false for NaN
+	private static bool IsWithinWorld(Vector3 position) =>
+		position.Abs() is
+		{
+			X: <= MaxReplicatedCoordinate, Y: <= MaxReplicatedCoordinate, Z: <= MaxReplicatedCoordinate
+		};
 
 	private void Relay(Vector3 position, float yaw, int sourcePeerId)
 	{

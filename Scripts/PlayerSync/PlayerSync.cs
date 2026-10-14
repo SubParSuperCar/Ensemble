@@ -36,8 +36,10 @@ public partial class PlayerSync : Node, IAutoload
 		Log.Debug("Synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), peer.PlayerId, peer.Id);
 	}
 
+	// Leaves the plot first, so ownership passes on; a disconnect isn't a choice, so the plot keeps its instances
 	private static void OnPeerUnregistered(Peer peer)
 	{
+		GPlots.SetPlot(peer.PlayerId, None, true, false);
 		GPlayers.Remove(peer.PlayerId);
 		Log.Debug("Removed synced {Class} {PlayerId} for peer {PeerId}", nameof(GdPlayer), peer.PlayerId, peer.Id);
 	}

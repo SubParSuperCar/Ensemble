@@ -46,7 +46,7 @@ public partial class PlotHandle
 
 		_staticInstances.AddChild(handle);
 		_handlesByInstanceId.Add(instance.Id, handle);
-		InstanceBoxes.Add(instance.Id, Obb.From(handle.BoundaryAabb, transform));
+		InstanceBoxes.Add(instance.Id, Obb.From(GAssetManager.GetBoundary(instance.Asset.Id), transform));
 	}
 
 	private void OnInstanceRemoved(GdInstance instance)

@@ -40,7 +40,17 @@ public partial class DiagnosticLogger : Node, IAutoload
 		var entries = new List<Entry>();
 
 		AddSoftwareInfo(entries);
-		AddHardwareInfo(entries);
+
+		// Hardware.Info shells out or uses WMI, either of which can fail, so the rest of the report still goes out
+		try
+		{
+			AddHardwareInfo(entries);
+		}
+		catch (Exception exception)
+		{
+			Log.Warning(exception, "Failed to collect hardware info");
+		}
+
 		AddLocaleInfo(entries);
 
 		Log.Information("\n{Report}", BuildReport(entries));

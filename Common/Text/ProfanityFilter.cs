@@ -8,7 +8,8 @@ namespace EnsembleRoot.Common.Text;
 
 /// <summary>
 ///     Masks profanity in text (e.g., chat messages) with <see cref="Mask" /> characters, or replaces the text with
-///     <see cref="Redacted" /> if nothing else would remain (or <see cref="Failed" /> if matching times out).
+///     <see cref="Redacted" /> if nothing else would remain (or <see cref="Failed" /> if matching times out or the list
+///     failed to load).
 ///     Thread-safe.
 /// </summary>
 /// <remarks>
@@ -59,6 +60,8 @@ public static class ProfanityFilter
 
 	private static readonly Lazy<Entry[]> Entries = new(Load);
 
+	private static int _hasLoggedLoadFailure;
+
 	/// <summary>Loads the list on the thread pool, so the first <see cref="Censor" /> call doesn't stall.</summary>
 	public static void Preload() =>
 		_ = Task.Run(static () =>
@@ -75,15 +78,30 @@ public static class ProfanityFilter
 
 	/// <summary>
 	///     Masks the profanity in <paramref name="text" />, or returns <see cref="Redacted" /> if no letter or digit
-	///     would remain unmasked, or <see cref="Failed" /> if matching times out.
+	///     would remain unmasked, or <see cref="Failed" /> if matching times out or the list failed to load.
 	/// </summary>
 	public static string Censor(string text)
 	{
+		Entry[] entries;
+
+		try
+		{
+			entries = Entries.Value;
+		}
+		// The lazy list caches its load failure, so it would otherwise rethrow on every call
+		catch (Exception exception)
+		{
+			if (Interlocked.Exchange(ref _hasLoggedLoadFailure, 1) is 0)
+				Log.Error(exception, "Failed to load the profanity list");
+
+			return Failed;
+		}
+
 		char[]? censored = null;
 
 		try
 		{
-			foreach (var entry in Entries.Value)
+			foreach (var entry in entries)
 				for (var match = entry.Pattern.Match(text); match.Success; match = match.NextMatch())
 				{
 					var core = match.Groups[CoreGroup];
@@ -105,6 +123,7 @@ public static class ProfanityFilter
 			Log.Warning(exception, "Profanity filter timed out (Length={Length})", text.Length);
 			return Failed;
 		}
+
 
 		if (censored is null)
 			return text;

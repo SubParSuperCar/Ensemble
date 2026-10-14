@@ -14,6 +14,9 @@
 # The profanity list is only committed compressed (see .github/scripts/profanity-list.sh)
 /Common/Text/ProfanityList.json
 
+# Private notes
+/.github/NITPICKS.md
+
 # TODO: Commit a shared (non-user) DotSettings file for future contributors
 *.DotSettings.user
 *.xsd

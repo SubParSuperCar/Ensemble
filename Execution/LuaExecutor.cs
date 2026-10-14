@@ -51,6 +51,7 @@ public static partial class LuaExecutor
 		{
 			// A script error, e.g., a bad argument, whose stack trace would only point into the interpreter
 			Log.Error(
+				// ReSharper disable once ExceptionLoggedAsTextProblem
 				"< Failed after {ElapsedMs:F3} ms: {Error}", stopwatch.Elapsed.TotalMilliseconds, exception.Message);
 
 			return new LuaResult(LuaOutcome.Failed, []);

@@ -80,8 +80,16 @@ public sealed class UpnpPortMapping(int port) : IAsyncDisposable
 				await Task.Delay(RenewInterval, GTimeProvider, token).ConfigureAwait(true);
 				token.ThrowIfCancellationRequested();
 
-				if (await Enqueue(AddMapping, token).ConfigureAwait(true) is not Upnp.UpnpResult.Success and var result)
-					Log.Warning("Failed to renew UPnP port mapping (Port={Port}, Result={Result})", port, result);
+				if (await Enqueue(AddMapping, token).ConfigureAwait(true) is Upnp.UpnpResult.Success)
+					continue;
+
+				// The router may have rebooted, so it's rediscovered; failing again raises Failed below
+				Log.Warning("Failed to renew UPnP port mapping for UDP port {Port}; mapping it again...", port);
+
+				address = await Enqueue(Map, token).ConfigureAwait(true);
+				token.ThrowIfCancellationRequested();
+
+				Opened?.Invoke(address);
 			}
 		}
 		// Nothing observes this task, and failures after closing (e.g., a slow discovery's) no longer matter

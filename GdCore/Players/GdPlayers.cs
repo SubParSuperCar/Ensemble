@@ -50,10 +50,17 @@ public partial class GdPlayers : RefCounted
 	public GdPlayer Add() => Add(string.Empty);
 	public GdPlayer Add(string id) => Add(id, string.Empty);
 
-	public GdPlayer Add(string id, string name) =>
-		GdPlayer.From(Source.Add(
-			id == string.Empty ? null : Guid.Parse(id),
-			name == string.Empty ? null : name));
+	public GdPlayer Add(string id, string name)
+	{
+		Guid? guid = null;
+
+		if (id.Length > 0)
+			guid = Guid.TryParse(id, out var parsed)
+				? parsed
+				: throw new ArgumentException($"Invalid player id: {id}.", nameof(id));
+
+		return GdPlayer.From(Source.Add(guid, name == string.Empty ? null : name));
+	}
 
 	public void Remove(string id)
 	{

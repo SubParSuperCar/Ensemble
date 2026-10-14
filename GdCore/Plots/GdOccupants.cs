@@ -50,7 +50,15 @@ public partial class GdOccupants : RefCounted
 	public Array<GdOccupant> GetAll() => [.. Source.All.Values.Select(GdOccupant.From)];
 
 	public void SetOwner() => SetOwner(string.Empty);
-	public void SetOwner(string playerId) => Source.SetOwner(Guid.TryParse(playerId, out var guid) ? guid : null);
+
+	// Only an empty ID clears the owner; a malformed one is ignored, like elsewhere in GdCore
+	public void SetOwner(string playerId)
+	{
+		if (playerId.Length is 0)
+			Source.SetOwner();
+		else if (Guid.TryParse(playerId, out var guid))
+			Source.SetOwner(guid);
+	}
 
 	public void Clear() => Source.Clear();
 

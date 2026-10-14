@@ -18,9 +18,12 @@ public static partial class LuaExecutor
 	// Keeps shifted dates well within DateTimeOffset's range
 	private static readonly TimeSpan MaxClockOffset = TimeSpan.FromDays(100 * 365.25);
 
+	// Task.Delay's limit
+	private static readonly double MaxWaitSeconds = TimeSpan.FromMilliseconds(uint.MaxValue - 1).TotalSeconds;
+
 	private static async ValueTask<int> quit(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (context.HasArgument(0))
+		if (context.GetArgumentOrDefault(0, false))
 		{
 			Log.Information("Force quitting...");
 			await Log.CloseAndFlushAsync().ConfigureAwait(false);
@@ -84,16 +87,25 @@ public static partial class LuaExecutor
 	{
 		var seconds = context.GetArgumentOrDefault(0, DefaultWaitSeconds);
 
-		if (!double.IsFinite(seconds) || seconds < 0)
+		if (!double.IsFinite(seconds) || seconds < 0 || seconds > MaxWaitSeconds)
 		{
 			Log.Error("Invalid wait: {Seconds} s", seconds);
 			return context.Return();
 		}
 
 		var start = Stopwatch.GetTimestamp();
+		PauseBudget();
+
+		try
+		{
 #pragma warning disable MA0166
-		await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken).ConfigureAwait(true);
+			await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken).ConfigureAwait(true);
 #pragma warning restore MA0166
+		}
+		finally
+		{
+			ResumeBudget();
+		}
 
 		return context.Return(Stopwatch.GetElapsedTime(start).TotalSeconds);
 	}

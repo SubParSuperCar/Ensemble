@@ -56,10 +56,11 @@ public static partial class LuaExecutor
 	extension(LuaFunctionExecutionContext context)
 	{
 		// An explicit nil skips an optional argument, too
+		private bool IsArgumentOmitted(int index) =>
+			!context.HasArgument(index) || context.GetArgument<LuaValue>(index).Type is LuaValueType.Nil;
+
 		private T GetArgumentOrDefault<T>(int index, T fallback = default!) =>
-			context.HasArgument(index) && context.GetArgument<LuaValue>(index).Type is not LuaValueType.Nil
-				? context.GetArgument<T>(index)
-				: fallback;
+			context.IsArgumentOmitted(index) ? fallback : context.GetArgument<T>(index);
 
 		private ValueTask<int> ReturnNothing() => new(context.Return());
 	}

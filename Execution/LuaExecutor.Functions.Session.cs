@@ -162,9 +162,22 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	/// <summary>Finds a player by ID or display name.</summary>
-	private static GdPlayer? FindPlayer(string query) =>
-		GPlayers.GetAll().FirstOrDefault(player =>
-			string.Equals(player.Id, query, StringComparison.Ordinal) ||
-			string.Equals(player.Name, query, StringComparison.Ordinal));
+	/// <summary>Finds a player by ID or, if unique, display name.</summary>
+	private static GdPlayer? FindPlayer(string query)
+	{
+		var players = GPlayers.GetAll();
+
+		if (players.FirstOrDefault(player => string.Equals(player.Id, query, StringComparison.Ordinal)) is { } byId)
+			return byId;
+
+		var named = players
+			.Where(other => string.Equals(other.Name, query, StringComparison.Ordinal))
+			.Take(2)
+			.ToArray();
+
+		if (named.Length > 1)
+			Log.Error("Several players are named {Name}; use a player ID instead", query);
+
+		return named.Length is 1 ? named[0] : null;
+	}
 }

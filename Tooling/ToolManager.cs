@@ -1,5 +1,6 @@
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Plots.Impl;
 using EnsembleRoot.Tooling.Tools;
 using Godot;
@@ -50,6 +51,7 @@ public partial class ToolManager : Node, IAutoload
 		AddChild(Marquee);
 
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
+		GSessionManager.ActionRejected += OnActionRejected;
 	}
 
 	/// <summary>Raised for every tool, so observers need not create tools just to watch them.</summary>
@@ -60,7 +62,9 @@ public partial class ToolManager : Node, IAutoload
 	public override void _ExitTree()
 	{
 		Selector.Dispose();
+
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
+		GSessionManager.ActionRejected -= OnActionRejected;
 
 		if (ReferenceEquals(Instance, this))
 			Instance = null;
@@ -146,5 +150,12 @@ public partial class ToolManager : Node, IAutoload
 		foreach (var tool in _tools.Values)
 			if (!ReferenceEquals(tool, exception))
 				tool.DisableInternal();
+	}
+
+	// The tools affirm on submit, so the host's rejection gets its own sound
+	private static void OnActionRejected(string actionId, string reason)
+	{
+		if (actionId is nameof(AddInstanceAction) or nameof(RemoveInstancesAction))
+			ToolCommon.PlaySound(ToolCommon.DissentSound);
 	}
 }

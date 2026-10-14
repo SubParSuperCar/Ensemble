@@ -32,7 +32,7 @@ public static partial class LuaExecutor
 	private static ValueTask<int> set_ui_dark_theme_on(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		bool? useDarkTheme = context.HasArgument(0) ? context.GetArgument<bool>(0) : null;
+		bool? useDarkTheme = context.IsArgumentOmitted(0) ? null : context.GetArgument<bool>(0);
 
 		WeakReferenceMessenger.Default.Send(new SetUiThemeMessage(useDarkTheme));
 		Log.Information("Set UI dark theme to {UseDarkTheme}", useDarkTheme);

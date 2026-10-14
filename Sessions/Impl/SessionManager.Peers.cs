@@ -174,7 +174,28 @@ public partial class SessionManager
 			_peersById.Values.Select(static peer => peer.PingMs).ToArray());
 	}
 
-	private static void OnPeerConnected(long peerId) => Log.Debug("Peer connected: {PeerId}", peerId);
+	// Clients time out their own registration, but a stalled or hostile one would otherwise keep its slot
+	private void OnPeerConnected(long id)
+	{
+		Log.Debug("Peer connected: {PeerId}", id);
+
+		if (!IsServer)
+			return;
+
+		var peerId = (int)id;
+		var session = _session;
+
+		GetTree().CreateTimer(RegistrationTimeout.TotalSeconds).Timeout += () =>
+		{
+			if (
+				!ReferenceEquals(_session, session) || _peersById.ContainsKey(peerId) ||
+				!Multiplayer.GetPeers().Contains(peerId))
+				return;
+
+			Log.Warning("Peer {PeerId} didn't register in time", peerId);
+			((SceneMultiplayer)Multiplayer).DisconnectPeer(peerId);
+		};
+	}
 
 	private void OnPeerDisconnected(long id)
 	{
@@ -182,6 +203,7 @@ public partial class SessionManager
 
 		var peerId = (int)id;
 		DisposeRateLimiter(peerId);
+		_kickedPeerIds.Remove(peerId);
 
 		if (IsServer && RemovePeer(peerId))
 			RpcRegistered(MethodName.RpcRemovePeer, peerId);

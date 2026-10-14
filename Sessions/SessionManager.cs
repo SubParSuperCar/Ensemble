@@ -183,6 +183,8 @@ public partial class SessionManager : Node
 		session.Failed += OnSessionFailed;
 		AttachPortMapping(session);
 
+		// Decoded objects could carry scripts from any peer; custom transports must not turn this on
+		((SceneMultiplayer)Multiplayer).AllowObjectDecoding = false;
 		session.StartSession();
 		stopwatch.Stop();
 
@@ -209,6 +211,10 @@ public partial class SessionManager : Node
 
 		Log.Information("Kicking peer {PeerId}... (Reason={Reason})", peerId, reason);
 		RpcId(peerId, MethodName.RpcEndSession, reason.Length is 0 ? "Kicked by host." : $"Kicked by host: {reason}");
+
+		// Until disconnected, it may ignore the kick, so it gets no more updates and its requests are dropped
+		_syncedPeerIds.Remove(peerId);
+		_kickedPeerIds.Add(peerId);
 
 		var session = _session;
 

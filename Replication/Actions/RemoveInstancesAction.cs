@@ -11,8 +11,8 @@ public readonly record struct RemoveInstancesAction(IReadOnlyList<InstanceRefere
 {
 	public const int MaxCount = 256;
 
-	// A full batch costs a third of a peer's token bucket
-	private const int CountPerToken = 8;
+	// A full batch costs a sixth of a peer's token bucket, so one marquee can delete a few thousand instances
+	private const int CountPerToken = 16;
 
 	public static int GetTokenCost(Array<Variant> payload) => (payload.Count + CountPerToken - 1) / CountPerToken;
 

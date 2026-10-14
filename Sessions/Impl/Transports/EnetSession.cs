@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Sockets;
 using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Sessions.Auth;
 using EnsembleRoot.Sessions.Nat;
@@ -20,6 +22,8 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 	[SuppressMessage("Performance", "CA1859")]
 	private readonly IPeerAuthenticator _authenticator = new HandshakeAuthenticator(version, config.Password);
 
+	private readonly CancellationTokenSource _resolveCts = new();
+
 	private ENetMultiplayerPeer? _peer;
 	private UpnpPortMapping? _portMapping;
 
@@ -39,11 +43,74 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 
 	public void StartSession()
 	{
+		if (config is JoinConfig join && !IPAddress.TryParse(join.Address, out _))
+			_ = ResolveThenStartAsync(join);
+		else
+			Start((config as JoinConfig)?.Address);
+	}
+
+	public Task StopSession()
+	{
+		_resolveCts.Cancel();
+
+		// Nothing is wired up if starting failed, and disconnecting unconnected Godot signals logs errors
+		if (_peer is not { } peer)
+			return Task.CompletedTask;
+
+		multiplayer.ConnectedToServer -= OnConnectedToServer;
+		multiplayer.ConnectionFailed -= OnConnectionFailed;
+		multiplayer.ServerDisconnected -= OnServerDisconnected;
+
+		_authenticator.Failed -= OnFailed;
+		_authenticator.StopAuth(multiplayer);
+
+		Close(peer);
+		_peer = null;
+		multiplayer.MultiplayerPeer = null;
+
+		return ClosePortMapping();
+	}
+
+	public string GetAddress(int peerId) => GetRemote(peerId)?.GetRemoteAddress() ?? string.Empty;
+
+	public int GetPing(int peerId) =>
+		(int)(GetRemote(peerId)?.GetStatistic(ENetPacketPeer.PeerStatistic.RoundTripTime) ?? 0);
+
+	// Godot would resolve the host name synchronously, freezing the main thread for up to the resolver's timeout
+	private async Task ResolveThenStartAsync(JoinConfig join)
+	{
+		IPAddress[] addresses;
+
+		try
+		{
+			addresses = await Dns.GetHostAddressesAsync(join.Address, _resolveCts.Token).ConfigureAwait(true);
+		}
+		catch (OperationCanceledException)
+		{
+			return;
+		}
+		catch (SocketException exception)
+		{
+			Failed?.Invoke($"Failed to resolve {join.Address}: {exception.Message}");
+			return;
+		}
+
+		if (_resolveCts.IsCancellationRequested)
+			return;
+
+		if (addresses is [])
+			Failed?.Invoke($"Failed to resolve {join.Address}.");
+		else
+			Start(addresses[0].ToString());
+	}
+
+	private void Start(string? address)
+	{
 		var peer = new ENetMultiplayerPeer();
 		var result = config switch
 		{
 			HostConfig host => peer.CreateServer(host.Port, host.MaxClientCount ?? MaxClientLimit),
-			JoinConfig join => peer.CreateClient(join.Address, join.Port),
+			JoinConfig join => peer.CreateClient(address, join.Port),
 			_ => Error.InvalidParameter
 		};
 
@@ -71,31 +138,6 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 		OpenPortMapping();
 		Started?.Invoke();
 	}
-
-	public Task StopSession()
-	{
-		// Nothing is wired up if starting failed, and disconnecting unconnected Godot signals logs errors
-		if (_peer is not { } peer)
-			return Task.CompletedTask;
-
-		multiplayer.ConnectedToServer -= OnConnectedToServer;
-		multiplayer.ConnectionFailed -= OnConnectionFailed;
-		multiplayer.ServerDisconnected -= OnServerDisconnected;
-
-		_authenticator.Failed -= OnFailed;
-		_authenticator.StopAuth(multiplayer);
-
-		Close(peer);
-		_peer = null;
-		multiplayer.MultiplayerPeer = null;
-
-		return ClosePortMapping();
-	}
-
-	public string GetAddress(int peerId) => GetRemote(peerId)?.GetRemoteAddress() ?? string.Empty;
-
-	public int GetPing(int peerId) =>
-		(int)(GetRemote(peerId)?.GetStatistic(ENetPacketPeer.PeerStatistic.RoundTripTime) ?? 0);
 
 	private void OpenPortMapping()
 	{

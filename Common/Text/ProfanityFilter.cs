@@ -124,7 +124,6 @@ public static class ProfanityFilter
 			return Failed;
 		}
 
-
 		if (censored is null)
 			return text;
 

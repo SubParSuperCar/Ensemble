@@ -9,7 +9,7 @@
     x:DataType="vm:ConsoleViewModel"
     TextOptions.TextRenderingMode="Antialias">
 
-    <Border BorderBrush="GreenYellow" BorderThickness="1.5">
+    <Border BorderBrush="GreenYellow" BorderThickness="{StaticResource BorderThickness}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.5*" MinWidth="448" />

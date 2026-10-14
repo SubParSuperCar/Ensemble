@@ -81,6 +81,7 @@ Text=" StdOut/Err)" /></Span>
                 PlaceholderText="&lt;Font Size Pt.&gt;"
                 ToolTip.Tip="Sets the output font size, in points."
                 Background="{DynamicResource TranslucentBackgroundBrush}"
+                Minimum="1"
                 Increment="0.5" />
         </WrapPanel>
     </Grid>

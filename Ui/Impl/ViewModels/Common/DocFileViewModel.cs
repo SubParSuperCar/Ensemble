@@ -94,7 +94,8 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	[RelayCommand]
 	private static void OpenLink(LinkClickedEventArgs e)
 	{
-		if (e.HRef is { IsAbsoluteUri: true } href)
+		// Other schemes (e.g., file:) could run programs
+		if (e.HRef is { IsAbsoluteUri: true, Scheme: "https" or "http" or "mailto" } href)
 			OS.ShellOpen(href.AbsoluteUri);
 	}
 
@@ -112,7 +113,10 @@ public sealed partial class DocFileViewModel : ViewModelBase
 			var root = link.IsImage ? DocFile.RepositoryRawUrl : DocFile.RepositoryBlobUrl;
 
 			// Like on GitHub, a leading "/" starts from the repository's root
-			link.Url = url.StartsWith('/') ? root + url[1..] : new Uri(new Uri(root + file.Path), url).ToString();
+			if (url.StartsWith('/'))
+				link.Url = root + url[1..];
+			else if (Uri.TryCreate(new Uri(root + file.Path), url, out var resolved))
+				link.Url = resolved.ToString();
 		}
 
 		return document;

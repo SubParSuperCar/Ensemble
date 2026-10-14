@@ -22,7 +22,7 @@
 
                 <!-- Drawn above the clock, so leaving the session is never blocked -->
                 <Border
-                    BorderBrush="{StaticResource DangerBrush}" BorderThickness="1.5"
+                    BorderBrush="{StaticResource DangerBrush}" BorderThickness="{StaticResource BorderThickness}"
                     HorizontalAlignment="Left" VerticalAlignment="Top">
 
                     <Button

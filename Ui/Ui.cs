@@ -31,6 +31,8 @@ public partial class Ui : Control
 	private AvaloniaControl _host = null!;
 	private double _lastUiProcessTime;
 	private ulong _processStartTicks;
+	private ServiceProvider? _services;
+	private MainViewModel? _viewModel;
 
 	public override void _Ready()
 	{
@@ -97,7 +99,22 @@ public partial class Ui : Control
 		Dispatcher.UIThread.UnhandledException -= OnAvaloniaUnhandledException;
 	}
 
-	public override void _Notification(int what) => WeakReferenceMessenger.Default.Send(new NotificationMessage(what));
+	public override void _Notification(int what)
+	{
+		WeakReferenceMessenger.Default.Send(new NotificationMessage(what));
+
+		// Unsubscribes the view models and services from static and autoload events. Not in _ExitTree, since quitting
+		// frees the autoloads first.
+		if (what != NotificationWMCloseRequest)
+			return;
+
+		_viewModel?.Dispose();
+		_services?.Dispose();
+
+		_viewModel = null;
+		_services = null;
+	}
+
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 
 	private static TextBlock CreateLoadingScreen()
@@ -168,7 +185,7 @@ public partial class Ui : Control
 		{
 			var collection = new ServiceCollection();
 			collection.AddServices();
-			var services = collection.BuildServiceProvider();
+			var services = _services = collection.BuildServiceProvider();
 
 			var locator = services.GetRequiredService<ViewLocatorService>();
 			Application.Current!.DataTemplates.Add(locator);
@@ -179,7 +196,7 @@ public partial class Ui : Control
 				[],
 				Performance.MonitorType.Time);
 
-			var viewModel = services.Create<MainViewModel>();
+			var viewModel = _viewModel = services.Create<MainViewModel>();
 			_host.Control = locator.Build(viewModel);
 
 			stopwatch.Stop();

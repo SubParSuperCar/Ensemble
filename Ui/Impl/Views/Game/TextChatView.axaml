@@ -33,7 +33,10 @@
                     VerticalContentAlignment="Center"
                     MaxLength="{x:Static t:ChatText.MaxLength}" />
 
-                <Border Grid.Column="1" BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="1.5">
+                <Border
+                    Grid.Column="1"
+                    BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="{StaticResource BorderThickness}">
+
                     <Button Command="{Binding SendCommand}" ToolTip.Tip="Sends your message. (Enter)">
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <TextBlock Text="Send" />

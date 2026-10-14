@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
@@ -55,5 +56,6 @@ public sealed partial class HostConfigViewModel : ViewModelBase
 
 	private bool CanHost() => IsValidDisplayName(DisplayName);
 
-	private void OnSessionFailed(string reason) => Status = reason;
+	private void OnSessionFailed(string reason) =>
+		Status = TextElements.Truncate(reason, MenuHomeViewModel.MaxReasonLength);
 }

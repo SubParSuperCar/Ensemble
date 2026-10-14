@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
@@ -19,12 +20,28 @@ public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewM
 	private const int RulerPosition = 60;
 	private const string EditorScrollViewerName = "PART_ScrollViewer";
 
+	private TextMate.Installation? _textMate;
+
 	public LuaEditorView()
 	{
 		InitializeComponent();
 
-		Dispatcher.UIThread.Post(InitializeEditor, DispatcherPriority.Background);
 		Editor.TemplateApplied += OnEditorTemplateApplied;
+	}
+
+	protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+	{
+		base.OnAttachedToVisualTree(e);
+		Dispatcher.UIThread.Post(InitializeEditor, DispatcherPriority.Background);
+	}
+
+	// The installation subscribes to the shared document, so it would otherwise keep this view alive
+	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+	{
+		base.OnDetachedFromVisualTree(e);
+
+		_textMate?.Dispose();
+		_textMate = null;
 	}
 
 	private void OnEditorTemplateApplied(object? sender, TemplateAppliedEventArgs e)
@@ -35,15 +52,18 @@ public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewM
 
 	private void InitializeEditor()
 	{
+		if (_textMate is not null || VisualRoot is null)
+			return;
+
 		Log.Debug("Initializing {Control}...", nameof(Editor));
 		var stopwatch = Stopwatch.StartNew();
 
 		var registryOptions = new RegistryOptions(SyntaxTheme);
-		var installation = Editor.InstallTextMate(registryOptions);
+		_textMate = Editor.InstallTextMate(registryOptions);
 
 		var language = registryOptions.GetLanguageByExtension(LanguageExtension);
 		var scope = registryOptions.GetScopeByLanguageId(language.Id);
-		installation.SetGrammar(scope);
+		_textMate.SetGrammar(scope);
 
 		var options = Editor.Options;
 		options.ShowSpaces = true;

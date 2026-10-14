@@ -1,6 +1,6 @@
-using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using Serilog;
@@ -12,7 +12,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class MenuHomeViewModel : ViewModelBase
 {
-	private const int MaxReasonLength = 128;
+	internal const int MaxReasonLength = 128;
 
 	private readonly NavigatorService _navigator;
 
@@ -43,7 +43,7 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	private void GoToWebBrowser() => _navigator.GoTo<MenuWebBrowserViewModel>();
 
 	private void OnSessionFailed(string reason) =>
-		Notice = $"Session ended: {TruncateToTextElements(reason, MaxReasonLength)}";
+		Notice = $"Session ended: {TextElements.Truncate(reason, MaxReasonLength)}";
 
 	private static Bitmap? LoadBitmapFromGodotImage(string path)
 	{
@@ -57,19 +57,5 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 
 		using var stream = new MemoryStream(file.GetBuffer((long)file.GetLength()));
 		return new Bitmap(stream);
-	}
-
-	private static string TruncateToTextElements(string value, int maxLength)
-	{
-		if (maxLength <= 0)
-			return string.Empty;
-
-		var elements = StringInfo.ParseCombiningCharacters(value);
-
-		if (elements.Length <= maxLength)
-			return value;
-
-		var end = elements[maxLength - 1];
-		return value[..end] + '\u2026';
 	}
 }

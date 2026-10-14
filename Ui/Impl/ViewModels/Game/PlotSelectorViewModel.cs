@@ -125,7 +125,11 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 	private void OnLocalPlotChanged(GdPlot? plot) =>
 		SelectedPlot = plot is null ? null : _plotsById.GetValueOrDefault(plot.Id);
 
-	private void OnActionRejected(string actionId, string reason) => OnLocalPlotChanged(LocalPlot);
+	private void OnActionRejected(string actionId, string reason)
+	{
+		if (actionId is nameof(SetPlotAction))
+			OnLocalPlotChanged(LocalPlot);
+	}
 }
 
 public sealed partial class PlotItem : ObservableObject

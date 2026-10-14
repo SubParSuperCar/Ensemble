@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:s="using:EnsembleRoot.Sessions"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.HostConfigView"
     x:DataType="vm:HostConfigViewModel"
@@ -26,6 +27,7 @@
                 ToolTip.Tip="The UDP port to listen on. Clients need it to join.&#x0a;Leave empty for the default port."
                 Minimum="1024" Maximum="65535"
                 Increment="1"
+                FormatString="0" ParsingNumberStyle="Integer"
                 ShowButtonSpinner="False" />
         </StackPanel>
 
@@ -63,7 +65,8 @@
                 PlaceholderText="&lt;Unlimited&gt;"
                 ToolTip.Tip="The most players that can be connected at once, excluding you.&#x0a;Leave empty for no limit."
                 Minimum="1" Maximum="4095"
-                Increment="1" />
+                Increment="1"
+                FormatString="0" ParsingNumberStyle="Integer" />
         </StackPanel>
 
         <CheckBox
@@ -79,7 +82,7 @@
                 Text="{Binding DisplayName}"
                 PlaceholderText="&lt;Short GUID&gt;"
                 ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
-                MaxLength="24" />
+                MaxLength="{x:Static s:SessionManager.MaxDisplayNameLength}" />
         </StackPanel>
 
         <TextBlock

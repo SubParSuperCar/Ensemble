@@ -96,6 +96,7 @@ public static class ConversionExtensions
 		[GdKey.KpSubtract] = AvKey.Subtract,
 		[GdKey.KpPeriod] = AvKey.Decimal, // Godot maps Separator and Decimal keys to the same key
 		[GdKey.KpDivide] = AvKey.Divide,
+		[GdKey.KpEnter] = AvKey.Return,
 		[GdKey.F1] = AvKey.F1,
 		[GdKey.F2] = AvKey.F2,
 		[GdKey.F3] = AvKey.F3,
@@ -128,7 +129,7 @@ public static class ConversionExtensions
 		[GdKey.Stop] = AvKey.BrowserStop,
 		[GdKey.Search] = AvKey.BrowserSearch,
 		[GdKey.Favorites] = AvKey.BrowserFavorites,
-		[GdKey.Homepage] = AvKey.Home,
+		[GdKey.Homepage] = AvKey.BrowserHome,
 		[GdKey.Volumemute] = AvKey.VolumeMute,
 		[GdKey.Volumedown] = AvKey.VolumeDown,
 		[GdKey.Volumeup] = AvKey.VolumeUp,
@@ -233,6 +234,7 @@ public static class ConversionExtensions
 		[GdKey.KpSubtract] = PhysicalKey.NumPadSubtract,
 		[GdKey.KpPeriod] = PhysicalKey.NumPadDecimal, // Godot maps Separator and Decimal keys to the same key
 		[GdKey.KpDivide] = PhysicalKey.NumPadDivide,
+		[GdKey.KpEnter] = PhysicalKey.NumPadEnter,
 		[GdKey.F1] = PhysicalKey.F1,
 		[GdKey.F2] = PhysicalKey.F2,
 		[GdKey.F3] = PhysicalKey.F3,
@@ -265,7 +267,7 @@ public static class ConversionExtensions
 		[GdKey.Stop] = PhysicalKey.BrowserStop,
 		[GdKey.Search] = PhysicalKey.BrowserSearch,
 		[GdKey.Favorites] = PhysicalKey.BrowserFavorites,
-		[GdKey.Homepage] = PhysicalKey.Home,
+		[GdKey.Homepage] = PhysicalKey.BrowserHome,
 		[GdKey.Volumemute] = PhysicalKey.AudioVolumeMute,
 		[GdKey.Volumedown] = PhysicalKey.AudioVolumeDown,
 		[GdKey.Volumeup] = PhysicalKey.AudioVolumeUp,

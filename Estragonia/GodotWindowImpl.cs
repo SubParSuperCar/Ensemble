@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
@@ -471,17 +472,14 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		WindowStateChanged?.Invoke(newAvState);
 	}
 
+	// Pointer events reach the host control's _GuiInput; keys and joypads don't, since it is never focused
 	private void OnWindowInput(InputEvent @event)
 	{
-		if (_isDisposed)
+		if (_isDisposed || !_hostControl.IsEnabled)
 			return;
 
 		_ = @event switch
 		{
-			InputEventMouseMotion motion => _topLevelImpl.OnMouseMotion(motion, Time.GetTicksMsec()),
-			InputEventMouseButton button => _topLevelImpl.OnMouseButton(button, Time.GetTicksMsec()),
-			InputEventScreenTouch st => _topLevelImpl.OnScreenTouch(st, Time.GetTicksMsec()),
-			InputEventScreenDrag sd => _topLevelImpl.OnScreenDrag(sd, Time.GetTicksMsec()),
 			InputEventKey k => _topLevelImpl.OnKey(k, Time.GetTicksMsec()),
 			InputEventJoypadButton jb => _topLevelImpl.OnJoypadButton(jb, Time.GetTicksMsec()),
 			InputEventJoypadMotion jm => _topLevelImpl.OnJoypadMotion(jm, Time.GetTicksMsec()),
@@ -522,6 +520,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		///     which is internal in Avalonia. Returns <c>null</c> when the property isn't found, for
 		///     instance because AOT trimmed it away.
 		/// </summary>
+		[DynamicDependency("RootVisual", "Avalonia.Controls.PresentationSource", "Avalonia.Controls")]
 		public static PropertyInfo? GetRootVisualProperty(IInputRoot inputRoot)
 		{
 			if (_rootVisualResolved)
@@ -541,7 +540,6 @@ internal sealed class GodotWindowImpl : IWindowImpl
 	private sealed class WindowHostControl : GdControl
 	{
 		private readonly GodotWindowImpl _owner;
-		private bool _isEnabled = true;
 
 		public WindowHostControl(GodotWindowImpl owner)
 		{
@@ -549,7 +547,9 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 		}
 
-		public void SetEnabled(bool enabled) => _isEnabled = enabled;
+		public bool IsEnabled { get; private set; } = true;
+
+		public void SetEnabled(bool enabled) => IsEnabled = enabled;
 
 		protected override bool InvokeGodotClassMethod(
 			in godot_string_name method,
@@ -669,9 +669,9 @@ internal sealed class GodotWindowImpl : IWindowImpl
 
 		public override void _GuiInput(InputEvent @event)
 		{
-			if (_owner._isDisposed || !_isEnabled)
+			if (_owner._isDisposed || !IsEnabled)
 			{
-				if (!_isEnabled)
+				if (!IsEnabled)
 					_owner.GotInputWhenDisabled?.Invoke();
 
 				return;

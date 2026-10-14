@@ -306,9 +306,9 @@ public class AvaloniaControl : GdControl
 
 	private bool SimulateKeyDownFromAction(InputEvent inputEvent, GdKey key)
 	{
-		// If the action already matches the key about to be simulated, abort: it already went
-		// through TryHandleInput and wasn't handled
-		if (inputEvent is InputEventKey inputEventKey && inputEventKey.Keycode == key)
+		// If the action's key already maps to the key about to be simulated (e.g., KpEnter to Enter), abort: it
+		// already went through TryHandleInput and wasn't handled
+		if (inputEvent is InputEventKey inputEventKey && inputEventKey.Keycode.ToAvaloniaKey() == key.ToAvaloniaKey())
 			return false;
 
 		if (_topLevel?.FocusManager.GetFocusedElement() is not { } currentElement)

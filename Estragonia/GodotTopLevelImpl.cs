@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
+using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -356,7 +357,10 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		}
 
 		// ReSharper disable once InvertIf -- the guard form would bury the text input handling in a nested block
-		if (pressed && OS.IsKeycodeUnicode((long)keyCode))
+		if (
+			pressed && OS.IsKeycodeUnicode((long)keyCode) && inputEvent.Unicode is >= 0x20 and not 0x7F &&
+			Rune.IsValid((int)inputEvent.Unicode)
+		)
 		{
 			var text = char.ConvertFromUtf32((int)inputEvent.Unicode);
 			var args = new RawTextInputEventArgs(GodotDevices.Keyboard, timestamp, InputRoot, text);
@@ -385,6 +389,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			// Match Avalonia's own KeySymbolHelper.IsAllowedAsciiKeySymbol: most control characters
 			// (other than a handful of whitespace/editing ones) and DEL aren't valid key symbols.
 			0 or < 0x20 and not ('\b' or '\t' or '\r' or 0x1B) or 0x7F => null,
+			_ when !Rune.IsValid(codepoint) => null,
 			_ => char.ConvertFromUtf32(codepoint)
 		};
 	}

@@ -24,7 +24,7 @@ internal sealed class BclStorageFile(FileInfo fileInfo) : IStorageBookmarkFile
 				new StorageItemProperties(
 					(ulong)FileInfo.Length,
 					FileInfo.CreationTimeUtc,
-					FileInfo.LastAccessTimeUtc
+					FileInfo.LastWriteTimeUtc
 				)
 			);
 

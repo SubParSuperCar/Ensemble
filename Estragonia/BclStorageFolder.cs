@@ -23,7 +23,7 @@ internal sealed class BclStorageFolder(DirectoryInfo directoryInfo) : IStorageBo
 			new StorageItemProperties(
 				null,
 				DirectoryInfo.CreationTimeUtc,
-				DirectoryInfo.LastAccessTimeUtc
+				DirectoryInfo.LastWriteTimeUtc
 			)
 		);
 

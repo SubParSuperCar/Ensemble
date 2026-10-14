@@ -138,7 +138,7 @@ internal static class MtlInterop
 	{
 		try
 		{
-			var surfaceHandle = GetSkObjectHandle(surface);
+			var surfaceHandle = surface.Handle;
 
 			if (surfaceHandle == IntPtr.Zero)
 				return IntPtr.Zero;
@@ -173,13 +173,6 @@ internal static class MtlInterop
 
 	private static IntPtr GetMetalTextureFromBackend(IntPtr backendTexture) =>
 		gr_backendtexture_get_mtl_textureinfo(backendTexture, out var info) ? info.Texture : IntPtr.Zero;
-
-	private static IntPtr GetSkObjectHandle(SKObject obj)
-	{
-		var handleProperty = typeof(SKObject).GetProperty("Handle", BindingFlags.Public | BindingFlags.Instance);
-
-		return handleProperty?.GetValue(obj) as IntPtr? ?? IntPtr.Zero;
-	}
 
 	/// <summary>Wraps a native handle in a <see cref="GRContext" /> through its non-public constructors.</summary>
 	private static GRContext? CreateGrContextFromHandle(IntPtr handle)
@@ -301,6 +294,7 @@ internal static class MtlInterop
 	private static extern void gr_backendtexture_delete(IntPtr handle);
 
 	[DllImport(SkiaLibrary, CallingConvention = CallingConvention.Cdecl)]
+	[return: MarshalAs(UnmanagedType.I1)]
 	private static extern bool gr_backendtexture_get_mtl_textureinfo(IntPtr texture, out GrMtlTextureInfoNative info);
 
 	[DllImport(SkiaLibrary, CallingConvention = CallingConvention.Cdecl)]

@@ -58,6 +58,54 @@ public sealed class BinarySaveSerializerTests
 	}
 
 	[Fact]
+	public void Deserialize_PropertyKeysDifferingInCase_Throws()
+	{
+		var data = CreateSaveData();
+		data.Instances[0] = new SaveInstance
+		{
+			AssetId = 1,
+			Rotation = Quaternion.Identity,
+			Properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { ["a"] = 1, ["b"] = 2 }
+		};
+
+		var bytes = Serialize(data);
+		bytes[Array.LastIndexOf(bytes, (byte)'b')] = (byte)'A';
+
+		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
+	}
+
+	[Fact]
+	public void Deserialize_OverflowingRotation_Throws()
+	{
+		var bytes = Serialize(CreateSaveData());
+
+		for (var offset = RotationOffset; offset < RotationOffset + 4 * sizeof(float); offset += sizeof(float))
+			BitConverter.TryWriteBytes(bytes.AsSpan(offset), 3e38f);
+
+		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
+	}
+
+	[Fact]
+	public void SerializeAndDeserialize_NonFiniteDouble_Throw()
+	{
+		var data = CreateSaveData();
+		data.Instances[0] = new SaveInstance
+		{
+			AssetId = 1,
+			Rotation = Quaternion.Identity,
+			Properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { ["k"] = 0.5 }
+		};
+
+		var bytes = Serialize(data);
+		BitConverter.TryWriteBytes(bytes.AsSpan(bytes.Length - sizeof(double)), double.NaN);
+
+		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
+
+		data.Instances[0].Properties!["k"] = double.PositiveInfinity;
+		Assert.Throws<InvalidOperationException>(() => Serialize(data));
+	}
+
+	[Fact]
 	public void Deserialize_UnnormalizedRotation_IsNormalized()
 	{
 		var data = CreateSaveData();

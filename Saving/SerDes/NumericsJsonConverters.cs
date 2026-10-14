@@ -26,7 +26,10 @@ internal sealed class QuaternionJsonConverter : JsonConverter<Quaternion>
 		FloatArray.Read(ref reader, values);
 
 		var rotation = new Quaternion(values[0], values[1], values[2], values[3]);
-		return rotation.LengthSquared() is 0f ? throw new JsonException("Invalid rotation.") : rotation;
+
+		return SaveValidation.TryNormalize(rotation, out var normalized)
+			? normalized
+			: throw new JsonException("Invalid rotation.");
 	}
 
 	public override void Write(Utf8JsonWriter writer, Quaternion value, JsonSerializerOptions options) =>

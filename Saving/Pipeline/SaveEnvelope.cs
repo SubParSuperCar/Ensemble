@@ -105,6 +105,10 @@ internal static class SaveEnvelope
 		if (!Enum.IsDefined(compression))
 			throw new InvalidDataException($"Unsupported compression type: {prefix[5]}.");
 
+		// A flag this build doesn't know may change how the payload reads
+		if ((flags & ~SaveFlags.Checksum) is not SaveFlags.None)
+			throw new InvalidDataException($"Unsupported save flags: {prefix[7]}.");
+
 		using var authenticated = new MemoryStream();
 		authenticated.Write(prefix);
 

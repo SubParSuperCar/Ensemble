@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Text;
 using EnsembleCoreRoot.Api.Assets;
+using static EnsembleRoot.Saving.SerDes.SaveValidation;
 
 namespace EnsembleRoot.Saving.SerDes;
 
@@ -18,12 +19,6 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 {
 	private const byte FormatVersion = 0;
 	private const int MaxPreallocatedCount = 1 << 12;
-	private const int MaxInstanceCount = 1 << 20;
-	private const int MaxPropertyCount = ushort.MaxValue - 2;
-	private const int MaxKeyByteCount = 256;
-
-	// Like Godot's Quaternion.IsNormalized(), which validates placements
-	private const float NormalizedTolerance = 1 / 1024f;
 
 	private static ReadOnlySpan<byte> Magic => "ENSB"u8;
 
@@ -75,8 +70,18 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			Instances = new List<SaveInstance>(Math.Min(instanceCount, MaxPreallocatedCount))
 		};
 
+		var totalPropertyCount = 0;
+
 		for (var i = 0; i < instanceCount; i++)
-			save.Instances.Add(ReadInstance(reader));
+		{
+			var instance = ReadInstance(reader);
+			totalPropertyCount += instance.Properties?.Count ?? 0;
+
+			if (totalPropertyCount > MaxTotalPropertyCount)
+				throw new InvalidDataException("Invalid property count.");
+
+			save.Instances.Add(instance);
+		}
 
 		return save;
 	}
@@ -123,17 +128,14 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		var rotation = new Quaternion(
 			ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader));
 
-		var lengthSquared = rotation.LengthSquared();
-		if (lengthSquared is 0f)
+		if (!TryNormalize(rotation, out var normalized))
 			throw new InvalidDataException("Invalid rotation.");
 
 		return new SaveInstance
 		{
 			AssetId = assetId,
 			Position = position,
-			Rotation = MathF.Abs(lengthSquared - 1f) < NormalizedTolerance
-				? rotation
-				: Quaternion.Normalize(rotation),
+			Rotation = normalized,
 			Properties = ReadProperties(reader)
 		};
 	}
@@ -148,7 +150,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			return null;
 
 		var properties = new Dictionary<string, CoreVariant>(
-			Math.Min((int)propertyCount, MaxPreallocatedCount), StringComparer.Ordinal);
+			Math.Min((int)propertyCount, MaxPreallocatedCount), StringComparer.OrdinalIgnoreCase);
 
 		for (var i = 0; i < propertyCount; i++)
 		{

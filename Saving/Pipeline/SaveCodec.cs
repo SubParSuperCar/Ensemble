@@ -4,6 +4,9 @@ namespace EnsembleRoot.Saving.Pipeline;
 
 internal static class SaveCodec
 {
+	private const int MaxPayloadByteCount = 64 * 1024 * 1024;
+	private const int ChunkSize = 64 * 1024;
+
 	public static void Write(ISaveSerializer serializer, Stream stream, CreationSaveData data, SaveOptions options)
 	{
 		using var payload = new MemoryStream();
@@ -36,28 +39,34 @@ internal static class SaveCodec
 
 	public static CreationSaveData Read(ISaveSerializer serializer, Stream stream, LoadOptions options)
 	{
-		var header = SaveEnvelope.ReadHeader(stream);
-
-		if (header.Encryption is not EncryptionType.None)
+		try
 		{
-			using var decrypted = new MemoryStream(SaveCrypto.Decrypt(stream, header, options), false);
-			return Decompress(serializer, decrypted, header.Compression);
+			var header = SaveEnvelope.ReadHeader(stream);
+
+			using var payload = ReadToEnd(stream);
+			var bytes = payload.GetBuffer().AsSpan(0, (int)payload.Length);
+
+			if (header.Encryption is not EncryptionType.None)
+			{
+				using var decrypted = new MemoryStream(SaveCrypto.Decrypt(bytes, header, options), false);
+				return Decompress(serializer, decrypted, header.Compression);
+			}
+
+			if (header.Checksum is { } expected)
+			{
+				Span<byte> actual = stackalloc byte[SaveEnvelope.ChecksumSize];
+				SHA256.HashData(bytes, actual);
+
+				if (!CryptographicOperations.FixedTimeEquals(actual, expected))
+					throw new InvalidDataException("Save file is corrupt: checksum mismatch.");
+			}
+
+			return Decompress(serializer, payload, header.Compression);
 		}
-
-		using var payload = new MemoryStream();
-		stream.CopyTo(payload);
-
-		if (header.Checksum is { } expected)
+		catch (EndOfStreamException exception)
 		{
-			Span<byte> actual = stackalloc byte[SaveEnvelope.ChecksumSize];
-			SHA256.HashData(payload.GetBuffer().AsSpan(0, (int)payload.Length), actual);
-
-			if (!CryptographicOperations.FixedTimeEquals(actual, expected))
-				throw new InvalidDataException("Save file is corrupt: checksum mismatch.");
+			throw new InvalidDataException("Save file is truncated.", exception);
 		}
-
-		payload.Position = 0;
-		return Decompress(serializer, payload, header.Compression);
 	}
 
 	private static void Compress(ISaveSerializer serializer, Stream target, CreationSaveData data, SaveOptions options)
@@ -71,7 +80,30 @@ internal static class SaveCodec
 	private static CreationSaveData Decompress(ISaveSerializer serializer, Stream source, CompressionType compression)
 	{
 		using var decompressor = SaveCompression.CreateDecompressorOrNull(source, compression);
-		return serializer.Deserialize(decompressor ?? source);
+
+		if (decompressor is null)
+			return serializer.Deserialize(source);
+
+		using var payload = ReadToEnd(decompressor);
+		return serializer.Deserialize(payload);
+	}
+
+	// Bounds the memory a crafted file or a decompression bomb can take
+	private static MemoryStream ReadToEnd(Stream source)
+	{
+		var payload = new MemoryStream();
+		var chunk = new byte[ChunkSize];
+
+		for (int count; (count = source.Read(chunk)) > 0;)
+		{
+			if (payload.Length + count > MaxPayloadByteCount)
+				throw new InvalidDataException("Save data is too large.");
+
+			payload.Write(chunk, 0, count);
+		}
+
+		payload.Position = 0;
+		return payload;
 	}
 
 	private static KdfParameters GetKdfParameters(SaveEncryption encryption) =>

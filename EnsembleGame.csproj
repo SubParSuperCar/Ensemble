@@ -93,8 +93,8 @@
     <PackageReference Include="LiveMarkdown.Avalonia.Svg.Skia" Version="2.4.3"/>
     <PackageReference Include="LuaCSharp" Version="0.5.7"/>
     <PackageReference Include="MethodBoundaryAspect.Fody" Version="3.2.0"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12"/>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.13"/>
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.13"/>
     <PackageReference Include="NsDepCop" Version="3.2.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -106,12 +106,12 @@
     <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1"/>
     <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1"/>
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0"/>
-    <PackageReference Include="Serilog.Sinks.File.Header" Version="1.0.2"/>
+    <PackageReference Include="Serilog.Sinks.File.Header" Version="1.1.0"/>
     <PackageReference Include="ServiceScan.SourceGenerator" Version="3.2.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Threading.RateLimiting" Version="10.0.12"/>
+    <PackageReference Include="System.Threading.RateLimiting" Version="10.0.13"/>
     <PackageReference Include="TinyDialogsNet" Version="2.0.0"/>
     <PackageReference Include="ZstdSharp.Port" Version="0.8.8"/>
   </ItemGroup>
@@ -179,6 +179,7 @@
       <BuildInfoLines Include="public static class BuildInfo"/>
       <BuildInfoLines Include="{"/>
       <BuildInfoLines Include="&#9;public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
+      <BuildInfoLines Include="&#9;public static bool IsNativeAot => !System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported%3B"/>
       <BuildInfoLines Include="}"/>
     </ItemGroup>
 

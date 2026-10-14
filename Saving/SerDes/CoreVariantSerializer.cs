@@ -6,8 +6,6 @@ namespace EnsembleRoot.Saving.SerDes;
 
 internal static class CoreVariantSerializer
 {
-	private const int MaxStringByteCount = 64 * 1024;
-
 	public static CoreVariant Read(BinaryReader reader)
 	{
 		var type = (CoreVariantType)reader.ReadByte();
@@ -17,8 +15,10 @@ internal static class CoreVariantSerializer
 			CoreVariantType.Null => CoreVariant.Null,
 			CoreVariantType.Boolean => new CoreVariant(reader.ReadBoolean()),
 			CoreVariantType.Int64 => new CoreVariant(reader.ReadInt64()),
-			CoreVariantType.Double => new CoreVariant(reader.ReadDouble()),
-			CoreVariantType.String => new CoreVariant(ReadString(reader, MaxStringByteCount)),
+			CoreVariantType.Double => reader.ReadDouble() is var value && double.IsFinite(value)
+				? new CoreVariant(value)
+				: throw new InvalidDataException("Invalid floating-point value."),
+			CoreVariantType.String => new CoreVariant(ReadString(reader, SaveValidation.MaxStringByteCount)),
 			_ => throw new InvalidDataException($"Unsupported variant type: {type}.")
 		};
 	}
@@ -51,12 +51,15 @@ internal static class CoreVariantSerializer
 				writer.Write((long)variant);
 				break;
 
+			case CoreVariantType.Double when !double.IsFinite((double)variant):
+				throw new InvalidOperationException("Saves support only finite floating-point values.");
+
 			case CoreVariantType.Double:
 				writer.Write((double)variant);
 				break;
 
 			case CoreVariantType.String:
-				WriteString(writer, (string)variant, MaxStringByteCount);
+				WriteString(writer, (string)variant, SaveValidation.MaxStringByteCount);
 				break;
 
 			default:

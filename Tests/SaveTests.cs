@@ -1,3 +1,4 @@
+using System.IO.Compression;
 using System.Numerics;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Saving;
@@ -9,6 +10,11 @@ namespace EnsembleRoot.Tests;
 public sealed class SaveTests : IDisposable
 {
 	private const string Password = "hunter2";
+
+	// Magic and version, compression, and encryption bytes, then the KDF block's function, memory, iterations, and
+	// parallelism
+	private const int FlagsOffset = 7;
+	private const int SaltLengthOffset = FlagsOffset + 1 + 1 + 2 * sizeof(uint) + 1;
 
 	private readonly string _path = Path.GetTempFileName();
 
@@ -50,7 +56,65 @@ public sealed class SaveTests : IDisposable
 			_path, CreateSaveData(), new SaveOptions { Encryption = new SaveEncryption.Key(new byte[5]) }));
 
 		AssertEquivalent(original, serializer.Load(_path));
-		Assert.False(File.Exists($"{_path}.tmp"));
+		Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(_path)!, $"{Path.GetFileName(_path)}.*.tmp"));
+	}
+
+	[Fact]
+	public void SaveThenLoad_WithPasswordInOtherNormalization_RoundTrips()
+	{
+		var serializer = new BinarySaveSerializer();
+		var original = CreateSaveData();
+
+		serializer.Save(_path, original, new SaveOptions { Encryption = CreatePassword("caf\u0065\u0301") });
+
+		AssertEquivalent(original, serializer.Load(_path, new LoadOptions { Password = "caf\u00E9" }));
+	}
+
+	[Theory]
+	[InlineData(SaltLengthOffset, 15, "salt")]
+	[InlineData(FlagsOffset, 0b10, "flags")]
+	public void Load_WithInvalidHeaderByte_Throws(int offset, byte value, string reason)
+	{
+		var serializer = new BinarySaveSerializer();
+		serializer.Save(_path, CreateSaveData(), new SaveOptions { Encryption = CreatePassword() });
+
+		var bytes = File.ReadAllBytes(_path);
+		bytes[offset] = value;
+		File.WriteAllBytes(_path, bytes);
+
+		var exception =
+			Assert.Throws<InvalidDataException>(() => serializer.Load(_path, new LoadOptions { Password = Password }));
+
+		Assert.Contains(reason, exception.Message, StringComparison.Ordinal);
+	}
+
+	[Fact]
+	public void Load_Truncated_ThrowsInvalidData()
+	{
+		var serializer = new BinarySaveSerializer();
+		serializer.Save(_path, CreateSaveData());
+
+		File.WriteAllBytes(_path, File.ReadAllBytes(_path)[..^4]);
+
+		Assert.Throws<InvalidDataException>(() => serializer.Load(_path));
+	}
+
+	[Fact]
+	public void Load_DecompressionBomb_Throws()
+	{
+		using (var file = File.Create(_path))
+		{
+			file.Write([.. "ENSV"u8, 0, (byte)CompressionType.Brotli, 0, 0]);
+
+			using var brotli = new BrotliStream(file, CompressionLevel.Fastest);
+			var zeros = new byte[1024 * 1024];
+
+			for (var i = 0; i <= 64; i++)
+				brotli.Write(zeros);
+		}
+
+		var exception = Assert.Throws<InvalidDataException>(() => new BinarySaveSerializer().Load(_path));
+		Assert.Contains("too large", exception.Message, StringComparison.Ordinal);
 	}
 
 	[Fact]
@@ -78,7 +142,7 @@ public sealed class SaveTests : IDisposable
 	private static ISaveSerializer CreateSerializer(string format) =>
 		format is nameof(JsonSaveSerializer) ? new JsonSaveSerializer() : new BinarySaveSerializer();
 
-	private static SaveEncryption.Password CreatePassword() => new(Password, 8 * 1024, 1, 1);
+	private static SaveEncryption.Password CreatePassword(string password = Password) => new(password, 8 * 1024, 1, 1);
 
 	private static CreationSaveData CreateSaveData() =>
 		new()

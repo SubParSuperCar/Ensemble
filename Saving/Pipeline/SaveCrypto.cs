@@ -12,7 +12,7 @@ internal static class SaveCrypto
 
 	// Bounds the cost a crafted header can demand before authentication
 	private const int MinArgon2MemoryKiB = 8 * 1024;
-	private const int MaxArgon2MemoryKiB = 2 * 1024 * 1024;
+	private const int MaxArgon2MemoryKiB = 512 * 1024;
 	private const int MinArgon2Iterations = 1;
 	private const int MaxArgon2Iterations = 16;
 	private const int MinArgon2DegreeOfParallelism = 1;
@@ -52,17 +52,15 @@ internal static class SaveCrypto
 		}
 	}
 
-	public static byte[] Decrypt(Stream stream, SaveEnvelope.Header header, LoadOptions options)
+	// The payload is the nonce, tag, and ciphertext
+	public static byte[] Decrypt(ReadOnlySpan<byte> payload, SaveEnvelope.Header header, LoadOptions options)
 	{
-		Span<byte> nonce = stackalloc byte[SaveEnvelope.NonceSize];
-		stream.ReadExactly(nonce);
+		if (payload.Length < SaveEnvelope.NonceSize + SaveEnvelope.TagSize)
+			throw new EndOfStreamException();
 
-		Span<byte> tag = stackalloc byte[SaveEnvelope.TagSize];
-		stream.ReadExactly(tag);
-
-		using var buffer = new MemoryStream();
-		stream.CopyTo(buffer);
-		var ciphertext = buffer.GetBuffer().AsSpan(0, (int)buffer.Length);
+		var nonce = payload[..SaveEnvelope.NonceSize];
+		var tag = payload.Slice(SaveEnvelope.NonceSize, SaveEnvelope.TagSize);
+		var ciphertext = payload[(SaveEnvelope.NonceSize + SaveEnvelope.TagSize)..];
 
 		var key = DeriveKey(header, options);
 
@@ -94,7 +92,7 @@ internal static class SaveCrypto
 		{
 			SaveEncryption.Key key => ValidateKey(key.Value.Span, nameof(encryption)),
 			SaveEncryption.Password password => DeriveArgon2IdKey(
-				Encoding.UTF8.GetBytes(password.Secret), salt, password.MemoryKiB, password.Iterations,
+				EncodePassword(password.Secret), salt, password.MemoryKiB, password.Iterations,
 				password.DegreeOfParallelism),
 			_ => throw new ArgumentOutOfRangeException(nameof(encryption))
 		};
@@ -105,7 +103,7 @@ internal static class SaveCrypto
 			KdfFunction.None => ValidateKey(
 				(options.Key ?? throw Missing("raw key", nameof(options))).Span, nameof(options)),
 			KdfFunction.Argon2Id => DeriveArgon2IdKey(
-				Encoding.UTF8.GetBytes(options.Password ?? throw Missing("password", nameof(options))), header.Salt,
+				EncodePassword(options.Password ?? throw Missing("password", nameof(options))), header.Salt,
 				header.Kdf.MemoryKiB, header.Kdf.Iterations, header.Kdf.DegreeOfParallelism),
 			_ => throw new InvalidDataException($"Unsupported key derivation function: {(byte)header.Kdf.Function}.")
 		};
@@ -115,6 +113,9 @@ internal static class SaveCrypto
 	{
 		try
 		{
+			if (salt.Length is not SaltSize)
+				throw new InvalidDataException("Invalid Argon2id salt length.");
+
 			ThrowIfOutOfRange(memoryKiB, MinArgon2MemoryKiB, MaxArgon2MemoryKiB, "memory cost (KiB)");
 			ThrowIfOutOfRange(iterations, MinArgon2Iterations, MaxArgon2Iterations, "iteration count");
 			ThrowIfOutOfRange(
@@ -134,6 +135,10 @@ internal static class SaveCrypto
 			CryptographicOperations.ZeroMemory(password);
 		}
 	}
+
+	// NFC, so the same password typed on any OS derives the same key
+	private static byte[] EncodePassword(string password) =>
+		Encoding.UTF8.GetBytes(password.Normalize(NormalizationForm.FormC));
 
 	private static void ThrowIfOutOfRange(int value, int min, int max, string parameter)
 	{

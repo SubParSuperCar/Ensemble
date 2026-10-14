@@ -10,7 +10,8 @@ public static class SaveSerializerExtensions
 		/// <remarks>Writes to a temporary file first, so a failed save never clobbers the existing one.</remarks>
 		public void Save(string path, CreationSaveData data, SaveOptions? options = null)
 		{
-			var tempPath = $"{path}.tmp";
+			// Unique, so concurrent saves to one path can't mix their writes
+			var tempPath = $"{path}.{Guid.NewGuid():N}.tmp";
 
 			try
 			{

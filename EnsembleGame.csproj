@@ -111,7 +111,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Threading.RateLimiting" Version="10.0.12"/>
+    <PackageReference Include="System.Threading.RateLimiting" Version="10.0.13"/>
     <PackageReference Include="TinyDialogsNet" Version="2.0.0"/>
     <PackageReference Include="ZstdSharp.Port" Version="0.8.8"/>
   </ItemGroup>

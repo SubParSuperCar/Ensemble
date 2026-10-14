@@ -52,6 +52,7 @@ internal static class SaveCodec
 				return Decompress(serializer, decrypted, header.Compression);
 			}
 
+			// ReSharper disable once InvertIf
 			if (header.Checksum is { } expected)
 			{
 				Span<byte> actual = stackalloc byte[SaveEnvelope.ChecksumSize];

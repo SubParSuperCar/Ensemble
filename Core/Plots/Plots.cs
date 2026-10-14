@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleCoreRoot.Api.Plots;
 
@@ -15,11 +16,8 @@ public sealed class Plots : IPlots
 
 	public Plots(IAssets assets, int? defaultMaxOccupantCount = null, int? defaultMaxInstanceCount = null)
 	{
-		if (defaultMaxOccupantCount is { } occupantCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount, nameof(defaultMaxOccupantCount));
-
-		if (defaultMaxInstanceCount is { } instanceCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount, nameof(defaultMaxInstanceCount));
+		ThrowIfInvalidMaxCount(defaultMaxOccupantCount);
+		ThrowIfInvalidMaxCount(defaultMaxInstanceCount);
 
 		_assets = assets;
 		_defaultMaxOccupantCount = defaultMaxOccupantCount;
@@ -44,12 +42,8 @@ public sealed class Plots : IPlots
 			throw new InvalidOperationException("Plots registry is locked.");
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
-
-		if (maxOccupantCount is { } occupantCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(occupantCount, nameof(maxOccupantCount));
-
-		if (maxInstanceCount is { } instanceCount and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(instanceCount, nameof(maxInstanceCount));
+		ThrowIfInvalidMaxCount(maxOccupantCount);
+		ThrowIfInvalidMaxCount(maxInstanceCount);
 
 		if (_plotsById.ContainsKey(id))
 			throw new InvalidOperationException(
@@ -83,7 +77,7 @@ public sealed class Plots : IPlots
 			current.Occupants.Remove(occupant, shouldResolveOwnerIfNullOrRelinquishing, plot is not null);
 		}
 
-		(plot as Plot)?.Occupants.Add(occupant, shouldResolveOwnerIfNullOrRelinquishing);
+		((Plot?)plot)?.Occupants.Add(occupant, shouldResolveOwnerIfNullOrRelinquishing);
 	}
 
 	public bool TryGetOccupant(Guid playerId, [NotNullWhen(true)] out IOccupant? occupant)
@@ -105,5 +99,12 @@ public sealed class Plots : IPlots
 		}
 
 		IsLocked = false;
+	}
+
+	private static void ThrowIfInvalidMaxCount(
+		int? maxCount, [CallerArgumentExpression(nameof(maxCount))] string? paramName = null)
+	{
+		if (maxCount is { } count and not Unlimited)
+			ArgumentOutOfRangeException.ThrowIfNegative(count, paramName);
 	}
 }

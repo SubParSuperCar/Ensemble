@@ -31,8 +31,31 @@ public partial class GdProperties : RefCounted
 	public Variant GetValue(string key) => Source.All.TryGetValue(key, out var value) ? value.ToGodot() : default;
 	public Dictionary GetAll() => Converter.ToGodotProperties(Source.All);
 
-	public void Update(string key, Variant value) => Source.Update(key, value.FromGodot());
-	public void UpdateAll(Dictionary properties) => Source.UpdateAll(Converter.FromGodotProperties(properties));
+	public void Update(string key, Variant value)
+	{
+		Validate(key, value);
+		Source.Update(key, value.FromGodot());
+	}
+
+	public void UpdateAll(Dictionary properties)
+	{
+		foreach (var (key, value) in properties)
+			Validate(key.AsString(), value);
+
+		Source.UpdateAll(Converter.FromGodotProperties(properties));
+	}
 
 	public override string ToString() => Source.ToString()!;
+
+	// Unsupported Godot types convert to Null, so they would otherwise slip through as a type change
+	private void Validate(string key, Variant value)
+	{
+		var converted = value.FromGodot();
+
+		if (
+			Source.All.TryGetValue(key, out var current) &&
+			(converted.Type != current.Type ||
+			 (converted.Type is CoreVariantType.Null && value.VariantType is not Variant.Type.Nil)))
+			throw new ArgumentException($"Property {key} must stay {current.Type}.", nameof(value));
+	}
 }

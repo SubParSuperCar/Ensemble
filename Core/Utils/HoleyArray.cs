@@ -71,6 +71,18 @@ internal sealed class HoleyArray<TValue> where TValue : class
 		if (index < _nextFreeIndex)
 			_nextFreeIndex = index;
 
+		// Trims the trailing holes, so one far placement doesn't leave every later scan walking them
+		if (index == _items.Count - 1)
+		{
+			var end = index;
+
+			while (end > 0 && _items[end - 1] is null)
+				end--;
+
+			_items.RemoveRange(end, _items.Count - end);
+			_items.TrimExcess();
+		}
+
 		Removed?.Invoke(index, item);
 	}
 

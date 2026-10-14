@@ -64,25 +64,25 @@ public sealed class App : Application
 		ApplyAccentColor();
 	}
 
-	// Sinks game input while a text input has focus
+	// Sinks game input while a text control has focus
 	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)
 	{
 		if (value.Args is not FocusChangedEventArgs focus)
 			return;
 
-		if (focus.NewFocusedElement is TextBox or TextArea or TerminalView)
+		if (focus.NewFocusedElement is TextBox or TextArea or SelectableTextBlock or TerminalView)
 			InputSink.Sink.Acquire(FocusSinkToken);
 		else
 			InputSink.Sink.Release(FocusSinkToken);
 	}
 
-	// Swallows Space and Tab, and all navigation keys while in session, to prevent unintended UI navigation
+	// Swallows Space, and Tab and the navigation keys while in session, to prevent unintended UI navigation
 	private static void OnKeyDownOrUp(TopLevel topLevel, KeyEventArgs args)
 	{
 		if (InputSink.IsSunk)
 			return;
 
-		if (args.Key is Key.Space or Key.Tab || (IsInSession && IsNavigationKey(args.Key)))
+		if (args.Key is Key.Space || (IsInSession && (args.Key is Key.Tab || IsNavigationKey(args.Key))))
 			args.Handled = true;
 	}
 

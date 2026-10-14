@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Networking;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
@@ -73,11 +74,16 @@ public sealed partial class JoinConfigViewModel : ViewModelBase
 
 	private (string Address, int Port)? GetEndPoint()
 	{
-		if (!IsCodeMethod)
-			return string.IsNullOrWhiteSpace(Address) || Port is not { } port ? null : (Address.Trim(), (int)port);
+		// Round-trips manual input through the parser, so it's validated like a code
+		var text = IsCodeMethod
+			? Code
+			: string.IsNullOrWhiteSpace(Address) || Port is not { } port
+				? null
+				: new HostEndPoint(Address.Trim(), (int)port).ToString();
 
-		return HostEndPoint.TryParse(Code, out var endPoint) ? (endPoint.Host, endPoint.Port) : null;
+		return HostEndPoint.TryParse(text, out var endPoint) ? (endPoint.Host, endPoint.Port) : null;
 	}
 
-	private void OnSessionFailed(string reason) => Status = reason;
+	private void OnSessionFailed(string reason) =>
+		Status = TextElements.Truncate(reason, MenuHomeViewModel.MaxReasonLength);
 }

@@ -113,7 +113,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 		void OnPingUpdated(int pingMs)
 		{
-			player.PingMs = Math.Min(pingMs, MaxPingMs);
+			player.PingMs = Math.Clamp(pingMs, 0, MaxPingMs);
 		}
 
 		void Unsubscribe()

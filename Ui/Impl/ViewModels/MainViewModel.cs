@@ -5,6 +5,7 @@ using Avalonia.Styling;
 using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Common.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Attributes;
 using EnsembleRoot.Ui.Impl.Extensions;
@@ -110,6 +111,9 @@ public sealed partial class MainViewModel : ViewModelBase
 
 	private void OnInput(InputEvent @event)
 	{
+		if (InputSink.IsSunk && @event is InputEventKey { Unicode: not 0 })
+			return;
+
 		if (Input.IsActionJustPressedByEvent(ToggleConsoleAction, @event))
 			IsConsoleVisible = !IsConsoleVisible;
 		else if (Input.IsActionJustPressedByEvent(OpenTerminalAction, @event))

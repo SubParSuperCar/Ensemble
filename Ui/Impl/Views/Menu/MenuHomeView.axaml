@@ -45,7 +45,7 @@
 
         <Border
             Grid.Row="2"
-            BorderBrush="{StaticResource DangerBrush}" BorderThickness="1.5"
+            BorderBrush="{StaticResource DangerBrush}" BorderThickness="{StaticResource BorderThickness}"
             HorizontalAlignment="Center" VerticalAlignment="Center"
             IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
 

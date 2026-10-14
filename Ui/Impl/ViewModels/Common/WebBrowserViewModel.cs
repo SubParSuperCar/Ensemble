@@ -17,7 +17,7 @@ public sealed partial class WebBrowserViewModel : ViewModelBase, IWidget
 
 	private bool _isNavigating;
 
-	[ObservableProperty] public partial Uri Source { get; set; } = new(HomePageUri);
+	[ObservableProperty] public partial Uri? Source { get; set; } = new(HomePageUri);
 
 	/// <summary>The address bar text, which follows <see cref="Source" /> unless being edited.</summary>
 	[ObservableProperty]
@@ -48,7 +48,7 @@ public sealed partial class WebBrowserViewModel : ViewModelBase, IWidget
 		CanGoForward = canGoForward;
 
 		if (!IsEditingAddress)
-			Address = Source.ToString();
+			Address = Source?.ToString() ?? string.Empty;
 	}
 
 	protected override void OnDispose() => NavigationRequested = null;

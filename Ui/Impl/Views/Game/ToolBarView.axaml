@@ -27,7 +27,7 @@
 
             <Border
                 Grid.Column="1"
-                BorderBrush="{StaticResource DangerBrush}" BorderThickness="1.5"
+                BorderBrush="{StaticResource DangerBrush}" BorderThickness="{StaticResource BorderThickness}"
                 Margin="0,0,0,4"
                 IsVisible="{Binding IsClearAllVisible}">
 
@@ -56,7 +56,10 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
                 </Grid.ColumnDefinitions>
 
-                <Border BorderBrush="{x:Static vm:ToolBarViewModel.ConstructBrush}" BorderThickness="1.5">
+                <Border
+                    BorderBrush="{x:Static vm:ToolBarViewModel.ConstructBrush}"
+                    BorderThickness="{StaticResource BorderThickness}">
+
                     <ToggleButton
                         Content="Place (1)"
                         Command="{Binding ToggleConstructToolCommand}"
@@ -66,7 +69,8 @@
 
                 <Border
                     Grid.Column="1"
-                    BorderBrush="{x:Static vm:ToolBarViewModel.DestructBrush}" BorderThickness="1.5">
+                    BorderBrush="{x:Static vm:ToolBarViewModel.DestructBrush}"
+                    BorderThickness="{StaticResource BorderThickness}">
 
                     <ToggleButton
                         Content="Delete (2)"
@@ -75,28 +79,28 @@
                         ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)&#x0a;&#x0a;Click an asset to delete it, or Shift-click to (de)select it.&#x0a;Alt-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Click a selected asset to delete the whole selection." />
                 </Border>
 
-                <Border Grid.Column="2" BorderBrush="#00C000" BorderThickness="1.5">
+                <Border Grid.Column="2" BorderBrush="#00C000" BorderThickness="{StaticResource BorderThickness}">
                     <ToggleButton
                         Content="Edit (3)"
                         ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)"
                         IsEnabled="False" />
                 </Border>
 
-                <Border Grid.Column="3" BorderBrush="#E050E0" BorderThickness="1.5">
+                <Border Grid.Column="3" BorderBrush="#E050E0" BorderThickness="{StaticResource BorderThickness}">
                     <ToggleButton
                         Content="Paint (4)"
                         ToolTip.Tip="Toggles the painting (material) tool. (Bound to 4 / Four)"
                         IsEnabled="False" />
                 </Border>
 
-                <Border Grid.Column="4" BorderBrush="#E0C000" BorderThickness="1.5">
+                <Border Grid.Column="4" BorderBrush="#E0C000" BorderThickness="{StaticResource BorderThickness}">
                     <ToggleButton
                         Content="Move (5)"
                         ToolTip.Tip="Toggles the moving (translate) tool. (Bound to 5 / Five)"
                         IsEnabled="False" />
                 </Border>
 
-                <!--<Border Grid.Column="5" BorderBrush="#FF8000" BorderThickness="1.5">
+                <!--<Border Grid.Column="5" BorderBrush="#FF8000" BorderThickness="{StaticResource BorderThickness}">
                     <ToggleButton
                         Content="Inspect (6)"
                         ToolTip.Tip="Toggles the inspection (inspect) tool. (Bound to 6 / Six)"

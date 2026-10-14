@@ -31,7 +31,7 @@
         Classes="fade"
         Classes.hidden="{Binding IsDismissing}"
         Background="{DynamicResource TranslucentBackgroundBrush}"
-        BorderBrush="{Binding #Level.Background}" BorderThickness="1.5"
+        BorderBrush="{Binding #Level.Background}" BorderThickness="{StaticResource BorderThickness}"
         CornerRadius="6" ClipToBounds="True">
 
         <Grid ColumnDefinitions="Auto,*,Auto,Auto">

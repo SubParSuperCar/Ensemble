@@ -103,7 +103,7 @@
                 IsVisible="{Binding Descriptor.IsResizable}" />
         </Grid>
 
-        <Border Name="Outline" BorderThickness="1.5" CornerRadius="6" />
+        <Border Name="Outline" BorderThickness="{StaticResource BorderThickness}" CornerRadius="6" />
     </Panel>
 
 </UserControl>

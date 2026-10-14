@@ -4,7 +4,6 @@ using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Utils;
 using Godot;
 using Serilog;
-using TinyDialogsNet;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -82,19 +81,9 @@ public partial class Watchdog : Node, IAutoload
 			CultureInfo.InvariantCulture,
 			$"Main thread missed {missCount} heartbeat(s) in ~{missCount * PollIntervalMs} ms.");
 
-		try
-		{
-			Log.Fatal("{Message}", message);
-			TinyDialogs.NotifyPopup(NotificationIconType.Error, "Ensemble Watchdog Timed Out", message);
-		}
-		catch (Exception exception)
-		{
-			Log.Error(exception, "Failed to show watchdog timeout popup");
-		}
-		finally
-		{
-			Main.FailFast();
-		}
+		// FailFast shows the crash popup
+		Log.Fatal("{Message}", message);
+		Main.FailFast();
 	}
 
 	private void Poll()

@@ -39,8 +39,39 @@ public sealed class ObbGridTests
 
 			// Boxes spanning several cells must still be reported once
 			Assert.Equal(candidates.Count, candidates.Distinct().Count());
+			Assert.All(boxes.Values.Where(probe.Overlaps), box => Assert.Contains(box, candidates));
 			Assert.Equal(boxes.Values.Any(probe.Overlaps), grid.Overlaps(probe));
 		}
+	}
+
+	[Fact]
+	public void AddAndQuery_WithHugeFarOrNonFiniteBoxes_StayBoundedAndReportThem()
+	{
+		var grid = new ObbGrid();
+		var huge = Obb.From(new Aabb(-Vector3.One * 1e30f, Vector3.One * 2e30f), Transform3D.Identity);
+		var far = Cube(Vector3.One * 3e38f, Basis.Identity);
+		var nonFinite = Cube(Vector3.One * float.NaN, Basis.Identity);
+		var near = Cube(Vector3.Zero, Basis.Identity);
+		var candidates = new List<Obb>();
+
+		grid.Add(0, huge);
+		grid.Add(1, far);
+		grid.Add(2, nonFinite);
+		grid.Add(3, near);
+
+		grid.Query(near, candidates);
+		Assert.Contains(huge, candidates);
+		Assert.Contains(near, candidates);
+		Assert.True(grid.Overlaps(near));
+
+		grid.Query(far, candidates);
+		Assert.Equal(4, candidates.Count);
+
+		grid.Remove(0);
+		grid.Remove(1);
+		grid.Remove(2);
+		grid.Query(near, candidates);
+		Assert.Equal([near], candidates);
 	}
 
 	private static Obb RandomCube(Random random) =>

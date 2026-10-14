@@ -8,6 +8,9 @@ namespace EnsembleRoot.Scripts.Players;
 [GlobalClass]
 public partial class PlayerManager : Node
 {
+	// The Godot dictionary is for GDScript and Lua; lookups use the C# one, which doesn't marshal
+	private readonly Dictionary<string, PlayerHandle> _handlesById = new(StringComparer.Ordinal);
+
 	public Godot.Collections.Dictionary<string, PlayerHandle> Handles { get; } = [];
 
 	[Export] public PackedScene PlayerScene { get; set; } = null!;
@@ -35,8 +38,7 @@ public partial class PlayerManager : Node
 			GPlayerManager = null!;
 	}
 
-	public PlayerHandle? GetHandleOrNull(string playerId) =>
-		Handles.TryGetValue(playerId, out var handle) ? handle : null;
+	public PlayerHandle? GetHandleOrNull(string playerId) => _handlesById.GetValueOrDefault(playerId);
 
 	public PlayerHandle GetHandle(string playerId) =>
 		GetHandleOrNull(playerId) ?? throw new KeyNotFoundException($"Handle with player id {playerId} not found.");
@@ -49,12 +51,16 @@ public partial class PlayerManager : Node
 		handle.TerrainNode = TerrainNode;
 
 		Handles.Add(player.Id, handle);
+		_handlesById.Add(player.Id, handle);
+
 		AddChild(handle);
 	}
 
 	private void OnPlayerRemoved(GdPlayer player)
 	{
-		if (Handles.Remove(player.Id, out var handle))
+		Handles.Remove(player.Id);
+
+		if (_handlesById.Remove(player.Id, out var handle))
 			handle.QueueFree();
 	}
 }

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 
 namespace EnsembleRoot.Scripts.Logging.Impl;
 
@@ -19,11 +18,9 @@ public static class NativeFrames
 	private static readonly string ModuleName =
 		"EnsembleGame" + (OperatingSystem.IsWindows() ? ".dll" : OperatingSystem.IsMacOS() ? ".dylib" : ".so");
 
-	private static bool IsSupported => !RuntimeFeature.IsDynamicCodeSupported;
-
 	public static string? Describe(Exception exception)
 	{
-		if (!IsSupported)
+		if (!BuildInfo.IsNativeAot)
 			return null;
 
 		var lines = new List<string>();

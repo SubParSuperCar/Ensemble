@@ -64,7 +64,14 @@ public partial class AssetManager : Node
 			if (entry.EndsWith('/'))
 				ScanDirectory(entryPath);
 			else if (SceneFileRegex.IsMatch(entryPath))
-				RegisterScene(entryPath);
+				try
+				{
+					RegisterScene(entryPath);
+				}
+				catch (Exception exception)
+				{
+					Log.Error(exception, "Failed to register asset at {Path}", entryPath);
+				}
 		}
 	}
 

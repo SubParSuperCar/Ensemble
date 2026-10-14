@@ -10,16 +10,24 @@ namespace EnsembleRoot.Scripts.Plots.Impl;
 public sealed class ObbGrid
 {
 	private const float CellSize = 2f;
+	private const float MaxGriddedExtent = 16f;
+	private const float MaxGriddedReach = 64 * 1024f;
 
 	private readonly Dictionary<int, Obb> _boxes = [];
 	private readonly List<Obb> _candidates = [];
 	private readonly Dictionary<Vector3I, List<int>> _cells = [];
+	private readonly HashSet<int> _ungridded = [];
 	private readonly HashSet<int> _visited = [];
 
 	public void Add(int id, Obb box)
 	{
 		_boxes.Add(id, box);
-		var (min, max) = GetCellRange(box);
+
+		if (!TryGetCellRange(box, out var min, out var max))
+		{
+			_ungridded.Add(id);
+			return;
+		}
 
 		for (var x = min.X; x <= max.X; x++)
 			for (var y = min.Y; y <= max.Y; y++)
@@ -29,10 +37,8 @@ public sealed class ObbGrid
 
 	public void Remove(int id)
 	{
-		if (!_boxes.Remove(id, out var box))
+		if (!_boxes.Remove(id, out var box) || _ungridded.Remove(id) || !TryGetCellRange(box, out var min, out var max))
 			return;
-
-		var (min, max) = GetCellRange(box);
 
 		for (var x = min.X; x <= max.X; x++)
 			for (var y = min.Y; y <= max.Y; y++)
@@ -61,7 +67,17 @@ public sealed class ObbGrid
 		results.Clear();
 		_visited.Clear();
 
-		var (min, max) = GetCellRange(box);
+		if (!TryGetCellRange(box, out var min, out var max))
+		{
+			foreach (var candidate in _boxes.Values)
+				results.Add(candidate);
+
+			return;
+		}
+
+		foreach (var id in _ungridded)
+			if (_visited.Add(id))
+				results.Add(_boxes[id]);
 
 		for (var x = min.X; x <= max.X; x++)
 			for (var y = min.Y; y <= max.Y; y++)
@@ -76,11 +92,20 @@ public sealed class ObbGrid
 				}
 	}
 
-	private static (Vector3I Min, Vector3I Max) GetCellRange(Obb box)
+	// Huge, far, or non-finite boxes skip the cells, so the loops stay bounded
+	private static bool TryGetCellRange(Obb box, out Vector3I min, out Vector3I max)
 	{
 		var envelope = box.Envelope;
-		return (ToCell(box.Center - envelope), ToCell(box.Center + envelope));
+		var isGridded = IsWithin(envelope, MaxGriddedExtent) && IsWithin(box.Center.Abs() + envelope, MaxGriddedReach);
+
+		min = isGridded ? ToCell(box.Center - envelope) : default;
+		max = isGridded ? ToCell(box.Center + envelope) : default;
+
+		return isGridded;
 	}
+
+	private static bool IsWithin(Vector3 vector, float limit) =>
+		vector.X <= limit && vector.Y <= limit && vector.Z <= limit;
 
 	private static Vector3I ToCell(Vector3 point) => (Vector3I)(point / CellSize).Floor();
 }

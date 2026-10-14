@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Utils;
+using EnsembleRoot.Scripts.Watchdog;
 using Godot;
 using Serilog;
 using TinyDialogsNet;
@@ -89,6 +90,9 @@ public partial class Main : Node
 
 	public static bool AskUser(string topic, string prompt)
 	{
+		var token = new object();
+		Watchdog.Suspension.Acquire(token);
+
 		try
 		{
 			var response = TinyDialogs.MessageBox(
@@ -101,6 +105,10 @@ public partial class Main : Node
 		{
 			Log.Error(exception, "Failed to show dialog");
 			return false;
+		}
+		finally
+		{
+			Watchdog.Suspension.Release(token);
 		}
 	}
 
@@ -186,6 +194,7 @@ public partial class Main : Node
 
 		var children = GetChildren();
 
+		// Queued frees run in order, so reversing the load order tears dependents down before what they depend on
 		for (var i = children.Count - 1; i >= 0; i--)
 			children[i].QueueFree();
 

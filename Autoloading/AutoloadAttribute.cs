@@ -1,5 +1,3 @@
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace EnsembleRoot.Autoloading;
 
 /// <summary>

@@ -31,6 +31,10 @@ public partial class ChatManager : Node, IAutoload
 	public const int MaxHistoryCount = 128;
 	public const long MaxLogFileBytes = 4 * 1024 * 1024;
 
+	// Like the Serilog file sink's retainedFileCountLimit
+	private const int MaxLogFileCount = 30;
+	private const string LogFilePattern = "chat_*.log";
+
 	private const string Section = "chat";
 	private const string IsFileLoggingEnabledKey = "log_to_file";
 	private const string IsTtsEnabledKey = "tts_enabled";
@@ -182,11 +186,30 @@ public partial class ChatManager : Node, IAutoload
 			CultureInfo.InvariantCulture, $"chat_{GSessionManager.UtcStartedAt.ToLocalTime():yyyy-MM-dd_HH-mm-ss}.log");
 
 		Directory.CreateDirectory(dir);
+		PruneLogs(dir);
 
 		var path = Path.Join(dir, fileName);
 		Log.Information("Logging chat to {Path}", path);
 
 		return new StreamWriter(path, true, new UTF8Encoding(false)) { AutoFlush = true };
+	}
+
+	// Keeps the newest logs, leaving room for the one about to open; the names sort by time
+	private static void PruneLogs(string dir)
+	{
+		var stale = Directory.GetFiles(dir, LogFilePattern)
+			.OrderDescending(StringComparer.Ordinal)
+			.Skip(MaxLogFileCount - 1);
+
+		foreach (var path in stale)
+			try
+			{
+				File.Delete(path);
+			}
+			catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+			{
+				Log.Warning(exception, "Failed to delete old chat log {Path}", path);
+			}
 	}
 
 	private void StopSpeech()

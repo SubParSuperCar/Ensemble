@@ -175,7 +175,11 @@ public partial class Logger : Node, IAutoload
 			if (Main.IsHeadlessServer)
 				return $"Kept {UserAppSettingsPath} despite newer defaults (not asked when headless)";
 
-			if (ShouldReplaceUserAppSettings())
+			// Unanswered, so it's asked again next launch
+			if (ShouldReplaceUserAppSettings() is not { } shouldReplace)
+				return $"Kept {UserAppSettingsPath} despite newer defaults (failed to ask)";
+
+			if (shouldReplace)
 			{
 				Copy(UserAppSettingsPath, UserAppSettingsPath + ".bak");
 				Copy(AppSettingsPath, UserAppSettingsPath);
@@ -192,7 +196,7 @@ public partial class Logger : Node, IAutoload
 		return note;
 	}
 
-	private static bool ShouldReplaceUserAppSettings()
+	private static bool? ShouldReplaceUserAppSettings()
 	{
 		try
 		{
@@ -209,7 +213,7 @@ public partial class Logger : Node, IAutoload
 		}
 		catch
 		{
-			return false;
+			return null;
 		}
 	}
 

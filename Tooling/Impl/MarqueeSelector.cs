@@ -22,7 +22,7 @@ public partial class MarqueeSelector : Node
 
 	public Color Color { get; private set; } = Colors.White;
 
-	private bool CanSelect => _manager.EnabledTools.Any(static tool => tool.UsesSelection);
+	public bool CanSelect => _manager.EnabledTools.Any(static tool => tool.UsesSelection);
 
 	public event Action<Rect2?>? AreaChanged;
 

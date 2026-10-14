@@ -38,9 +38,10 @@ internal static class ToolCommon
 
 	public static void PlaySound(string name) => SoundManager.Call(PlayMethod, SoundBus, name);
 
-	// Presses with the marquee key held start a marquee instead
+	// Presses with the marquee key held start a marquee instead, if any enabled tool selects
 	public static bool IsTriggerPressed(InputEvent @event) =>
-		@event.IsActionPressed(TriggerAction) && !Input.IsActionPressed(SelectionMarqueeAction);
+		@event.IsActionPressed(TriggerAction) &&
+		(!Input.IsActionPressed(SelectionMarqueeAction) || !GToolManager.Marquee.CanSelect);
 
 	public static bool IsHandleLocal(AssetHandle handle) =>
 		LocalPlotHandle is { } plot && ReferenceEquals(FindInHierarchy<PlotHandle>(handle), plot);

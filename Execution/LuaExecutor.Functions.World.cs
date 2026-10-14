@@ -41,6 +41,9 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
+		if (!IsValidInstanceCount(plot, count))
+			return context.ReturnNothing();
+
 		var stopwatch = Stopwatch.StartNew();
 		AddRandomInstances(plot, count);
 
@@ -120,7 +123,7 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
-		if (!context.HasArgument(0))
+		if (context.IsArgumentOmitted(0))
 		{
 			timeOfDay.Set(GameTimeEnabledProperty, true);
 			timeOfDay.Set(SystemSyncProperty, true);
@@ -129,7 +132,15 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
-		var time = Mathf.PosMod(context.GetArgument<float>(0), 24f);
+		var hours = context.GetArgument<float>(0);
+
+		if (!float.IsFinite(hours))
+		{
+			Log.Error("Invalid lighting time: {Hours} hour(s)", hours);
+			return context.ReturnNothing();
+		}
+
+		var time = Mathf.PosMod(hours, 24f);
 
 		timeOfDay.Set(GameTimeEnabledProperty, false);
 		timeOfDay.Set(SystemSyncProperty, false);
@@ -157,7 +168,7 @@ public static partial class LuaExecutor
 	}
 
 	/// <summary>
-	///     Adds random instances to a plot, measures the frame times for a while, then clears the plot again.
+	///     Adds random instances to a plot, measures the frame times for a while, then removes them again.
 	///     Returns the average and worst frame times in milliseconds.
 	/// </summary>
 	private static async ValueTask<int> stress_test(
@@ -176,8 +187,12 @@ public static partial class LuaExecutor
 			return context.Return();
 		}
 
+		if (!IsValidInstanceCount(plot, count))
+			return context.Return();
+
 		var tree = (SceneTree)Engine.GetMainLoop();
 		var frameTimesMs = new List<double>();
+		var instanceIds = new List<int>();
 
 		Log.Information(
 			"Stress testing plot with id {PlotId} with {Count} instance(s) for {Seconds} s...", plotId, count, seconds);
@@ -185,12 +200,12 @@ public static partial class LuaExecutor
 
 		try
 		{
-			AddRandomInstances(plot, count);
+			AddRandomInstances(plot, count, instanceIds);
 			var addMs = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
 
 			for (var last = Stopwatch.GetTimestamp(); Stopwatch.GetElapsedTime(start).TotalSeconds < seconds;)
 			{
-				await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame);
+				await NextFrameAsync(tree).ConfigureAwait(true);
 				cancellationToken.ThrowIfCancellationRequested();
 
 				var now = Stopwatch.GetTimestamp();
@@ -210,7 +225,9 @@ public static partial class LuaExecutor
 		}
 		finally
 		{
-			plot.Instances.Clear();
+			foreach (var id in instanceIds)
+				if (plot.Instances.GetInstance(id) is not null)
+					plot.Instances.Remove(id);
 		}
 	}
 
@@ -218,7 +235,7 @@ public static partial class LuaExecutor
 	{
 		if (GPlayers.Local is null || GPlayerManager.LocalHandle is not { } handle)
 			Log.Error("No local character to teleport");
-		else if (!context.HasArgument(0))
+		else if (context.IsArgumentOmitted(0))
 			handle.Respawn();
 		else if (context.GetArgument<LuaValue>(0) is { Type: LuaValueType.String } argument)
 		{
@@ -230,13 +247,20 @@ public static partial class LuaExecutor
 				Log.Error("Player with id or name {Query} not found", query);
 		}
 		else
-			handle.Teleport(new Vector3(
-				context.GetArgument<float>(0), context.GetArgument<float>(1), context.GetArgument<float>(2)));
+		{
+			var position = new Vector3(
+				context.GetArgument<float>(0), context.GetArgument<float>(1), context.GetArgument<float>(2));
+
+			if (position.IsFinite())
+				handle.Teleport(position);
+			else
+				Log.Error("Invalid teleport position: {Position}", position);
+		}
 
 		return context.ReturnNothing();
 	}
 
-	private static void AddRandomInstances(GdPlot plot, int count)
+	private static void AddRandomInstances(GdPlot plot, int count, List<int>? addedIds = null)
 	{
 		var assetIds = GAssets.GetAll().Select(static asset => asset.Id).ToArray();
 
@@ -266,8 +290,38 @@ public static partial class LuaExecutor
 			} while (!axis.IsNormalized());
 
 			var rotation = new Quaternion(axis, (float)((random.NextDouble() - 0.5) * Math.Tau));
-			instances.Add(assetId, position, rotation);
+			var instance = instances.Add(assetId, position, rotation);
+			addedIds?.Add(instance.Id);
 		}
+	}
+
+	private static async Task NextFrameAsync(SceneTree tree)
+	{
+		PauseBudget();
+
+		try
+		{
+			await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame);
+		}
+		finally
+		{
+			ResumeBudget();
+		}
+	}
+
+	// Core enforces no caps, so these functions must
+	private static bool IsValidInstanceCount(GdPlot plot, int count)
+	{
+		var instances = plot.Instances;
+
+		if (count >= 0 && (instances.MaxCount is Unlimited || count <= instances.MaxCount - instances.Count))
+			return true;
+
+		Log.Error(
+			"Invalid instance count {Count} for plot with id {PlotId} ({Current}/{Max})",
+			count, plot.Id, instances.Count, instances.MaxCount);
+
+		return false;
 	}
 
 	private static bool IsSinglePlayer(string function)

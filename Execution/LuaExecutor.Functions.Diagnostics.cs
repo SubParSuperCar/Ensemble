@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Text;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Common.Utils;
@@ -32,7 +31,7 @@ public static partial class LuaExecutor
 
 		Log.Information(
 			"Game: v{Version} (Commit={Commit}, BuildTime={BuildTime}, Compilation={Compilation}, Runtime={Runtime})",
-			GameVersion, GameCommit, BuildInfo.BuildTime, RuntimeFeature.IsDynamicCodeSupported ? "JIT" : "AOT",
+			GameVersion, GameCommit, BuildInfo.BuildTime, BuildInfo.IsNativeAot ? "AOT" : "JIT",
 			Environment.Version);
 
 		Log.Information(

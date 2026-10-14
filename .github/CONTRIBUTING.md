@@ -41,6 +41,8 @@
   what.
 - **Respect the module boundaries.** Layering is enforced at build time by NsDepCop (`config.nsdepcop`); see
   [**Architecture**](/.github/README.md#architecture). `Core` stays plain C# with no Godot dependencies.
+- **Keep asset IDs stable.** Saves store each instance's `AssetId`, so once an asset ships, its ID must never change or
+  be reused; give new assets new IDs.
 - **Build cleanly and test.** The solution must build without warnings, and `dotnet test --solution Ensemble.slnx` must
   pass. Add tests for real behavior and regressions rather than trivial operations.
 - **License your contributions.** By contributing, you agree that your code is licensed under GPL-3.0-or-later and your

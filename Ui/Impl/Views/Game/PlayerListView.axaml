@@ -81,7 +81,7 @@
                 Grid.Row="2"
                 ColumnDefinitions="*,Auto"
                 ToolTip.Tip="{Binding PortMappingDetail}"
-                Margin="6,0"
+                Margin="6,2,6,0"
                 IsVisible="{Binding PortMappingStatus, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
 
                 <TextBlock

@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using EnsembleRoot.Sessions.Api;
@@ -21,8 +20,9 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 	private const int CloseTimeoutMs = 500;
 	private const int CloseServiceTimeoutMs = 10;
 
-	[SuppressMessage("Performance", "CA1859")]
+#pragma warning disable CA1859
 	private readonly IPeerAuthenticator _authenticator = new HandshakeAuthenticator(version, config.Password);
+#pragma warning restore CA1859
 
 	private readonly CancellationTokenSource _resolveCts = new();
 

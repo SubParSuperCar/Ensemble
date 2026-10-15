@@ -2,11 +2,13 @@ using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
 using Avalonia.Rendering.Composition;
-using EnsembleRoot.Common.Interop;
 using EnsembleRoot.Ui.Impl;
 using Estragonia;
 using Fonts.Avalonia.JetBrainsMono;
 using Godot;
+#if !(NATIVE_AOT && OS_LINUX)
+using EnsembleRoot.Common.Interop;
+#endif
 
 namespace EnsembleRoot.Ui;
 
@@ -27,7 +29,9 @@ public partial class AvaloniaLoader : Node
 
 		try
 		{
+#if !(NATIVE_AOT && OS_LINUX)
 			HarfBuzzIsolation.Apply();
+#endif
 
 			AppBuilder
 				.Configure<App>()

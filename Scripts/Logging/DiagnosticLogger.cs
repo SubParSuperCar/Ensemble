@@ -82,7 +82,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		);
 
 		Add(entries, "Build Comp.",
-#if ENSEMBLE_AOT
+#if NATIVE_AOT
 			"Native Ahead-Of-Time (AOT)"
 #else
 			"Just-In-Time (JIT)"

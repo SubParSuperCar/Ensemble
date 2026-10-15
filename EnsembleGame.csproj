@@ -27,6 +27,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
     <!-- Keeps Release output in Debug for Godot's editor workflow -->
     <OutputPath>$(GodotProjectDir).godot/mono/temp/bin/Debug/</OutputPath>
   </PropertyGroup>
@@ -46,7 +47,7 @@
 
   <!-- Only releases are NativeAOT; everything else, including debug exports, is JIT-compiled -->
   <PropertyGroup Condition="('$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease') And '$(EnsembleJit)' != 'true'">
-    <DefineConstants>$(DefineConstants);ENSEMBLE_AOT</DefineConstants>
+    <DefineConstants>$(DefineConstants);NATIVE_AOT</DefineConstants>
     <PublishAot>true</PublishAot>
     <TrimMode>full</TrimMode>
   </PropertyGroup>

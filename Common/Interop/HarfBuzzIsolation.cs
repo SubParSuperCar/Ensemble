@@ -1,3 +1,4 @@
+#if !(NATIVE_AOT && OS_LINUX)
 using System.Reflection;
 using System.Runtime.InteropServices;
 using HarfBuzzSharp;
@@ -67,3 +68,5 @@ internal static class HarfBuzzIsolation
 	private static extern nint DlOpen([MarshalAs(UnmanagedType.LPUTF8Str)] string path, int flags);
 #pragma warning restore CA2101, SYSLIB1054
 }
+
+#endif

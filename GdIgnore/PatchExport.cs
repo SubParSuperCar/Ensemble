@@ -1,4 +1,4 @@
-#if ENSEMBLE_AOT && !OS_MAC
+#if NATIVE_AOT && !OS_MAC
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;

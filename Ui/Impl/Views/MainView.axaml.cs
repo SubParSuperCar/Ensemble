@@ -25,7 +25,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 
 		Watermark.Text =
 			$"\"Ensemble\" (v{GameVersion}) (" +
-#if ENSEMBLE_AOT
+#if NATIVE_AOT
 			"AOT"
 #else
 			"JIT"

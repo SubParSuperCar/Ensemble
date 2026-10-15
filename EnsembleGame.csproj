@@ -9,11 +9,11 @@
     <AssemblyName>EnsembleGame</AssemblyName>
     <RootNamespace>EnsembleRoot</RootNamespace>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-  </PropertyGroup>
 
-  <PropertyGroup>
     <!-- Makes embedded source paths relative to the project directory, for privacy and brevity -->
     <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
+
+    <LaunchScriptExt>sh</LaunchScriptExt>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
@@ -26,41 +26,51 @@
     <UseAppHost>false</UseAppHost>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <!-- Keeps Release output in Debug for Godot's editor workflow -->
+    <OutputPath>$(GodotProjectDir).godot/mono/temp/bin/Debug/</OutputPath>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
     <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
     <OptimizationPreference>Speed</OptimizationPreference>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="('$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease') And '$(EnsembleJit)' != 'true'">
-    <PublishAot>true</PublishAot>
-    <TrimMode>full</TrimMode>
-  </PropertyGroup>
-
-  <!-- Only release exports are NativeAOT; everything else, including debug exports, is JIT-compiled -->
-  <PropertyGroup Condition="'$(Configuration)' == 'ExportRelease' And '$(EnsembleJit)' != 'true'">
-    <DefineConstants>$(DefineConstants);ENSEMBLE_AOT</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
     <DefineConstants>$(DefineConstants);ENSEMBLE_DEBUG</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
-    <OutputPath>$(GodotProjectDir).godot/mono/temp/bin/Debug/</OutputPath>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'ExportDebug' Or '$(Configuration)' == 'ExportRelease'">
     <DefineConstants>$(DefineConstants);EXPORT</DefineConstants>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
-    <LaunchScriptExt>cmd</LaunchScriptExt>
+  <!-- Only releases are NativeAOT; everything else, including debug exports, is JIT-compiled -->
+  <PropertyGroup Condition="('$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease') And '$(EnsembleJit)' != 'true'">
+    <DefineConstants>$(DefineConstants);ENSEMBLE_AOT</DefineConstants>
+    <PublishAot>true</PublishAot>
+    <TrimMode>full</TrimMode>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
-    <LaunchScriptExt>sh</LaunchScriptExt>
-  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(OS)' == 'Windows_NT'">
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);OS_WINDOWS</DefineConstants>
+        <LaunchScriptExt>cmd</LaunchScriptExt>
+      </PropertyGroup>
+    </When>
+
+    <When Condition="Exists('/System/Library/CoreServices')">
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);OS_MAC</DefineConstants>
+      </PropertyGroup>
+    </When>
+
+    <Otherwise>
+      <PropertyGroup>
+        <DefineConstants>$(DefineConstants);OS_LINUX</DefineConstants>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
 
   <ItemGroup>
     <TrimmerRootAssembly Include="$(TargetName)"/>

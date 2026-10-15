@@ -1,4 +1,4 @@
-#if ENSEMBLE_AOT
+#if ENSEMBLE_AOT && !OS_MAC
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;
@@ -17,7 +17,7 @@ public static class PatchExport
 	[ModuleInitializer]
 	public static void Initialize()
 	{
-		if (OperatingSystem.IsMacOS() || Path.GetDirectoryName(Environment.ProcessPath) is not { } exeDir)
+		if (Path.GetDirectoryName(Environment.ProcessPath) is not { } exeDir)
 			return;
 
 		try

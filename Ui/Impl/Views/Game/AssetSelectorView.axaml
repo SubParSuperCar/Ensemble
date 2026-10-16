@@ -6,8 +6,7 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="384" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.AssetSelectorView"
-    x:DataType="vm:AssetSelectorViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:AssetSelectorViewModel">
 
     <Grid
         RowDefinitions="Auto,Auto,*,Auto"

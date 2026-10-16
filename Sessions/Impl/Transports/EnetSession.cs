@@ -9,7 +9,7 @@ using Godot;
 
 namespace EnsembleRoot.Sessions.Transports;
 
-/// <summary>A multi-player session over ENet (UDP), with an optional UPnP port mapping while hosting.</summary>
+/// <summary>A multi-player session over ENet (UDP) with DTLS, and an optional UPnP port mapping while hosting.</summary>
 /// <remarks>
 ///     Closing waits briefly for queued reliable packets (e.g., a session-ended notice) to be acknowledged.
 /// </remarks>
@@ -118,6 +118,9 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 			_ => Error.InvalidParameter
 		};
 
+		if (result is Error.Ok)
+			result = SetUpDtls(peer.Host, address);
+
 		if (result is not Error.Ok)
 		{
 			peer.Dispose();
@@ -142,6 +145,12 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 		OpenPortMapping();
 		Started?.Invoke();
 	}
+
+	// Clients can't verify the host's self-signed certificate yet, so this stops eavesdropping and tampering only
+	private Error SetUpDtls(ENetConnection host, string? address) =>
+		IsServer
+			? host.DtlsServerSetup(HostCertificate.ServerOptions)
+			: host.DtlsClientSetup(address, TlsOptions.ClientUnsafe());
 
 	private void OpenPortMapping()
 	{

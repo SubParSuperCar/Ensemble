@@ -71,8 +71,8 @@ public partial class GdPlots : RefCounted
 			if (current.Id == plotId)
 				return;
 
-			current.Despawn();
 			current.Instances.Clear();
+			current.Despawn();
 		}
 
 		Source.SetPlot(guid, plotId is None ? null : plotId, shouldResolveOwnerIfNullOrRelinquishing);

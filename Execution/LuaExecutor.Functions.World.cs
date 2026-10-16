@@ -26,10 +26,10 @@ public static partial class LuaExecutor
 	private static readonly StringName SystemSyncProperty = "system_sync";
 	private static readonly StringName CurrentTimeProperty = "current_time";
 
-	private static ValueTask<int> add_rand_insts(
+	private static ValueTask<int> loc_add_rand_insts(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (!IsSinglePlayer(nameof(add_rand_insts)))
+		if (!IsSinglePlayer(nameof(loc_add_rand_insts)))
 			return context.ReturnNothing();
 
 		var plotId = context.GetArgument<int>(0);
@@ -55,9 +55,10 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> clr_insts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	private static ValueTask<int> loc_clr_insts(LuaFunctionExecutionContext context,
+		CancellationToken cancellationToken)
 	{
-		if (!IsSinglePlayer(nameof(clr_insts)))
+		if (!IsSinglePlayer(nameof(loc_clr_insts)))
 			return context.ReturnNothing();
 
 		var plotId = context.GetArgument<int>(0);
@@ -80,6 +81,70 @@ public static partial class LuaExecutor
 			count, plotId, stopwatch.Elapsed.TotalMilliseconds);
 
 		return context.ReturnNothing();
+	}
+
+	/// <summary>
+	///     Adds random instances to a plot, measures the frame times for a while, then removes them again.
+	///     Returns the average and worst frame times in milliseconds.
+	/// </summary>
+	private static async ValueTask<int> loc_stress_test(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		if (!IsSinglePlayer(nameof(loc_stress_test)))
+			return context.Return();
+
+		var plotId = context.GetArgument<int>(0);
+		var count = context.GetArgumentOrDefault(1, DefaultStressTestCount);
+		var seconds = context.GetArgumentOrDefault(2, DefaultStressTestSeconds);
+
+		if (GPlots.GetPlot(plotId) is not { } plot)
+		{
+			Log.Error("Plot with id {PlotId} not found", plotId);
+			return context.Return();
+		}
+
+		if (!IsValidInstanceCount(plot, count))
+			return context.Return();
+
+		var tree = (SceneTree)Engine.GetMainLoop();
+		var frameTimesMs = new List<double>();
+		var instanceIds = new List<int>();
+
+		Log.Information(
+			"Stress testing plot with id {PlotId} with {Count} instance(s) for {Seconds} s...", plotId, count, seconds);
+		var start = Stopwatch.GetTimestamp();
+
+		try
+		{
+			AddRandomInstances(plot, count, instanceIds);
+			var addMs = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+
+			for (var last = Stopwatch.GetTimestamp(); Stopwatch.GetElapsedTime(start).TotalSeconds < seconds;)
+			{
+				await NextFrameAsync(tree).ConfigureAwait(true);
+				cancellationToken.ThrowIfCancellationRequested();
+
+				var now = Stopwatch.GetTimestamp();
+				frameTimesMs.Add(Stopwatch.GetElapsedTime(last, now).TotalMilliseconds);
+				last = now;
+			}
+
+			var averageMs = frameTimesMs.Count is 0 ? 0d : frameTimesMs.Average();
+			var worstMs = frameTimesMs.Count is 0 ? 0d : frameTimesMs.Max();
+
+			Log.Information(
+				"Stress test added {Count} instance(s) in {AddMs:F3} ms, then averaged {AverageMs:F3} ms per frame " +
+				"(worst {WorstMs:F3} ms) over {FrameCount} frame(s)",
+				count, addMs, averageMs, worstMs, frameTimesMs.Count);
+
+			return context.Return(averageMs, worstMs);
+		}
+		finally
+		{
+			foreach (var id in instanceIds)
+				if (plot.Instances.GetInstance(id) is not null)
+					plot.Instances.Remove(id);
+		}
 	}
 
 	private static ValueTask<int> perf_mod(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
@@ -165,70 +230,6 @@ public static partial class LuaExecutor
 		Log.Information("Set {Node} shader visibility to {IsVisible}", TemporalStaticPath, isVisible);
 
 		return context.ReturnNothing();
-	}
-
-	/// <summary>
-	///     Adds random instances to a plot, measures the frame times for a while, then removes them again.
-	///     Returns the average and worst frame times in milliseconds.
-	/// </summary>
-	private static async ValueTask<int> stress_test(
-		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
-	{
-		if (!IsSinglePlayer(nameof(stress_test)))
-			return context.Return();
-
-		var plotId = context.GetArgument<int>(0);
-		var count = context.GetArgumentOrDefault(1, DefaultStressTestCount);
-		var seconds = context.GetArgumentOrDefault(2, DefaultStressTestSeconds);
-
-		if (GPlots.GetPlot(plotId) is not { } plot)
-		{
-			Log.Error("Plot with id {PlotId} not found", plotId);
-			return context.Return();
-		}
-
-		if (!IsValidInstanceCount(plot, count))
-			return context.Return();
-
-		var tree = (SceneTree)Engine.GetMainLoop();
-		var frameTimesMs = new List<double>();
-		var instanceIds = new List<int>();
-
-		Log.Information(
-			"Stress testing plot with id {PlotId} with {Count} instance(s) for {Seconds} s...", plotId, count, seconds);
-		var start = Stopwatch.GetTimestamp();
-
-		try
-		{
-			AddRandomInstances(plot, count, instanceIds);
-			var addMs = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
-
-			for (var last = Stopwatch.GetTimestamp(); Stopwatch.GetElapsedTime(start).TotalSeconds < seconds;)
-			{
-				await NextFrameAsync(tree).ConfigureAwait(true);
-				cancellationToken.ThrowIfCancellationRequested();
-
-				var now = Stopwatch.GetTimestamp();
-				frameTimesMs.Add(Stopwatch.GetElapsedTime(last, now).TotalMilliseconds);
-				last = now;
-			}
-
-			var averageMs = frameTimesMs.Count is 0 ? 0d : frameTimesMs.Average();
-			var worstMs = frameTimesMs.Count is 0 ? 0d : frameTimesMs.Max();
-
-			Log.Information(
-				"Stress test added {Count} instance(s) in {AddMs:F3} ms, then averaged {AverageMs:F3} ms per frame " +
-				"(worst {WorstMs:F3} ms) over {FrameCount} frame(s)",
-				count, addMs, averageMs, worstMs, frameTimesMs.Count);
-
-			return context.Return(averageMs, worstMs);
-		}
-		finally
-		{
-			foreach (var id in instanceIds)
-				if (plot.Instances.GetInstance(id) is not null)
-					plot.Instances.Remove(id);
-		}
 	}
 
 	private static ValueTask<int> tp_char(LuaFunctionExecutionContext context, CancellationToken cancellationToken)

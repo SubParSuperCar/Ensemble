@@ -6,11 +6,10 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.ConsoleView"
-    x:DataType="vm:ConsoleViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:ConsoleViewModel">
 
     <Border BorderBrush="GreenYellow" BorderThickness="{StaticResource BorderThickness}">
-        <Grid>
+        <Grid Name="Panes" SizeChanged="OnPanesSizeChanged">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.5*" MinWidth="448" />
                 <ColumnDefinition Width="Auto" />
@@ -20,6 +19,7 @@
             <ContentControl Content="{Binding Output}" />
 
             <GridSplitter
+                Name="Splitter"
                 Grid.Column="1"
                 ResizeDirection="Columns"
                 Background="YellowGreen"

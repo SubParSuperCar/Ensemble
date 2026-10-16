@@ -48,8 +48,8 @@ public sealed class Plot : IPlot
 	{
 		Occupants.Clear();
 
-		Despawn();
 		Instances.Clear();
+		Despawn();
 	}
 
 	public override string ToString() =>

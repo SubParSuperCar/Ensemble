@@ -6,8 +6,7 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.PlayerListView"
-    x:DataType="vm:PlayerListViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:PlayerListViewModel">
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
         <Grid RowDefinitions="Auto,*,Auto" Grid.IsSharedSizeScope="True">
@@ -42,40 +41,80 @@
                 </Grid>
             </Grid>
 
-            <ListBox
+            <Border
                 Grid.Row="1"
-                ItemsSource="{Binding Players}"
-                SelectedItem="{Binding SelectedPlayer}"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                BorderBrush="{DynamicResource ThemeBorderMidBrush}"
+                BorderThickness="{DynamicResource ThemeBorderThickness}">
 
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid
-                            ColumnDefinitions="*,Auto"
-                            ColumnSpacing="16"
-                            ToolTip.Tip="{Binding Id, StringFormat='Player ID: {0}'}">
+                <ScrollViewer Background="{DynamicResource ThemeBackgroundBrush}"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Players}" Padding="4">
+                        <ItemsControl.Styles>
+                            <Style Selector="Border.player">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
 
-                            <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+                            <Style Selector="Border.player:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource ThemeControlHighlightMidBrush}" />
+                            </Style>
 
-                            <Grid Grid.Column="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="PeerId" />
-                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Ping" />
-                                </Grid.ColumnDefinitions>
+                            <Style Selector="Border.player.local">
+                                <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush4}" />
+                            </Style>
 
-                                <TextBlock Text="{Binding PeerId}" TextAlignment="Right" />
+                            <Style Selector="Border.player.local:pointerover">
+                                <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
+                            </Style>
 
-                                <TextBlock
-                                    Grid.Column="1"
-                                    Text="{Binding PingMs, StringFormat='{}{0:000}'}"
-                                    Margin="16,0,0,0"
-                                    TextAlignment="Right"
-                                    IsVisible="{Binding $parent[ListBox].((vm:PlayerListViewModel)DataContext).IsMultiPlayer, FallbackValue=False}" />
-                            </Grid>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                            <Style Selector="Border.kickable">
+                                <Setter Property="ContextMenu">
+                                    <Template>
+                                        <ContextMenu x:DataType="vm:PlayerItem">
+                                            <MenuItem
+                                                Header="Kick"
+                                                Command="{Binding $parent[ItemsControl].((vm:PlayerListViewModel)DataContext).KickCommand, FallbackValue={x:Null}}"
+                                                CommandParameter="{Binding}"
+                                                ToolTip.Tip="Disconnects this player from the session." />
+                                        </ContextMenu>
+                                    </Template>
+                                </Setter>
+                            </Style>
+                        </ItemsControl.Styles>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Classes="player"
+                                    Classes.local="{Binding IsLocal}"
+                                    Classes.kickable="{Binding CanKick}"
+                                    ToolTip.Tip="{Binding Id, StringFormat='Player ID: {0}'}"
+                                    Padding="2,1">
+
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                                        <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" />
+
+                                        <Grid Grid.Column="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="PeerId" />
+                                                <ColumnDefinition Width="Auto" SharedSizeGroup="Ping" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Text="{Binding PeerId}" TextAlignment="Right" />
+
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Text="{Binding PingMs, StringFormat='{}{0:000}'}"
+                                                Margin="16,0,0,0"
+                                                TextAlignment="Right"
+                                                IsVisible="{Binding $parent[ItemsControl].((vm:PlayerListViewModel)DataContext).IsMultiPlayer, FallbackValue=False}" />
+                                        </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
 
             <Grid
                 Grid.Row="2"

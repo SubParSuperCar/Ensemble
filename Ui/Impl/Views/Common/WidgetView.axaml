@@ -6,8 +6,7 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="240"
     x:Class="EnsembleRoot.Ui.Impl.Views.WidgetView"
-    x:DataType="vm:WidgetViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:WidgetViewModel">
 
     <UserControl.Styles>
         <Style Selector="Border#Outline">

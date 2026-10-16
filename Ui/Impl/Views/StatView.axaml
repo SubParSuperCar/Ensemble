@@ -6,8 +6,7 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.StatView"
-    x:DataType="vm:StatViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:StatViewModel">
 
     <Border Effect="{DynamicResource StrokeEffect}">
         <Border Effect="{DynamicResource StrokeEffect}">

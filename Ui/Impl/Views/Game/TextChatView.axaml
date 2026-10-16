@@ -7,8 +7,7 @@
     xmlns:t="using:EnsembleRoot.Common.Text"
     mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.TextChatView"
-    x:DataType="vm:TextChatViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:TextChatViewModel">
 
     <Border Padding="2">
         <Border.Background>
@@ -43,7 +42,7 @@
 
                             <Path
                                 VerticalAlignment="Center"
-                                Data="M 0,0 L 10,4 L 0,8 L 2,4 Z"
+                                Data="M 0,0 L 16,6 L 0,12 L 4,6 Z"
                                 Fill="{Binding $parent[Button].Foreground}" />
                         </StackPanel>
                     </Button>

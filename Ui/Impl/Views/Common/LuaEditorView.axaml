@@ -7,8 +7,7 @@
     xmlns:ae="using:AvaloniaEdit"
     mc:Ignorable="d" d:DesignWidth="384" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.LuaEditorView"
-    x:DataType="vm:LuaEditorViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:LuaEditorViewModel">
 
     <Grid>
         <ae:TextEditor
@@ -26,11 +25,13 @@
             </ae:TextEditor.Background>
         </ae:TextEditor>
 
-        <StackPanel
+        <!-- Wraps upward when the editor is too narrow for one row -->
+        <WrapPanel
             Name="Actions"
-            Orientation="Horizontal" Spacing="4"
+            ItemSpacing="4" LineSpacing="4"
             HorizontalAlignment="Right" VerticalAlignment="Bottom"
-            Margin="0,0,4,4">
+            Margin="0,0,4,4"
+            ItemsAlignment="End">
 
             <Border BorderBrush="{StaticResource DangerBrush}" BorderThickness="{StaticResource BorderThickness}">
                 <Button
@@ -47,7 +48,7 @@
                     ToolTip.Tip="Executes the entered script source code."
                     Background="{DynamicResource TranslucentBackgroundBrush}" />
             </Border>
-        </StackPanel>
+        </WrapPanel>
     </Grid>
 
 </UserControl>

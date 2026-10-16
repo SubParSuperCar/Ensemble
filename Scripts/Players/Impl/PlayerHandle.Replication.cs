@@ -101,8 +101,23 @@ public partial class PlayerHandle
 		else if (senderId != MultiplayerPeer.TargetPeerServer)
 			return;
 
+		if (_targetPosition is null)
+			Reveal(position, yaw);
+
 		_targetPosition = position;
 		_targetYaw = yaw;
+	}
+
+	private void Reveal(Vector3 position, float yaw)
+	{
+		var body = Body;
+
+		body.GlobalPosition = position;
+		body.GlobalRotation = body.GlobalRotation with { Y = yaw };
+		body.ResetPhysicsInterpolation();
+
+		body.ProcessMode = ProcessModeEnum.Inherit;
+		body.Visible = true;
 	}
 
 	// Also false for NaN

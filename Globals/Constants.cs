@@ -16,6 +16,8 @@ public static class Constants
 	public const string UserAppSettingsPath = UserScheme + AppSettingsJson;
 
 	public const string UserDataCfgPath = UserScheme + "user_data.cfg";
+	public const string HostKeyPath = UserScheme + "host.key";
+	public const string HostCertificatePath = UserScheme + "host.crt";
 	public const string LogDir = UserScheme + "ensemble_logs/";
 	public const string ChatLogDir = UserScheme + "chat_logs/";
 

@@ -54,8 +54,14 @@ public partial class PlayerHandle : Node3D
 		var nametag = Character.GetNode<Label3D>("Nametag");
 		nametag.Text = $"\"{_player.Name}\"\n({Id})\n\u2193";
 
+		// Others stay hidden and out of the physics space until their first update places them
 		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
+		{
+			Character.Visible = false;
+			Character.ProcessMode = ProcessModeEnum.Disabled;
+
 			return;
+		}
 
 		// Only the local body is controlled, so its script is swapped in place. Swapping invalidates the managed
 		// wrapper, so the node is fetched again by instance ID.

@@ -7,8 +7,7 @@
     xmlns:s="using:EnsembleRoot.Ui.Impl.Services"
     mc:Ignorable="d" d:DesignWidth="240" d:DesignHeight="320"
     x:Class="EnsembleRoot.Ui.Impl.Views.WidgetDrawerView"
-    x:DataType="vm:WidgetDrawerViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:WidgetDrawerViewModel">
 
     <UserControl.Styles>
         <Style Selector="ToggleButton#Handle">

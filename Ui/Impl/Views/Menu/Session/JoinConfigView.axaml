@@ -8,7 +8,6 @@
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.JoinConfigView"
     x:DataType="vm:JoinConfigViewModel"
-    TextOptions.TextRenderingMode="Antialias"
     FontSize="24" FontWeight="ExtraLight">
 
     <StackPanel

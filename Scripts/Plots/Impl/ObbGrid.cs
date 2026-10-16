@@ -51,6 +51,13 @@ public sealed class ObbGrid
 				}
 	}
 
+	public void Clear()
+	{
+		_boxes.Clear();
+		_cells.Clear();
+		_ungridded.Clear();
+	}
+
 	public bool Overlaps(Obb box)
 	{
 		Query(box, _candidates);

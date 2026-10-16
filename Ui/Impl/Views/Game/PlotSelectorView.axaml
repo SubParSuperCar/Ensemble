@@ -6,8 +6,7 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="256" d:DesignHeight="192"
     x:Class="EnsembleRoot.Ui.Impl.Views.PlotSelectorView"
-    x:DataType="vm:PlotSelectorViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:PlotSelectorViewModel">
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
         <Grid RowDefinitions="Auto,*,Auto" RowSpacing="2" Grid.IsSharedSizeScope="True">

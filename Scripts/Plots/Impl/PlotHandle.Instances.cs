@@ -21,8 +21,8 @@ public partial class PlotHandle
 	{
 		_staticInstances = GetNode<Node3D>("Instances/Static");
 
-		foreach (var instance in _plot.Instances.GetAll())
-			OnInstanceAdded(instance);
+		if (!_plot.IsSpawned)
+			AddStaticInstances();
 
 		_plot.Instances.Added += OnInstanceAdded;
 		_plot.Instances.Removed += OnInstanceRemoved;
@@ -34,7 +34,35 @@ public partial class PlotHandle
 		_plot.Instances.Removed -= OnInstanceRemoved;
 	}
 
+	private void AddStaticInstances()
+	{
+		foreach (var instance in _plot.Instances.GetAll())
+			AddStaticInstance(instance);
+	}
+
+	private void ClearStaticInstances()
+	{
+		foreach (var handle in _handlesByInstanceId.Values)
+			handle.QueueFree();
+
+		_handlesByInstanceId.Clear();
+		InstanceBoxes.Clear();
+	}
+
+	// While spawned, the static instances are gone, and despawning rebuilds them from the plot's state
 	private void OnInstanceAdded(GdInstance instance)
+	{
+		if (!_plot.IsSpawned)
+			AddStaticInstance(instance);
+	}
+
+	private void OnInstanceRemoved(GdInstance instance)
+	{
+		if (!_plot.IsSpawned)
+			RemoveStaticInstance(instance);
+	}
+
+	private void AddStaticInstance(GdInstance instance)
 	{
 		var transform = new Transform3D(new Basis(instance.Rotation), instance.Position * GridToWorldScale);
 
@@ -49,7 +77,7 @@ public partial class PlotHandle
 		InstanceBoxes.Add(instance.Id, Obb.From(GAssetManager.GetBoundary(instance.Asset.Id), transform));
 	}
 
-	private void OnInstanceRemoved(GdInstance instance)
+	private void RemoveStaticInstance(GdInstance instance)
 	{
 		InstanceBoxes.Remove(instance.Id);
 

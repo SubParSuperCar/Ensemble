@@ -35,6 +35,25 @@ public sealed class InstancesTests
 		Assert.Equal(1, instances.Count);
 	}
 
+	[Fact]
+	public void PlotReset_WhileSpawned_ClearsInstancesBeforeDespawning()
+	{
+		var core = new Core();
+		core.Assets.Add(0);
+
+		var plot = core.Plots.Add(0);
+		Add(plot.Instances);
+		plot.Spawn();
+
+		int? countOnDespawn = null;
+		plot.IsSpawnedChanged += _ => countOnDespawn = plot.Instances.Count;
+
+		plot.Reset();
+
+		Assert.Equal(0, countOnDespawn);
+		Assert.False(plot.IsSpawned);
+	}
+
 	private static IInstances CreateInstances()
 	{
 		var core = new Core();

@@ -4,14 +4,14 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
-	// Shown by help(); "?" marks optional parameters, and "|" separates alternatives
+	// Shown by help(); "?" marks optional parameters, "|" separates alternatives, and "loc_" marks functions that skip
+	// the network (Single-Player only)
 	private static readonly (LuaFunction Function, string Parameters)[] Functions =
 	[
 		(new LuaFunction(nameof(add_inst), add_inst), "asset_id, x?, y?, z?, rx?, ry?, rz?"),
-		(new LuaFunction(nameof(add_rand_insts), add_rand_insts), "plot_id, count"),
 		(new LuaFunction(nameof(cap_fps), cap_fps), "fps?"),
 		(new LuaFunction(nameof(chat), chat), "message"),
-		(new LuaFunction(nameof(clr_insts), clr_insts), "plot_id"),
+		(new LuaFunction(nameof(clr_insts), clr_insts), ""),
 		(new LuaFunction(nameof(clr_log), clr_log), ""),
 		(new LuaFunction(nameof(dmp_asm_info), dmp_asm_info), ""),
 		(new LuaFunction(nameof(dmp_chat), dmp_chat), ""),
@@ -24,6 +24,9 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(help), help), ""),
 		(new LuaFunction(nameof(kick_occupant), kick_occupant), "player"),
 		(new LuaFunction(nameof(kick_peer), kick_peer), "peer_id, reason?"),
+		(new LuaFunction(nameof(loc_add_rand_insts), loc_add_rand_insts), "plot_id, count"),
+		(new LuaFunction(nameof(loc_clr_insts), loc_clr_insts), "plot_id"),
+		(new LuaFunction(nameof(loc_stress_test), loc_stress_test), "plot_id, count?, seconds?"),
 		(new LuaFunction(nameof(log_lan_ip4_addr), log_lan_ip4_addr), ""),
 		(new LuaFunction(nameof(log_wan_ip4_addr), log_wan_ip4_addr), ""),
 		(new LuaFunction(nameof(perf_mod), perf_mod), ""),
@@ -34,14 +37,14 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(set_chat_log_on), set_chat_log_on), "is_on"),
 		(new LuaFunction(nameof(set_chat_tts_on), set_chat_tts_on), "is_on"),
 		(new LuaFunction(nameof(set_clock_offset), set_clock_offset), "seconds?"),
-		(new LuaFunction(nameof(set_inst_prop), set_inst_prop), "instance_id, key, value"),
+		(new LuaFunction(nameof(set_inst_prop), set_inst_prop), "instance_id, key, value?"),
+		(new LuaFunction(nameof(set_plot_spawned), set_plot_spawned), "is_spawned"),
 		(new LuaFunction(nameof(set_profanity_filter_on), set_profanity_filter_on), "is_on"),
 		(new LuaFunction(nameof(set_sky_time), set_sky_time), "hours?"),
 		(new LuaFunction(nameof(set_static_shader_on), set_static_shader_on), "is_on"),
 		(new LuaFunction(nameof(set_ui_dark_theme_on), set_ui_dark_theme_on), "is_on?"),
 		(new LuaFunction(nameof(set_ui_scale), set_ui_scale), "scale"),
 		(new LuaFunction(nameof(set_vsync_mode), set_vsync_mode), "mode"),
-		(new LuaFunction(nameof(stress_test), stress_test), "plot_id, count?, seconds?"),
 		(new LuaFunction(nameof(tp_char), tp_char), "player? | x, y, z"),
 		(new LuaFunction(nameof(tts), tts), "text, culture?, rate?, pitch?, volume?"),
 		(new LuaFunction(nameof(wait), wait), "seconds?")

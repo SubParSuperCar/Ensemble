@@ -8,8 +8,7 @@
     xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.MainView"
-    x:DataType="vm:MainViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:MainViewModel">
 
     <UserControl.Styles>
         <Style Selector="TextBlock#Watermark">

@@ -7,8 +7,7 @@
     xmlns:g="clr-namespace:EnsembleRoot.Globals"
     mc:Ignorable="d" d:DesignWidth="448" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.LogOutputView"
-    x:DataType="vm:LogOutputViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:LogOutputViewModel">
 
     <UserControl.Styles>
         <Style Selector="SelectableTextBlock#Output">

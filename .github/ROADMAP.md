@@ -53,7 +53,11 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
   reused
 - [x] (S) SetPropertiesAction - type- and key-checked property edits, ready for AttrTool
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
-- (WIP) (S) Peer UI - ping column in the player list done; server info panel and kick button next
+- (WIP) (S) Peer UI - ping column and host kick context menu in the player list done (kick reason box TODO); server
+  info panel next
+- [x] (S) DTLS - ENet traffic is encrypted with the host's self-signed certificate (created once, kept in `user://`);
+  clients don't verify it yet, so it stops eavesdropping and tampering, not impersonation
+- [ ] (S) Host certificate pinning - clients remember a host's certificate on first join and warn if it changes
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or `--join=HOST:P`)
 - [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
   shown under the player list
@@ -66,20 +70,113 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
   nothing else remains), late-join history snapshot, optional per-session file logs, and Lua functions
 - [x] (S) Profanity filter - host-chosen (remembered), masks chat profanity and replaces inappropriate display names
 - [ ] (M) Chat bubbles over players
-- [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override), kicking
-  occupants (owner or host; `KickOccupantAction` and `kick_occupant` done), and Player List context menus for kicking
-  peers
-- [ ] (L) Physics replication - plot-owner authority, possibly over custom RPCs
+- [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override) and kicking
+  occupants (owner or host; `KickOccupantAction` and `kick_occupant` done)
+- [ ] (L) Physics replication - plot-owner authority over custom RPCs; see
+  [**Spawning and live physics**](#spawning-and-live-physics-plan)
 
 ## Gameplay / content
 
-- [ ] (M) Plot spawn / despawn - `PlotHandle.Spawning` stubs are in place
+- (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction` and `set_plot_spawned` done; spawning frees the static
+  instances and despawning rebuilds them, and an emptied plot despawns. Next: the live creation itself; see
+  [**Spawning and live physics**](#spawning-and-live-physics-plan)
 - [ ] (L) Live asset logic - infrastructure for assets with behavior
 - [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
 - [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
 - [ ] (L) A real map, built with Unibuilder
 - [ ] (L) Speaker asset (and/or a music player widget) - plays audio to nearby players. Open problems: moderating
   inappropriate audio, replicating playback, and storing / fetching the audio in the first place
+
+## Spawning and live physics (plan)
+
+The agreed design for spawned plots, from 2026-10-15. Only the plumbing exists so far; the rest is the reference for
+building the live creation.
+
+### Done (plumbing)
+
+- `SetPlotSpawnedAction(bool)` (the owner, or the host via Lua), the floating Spawn / Despawn button (owner only), and
+  `set_plot_spawned(is_spawned)`
+- Spawning frees the PlotHandle's static AssetHandles and clears its ObbGrid; despawning rebuilds them from Core, and
+  instance events are ignored while spawned
+- The edit lock lives in the actions (`IsSpawned: false`); Core still accepts changes while spawned, since it's only
+  state
+- An emptied plot despawns (leaving clears its instances first; a disconnect keeps them)
+
+### Principles
+
+- Core stays pure data, and the static plot is the only persistent and replicated build state. Live state is
+  ephemeral: despawning discards it, and saves never see it
+- Every peer already has every plot's instances, so spawning sends no geometry; each peer builds the same assemblies
+  from Core, in instance ID order
+- No cross-machine physics determinism is assumed; live state is streamed, not lockstepped
+- No breakable welds, and no dynamic body cap (instance quotas are the limit; the host kicks lag bombers)
+- Collisions between creations with different owners may be imperfect (one-sided pushes); no custom physics
+
+### Spawn pipeline (per plot, on every peer)
+
+1. Weld graph - an edge for each instance pair whose OBBs touch or nearly touch on coplanar, overlapping faces, never
+   edges or corners (Baja Builders parity). Neighbors come from ObbGrid; Obb gains a face-contact test (opposite
+   normals, coplanar within an epsilon, and a positive overlap area after shrinking the faces slightly, so edge and
+   corner contact don't count)
+2. Groups - union-find over the weld edges; each connected component is one rigid group, even a group of one
+3. Assembly bodies - a new `RigidBody3D` per group under `Instances/Dynamic`, with each asset's collision shapes
+   registered on it through the shape-owner API (`CreateShapeOwner(asset)`, `ShapeOwnerAddShape`,
+   `ShapeOwnerSetTransform`) at the asset's offset, reusing the `Shape3D` resources. Godot only counts shapes that are
+   direct children of a body, so nesting bodies (or wrapping `Node3D` assets) wouldn't work
+4. Passengers - each asset is instantiated as in build mode and parented under its assembly at its offset, with its
+   own body disabled (out of the physics space); meshes and scripts ride along. Assets stay `RigidBody3D` scenes, which
+   is where mass and physics materials are authored
+5. Mass - the sum of the assets' `Mass`, with the center of mass at their mass-weighted average position; Jolt derives
+   the inertia from the shapes
+6. IDs - each assembly takes its group's lowest instance ID, so peers agree on IDs without sending them
+7. Raycasts - a hit's shape index leads back to the exact asset (`ShapeFindOwner`, then `ShapeOwnerGetOwner`)
+8. Joints (later) - hinge, piston, and suspension assets link two groups with Jolt joints; groups linked by joints form
+   an assembly, the unit of ownership
+
+Despawning frees `Instances/Dynamic`, then rebuilds the static instances (done).
+
+### Ownership and authority
+
+- The plot owner simulates its assemblies (like Roblox's network ownership); everyone else shows kinematic proxies
+  moved by the received state, so local characters can still stand on and collide with them. Each body is simulated
+  exactly once
+- When the owner leaves, the new owner takes over, with the host as the fallback; an empty plot despawns, so a
+  creation never outlives its occupants
+- API: host-authoritative, one call to set who simulates what, the host always the fallback
+- The host validates incoming state like character updates: only a plot's owner may send its bodies, values must be
+  finite and within the world, speeds are capped, and updates are rate limited
+
+### Replication
+
+- One unreliable, sequenced, batched message per plot per tick (a custom RPC with a packed byte payload), not one RPC
+  per body; `MultiplayerSynchronizer` doesn't suit thousands of changing bodies
+- About 24 bytes per body: ID, position, quantized rotation (smallest three), and quantized linear and angular
+  velocity. Sleeping bodies send nothing, and idle keepalives recover from losses
+- About 20 Hz, like characters, within a per-client bandwidth budget that favors near and fast bodies and slows far
+  ones. 50 moving bodies cost about 24 KB/s per receiver; 1000 loose ones about 480 KB/s, hence welding and the budget
+- Owner -> host -> synced peers, as with characters. Proxies interpolate about 100 ms behind, extrapolate briefly with
+  velocity on loss, and snap when far off
+- Late joins: PlotsSnapshot already carries the spawn state; the latest body states join it, so proxies start in place
+
+### Phases (each shippable)
+
+0. Prerequisites - dedicated physics layers (static, dynamic, proxies, characters), per-asset mass, and the
+   face-contact test (with unit tests)
+1. Single-Player - weld graph, assemblies, and passengers; stress-test Jolt with about 5000 blocks
+2. Multiplayer with the host as the only simulator - batched state, proxies, interpolation, and late joins; proves the
+   wire format
+3. Owner authority - the same format, sent by the owner, relayed and validated by the host, with hand-off when the
+   owner changes
+4. Joints and motors - needs Live asset logic and Input management
+5. Polish - bandwidth tuning, characters riding moving creations (platform velocity), and optional ownership hand-off
+   on contact between creations
+
+### Known hard parts
+
+- Collisions between creations with different owners (one-sided pushes); acceptable for now
+- Joint stability across large mass ratios
+- Bandwidth spikes when many loose bodies move at once
+- Characters standing on someone else's moving creation
 
 ## UI / UX framework
 

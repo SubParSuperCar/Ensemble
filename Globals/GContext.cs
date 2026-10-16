@@ -1,17 +1,31 @@
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.GdCore.Plots;
+using Godot;
 
 namespace EnsembleRoot.Globals;
 
+/// <remarks>
+///     The properties are always current, but Core passes through intermediate states (e.g., no owner while a player
+///     switches plots), so the events are coalesced and raised once per frame, deferred, with the settled values.
+/// </remarks>
 public static class GContext
 {
 	private static GdOccupant? _occupant;
+
+	private static bool _isNotifyQueued;
+	private static GdPlot? _notifiedLocalPlot;
+	private static bool? _notifiedIsPlotOwner;
+	private static bool? _notifiedIsLocalPlotSpawned;
 
 	static GContext()
 	{
 		// Throws unless GdCore is initialized before GContext's first use
 		OnLocalChanged(GPlayers.Local);
 		GPlayers.LocalChanged += OnLocalChanged;
+
+		_notifiedLocalPlot = LocalPlot;
+		_notifiedIsPlotOwner = IsPlotOwner;
+		_notifiedIsLocalPlotSpawned = IsLocalPlotSpawned;
 	}
 
 	public static GdPlot? LocalPlot { get; private set; }
@@ -49,7 +63,7 @@ public static class GContext
 		}
 
 		LocalPlot = plot;
-		LocalPlotChanged?.Invoke(plot);
+		QueueNotify();
 
 		OnOwnerChanged(plot?.Occupants.Owner);
 		SetIsLocalPlotSpawned(plot?.IsSpawned);
@@ -72,7 +86,7 @@ public static class GContext
 			return;
 
 		IsPlotOwner = value;
-		IsPlotOwnerChanged?.Invoke(value);
+		QueueNotify();
 	}
 
 	private static void SetIsLocalPlotSpawned(bool? value)
@@ -81,6 +95,39 @@ public static class GContext
 			return;
 
 		IsLocalPlotSpawned = value;
-		IsLocalPlotSpawnedChanged?.Invoke(value);
+		QueueNotify();
+	}
+
+	private static void QueueNotify()
+	{
+		if (_isNotifyQueued)
+			return;
+
+		_isNotifyQueued = true;
+		Callable.From(Notify).CallDeferred();
+	}
+
+	private static void Notify()
+	{
+		_isNotifyQueued = false;
+
+		if (!ReferenceEquals(_notifiedLocalPlot, LocalPlot))
+		{
+			_notifiedLocalPlot = LocalPlot;
+			LocalPlotChanged?.Invoke(LocalPlot);
+		}
+
+		if (_notifiedIsPlotOwner != IsPlotOwner)
+		{
+			_notifiedIsPlotOwner = IsPlotOwner;
+			IsPlotOwnerChanged?.Invoke(IsPlotOwner);
+		}
+
+		// ReSharper disable once InvertIf
+		if (_notifiedIsLocalPlotSpawned != IsLocalPlotSpawned)
+		{
+			_notifiedIsLocalPlotSpawned = IsLocalPlotSpawned;
+			IsLocalPlotSpawnedChanged?.Invoke(IsLocalPlotSpawned);
+		}
 	}
 }

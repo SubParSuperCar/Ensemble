@@ -96,8 +96,9 @@ Ensemble's test map:
 <details open>
   <summary>Click to expand/collapse this section.</summary>
 
-Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone must run the **same version**. A host
-password only controls who can join: traffic isn't encrypted, so don't use a password that matters elsewhere.
+Multiplayer is host-authoritative and peer-to-host over UDP (ENet). Everyone must run the **same version**. Traffic is
+encrypted (DTLS), but players don't verify the host's identity yet, so it stops eavesdropping, not impersonation. A host
+password only controls who can join, so don't use one that matters elsewhere.
 
 - **Host:** *Play &rarr; Multi-Player (Online) &rarr; Host (Server)*. Leave the port empty for the default (`7777`), and
   optionally set a password and a client limit. Share your address with joining players:

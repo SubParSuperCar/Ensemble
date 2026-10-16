@@ -98,7 +98,8 @@ public static partial class LuaExecutor
 		var functions = Functions.Select(static entry => $"-> {entry.Function.Name}({entry.Parameters})");
 
 		Log.Information(
-			"Custom functions (\"?\" = optional, \"|\" = or):\n{Functions}", string.Join('\n', functions));
+			"Custom functions (\"?\" = optional, \"|\" = or, \"loc_\" = local only):\n{Functions}",
+			string.Join('\n', functions));
 
 		return context.ReturnNothing();
 	}

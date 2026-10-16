@@ -33,8 +33,6 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 	public bool IsMultiPlayer { get; } = GSessionManager.Mode is SessionMode.MultiPlayer;
 
-	[ObservableProperty] public partial PlayerItem? SelectedPlayer { get; set; }
-
 	[ObservableProperty] public partial string? PortMappingStatus { get; set; }
 	[ObservableProperty] public partial string? PortMappingDetail { get; set; }
 
@@ -57,6 +55,10 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 	private void CopyJoinCode() => DisplayServer.ClipboardSet(JoinCode!);
 
 	private bool CanCopyJoinCode() => JoinCode is not null;
+
+	// TODO: Let the host give a reason
+	[RelayCommand]
+	private static void Kick(PlayerItem player) => GSessionManager.Kick(player.PeerId);
 
 	private void OnPortMappingChanged()
 	{
@@ -92,14 +94,20 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPlayerAdded(GdPlayer gdPlayer)
 	{
-		var peer = GSessionManager.GetPeerByPlayerId(gdPlayer.Id);
-		var player = new PlayerItem { Name = gdPlayer.Name, Id = gdPlayer.Id, PeerId = peer?.Id ?? None };
+		var manager = GSessionManager;
+		var peer = manager.GetPeerByPlayerId(gdPlayer.Id);
+
+		var player = new PlayerItem
+		{
+			Name = gdPlayer.Name,
+			Id = gdPlayer.Id,
+			PeerId = peer?.Id ?? None,
+			IsLocal = ReferenceEquals(gdPlayer, GPlayers.Local),
+			CanKick = manager.IsServer && peer is not null && peer.Id != manager.LocalPeerId
+		};
 
 		Players.Insert(Players.TakeWhile(other => ComparePlayers(other, player) < 0).Count(), player);
 		_playersById.Add(gdPlayer.Id, player);
-
-		if (ReferenceEquals(gdPlayer, GPlayers.Local))
-			SelectedPlayer = player;
 
 		if (peer is null)
 			return;
@@ -124,9 +132,6 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPlayerRemoved(GdPlayer gdPlayer)
 	{
-		if (ReferenceEquals(gdPlayer, GPlayers.Local))
-			SelectedPlayer = null;
-
 		if (_playersById.Remove(gdPlayer.Id, out var player))
 			Players.Remove(player);
 
@@ -150,6 +155,8 @@ public sealed partial class PlayerItem : ObservableObject
 	public required string Name { get; init; }
 	public required string Id { get; init; }
 	public int PeerId { get; init; }
+	public bool IsLocal { get; init; }
+	public bool CanKick { get; init; }
 
 	[ObservableProperty] public partial int PingMs { get; set; }
 }

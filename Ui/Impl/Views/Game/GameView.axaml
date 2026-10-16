@@ -9,8 +9,7 @@
     xmlns:v="using:EnsembleRoot.Ui.Impl.Views"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.GameView"
-    x:DataType="vm:GameViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:GameViewModel">
 
     <Grid>
         <!-- Widgets render below the ribbon, the ToolBar, the player list, and the overlays -->
@@ -81,6 +80,16 @@
         <ContentControl
             Content="{Binding WidgetDrawer}"
             HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+        <!-- Drawn above the widgets and the ToolBar, since it's essential, and outside the footer -->
+        <TransitioningContentControl
+            Content="{Binding SpawnButton}"
+            HorizontalAlignment="Left" VerticalAlignment="Bottom">
+
+            <TransitioningContentControl.PageTransition>
+                <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
+            </TransitioningContentControl.PageTransition>
+        </TransitioningContentControl>
 
         <!-- Drawn above the rest of the game view -->
         <ContentControl Content="{Binding Marquee}" IsHitTestVisible="False" />

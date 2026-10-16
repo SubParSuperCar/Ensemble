@@ -6,8 +6,7 @@
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
     mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.ToastListView"
-    x:DataType="vm:ToastListViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:ToastListViewModel">
 
     <ScrollViewer MaxHeight="256" HorizontalScrollBarVisibility="Disabled">
         <ItemsControl ItemsSource="{Binding Toasts}">

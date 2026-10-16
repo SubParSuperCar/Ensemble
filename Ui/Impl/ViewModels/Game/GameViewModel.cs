@@ -50,6 +50,8 @@ public sealed partial class GameViewModel : ViewModelBase
 
 		OnIsLocalPlotSpawnedChanged(IsLocalPlotSpawned);
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
+		OnIsPlotOwnerChanged(IsPlotOwner);
+		IsPlotOwnerChanged += OnIsPlotOwnerChanged;
 
 		OnToolIsEnabledChanged(null, GToolManager.IsEnabled<ConstructTool>());
 		GToolManager.ToolIsEnabledChanged += OnToolIsEnabledChanged;
@@ -72,6 +74,10 @@ public sealed partial class GameViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
+	public partial SpawnButtonViewModel? SpawnButton { get; set; }
+
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
 	public partial MarqueeViewModel? Marquee { get; set; }
 
 	protected override void OnDispose()
@@ -82,11 +88,13 @@ public sealed partial class GameViewModel : ViewModelBase
 		_dispatcher.Input -= OnInput;
 
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
+		IsPlotOwnerChanged -= OnIsPlotOwnerChanged;
 		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
 
 		Clock = null;
 		PlayerList = null;
 		ToolBar = null;
+		SpawnButton = null;
 		Marquee = null;
 
 		_scope.Dispose();
@@ -99,7 +107,10 @@ public sealed partial class GameViewModel : ViewModelBase
 	}
 
 	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) =>
-		ToolBar = isSpawned is false ? _services.Create<ToolBarViewModel>() : null;
+		ToolBar = isSpawned is false ? ToolBar ?? _services.Create<ToolBarViewModel>() : null;
+
+	private void OnIsPlotOwnerChanged(bool? isOwner) =>
+		SpawnButton = isOwner is true ? SpawnButton ?? _services.Create<SpawnButtonViewModel>() : null;
 
 	private void OnToolIsEnabledChanged(ToolBase? tool, bool isEnabled)
 	{

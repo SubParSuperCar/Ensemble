@@ -7,8 +7,7 @@
     xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="384"
     x:Class="EnsembleRoot.Ui.Impl.Views.WebBrowserView"
-    x:DataType="vm:WebBrowserViewModel"
-    TextOptions.TextRenderingMode="Antialias">
+    x:DataType="vm:WebBrowserViewModel">
 
     <Grid>
         <TextBlock

@@ -22,9 +22,17 @@ public partial class PlotHandle
 			Despawn();
 	}
 
-	// TODO: Spawn the static instances as a live, simulated creation (under Instances/Dynamic)
-	private void Spawn() => Log.Debug("Spawned plot {PlotId} (not implemented)", Id);
+	// TODO: Replace the static instances with a live, simulated creation (under Instances/Dynamic)
+	private void Spawn()
+	{
+		ClearStaticInstances();
+		Log.Debug("Spawned plot {PlotId}", Id);
+	}
 
-	// TODO: Despawn the live creation, restoring the static instances
-	private void Despawn() => Log.Debug("Despawned plot {PlotId} (not implemented)", Id);
+	// TODO: Free the live creation before the static instances are restored
+	private void Despawn()
+	{
+		AddStaticInstances();
+		Log.Debug("Despawned plot {PlotId}", Id);
+	}
 }

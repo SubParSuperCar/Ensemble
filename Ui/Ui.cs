@@ -63,6 +63,9 @@ public partial class Ui : Control
 			_host.Control = CreateLoadingScreen();
 			AddChild(_host);
 
+			// Popups render in the top level's overlay layer, outside every view, so they inherit from here
+			TextOptions.SetTextRenderingMode(_host.GetTopLevel(), TextRenderingMode.Antialias);
+
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
 				CultureInfo.InvariantCulture,
@@ -117,9 +120,8 @@ public partial class Ui : Control
 
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 
-	private static TextBlock CreateLoadingScreen()
-	{
-		var loadingScreen = new TextBlock
+	private static TextBlock CreateLoadingScreen() =>
+		new()
 		{
 			Text = "Loading Ensemble's Autoloads\u2026\nThis shouldn't take long.",
 			FontFamily = new FontFamily("sans-serif"),
@@ -129,10 +131,6 @@ public partial class Ui : Control
 			VerticalAlignment = VerticalAlignment.Center,
 			TextAlignment = TextAlignment.Center
 		};
-		TextOptions.SetTextRenderingMode(loadingScreen, TextRenderingMode.Antialias);
-
-		return loadingScreen;
-	}
 
 	// Buckets by diagonal, expressed as the height of a 16:9 window with the same diagonal, so the thresholds sit
 	// halfway between standard resolutions (720p, 900p, 1080p, 1440p, and 2160p)

@@ -1,0 +1,24 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    x:Class="EnsembleRoot.Ui.Impl.Views.SpawnButtonView"
+    x:DataType="vm:SpawnButtonViewModel"
+    Margin="4"
+    FontSize="20" FontWeight="ExtraLight">
+
+    <Border
+        Background="{DynamicResource TranslucentBackgroundBrush}"
+        CornerRadius="6"
+        Padding="4">
+
+        <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="{StaticResource BorderThickness}">
+            <Button
+                Content="{Binding Label}"
+                Command="{Binding ToggleCommand}"
+                ToolTip.Tip="Spawns your plot's creation, or despawns it to keep building. (Owner only)"
+                LetterSpacing="-1" />
+        </Border>
+    </Border>
+
+</UserControl>

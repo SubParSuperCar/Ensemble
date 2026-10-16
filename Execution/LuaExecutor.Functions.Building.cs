@@ -1,5 +1,6 @@
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Plots.Impl;
@@ -44,6 +45,14 @@ public static partial class LuaExecutor
 		}
 
 		new AddInstanceAction(assetId, position, rotation).Submit();
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> clr_insts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		if (GetLocalPlot(nameof(clr_insts)) is not null)
+			new ClearInstancesAction().Submit();
+
 		return context.ReturnNothing();
 	}
 
@@ -105,7 +114,10 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
-		var value = ToVariant(context.GetArgument<LuaValue>(2), current.Type);
+		// Nil resets it to the asset's default
+		var value = context.IsArgumentOmitted(2)
+			? instance.Asset.Source.Properties[key].ToGodot()
+			: ToVariant(context.GetArgument<LuaValue>(2), current.Type);
 
 		if (value.VariantType is Variant.Type.Nil)
 		{
@@ -115,6 +127,15 @@ public static partial class LuaExecutor
 
 		new SetPropertiesAction(InstanceReference.From(instance), new Dictionary { [key] = value })
 			.Submit();
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_plot_spawned(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		if (GetLocalPlot(nameof(set_plot_spawned)) is not null)
+			new SetPlotSpawnedAction(context.GetArgument<bool>(0)).Submit();
 
 		return context.ReturnNothing();
 	}

@@ -77,8 +77,8 @@ Text=" StdOut/Err)" /></Span>
 
             <NumericUpDown
                 Value="{Binding #Output.FontSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                PlaceholderText="&lt;Font Size Pt.&gt;"
-                ToolTip.Tip="Sets the output font size, in points."
+                PlaceholderText="&lt;Font Size Px.&gt;"
+                ToolTip.Tip="Sets the output font size, in device-independent pixels (scaled with the UI)."
                 Background="{DynamicResource TranslucentBackgroundBrush}"
                 Minimum="1"
                 Increment="0.5" />

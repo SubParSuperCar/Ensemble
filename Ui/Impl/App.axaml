@@ -13,6 +13,7 @@
 
             <FontWeight x:Key="FontWeight">Light</FontWeight>
             <x:Double x:Key="FontSize">16</x:Double>
+            <x:Double x:Key="MenuFontSize">12</x:Double>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
@@ -43,16 +44,18 @@
         <StyleInclude Source="avares://LiveMarkdown.Avalonia/Styles.axaml" />
         <StyleInclude Source="avares://LiveMarkdown.Avalonia.Mermaid/Styles.axaml" />
 
-        <Style Selector=":is(TopLevel)">
+        <!-- SimpleTheme gives popup hosts and menus their own fonts, so they would not inherit the window's -->
+        <Style Selector=":is(TopLevel), OverlayPopupHost, ContextMenu, MenuFlyoutPresenter">
             <Setter Property="FontFamily" Value="{StaticResource Font}" />
             <Setter Property="FontWeight" Value="{StaticResource FontWeight}" />
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />
         </Style>
 
+        <Style Selector="ContextMenu, MenuFlyoutPresenter">
+            <Setter Property="FontSize" Value="{StaticResource MenuFontSize}" />
+        </Style>
+
         <Style Selector="ToolTip">
-            <Setter Property="FontFamily" Value="{StaticResource Font}" />
-            <Setter Property="FontWeight" Value="{StaticResource FontWeight}" />
-            <Setter Property="FontSize" Value="{StaticResource FontSize}" />
             <Setter Property="Background" Value="{StaticResource TranslucentBackgroundBrush}" />
             <Setter Property="IsHitTestVisible" Value="False" />
         </Style>

@@ -28,17 +28,17 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private readonly ScaleTransform _scale = new(HiddenScale, HiddenScale);
 	private readonly Rotate3DTransform _tilt = new() { AngleX = HiddenTilt, Depth = TiltDepth };
 	private readonly List<DoubleTransition> _transitions = [];
+
 	private DragKind _drag;
 	private Rect _dragOrigin;
 	private Point _dragStart;
-
 	private bool? _isShown;
 
 	public WidgetView()
 	{
 		InitializeComponent();
-		InitializeTransform();
 
+		InitializeTransform();
 		AddHandler(PointerPressedEvent, OnAnyPointerPressed, RoutingStrategies.Tunnel, true);
 	}
 

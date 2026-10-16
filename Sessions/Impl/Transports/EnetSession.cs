@@ -9,7 +9,9 @@ using Godot;
 
 namespace EnsembleRoot.Sessions.Transports;
 
-/// <summary>A multi-player session over ENet (UDP) with DTLS, and an optional UPnP port mapping while hosting.</summary>
+/// <summary>
+///     A multi-player session over ENet (UDP) with DTLS, and an optional UPnP port mapping while hosting.
+/// </summary>
 /// <remarks>
 ///     Closing waits briefly for queued reliable packets (e.g., a session-ended notice) to be acknowledged.
 /// </remarks>

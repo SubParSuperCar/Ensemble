@@ -21,7 +21,6 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 	{
 		foreach (var player in GPlayers.GetAll())
 			OnPlayerAdded(player);
-
 		GPlayers.Added += OnPlayerAdded;
 		GPlayers.Removed += OnPlayerRemoved;
 

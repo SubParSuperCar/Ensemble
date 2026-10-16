@@ -31,8 +31,7 @@ public static partial class LuaExecutor
 
 		Log.Information(
 			"Game: v{Version} (Commit={Commit}, BuildTime={BuildTime}, Compilation={Compilation}, Runtime={Runtime})",
-			GameVersion, GameCommit, BuildInfo.BuildTime, BuildInfo.IsNativeAot ? "AOT" : "JIT",
-			Environment.Version);
+			GameVersion, GameCommit, BuildInfo.BuildTime, BuildInfo.IsNativeAot ? "AOT" : "JIT", Environment.Version);
 
 		Log.Information(
 			"Loaded assemblies ({Count}):\n{Assemblies}",

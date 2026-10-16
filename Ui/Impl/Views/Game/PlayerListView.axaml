@@ -46,8 +46,10 @@
                 BorderBrush="{DynamicResource ThemeBorderMidBrush}"
                 BorderThickness="{DynamicResource ThemeBorderThickness}">
 
-                <ScrollViewer Background="{DynamicResource ThemeBackgroundBrush}"
-                              HorizontalScrollBarVisibility="Disabled">
+                <ScrollViewer
+                    Background="{DynamicResource ThemeBackgroundBrush}"
+                    HorizontalScrollBarVisibility="Disabled">
+
                     <ItemsControl ItemsSource="{Binding Players}" Padding="4">
                         <ItemsControl.Styles>
                             <Style Selector="Border.player">

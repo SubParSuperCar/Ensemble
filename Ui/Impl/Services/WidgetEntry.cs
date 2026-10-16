@@ -10,8 +10,8 @@ namespace EnsembleRoot.Ui.Impl.Services;
 public sealed partial class WidgetEntry : ObservableObject
 {
 	private const string ViewModelSuffix = "ViewModel";
-	private readonly Func<ViewModelBase> _createContent;
 
+	private readonly Func<ViewModelBase> _createContent;
 	private readonly WidgetManagerService _manager;
 
 	internal WidgetEntry(

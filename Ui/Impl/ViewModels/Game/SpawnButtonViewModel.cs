@@ -21,5 +21,5 @@ public sealed partial class SpawnButtonViewModel : ViewModelBase
 	[RelayCommand]
 	private static void Toggle() => new SetPlotSpawnedAction(IsLocalPlotSpawned is not true).Submit();
 
-	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) => Label = isSpawned is true ? "Despawn" : "Spawn";
+	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) => Label = isSpawned is true ? "Despawn!" : "Spawn!";
 }

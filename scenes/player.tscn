@@ -75,7 +75,7 @@ no_depth_test = true
 fixed_size = true
 render_priority = 127
 outline_render_priority = 126
-text = "<Default>"
+text = "<Nametag>"
 font_size = 24
 
 [node name="Flashlight" type="SpotLight3D" parent="Character" unique_id=1841905227]

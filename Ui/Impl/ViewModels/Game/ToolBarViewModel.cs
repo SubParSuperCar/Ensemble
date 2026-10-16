@@ -37,6 +37,7 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	[ObservableProperty] public partial bool IsDestructToolEnabled { get; set; }
 
 	[ObservableProperty] public partial bool IsMutexEnforced { get; set; } = GToolManager.UseMutex;
+	[ObservableProperty] public partial bool IsRestoreOnDespawnEnabled { get; set; } = GToolManager.RestoreOnDespawn;
 
 	[ObservableProperty] public partial bool IsClearAllVisible { get; set; }
 	[ObservableProperty] public partial bool IsClearAllEnabled { get; set; }
@@ -71,6 +72,13 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	{
 		GToolManager.UseMutex = !GToolManager.UseMutex;
 		IsMutexEnforced = GToolManager.UseMutex;
+	}
+
+	[RelayCommand]
+	private void ToggleRestoreOnDespawn()
+	{
+		GToolManager.RestoreOnDespawn = !GToolManager.RestoreOnDespawn;
+		IsRestoreOnDespawnEnabled = GToolManager.RestoreOnDespawn;
 	}
 
 	private void OnToolIsEnabledChanged(ToolBase tool, bool isEnabled)

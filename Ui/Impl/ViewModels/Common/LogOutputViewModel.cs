@@ -28,7 +28,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 
 	public static IReadOnlyList<LogEventLevel> Levels { get; } = Enum.GetValues<LogEventLevel>();
 
-	[ObservableProperty] public partial string Output { get; private set; } = "<Default>";
+	[ObservableProperty] public partial string Output { get; private set; } = string.Empty;
 	[ObservableProperty] public partial LogEventLevel MinimumLevel { get; set; } = LogEventLevel.Debug;
 
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(6, 6, 12, 18))

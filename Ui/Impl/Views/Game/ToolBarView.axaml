@@ -23,6 +23,7 @@
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
                 <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Restore" />
             </Grid.ColumnDefinitions>
 
             <Border
@@ -54,6 +55,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
                     <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Restore" />
                 </Grid.ColumnDefinitions>
 
                 <Border
@@ -113,7 +115,14 @@
                     Command="{Binding ToggleMutexEnforcedCommand}"
                     IsChecked="{Binding IsMutexEnforced}"
                     ToolTip.Tip="Mutual Exclusion: Toggles whether only one tool can be enabled at a time.&#x0a;Disables all other tools when you enable one."
-                    Margin="4,0,0,0" />
+                    FlowDirection="RightToLeft" />
+
+                <CheckBox
+                    Grid.Column="6"
+                    Content="Restore"
+                    Command="{Binding ToggleRestoreOnDespawnCommand}"
+                    IsChecked="{Binding IsRestoreOnDespawnEnabled}"
+                    ToolTip.Tip="Toggles whether the tools that spawning your plot disabled are enabled again when it despawns." />
             </Grid>
         </Border>
     </StackPanel>

@@ -18,6 +18,7 @@ public partial class PlayerHandle : Node3D
 
 	private GdOccupant _occupant = null!;
 	private GdPlayer _player = null!;
+	private GdPlot? _plot;
 	private double _resetHeldFor;
 	private Vector3? _spawnOffset;
 
@@ -43,6 +44,7 @@ public partial class PlayerHandle : Node3D
 		_player = GPlayers.GetPlayer(Id)!;
 
 		_occupant = GPlots.GetOccupant(Id)!;
+		OnPlotChanged(_occupant.Plot);
 		_occupant.PlotChanged += OnPlotChanged;
 	}
 
@@ -77,7 +79,11 @@ public partial class PlayerHandle : Node3D
 		Controller.SetPhysicsProcess(true);
 	}
 
-	public override void _ExitTree() => _occupant.PlotChanged -= OnPlotChanged;
+	public override void _ExitTree()
+	{
+		_occupant.PlotChanged -= OnPlotChanged;
+		_plot?.IsSpawnedChanged -= OnIsPlotSpawnedChanged;
+	}
 
 	public override void _Process(double delta)
 	{
@@ -121,13 +127,29 @@ public partial class PlayerHandle : Node3D
 
 	private void OnPlotChanged(GdPlot? plot)
 	{
-		if (plot is null || Controller is null)
+		_plot?.IsSpawnedChanged -= OnIsPlotSpawnedChanged;
+		_plot = plot;
+		_plot?.IsSpawnedChanged += OnIsPlotSpawnedChanged;
+
+		ReturnToPlot();
+	}
+
+	// A live creation can carry the character off, but building happens inside the boundary
+	private void OnIsPlotSpawnedChanged(bool isSpawned)
+	{
+		if (!isSpawned)
+			ReturnToPlot();
+	}
+
+	private void ReturnToPlot()
+	{
+		if (_plot is null || Controller is null)
 			return;
 
-		var handle = GPlotManager.GetHandle(plot.Id);
+		var handle = GPlotManager.GetHandle(_plot.Id);
 
 		if (!IsInsideCuboid(Body.GlobalPosition, handle.BoundaryTransform, handle.BoundarySize))
-			Teleport(GetPlotSpawn(plot));
+			Teleport(GetPlotSpawn(_plot));
 	}
 
 	private Vector3 GetPlotSpawn(GdPlot plot) => GPlotManager.GetHandle(plot.Id).OriginTransform.Origin + SpawnOffset;

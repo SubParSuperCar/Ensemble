@@ -15,8 +15,9 @@ namespace EnsembleRoot.Sessions;
 /// </summary>
 /// <remarks>
 ///     A session is only started (<see cref="IsActive" />) once the local player has been registered. Clients then
-///     request snapshots, and confirmed actions are only sent to peers that received them, so none can precede or
-///     duplicate a snapshot. Failures are handled deferred, so a session never ends mid-poll (e.g., from an RPC).
+///     request snapshots and are synced once they're restored, while the server is synced right away. Confirmed
+///     actions are only sent to synced peers, so none can precede or duplicate a snapshot. Failures are handled
+///     deferred, so a session never ends mid-poll (e.g., from an RPC).
 /// </remarks>
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Early + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
@@ -39,6 +40,9 @@ public partial class SessionManager : Node
 
 	[Signal]
 	public delegate void SessionStoppedEventHandler();
+
+	[Signal]
+	public delegate void SessionSyncedEventHandler();
 
 	public const int DefaultPort = 7777;
 
@@ -290,7 +294,9 @@ public partial class SessionManager : Node
 
 		EmitSignal(SignalName.SessionStarted);
 
-		if (!IsServer)
+		if (IsServer)
+			EmitSignal(SignalName.SessionSynced);
+		else
 			RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcRequestSnapshots);
 	}
 

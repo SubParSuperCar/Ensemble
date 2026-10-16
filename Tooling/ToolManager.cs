@@ -1,5 +1,6 @@
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Plots.Impl;
 using EnsembleRoot.Tooling.Tools;
@@ -18,6 +19,7 @@ namespace EnsembleRoot.Tooling;
 public partial class ToolManager : Node, IAutoload
 {
 	private readonly List<ToolBase> _enabledTools = [];
+	private readonly List<ToolBase> _spawnDisabledTools = [];
 	private readonly Dictionary<Type, ToolBase> _tools = [];
 
 	public static ToolManager? Instance
@@ -32,6 +34,9 @@ public partial class ToolManager : Node, IAutoload
 	}
 
 	public bool UseMutex { get; set; } = true;
+
+	/// <summary>Whether the tools disabled by spawning the local plot are enabled again once it despawns.</summary>
+	public bool RestoreOnDespawn { get; set; }
 
 	public ConstructTool Construct => Get<ConstructTool>();
 	public DestructTool Destruct => Get<DestructTool>();
@@ -50,6 +55,7 @@ public partial class ToolManager : Node, IAutoload
 		Marquee.Initialize(this);
 		AddChild(Marquee);
 
+		LocalPlotChanged += OnLocalPlotChanged;
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
 		GSessionManager.ActionRejected += OnActionRejected;
 	}
@@ -63,6 +69,7 @@ public partial class ToolManager : Node, IAutoload
 	{
 		Selector.Dispose();
 
+		LocalPlotChanged -= OnLocalPlotChanged;
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 		GSessionManager.ActionRejected -= OnActionRejected;
 
@@ -135,13 +142,27 @@ public partial class ToolManager : Node, IAutoload
 		return tool;
 	}
 
-	private void OnIsLocalPlotSpawnedChanged(bool? _)
-	{
-		if (CanEnableTools)
-			return;
+	// Raised before the spawn state in the same frame, so tools never carry over to another plot
+	private void OnLocalPlotChanged(GdPlot? _) => _spawnDisabledTools.Clear();
 
-		DisableAll();
-		Selector.Clear();
+	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned)
+	{
+		if (isSpawned is true)
+			_spawnDisabledTools.AddRange(_enabledTools);
+
+		if (!CanEnableTools)
+		{
+			DisableAll();
+			Selector.Clear();
+
+			return;
+		}
+
+		if (RestoreOnDespawn)
+			foreach (var tool in _spawnDisabledTools)
+				RequestEnable(tool);
+
+		_spawnDisabledTools.Clear();
 	}
 
 	private void DisableAll(ToolBase? exception = null)

@@ -31,6 +31,18 @@ public partial class PlayerHandle
 
 	private static bool IsReplicating => GSessionManager is { Mode: SessionMode.MultiPlayer, IsActive: true };
 
+	/// <summary>The local character's state, or the latest one received for another's (if any).</summary>
+	public (Vector3 Position, float Yaw)? ReplicatedState =>
+		Controller is not null ? (Body.GlobalPosition, Body.GlobalRotation.Y) :
+		_targetPosition is { } target ? (target, _targetYaw) : null;
+
+	/// <summary>Places another's character from a snapshot, unless an update already did.</summary>
+	public void RestoreReplicatedState(Vector3 position, float yaw)
+	{
+		if (Controller is null && _targetPosition is null && IsValidState(position, yaw))
+			Receive(position, yaw);
+	}
+
 	private void Replicate(double delta)
 	{
 		if (!IsReplicating)
@@ -83,7 +95,7 @@ public partial class PlayerHandle
 		TransferChannel = ReplicationChannel)]
 	private void RpcReplicate(Vector3 position, float yaw)
 	{
-		if (!IsWithinWorld(position) || !float.IsFinite(yaw))
+		if (!IsValidState(position, yaw))
 			return;
 
 		var senderId = Multiplayer.GetRemoteSenderId();
@@ -101,31 +113,32 @@ public partial class PlayerHandle
 		else if (senderId != MultiplayerPeer.TargetPeerServer)
 			return;
 
-		if (_targetPosition is null)
-			Reveal(position, yaw);
-
-		_targetPosition = position;
-		_targetYaw = yaw;
-	}
-
-	private void Reveal(Vector3 position, float yaw)
-	{
-		var body = Body;
-
-		body.GlobalPosition = position;
-		body.GlobalRotation = body.GlobalRotation with { Y = yaw };
-		body.ResetPhysicsInterpolation();
-
-		body.ProcessMode = ProcessModeEnum.Inherit;
-		body.Visible = true;
+		Receive(position, yaw);
 	}
 
 	// Also false for NaN
-	private static bool IsWithinWorld(Vector3 position) =>
+	private static bool IsValidState(Vector3 position, float yaw) =>
+		float.IsFinite(yaw) &&
 		position.Abs() is
 		{
 			X: <= MaxReplicatedCoordinate, Y: <= MaxReplicatedCoordinate, Z: <= MaxReplicatedCoordinate
 		};
+
+	// The first state is jumped to, rather than interpolated toward from the spawn location
+	private void Receive(Vector3 position, float yaw)
+	{
+		if (_targetPosition is null)
+		{
+			var body = Body;
+
+			body.GlobalPosition = position;
+			body.GlobalRotation = body.GlobalRotation with { Y = yaw };
+			body.ResetPhysicsInterpolation();
+		}
+
+		_targetPosition = position;
+		_targetYaw = yaw;
+	}
 
 	private void Relay(Vector3 position, float yaw, int sourcePeerId)
 	{

@@ -51,7 +51,7 @@
                 <DropDownButton Grid.Column="2" ToolTip.Tip="Chat options.">
                     <DropDownButton.Flyout>
                         <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-2">
-                            <StackPanel Spacing="4">
+                            <StackPanel Spacing="5">
                                 <CheckBox
                                     Content="Profanity Filter"
                                     IsChecked="{Binding IsProfanityFilterEnabled}"

@@ -30,6 +30,9 @@ public partial class SessionManager
 		Log.Debug("Restored snapshot {SnapshotId} for peer {PeerId}", snapshotId, LocalPeerId);
 	}
 
+	[Rpc]
+	private void RpcFinishSnapshots() => EmitSignal(SignalName.SessionSynced);
+
 	private void SendSnapshots(int peerId)
 	{
 		if (!_peersById.ContainsKey(peerId) || !_syncedPeerIds.Add(peerId))
@@ -43,6 +46,8 @@ public partial class SessionManager
 			RpcId(peerId, MethodName.RpcRestoreSnapshot, snapshotId, payload);
 			count++;
 		}
+
+		RpcId(peerId, MethodName.RpcFinishSnapshots);
 
 		stopwatch.Stop();
 		Log.Debug(

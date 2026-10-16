@@ -16,6 +16,14 @@ public partial class WorldHandle : Node3D
 			AddTestData();
 #endif
 
+		GSessionManager.SessionSynced += OnSessionSynced;
+	}
+
+	public override void _ExitTree() => GSessionManager.SessionSynced -= OnSessionSynced;
+
+	// Clients only have the real state once their snapshots are restored
+	private static void OnSessionSynced()
+	{
 		Log.Debug("{Member} ({Count}):", nameof(GPlayers), GPlayers.Count);
 		foreach (var player in GPlayers.GetAll().OrderBy(static player => player.Id, StringComparer.Ordinal))
 			Log.Debug("{$Player}", player.ToDict());

@@ -47,7 +47,7 @@ public partial class WorldHandle : Node3D
 #if ENSEMBLE_DEBUG
 	private const int TestPlotId = 2;
 
-	private static readonly Vector3 HalfCell = Vector3.One * 0.5f;
+	private static readonly Vector3 HalfCell = Vector3.One / 2f;
 
 	// Places every asset in a ring on a test plot (radius = asset count, snapped to cell centers) and adds fake players
 	private static void AddTestData()

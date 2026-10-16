@@ -17,6 +17,7 @@
                 Content="{Binding Label}"
                 Command="{Binding ToggleCommand}"
                 ToolTip.Tip="Spawns your plot's creation, or despawns it to keep building. (Owner only)"
+                MinWidth="96"
                 LetterSpacing="-1" />
         </Border>
     </Border>

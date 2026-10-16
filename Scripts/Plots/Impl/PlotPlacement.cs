@@ -30,9 +30,7 @@ public static class PlotPlacement
 		if (IsLimitReached(count, maxCount))
 			return PlacementState.AssetQuotaMet;
 
-		return IsLimitReached(instances.Count, instances.MaxCount)
-			? PlacementState.PlotQuotaMet
-			: PlacementState.Valid;
+		return IsLimitReached(instances.Count, instances.MaxCount) ? PlacementState.PlotQuotaMet : PlacementState.Valid;
 	}
 
 	public static Obb GetBox(int assetId, Vector3 gridPosition, Quaternion rotation) =>

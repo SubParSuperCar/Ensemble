@@ -40,8 +40,8 @@ public static class SaveConverter
 	}
 
 	/// <summary>
-	///     Adds the saved instances, skipping (for the best chance of recovering data) those whose asset isn't loaded or
-	///     whose plot or asset cap is reached, and property values that are unknown or invalid for their property.
+	///     Adds the saved instances, skipping (for the best chance of recovering data) those whose asset isn't loaded
+	///     or whose plot or asset cap is reached, and property values that are unknown or invalid for their property.
 	/// </summary>
 	public static (int SkippedInstances, int SkippedValues) FromSaveData(IInstances instances, CreationSaveData data)
 	{

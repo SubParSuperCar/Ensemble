@@ -47,7 +47,6 @@ public sealed class Plot : IPlot
 	public void Reset()
 	{
 		Occupants.Clear();
-
 		Instances.Clear();
 		Despawn();
 	}

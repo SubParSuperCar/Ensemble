@@ -27,9 +27,7 @@ public partial class DestructTool : ToolBase
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (
-			!IsEnabled || InputSink.IsSunk || !ToolCommon.IsTriggerPressed(@event) ||
-			LocalPlot is not { } plot)
+		if (!IsEnabled || InputSink.IsSunk || !ToolCommon.IsTriggerPressed(@event) || LocalPlot is not { } plot)
 			return;
 
 		int? hoveredId = _hovered is { } hovered && IsLive(hovered) ? hovered.InstanceId : null;

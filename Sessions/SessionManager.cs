@@ -243,6 +243,7 @@ public partial class SessionManager : Node
 			Rpc(MethodName.RpcEndSession, failureReason ?? "Host ended the session.");
 
 		_session = null;
+
 		session.Started -= OnSessionStarted;
 		session.Failed -= OnSessionFailed;
 		DetachPortMapping(session);

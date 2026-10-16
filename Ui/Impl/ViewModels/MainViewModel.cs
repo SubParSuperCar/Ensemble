@@ -52,7 +52,6 @@ public sealed partial class MainViewModel : ViewModelBase
 			OnSessionStarted();
 		else
 			OnSessionStopped();
-
 		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
 	}

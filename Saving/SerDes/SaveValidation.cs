@@ -29,14 +29,6 @@ internal static class SaveValidation
 		return isValid;
 	}
 
-	private static bool IsValid(CoreVariant value) =>
-		value.Type switch
-		{
-			CoreVariantType.Double => double.IsFinite((double)value),
-			CoreVariantType.String => Encoding.UTF8.GetByteCount((string)value) <= MaxStringByteCount,
-			_ => true
-		};
-
 	/// <summary>Checks a save from a deserializer that can't enforce the limits while reading, e.g., JSON.</summary>
 	public static void Validate(CreationSaveData data)
 	{
@@ -67,4 +59,12 @@ internal static class SaveValidation
 					throw new InvalidDataException($"Invalid property: {key}.");
 		}
 	}
+
+	private static bool IsValid(CoreVariant value) =>
+		value.Type switch
+		{
+			CoreVariantType.Double => double.IsFinite((double)value),
+			CoreVariantType.String => Encoding.UTF8.GetByteCount((string)value) <= MaxStringByteCount,
+			_ => true
+		};
 }

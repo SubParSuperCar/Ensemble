@@ -55,8 +55,8 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> loc_clr_insts(LuaFunctionExecutionContext context,
-		CancellationToken cancellationToken)
+	private static ValueTask<int> loc_clr_insts(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		if (!IsSinglePlayer(nameof(loc_clr_insts)))
 			return context.ReturnNothing();
@@ -179,8 +179,7 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> set_sky_time(
-		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	private static ValueTask<int> set_sky_time(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		if (WorldManager.Instance?.World?.GetNodeOrNull(TimeOfDayPath) is not { } timeOfDay)
 		{
@@ -212,6 +211,7 @@ public static partial class LuaExecutor
 		timeOfDay.Set(CurrentTimeProperty, time);
 
 		Log.Information("Set lighting time to {Hours} hour(s) after midnight", time);
+
 		return context.ReturnNothing();
 	}
 

@@ -33,8 +33,7 @@ public partial class UpdateChecker : Node, IAutoload
 
 	// The page opens in the browser, so it must stay on GitHub
 	private static bool IsGitHubUrl(string? url) =>
-		Uri.TryCreate(url, UriKind.Absolute, out var uri) &&
-		uri is { Scheme: "https", Host: "github.com" };
+		Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri is { Scheme: "https", Host: "github.com" };
 
 	private static bool TryParseVersion(string? text, out Version version) =>
 		Version.TryParse(text?.TrimStart('v', 'V'), out version!);

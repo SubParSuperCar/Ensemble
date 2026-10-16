@@ -20,13 +20,11 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 	{
 		foreach (var plot in GPlots.GetAll())
 			OnPlotAdded(plot);
-
 		GPlots.Added += OnPlotAdded;
 		GPlots.Removed += OnPlotRemoved;
 
 		OnLocalPlotChanged(LocalPlot);
 		LocalPlotChanged += OnLocalPlotChanged;
-
 		GSessionManager.ActionRejected += OnActionRejected;
 	}
 
@@ -50,7 +48,6 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		GPlots.Removed -= OnPlotRemoved;
 
 		LocalPlotChanged -= OnLocalPlotChanged;
-
 		GSessionManager.ActionRejected -= OnActionRejected;
 
 		foreach (var unsubscribe in _unsubscribeByPlotId.Values)

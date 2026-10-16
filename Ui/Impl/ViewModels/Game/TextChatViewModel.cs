@@ -27,7 +27,6 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 		foreach (var message in GChatManager.Messages)
 			OnMessageAdded(message);
-
 		GChatManager.MessageAdded += OnMessageAdded;
 
 		GProfanityFilterManager.EnabledChanged += OnProfanityFilterEnabledChanged;

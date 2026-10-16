@@ -68,8 +68,7 @@ public partial class Ui : Control
 
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
+				CultureInfo.InvariantCulture, $"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 
 			WeakReferenceMessenger.Default.Register<Ui, SetUiRenderScaleMessage>(
 				this, static (ui, message) => ui._host.RenderScaling = message.Value);

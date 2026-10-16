@@ -74,8 +74,7 @@
                                         <ContextMenu x:DataType="vm:PlayerItem">
                                             <MenuItem
                                                 Header="Kick"
-                                                Command="{Binding $parent[ItemsControl].((vm:PlayerListViewModel)DataContext).KickCommand, FallbackValue={x:Null}}"
-                                                CommandParameter="{Binding}"
+                                                Command="{Binding KickCommand}"
                                                 ToolTip.Tip="Disconnects this player from the session." />
                                         </ContextMenu>
                                     </Template>

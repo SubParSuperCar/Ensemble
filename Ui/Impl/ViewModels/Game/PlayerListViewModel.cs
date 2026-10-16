@@ -55,10 +55,6 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 	private bool CanCopyJoinCode() => JoinCode is not null;
 
-	// TODO: Let the host give a reason
-	[RelayCommand]
-	private static void Kick(PlayerItem player) => GSessionManager.Kick(player.PeerId);
-
 	private void OnPortMappingChanged()
 	{
 		var manager = GSessionManager;
@@ -158,4 +154,8 @@ public sealed partial class PlayerItem : ObservableObject
 	public bool CanKick { get; init; }
 
 	[ObservableProperty] public partial int PingMs { get; set; }
+
+	// TODO: Let the host give a reason
+	[RelayCommand]
+	private void Kick() => GSessionManager.Kick(PeerId);
 }

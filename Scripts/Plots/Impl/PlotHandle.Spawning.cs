@@ -90,6 +90,7 @@ public partial class PlotHandle
 		_assembliesById.Clear();
 		_awakeIds.Clear();
 		SetStaticInstancesEnabled(true);
+		ClearSimulatorOverride();
 
 		Log.Debug("Despawned plot {PlotId}", Id);
 	}

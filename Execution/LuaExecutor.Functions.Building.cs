@@ -71,8 +71,9 @@ public static partial class LuaExecutor
 			Log.Information("Plot {PlotId}'s creation isn't spawned", id);
 		else
 			Log.Information(
-				"Plot {PlotId}'s creation: {Count} assemblies\n{Assemblies}",
-				id, handle.Assemblies.Count, string.Join('\n', handle.Assemblies));
+				"Plot {PlotId}'s creation: {Count} assemblies, simulated by peer {PeerId} (epoch {Epoch})\n{Assemblies}",
+				id, handle.Assemblies.Count, handle.SimulatorPeerId, handle.SimulationEpoch,
+				string.Join('\n', handle.Assemblies));
 
 		return context.ReturnNothing();
 	}
@@ -157,6 +158,22 @@ public static partial class LuaExecutor
 	{
 		if (GetLocalPlot(nameof(set_plot_spawned)) is not null)
 			new SetPlotSpawnedAction(context.GetArgument<bool>(0)).Submit();
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_plot_simulator(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var plotId = context.GetArgument<int>(0);
+		int? peerId = context.IsArgumentOmitted(1) ? null : context.GetArgument<int>(1);
+
+		if (GPlotManager.GetHandleOrNull(plotId) is not { } handle)
+			Log.Error("Plot with id {PlotId} not found", plotId);
+		else if (!handle.SetSimulatorOverride(peerId))
+			Log.Error("Only the host can set simulators, and only to registered peers");
+		else
+			Log.Information("Set plot {PlotId}'s simulator override to {PeerId}", plotId, peerId);
 
 		return context.ReturnNothing();
 	}

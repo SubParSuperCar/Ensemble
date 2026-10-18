@@ -25,6 +25,21 @@ public partial class Assembly : RigidBody3D
 
 	public bool IsKilled { get; private set; }
 
+	/// <summary>
+	///     Whether this peer simulates the body; otherwise it's a proxy, frozen as kinematic and moved by received
+	///     state, so characters still collide with and stand on it. A massless body stays frozen either way.
+	/// </summary>
+	public bool IsSimulated
+	{
+		get;
+		set
+		{
+			field = value;
+			FreezeMode = value ? FreezeModeEnum.Static : FreezeModeEnum.Kinematic;
+			Freeze = !value || _mass <= 0;
+		}
+	}
+
 	// Best done before entering the tree, so the body enters the physics space with all of its shapes at once
 	public void AddMember(AssetHandle member, AssetMaterial? material)
 	{
@@ -52,11 +67,11 @@ public partial class Assembly : RigidBody3D
 	}
 
 	/// <summary>
-	///     Takes the members' own bodies out of the physics space, then releases this body into the simulation with
-	///     their mass, mass-weighted friction, and lowest bounce, unless it has no mass.
+	///     Takes the members' own bodies out of the physics space, then gives this body their mass, mass-weighted
+	///     friction, and lowest bounce. It stays frozen until <see cref="IsSimulated" /> is set.
 	/// </summary>
 	/// <remarks>The assembly must be in the tree, so the members' bodies have entered the space they leave.</remarks>
-	public void Release()
+	public void Assemble()
 	{
 		foreach (var member in _members)
 			PhysicsServer3D.BodySetSpace(member.GetRid(), default);
@@ -74,8 +89,6 @@ public partial class Assembly : RigidBody3D
 		// Godot's defaults need no material of their own
 		if (friction is not AssetMaterial.DefaultFriction || bounce is not 0)
 			PhysicsMaterialOverride = new PhysicsMaterial { Friction = friction, Bounce = bounce };
-
-		Freeze = false;
 	}
 
 	/// <summary>

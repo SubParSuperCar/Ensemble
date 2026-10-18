@@ -54,12 +54,15 @@ public partial class PlotHandle
 	{
 		var timestamp = Stopwatch.GetTimestamp();
 		var instances = _plot.Instances.GetAll().ToDictionary(static instance => instance.Id);
+		var isSimulated = IsSimulatedLocally;
 		var parts = instances.Values.Select(static instance => (instance.Id, GetColliderBoxes(instance))).ToList();
 
 		SetStaticInstancesEnabled(false);
 
+		SimulationEpoch++;
+
 		foreach (var group in Welds.Group(parts))
-			AddAssembly(group, instances);
+			AddAssembly(group, instances, isSimulated);
 
 		foreach (var member in _assemblies.SelectMany(static assembly => assembly.Members))
 			member.Initialize(this, instances[member.InstanceId]);
@@ -77,6 +80,7 @@ public partial class PlotHandle
 	private void Despawn()
 	{
 		SetPhysicsProcess(false);
+		SimulationEpoch++;
 
 		foreach (var assembly in _assemblies)
 			assembly.QueueFree();
@@ -99,7 +103,7 @@ public partial class PlotHandle
 		return [.. GAssetManager.GetColliderBounds(instance.Asset.Id).Select(bounds => Obb.From(bounds, transform))];
 	}
 
-	private void AddAssembly(int[] group, Dictionary<int, GdInstance> instances)
+	private void AddAssembly(int[] group, Dictionary<int, GdInstance> instances, bool isSimulated)
 	{
 		var assembly = new Assembly
 		{
@@ -118,7 +122,8 @@ public partial class PlotHandle
 		}
 
 		_dynamicInstances.AddChild(assembly);
-		assembly.Release();
+		assembly.Assemble();
+		assembly.IsSimulated = isSimulated;
 		assembly.ResetPhysicsInterpolation();
 		_assemblies.Add(assembly);
 	}

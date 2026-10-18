@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 
 // ReSharper disable UnusedMember.Global
@@ -65,4 +66,9 @@ public partial class Assembly : RigidBody3D
 		ProcessMode = ProcessModeEnum.Disabled;
 		Visible = false;
 	}
+
+	public override string ToString() =>
+		string.Create(
+			CultureInfo.InvariantCulture,
+			$"Assembly(id={Id}, members={_members.Count}, mass={Mass:F1}, sleeping={Sleeping}, killed={IsKilled})");
 }

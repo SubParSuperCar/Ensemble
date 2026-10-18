@@ -14,11 +14,14 @@ public partial class PlotHandle
 {
 	private const float KillHeight = -1024f;
 	private const double KillCheckInterval = 1d;
+	private const int MaxLiftPasses = 64;
 
 	private const uint AssemblyMask =
 		PhysicsLayers.World | PhysicsLayers.Character | PhysicsLayers.StaticInstances | PhysicsLayers.DynamicInstances;
 
 	private readonly List<Assembly> _assemblies = [];
+	private readonly List<Obb> _liftCandidates = [];
+	private readonly PlacementSolver _solver = new();
 
 	private Node3D _dynamicInstances = null!;
 	private double _sinceKillCheck;
@@ -57,6 +60,12 @@ public partial class PlotHandle
 
 		foreach (var group in Welds.Group(parts))
 			AddAssembly(group, instances);
+
+		foreach (var assembly in _assemblies)
+			foreach (var member in assembly.Members)
+				member.Initialize(this, instances[member.InstanceId]);
+
+		MoveLocalCharacterClear();
 
 		_sinceKillCheck = 0;
 		SetPhysicsProcess(true);
@@ -111,6 +120,40 @@ public partial class PlotHandle
 		assembly.Release();
 		assembly.ResetPhysicsInterpolation();
 		_assemblies.Add(assembly);
+	}
+
+	// Placement ignores characters, so the creation may spawn around one; each peer moves its own, before physics does
+	private void MoveLocalCharacterClear()
+	{
+		if (GPlayerManager.LocalHandle is not { } player)
+			return;
+
+		var body = player.Body;
+		var origin = _staticInstances.GlobalTransform;
+		var box = Obb.From(player.BodyBounds, origin.AffineInverse() * body.GlobalTransform);
+
+		if (!InstanceBoxes.Overlaps(box))
+			return;
+
+		var cleared = LiftClear(_solver.Settle(box, InstanceBoxes, float.NegativeInfinity, Vector3.Up, null, default));
+		player.Teleport(body.GlobalPosition + origin.Basis * (cleared.Center - box.Center));
+	}
+
+	// Rises above whatever the sideways push couldn't escape, e.g., inside a closed shell
+	private Obb LiftClear(Obb box)
+	{
+		for (var pass = 0; pass < MaxLiftPasses && InstanceBoxes.Overlaps(box); pass++)
+		{
+			InstanceBoxes.Query(box, _liftCandidates);
+
+			var lift = _liftCandidates
+				.Where(box.Overlaps)
+				.Max(obstacle => box.GetSeparationDistance(obstacle, Vector3.Up));
+
+			box = box.At(box.Center + Vector3.Up * lift);
+		}
+
+		return box;
 	}
 
 	private void KillFallenAssemblies(double delta)

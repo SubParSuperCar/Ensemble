@@ -21,8 +21,13 @@ public partial class PlotHandle
 	{
 		_staticInstances = GetNode<Node3D>("Instances/Static");
 
-		foreach (var instance in _plot.Instances.GetAll())
-			OnInstanceAdded(instance);
+		var instances = _plot.Instances.GetAll();
+
+		foreach (var instance in instances)
+			AddStaticInstance(instance);
+
+		foreach (var instance in instances)
+			_handlesByInstanceId[instance.Id].Initialize(this, instance);
 
 		_plot.Instances.Added += OnInstanceAdded;
 		_plot.Instances.Removed += OnInstanceRemoved;
@@ -47,8 +52,18 @@ public partial class PlotHandle
 		return handle;
 	}
 
+	private void OnInstanceAdded(GdInstance instance) => AddStaticInstance(instance).Initialize(this, instance);
+
+	private void OnInstanceRemoved(GdInstance instance)
+	{
+		InstanceBoxes.Remove(instance.Id);
+
+		if (_handlesByInstanceId.Remove(instance.Id, out var handle))
+			handle.QueueFree();
+	}
+
 	// The static instances mirror the plot even while it's spawned (hidden, out of the physics space)
-	private void OnInstanceAdded(GdInstance instance)
+	private AssetHandle AddStaticInstance(GdInstance instance)
 	{
 		var transform = GetTransform(instance);
 
@@ -60,13 +75,7 @@ public partial class PlotHandle
 		_staticInstances.AddChild(handle);
 		_handlesByInstanceId.Add(instance.Id, handle);
 		InstanceBoxes.Add(instance.Id, Obb.From(GAssetManager.GetBoundary(instance.Asset.Id), transform));
-	}
 
-	private void OnInstanceRemoved(GdInstance instance)
-	{
-		InstanceBoxes.Remove(instance.Id);
-
-		if (_handlesByInstanceId.Remove(instance.Id, out var handle))
-			handle.QueueFree();
+		return handle;
 	}
 }

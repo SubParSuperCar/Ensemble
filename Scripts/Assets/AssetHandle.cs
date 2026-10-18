@@ -1,15 +1,18 @@
+using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets.Impl;
+using EnsembleRoot.Scripts.Plots;
 using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 
 namespace EnsembleRoot.Scripts.Assets;
 
 [GlobalClass]
 public partial class AssetHandle : RigidBody3D
 {
-	// Water's, until materials have their own
-	public const float DefaultDensity = 1000f;
+	// An eighth of water's, as blocks are hollow shells like toy bricks, until materials have their own
+	public const float DefaultDensity = 1000 / 8f;
 
 	private bool _isBoundaryCalculated;
 
@@ -43,10 +46,18 @@ public partial class AssetHandle : RigidBody3D
 
 	public int InstanceId { get; internal set; }
 
+	public PlotHandle Plot { get; private set; } = null!;
+	public GdInstance Instance { get; private set; } = null!;
+
 	/// <summary>The assembly carrying this handle while its plot is spawned, set for the handle's whole life.</summary>
 	public Assembly? Assembly { get; internal set; }
 
 	public bool IsLive => Assembly is not null;
+
+	public IReadOnlyList<AssetComponent> Components { get; private set; } = [];
+
+	public TComponent? GetComponent<TComponent>() where TComponent : AssetComponent =>
+		Components.OfType<TComponent>().FirstOrDefault();
 
 	// Only direct children count, as a body only registers the shapes of its direct children
 	public IEnumerable<CollisionShape3D> GetColliders() =>
@@ -74,6 +85,24 @@ public partial class AssetHandle : RigidBody3D
 
 		return volume > 0 ? (Density * volume, moment / volume) : default;
 	}
+
+	/// <summary>
+	///     Binds the handle to its plot and instance, then initializes its components and itself, once every handle of
+	///     its creation exists. Previews and other unbound handles are never initialized.
+	/// </summary>
+	internal void Initialize(PlotHandle plot, GdInstance instance)
+	{
+		Plot = plot;
+		Instance = instance;
+		Components = [.. GetChildren().OfType<AssetComponent>()];
+
+		foreach (var component in Components)
+			component.Initialize(this);
+
+		OnInitialized();
+	}
+
+	protected virtual void OnInitialized() { }
 
 	private Aabb CalculateBoundary() =>
 		GetColliderBounds() is [var first, .. var rest]

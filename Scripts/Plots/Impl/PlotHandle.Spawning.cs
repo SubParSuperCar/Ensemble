@@ -86,6 +86,8 @@ public partial class PlotHandle
 			assembly.QueueFree();
 
 		_assemblies.Clear();
+		_assembliesById.Clear();
+		_awakeIds.Clear();
 		SetStaticInstancesEnabled(true);
 
 		Log.Debug("Despawned plot {PlotId}", Id);
@@ -124,6 +126,7 @@ public partial class PlotHandle
 		_dynamicInstances.AddChild(assembly);
 		assembly.Assemble();
 		assembly.IsSimulated = isSimulated;
+		_assembliesById.Add(assembly.Id, assembly);
 		assembly.ResetPhysicsInterpolation();
 		_assemblies.Add(assembly);
 	}

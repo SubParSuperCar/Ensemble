@@ -11,7 +11,8 @@ internal static class PlotsSnapshot
 	private static readonly (string Key, Variant.Type Type)[] PlotFields =
 	[
 		("id", Variant.Type.Int), ("ownerId", Variant.Type.String), ("occupantIds", Variant.Type.PackedStringArray),
-		("instances", Variant.Type.Array), ("isSpawned", Variant.Type.Bool)
+		("instances", Variant.Type.Array), ("isSpawned", Variant.Type.Bool), ("epoch", Variant.Type.Int),
+		("creation", Variant.Type.PackedByteArray)
 	];
 
 	private static readonly (string Key, Variant.Type Type)[] InstanceFields =
@@ -32,6 +33,11 @@ internal static class PlotsSnapshot
 			dict["ownerId"] = occupants.Owner?.Player.Id ?? string.Empty;
 			dict["occupantIds"] = occupants.GetAll().Select(static occupant => occupant.Player.Id).ToArray();
 			dict["instances"] = Variant.From(plot.Instances.GetAllDicts());
+
+			// Every plot's epoch, spawned or not, or this peer's would drift from the others' at the next spawn
+			var (epoch, creation) = GPlotManager.GetHandle(plot.Id).CaptureCreation();
+			dict["epoch"] = epoch;
+			dict["creation"] = creation;
 
 			payload.Add(dict);
 		}
@@ -75,6 +81,9 @@ internal static class PlotsSnapshot
 
 			if (dict["isSpawned"].AsBool())
 				plot.Spawn();
+
+			GPlotManager.GetHandleOrNull(plot.Id)
+				?.RestoreCreation((ushort)dict["epoch"].AsInt32(), dict["creation"].AsByteArray());
 		}
 	}
 

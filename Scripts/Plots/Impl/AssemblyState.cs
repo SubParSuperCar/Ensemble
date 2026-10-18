@@ -14,6 +14,7 @@ public readonly record struct AssemblyState(
 	Vector3 AngularVelocity)
 {
 	public const int Bits = IdBits + 3 * PositionBits + 2 + 3 * RotationBits + 6 * VelocityBits;
+	public const int MaxId = (1 << IdBits) - 1;
 
 	private const int IdBits = 16;
 

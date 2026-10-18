@@ -79,8 +79,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 ## Gameplay / content
 
 - (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction` and `set_plot_spawned` done; spawned plots become live,
-  welded creations in single-player, and an emptied plot despawns. Next: multiplayer; see
-  [**Spawning and live physics**](#spawning-and-live-physics-plan)
+  welded creations, simulated by the host and streamed to everyone else, and an emptied plot despawns. Next: plot
+  owners simulating their own creations; see [**Spawning and live physics**](#spawning-and-live-physics-plan)
 - (WIP) (L) Live asset logic - infrastructure for assets with behavior. `AssetComponent`s are nodes dropped under an
   asset's `AssetHandle` in its scene (unique behaviors may subclass `AssetHandle`); handles bind to their plot and
   instance, then initialize their components once their whole creation exists, and live in one mode (build or live)

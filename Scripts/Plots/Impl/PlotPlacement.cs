@@ -61,6 +61,5 @@ public static class PlotPlacement
 		return true;
 	}
 
-	private static bool IsAtLeast(float value, float threshold) =>
-		value >= threshold || Mathf.IsEqualApprox(value, threshold);
+	private static bool IsAtLeast(float value, float threshold) => value >= threshold - Epsilon;
 }

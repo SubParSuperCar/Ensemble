@@ -92,6 +92,27 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 The agreed design for spawned plots, from 2026-10-15. Only the plumbing exists so far; the rest is the reference for
 building the live creation.
 
+### Terms
+
+| Term             | Meaning                                                                                    |
+|------------------|--------------------------------------------------------------------------------------------|
+| Creation         | A plot's build as a whole, static or live (as in saves)                                    |
+| Instance         | One placed asset in Core: ID, asset, grid position, rotation, properties                   |
+| Static instances | Build mode: frozen AssetHandles under `Instances/Static`, editable with the tools          |
+| Spawned / live   | A plot whose creation is simulated, under `Instances/Dynamic`; editing is locked           |
+| Abut             | Two collider boxes share part of a face within `Epsilon`; edges and corners don't count    |
+| Weld             | An automatic, unbreakable rigid link between two instances whose collider boxes abut       |
+| Group            | The instances connected by welds (one union-find component), even a single instance        |
+| Assembly         | The `RigidBody3D` built for one group; its ID is the group's lowest instance ID            |
+| Member           | An AssetHandle riding its assembly, with its own body out of the physics space             |
+| Mechanism        | (Later) Assemblies linked by joints; the unit of ownership                                 |
+| Owner            | The peer that simulates a mechanism; the plot's owner by default (network ownership)       |
+| Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
+| Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
+| Anchor           | (Later) An asset that freezes its assembly while any anchor holds it                       |
+| Piece            | (Later) One moving part of an asset (a motor's head); never welds to its siblings          |
+| Passenger        | (Later, name TBD) A character seated in a creation                                         |
+
 ### Done (plumbing)
 
 - `SetPlotSpawnedAction(bool)` (the owner, or the host via Lua), the floating Spawn / Despawn button (owner only), and
@@ -114,24 +135,22 @@ building the live creation.
 
 ### Spawn pipeline (per plot, on every peer)
 
-1. Weld graph - an edge for each instance pair whose OBBs touch or nearly touch on coplanar, overlapping faces, never
-   edges or corners (Baja Builders parity). Neighbors come from ObbGrid; Obb gains a face-contact test (opposite
-   normals, coplanar within an epsilon, and a positive overlap area after shrinking the faces slightly, so edge and
-   corner contact don't count)
-2. Groups - union-find over the weld edges; each connected component is one rigid group, even a group of one
+1. Welds - an edge for each instance pair with abutting collider boxes (`Obb.Abuts`, Baja Builders parity: either box,
+   grown by `Epsilon` along one of its axes and shrunk by it along the others, overlaps the other), one box per
+   collider, so assets may have several. Neighbors come from an ObbGrid (done: `Welds.Group`)
+2. Groups - union-find over the weld edges; each connected component is one rigid group, even a group of one (done)
 3. Assembly bodies - a new `RigidBody3D` per group under `Instances/Dynamic`, with each asset's collision shapes
    registered on it through the shape-owner API (`CreateShapeOwner(asset)`, `ShapeOwnerAddShape`,
    `ShapeOwnerSetTransform`) at the asset's offset, reusing the `Shape3D` resources. Godot only counts shapes that are
    direct children of a body, so nesting bodies (or wrapping `Node3D` assets) wouldn't work
-4. Passengers - each asset is instantiated as in build mode and parented under its assembly at its offset, with its
-   own body disabled (out of the physics space); meshes and scripts ride along. Assets stay `RigidBody3D` scenes, which
-   is where mass and physics materials are authored
-5. Mass - the sum of the assets' `Mass`, with the center of mass at their mass-weighted average position; Jolt derives
-   the inertia from the shapes
+4. Members - each asset is instantiated and parented under its assembly at its offset, with its own body out of the
+   physics space; meshes and scripts ride along. Assets stay `RigidBody3D` scenes
+5. Mass - each asset's density times its volume by default (overridable later), summed, with the center of mass at the
+   mass-weighted average position; Jolt derives the inertia from the shapes. Friction comes from the material later
 6. IDs - each assembly takes its group's lowest instance ID, so peers agree on IDs without sending them
 7. Raycasts - a hit's shape index leads back to the exact asset (`ShapeFindOwner`, then `ShapeOwnerGetOwner`)
-8. Joints (later) - hinge, piston, and suspension assets link two groups with Jolt joints; groups linked by joints form
-   an assembly, the unit of ownership
+8. Joints (later) - hinge, piston, and suspension assets link two groups with Jolt joints; assemblies linked by joints
+   form a mechanism, the unit of ownership
 
 Despawning frees `Instances/Dynamic`, then rebuilds the static instances (done).
 
@@ -160,9 +179,10 @@ Despawning frees `Instances/Dynamic`, then rebuilds the static instances (done).
 
 ### Phases (each shippable)
 
-0. Prerequisites - dedicated physics layers (static, dynamic, proxies, characters), per-asset mass, and the
-   face-contact test (with unit tests)
-1. Single-Player - weld graph, assemblies, and passengers; stress-test Jolt with about 5000 blocks
+0. Prerequisites - physics layers (World, Character, Static Instances, Dynamic Instances), a game-wide `Epsilon`
+   (1/512 m) for placement and welding, multi-collider assets, the abut test and weld groups (with unit tests), and
+   spawning blocked in multiplayer until Phase 2
+1. Single-Player - assemblies, members, and mass; a kill height for assemblies; stress-test Jolt with about 5000 blocks
 2. Multiplayer with the host as the only simulator - batched state, proxies, interpolation, and late joins; proves the
    wire format
 3. Owner authority - the same format, sent by the owner, relayed and validated by the host, with hand-off when the

@@ -6,7 +6,7 @@ namespace EnsembleRoot.Scripts.Plots.Impl;
 /// <summary>
 ///     An oriented bounding box tested with the Separating Axis Theorem: two boxes are disjoint if their projections
 ///     are disjoint on any of 15 axes, i.e., each box's 3 face normals and the 9 cross products of their edges.
-///     Touching boxes do not overlap.
+///     Boxes within <see cref="Epsilon" /> of touching do not overlap.
 /// </summary>
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
@@ -25,25 +25,14 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 		Extents.Y * MathF.Abs(Basis.Y.Dot(direction)) +
 		Extents.Z * MathF.Abs(Basis.Z.Dot(direction));
 
-	public bool Overlaps(Obb other)
-	{
-		var reach = Extents.Length() + other.Extents.Length();
+	public bool Overlaps(Obb other) => Overlaps(other, Epsilon);
 
-		if ((other.Center - Center).LengthSquared() >= reach * reach)
-			return false;
-
-		if (IsSeparatedOn(other, Vector3.Right) || IsSeparatedOn(other, Vector3.Up) ||
-			IsSeparatedOn(other, Vector3.Back))
-			return false;
-
-		Span<Vector3> axes = stackalloc Vector3[MaxAxisCount];
-
-		foreach (var axis in axes[..GetAxes(other, axes)])
-			if (IsSeparatedOn(other, axis))
-				return false;
-
-		return true;
-	}
+	/// <summary>
+	///     Gets whether the boxes share part of a face (Baja Builders parity): either box, grown by
+	///     <see cref="Epsilon" /> along one of its axes and shrunk by it along the others, overlaps the other. Gaps up
+	///     to the tolerance count, but edge and corner contact don't.
+	/// </summary>
+	public bool Abuts(Obb other) => AbutsOneWay(other) || other.AbutsOneWay(this);
 
 	/// <summary>
 	///     Gets how far this box must travel along the unit <paramref name="direction" /> to stop overlapping
@@ -108,13 +97,42 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 		return float.IsFinite(distance) ? normal * distance : Vector3.Zero;
 	}
 
-	private bool IsSeparatedOn(Obb other, Vector3 axis)
+	private bool Overlaps(Obb other, float tolerance)
 	{
-		var distance = MathF.Abs((other.Center - Center).Dot(axis));
-		var reach = Radius(axis) + other.Radius(axis);
+		var reach = Extents.Length() + other.Extents.Length();
 
-		return distance >= reach || Mathf.IsEqualApprox(distance, reach);
+		if ((other.Center - Center).LengthSquared() >= reach * reach)
+			return false;
+
+		if (IsSeparatedOn(other, Vector3.Right, tolerance) || IsSeparatedOn(other, Vector3.Up, tolerance) ||
+			IsSeparatedOn(other, Vector3.Back, tolerance))
+			return false;
+
+		Span<Vector3> axes = stackalloc Vector3[MaxAxisCount];
+
+		foreach (var axis in axes[..GetAxes(other, axes)])
+			if (IsSeparatedOn(other, axis, tolerance))
+				return false;
+
+		return true;
 	}
+
+	private bool AbutsOneWay(Obb other)
+	{
+		for (var axis = 0; axis < 3; axis++)
+		{
+			var extents = Extents - Vector3.One * Epsilon;
+			extents[axis] += 2 * Epsilon;
+
+			if ((this with { Extents = extents }).Overlaps(other, 0))
+				return true;
+		}
+
+		return false;
+	}
+
+	private bool IsSeparatedOn(Obb other, Vector3 axis, float tolerance = Epsilon) =>
+		MathF.Abs((other.Center - Center).Dot(axis)) >= Radius(axis) + other.Radius(axis) - tolerance;
 
 	private int GetAxes(Obb other, Span<Vector3> axes)
 	{

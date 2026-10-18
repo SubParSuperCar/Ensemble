@@ -14,6 +14,7 @@ public sealed class ObbGrid
 	private const float MaxGriddedReach = 64 * 1024f;
 
 	private readonly Dictionary<int, Obb> _boxes = [];
+	private readonly List<int> _candidateIds = [];
 	private readonly List<Obb> _candidates = [];
 	private readonly Dictionary<Vector3I, List<int>> _cells = [];
 	private readonly HashSet<int> _ungridded = [];
@@ -71,20 +72,28 @@ public sealed class ObbGrid
 
 	public void Query(Obb box, ICollection<Obb> results)
 	{
+		Query(box, _candidateIds);
+		results.Clear();
+
+		foreach (var id in _candidateIds)
+			results.Add(_boxes[id]);
+	}
+
+	public void Query(Obb box, ICollection<int> results)
+	{
 		results.Clear();
 		_visited.Clear();
 
 		if (!TryGetCellRange(box, out var min, out var max))
 		{
-			foreach (var candidate in _boxes.Values)
-				results.Add(candidate);
+			foreach (var id in _boxes.Keys)
+				results.Add(id);
 
 			return;
 		}
 
 		foreach (var id in _ungridded)
-			if (_visited.Add(id))
-				results.Add(_boxes[id]);
+			results.Add(id);
 
 		for (var x = min.X; x <= max.X; x++)
 			for (var y = min.Y; y <= max.Y; y++)
@@ -95,7 +104,7 @@ public sealed class ObbGrid
 
 					foreach (var id in ids)
 						if (_visited.Add(id))
-							results.Add(_boxes[id]);
+							results.Add(id);
 				}
 	}
 

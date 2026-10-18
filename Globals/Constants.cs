@@ -33,6 +33,12 @@ public static class Constants
 
 	public const int RegexMatchTimeoutMs = 100;
 
+	/// <summary>
+	///     The world-space distance (about 2 mm) within which geometry counts as touching, for placement and welding.
+	///     It sits between the editor's 0.001 steps, so a 0.002 offset reliably exceeds it.
+	/// </summary>
+	public const float Epsilon = 1 / 512f;
+
 	public static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(3 / 16d);
 
 	/// <remarks>Also the multi-player handshake version: peers must match exactly.</remarks>
@@ -44,4 +50,13 @@ public static class Constants
 			.Split('+') is [_, var commit]
 			? commit
 			: "Unknown";
+
+	/// <summary>Mirrors project.godot's 3D physics layer names, as bits for collision layers and masks.</summary>
+	public static class PhysicsLayers
+	{
+		public const uint World = 1 << 0;
+		public const uint Character = 1 << 1;
+		public const uint StaticInstances = 1 << 2;
+		public const uint DynamicInstances = 1 << 3;
+	}
 }

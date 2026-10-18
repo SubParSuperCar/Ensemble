@@ -232,6 +232,8 @@ ui_terminal_open={
 
 3d_physics/layer_1="World"
 3d_physics/layer_2="Character"
+3d_physics/layer_3="Static Instances"
+3d_physics/layer_4="Dynamic Instances"
 
 [physics]
 

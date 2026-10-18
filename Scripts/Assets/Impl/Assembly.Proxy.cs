@@ -20,8 +20,8 @@ public partial class Assembly
 
 	/// <summary>
 	///     Buffers a proxy's streamed state, in global space, stamped with the local time it describes; the first one
-	///     is jumped to. A state much later than the previous one (a body that rested, or lost updates) holds the
-	///     previous pose until <paramref name="interval" /> before it, rather than drifting toward it all along.
+	///     is jumped to. A body that rested long before this state holds its pose until <paramref name="interval" />
+	///     before it, rather than drifting toward it all along.
 	/// </summary>
 	internal void AddProxyState(
 		double time, double interval, Transform3D transform, Vector3 linearVelocity, Vector3 angularVelocity)
@@ -35,7 +35,7 @@ public partial class Assembly
 			if (time <= latest.Time)
 				return;
 
-			if (time - latest.Time > 2 * interval)
+			if (time - latest.Time > 2 * interval && latest.IsAtRest)
 				latest = latest with { Time = time - interval };
 		}
 
@@ -48,7 +48,7 @@ public partial class Assembly
 	/// <summary>Forgets the buffered states' times (another simulator's clock), keeping the proxy in place.</summary>
 	internal void ResetProxyTimeline()
 	{
-		if (_proxyStateCount is 0)
+		if (IsSimulated || _proxyStateCount is 0)
 			return;
 
 		_proxyStates[0] = new ProxyState(double.NegativeInfinity, _proxyTransform, Vector3.Zero, Vector3.Zero);
@@ -76,8 +76,9 @@ public partial class Assembly
 			while (index >= 0 && _proxyStates[index].Time > time)
 				index--;
 
-			transform = index < 0 ? _proxyStates[0].Transform :
-				Interpolate(_proxyStates[index], _proxyStates[index + 1], time);
+			transform = index < 0
+				? _proxyStates[0].Transform
+				: Interpolate(_proxyStates[index], _proxyStates[index + 1], time);
 		}
 
 		if (transform == _proxyTransform)
@@ -131,6 +132,43 @@ public partial class Assembly
 			: new Quaternion(angularVelocity / speed, speed * seconds);
 	}
 
+	/// <summary>
+	///     Starts simulating the body from its latest received state, brought forward to <paramref name="time" />
+	///     (asleep if it was at rest, so a hand-off doesn't wake a whole creation), or freezes it into a proxy where it
+	///     is, holding still until the new simulator's states arrive.
+	/// </summary>
+	internal void HandOff(bool isSimulated, double time)
+	{
+		if (isSimulated == IsSimulated)
+			return;
+
+		if (!isSimulated)
+		{
+			IsSimulated = false;
+			_proxyTransform = GlobalTransform;
+			_proxyStates[0] = new ProxyState(double.NegativeInfinity, _proxyTransform, Vector3.Zero, Vector3.Zero);
+			_proxyStateCount = 1;
+
+			return;
+		}
+
+		if (_proxyStateCount is 0)
+		{
+			IsSimulated = true;
+			return;
+		}
+
+		var latest = _proxyStates[_proxyStateCount - 1];
+		_proxyStateCount = 0;
+
+		JumpProxy(Extrapolate(latest, Math.Clamp(time - latest.Time, 0, MaxProxyExtrapolation)));
+		IsSimulated = true;
+
+		LinearVelocity = latest.LinearVelocity;
+		AngularVelocity = latest.AngularVelocity;
+		Sleeping = latest.IsAtRest;
+	}
+
 	// A kinematic body moved by a transform shoves what it touched on the way, so jumps leave the space for the move
 	private void JumpProxy(Transform3D transform)
 	{
@@ -149,5 +187,8 @@ public partial class Assembly
 		double Time,
 		Transform3D Transform,
 		Vector3 LinearVelocity,
-		Vector3 AngularVelocity);
+		Vector3 AngularVelocity)
+	{
+		public bool IsAtRest => LinearVelocity == Vector3.Zero && AngularVelocity == Vector3.Zero;
+	}
 }

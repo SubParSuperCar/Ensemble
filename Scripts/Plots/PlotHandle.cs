@@ -42,18 +42,21 @@ public partial class PlotHandle : Node3D
 		GridBoundarySize = BoundarySize / GridToWorldScale;
 
 		ReadyInstances();
+		ReadySimulation();
 		ReadySpawning();
 	}
 
 	public override void _ExitTree()
 	{
 		ExitSpawning();
+		ExitSimulation();
 		ExitInstances();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
 		UpdateReplication(delta);
+		WatchSimulator(delta);
 		KillFallenAssemblies(delta);
 	}
 

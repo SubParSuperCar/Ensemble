@@ -7,6 +7,7 @@ using EnsembleRoot.Common.Networking;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Profanity;
+using EnsembleRoot.Sessions;
 using EnsembleRoot.Sessions.Actions;
 using Lua;
 using Serilog;
@@ -18,6 +19,9 @@ namespace EnsembleRoot.Execution;
 public static partial class LuaExecutor
 {
 	private const string PublicIPv4AddressSourceUrl = HttpsScheme + "api.ipify.org";
+
+	// Worse than any real connection worth simulating
+	private const int MaxSimulatedDelayMs = 4096;
 
 	private static ValueTask<int> chat(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -137,6 +141,31 @@ public static partial class LuaExecutor
 		GChatManager.IsTtsEnabled = isEnabled;
 
 		Log.Information("Set chat TTS to {IsEnabled}", isEnabled);
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_net_sim(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var latencyMs = context.GetArgumentOrDefault(0, 0d);
+		var jitterMs = context.GetArgumentOrDefault(1, 0d);
+		var lossRate = context.GetArgumentOrDefault(2, 0d);
+
+		if (
+			latencyMs is not (>= 0 and <= MaxSimulatedDelayMs) || jitterMs is not (>= 0 and <= MaxSimulatedDelayMs) ||
+			lossRate is not (>= 0 and <= 1))
+		{
+			Log.Error(
+				"Invalid network simulation: latency and jitter take 0 to {Max} ms, and loss 0 to 1",
+				MaxSimulatedDelayMs);
+
+			return context.ReturnNothing();
+		}
+
+		NetworkConditions.Set((int)latencyMs, (int)jitterMs, lossRate);
+		Log.Information(
+			"Simulating {LatencyMs} ms latency, {JitterMs} ms jitter, and {Loss:P0} loss on incoming live state",
+			(int)latencyMs, (int)jitterMs, lossRate);
 
 		return context.ReturnNothing();
 	}

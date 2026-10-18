@@ -39,6 +39,8 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(set_chat_tts_on), set_chat_tts_on), "is_on"),
 		(new LuaFunction(nameof(set_clock_offset), set_clock_offset), "seconds?"),
 		(new LuaFunction(nameof(set_inst_prop), set_inst_prop), "instance_id, key, value?"),
+		(new LuaFunction(nameof(set_net_sim), set_net_sim), "latency_ms?, jitter_ms?, loss?"),
+		(new LuaFunction(nameof(set_plot_simulator), set_plot_simulator), "plot_id, peer_id?"),
 		(new LuaFunction(nameof(set_plot_spawned), set_plot_spawned), "is_spawned"),
 		(new LuaFunction(nameof(set_profanity_filter_on), set_profanity_filter_on), "is_on"),
 		(new LuaFunction(nameof(set_sky_time), set_sky_time), "hours?"),

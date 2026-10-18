@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using EnsembleRoot.Common.Utils;
+using EnsembleRoot.Sessions;
 using EnsembleRoot.Sessions.Api;
 using Godot;
 
@@ -98,10 +99,14 @@ public partial class PlayerHandle
 		TransferChannel = ReplicationChannel)]
 	private void RpcReplicate(Vector3 position, float yaw)
 	{
+		var senderId = Multiplayer.GetRemoteSenderId();
+		NetworkConditions.Receive(this, () => ReceiveReplicated(senderId, position, yaw));
+	}
+
+	private void ReceiveReplicated(int senderId, Vector3 position, float yaw)
+	{
 		if (!IsValidState(position, yaw))
 			return;
-
-		var senderId = Multiplayer.GetRemoteSenderId();
 
 		if (GSessionManager.IsServer)
 		{

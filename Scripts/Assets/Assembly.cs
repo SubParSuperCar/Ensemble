@@ -32,7 +32,7 @@ public partial class Assembly : RigidBody3D
 	public bool IsSimulated
 	{
 		get;
-		set
+		internal set
 		{
 			field = value;
 			FreezeMode = value ? FreezeModeEnum.Static : FreezeModeEnum.Kinematic;

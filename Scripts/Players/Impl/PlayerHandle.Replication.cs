@@ -81,7 +81,10 @@ public partial class PlayerHandle
 		var position = body.GlobalPosition;
 		var weight = Smoothing.GetWeight(SmoothingRate, delta);
 
-		body.GlobalPosition = position.DistanceTo(target) > SnapDistance ? target : position.Lerp(target, weight);
+		if (position.DistanceTo(target) > SnapDistance)
+			Jump(target);
+		else
+			body.GlobalPosition = position.Lerp(target, weight);
 
 		var rotation = body.GlobalRotation;
 		rotation.Y = Mathf.LerpAngle(rotation.Y, _targetYaw, weight);
@@ -131,8 +134,8 @@ public partial class PlayerHandle
 		{
 			var body = Body;
 
-			body.GlobalPosition = position;
 			body.GlobalRotation = body.GlobalRotation with { Y = yaw };
+			Jump(position);
 			body.ResetPhysicsInterpolation();
 		}
 

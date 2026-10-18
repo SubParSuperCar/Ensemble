@@ -103,22 +103,27 @@ public partial class PlayerHandle : Node3D
 
 	public void Teleport(Vector3 position)
 	{
-		var body = Body;
-		var rid = body.GetRid();
-		var space = PhysicsServer3D.BodyGetSpace(rid);
-
-		// Jolt moves a kinematic body to a new transform during the next step, shoving whatever it touched where it was;
-		// leaving the space for the move makes it a jump
-		PhysicsServer3D.BodySetSpace(rid, default);
-		body.GlobalPosition = position;
-		body.Velocity = Vector3.Zero;
-		body.ForceUpdateTransform();
-		PhysicsServer3D.BodySetSpace(rid, space);
+		Body.Velocity = Vector3.Zero;
+		Jump(position);
 
 		Log.Debug("Teleported {Player} to {Position}", _player.Name, position);
 	}
 
 	public void Respawn() => Teleport(_occupant.Plot is { } plot ? GetPlotSpawn(plot) : SpawnLocation);
+
+	// Jolt moves a kinematic body to a new transform during the next step, shoving whatever it touched where it was;
+	// leaving the space for the move makes it a jump
+	private void Jump(Vector3 position)
+	{
+		var body = Body;
+		var rid = body.GetRid();
+		var space = PhysicsServer3D.BodyGetSpace(rid);
+
+		PhysicsServer3D.BodySetSpace(rid, default);
+		body.GlobalPosition = position;
+		body.ForceUpdateTransform();
+		PhysicsServer3D.BodySetSpace(rid, space);
+	}
 
 	private void UpdateReset(double delta)
 	{

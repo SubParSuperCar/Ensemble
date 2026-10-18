@@ -36,8 +36,10 @@ The tool suite, in rough intended order of implementation.
   through the same actions (and validation) as the tools, so they also work in multiplayer
 - [ ] (M) Build share codes - `copy_build()` / `paste_build(code)` turn a plot into a short compressed text code to
   paste in chat (reuses the save pipeline)
-- [ ] (M) Build replays - record a plot's add / remove / property actions and replay them as a time-lapse; groundwork
-  for undo / redo
+- [ ] (M) Undo / redo - a local history the tools push to, not part of the actions (Lua and large scripted edits stay
+  out of it): each entry pairs a redo with an undo thunk that submits the counter-action (e.g., re-adding removed
+  instances), so validation still applies; `Ctrl+Z` / `Ctrl+Y`, cleared when the local plot changes
+- [ ] (M) Build replays - record a plot's add / remove / property actions and replay them as a time-lapse
 
 ## Multiplayer / replication
 
@@ -79,8 +81,9 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 ## Gameplay / content
 
 - (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction` and `set_plot_spawned` done; spawned plots become live,
-  welded creations, simulated by the host and streamed to everyone else, and an emptied plot despawns. Next: plot
-  owners simulating their own creations; see [**Spawning and live physics**](#spawning-and-live-physics-plan)
+  welded creations, simulated by the plot's owner (the host as the fallback) and streamed to everyone else, handed
+  off when the owner changes, and an emptied plot despawns. Next: live asset logic; see
+  [**Spawning and live physics**](#spawning-and-live-physics-plan)
 - (WIP) (L) Live asset logic - infrastructure for assets with behavior. `AssetComponent`s are nodes dropped under an
   asset's `AssetHandle` in its scene (unique behaviors may subclass `AssetHandle`); handles bind to their plot and
   instance, then initialize their components once their whole creation exists, and live in one mode (build or live)
@@ -94,7 +97,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 
 ## Spawning and live physics (plan)
 
-The agreed design for spawned plots, from 2026-10-15; single-player live creations shipped in v0.52.0. Everything
+The agreed design for spawned plots, from 2026-10-15; single-player live creations shipped in v0.52.0, host-simulated
+multiplayer in v0.53.0, and owner-simulated creations with hand-offs in v0.54.0. Everything
 after them (asset logic, mechanisms, seats, input, physics authority, replication) is designed in
 [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 

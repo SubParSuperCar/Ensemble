@@ -175,32 +175,40 @@ would fall through what it stands on. Options to prototype later:
 
 - Every mechanism has exactly one **simulator** peer. Everyone else shows proxies: frozen kinematic bodies moved by
   received state, which local characters still collide with and stand on.
-- **Default:** a mechanism's simulator is its plot's owner. Every peer computes the default itself, so nothing is
-  sent unless an override exists.
-- **Overrides:** the host alone sets them (`SetSimulator(plotId, mechanismId, peerId)`), and the host is always the
-  fallback. Overrides are live state, so they're RPCs from the host, not Core actions.
-- **Epochs:** each plot has an ownership epoch, bumped on every change of any of its simulators and sent with each
-  change. State packets carry it, and peers drop packets with an old epoch or from the wrong sender, so a late packet
-  from a previous simulator can never move a body.
+- **Default:** a creation's simulator is its plot's owner, else the host. The host alone decides and broadcasts each
+  change with its epoch, rather than every peer deriving it: one departure can change the owner and clear an override
+  at once, and peers handling those in another order would count different epochs.
+- **Overrides:** the host alone sets them, per plot for now (`PlotHandle.SetSimulatorOverride`, Lua
+  `set_plot_simulator`), and the host is always the fallback. An override lasts until the plot's owner changes, the
+  plot despawns, or its peer leaves. Overrides are live state, so they're RPCs from the host, not Core actions.
+  Per-mechanism overrides come with mechanisms.
+- **Epochs:** each plot has an ownership epoch. Every peer bumps it on spawning and despawning; hand-offs take the
+  host's. State packets carry it, and peers drop packets with another epoch or from the wrong sender (the host only
+  accepts the simulator's), so a late packet from a previous simulator can never move a body.
 
 ### Hand-off
 
-1. The host decides (owner left, override set or cleared), bumps the epoch, and broadcasts the new simulator(s).
-2. The old simulator, on receipt, freezes its bodies into proxies.
-3. The new simulator unfreezes its proxies from their latest received state (position, rotation, velocities) and
-   starts sending. A ~100 ms rewind is invisible at walking speeds and acceptable at driving speeds.
-4. Until the change reaches everyone, both may simulate briefly; the epoch keeps only the new one's packets.
+1. The host decides (owner left, override set or cleared, timeout), bumps the epoch, and broadcasts the new simulator
+   with it (`RpcSetSimulator`, reliable, to synced peers).
+2. The old simulator, on receipt, freezes its bodies into proxies where they are; they hold still until the new
+   simulator's states arrive.
+3. The new simulator unfreezes its proxies from their latest received state, brought forward to the present, with its
+   velocities; bodies that were at rest start asleep, so a hand-off doesn't wake a whole creation. Then it streams.
+4. Remaining proxies forget their timeline (another simulator's sequence numbers mean other moments).
+5. Until the change reaches everyone, both may simulate briefly; the epoch keeps only the new one's packets.
 
 ### Edge cases
 
 - **Owner leaves:** the plot's new owner becomes the default simulator. An empty plot despawns (existing rule), so the
-  host fallback only matters for overrides and for owners that stop sending (the host takes over after a timeout).
-- **Owner lags or cheats:** the host validates like character updates (finite values, inside the world, speed caps,
-  rate limits) and can override.
+  host fallback only matters for overrides and for owners that stop sending.
+- **Simulator stops sending:** simulators send at least a header-only heartbeat a second, and the host takes over a
+  creation it heard nothing about for 3 s, as an override (so a flaky connection can't flip it back and forth).
+- **Owner lags or cheats:** sessions are invite-only, so checks stay light: the codec only carries finite, bounded
+  values (+-16 km, +-256 m/s); the host decodes every packet before relaying it (plot, epoch, at most one packet's
+  states) and rate limits relays to 1.5 times what the creation's size lets a simulator send.
 - **Despawn mid-hand-off:** every peer frees the creation, and pending packets for it are dropped (no such creation).
-- **Late joiners:** a live-state snapshot from the host (like `CharactersSnapshot`, at a larger scale) carries each
-  spawned plot's epoch, overrides, seated characters, controller input, and the latest state of every assembly, moving
-  or asleep, so proxies start exactly in place.
+- **Late joiners:** `PlotsSnapshot` carries each plot's epoch, simulator, and the latest state of every assembly,
+  moving or asleep, so proxies start exactly in place (later: seated characters and controller input).
 - **Lost packets for sleeping bodies:** a body's last update before sleeping may be lost, so sleeping assemblies get a
   slow round-robin keepalive within a fixed per-plot budget (e.g., 32 assemblies a second), healing stale proxies
   without scaling bandwidth with creation size.
@@ -216,12 +224,20 @@ cheap) reports when two mechanisms with different simulators get close; the host
 - One unreliable-ordered RPC per plot per tick from the simulator (channel 2; characters use 1), relayed by the host
   to synced peers, as with characters.
 - **Bit-packed, not byte-aligned.** Header: plot ID, epoch, sequence. Per moving assembly: ID (the group's lowest
-  instance ID), position (quantized, e.g., to 1/512 m relative to the plot), rotation (smallest three, about 10 bits
-  each), and linear and angular velocity (quantized). Roughly 20-30 bytes per moving assembly before further tricks
-  (sending only changed fields, lower rates for far or slow bodies). Exact bit budgets are set in Phase 2.
+  instance ID), position (1/512 m, relative to the plot), rotation (smallest three), and linear and angular velocity
+  (see the bit budget in section 12).
+- An assembly's origin is its center of mass, so its position and velocities describe the point it rotates about
+  (with the plot's origin, proxies extrapolating a rolling ball swung it meters off course).
 - Sleeping assemblies send nothing beyond the keepalive round-robin (section 7).
-- Proxies interpolate ~100 ms behind, extrapolate briefly with velocity on loss, and snap when far off. Snaps use the
-  space hop (see the Jolt kinematic note), or a snapping proxy would shove nearby bodies.
+- **Budget:** at most 256 states per plot per stream (about 130 KB/s per receiver); past it, awake assemblies take
+  turns, each sent less often, and bodies that just fell asleep go first.
+- **Proxies replay 100 ms behind:** each state is stamped with the simulator's moment (sequence numbers advance every
+  stream tick, a whole number of physics ticks) on a local timeline that follows the earliest arrivals. Proxies follow
+  a Hermite curve through the buffered positions and velocities (straight across impacts, so nothing dips into what
+  it hit), spin rotations by their angular velocities, extrapolate at most 1/10 s when a state is late, and snap when
+  far off. Snaps use the space hop (see the Jolt kinematic note), or a snapping proxy would shove nearby bodies.
+- **Testing:** Lua `set_net_sim(latency_ms?, jitter_ms?, loss?)` delays (in order) and drops this peer's incoming
+  live state, creations and characters, to try poor connections without outside players.
 - Input masks: unreliable full masks on change plus a few repeats a second while held, controller -> host ->
   simulator.
 - Seats: reliable sit / leave messages; seated characters stop sending positions.
@@ -284,7 +300,7 @@ work proportional to what moves and thinks, not to what exists.
 | 0.52.x  | Polish      | Token cost by instance count, `dmp_creation`, spawn speedups, the material bank (done)    |
 | 0.53.0  | Multiplayer | Phase 2 with the full authority model, but the host as the only simulator; proxies,       |
 |         |             | bit-packed wire format, epochs, keepalives, late joins                                    |
-| 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts                     |
+| 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts (done)              |
 | 0.55.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,     |
 |         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                          |
 
@@ -295,8 +311,8 @@ work proportional to what moves and thinks, not to what exists.
    kinematic proxies (`Assembly.IsSimulated`). Overrides wait for 0.54.0, which needs them.
 2. **Codec:** `BitWriter` / `BitReader`, `AssemblyState`, and `CreationPackets`, with round-trip tests.
 3. **Streaming:** `PlotHandle.Replication.cs`: awake assemblies at 20 Hz on channel 2, chunked below the MTU; the
-   host accepts only the plot's simulator and relays to synced peers. Proxies extrapolate briefly with the streamed
-   velocities and ease toward that (like characters, rather than buffering 100 ms), snapping with the space hop.
+   host accepts only the plot's simulator and relays to synced peers. Proxies extrapolated briefly with the streamed
+   velocities and eased toward that, snapping with the space hop (replaced by a 100 ms replay in 0.54.0).
 4. **Sleep keepalives:** a final at-rest state when an assembly falls asleep, then about 40 sleeping assemblies a
    second in turn.
 5. **Late joins:** `PlotsSnapshot` carries every plot's epoch (spawned or not, or it would drift at the next spawn) and
@@ -314,6 +330,18 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 | Rotation         | Smallest three: 2-bit index, 3 x 10 bits                              | 32   |
 | Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                      | 42   |
 | Angular velocity | 1/32 rad/s steps, +-256 rad/s (a fast wheel spins past 100 rad/s)     | 42   |
+
+### 0.54.0 steps (Phase 3: plot owners simulate; done)
+
+1. **Proxy accuracy:** assemblies centered on their mass, and proxies replaying 100 ms behind (section 8).
+2. **Simulator resolution:** the host picks the override, else the owner's peer, else itself, and broadcasts each
+   change with its epoch; late joiners get the simulator in `PlotsSnapshot`.
+3. **Hand-off:** `Assembly.HandOff` (section 7), tested with an owner leaving mid-fall.
+4. **Overrides:** per plot, host only, Lua `set_plot_simulator`; `dmp_creation` shows the simulator and epoch.
+5. **Validation and rate limits:** the host decodes before relaying and caps relays at 1.5 times the allowance.
+6. **Timeout:** heartbeats and the host's 3 s takeover, tested by freezing a simulator's process and resuming it.
+7. **Budget:** 256 states per plot per stream, in turns past it.
+8. **Poor connections:** `NetworkConditions` and Lua `set_net_sim`.
 
 ## 13. Decisions
 

@@ -13,6 +13,8 @@ public partial class Assembly : RigidBody3D
 {
 	private readonly List<AssetHandle> _members = [];
 
+	private float? _bounce;
+	private float _frictionMoment;
 	private float _mass;
 	private Vector3 _massMoment;
 
@@ -24,7 +26,7 @@ public partial class Assembly : RigidBody3D
 	public bool IsKilled { get; private set; }
 
 	// Best done before entering the tree, so the body enters the physics space with all of its shapes at once
-	public void AddMember(AssetHandle member)
+	public void AddMember(AssetHandle member, AssetMaterial? material)
 	{
 		var transform = member.Transform;
 
@@ -40,16 +42,18 @@ public partial class Assembly : RigidBody3D
 			ShapeOwnerSetTransform(owner, transform * colliderTransform);
 		}
 
-		var (mass, centerOfMass) = GAssetManager.GetMass(member.AssetId);
+		var (mass, centerOfMass) = GAssetManager.GetMass(member.AssetId, material);
 
 		_mass += mass;
 		_massMoment += transform * centerOfMass * mass;
+		_frictionMoment += (material?.Friction ?? AssetMaterial.DefaultFriction) * mass;
+		_bounce = MathF.Min(_bounce ?? float.PositiveInfinity, material?.Bounce ?? 0);
 		_members.Add(member);
 	}
 
 	/// <summary>
 	///     Takes the members' own bodies out of the physics space, then releases this body into the simulation with
-	///     their mass, unless it has none.
+	///     their mass, mass-weighted friction, and lowest bounce, unless it has no mass.
 	/// </summary>
 	/// <remarks>The assembly must be in the tree, so the members' bodies have entered the space they leave.</remarks>
 	public void Release()
@@ -60,9 +64,17 @@ public partial class Assembly : RigidBody3D
 		if (_mass <= 0)
 			return;
 
+		var friction = _frictionMoment / _mass;
+		var bounce = _bounce ?? 0;
+
 		Mass = _mass;
 		CenterOfMassMode = CenterOfMassModeEnum.Custom;
 		CenterOfMass = _massMoment / _mass;
+
+		// Godot's defaults need no material of their own
+		if (friction is not AssetMaterial.DefaultFriction || bounce is not 0)
+			PhysicsMaterialOverride = new PhysicsMaterial { Friction = friction, Bounce = bounce };
+
 		Freeze = false;
 	}
 

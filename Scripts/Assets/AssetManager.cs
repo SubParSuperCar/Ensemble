@@ -16,8 +16,8 @@ public partial class AssetManager : Node
 	private readonly System.Collections.Generic.Dictionary<int, string> _categoriesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, Aabb[]> _colliderBoundsByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, (Shape3D, Transform3D)[]> _collidersByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, (float, Vector3)> _massesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, PackedScene> _scenesByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, (float, Vector3, float)> _volumesByAssetId = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
@@ -57,13 +57,19 @@ public partial class AssetManager : Node
 
 	public Aabb GetBoundary(int assetId) => _boundariesByAssetId.GetValueOrDefault(assetId);
 	public string GetCategory(int assetId) => _categoriesByAssetId.GetValueOrDefault(assetId, string.Empty);
-	public (float Mass, Vector3 CenterOfMass) GetMass(int assetId) => _massesByAssetId.GetValueOrDefault(assetId);
 
 	public IReadOnlyList<Aabb> GetColliderBounds(int assetId) =>
 		_colliderBoundsByAssetId.GetValueOrDefault(assetId, []);
 
 	public IReadOnlyList<(Shape3D Shape, Transform3D Transform)> GetColliders(int assetId) =>
 		_collidersByAssetId.GetValueOrDefault(assetId, []);
+
+	/// <summary>Gets an instance's mass, from its material's density or else the asset's, and its center of mass.</summary>
+	public (float Mass, Vector3 CenterOfMass) GetMass(int assetId, AssetMaterial? material)
+	{
+		var (volume, centroid, density) = _volumesByAssetId.GetValueOrDefault(assetId);
+		return ((material?.Density ?? density) * volume, centroid);
+	}
 
 	private void ScanDirectory(string path)
 	{
@@ -106,7 +112,8 @@ public partial class AssetManager : Node
 		var colliderBounds = handle.GetColliderBounds();
 		(Shape3D, Transform3D)[] colliders =
 			[.. handle.GetColliders().Select(static collider => (collider.Shape, collider.Transform))];
-		var mass = handle.CalculateMass();
+		var (volume, centroid) = handle.CalculateVolume();
+		var density = handle.Density;
 
 		instance.Free();
 
@@ -120,7 +127,7 @@ public partial class AssetManager : Node
 		_boundariesByAssetId.Add(id, boundary);
 		_colliderBoundsByAssetId.Add(id, colliderBounds);
 		_collidersByAssetId.Add(id, colliders);
-		_massesByAssetId.Add(id, mass);
+		_volumesByAssetId.Add(id, (volume, centroid, density));
 
 		var converted = new Dictionary();
 

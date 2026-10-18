@@ -112,7 +112,10 @@ public partial class PlotHandle
 		};
 
 		foreach (var id in group)
-			assembly.AddMember(CreateHandle(instances[id], GetTransform(instances[id])));
+		{
+			var instance = instances[id];
+			assembly.AddMember(CreateHandle(instance, GetTransform(instance)), MaterialBank.Get(instance.Properties));
+		}
 
 		_dynamicInstances.AddChild(assembly);
 		assembly.Release();

@@ -60,6 +60,7 @@ public partial class PlotHandle
 		SetStaticInstancesEnabled(false);
 
 		SimulationEpoch++;
+		_timelineOrigin = null;
 
 		foreach (var group in Welds.Group(parts))
 			AddAssembly(group, instances, isSimulated);
@@ -123,6 +124,7 @@ public partial class PlotHandle
 			assembly.AddMember(CreateHandle(instance, GetTransform(instance)), MaterialBank.Get(instance.Properties));
 		}
 
+		assembly.Build();
 		_dynamicInstances.AddChild(assembly);
 		assembly.Assemble();
 		assembly.IsSimulated = isSimulated;

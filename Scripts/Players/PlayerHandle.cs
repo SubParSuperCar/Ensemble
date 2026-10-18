@@ -16,11 +16,11 @@ public partial class PlayerHandle : Node3D
 
 	private static readonly StringName ResetAction = "character_reset";
 
+	private Aabb? _bodyBounds;
 	private GdOccupant _occupant = null!;
 	private GdPlayer _player = null!;
 	private GdPlot? _plot;
 	private double _resetHeldFor;
-	private Vector3? _spawnOffset;
 
 	[Export] public Script CharacterControllerScript { get; set; } = null!;
 
@@ -33,11 +33,13 @@ public partial class PlayerHandle : Node3D
 
 	public CharacterBody3D Body => Character ?? Controller!;
 
+	public Aabb BodyBounds => _bodyBounds ??= CalculateBodyBounds();
+
 	private CharacterBody3D? Character { get; set; }
 	private CharacterController? Controller { get; set; }
 	private PopperCam? Camera { get; set; }
 
-	private Vector3 SpawnOffset => _spawnOffset ??= CalculateSpawnOffset();
+	private Vector3 SpawnOffset => new(0, -BodyBounds.Position.Y, 0);
 
 	public override void _EnterTree()
 	{
@@ -101,8 +103,17 @@ public partial class PlayerHandle : Node3D
 
 	public void Teleport(Vector3 position)
 	{
-		Body.GlobalPosition = position;
-		Body.Velocity = Vector3.Zero;
+		var body = Body;
+		var rid = body.GetRid();
+		var space = PhysicsServer3D.BodyGetSpace(rid);
+
+		// Jolt moves a kinematic body to a new transform during the next step, shoving whatever it touched where it was;
+		// leaving the space for the move makes it a jump
+		PhysicsServer3D.BodySetSpace(rid, default);
+		body.GlobalPosition = position;
+		body.Velocity = Vector3.Zero;
+		body.ForceUpdateTransform();
+		PhysicsServer3D.BodySetSpace(rid, space);
 
 		Log.Debug("Teleported {Player} to {Position}", _player.Name, position);
 	}
@@ -154,12 +165,10 @@ public partial class PlayerHandle : Node3D
 
 	private Vector3 GetPlotSpawn(GdPlot plot) => GPlotManager.GetHandle(plot.Id).OriginTransform.Origin + SpawnOffset;
 
-	private Vector3 CalculateSpawnOffset()
+	private Aabb CalculateBodyBounds()
 	{
 		var collider = Body.GetNode<CollisionShape3D>("Collider");
-		var aabb = collider.Transform * collider.Shape.GetDebugMesh().GetAabb();
-
-		return new Vector3(0, -aabb.Position.Y, 0);
+		return collider.Transform * collider.Shape.GetDebugMesh().GetAabb();
 	}
 
 	private static bool IsInsideCuboid(Vector3 point, Transform3D transform, Vector3 size)

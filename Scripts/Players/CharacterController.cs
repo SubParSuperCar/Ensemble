@@ -10,6 +10,9 @@ namespace EnsembleRoot.Scripts.Players;
 [GlobalClass]
 public partial class CharacterController : CharacterBody3D
 {
+	// Godot's own, which IsOnFloor allows beyond FloorMaxAngle
+	private const float FloorAngleThreshold = 0.01f;
+
 	private static readonly StringName JumpAction = "character_jump";
 	private static readonly StringName RunAction = "character_run";
 	private static readonly StringName MoveLeftAction = "character_move_left";
@@ -31,6 +34,10 @@ public partial class CharacterController : CharacterBody3D
 
 	[Export(PropertyHint.Range, "-1,0,or_greater,hide_slider")]
 	public float FirstPersonInvisibleProximityThreshold { get; set; } = 1f;
+
+	// A kinematic body has no weight of its own, so it presses on whatever simulated body it stands on
+	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:kg")]
+	public float Mass { get; set; } = 70f;
 
 	[Export] public Camera3D Camera { get; set; } = null!;
 	[Export] public Node3D Terrain { get; set; } = null!; // Terrain3D, which has no C# bindings
@@ -88,5 +95,27 @@ public partial class CharacterController : CharacterBody3D
 
 		Velocity = velocity;
 		MoveAndSlide();
+
+		PressOnFloor();
 	}
+
+	private void PressOnFloor()
+	{
+		if (!IsOnFloor())
+			return;
+
+		for (var i = 0; i < GetSlideCollisionCount(); i++)
+		{
+			var collision = GetSlideCollision(i);
+
+			if (collision.GetCollider() is not RigidBody3D { Freeze: false } body ||
+				!IsFloorNormal(collision.GetNormal()))
+				continue;
+
+			body.ApplyForce(GetGravity() * Mass, collision.GetPosition() - body.GlobalPosition);
+			return;
+		}
+	}
+
+	private bool IsFloorNormal(Vector3 normal) => normal.AngleTo(UpDirection) <= FloorMaxAngle + FloorAngleThreshold;
 }

@@ -14,6 +14,7 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(clr_insts), clr_insts), ""),
 		(new LuaFunction(nameof(clr_log), clr_log), ""),
 		(new LuaFunction(nameof(dmp_asm_info), dmp_asm_info), ""),
+		(new LuaFunction(nameof(dmp_assemblies), dmp_assemblies), ""),
 		(new LuaFunction(nameof(dmp_chat), dmp_chat), ""),
 		(new LuaFunction(nameof(dmp_env), dmp_env), ""),
 		(new LuaFunction(nameof(dmp_inp_map), dmp_inp_map), ""),

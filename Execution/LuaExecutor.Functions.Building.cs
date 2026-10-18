@@ -56,6 +56,19 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
+	private static ValueTask<int> dmp_assemblies(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		if (GetLocalPlot(nameof(dmp_assemblies)) is not var (plot, handle))
+			return context.ReturnNothing();
+
+		Log.Information(
+			"Plot {PlotId}: {Count} assemblies\n{Assemblies}",
+			plot.Id, handle.Assemblies.Count, string.Join('\n', handle.Assemblies));
+
+		return context.ReturnNothing();
+	}
+
 	private static ValueTask<int> dmp_insts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		if (GetLocalPlot(nameof(dmp_insts)) is not var (plot, _))

@@ -26,7 +26,7 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
-- [ ] TextureTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes
+- [ ] TextureTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
@@ -80,7 +80,11 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction` and `set_plot_spawned` done; spawned plots become live,
   welded creations in single-player, and an emptied plot despawns. Next: multiplayer; see
   [**Spawning and live physics**](#spawning-and-live-physics-plan)
-- [ ] (L) Live asset logic - infrastructure for assets with behavior
+- (WIP) (L) Live asset logic - infrastructure for assets with behavior. `AssetComponent`s are nodes dropped under an
+  asset's `AssetHandle` in its scene (unique behaviors may subclass `AssetHandle`); handles bind to their plot and
+  instance, then initialize their components once their whole creation exists, and live in one mode (build or live)
+  for life. `Paintable` (material overrides from `_colorHex` / `_materialId`, opt-out by node) is the first. Next: a
+  material registry, and a batched tick for many scripted blocks
 - [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
 - [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
 - [ ] (L) A real map, built with Unibuilder
@@ -122,6 +126,9 @@ building the live creation.
 - The edit lock lives in the actions (`IsSpawned: false`); Core still accepts changes while spawned, since it's only
   state
 - An emptied plot despawns (leaving clears its instances first; a disconnect keeps them)
+- Spawning moves the local character out of the creation (placement ignores characters), and characters press their
+  weight (70 kg) on the simulated body they stand on. Teleports briefly leave the physics space, since Jolt would
+  otherwise move a kinematic body through its surroundings and shove what it touched
 
 ### Principles
 

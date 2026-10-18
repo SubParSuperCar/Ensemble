@@ -23,33 +23,40 @@ public partial class Assembly : RigidBody3D
 
 	public bool IsKilled { get; private set; }
 
-	/// <remarks>The assembly must be in the tree, so the member's own body has entered the space it leaves.</remarks>
+	// Best done before entering the tree, so the body enters the physics space with all of its shapes at once
 	public void AddMember(AssetHandle member)
 	{
+		var transform = member.Transform;
+
 		member.Assembly = this;
 		member.Freeze = true;
-
 		AddChild(member);
-		PhysicsServer3D.BodySetSpace(member.GetRid(), default);
 
-		foreach (var collider in member.GetColliders())
+		foreach (var (shape, colliderTransform) in GAssetManager.GetColliders(member.AssetId))
 		{
-			var owner = CreateShapeOwner(collider);
+			var owner = CreateShapeOwner(member);
 
-			ShapeOwnerAddShape(owner, collider.Shape);
-			ShapeOwnerSetTransform(owner, member.Transform * collider.Transform);
+			ShapeOwnerAddShape(owner, shape);
+			ShapeOwnerSetTransform(owner, transform * colliderTransform);
 		}
 
 		var (mass, centerOfMass) = GAssetManager.GetMass(member.AssetId);
 
 		_mass += mass;
-		_massMoment += member.Transform * centerOfMass * mass;
+		_massMoment += transform * centerOfMass * mass;
 		_members.Add(member);
 	}
 
-	/// <summary>Applies the members' mass and releases the body into the simulation, unless it has no mass.</summary>
+	/// <summary>
+	///     Takes the members' own bodies out of the physics space, then releases this body into the simulation with
+	///     their mass, unless it has none.
+	/// </summary>
+	/// <remarks>The assembly must be in the tree, so the members' bodies have entered the space they leave.</remarks>
 	public void Release()
 	{
+		foreach (var member in _members)
+			PhysicsServer3D.BodySetSpace(member.GetRid(), default);
+
 		if (_mass <= 0)
 			return;
 
@@ -59,7 +66,9 @@ public partial class Assembly : RigidBody3D
 		Freeze = false;
 	}
 
-	/// <summary>Switches the assembly off (out of the physics space, hidden), as only despawning frees a creation.</summary>
+	/// <summary>
+	///     Switches the assembly off (out of the physics space, hidden), as only despawning frees a creation.
+	/// </summary>
 	public void Kill()
 	{
 		IsKilled = true;

@@ -9,7 +9,15 @@ namespace EnsembleRoot.Replication.Actions;
 
 public readonly record struct SetPlotSpawnedAction(bool IsSpawned) : INetworkAction<SetPlotSpawnedAction>
 {
+	// Spawning builds the creation on every peer, so it costs more the bigger the plot; 2000 instances cost 87
+	private const int InstancesPerToken = 32;
+
 	public static int TokenCost { get; } = 25;
+
+	public static int GetTokenCost(Array<Variant> payload, ActionSource source) =>
+		payload is [{ VariantType: Variant.Type.Bool } isSpawned] && isSpawned.AsBool() && source.Plot is { } plot
+			? TokenCost + plot.Instances.Count / InstancesPerToken
+			: TokenCost;
 
 	public static SetPlotSpawnedAction FromPayload(Array<Variant> payload) => new(payload[0].AsBool());
 

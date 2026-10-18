@@ -111,11 +111,10 @@ public partial class PlotHandle
 			CollisionMask = AssemblyMask
 		};
 
-		_dynamicInstances.AddChild(assembly);
-
 		foreach (var id in group)
 			assembly.AddMember(CreateHandle(instances[id], GetTransform(instances[id])));
 
+		_dynamicInstances.AddChild(assembly);
 		assembly.Release();
 		assembly.ResetPhysicsInterpolation();
 		_assemblies.Add(assembly);

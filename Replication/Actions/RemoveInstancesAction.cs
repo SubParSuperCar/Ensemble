@@ -14,7 +14,8 @@ public readonly record struct RemoveInstancesAction(IReadOnlyList<InstanceRefere
 	// A full batch costs a sixth of a peer's token bucket, so one marquee can delete a few thousand instances
 	private const int CountPerToken = 16;
 
-	public static int GetTokenCost(Array<Variant> payload) => (payload.Count + CountPerToken - 1) / CountPerToken;
+	public static int GetTokenCost(Array<Variant> payload, ActionSource source) =>
+		(payload.Count + CountPerToken - 1) / CountPerToken;
 
 	public static RemoveInstancesAction FromPayload(Array<Variant> payload) =>
 		new([.. payload.Select(static reference => InstanceReference.FromPayload(reference.AsGodotArray<Variant>()))]);

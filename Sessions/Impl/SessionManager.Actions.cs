@@ -30,7 +30,9 @@ public partial class SessionManager
 			return;
 
 		var senderId = Multiplayer.GetRemoteSenderId();
-		var tokenCost = NetworkActionRegistry.GetTokenCost(actionId, payload);
+		var tokenCost = _peersById.TryGetValue(senderId, out var peer)
+			? NetworkActionRegistry.GetTokenCost(actionId, payload, new ActionSource(senderId, peer.PlayerId))
+			: NetworkActionRegistry.DefaultTokenCost;
 
 		EnqueueRpc(
 			senderId, tokenCost, () => HandleAction(actionId, payload, senderId),

@@ -1,6 +1,5 @@
 using System.Runtime.CompilerServices;
 using EnsembleRoot.Sessions.Actions;
-using EnsembleRoot.Sessions.Api;
 using Godot;
 using Godot.Collections;
 using static EnsembleRoot.Sessions.Actions.ActionValidation;
@@ -30,10 +29,6 @@ public readonly record struct SetPlotSpawnedAction(bool IsSpawned) : INetworkAct
 
 		if (plot.IsSpawned == IsSpawned)
 			return Reject(IsSpawned ? "Plot already spawned." : "Plot not spawned.");
-
-		// TODO: Allow once live creations replicate
-		if (IsSpawned && GSessionManager.Mode is SessionMode.MultiPlayer)
-			return Reject("Spawning is single-player only for now.");
 
 		var isOwner = string.Equals(plot.Occupants.Owner?.Player.Id, source.PlayerId, StringComparison.Ordinal);
 

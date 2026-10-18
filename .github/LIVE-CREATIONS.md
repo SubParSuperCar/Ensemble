@@ -288,19 +288,22 @@ work proportional to what moves and thinks, not to what exists.
 | 0.55.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,     |
 |         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                          |
 
-### 0.53.0 steps (Phase 2: multiplayer, the host simulating)
+### 0.53.0 steps (Phase 2: multiplayer, the host simulating; done)
 
-1. **Authority model:** per-plot simulator state with the default rule, overrides, and epochs, wired so the host is
-   every mechanism's simulator for now. On spawn, the simulator releases its assemblies; everyone else freezes theirs
-   as kinematic proxies.
-2. **Codec:** a bit writer and reader plus the assembly state format (below), pure C# with round-trip tests.
-3. **Streaming:** `PlotHandle.Replication.cs`: the simulator packs awake assemblies at 20 Hz into one RPC per plot
-   (channel 2), the host relays it to synced peers, and proxies interpolate ~100 ms behind (extrapolating briefly,
-   snapping with the space hop).
-4. **Sleep keepalives:** the round-robin budget for sleeping assemblies.
-5. **Late joins:** a creations snapshot (like `CharactersSnapshot`) with epochs and every assembly's latest state.
-6. **Unblock and test:** remove the single-player guard on `SetPlotSpawnedAction`, then test with a headless host and
-   clients (and two windowed instances), including joins mid-simulation.
+1. **Authority model:** `PlotHandle.SimulatorPeerId` (the host for now), `IsSimulatedLocally`, and `SimulationEpoch`,
+   bumped on spawn and despawn on every peer. The simulator releases its assemblies; everyone else freezes theirs as
+   kinematic proxies (`Assembly.IsSimulated`). Overrides wait for 0.54.0, which needs them.
+2. **Codec:** `BitWriter` / `BitReader`, `AssemblyState`, and `CreationPackets`, with round-trip tests.
+3. **Streaming:** `PlotHandle.Replication.cs`: awake assemblies at 20 Hz on channel 2, chunked below the MTU; the
+   host accepts only the plot's simulator and relays to synced peers. Proxies extrapolate briefly with the streamed
+   velocities and ease toward that (like characters, rather than buffering 100 ms), snapping with the space hop.
+4. **Sleep keepalives:** a final at-rest state when an assembly falls asleep, then about 40 sleeping assemblies a
+   second in turn.
+5. **Late joins:** `PlotsSnapshot` carries every plot's epoch (spawned or not, or it would drift at the next spawn) and
+   each creation's states. It's part of `PlotsSnapshot` rather than its own snapshot, since snapshots restore in
+   registration order and the creation must restore after its plot spawns.
+6. **Unblocked and tested:** headless host and clients, the host simulating a tipping tower, a client's proxy
+   matching it, a late joiner seeing it in place, and a respawn keeping every epoch in step.
 
 Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):
 

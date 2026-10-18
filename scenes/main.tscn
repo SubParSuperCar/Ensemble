@@ -2,9 +2,12 @@
 
 [ext_resource type="Script" uid="uid://dyffxytf1id1l" path="res://Main.cs" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://0hf0xbvnk1kd" path="res://Ui/Ui.cs" id="2_0wfyh"]
+[ext_resource type="Script" uid="uid://b07v03smb5kgp" path="res://Scripts/Assets/MaterialBank.cs" id="3_85g3d"]
 [ext_resource type="Script" uid="uid://ce4663ihappnk" path="res://addons/resonate/sound_manager/sound_bank.gd" id="3_jyhfs"]
 [ext_resource type="Shader" uid="uid://b40ts4rmsiyhu" path="res://shaders/temporal_static.gdshader" id="3_sugp2"]
+[ext_resource type="Script" uid="uid://ctgp55iclfbsa" path="res://Scripts/Assets/AssetMaterial.cs" id="4_choun"]
 [ext_resource type="Script" uid="uid://36xmqkvux3vt" path="res://addons/resonate/sound_manager/sound_event_resource.gd" id="4_tbgi4"]
+[ext_resource type="Resource" uid="uid://b1spd65ih244" path="res://resources/materials/Debug.tres" id="5_choun"]
 [ext_resource type="AudioStream" uid="uid://drpphn1pullkq" path="res://assets/audio/Affirm.mp3" id="5_tefeu"]
 [ext_resource type="AudioStream" uid="uid://oyn5pbkk2y54" path="res://assets/audio/Dissent.mp3" id="6_o6xl0"]
 
@@ -54,6 +57,11 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("2_0wfyh")
 metadata/_custom_type_script = "uid://0hf0xbvnk1kd"
+
+[node name="Material Bank" type="Node" parent="." unique_id=1783696896]
+script = ExtResource("3_85g3d")
+Materials = Array[ExtResource("4_choun")]([ExtResource("5_choun")])
+metadata/_custom_type_script = "uid://b07v03smb5kgp"
 
 [node name="Sound Bank" type="Node" parent="." unique_id=2070128617]
 script = ExtResource("3_jyhfs")

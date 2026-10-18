@@ -21,8 +21,8 @@ public partial class PlotHandle
 	{
 		_staticInstances = GetNode<Node3D>("Instances/Static");
 
-		if (!_plot.IsSpawned)
-			AddStaticInstances();
+		foreach (var instance in _plot.Instances.GetAll())
+			OnInstanceAdded(instance);
 
 		_plot.Instances.Added += OnInstanceAdded;
 		_plot.Instances.Removed += OnInstanceRemoved;
@@ -34,42 +34,25 @@ public partial class PlotHandle
 		_plot.Instances.Removed -= OnInstanceRemoved;
 	}
 
-	private void AddStaticInstances()
+	private static Transform3D GetTransform(GdInstance instance) =>
+		new(new Basis(instance.Rotation), instance.Position * GridToWorldScale);
+
+	private static AssetHandle CreateHandle(GdInstance instance, Transform3D transform)
 	{
-		foreach (var instance in _plot.Instances.GetAll())
-			AddStaticInstance(instance);
-	}
-
-	private void ClearStaticInstances()
-	{
-		foreach (var handle in _handlesByInstanceId.Values)
-			handle.QueueFree();
-
-		_handlesByInstanceId.Clear();
-		InstanceBoxes.Clear();
-	}
-
-	// While spawned, the static instances are gone, and despawning rebuilds them from the plot's state
-	private void OnInstanceAdded(GdInstance instance)
-	{
-		if (!_plot.IsSpawned)
-			AddStaticInstance(instance);
-	}
-
-	private void OnInstanceRemoved(GdInstance instance)
-	{
-		if (!_plot.IsSpawned)
-			RemoveStaticInstance(instance);
-	}
-
-	private void AddStaticInstance(GdInstance instance)
-	{
-		var transform = new Transform3D(new Basis(instance.Rotation), instance.Position * GridToWorldScale);
-
 		var handle = GAssetManager.GetPacked(instance.Asset.Id).Instantiate<AssetHandle>();
 		handle.Name = string.Create(CultureInfo.InvariantCulture, $"{instance.Id}-{instance.Asset.Name}");
 		handle.InstanceId = instance.Id;
 		handle.Transform = transform;
+
+		return handle;
+	}
+
+	// The static instances mirror the plot even while it's spawned (hidden, out of the physics space)
+	private void OnInstanceAdded(GdInstance instance)
+	{
+		var transform = GetTransform(instance);
+
+		var handle = CreateHandle(instance, transform);
 		handle.Freeze = true;
 		handle.CollisionLayer = PhysicsLayers.StaticInstances;
 		handle.CollisionMask = 0;
@@ -79,7 +62,7 @@ public partial class PlotHandle
 		InstanceBoxes.Add(instance.Id, Obb.From(GAssetManager.GetBoundary(instance.Asset.Id), transform));
 	}
 
-	private void RemoveStaticInstance(GdInstance instance)
+	private void OnInstanceRemoved(GdInstance instance)
 	{
 		InstanceBoxes.Remove(instance.Id);
 

@@ -77,8 +77,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 
 ## Gameplay / content
 
-- (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction` and `set_plot_spawned` done; spawning frees the static
-  instances and despawning rebuilds them, and an emptied plot despawns. Next: the live creation itself; see
+- (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction` and `set_plot_spawned` done; spawned plots become live,
+  welded creations in single-player, and an emptied plot despawns. Next: multiplayer; see
   [**Spawning and live physics**](#spawning-and-live-physics-plan)
 - [ ] (L) Live asset logic - infrastructure for assets with behavior
 - [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
@@ -117,8 +117,8 @@ building the live creation.
 
 - `SetPlotSpawnedAction(bool)` (the owner, or the host via Lua), the floating Spawn / Despawn button (owner only), and
   `set_plot_spawned(is_spawned)`
-- Spawning frees the PlotHandle's static AssetHandles and clears its ObbGrid; despawning rebuilds them from Core, and
-  instance events are ignored while spawned
+- The static instances always mirror Core; spawning only hides them and takes them out of the physics space (one
+  toggle on `Instances/Static`), so despawning is instant
 - The edit lock lives in the actions (`IsSpawned: false`); Core still accepts changes while spawned, since it's only
   state
 - An emptied plot despawns (leaving clears its instances first; a disconnect keeps them)
@@ -142,17 +142,19 @@ building the live creation.
 3. Assembly bodies - a new `RigidBody3D` per group under `Instances/Dynamic`, with each asset's collision shapes
    registered on it through the shape-owner API (`CreateShapeOwner(asset)`, `ShapeOwnerAddShape`,
    `ShapeOwnerSetTransform`) at the asset's offset, reusing the `Shape3D` resources. Godot only counts shapes that are
-   direct children of a body, so nesting bodies (or wrapping `Node3D` assets) wouldn't work
+   direct children of a body, so nesting bodies (or wrapping `Node3D` assets) wouldn't work (done: `Assembly`)
 4. Members - each asset is instantiated and parented under its assembly at its offset, with its own body out of the
-   physics space; meshes and scripts ride along. Assets stay `RigidBody3D` scenes
+   physics space; meshes and scripts ride along. Assets stay `RigidBody3D` scenes (done)
 5. Mass - each asset's density times its volume by default (overridable later), summed, with the center of mass at the
    mass-weighted average position; Jolt derives the inertia from the shapes. Friction comes from the material later
-6. IDs - each assembly takes its group's lowest instance ID, so peers agree on IDs without sending them
+   (done: `AssetHandle.Density`, water's by default)
+6. IDs - each assembly takes its group's lowest instance ID, so peers agree on IDs without sending them (done)
 7. Raycasts - a hit's shape index leads back to the exact asset (`ShapeFindOwner`, then `ShapeOwnerGetOwner`)
 8. Joints (later) - hinge, piston, and suspension assets link two groups with Jolt joints; assemblies linked by joints
    form a mechanism, the unit of ownership
 
-Despawning frees `Instances/Dynamic`, then rebuilds the static instances (done).
+Despawning frees the assemblies and re-enables the static instances (done). Assemblies that fall below -1024 m are
+switched off, not freed.
 
 ### Ownership and authority
 

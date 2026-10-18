@@ -14,6 +14,8 @@ public partial class AssetManager : Node
 	// C# collections avoid interop on the placement hot path; GDScript reads them through the methods below
 	private readonly System.Collections.Generic.Dictionary<int, Aabb> _boundariesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, string> _categoriesByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, Aabb[]> _colliderBoundsByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, (float, Vector3)> _massesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, PackedScene> _scenesByAssetId = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
@@ -54,6 +56,10 @@ public partial class AssetManager : Node
 
 	public Aabb GetBoundary(int assetId) => _boundariesByAssetId.GetValueOrDefault(assetId);
 	public string GetCategory(int assetId) => _categoriesByAssetId.GetValueOrDefault(assetId, string.Empty);
+	public (float Mass, Vector3 CenterOfMass) GetMass(int assetId) => _massesByAssetId.GetValueOrDefault(assetId);
+
+	public IReadOnlyList<Aabb> GetColliderBounds(int assetId) =>
+		_colliderBoundsByAssetId.GetValueOrDefault(assetId, []);
 
 	private void ScanDirectory(string path)
 	{
@@ -93,6 +99,8 @@ public partial class AssetManager : Node
 		var properties = handle.Properties;
 		var maxInstanceCount = handle.MaxInstanceCount;
 		var boundary = handle.BoundaryAabb;
+		var colliderBounds = handle.GetColliderBounds();
+		var mass = handle.CalculateMass();
 
 		instance.Free();
 
@@ -104,6 +112,8 @@ public partial class AssetManager : Node
 
 		_categoriesByAssetId.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
 		_boundariesByAssetId.Add(id, boundary);
+		_colliderBoundsByAssetId.Add(id, colliderBounds);
+		_massesByAssetId.Add(id, mass);
 
 		var converted = new Dictionary();
 

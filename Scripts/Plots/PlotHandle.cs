@@ -51,6 +51,8 @@ public partial class PlotHandle : Node3D
 		ExitInstances();
 	}
 
+	public override void _PhysicsProcess(double delta) => KillFallenAssemblies(delta);
+
 	public Vector3 WorldToGrid(Vector3 worldPosition) =>
 		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;
 

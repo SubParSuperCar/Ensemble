@@ -12,6 +12,7 @@ public readonly record struct CreationPacketHeader(int PlotId, ushort Epoch, ush
 /// <summary>One plot's streamed assembly states: a header, a count, then the states, bit-packed.</summary>
 public static class CreationPackets
 {
+	public const int HeaderBits = PlotIdBits + EpochBits + SequenceBits + CountBits;
 	public const int MaxPlotId = (1 << PlotIdBits) - 1;
 	public const int MaxStateCount = (1 << CountBits) - 1;
 

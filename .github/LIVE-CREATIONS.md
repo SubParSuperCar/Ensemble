@@ -288,6 +288,30 @@ work proportional to what moves and thinks, not to what exists.
 | 0.55.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,     |
 |         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                          |
 
+### 0.53.0 steps (Phase 2: multiplayer, the host simulating)
+
+1. **Authority model:** per-plot simulator state with the default rule, overrides, and epochs, wired so the host is
+   every mechanism's simulator for now. On spawn, the simulator releases its assemblies; everyone else freezes theirs
+   as kinematic proxies.
+2. **Codec:** a bit writer and reader plus the assembly state format (below), pure C# with round-trip tests.
+3. **Streaming:** `PlotHandle.Replication.cs`: the simulator packs awake assemblies at 20 Hz into one RPC per plot
+   (channel 2), the host relays it to synced peers, and proxies interpolate ~100 ms behind (extrapolating briefly,
+   snapping with the space hop).
+4. **Sleep keepalives:** the round-robin budget for sleeping assemblies.
+5. **Late joins:** a creations snapshot (like `CharactersSnapshot`) with epochs and every assembly's latest state.
+6. **Unblock and test:** remove the single-player guard on `SetPlotSpawnedAction`, then test with a headless host and
+   clients (and two windowed instances), including joins mid-simulation.
+
+Proposed bit budget per moving assembly (about 25 bytes; header: plot ID 8 bits, epoch 16, sequence 16):
+
+| Field            | Encoding                                                              | Bits |
+|------------------|-----------------------------------------------------------------------|------|
+| Assembly ID      | The group's lowest instance ID                                        | 16   |
+| Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m     | 72   |
+| Rotation         | Smallest three: 2-bit index, 3 x 10 bits                              | 32   |
+| Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                      | 42   |
+| Angular velocity | 1/64 rad/s steps, +-64 rad/s                                          | 39   |
+
 ## 13. Decisions
 
 | #  | Decision                         | Resolution                                                        |

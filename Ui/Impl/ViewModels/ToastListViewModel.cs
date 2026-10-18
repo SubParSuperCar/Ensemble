@@ -9,7 +9,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 public sealed class ToastListViewModel : ViewModelBase
 {
 	private const LogEventLevel MinimumLevel = LogEventLevel.Warning;
-	private const int MaxCount = 32;
+	private const int MaxCount = 8;
 
 	private static readonly TimeSpan Lifetime = TimeSpan.FromSeconds(10);
 

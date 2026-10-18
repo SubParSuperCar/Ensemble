@@ -13,7 +13,7 @@
 
             <FontWeight x:Key="FontWeight">Light</FontWeight>
             <x:Double x:Key="FontSize">16</x:Double>
-            <x:Double x:Key="MenuFontSize">12</x:Double>
+            <x:Double x:Key="MenuFontSize">11</x:Double>
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />

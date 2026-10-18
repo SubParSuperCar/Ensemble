@@ -24,7 +24,7 @@ public enum RotationSpace : byte
 public partial class ConstructTool : ToolBase
 {
 	private const float LinearSmoothingRate = 40f;
-	private const float AngularSmoothingRate = 32f;
+	private const float AngularSmoothingRate = 40f;
 
 	private const float PreviewOpacity = 0.75f;
 	private const double FlashDuration = 1 / 8d;

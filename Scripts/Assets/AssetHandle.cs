@@ -69,8 +69,8 @@ public partial class AssetHandle : RigidBody3D
 	public Aabb[] GetColliderBounds() =>
 		[.. GetColliders().Select(static collider => collider.Transform * collider.Shape.GetDebugMesh().GetAabb())];
 
-	/// <summary>Gets the mass, from <see cref="Density" /> and the colliders' volume, and the center of mass.</summary>
-	public (float Mass, Vector3 CenterOfMass) CalculateMass()
+	/// <summary>Gets the colliders' combined volume and centroid, from which mass follows.</summary>
+	public (float Volume, Vector3 Centroid) CalculateVolume()
 	{
 		var volume = 0f;
 		var moment = Vector3.Zero;
@@ -84,7 +84,7 @@ public partial class AssetHandle : RigidBody3D
 			moment += collider.Transform * centroid * scaledVolume;
 		}
 
-		return volume > 0 ? (Density * volume, moment / volume) : default;
+		return volume > 0 ? (volume, moment / volume) : default;
 	}
 
 	/// <summary>

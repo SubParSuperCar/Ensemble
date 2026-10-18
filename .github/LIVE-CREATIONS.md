@@ -129,10 +129,10 @@ and may come earlier. Some glitching may be accepted at first.
   host whenever it changes, plus a few times a second while any key is held, so a lost packet heals itself and a key
   can't stick. It's a custom RPC, not an action: it changes too often for the action rate limiter, and needs no
   validation beyond "the sender is the plot's current controller", which the host checks.
-- **Who receives it:** the host relays it to the creation's **simulator**, who drives the physics (which way motors
-  spin), not to the plot owner as such. **(D8)** Input-driven visuals (a light that turns on with a key) need it too:
-  relaying the mask to every synced peer as well lets visual logic read the same input everywhere, at no cost to the
-  simulator. Visuals that follow physics (a spinning rotor) need nothing extra, since the proxies already move.
+- **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
+  spin), not the plot owner as such. An asset whose look depends on input replicates that state itself (e.g., a glass
+  that turns from water to wine sends a bool to the other peers), and visuals that follow physics (a spinning rotor)
+  need nothing extra, since the proxies already move.
 - While seated, the controller's character doesn't walk; the camera keeps mouse look and follows the seat.
 - **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, consumed only when no seated asset
   binds Space; otherwise the action's own key.
@@ -166,7 +166,8 @@ would fall through what it stands on. Options to prototype later:
   `CharacterController`.
 - **Kinematic characters that yield:** detect creations moving into the character each step and move it out of the
   way first, so contact rarely builds.
-- Accept today's behavior until vehicles make it matter.
+- Accept today's behavior until vehicles make it matter (the current choice). Players deliberately blocking others'
+  creations could later be handled by moderation (e.g., per-plot blocklists).
 
 ## 7. Physics authority
 
@@ -197,8 +198,9 @@ would fall through what it stands on. Options to prototype later:
 - **Owner lags or cheats:** the host validates like character updates (finite values, inside the world, speed caps,
   rate limits) and can override.
 - **Despawn mid-hand-off:** every peer frees the creation, and pending packets for it are dropped (no such creation).
-- **Late joiners:** a live-state snapshot carries each spawned plot's epoch, overrides, seated characters, controller
-  input, and the latest state of every assembly, moving or asleep, so proxies start exactly in place.
+- **Late joiners:** a live-state snapshot from the host (like `CharactersSnapshot`, at a larger scale) carries each
+  spawned plot's epoch, overrides, seated characters, controller input, and the latest state of every assembly, moving
+  or asleep, so proxies start exactly in place.
 - **Lost packets for sleeping bodies:** a body's last update before sleeping may be lost, so sleeping assemblies get a
   slow round-robin keepalive within a fixed per-plot budget (e.g., 32 assemblies a second), healing stale proxies
   without scaling bandwidth with creation size.
@@ -221,7 +223,7 @@ cheap) reports when two mechanisms with different simulators get close; the host
 - Proxies interpolate ~100 ms behind, extrapolate briefly with velocity on loss, and snap when far off. Snaps use the
   space hop (see the Jolt kinematic note), or a snapping proxy would shove nearby bodies.
 - Input masks: unreliable full masks on change plus a few repeats a second while held, controller -> host ->
-  simulator (and every synced peer, per D8).
+  simulator.
 - Seats: reliable sit / leave messages; seated characters stop sending positions.
 
 ## 9. Aerodynamics and other forces (later)
@@ -260,16 +262,18 @@ Welded creations are cheaper (one 2000-member assembly: ~280 ms). The rest is mo
 At runtime: the batched simulation tick, force accumulators, cached body state, and sleeping bodies keep per-tick
 work proportional to what moves and thinks, not to what exists.
 
-## 11. Material bank
+## 11. Material bank (done)
 
 - A `MaterialBank` node under Main with a static `Instance` (no `Globals` accessor), exporting an array of
   `AssetMaterial` resources edited in the inspector. An asset's `_materialId` indexes it; `-1` (matching `Sentinels`)
-  means none, the plain color.
-- **(D5)** An `AssetMaterial` holds the look (texture, later roughness and more) and the physics (density, friction,
-  bounce), so `Paintable` and the mass calculation read the same entry: rocks sink, wood floats, rubber grips, and ice
-  slips.
-- **(D6)** ID 0 is a debug checkerboard (today's look), so existing `_materialId = 0` instances keep their look, and new
-  plain assets default to `-1`.
+  means none, the plain color. Painted materials are shared per material and color (`Paints`), so painted geometry
+  still batches.
+- **(D5)** An `AssetMaterial` holds the look (`Look`, any `BaseMaterial3D` template, its albedo tinted by the
+  instance's color) and the physics (`Density`, `Friction`, `Bounce`), so `Paintable` and the mass calculation read the
+  same entry: rocks sink, wood floats, rubber grips, and ice slips. An instance without a material uses its asset's
+  `Density`.
+- **(D6)** ID 0 is the debug checkerboard (`resources/materials/Debug.tres`, today's look), so existing
+  `_materialId = 0` instances keep their look, and new plain assets default to `-1`.
 - An assembly has one physics material (Godot sets them per body), blended from its members' (mass-weighted friction,
   minimum bounce). Wheels get grip by being their own assemblies on joints.
 
@@ -277,8 +281,7 @@ work proportional to what moves and thinks, not to what exists.
 
 | Version | Track       | Content                                                                                   |
 |---------|-------------|-------------------------------------------------------------------------------------------|
-| 0.52.x  | Polish      | Token cost by instance count, `dmp_creation`, spawn speedups (done in a2a576a); the       |
-|         |             | material bank, which needs nothing else                                                   |
+| 0.52.x  | Polish      | Token cost by instance count, `dmp_creation`, spawn speedups, the material bank (done)    |
 | 0.53.0  | Multiplayer | Phase 2 with the full authority model, but the host as the only simulator; proxies,       |
 |         |             | bit-packed wire format, epochs, keepalives, late joins                                    |
 | 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts                     |
@@ -296,4 +299,4 @@ work proportional to what moves and thinks, not to what exists.
 | D5 | Texture bank or material bank    | Material bank: look plus physics                                  |
 | D6 | Material ID 0                    | Debug checkerboard; plain assets default to -1                    |
 | D7 | Multiplayer or asset logic first | Multiplayer first                                                 |
-| D8 | Who receives input               | Open; recommended: every synced peer                              |
+| D8 | Who receives input               | The simulator only; assets replicate input-driven looks           |

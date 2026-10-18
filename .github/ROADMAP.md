@@ -27,6 +27,7 @@ The tool suite, in rough intended order of implementation.
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
 - [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
 - [ ] TextureTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
+  (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics

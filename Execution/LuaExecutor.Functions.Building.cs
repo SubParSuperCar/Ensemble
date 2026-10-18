@@ -56,15 +56,23 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	private static ValueTask<int> dmp_assemblies(
+	private static ValueTask<int> dmp_creation(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(dmp_assemblies)) is not var (plot, handle))
-			return context.ReturnNothing();
+		var plotId = context.IsArgumentOmitted(0) ? LocalPlot?.Id : context.GetArgument<int>(0);
 
-		Log.Information(
-			"Plot {PlotId}: {Count} assemblies\n{Assemblies}",
-			plot.Id, handle.Assemblies.Count, string.Join('\n', handle.Assemblies));
+		if (plotId is not { } id || GPlotManager.GetHandleOrNull(id) is not { } handle)
+		{
+			Log.Error("{Function} needs a plot ID or a claimed plot", nameof(dmp_creation));
+			return context.ReturnNothing();
+		}
+
+		if (handle.Assemblies.Count is 0)
+			Log.Information("Plot {PlotId}'s creation isn't spawned", id);
+		else
+			Log.Information(
+				"Plot {PlotId}'s creation: {Count} assemblies\n{Assemblies}",
+				id, handle.Assemblies.Count, string.Join('\n', handle.Assemblies));
 
 		return context.ReturnNothing();
 	}

@@ -15,6 +15,7 @@ public partial class AssetManager : Node
 	private readonly System.Collections.Generic.Dictionary<int, Aabb> _boundariesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, string> _categoriesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, Aabb[]> _colliderBoundsByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, (Shape3D, Transform3D)[]> _collidersByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, (float, Vector3)> _massesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, PackedScene> _scenesByAssetId = [];
 
@@ -61,6 +62,9 @@ public partial class AssetManager : Node
 	public IReadOnlyList<Aabb> GetColliderBounds(int assetId) =>
 		_colliderBoundsByAssetId.GetValueOrDefault(assetId, []);
 
+	public IReadOnlyList<(Shape3D Shape, Transform3D Transform)> GetColliders(int assetId) =>
+		_collidersByAssetId.GetValueOrDefault(assetId, []);
+
 	private void ScanDirectory(string path)
 	{
 		foreach (var entry in ResourceLoader.ListDirectory(path))
@@ -100,6 +104,8 @@ public partial class AssetManager : Node
 		var maxInstanceCount = handle.MaxInstanceCount;
 		var boundary = handle.BoundaryAabb;
 		var colliderBounds = handle.GetColliderBounds();
+		(Shape3D, Transform3D)[] colliders =
+			[.. handle.GetColliders().Select(static collider => (collider.Shape, collider.Transform))];
 		var mass = handle.CalculateMass();
 
 		instance.Free();
@@ -113,6 +119,7 @@ public partial class AssetManager : Node
 		_categoriesByAssetId.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
 		_boundariesByAssetId.Add(id, boundary);
 		_colliderBoundsByAssetId.Add(id, colliderBounds);
+		_collidersByAssetId.Add(id, colliders);
 		_massesByAssetId.Add(id, mass);
 
 		var converted = new Dictionary();

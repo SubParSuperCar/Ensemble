@@ -9,6 +9,9 @@ public static class NetworkActionRegistry
 {
 	public const int DefaultTokenCost = 1;
 
+	/// <summary>A peer's whole token bucket, which refills in 5 s.</summary>
+	public const int MaxTokenCost = 100;
+
 	private static readonly System.Collections.Generic.Dictionary<string, Entry> EntriesByActionId =
 		new(StringComparer.Ordinal);
 
@@ -29,9 +32,9 @@ public static class NetworkActionRegistry
 	public static void Submit<TAction>(this TAction action) where TAction : INetworkAction<TAction> =>
 		GSessionManager.Submit(action);
 
-	internal static int GetTokenCost(string actionId, Array<Variant> payload) =>
+	internal static int GetTokenCost(string actionId, Array<Variant> payload, ActionSource source) =>
 		EntriesByActionId.TryGetValue(actionId, out var entry)
-			? Math.Max(entry.GetCost(payload), DefaultTokenCost)
+			? Math.Clamp(entry.GetCost(payload, source), DefaultTokenCost, MaxTokenCost)
 			: DefaultTokenCost;
 
 	/// <summary>
@@ -76,5 +79,5 @@ public static class NetworkActionRegistry
 
 	private delegate ActionValidation ExecuteHandler(ref Array<Variant> payload, ActionSource source, bool isHost);
 
-	private readonly record struct Entry(Func<Array<Variant>, int> GetCost, ExecuteHandler Run);
+	private readonly record struct Entry(Func<Array<Variant>, ActionSource, int> GetCost, ExecuteHandler Run);
 }

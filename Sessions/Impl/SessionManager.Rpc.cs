@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Threading.RateLimiting;
+using EnsembleRoot.Sessions.Actions;
 using Serilog;
 using PendingRpc = (System.Threading.Tasks.Task<bool?> Lease, System.Action Action, System.Action? OnDropped);
 
@@ -11,7 +12,7 @@ public partial class SessionManager
 	// it wait in a queue of up to another bucket's worth, and only then get dropped.
 	private static readonly TokenBucketRateLimiterOptions RateLimiterOptions = new()
 	{
-		TokenLimit = 100,
+		TokenLimit = NetworkActionRegistry.MaxTokenCost,
 		QueueLimit = 100,
 		TokensPerPeriod = 2,
 		ReplenishmentPeriod = TimeSpan.FromMilliseconds(100),

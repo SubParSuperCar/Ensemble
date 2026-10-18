@@ -15,10 +15,11 @@
   <Folder Name="/Solution Items/GitHub/">
     <File Path=".github/CONTRIBUTING.md"/>
     <File Path=".github/dependabot.yml"/>
+    <File Path=".github/IDEAS.md"/>
     <File Path=".github/INTRODUCTION.md"/>
     <File Path=".github/LICENSE-ASSETS.txt"/>
     <File Path=".github/LICENSE-CODE.txt"/>
-    <File Path=".github/NITPICKS.md"/>
+    <File Path=".github/LIVE-CREATIONS.md"/>
     <File Path=".github/README.md"/>
     <File Path=".github/ROADMAP.md"/>
   </Folder>

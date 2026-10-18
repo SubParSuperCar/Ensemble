@@ -93,8 +93,9 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 
 ## Spawning and live physics (plan)
 
-The agreed design for spawned plots, from 2026-10-15. Only the plumbing exists so far; the rest is the reference for
-building the live creation.
+The agreed design for spawned plots, from 2026-10-15; single-player live creations shipped in v0.52.0. Everything
+after them (asset logic, mechanisms, seats, input, physics authority, replication) is designed in
+[**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 
 ### Terms
 

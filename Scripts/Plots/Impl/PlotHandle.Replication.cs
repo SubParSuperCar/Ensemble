@@ -9,7 +9,7 @@ namespace EnsembleRoot.Scripts.Plots;
 public partial class PlotHandle
 {
 	private const int CreationChannel = 2;
-	private const double StreamInterval = 1 / 20d;
+	private const int StreamRate = 20;
 
 	// Below a typical MTU, so ENet never fragments a packet (one lost fragment would lose them all)
 	private const int MaxPacketBytes = 1200;
@@ -18,15 +18,31 @@ public partial class PlotHandle
 	// Sleeping assemblies are resent in turn, about 40 a second, so a lost final update can't leave a proxy off
 	private const int KeepalivesPerStream = 2;
 
+	// Proxies show the creation this far in the past, so a late state still arrives before it's needed
+	private const double InterpolationDelay = 2d / StreamRate;
+
+	// How fast a timeline adapts to states arriving later than before (they move it earlier at once)
+	private const double TimelineDriftRate = 1 / 16d;
+
+	// Whole physics ticks, so each sequence number stands for an exact moment on the simulator
+	private static readonly int StreamTicks =
+		Math.Max(1, (int)Math.Round(Engine.PhysicsTicksPerSecond / (double)StreamRate));
+	private static readonly double StreamInterval = StreamTicks / (double)Engine.PhysicsTicksPerSecond;
+
 	private readonly Dictionary<int, Assembly> _assembliesById = [];
 	private readonly HashSet<int> _awakeIds = [];
 	private readonly List<AssemblyState> _receivedStates = [];
 	private readonly List<AssemblyState> _streamedStates = [];
 	private readonly BitWriter _writer = new(MaxPacketBytes);
 
+	private double _clock;
 	private int _keepaliveIndex;
-	private double _sinceStream;
+	private long _receivedSequence;
+	private int _sinceStream;
 	private ushort _streamSequence;
+
+	// The local time of sequence 0 on the simulator's clock, or null until the epoch's first state
+	private double? _timelineOrigin;
 
 	private static bool IsStreaming => GSessionManager is { Mode: SessionMode.MultiPlayer, IsActive: true };
 
@@ -39,7 +55,7 @@ public partial class PlotHandle
 			.Select(assembly => GetState(assembly, toLocal, !assembly.Sleeping))
 			.ToList();
 
-		var header = new CreationPacketHeader(Id, SimulationEpoch, 0);
+		var header = new CreationPacketHeader(Id, SimulationEpoch, _streamSequence);
 		return (SimulationEpoch, CreationPackets.Write(new BitWriter(), header, states));
 	}
 
@@ -47,6 +63,7 @@ public partial class PlotHandle
 	public void RestoreCreation(ushort epoch, byte[] states)
 	{
 		SimulationEpoch = epoch;
+		ResetTimeline();
 
 		if (_plot.IsSpawned)
 			Receive(states);
@@ -57,21 +74,32 @@ public partial class PlotHandle
 		if (!IsStreaming)
 			return;
 
+		_clock += delta;
+
 		if (IsSimulatedLocally)
-			Stream(delta);
+			Stream();
 		else
 			foreach (var assembly in _assemblies)
-				assembly.UpdateProxy(delta);
+				assembly.UpdateProxy(_clock - InterpolationDelay);
+	}
+
+	// States of a new epoch may come from another simulator, whose sequence numbers mean other moments
+	private void ResetTimeline()
+	{
+		_timelineOrigin = null;
+
+		foreach (var assembly in _assemblies)
+			assembly.ResetProxyTimeline();
 	}
 
 	// Awake assemblies are sent every time; one falling asleep is sent once more, at rest, then only as a keepalive
-	private void Stream(double delta)
+	private void Stream()
 	{
-		_sinceStream += delta;
-		if (_sinceStream < StreamInterval)
+		if (++_sinceStream < StreamTicks)
 			return;
 
 		_sinceStream = 0;
+		_streamSequence++;
 
 		var toLocal = _staticInstances.GlobalTransform.AffineInverse();
 		_streamedStates.Clear();
@@ -101,8 +129,6 @@ public partial class PlotHandle
 
 		if (_streamedStates.Count is 0)
 			return;
-
-		_streamSequence++;
 
 		for (var start = 0; start < _streamedStates.Count; start += MaxStatesPerPacket)
 		{
@@ -169,12 +195,30 @@ public partial class PlotHandle
 			header.PlotId != Id || header.Epoch != SimulationEpoch)
 			return;
 
+		var time = GetStateTime(header.Sequence);
 		var origin = _staticInstances.GlobalTransform;
 
 		foreach (var state in _receivedStates)
 			if (_assembliesById.TryGetValue(state.Id, out var assembly) && !assembly.IsKilled)
-				assembly.SetProxyTarget(
-					origin * new Transform3D(new Basis(state.Rotation), state.Position),
+				assembly.AddProxyState(
+					time, StreamInterval, origin * new Transform3D(new Basis(state.Rotation), state.Position),
 					origin.Basis * state.LinearVelocity, origin.Basis * state.AngularVelocity);
+	}
+
+	// Maps a sequence number to local time, following the earliest arrivals, as later ones were only delayed
+	private double GetStateTime(ushort sequence)
+	{
+		_receivedSequence = _timelineOrigin is null
+			? sequence
+			: _receivedSequence + (short)(sequence - (ushort)_receivedSequence);
+
+		var simulatorTime = _receivedSequence * StreamInterval;
+		var origin = _clock - simulatorTime;
+
+		_timelineOrigin = _timelineOrigin is { } current && origin > current
+			? current + (origin - current) * TimelineDriftRate
+			: origin;
+
+		return simulatorTime + _timelineOrigin.Value;
 	}
 }

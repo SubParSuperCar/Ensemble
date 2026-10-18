@@ -67,28 +67,44 @@ public partial class Assembly : RigidBody3D
 	}
 
 	/// <summary>
-	///     Takes the members' own bodies out of the physics space, then gives this body their mass, mass-weighted
-	///     friction, and lowest bounce. It stays frozen until <see cref="IsSimulated" /> is set.
+	///     Gives the body its members' mass, mass-weighted friction, and lowest bounce, and moves its origin onto the
+	///     center of mass, so its position and streamed velocities describe the same point it rotates about. It stays
+	///     frozen until <see cref="IsSimulated" /> is set.
 	/// </summary>
-	/// <remarks>The assembly must be in the tree, so the members' bodies have entered the space they leave.</remarks>
-	public void Assemble()
+	/// <remarks>Best done before entering the tree, like <see cref="AddMember" />.</remarks>
+	public void Build()
 	{
-		foreach (var member in _members)
-			PhysicsServer3D.BodySetSpace(member.GetRid(), default);
-
 		if (_mass <= 0)
 			return;
+
+		var center = _massMoment / _mass;
+
+		foreach (var member in _members)
+			member.Transform = member.Transform.Translated(-center);
+
+		foreach (var owner in GetShapeOwners())
+			ShapeOwnerSetTransform((uint)owner, ShapeOwnerGetTransform((uint)owner).Translated(-center));
+
+		Transform = Transform.TranslatedLocal(center);
 
 		var friction = _frictionMoment / _mass;
 		var bounce = _bounce ?? 0;
 
 		Mass = _mass;
 		CenterOfMassMode = CenterOfMassModeEnum.Custom;
-		CenterOfMass = _massMoment / _mass;
+		CenterOfMass = Vector3.Zero;
 
 		// Godot's defaults need no material of their own
 		if (friction is not AssetMaterial.DefaultFriction || bounce is not 0)
 			PhysicsMaterialOverride = new PhysicsMaterial { Friction = friction, Bounce = bounce };
+	}
+
+	/// <summary>Takes the members' own bodies out of the physics space, leaving only this body's shapes.</summary>
+	/// <remarks>The assembly must be in the tree, so the members' bodies have entered the space they leave.</remarks>
+	public void Assemble()
+	{
+		foreach (var member in _members)
+			PhysicsServer3D.BodySetSpace(member.GetRid(), default);
 	}
 
 	/// <summary>

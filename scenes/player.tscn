@@ -51,6 +51,7 @@ SpawnLocation = Vector3(0, 4, 0)
 
 [node name="Character" type="CharacterBody3D" parent="." unique_id=989463391]
 collision_layer = 2
+collision_mask = 13
 
 [node name="Collider" type="CollisionShape3D" parent="Character" unique_id=2025839855]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.188, 0)

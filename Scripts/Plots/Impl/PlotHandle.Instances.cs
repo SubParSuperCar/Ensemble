@@ -71,6 +71,8 @@ public partial class PlotHandle
 		handle.InstanceId = instance.Id;
 		handle.Transform = transform;
 		handle.Freeze = true;
+		handle.CollisionLayer = PhysicsLayers.StaticInstances;
+		handle.CollisionMask = 0;
 
 		_staticInstances.AddChild(handle);
 		_handlesByInstanceId.Add(instance.Id, handle);

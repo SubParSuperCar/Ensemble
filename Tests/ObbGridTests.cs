@@ -31,11 +31,15 @@ public sealed class ObbGridTests
 		}
 
 		var candidates = new List<Obb>();
+		var candidateIds = new List<int>();
 
 		for (var i = 0; i < BoxCount; i++)
 		{
 			var probe = RandomCube(random);
 			grid.Query(probe, candidates);
+			grid.Query(probe, candidateIds);
+
+			Assert.Equal(candidates, candidateIds.Select(id => boxes[id]));
 
 			// Boxes spanning several cells must still be reported once
 			Assert.Equal(candidates.Count, candidates.Distinct().Count());

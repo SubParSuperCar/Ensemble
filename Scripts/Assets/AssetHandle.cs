@@ -36,9 +36,18 @@ public partial class AssetHandle : RigidBody3D
 
 	public int InstanceId { get; internal set; }
 
-	private Aabb CalculateBoundary()
-	{
-		var collider = GetNodeOrNull<CollisionShape3D>("Collider");
-		return collider?.Shape is { } shape ? collider.Transform * shape.GetDebugMesh().GetAabb() : default;
-	}
+	// Only direct children count, as a body only registers the shapes of its direct children
+	public IEnumerable<CollisionShape3D> GetColliders() => GetChildren().OfType<CollisionShape3D>();
+
+	public Aabb[] GetColliderBounds() =>
+	[
+		.. GetColliders()
+			.Where(static collider => collider.Shape is not null)
+			.Select(static collider => collider.Transform * collider.Shape.GetDebugMesh().GetAabb())
+	];
+
+	private Aabb CalculateBoundary() =>
+		GetColliderBounds() is [var first, .. var rest]
+			? rest.Aggregate(first, static (sum, aabb) => sum.Merge(aabb))
+			: default;
 }

@@ -12,7 +12,7 @@ internal static class ToolCommon
 	public const string AffirmSound = "affirm";
 	public const string DissentSound = "dissent";
 
-	private const uint SelectableLayers = 1;
+	private const uint SelectableLayers = PhysicsLayers.World | PhysicsLayers.StaticInstances;
 	private const float RayLength = 1000f;
 	private const string SoundBus = "master";
 

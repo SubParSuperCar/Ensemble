@@ -1,11 +1,14 @@
 using EnsembleRoot.Scripts.Plots.Impl;
 using Godot;
 using Xunit;
+using static EnsembleRoot.Globals.Constants;
 
 namespace EnsembleRoot.Tests;
 
 public sealed class ObbTests
 {
+	private const float Sqrt2Half = 0.70710678f;
+
 	private static readonly Aabb UnitCube = new(-Vector3.One / 2, Vector3.One);
 	private static readonly Basis Yaw45 = new(Vector3.Up, float.Pi / 4);
 
@@ -16,6 +19,7 @@ public sealed class ObbTests
 
 		Assert.False(box.Overlaps(Cube(Vector3.Right)));
 		Assert.False(box.Overlaps(Cube(new Vector3(1, 1, 0))));
+		Assert.False(box.Overlaps(Cube(new Vector3(1 - Epsilon / 2, 0, 0))));
 		Assert.True(box.Overlaps(Cube(new Vector3(0.75f, 0, 0))));
 
 		// A 45-degree cube's corner reaches sqrt(2) / 2 from its center
@@ -30,6 +34,25 @@ public sealed class ObbTests
 		var tilted = new Basis(Vector3.Right, float.Pi / 4) * Yaw45;
 
 		Assert.False(Cube(Vector3.Zero).Overlaps(Cube(new Vector3(1.1f, 1.1f, 0), tilted)));
+	}
+
+	[Theory]
+	[InlineData(1, 0, 0, false, true)]
+	[InlineData(1 + Epsilon / 2, 0, 0, false, true)]
+	[InlineData(1 + Epsilon * 2, 0, 0, false, false)]
+	[InlineData(1, 0.5f, 0.5f, false, true)]
+	[InlineData(1, 1 - Epsilon / 2, 0, false, false)]
+	[InlineData(1, 1, 0, false, false)]
+	[InlineData(1, 1, 1, false, false)]
+	[InlineData(0.5f + Sqrt2Half, 0, 0, true, true)]
+	public void Abuts_CountsFacesWithinToleranceButNotEdgesOrCorners(
+		float x, float y, float z, bool isYawed, bool isAbutting)
+	{
+		var box = Cube(Vector3.Zero);
+		var other = Cube(new Vector3(x, y, z), isYawed ? Yaw45 : null);
+
+		Assert.Equal(isAbutting, box.Abuts(other));
+		Assert.Equal(isAbutting, other.Abuts(box));
 	}
 
 	[Fact]

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using EnsembleRoot.Common.Audio;
 using EnsembleRoot.Common.Time;
+using EnsembleRoot.Common.Utils;
 using Godot;
 using Lua;
 using Serilog;
@@ -101,6 +102,10 @@ public static partial class LuaExecutor
 #pragma warning disable MA0166
 			await Task.Delay(TimeSpan.FromSeconds(seconds), cancellationToken).ConfigureAwait(true);
 #pragma warning restore MA0166
+
+			// Godot runs queued continuations until none are left, so a script whose work outlasted its wait would
+			// resume within the same frame forever, hanging the game while its budget kept resetting
+			await ((SceneTree)Engine.GetMainLoop()).ToSignalAsync(SceneTree.SignalName.ProcessFrame);
 		}
 		finally
 		{

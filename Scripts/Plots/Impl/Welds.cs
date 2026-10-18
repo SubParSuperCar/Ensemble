@@ -47,12 +47,14 @@ public static class Welds
 			}
 		}
 
-		return parts
-			.Select((part, index) => (part.Id, Root: Find(parents, index)))
-			.GroupBy(static entry => entry.Root, static entry => entry.Id)
-			.Select(static group => group.Order().ToArray())
-			.OrderBy(static group => group[0])
-			.ToList();
+		return
+		[
+			.. parts
+				.Select((part, index) => (part.Id, Root: Find(parents, index)))
+				.GroupBy(static entry => entry.Root, static entry => entry.Id)
+				.Select(static group => group.Order().ToArray())
+				.OrderBy(static group => group[0])
+		];
 	}
 
 	private static int Find(int[] parents, int index)

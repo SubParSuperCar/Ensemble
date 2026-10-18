@@ -8,6 +8,7 @@ using Godot;
 
 namespace EnsembleRoot.Scripts.Assets;
 
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 [GlobalClass]
 public partial class AssetHandle : RigidBody3D
 {

@@ -61,9 +61,8 @@ public partial class PlotHandle
 		foreach (var group in Welds.Group(parts))
 			AddAssembly(group, instances);
 
-		foreach (var assembly in _assemblies)
-			foreach (var member in assembly.Members)
-				member.Initialize(this, instances[member.InstanceId]);
+		foreach (var member in _assemblies.SelectMany(static assembly => assembly.Members))
+			member.Initialize(this, instances[member.InstanceId]);
 
 		MoveLocalCharacterClear();
 

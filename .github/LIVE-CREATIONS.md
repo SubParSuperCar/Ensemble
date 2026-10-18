@@ -302,7 +302,7 @@ work proportional to what moves and thinks, not to what exists.
 6. **Unblock and test:** remove the single-player guard on `SetPlotSpawnedAction`, then test with a headless host and
    clients (and two windowed instances), including joins mid-simulation.
 
-Proposed bit budget per moving assembly (about 25 bytes; header: plot ID 8 bits, epoch 16, sequence 16):
+Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):
 
 | Field            | Encoding                                                              | Bits |
 |------------------|-----------------------------------------------------------------------|------|
@@ -310,7 +310,7 @@ Proposed bit budget per moving assembly (about 25 bytes; header: plot ID 8 bits,
 | Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m     | 72   |
 | Rotation         | Smallest three: 2-bit index, 3 x 10 bits                              | 32   |
 | Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                      | 42   |
-| Angular velocity | 1/64 rad/s steps, +-64 rad/s                                          | 39   |
+| Angular velocity | 1/32 rad/s steps, +-256 rad/s (a fast wheel spins past 100 rad/s)     | 42   |
 
 ## 13. Decisions
 

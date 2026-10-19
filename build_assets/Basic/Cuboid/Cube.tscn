@@ -1,29 +1,20 @@
 [gd_scene format=3 uid="uid://d1dlsgrbbr71y"]
 
-[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_gvw6i"]
-[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_7icts"]
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_ahla0"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_he0m8"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(0.5, 0.5, 0.5)
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_gee14"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u5sy4"]
-shading_mode = 0
-albedo_texture = SubResource("PlaceholderTexture2D_gee14")
-uv1_triplanar = true
-texture_filter = 0
-
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
-material = SubResource("StandardMaterial3D_u5sy4")
 size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Cube" type="RigidBody3D" unique_id=726135581]
-script = ExtResource("1_gvw6i")
+script = ExtResource("1_ahla0")
 AssetName = &"Cube"
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
-&"_materialId": 0
+&"_materialId": -1
 })
 MaxInstanceCount = 1000
 
@@ -34,5 +25,5 @@ shape = SubResource("BoxShape3D_8kdi2")
 mesh = SubResource("BoxMesh_8kdi2")
 
 [node name="Paintable" type="Node" parent="." unique_id=107636412]
-script = ExtResource("2_7icts")
+script = ExtResource("2_he0m8")
 metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

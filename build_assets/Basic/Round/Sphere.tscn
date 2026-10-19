@@ -1,20 +1,12 @@
 [gd_scene format=3 uid="uid://oyvwnup33swu"]
 
 [ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_hyqjw"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_r3tig"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_irkkq"]
-radius = 0.25
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_gee14"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hyqjw"]
-shading_mode = 0
-albedo_texture = SubResource("PlaceholderTexture2D_gee14")
-uv1_triplanar = true
-texture_filter = 0
+radius = 0.249
 
 [sub_resource type="SphereMesh" id="SphereMesh_ruqy6"]
-material = SubResource("StandardMaterial3D_hyqjw")
 radius = 0.25
 height = 0.5
 radial_segments = 32
@@ -25,7 +17,7 @@ script = ExtResource("1_hyqjw")
 AssetId = 1
 AssetName = &"Sphere"
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FFFFFF",
+&"_colorHex": "808080",
 &"_materialId": 0
 })
 MaxInstanceCount = 500
@@ -35,3 +27,7 @@ shape = SubResource("SphereShape3D_irkkq")
 
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
 mesh = SubResource("SphereMesh_ruqy6")
+
+[node name="Paintable" type="Node" parent="." unique_id=142671377]
+script = ExtResource("2_r3tig")
+metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

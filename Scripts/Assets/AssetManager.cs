@@ -112,8 +112,10 @@ public partial class AssetManager : Node
 		var maxInstanceCount = handle.MaxInstanceCount;
 		var boundary = handle.BoundaryAabb;
 		var colliderBounds = handle.GetColliderBounds();
+
 		(Shape3D, Transform3D)[] colliders =
 			[.. handle.GetColliders().Select(static collider => (collider.Shape, collider.Transform))];
+
 		var (volume, centroid) = handle.CalculateVolume();
 		var density = handle.Density;
 

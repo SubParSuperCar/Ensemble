@@ -36,7 +36,6 @@ public partial class GdPlots : RefCounted
 			});
 
 	public GdPlot? GetPlot(int id) => Source.All.TryGetValue(id, out var plot) ? GdPlot.From(plot) : null;
-
 	public Array<GdPlot> GetAll() => [.. Source.All.Values.Select(GdPlot.From)];
 
 	public GdPlot Add(int id) => Add(id, Default);

@@ -36,7 +36,6 @@ public partial class GdInstances : RefCounted
 			});
 
 	public GdInstance? GetInstance(int id) => Source.TryGet(id, out var instance) ? GdInstance.From(instance) : null;
-
 	public Array<GdInstance> GetAll() => [.. Source.All.Select(GdInstance.From)];
 
 	public GdInstance Add(int assetId, Vector3 position, Quaternion rotation) =>

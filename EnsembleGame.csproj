@@ -156,7 +156,7 @@
     <None Include="**/*.gd;**/*.gdshader;**/*.gdshaderinc;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
-    <None Include="**/*.tscn;**/*.scn" Exclude=".godot/**;bin/**"/>
+    <None Include="**/*.tscn;**/*.scn" Exclude=".godot/**;bin/**;scenes/**"/>
     <None Include="Common/Text/ProfanityList.LICENSE.txt"/>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>
   </ItemGroup>

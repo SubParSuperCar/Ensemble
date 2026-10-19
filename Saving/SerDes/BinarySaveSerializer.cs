@@ -122,7 +122,6 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 	private static SaveInstance ReadInstance(BinaryReader reader)
 	{
 		var assetId = reader.ReadUInt16();
-
 		var position = new Vector3(ReadFiniteSingle(reader), ReadFiniteSingle(reader), ReadFiniteSingle(reader));
 
 		var rotation = new Quaternion(

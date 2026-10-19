@@ -82,7 +82,6 @@ public sealed class Instances : IInstances
 	}
 
 	public Quota GetQuota(int assetId) => (_countsByAssetId.Get(assetId), GetAsset(assetId).MaxInstanceCount);
-
 	public IReadOnlyDictionary<int, Quota> GetAllQuotas() => _assets.All.Keys.ToDictionary(static id => id, GetQuota);
 
 	private IAsset GetAsset(int assetId) =>

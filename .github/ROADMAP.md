@@ -66,7 +66,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
   shown under the player list
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
-- [ ] (L) Dynamic instance replication - placed blocks sync + authority model
+- [x] (L) Instance replication - placements, deletions, and property edits sync as validated actions, with the host
+  as the authority and late joiners restored from snapshots
 - (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction + occupant/owner checks done
 - [x] (S) Text chat - Text Chat widget (opens in multiplayer, `/` to type, Roblox-style nametag colors, join / leave
   notices, unread count in the drawer), chat action with the host's profanity filter (masks with `#`, or `<Redacted>` if
@@ -75,8 +76,10 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - [ ] (M) Chat bubbles over players
 - [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override) and kicking
   occupants (owner or host; `KickOccupantAction` and `kick_occupant` done)
-- [ ] (L) Physics replication - plot-owner authority over custom RPCs; see
+- [x] (L) Physics replication - plot owners simulate their creations, streamed as bit-packed state over custom RPCs,
+  with host-decided hand-offs, timeouts, and relay limits, and proxies replayed 100 ms behind; see
   [**Spawning and live physics**](#spawning-and-live-physics-plan)
+- [x] (S) Poor-connection simulator - `set_net_sim(latency_ms, jitter_ms, loss)` delays and drops incoming live state
 
 ## Gameplay / content
 
@@ -87,8 +90,9 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - (WIP) (L) Live asset logic - infrastructure for assets with behavior. `AssetComponent`s are nodes dropped under an
   asset's `AssetHandle` in its scene (unique behaviors may subclass `AssetHandle`); handles bind to their plot and
   instance, then initialize their components once their whole creation exists, and live in one mode (build or live)
-  for life. `Paintable` (material overrides from `_colorHex` / `_materialId`, opt-out by node) is the first. Next: a
-  material registry, and a batched tick for many scripted blocks
+  for life. `Paintable` (material overrides from `_colorHex` / `_materialId`, opt-out by node) is the first, and the
+  `MaterialBank` pairs each material's look with its density, friction, and bounce. Next: a batched simulation tick for
+  many scripted blocks, then seats, input, and joints (see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md))
 - [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
 - [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
 - [ ] (L) A real map, built with Unibuilder
@@ -235,7 +239,7 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) Sessions/Impl gdignored; Sentinels dependency removed
 - [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build warnings
 - [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
-- [ ] (S) Dedicated 3D physics layers - Plot Base, Instances (only World + Character exist today)
+- [x] (S) Dedicated 3D physics layers - World, Character, Static Instances, and Dynamic Instances
 - [x] (S) Populate Tests/ - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline roundtrips,
   HostEndPoint parsing, OBB/grid math, NavigatorService
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down

@@ -30,6 +30,8 @@ If you played Baja Builders on Roblox, you'll feel at home: the ideas are the sa
 
 - **Build** with blocks, wedges, cylinders, cones, spheres, and more. Pieces snap neatly to the grid and to each other,
   rotate on any axis, and never clip into one another.
+- **Bring it to life** by spawning your plot: touching pieces weld together, each piece weighs what its material does,
+  and the whole creation tips, falls, and rolls for real, in multiplayer too. Despawn it to keep building.
 - **Play together** over the internet or your local network. Hosting can forward its port automatically, so friends can
   join with a single code. Sessions can have passwords and player limits, and run on dedicated servers.
 - **Chat** with Roblox-style colored nametags, an optional profanity filter (hosts choose), and an optional "read aloud"
@@ -41,8 +43,9 @@ If you played Baja Builders on Roblox, you'll feel at home: the ideas are the sa
 
 ### What's Coming
 
-The road to 1.0 includes saving and loading your creations, a real map, more building tools (editing properties,
-painting, and moving things), a plot manager for inviting and removing builders, and plenty of polish. See the
+The road to 1.0 includes moving parts (motors, hinges, pistons, and seats you can drive from), saving and loading your
+creations, a real map, more building tools (editing properties, painting, and moving things), a plot manager for
+inviting and removing builders, and plenty of polish. See the
 [**roadmap**](./ROADMAP.md) for everything that's planned.
 
 ### Trying It
@@ -72,6 +75,9 @@ What makes it interesting under the hood:
 - **Server-authoritative multiplayer.** Every change to the world, and every chat message, is a small, validated,
   rate-limited network action. The host checks it, may rewrite it (for example, to filter chat), applies it, and
   broadcasts it. Single-player runs the exact same path locally.
+- **Live, owner-simulated physics.** A spawned creation is simulated by its plot's owner, Roblox-style, and streamed to
+  everyone else as bit-packed state, about 25 bytes per moving body. Other players see smooth replays of it, and the
+  host hands it to the next owner, or takes it over, without a hitch.
 - **Native, trimmed builds.** Releases are compiled ahead of time with NativeAOT for each platform, and a CI pipeline
   builds, smoke-tests, and publishes Windows, Linux, and macOS packages from every tag.
 - **Built to be poked at.** A Lua 5.2 console with dozens of game functions, structured logs, a watchdog for hangs, a
@@ -92,6 +98,7 @@ If that sounds like your kind of project, the deep dive below goes further, and 
 | Engine         | Godot 4.7 (.NET build), Mobile rendering method                            |
 | Language       | C# 14 on .NET 10, plus GDScript only inside third-party addons             |
 | UI             | Avalonia 12 through a forked Estragonia bridge, MVVM with CommunityToolkit |
+| Physics        | Jolt, through Godot's built-in integration                                 |
 | Networking     | Godot's `SceneMultiplayer` over ENet, with UPnP port forwarding            |
 | Scripting      | Lua 5.2 via Lua-CSharp                                                     |
 | Logging        | Serilog (console, rolling JSON files, and an in-game log view)             |
@@ -107,7 +114,7 @@ If that sounds like your kind of project, the deep dive below goes further, and 
 | `GdCore/`            | `RefCounted` wrappers that expose Core to Godot code, signals, and the network       |
 | `Sessions/`          | `SessionManager`: transports, handshake, peers, RPCs, actions, and snapshots         |
 | `Replication/`       | The game's concrete network actions and snapshots                                    |
-| `Scripts/`           | Scene-tree nodes: managers and handles for plots, players, assets, and the world     |
+| `Scripts/`           | Scene-tree nodes: plots, live creations, players, assets, materials, and the world   |
 | `Tooling/`           | The building tools (place and delete) and their manager                              |
 | `Execution/`         | The Lua console's executor and functions                                             |
 | `Ui/`                | Views, view models, widgets, and services                                            |
@@ -157,6 +164,24 @@ Placement is validated by shared rules (bounds, overlaps, and quotas) that run o
 host for authority. Overlaps are resolved with oriented bounding boxes and the separating axis theorem, so previews
 slide out of collisions and snap flush against neighbors.
 
+### Live Creations
+
+Spawning turns a plot's build into physics, on every peer at once and without sending any geometry, since everyone
+already has the plot's instances:
+
+- **Welds.** Pieces whose collider boxes share part of a face (within 1/512 m) weld together, as in Baja Builders, and
+  each welded group becomes one rigid body, an *assembly*, whose origin sits on its center of mass. Every peer derives
+  the same groups and IDs from the same instances.
+- **Members.** The pieces ride their assembly as ordinary asset scenes, with their own bodies taken out of the physics
+  space, so meshes and scripts keep working while the assembly carries all of their collision shapes.
+- **Mass and materials.** Each piece weighs its collider volume times its density, from its material if it has one.
+  The material bank pairs each material's look (tinted by the piece's color) with its physics: density, friction, and
+  bounciness.
+- **Static mirror.** The editable build is only hidden and disabled while spawned, so despawning is instant, and bodies
+  that fall below the world are switched off.
+- **Asset logic.** Assets get behavior from reusable component nodes (like `Paintable`) or their own subclasses, each
+  initialized once the whole creation exists.
+
 ### Multiplayer
 
 - **Transports.** `SessionManager` drives one `ISession` at a time: ENet for multiplayer, or an offline transport for
@@ -169,9 +194,15 @@ slide out of collisions and snap flush against neighbors.
   optionally rewrite (host only), and apply. Actions register themselves through module initializers.
 - **Rate limiting.** Each peer gets a token bucket of 100 tokens that refills in 5 seconds, and each action costs
   tokens, so costs read as percentages. Excess requests queue briefly, then get a polite rejection.
-- **Late joiners** receive snapshots (plots and their instances, chat history, filter state) before any further action
-  reaches them, so nothing arrives out of order.
+- **Late joiners** receive snapshots (plots and their instances, live creations, chat history, filter state) before any
+  further action reaches them, so nothing arrives out of order.
 - **Characters** replicate at 20 Hz while moving and once a second while idle, interpolated on other peers.
+- **Live creations** are simulated by their plot's owner (the host decides, and is always the fallback); everyone else
+  sees frozen proxies, which characters can still stand on. The simulator streams moving bodies at 20 Hz in packets
+  below the MTU, quantized to 1/512 m and smallest-three rotations, with sleeping bodies sent once at rest and then
+  only as slow keepalives. Proxies replay those states 100 ms in the past along curves through their velocities, so
+  lost or late packets don't show. Ownership epochs keep late packets from a previous simulator from moving anything,
+  and the host takes over any creation whose simulator goes silent for 3 seconds.
 - **UPnP** runs off the main thread with leased, renewed mappings, and its join code is only ever copied, never shown,
   to protect the host's IP address on streams.
 
@@ -198,8 +229,8 @@ per-session text files and read aloud with text-to-speech, which stops when you 
 
 ### Diagnostics and Scripting
 
-- **Lua console**: over 40 functions for the session, world, display, and diagnostics, listed with their parameters by
-  `help()`.
+- **Lua console**: over 40 functions for building, plots, chat, the network (including a poor-connection simulator),
+  the world, the display, and diagnostics, listed with their parameters by `help()`.
 - **Logging**: Serilog writes colored console output, rolling JSON files, an in-game log view, and toasts for warnings.
 - **Watchdog**: a background thread that fails fast if the main thread stops responding for 20 seconds, instead of
   hanging silently.

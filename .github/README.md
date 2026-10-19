@@ -81,7 +81,7 @@ Ensemble's blocks during the day with the light-mode UI enabled using the `set_u
 Ensemble's console, with the output log on the left and the code editor on the right:
 ![Ensemble's Console UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
 
-Ensemble's blocks at night, generated using the `add_rand_insts` Lua function:
+Ensemble's blocks at night, generated using the `loc_add_rand_insts` Lua function:
 ![Ensemble's Blocks at Night](./screenshots/random-blocks-night.webp)
 
 Ensemble's test map:
@@ -115,7 +115,10 @@ password only controls who can join, so don't use one that matters elsewhere.
   `--p=7777 --pw=abc` (`j`, `mc`, `n`, `p`, `pf`, `pw`, and `u`).
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
-and characters are replicated. Hosts can list peers (with their ping) using `dmp_peers()` and remove one using
+and characters are replicated. A spawned creation is simulated by its plot's owner and streamed to everyone else; when
+the owner leaves, the next one takes over, and the host steps in if a simulator stops responding. To try a poor
+connection without outside players, run `set_net_sim(120, 40, 0.05)` (latency and jitter in milliseconds, and a loss
+rate) on a client. Hosts can list peers (with their ping) using `dmp_peers()` and remove one using
 `kick_peer(peer_id, "reason")`, and kick players off plots with `kick_occupant("name or id")`, which plot owners can
 also use on their own plots. Display names are remembered between sessions. The host has authority over the session:
 they can clear any plot they occupy, and their chat messages bypass the profanity filter.
@@ -399,6 +402,7 @@ classDiagram
     class GdCore
     class PlotManager
     class PlotHandle
+    class Assembly
     class AssetManager
     class AssetHandle
 
@@ -407,7 +411,9 @@ classDiagram
     IPlot --> IInstances
     GdCore ..> ICore : wraps
     PlotManager --> PlotHandle : one per plot
-    PlotHandle --> AssetHandle : one per instance
+    PlotHandle --> AssetHandle : one per instance (static)
+    PlotHandle --> Assembly : one per welded group (spawned)
+    Assembly --> AssetHandle : members
     AssetManager ..> IAsset : loads meshes
     PlotHandle ..> IInstances : mirrors
 ```
@@ -456,6 +462,7 @@ player acting as the server.
 | Action                     | Effect                                           |
 |----------------------------|--------------------------------------------------|
 | `SetPlotAction`            | Claims or releases a plot for the sender         |
+| `SetPlotSpawnedAction`     | Spawns or despawns a plot (owner or host)        |
 | `AddInstanceAction`        | Places an asset instance on the sender's plot    |
 | `RemoveInstancesAction`    | Deletes up to 256 instances                      |
 | `SetPropertiesAction`      | Changes an instance's properties                 |
@@ -463,6 +470,48 @@ player acting as the server.
 | `KickOccupantAction`       | Removes a player from their plot (owner or host) |
 | `SendChatMessageAction`    | Posts a chat message (filtered by the host)      |
 | `SetProfanityFilterAction` | Toggles the profanity filter (host only)         |
+
+</details>
+
+<details>
+  <summary><b>Live Creations</b></summary>
+
+Spawning (`SetPlotSpawnedAction`) builds the same physics on every peer from the plot's instances, so it sends no
+geometry. `PlotHandle` groups touching instances with `Welds.Group` (the `Obb.Abuts` face test, then union-find), and
+builds one `Assembly` (a `RigidBody3D`) per group, carrying its members' collision shapes and mass, with its origin on
+the center of mass. The members are ordinary `AssetHandle` scenes riding along out of the physics space, initialized
+once the creation exists. The static instances stay in sync with Core, only hidden and disabled while spawned.
+
+```mermaid
+graph LR
+    Core["Plot instances (Core)"] --> Welds["Welds.Group"]
+    Welds --> Assemblies["One Assembly per group"]
+    Bank["MaterialBank"] -->|density, friction, bounce| Assemblies
+    Assemblies --> Members["AssetHandle members + components"]
+```
+
+The host decides who simulates each creation (an override, else the plot's owner, else itself) and broadcasts every
+change with an epoch. The simulator streams its moving assemblies; the host checks each packet, rate limits it, and
+relays it; everyone else moves frozen proxies along a 100 ms replay of the received states.
+
+```mermaid
+sequenceDiagram
+    participant O as Simulator (owner)
+    participant H as Host
+    participant P as Other peers
+
+    H->>O: RpcSetSimulator(peer, epoch)
+    H->>P: RpcSetSimulator(peer, epoch)
+    loop 20 Hz
+        O->>H: RpcReceiveCreation(packed states)
+        H->>H: decode, check epoch, rate limit
+        H->>P: RpcReceiveCreation(packed states)
+        P->>P: buffer, replay 100 ms behind
+    end
+```
+
+Each state packs an assembly's ID, position, rotation, and velocities into 204 bits (`AssemblyState`, `CreationPackets`,
+`BitWriter`). The full design, with its decisions and phases, is in [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 
 </details>
 

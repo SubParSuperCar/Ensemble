@@ -34,9 +34,9 @@ contract: they bend when something unforeseen comes up.
 - Asset-specific scripts sit beside their scene in `build_assets/`: `build_assets/Mechanics/Motor.tscn` and
   `Motor.cs`. Godot requires a script's file name to match its class, and asset scenes are PascalCase **(D1)**, so
   every `X.cs` pairs with its `X.tscn`. `AssetManager` only registers scenes, so the scripts don't disturb its scan.
-- With the first asset script, `EnsembleGame.csproj` gets a rule nesting each script under its scene in Rider, as
-  `.axaml.cs` nests under `.axaml` (`DependentUpon="%(Filename).tscn"`, with the scenes as `None` items so they can
-  parent), and `config.nsdepcop` a rule that nothing but `EnsembleRoot.BuildAssets.*` may reference it.
+- `EnsembleGame.csproj` nests each script under the same-named `.tscn` or `.scn` beside it in the IDE, as `.axaml.cs`
+  nests under `.axaml` (the scenes are `None` items, so they can parent). With the first asset script,
+  `config.nsdepcop` gets a rule that nothing but `EnsembleRoot.BuildAssets.*` may reference it.
 
 ### Behaviors: components or subclasses
 

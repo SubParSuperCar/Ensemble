@@ -156,8 +156,17 @@
     <None Include="**/*.gd;**/*.gdshader;**/*.gdshaderinc;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
+    <None Include="**/*.tscn;**/*.scn" Exclude=".godot/**;bin/**"/>
     <None Include="Common/Text/ProfanityList.LICENSE.txt"/>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>
+  </ItemGroup>
+
+  <!-- A script nests under the same-named scene beside it (Motor.cs under Motor.tscn), as .axaml.cs under .axaml -->
+  <ItemGroup>
+    <Compile Update="**/*.cs">
+      <DependentUpon Condition="Exists('%(RootDir)%(Directory)%(Filename).tscn')">%(Filename).tscn</DependentUpon>
+      <DependentUpon Condition="Exists('%(RootDir)%(Directory)%(Filename).scn')">%(Filename).scn</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>

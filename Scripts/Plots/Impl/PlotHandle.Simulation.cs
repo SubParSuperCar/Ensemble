@@ -26,7 +26,7 @@ public partial class PlotHandle
 
 	/// <summary>
 	///     The peer that simulates the creation; everyone else shows proxies of it. The host decides: the override if
-	///     any, else the plot's owner, else itself.
+	///     any, else the arbitrated simulator, else the plot's owner, else itself.
 	/// </summary>
 	public int SimulatorPeerId { get; private set; } = HostPeerId;
 
@@ -65,11 +65,17 @@ public partial class PlotHandle
 
 	private void OnOwnerChanged(GdOccupant? _) => ClearSimulatorOverride();
 
-	// A departing owner arrives as an owner change, which may come before or after this, so only overrides matter here
+	// A departing owner arrives as an owner change, which may come before or after this, so only the peers an override
+	// or arbitration chose matter here
 	private void OnPeerUnregistered(Peer peer)
 	{
 		if (_simulatorOverride == peer.Id)
-			ClearSimulatorOverride();
+			_simulatorOverride = null;
+
+		if (ArbitratedSimulatorPeerId == peer.Id)
+			ArbitratedSimulatorPeerId = null;
+
+		UpdateSimulator();
 	}
 
 	private void ClearSimulatorOverride()
@@ -84,7 +90,7 @@ public partial class PlotHandle
 		if (!GSessionManager.IsServer)
 			return;
 
-		var simulator = _simulatorOverride ?? GetOwnerPeerId() ?? HostPeerId;
+		var simulator = _simulatorOverride ?? ArbitratedSimulatorPeerId ?? GetOwnerPeerId() ?? HostPeerId;
 
 		if (simulator == SimulatorPeerId)
 			return;

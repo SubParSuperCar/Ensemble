@@ -89,8 +89,11 @@ public partial class PlotHandle
 		SetPhysicsProcess(false);
 
 		// The host announces the hand-off before peers despawn, so it must carry the epoch they still hold
+		ArbitratedSimulatorPeerId = null;
 		ClearSimulatorOverride();
 		SimulationEpoch++;
+
+		GPlotManager.ForgetArbitration(this);
 
 		foreach (var assembly in _assemblies)
 			assembly.QueueFree();

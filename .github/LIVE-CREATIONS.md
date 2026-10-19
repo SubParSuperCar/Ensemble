@@ -212,31 +212,39 @@ would fall through what it stands on. Options to prototype later:
 - **Lost packets for sleeping bodies:** a body's last update before sleeping may be lost, so sleeping assemblies get a
   slow round-robin keepalive within a fixed per-plot budget (e.g., 32 assemblies a second), healing stale proxies
   without scaling bandwidth with creation size.
+- **Support despawning (open):** a body handed off at rest starts asleep, and nothing wakes it if what held it up
+  despawns: a tower propped against a creation that despawned as its owner left kept leaning on nothing. Waking the
+  bodies near a despawning creation would fix it.
 
-### Arbitration: shared simulators (0.55.0, planned)
+### Arbitration: shared simulators (0.55.0, done)
 
 Collisions between bodies with different simulators are one-sided: each simulator sees the other creation as a
 kinematic proxy, an immovable wall that arrives late. So when two creations with different simulators get close, the
 host gives both to one simulator until they separate, and their collisions become real physics on one machine.
 
-- **Detection, on the host only:** it already has every creation as proxies, and it decides. Each assembly of a
-  spawned plot gets an `Area3D` child with a `SphereShape3D` (Godot's areas take any shape): a sphere doesn't change
-  as the assembly rotates, so nothing is updated per tick. Its radius is the assembly's bounding sphere (half its
-  bounds' diagonal, from its colliders) times 1.5, so the hand-off happens before contact rather than during it.
-- **Areas only see areas:** they sit on their own physics layer (Arbitration, 5) and monitor only that layer, so Jolt
-  tests sphere pairs and nothing else, and no body or character pays for them. Overlaps of areas from the same plot,
-  or from plots that already share a simulator, are ignored.
-- **Groups:** overlapping plots join with union-find, so three creations in a pile share one simulator. Each group goes
-  to the simulator of its creation with the most assemblies (**D9**), which already carries the heaviest load, so the
-  work stays spread across players rather than piling onto the host; the others get arbitration overrides, through
-  the same broadcast as any hand-off.
-- **Release with hysteresis:** a group splits once its plots' areas have stopped overlapping for 2 s, and no plot
-  changes simulator more than once every 2 s, so creations jostling at the edge don't flap between machines.
-- **Precedence:** a manual or timeout override beats arbitration, which beats the plot's owner. Despawning, an owner
-  change, or the simulator leaving ends a plot's arbitration, like any override.
-- **Cost:** one area per assembly on the host only, while two or more plots are spawned in multiplayer; areas that
-  overlap nothing cost Jolt a broadphase entry. A creation of thousands of loose bodies could share one area per plot
-  instead (its whole bounds), if per-assembly areas ever show up in profiles.
+- **Detection, on the host only:** it already has every creation, as proxies or as bodies it simulates, and it
+  decides. Every 1/8 s, while two or more plots are spawned, it puts a sphere around each assembly, its bounding
+  sphere (half its colliders' bounds diagonal) times 1.5, so the hand-off happens before contact rather than during
+  it. Each pair of creations is tested by their spheres' overall bounds first, then only the spheres within the other
+  creation's bounds, stopping at the first touching pair (`ArbitrationSpheres`). Proxies' poses are known without
+  asking Godot, so only bodies the host simulates cost a read each.
+- **Why not areas:** Godot areas were measured first, on 1,462 loose cubes. An `Area3D` per assembly made Jolt track
+  every overlap within the creation itself (settled physics went from 0.8 ms to as much as 22 ms a frame), and one
+  area per plot, with a sphere shape per assembly, rebuilt its whole compound shape whenever a sphere moved (up to
+  260 ms a frame while the pile settled). The tests in C# cost about 0.05 ms a frame on the same pile.
+- **Groups:** creations whose spheres overlap link their plots, and linked plots join with union-find
+  (`Arbitration.GetLeaders`), so three creations in a pile share one simulator. Each group goes to the simulator its
+  creation with the most assemblies has apart from arbitration (**D9**), which already carries the heaviest load, so
+  the work stays spread across players rather than piling onto the host; the others get it as their arbitrated
+  simulator, through the same broadcast as any hand-off.
+- **Release with hysteresis:** a link holds for 2 s after its creations part, and arbitration moves a plot at most
+  once every 2 s, so creations jostling at the edge don't flap between machines.
+- **Precedence:** a manual or timeout override beats arbitration, which beats the plot's owner. Despawning ends a
+  plot's links at once, and a departing simulator loses the arbitrations it held; an owner change only changes whom
+  its group goes to.
+- **Cost:** nothing in single-player or with fewer than two spawned plots. Otherwise, creations far apart cost a
+  bounds test each review, and 1,462 bodies the host simulates cost about 0.4 ms a review, mostly reading their
+  transforms.
 
 ## 8. Replication
 
@@ -320,7 +328,7 @@ work proportional to what moves and thinks, not to what exists.
 | 0.53.0  | Multiplayer | Phase 2 with the full authority model, but the host as the only simulator; proxies,    |
 |         |             | bit-packed wire format, epochs, keepalives, late joins                                 |
 | 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts (done)           |
-| 0.55.0  | Multiplayer | Arbitration: creations close to each other share a simulator (section 7)               |
+| 0.55.0  | Multiplayer | Arbitration: creations close to each other share a simulator (section 7) (done)        |
 | 0.56.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,  |
 |         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                       |
 
@@ -362,6 +370,19 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 6. **Timeout:** heartbeats and the host's 3 s takeover, tested by freezing a simulator's process and resuming it.
 7. **Budget:** 256 states per plot per stream, in turns past it.
 8. **Poor connections:** `NetworkConditions` and Lua `set_net_sim`.
+
+### 0.55.0 steps (arbitration; done)
+
+1. **Bounds:** `Assembly.Bounds`, its colliders' bounds in its own space, measured as it's built.
+2. **Detection:** the host's sphere tests every 1/8 s (`ArbitrationSpheres`, with tests against brute force), linking
+   plots whose creations are close and holding each link 2 s after they part.
+3. **Groups:** `Arbitration.GetLeaders` (union-find; the most assemblies, then the lowest ID), with tests against a
+   brute-force flood.
+4. **Resolution:** an override, else the arbitrated simulator, else the owner, else the host; `dmp_creation` shows
+   whether a creation is arbitrated.
+5. **Tested** with headless peers: towers overlapping at spawn join; the leaning one topples away and its neighbor
+   returns 2 s later; respawning rejoins; a leaving simulator releases at once; and towers falling into each other
+   collide on one machine, ending in the same pose on every peer.
 
 ## 13. Decisions
 

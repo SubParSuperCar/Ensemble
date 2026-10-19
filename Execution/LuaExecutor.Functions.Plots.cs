@@ -24,9 +24,10 @@ public static partial class LuaExecutor
 			Log.Information("Plot {PlotId}'s creation isn't spawned", id);
 		else
 			Log.Information(
-				"Plot {PlotId}'s creation: {Count} assemblies, simulated by peer {PeerId} (epoch {Epoch})\n{Assemblies}",
+				"Plot {PlotId}'s creation: {Count} assemblies, simulated by peer {PeerId} (epoch {Epoch}, " +
+				"arbitrated {IsArbitrated})\n{Assemblies}",
 				id, handle.Assemblies.Count, handle.SimulatorPeerId, handle.SimulationEpoch,
-				string.Join('\n', handle.Assemblies));
+				handle.ArbitratedSimulatorPeerId is not null, string.Join('\n', handle.Assemblies));
 
 		return context.ReturnNothing();
 	}

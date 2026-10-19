@@ -202,7 +202,8 @@ already has the plot's instances:
   below the MTU, quantized to 1/512 m and smallest-three rotations, with sleeping bodies sent once at rest and then
   only as slow keepalives. Proxies replay those states 100 ms in the past along curves through their velocities, so
   lost or late packets don't show. Ownership epochs keep late packets from a previous simulator from moving anything,
-  and the host takes over any creation whose simulator goes silent for 3 seconds.
+  and the host takes over any creation whose simulator goes silent for 3 seconds. When creations of different plots
+  come close, the host hands them all to one simulator, so their collisions are real physics on both sides.
 - **UPnP** runs off the main thread with leased, renewed mappings, and its join code is only ever copied, never shown,
   to protect the host's IP address on streams.
 

@@ -16,8 +16,8 @@ public partial class Assembly
 	private readonly ProxyState[] _proxyStates = new ProxyState[ProxyBufferSize];
 	private int _proxyStateCount;
 
-	// The proxy's own copy of where it was last put, so a settled proxy costs no interop
-	private Transform3D _proxyTransform;
+	/// <summary>Where a proxy was last put, known without asking Godot, so a settled proxy costs no interop.</summary>
+	internal Transform3D ProxyTransform { get; private set; }
 
 	/// <summary>
 	///     Buffers a proxy's streamed state, in global space, stamped with the local time it describes; the first one
@@ -79,13 +79,13 @@ public partial class Assembly
 				: Interpolate(_proxyStates[index], _proxyStates[index + 1], time);
 		}
 
-		if (transform == _proxyTransform)
+		if (transform == ProxyTransform)
 			return;
 
-		if (transform.Origin.DistanceTo(_proxyTransform.Origin) > ProxySnapDistance)
+		if (transform.Origin.DistanceTo(ProxyTransform.Origin) > ProxySnapDistance)
 			JumpProxy(transform);
 		else
-			GlobalTransform = _proxyTransform = transform;
+			GlobalTransform = ProxyTransform = transform;
 	}
 
 	private static Transform3D Extrapolate(in ProxyState state, double age) =>
@@ -143,7 +143,6 @@ public partial class Assembly
 		if (!isSimulated)
 		{
 			IsSimulated = false;
-			_proxyTransform = GlobalTransform;
 			HoldProxy();
 
 			return;
@@ -169,7 +168,7 @@ public partial class Assembly
 	// The proxy holds where it was last placed, and its timeline starts over with the next received state
 	private void HoldProxy()
 	{
-		_proxyStates[0] = new ProxyState(double.NegativeInfinity, _proxyTransform, Vector3.Zero, Vector3.Zero);
+		_proxyStates[0] = new ProxyState(double.NegativeInfinity, ProxyTransform, Vector3.Zero, Vector3.Zero);
 		_proxyStateCount = 1;
 	}
 
@@ -180,7 +179,7 @@ public partial class Assembly
 		var space = PhysicsServer3D.BodyGetSpace(rid);
 
 		PhysicsServer3D.BodySetSpace(rid, default);
-		GlobalTransform = _proxyTransform = transform;
+		GlobalTransform = ProxyTransform = transform;
 		ForceUpdateTransform();
 		PhysicsServer3D.BodySetSpace(rid, space);
 		ResetPhysicsInterpolation();

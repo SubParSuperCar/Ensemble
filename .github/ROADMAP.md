@@ -83,8 +83,9 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
   with host-decided hand-offs, timeouts, and relay limits, and proxies replayed 100 ms behind; see
   [**Spawning and live physics**](#spawning-and-live-physics-plan)
 - [x] (S) Poor-connection simulator - `set_net_sim(latency_ms, jitter_ms, loss)` delays and drops incoming live state
-- [ ] (M) Creation arbitration - creations with different simulators that come close (host-side sphere areas at 1.5
-  times their bounds) share one simulator until they separate; see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md)
+- [x] (M) Creation arbitration - creations with different simulators that come close (the host's sphere tests at 1.5
+  times their bounds) share one simulator, their largest's, until they've been apart for 2 s; see
+  [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md)
 
 ## Gameplay / content
 
@@ -213,12 +214,12 @@ switched off, not freed.
    owner changes
 4. Joints and motors - needs Live asset logic and Input management
 5. Polish - bandwidth tuning, characters riding moving creations (platform velocity), and arbitration: creations
-   that come close share one simulator (0.55.0)
+   that come close share one simulator (done in 0.55.0)
 
 ### Known hard parts
 
-- Collisions between creations with different owners (one-sided pushes), until arbitration gives close creations one
-  simulator (0.55.0)
+- Collisions between creations with different owners: arbitration hands close ones to one simulator, but fast ones
+  may meet before the hand-off arrives (one-sided pushes until then)
 - Joint stability across large mass ratios
 - Bandwidth spikes when many loose bodies move at once
 - Characters standing on someone else's moving creation

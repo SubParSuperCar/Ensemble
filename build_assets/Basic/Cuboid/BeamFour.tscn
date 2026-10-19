@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://b00m71tppiktg"]
+
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_s0jc2"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_rfv87"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
+size = Vector3(3.5, 0.5, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
+size = Vector3(3.5, 0.5, 0.5)
+
+[node name="Beam 7" type="RigidBody3D" unique_id=726135581]
+script = ExtResource("1_s0jc2")
+AssetId = 10
+AssetName = &"Beam 7"
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF",
+&"_materialId": -1
+})
+MaxInstanceCount = 750
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=237803691]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0)
+shape = SubResource("BoxShape3D_8kdi2")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0)
+mesh = SubResource("BoxMesh_8kdi2")
+
+[node name="Paintable" type="Node" parent="." unique_id=107636412]
+script = ExtResource("2_rfv87")
+metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

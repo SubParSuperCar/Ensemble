@@ -50,7 +50,10 @@ public readonly record struct AssemblyState(
 		var limit = (1L << (bits - 1)) - 1;
 
 		for (var axis = 0; axis < 3; axis++)
-			writer.WriteSigned(Math.Clamp((long)MathF.Round(vector[axis] * scale), -limit, limit), bits);
+		{
+			var steps = (long)MathF.Round(vector[axis] * scale, MidpointRounding.ToEven);
+			writer.WriteSigned(Math.Clamp(steps, -limit, limit), bits);
+		}
 	}
 
 	private static Vector3 ReadVector(ref BitReader reader, float scale, int bits) =>
@@ -75,7 +78,7 @@ public readonly record struct AssemblyState(
 			if (i != largest)
 			{
 				var unit = Math.Clamp(components[i] * sign * Sqrt2, -1, 1);
-				writer.Write((ulong)MathF.Round((unit + 1) / 2 * RotationRange), RotationBits);
+				writer.Write((ulong)MathF.Round((unit + 1) / 2 * RotationRange, MidpointRounding.ToEven), RotationBits);
 			}
 	}
 

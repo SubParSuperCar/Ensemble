@@ -16,6 +16,7 @@ public partial class AssetManager : Node
 	private readonly System.Collections.Generic.Dictionary<int, string> _categoriesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, Aabb[]> _colliderBoundsByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, (Shape3D, Transform3D)[]> _collidersByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, string> _descriptionsByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, PackedScene> _scenesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, (float, Vector3, float)> _volumesByAssetId = [];
 
@@ -57,6 +58,7 @@ public partial class AssetManager : Node
 
 	public Aabb GetBoundary(int assetId) => _boundariesByAssetId.GetValueOrDefault(assetId);
 	public string GetCategory(int assetId) => _categoriesByAssetId.GetValueOrDefault(assetId, string.Empty);
+	public string? GetDescription(int assetId) => _descriptionsByAssetId.GetValueOrDefault(assetId);
 
 	public IReadOnlyList<Aabb> GetColliderBounds(int assetId) =>
 		_colliderBoundsByAssetId.GetValueOrDefault(assetId, []);
@@ -108,6 +110,7 @@ public partial class AssetManager : Node
 
 		var id = handle.AssetId;
 		var name = handle.AssetName;
+		var description = handle.Description;
 		var properties = handle.Properties;
 		var maxInstanceCount = handle.MaxInstanceCount;
 		var boundary = handle.BoundaryAabb;
@@ -132,6 +135,9 @@ public partial class AssetManager : Node
 		_colliderBoundsByAssetId.Add(id, colliderBounds);
 		_collidersByAssetId.Add(id, colliders);
 		_volumesByAssetId.Add(id, (volume, centroid, density));
+
+		if (description is { IsEmpty: false })
+			_descriptionsByAssetId.Add(id, description.ToString());
 
 		var converted = new Dictionary();
 

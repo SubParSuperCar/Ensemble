@@ -16,6 +16,7 @@ rings = 16
 script = ExtResource("1_hyqjw")
 AssetId = 1
 AssetName = &"Sphere"
+Description = &"A ball one cube across."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "808080",
 &"_materialId": 0

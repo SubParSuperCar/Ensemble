@@ -16,6 +16,7 @@ radial_segments = 32
 script = ExtResource("1_nw72c")
 AssetId = 11
 AssetName = &"Capsule"
+Description = &"A rounded rod, two cubes long."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "8080FF",
 &"_materialId": 0

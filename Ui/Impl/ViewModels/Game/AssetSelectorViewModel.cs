@@ -94,7 +94,10 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	private void AddAssetNode(GdAsset asset)
 	{
 		var category = GAssetManager.GetCategory(asset.Id);
-		var node = new AssetNode { Name = asset.Name, Id = asset.Id };
+		var node = new AssetNode
+		{
+			Name = asset.Name, Id = asset.Id, Description = GAssetManager.GetDescription(asset.Id)
+		};
 
 		_nodesByAssetId.Add(asset.Id, node);
 		Insert(GetOrCreateFolder(category, asset.Id == Construct.AssetId), node);
@@ -279,6 +282,7 @@ public sealed partial class FolderNode : ObservableObject, INodeBase
 public sealed partial class AssetNode : ObservableObject, INodeBase
 {
 	public int Id { get; init; }
+	public string? Description { get; init; }
 
 	[ObservableProperty] public partial string Quota { get; set; } = QuotaFormat.Unknown;
 	public required string Name { get; init; }

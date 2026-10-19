@@ -13,6 +13,7 @@ size = Vector3(3.5, 0.5, 0.5)
 script = ExtResource("1_s0jc2")
 AssetId = 10
 AssetName = &"Beam 7"
+Description = &"Seven cubes long, in one piece."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1

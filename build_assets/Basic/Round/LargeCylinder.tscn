@@ -18,6 +18,7 @@ rings = 0
 script = ExtResource("1_gk6lf")
 AssetId = 4
 AssetName = &"Large Cylinder"
+Description = &"A wide disc four cubes across, like a wheel."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FF80FF",
 &"_materialId": -1

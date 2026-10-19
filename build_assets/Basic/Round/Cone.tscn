@@ -18,6 +18,7 @@ cap_top = false
 script = ExtResource("1_3jc1b")
 AssetId = 5
 AssetName = &"Cone"
+Description = &"A cone, one cube across and tall."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "80FFFF",
 &"_materialId": -1

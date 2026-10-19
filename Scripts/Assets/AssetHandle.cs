@@ -22,6 +22,9 @@ public partial class AssetHandle : RigidBody3D
 
 	[Export] public StringName AssetName { get; set; } = null!;
 
+	// Shown when hovering over the asset in the selector; test assets may go without
+	[Export(PropertyHint.MultilineText)] public StringName? Description { get; set; }
+
 	[Export] public Godot.Collections.Dictionary<StringName, Variant> Properties { get; set; } = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]

@@ -20,7 +20,7 @@ public sealed class Players(TimeProvider? timeProvider = null) : IPlayers
 		var playerId = id ?? Guids.Create();
 
 		if (_playersById.ContainsKey(playerId))
-			throw new InvalidOperationException($"Player with id {playerId} already exists.");
+			throw new InvalidOperationException($"Player with ID {playerId} already exists.");
 
 		var player = new Player(playerId, name, timeProvider);
 
@@ -33,7 +33,7 @@ public sealed class Players(TimeProvider? timeProvider = null) : IPlayers
 	public void Remove(Guid id)
 	{
 		if (!_playersById.Remove(id, out var player))
-			throw new KeyNotFoundException($"Player with id {id} not found.");
+			throw new KeyNotFoundException($"Player with ID {id} not found.");
 
 		if (ReferenceEquals(player, Local))
 			SetLocal();
@@ -46,7 +46,7 @@ public sealed class Players(TimeProvider? timeProvider = null) : IPlayers
 		IPlayer? player = null;
 
 		if (id is { } playerId && !_playersById.TryGetValue(playerId, out player))
-			throw new KeyNotFoundException($"Player with id {playerId} not found.");
+			throw new KeyNotFoundException($"Player with ID {playerId} not found.");
 
 		if (ReferenceEquals(player, Local))
 			return;

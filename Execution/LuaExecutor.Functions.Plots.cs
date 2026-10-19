@@ -39,7 +39,7 @@ public static partial class LuaExecutor
 		if (FindPlayer(query) is { } player)
 			new KickOccupantAction(player.Id).Submit();
 		else
-			Log.Error("Player with id or name {Query} not found", query);
+			Log.Error("Player with ID or name {Query} not found", query);
 
 		return context.ReturnNothing();
 	}
@@ -51,7 +51,7 @@ public static partial class LuaExecutor
 		int? peerId = context.IsArgumentOmitted(1) ? null : context.GetArgument<int>(1);
 
 		if (GPlotManager.GetHandleOrNull(plotId) is not { } handle)
-			Log.Error("Plot with id {PlotId} not found", plotId);
+			Log.Error("Plot with ID {PlotId} not found", plotId);
 		else if (!handle.SetSimulatorOverride(peerId))
 			Log.Error("Only the host can set simulators, and only to registered peers");
 		else

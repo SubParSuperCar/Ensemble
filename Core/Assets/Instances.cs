@@ -70,7 +70,7 @@ public sealed class Instances : IInstances
 	{
 		if (!TryGet(instanceId, out _))
 			throw new KeyNotFoundException(
-				string.Create(CultureInfo.InvariantCulture, $"Instance with id {instanceId} not found."));
+				string.Create(CultureInfo.InvariantCulture, $"Instance with ID {instanceId} not found."));
 
 		_instancesById.Remove(instanceId);
 	}
@@ -89,5 +89,5 @@ public sealed class Instances : IInstances
 		_assets.All.TryGetValue(assetId, out var asset)
 			? asset
 			: throw new KeyNotFoundException(
-				string.Create(CultureInfo.InvariantCulture, $"Asset with id {assetId} not found."));
+				string.Create(CultureInfo.InvariantCulture, $"Asset with ID {assetId} not found."));
 }

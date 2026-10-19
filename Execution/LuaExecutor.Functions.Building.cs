@@ -25,7 +25,7 @@ public static partial class LuaExecutor
 
 		if (GAssets.GetAsset(assetId) is null)
 		{
-			Log.Error("Asset with id {AssetId} not found", assetId);
+			Log.Error("Asset with ID {AssetId} not found", assetId);
 			return context.ReturnNothing();
 		}
 
@@ -85,7 +85,7 @@ public static partial class LuaExecutor
 			if (plot.Instances.GetInstance(id) is { } instance)
 				references.Add(InstanceReference.From(instance));
 			else
-				Log.Warning("Instance with id {InstanceId} not found", id);
+				Log.Warning("Instance with ID {InstanceId} not found", id);
 		}
 
 		foreach (var chunk in references.Chunk(RemoveInstancesAction.MaxCount))
@@ -105,7 +105,7 @@ public static partial class LuaExecutor
 
 		if (plot.Instances.GetInstance(id) is not { } instance)
 		{
-			Log.Error("Instance with id {InstanceId} not found", id);
+			Log.Error("Instance with ID {InstanceId} not found", id);
 			return context.ReturnNothing();
 		}
 

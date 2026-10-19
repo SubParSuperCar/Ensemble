@@ -57,7 +57,7 @@ public partial class GdPlayers : RefCounted
 		if (id.Length > 0)
 			guid = Guid.TryParse(id, out var parsed)
 				? parsed
-				: throw new ArgumentException($"Invalid player id: {id}.", nameof(id));
+				: throw new ArgumentException($"Invalid player ID: {id}.", nameof(id));
 
 		return GdPlayer.From(Source.Add(guid, name == string.Empty ? null : name));
 	}

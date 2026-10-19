@@ -38,8 +38,9 @@ public partial class PlotHandle
 	/// </summary>
 	public bool SetSimulatorOverride(int? peerId)
 	{
-		// The host is always valid, though a dedicated one has no registered peer of its own
-		if (!GSessionManager.IsServer || (peerId is { } id and not HostPeerId && GSessionManager.GetPeer(id) is null))
+		// The host is always valid, though a dedicated one has no registered peer of its own; a peer still syncing
+		// would simulate from the spawn pose, as its snapshot doesn't move the bodies it simulates
+		if (!GSessionManager.IsServer || (peerId is { } id and not HostPeerId && !GSessionManager.IsPeerSynced(id)))
 			return false;
 
 		_simulatorOverride = peerId;

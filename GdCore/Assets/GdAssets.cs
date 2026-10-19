@@ -36,7 +36,6 @@ public partial class GdAssets : RefCounted
 			});
 
 	public GdAsset? GetAsset(int id) => Source.All.TryGetValue(id, out var asset) ? GdAsset.From(asset) : null;
-
 	public Array<GdAsset> GetAll() => [.. Source.All.Values.Select(GdAsset.From)];
 
 	// Explicit overloads instead of default arguments, which GDScript callers can't omit

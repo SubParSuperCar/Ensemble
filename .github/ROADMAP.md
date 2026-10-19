@@ -19,13 +19,13 @@ The tool suite, in rough intended order of implementation.
     - [x] (M) Multi-selection - `Shift`-click to toggle, click a selected instance to delete them all, bulk
       `RemoveInstancesAction` (up to 256, token cost scales with count)
     - [ ] (S) Finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
-- ConstructTool / CtorTool (Place) - place the selected asset (WIP)
+- ConstructTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
     - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation, snap
       along the surface with edges aligned to the targeted instance, and never clip
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
-- [ ] AttrTool (Edit) - view/modify asset properties not prefixed with an underscore
+- [ ] PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
 - [ ] TextureTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
@@ -38,7 +38,10 @@ The tool suite, in rough intended order of implementation.
   paste in chat (reuses the save pipeline)
 - [ ] (M) Undo / redo - a local history the tools push to, not part of the actions (Lua and large scripted edits stay
   out of it): each entry pairs a redo with an undo thunk that submits the counter-action (e.g., re-adding removed
-  instances), so validation still applies; `Ctrl+Z` / `Ctrl+Y`, cleared when the local plot changes
+  instances), so validation still applies; `Ctrl+Z` / `Ctrl+X` (beside the clipboard keys, not `Ctrl+Y`), cleared
+  when the local plot changes
+- [ ] (M) Clipboard - `Ctrl+C` / `Ctrl+V` copy an instance's properties (color, material, and the like) and paste them
+  onto others, next to undo / redo on the same hand
 - [ ] (M) Build replays - record a plot's add / remove / property actions and replay them as a time-lapse
 
 ## Multiplayer / replication
@@ -54,7 +57,7 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
 - [x] (S) Instance references - actions verify an instance's ID against its asset and transform, since freed IDs are
   reused
-- [x] (S) SetPropertiesAction - type- and key-checked property edits, ready for AttrTool
+- [x] (S) SetPropertiesAction - type- and key-checked property edits, ready for PropertyTool
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
 - (WIP) (S) Peer UI - ping column and host kick context menu in the player list done (kick reason box TODO); server
   info panel next
@@ -80,6 +83,8 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
   with host-decided hand-offs, timeouts, and relay limits, and proxies replayed 100 ms behind; see
   [**Spawning and live physics**](#spawning-and-live-physics-plan)
 - [x] (S) Poor-connection simulator - `set_net_sim(latency_ms, jitter_ms, loss)` delays and drops incoming live state
+- [ ] (M) Creation arbitration - creations with different simulators that come close (host-side sphere areas at 1.5
+  times their bounds) share one simulator until they separate; see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md)
 
 ## Gameplay / content
 
@@ -207,12 +212,13 @@ switched off, not freed.
 3. Owner authority - the same format, sent by the owner, relayed and validated by the host, with hand-off when the
    owner changes
 4. Joints and motors - needs Live asset logic and Input management
-5. Polish - bandwidth tuning, characters riding moving creations (platform velocity), and optional ownership hand-off
-   on contact between creations
+5. Polish - bandwidth tuning, characters riding moving creations (platform velocity), and arbitration: creations
+   that come close share one simulator (0.55.0)
 
 ### Known hard parts
 
-- Collisions between creations with different owners (one-sided pushes); acceptable for now
+- Collisions between creations with different owners (one-sided pushes), until arbitration gives close creations one
+  simulator (0.55.0)
 - Joint stability across large mass ratios
 - Bandwidth spikes when many loose bodies move at once
 - Characters standing on someone else's moving creation

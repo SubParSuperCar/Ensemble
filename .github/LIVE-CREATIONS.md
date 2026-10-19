@@ -107,8 +107,8 @@ and may come earlier. Some glitching may be accepted at first.
 | Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target             |
 | Suspension | `Generic6DOFJoint3D`, a linear spring axis | Stiffness and damping from props                      |
 
-- Strengths are asset properties (non-underscore, so the future AttrTool edits them), scaled for the default density
-  (125 kg/m3).
+- Strengths are asset properties (non-underscore, so the future PropertyTool edits them), scaled for the default
+  density (125 kg/m3).
 - Joint stability suffers at large mass ratios (a 15 kg wheel on a 3 t car is 200:1). Mitigations: material densities
   for wheels, more Jolt solver iterations, and testing early.
 
@@ -122,8 +122,8 @@ and may come earlier. Some glitching may be accepted at first.
   the whole state, so presses and releases are found by comparing with the previous mask: no start / stop bits or
   toggles, and a lost packet can't invert a key.
 - **Bindings live on assets,** as editable properties suffixed `Key` (e.g., a motor's `forwardKey`, `reverseKey`), so
-  the future AttrTool knows to show them as key pickers. Values are Godot `Key` codes as integers: compact in saves and
-  packets, shown by name in the UI (harder to hand-edit in JSON saves, an acceptable cost). Assets read
+  the future PropertyTool knows to show them as key pickers. Values are Godot `Key` codes as integers: compact in saves
+  and packets, shown by name in the UI (harder to hand-edit in JSON saves, an acceptable cost). Assets read
   `tick.Input.IsPressed(Key.Q)`.
 - **Flow:** the controller samples its mask each physics tick (empty while the UI sinks input) and sends it to the
   host whenever it changes, plus a few times a second while any key is held, so a lost packet heals itself and a key
@@ -213,11 +213,29 @@ would fall through what it stands on. Options to prototype later:
   slow round-robin keepalive within a fixed per-plot budget (e.g., 32 assemblies a second), healing stale proxies
   without scaling bandwidth with creation size.
 
-### Shared simulators (later)
+### Arbitration: shared simulators (0.55.0, planned)
 
-Collisions between bodies with different simulators are one-sided. An `Area3D` around each mechanism (Jolt areas are
-cheap) reports when two mechanisms with different simulators get close; the host then gives both to one simulator (the
-host, or one of the owners) until they separate, with hysteresis. The override API above already supports it.
+Collisions between bodies with different simulators are one-sided: each simulator sees the other creation as a
+kinematic proxy, an immovable wall that arrives late. So when two creations with different simulators get close, the
+host gives both to one simulator until they separate, and their collisions become real physics on one machine.
+
+- **Detection, on the host only:** it already has every creation as proxies, and it decides. Each assembly of a
+  spawned plot gets an `Area3D` child with a `SphereShape3D` (Godot's areas take any shape): a sphere doesn't change
+  as the assembly rotates, so nothing is updated per tick. Its radius is the assembly's bounding sphere (half its
+  bounds' diagonal, from its colliders) times 1.5, so the hand-off happens before contact rather than during it.
+- **Areas only see areas:** they sit on their own physics layer (Arbitration, 5) and monitor only that layer, so Jolt
+  tests sphere pairs and nothing else, and no body or character pays for them. Overlaps of areas from the same plot,
+  or from plots that already share a simulator, are ignored.
+- **Groups:** overlapping plots join with union-find, so three creations in a pile share one simulator. Each group's
+  simulator (**D9**, recommended: the simulator of the group's heaviest awake creation, as it's the one whose motion a
+  rewind would disturb most) gets the others as arbitration overrides, through the same broadcast as any hand-off.
+- **Release with hysteresis:** a group splits once its plots' areas have stopped overlapping for 2 s, and no plot
+  changes simulator more than once every 2 s, so creations jostling at the edge don't flap between machines.
+- **Precedence:** a manual or timeout override beats arbitration, which beats the plot's owner. Despawning, an owner
+  change, or the simulator leaving ends a plot's arbitration, like any override.
+- **Cost:** one area per assembly on the host only, while two or more plots are spawned in multiplayer; areas that
+  overlap nothing cost Jolt a broadphase entry. A creation of thousands of loose bodies could share one area per plot
+  instead (its whole bounds), if per-assembly areas ever show up in profiles.
 
 ## 8. Replication
 
@@ -301,7 +319,8 @@ work proportional to what moves and thinks, not to what exists.
 | 0.53.0  | Multiplayer | Phase 2 with the full authority model, but the host as the only simulator; proxies,    |
 |         |             | bit-packed wire format, epochs, keepalives, late joins                                 |
 | 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts (done)           |
-| 0.55.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,  |
+| 0.55.0  | Multiplayer | Arbitration: creations close to each other share a simulator (section 7)               |
+| 0.56.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,  |
 |         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                       |
 
 ### 0.53.0 steps (Phase 2: multiplayer, the host simulating; done)
@@ -355,3 +374,4 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 | D6 | Material ID 0                    | Debug checkerboard; plain assets default to -1                    |
 | D7 | Multiplayer or asset logic first | Multiplayer first                                                 |
 | D8 | Who receives input               | The simulator only; assets replicate input-driven looks           |
+| D9 | Who simulates an arbitrated pair | Open; recommended: the simulator of the heaviest awake creation   |

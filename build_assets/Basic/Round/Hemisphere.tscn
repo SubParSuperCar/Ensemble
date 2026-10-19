@@ -22,6 +22,7 @@ is_hemisphere = true
 script = ExtResource("1_62e8s")
 AssetId = 7
 AssetName = &"Hemisphere"
+Description = &"Half a ball, flat side down."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFF80",
 &"_materialId": -1

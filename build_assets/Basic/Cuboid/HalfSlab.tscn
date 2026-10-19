@@ -13,6 +13,7 @@ size = Vector3(0.5, 0.25, 0.5)
 script = ExtResource("1_lwxlw")
 AssetId = 8
 AssetName = &"Half Slab"
+Description = &"Half as tall as a cube, for thin floors and fine steps."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1

@@ -26,14 +26,16 @@ public static class NetworkConditions
 		ArgumentOutOfRangeException.ThrowIfNegative(latencyMs);
 		ArgumentOutOfRangeException.ThrowIfNegative(jitterMs);
 		ArgumentOutOfRangeException.ThrowIfNegative(lossRate);
-		ArgumentOutOfRangeException.ThrowIfGreaterThan(lossRate, 1);
+		ArgumentOutOfRangeException.ThrowIfGreaterThan(lossRate, 1d);
 
 		LatencyMs = latencyMs;
 		JitterMs = jitterMs;
 		LossRate = lossRate;
 	}
 
-	/// <summary>Runs <paramref name="deliver" /> now, later, or never, unless <paramref name="node" /> is freed first.</summary>
+	/// <summary>
+	///     Runs <paramref name="deliver" /> now, later, or never, unless <paramref name="node" /> is freed first.
+	/// </summary>
 	public static void Receive(Node node, Action deliver)
 	{
 		if (!IsSimulated)
@@ -46,8 +48,8 @@ public static class NetworkConditions
 			return;
 
 		var now = Stopwatch.GetTimestamp();
-		var delay = TimeSpan.FromMilliseconds(LatencyMs + Random.Shared.Next(JitterMs + 1));
-		var due = Math.Max(now + (long)(delay.TotalSeconds * Stopwatch.Frequency), _lastDueTimestamp);
+		var delayMs = LatencyMs + Random.Shared.Next(JitterMs + 1);
+		var due = Math.Max(now + delayMs * Stopwatch.Frequency / 1000, _lastDueTimestamp);
 
 		_lastDueTimestamp = due;
 

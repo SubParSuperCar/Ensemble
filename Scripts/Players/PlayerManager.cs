@@ -41,7 +41,7 @@ public partial class PlayerManager : Node
 	public PlayerHandle? GetHandleOrNull(string playerId) => _handlesById.GetValueOrDefault(playerId);
 
 	public PlayerHandle GetHandle(string playerId) =>
-		GetHandleOrNull(playerId) ?? throw new KeyNotFoundException($"Handle with player id {playerId} not found.");
+		GetHandleOrNull(playerId) ?? throw new KeyNotFoundException($"Handle with player ID {playerId} not found.");
 
 	private void OnPlayerAdded(GdPlayer player)
 	{

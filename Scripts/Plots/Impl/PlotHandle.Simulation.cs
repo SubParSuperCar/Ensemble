@@ -38,7 +38,7 @@ public partial class PlotHandle
 	/// </summary>
 	public bool SetSimulatorOverride(int? peerId)
 	{
-		// A dedicated host has no peer of its own
+		// The host is always valid, though a dedicated one has no registered peer of its own
 		if (!GSessionManager.IsServer || (peerId is { } id and not HostPeerId && GSessionManager.GetPeer(id) is null))
 			return false;
 
@@ -62,18 +62,13 @@ public partial class PlotHandle
 		GSessionManager.PeerUnregistered -= OnPeerUnregistered;
 	}
 
-	private void OnOwnerChanged(GdOccupant? _)
-	{
-		_simulatorOverride = null;
-		UpdateSimulator();
-	}
+	private void OnOwnerChanged(GdOccupant? _) => ClearSimulatorOverride();
 
+	// A departing owner arrives as an owner change, which may come before or after this, so only overrides matter here
 	private void OnPeerUnregistered(Peer peer)
 	{
 		if (_simulatorOverride == peer.Id)
-			_simulatorOverride = null;
-
-		UpdateSimulator();
+			ClearSimulatorOverride();
 	}
 
 	private void ClearSimulatorOverride()
@@ -99,7 +94,7 @@ public partial class PlotHandle
 		SetSimulator(simulator);
 
 		foreach (var peerId in GSessionManager.Peers.Keys)
-			if (peerId != GSessionManager.LocalPeerId && GSessionManager.IsPeerSynced(peerId))
+			if (IsSyncedRemote(peerId))
 				RpcId(peerId, MethodName.RpcSetSimulator, simulator, SimulationEpoch);
 	}
 
@@ -133,9 +128,7 @@ public partial class PlotHandle
 			if (!assembly.IsKilled)
 				assembly.HandOff(isSimulated, _clock);
 
-		ResetTimeline();
-		_awakeIds.Clear();
-		_sinceStream = 0;
+		ResetReplication();
 
 		Log.Debug(
 			"Plot {PlotId}'s creation is simulated by peer {PeerId} (epoch {Epoch})", Id, peerId, SimulationEpoch);
@@ -152,8 +145,8 @@ public partial class PlotHandle
 			return;
 
 		Log.Warning(
-			"Peer {PeerId} sent nothing for plot {PlotId}'s creation in {Seconds} s; the host takes over",
-			SimulatorPeerId, Id, SimulatorTimeout);
+			"Plot {PlotId}'s simulator, peer {PeerId}, was silent for {Seconds} s; the host takes over",
+			Id, SimulatorPeerId, SimulatorTimeout);
 
 		_sinceSimulatorHeard = 0;
 		SetSimulatorOverride(HostPeerId);

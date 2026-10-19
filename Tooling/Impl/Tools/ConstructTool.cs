@@ -26,7 +26,7 @@ public partial class ConstructTool : ToolBase
 	private const float LinearSmoothingRate = 40f;
 	private const float AngularSmoothingRate = 40f;
 
-	private const float PreviewOpacity = 0.75f;
+	private const float PreviewOpacity = 3 / 4f;
 	private const double FlashDuration = 1 / 8d;
 
 	public static readonly StringName ToggleAction = "tool_construct_toggle";

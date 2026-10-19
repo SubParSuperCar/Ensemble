@@ -20,6 +20,7 @@ public partial class PlotHandle
 		PhysicsLayers.World | PhysicsLayers.Character | PhysicsLayers.StaticInstances | PhysicsLayers.DynamicInstances;
 
 	private readonly List<Assembly> _assemblies = [];
+	private readonly Dictionary<int, Assembly> _assembliesById = [];
 	private readonly List<Obb> _liftCandidates = [];
 	private readonly PlacementSolver _solver = new();
 
@@ -54,16 +55,14 @@ public partial class PlotHandle
 	{
 		var timestamp = Stopwatch.GetTimestamp();
 		var instances = _plot.Instances.GetAll().ToDictionary(static instance => instance.Id);
-		var isSimulated = IsSimulatedLocally;
 		var parts = instances.Values.Select(static instance => (instance.Id, GetColliderBoxes(instance))).ToList();
 
 		SetStaticInstancesEnabled(false);
 
 		SimulationEpoch++;
-		_timelineOrigin = null;
 
 		foreach (var group in Welds.Group(parts))
-			AddAssembly(group, instances, isSimulated);
+			AddAssembly(group, instances);
 
 		foreach (var member in _assemblies.SelectMany(static assembly => assembly.Members))
 			member.Initialize(this, instances[member.InstanceId]);
@@ -71,6 +70,7 @@ public partial class PlotHandle
 		MoveLocalCharacterClear();
 
 		_sinceKillCheck = 0;
+		_sinceSimulatorHeard = 0;
 		SetPhysicsProcess(true);
 
 		Log.Debug(
@@ -81,6 +81,9 @@ public partial class PlotHandle
 	private void Despawn()
 	{
 		SetPhysicsProcess(false);
+
+		// The host announces the hand-off before peers despawn, so it must carry the epoch they still hold
+		ClearSimulatorOverride();
 		SimulationEpoch++;
 
 		foreach (var assembly in _assemblies)
@@ -88,9 +91,8 @@ public partial class PlotHandle
 
 		_assemblies.Clear();
 		_assembliesById.Clear();
-		_awakeIds.Clear();
+		ResetReplication();
 		SetStaticInstancesEnabled(true);
-		ClearSimulatorOverride();
 
 		Log.Debug("Despawned plot {PlotId}", Id);
 	}
@@ -107,7 +109,7 @@ public partial class PlotHandle
 		return [.. GAssetManager.GetColliderBounds(instance.Asset.Id).Select(bounds => Obb.From(bounds, transform))];
 	}
 
-	private void AddAssembly(int[] group, Dictionary<int, GdInstance> instances, bool isSimulated)
+	private void AddAssembly(int[] group, Dictionary<int, GdInstance> instances)
 	{
 		var assembly = new Assembly
 		{
@@ -128,10 +130,11 @@ public partial class PlotHandle
 		assembly.Build();
 		_dynamicInstances.AddChild(assembly);
 		assembly.Assemble();
-		assembly.IsSimulated = isSimulated;
-		_assembliesById.Add(assembly.Id, assembly);
+		assembly.IsSimulated = IsSimulatedLocally;
 		assembly.ResetPhysicsInterpolation();
+
 		_assemblies.Add(assembly);
+		_assembliesById.Add(assembly.Id, assembly);
 	}
 
 	// Placement ignores characters, so the creation may spawn around one; each peer moves its own, before physics does

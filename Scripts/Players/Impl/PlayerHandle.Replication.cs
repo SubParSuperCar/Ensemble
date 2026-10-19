@@ -141,7 +141,6 @@ public partial class PlayerHandle
 
 			body.GlobalRotation = body.GlobalRotation with { Y = yaw };
 			Jump(position);
-			body.ResetPhysicsInterpolation();
 		}
 
 		_targetPosition = position;

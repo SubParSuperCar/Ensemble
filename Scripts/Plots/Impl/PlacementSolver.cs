@@ -50,6 +50,14 @@ public sealed class PlacementSolver
 		return box;
 	}
 
+	public static float GetSnapExtent(float extent, float cellSize)
+	{
+		var cells = 2 * extent / cellSize;
+		var whole = MathF.Round(cells, MidpointRounding.AwayFromZero);
+
+		return whole > 0 && MathF.Abs(cells - whole) <= SnapTolerance ? whole * cellSize / 2 : extent;
+	}
+
 	private Obb Resolve(Obb box, ObbGrid obstacles, Vector3 normal)
 	{
 		for (var pass = 0; pass < MaxResolvePasses; pass++)
@@ -99,14 +107,6 @@ public sealed class PlacementSolver
 		}
 
 		return box.At(center);
-	}
-
-	public static float GetSnapExtent(float extent, float cellSize)
-	{
-		var cells = 2 * extent / cellSize;
-		var whole = MathF.Round(cells, MidpointRounding.AwayFromZero);
-
-		return whole > 0 && MathF.Abs(cells - whole) <= SnapTolerance ? whole * cellSize / 2 : extent;
 	}
 
 	private static float SnapEdge(float edge, float anchor, float cellSize, int direction)

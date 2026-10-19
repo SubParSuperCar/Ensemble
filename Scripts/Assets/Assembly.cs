@@ -40,7 +40,10 @@ public partial class Assembly : RigidBody3D
 		}
 	}
 
-	// Best done before entering the tree, so the body enters the physics space with all of its shapes at once
+	/// <summary>Adopts a handle as a child, registers its colliders as shapes, and weighs it into the body.</summary>
+	/// <remarks>
+	///     Best done before entering the tree, so the body enters the physics space with all of its shapes at once.
+	/// </remarks>
 	public void AddMember(AssetHandle member, AssetMaterial? material)
 	{
 		var transform = member.Transform;

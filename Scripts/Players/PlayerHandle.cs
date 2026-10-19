@@ -123,6 +123,7 @@ public partial class PlayerHandle : Node3D
 		body.GlobalPosition = position;
 		body.ForceUpdateTransform();
 		PhysicsServer3D.BodySetSpace(rid, space);
+		body.ResetPhysicsInterpolation();
 	}
 
 	private void UpdateReset(double delta)

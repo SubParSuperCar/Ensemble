@@ -30,6 +30,7 @@ public static class Welds
 		for (var key = 0; key < boxes.Count; key++)
 		{
 			var box = boxes[key];
+			var root = Find(parents, owners[key]);
 
 			// Grown, so neighbors across a gap in the next cell are found
 			grid.Query(box with { Extents = box.Extents + Vector3.One * Epsilon }, candidates);
@@ -39,7 +40,6 @@ public static class Welds
 				if (other <= key)
 					continue;
 
-				var root = Find(parents, owners[key]);
 				var otherRoot = Find(parents, owners[other]);
 
 				if (root != otherRoot && box.Abuts(boxes[other]))

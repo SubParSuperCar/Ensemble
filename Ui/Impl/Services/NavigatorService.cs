@@ -7,7 +7,7 @@ using EnsembleRoot.Ui.Impl.Extensions;
 namespace EnsembleRoot.Ui.Impl.Services;
 
 [INotifyPropertyChanged]
-public partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
+public sealed partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
 {
 	private readonly Stack<Func<ViewModelBase>> _history = [];
 	private Func<ViewModelBase>? _createCurrent;

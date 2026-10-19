@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots.Impl;
@@ -26,7 +27,7 @@ public partial class PlotHandle
 	// A simulator with nothing to send still sends a header this often, so the host knows it's alive
 	private const int HeartbeatStreams = StreamRate;
 
-	// The host relays up to this much more than a simulator should send, so only floods are cut
+	// The host relays up to this multiple of what a simulator should send, so only floods are cut
 	private const double RelayAllowance = 1.5;
 
 	// Proxies show the creation this far in the past, so a late state still arrives before it's needed
@@ -39,7 +40,6 @@ public partial class PlotHandle
 	private static readonly int StreamTicks = Math.Max(1, Engine.PhysicsTicksPerSecond / StreamRate);
 	private static readonly double StreamInterval = StreamTicks / (double)Engine.PhysicsTicksPerSecond;
 
-	private readonly Dictionary<int, Assembly> _assembliesById = [];
 	private readonly List<Assembly> _awakeAssemblies = [];
 	private readonly HashSet<int> _awakeIds = [];
 	private readonly List<AssemblyState> _receivedStates = [];
@@ -62,16 +62,21 @@ public partial class PlotHandle
 
 	private static bool IsStreaming => GSessionManager is { Mode: SessionMode.MultiPlayer, IsActive: true };
 
+	private static bool IsSyncedRemote(int peerId) =>
+		peerId != GSessionManager.LocalPeerId && GSessionManager.IsPeerSynced(peerId);
+
 	/// <summary>
 	///     The simulation epoch, the simulator, and every assembly's latest state, asleep or not, for a joining peer.
 	/// </summary>
 	public (ushort Epoch, int SimulatorPeerId, byte[] States) CaptureCreation()
 	{
 		var toLocal = _staticInstances.GlobalTransform.AffineInverse();
+
+		// Killed assemblies are included, so the joiner's copies fall out of the world and die too
 		var states = _assemblies
 			.Where(static assembly => assembly.Id <= AssemblyState.MaxId)
 			.Select(assembly => GetState(assembly, toLocal, !assembly.Sleeping))
-			.ToList();
+			.ToArray();
 
 		var header = new CreationPacketHeader(Id, SimulationEpoch, _streamSequence);
 		return (SimulationEpoch, SimulatorPeerId, CreationPackets.Write(new BitWriter(), header, states));
@@ -83,8 +88,13 @@ public partial class PlotHandle
 		SimulationEpoch = epoch;
 		SetSimulator(simulatorPeerId);
 
-		if (_plot.IsSpawned && !IsSimulatedLocally && TryRead(states, out var header))
-			Apply(header.Sequence);
+		if (!_plot.IsSpawned || IsSimulatedLocally || !TryRead(states, out var header))
+			return;
+
+		Apply(header.Sequence);
+
+		// The sequence may come from a counter that isn't the simulator's, so live states start the timeline over
+		_timelineOrigin = null;
 	}
 
 	private void UpdateReplication(double delta)
@@ -101,9 +111,11 @@ public partial class PlotHandle
 				assembly.UpdateProxy(_clock - InterpolationDelay);
 	}
 
-	// States of a new epoch may come from another simulator, whose sequence numbers mean other moments
-	private void ResetTimeline()
+	// Another simulator's sequence numbers mean other moments, so the stream and the timeline start over
+	private void ResetReplication()
 	{
+		_awakeIds.Clear();
+		_sinceStream = 0;
 		_timelineOrigin = null;
 
 		foreach (var assembly in _assemblies)
@@ -124,17 +136,18 @@ public partial class PlotHandle
 			return;
 
 		_streamsSinceSent = 0;
+
+		var states = CollectionsMarshal.AsSpan(_streamedStates);
+		var header = new CreationPacketHeader(Id, SimulationEpoch, _streamSequence);
 		var start = 0;
 
 		do
 		{
-			var count = Math.Min(MaxStatesPerPacket, _streamedStates.Count - start);
-			var header = new CreationPacketHeader(Id, SimulationEpoch, _streamSequence);
-			var data = CreationPackets.Write(_writer, header, _streamedStates.GetRange(start, count));
+			var end = Math.Min(start + MaxStatesPerPacket, states.Length);
 
-			Send(data, GSessionManager.LocalPeerId);
-			start += MaxStatesPerPacket;
-		} while (start < _streamedStates.Count);
+			Send(CreationPackets.Write(_writer, header, states[start..end]), GSessionManager.LocalPeerId);
+			start = end;
+		} while (start < states.Length);
 	}
 
 	// Awake assemblies are sent every time (in turns past the budget); one falling asleep is sent once more, at
@@ -174,9 +187,10 @@ public partial class PlotHandle
 		if (_awakeAssemblies.Count > 0)
 			_awakeCursor = (_awakeCursor + room) % _awakeAssemblies.Count;
 
-		for (var i = 0; i < KeepalivesPerStream && _assemblies.Count > 0; i++)
+		for (var i = 0; i < Math.Min(KeepalivesPerStream, _assemblies.Count); i++)
 		{
-			var assembly = _assemblies[_keepaliveIndex = (_keepaliveIndex + 1) % _assemblies.Count];
+			_keepaliveIndex = (_keepaliveIndex + 1) % _assemblies.Count;
+			var assembly = _assemblies[_keepaliveIndex];
 
 			if (assembly is { IsKilled: false, Sleeping: true, Id: <= AssemblyState.MaxId } &&
 				!_awakeIds.Contains(assembly.Id))
@@ -204,7 +218,7 @@ public partial class PlotHandle
 		}
 
 		foreach (var peerId in GSessionManager.Peers.Keys)
-			if (peerId != sourcePeerId && peerId != GSessionManager.LocalPeerId && GSessionManager.IsPeerSynced(peerId))
+			if (peerId != sourcePeerId && IsSyncedRemote(peerId))
 				RpcId(peerId, MethodName.RpcReceiveCreation, data);
 	}
 
@@ -224,7 +238,7 @@ public partial class PlotHandle
 		if (
 			senderId != (GSessionManager.IsServer ? SimulatorPeerId : HostPeerId) ||
 			!_plot.IsSpawned || IsSimulatedLocally ||
-			!TryRead(data, out var header) || _receivedStates.Count > MaxStatesPerPacket)
+			data.Length > MaxPacketBytes || !TryRead(data, out var header))
 			return;
 
 		if (GSessionManager.IsServer)

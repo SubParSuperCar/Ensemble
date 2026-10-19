@@ -35,5 +35,90 @@ public sealed class WeldsTests
 		Assert.Equal([[0, 1, 2]], Welds.Group(parts));
 	}
 
+	[Fact]
+	public void Group_MatchesPairwiseAbutting_ForRandomRotatedAndOversizedBoxes()
+	{
+		var random = new Random(11);
+
+		for (var round = 0; round < 64; round++)
+		{
+			var id = 0;
+			var parts = new List<(int Id, Obb[] Boxes)>();
+
+			for (var i = random.Next(2, 40); i > 0; i--)
+			{
+				// Every fifth round has boxes longer than a grid cell
+				var boxes = new Obb[random.Next(3)];
+
+				for (var box = 0; box < boxes.Length; box++)
+					boxes[box] = RandomBox(random, round % 5 is 0);
+
+				parts.Add((id += random.Next(1, 4), boxes));
+			}
+
+			Assert.Equal(GroupPairwise(parts), Welds.Group(parts));
+		}
+	}
+
 	private static Obb Cube(Vector3 center) => Obb.From(UnitCube, new Transform3D(Basis.Identity, center));
+
+	// Half the boxes sit on the half-unit grid, as placed ones do, so many of them abut
+	private static Obb RandomBox(Random random, bool isOversized)
+	{
+		var extents = isOversized
+			? new Vector3(20 + random.NextSingle() * 30, 1, 2)
+			: new Vector3(1 / 4f + random.NextSingle(), 1 / 4f + random.NextSingle(), 1 / 4f + random.NextSingle());
+
+		var basis = random.Next(3) switch
+		{
+			0 => Basis.Identity,
+			1 => new Basis(Vector3.Up, random.Next(4) * float.Pi / 2),
+			_ => new Basis(RandomUnit(random), random.NextSingle() * float.Tau)
+		};
+
+		var center = random.Next(2) is 0
+			? new Vector3(random.Next(-8, 9), random.Next(5), random.Next(-8, 9)) / 2
+			: new Vector3(random.NextSingle() * 16 - 8, random.NextSingle() * 4, random.NextSingle() * 16 - 8);
+
+		return new Obb(center, basis, extents);
+	}
+
+	private static Vector3 RandomUnit(Random random)
+	{
+		Vector3 vector;
+
+		do
+			vector = new Vector3(random.NextSingle(), random.NextSingle(), random.NextSingle()) - Vector3.One / 2;
+		while (vector.LengthSquared() < 1 / 1024f);
+
+		return vector.Normalized();
+	}
+
+	// The reference: every pair of parts tested directly, without the grid
+	private static List<int[]> GroupPairwise(List<(int Id, Obb[] Boxes)> parts)
+	{
+		var parents = Enumerable.Range(0, parts.Count).ToArray();
+
+		for (var i = 0; i < parts.Count; i++)
+			for (var j = i + 1; j < parts.Count; j++)
+				if (parts[i].Boxes.Any(box => parts[j].Boxes.Any(box.Abuts)))
+					parents[Find(j)] = Find(i);
+
+		return
+		[
+			.. parts
+				.Select((part, index) => (part.Id, Root: Find(index)))
+				.GroupBy(static entry => entry.Root, static entry => entry.Id)
+				.Select(static group => group.Order().ToArray())
+				.OrderBy(static group => group[0])
+		];
+
+		int Find(int index)
+		{
+			while (parents[index] != index)
+				index = parents[index];
+
+			return index;
+		}
+	}
 }

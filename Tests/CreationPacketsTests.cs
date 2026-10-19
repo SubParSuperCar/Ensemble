@@ -112,6 +112,42 @@ public sealed class CreationPacketsTests
 		Assert.Empty(read);
 	}
 
+	[Theory]
+	[InlineData(float.NaN)]
+	[InlineData(float.PositiveInfinity)]
+	[InlineData(float.NegativeInfinity)]
+	public void AssemblyState_DecodesNonFiniteValuesAsFinite(float value)
+	{
+		var writer = new BitWriter();
+		new AssemblyState(
+			1, new Vector3(value, 0, 0), new Quaternion(value, 0, 0, 1), new Vector3(0, value, 0),
+			new Vector3(0, 0, value)).Write(writer);
+
+		var reader = new BitReader(writer.ToArray());
+		var read = AssemblyState.Read(ref reader);
+
+		Assert.False(reader.IsOverrun);
+		Assert.True(read.Position.IsFinite() && read.LinearVelocity.IsFinite() && read.AngularVelocity.IsFinite());
+		Assert.True(read.Rotation.IsNormalized());
+	}
+
+	[Fact]
+	public void Writer_ReusedForASmallerPacket_LeavesNoStaleBits()
+	{
+		var writer = new BitWriter(4);
+		var large = new AssemblyState(
+			AssemblyState.MaxId, Vector3.One * 100, new Quaternion(1, 1, 1, 1).Normalized(), Vector3.One * 9,
+			Vector3.One * -9);
+
+		AssemblyState[] small = [new(0, Vector3.Zero, Quaternion.Identity, Vector3.Zero, Vector3.Zero)];
+
+		var header = new CreationPacketHeader(CreationPackets.MaxPlotId, ushort.MaxValue, ushort.MaxValue);
+		CreationPackets.Write(writer, header, [large, large]);
+
+		Assert.Equal(
+			CreationPackets.Write(new BitWriter(), default, small), CreationPackets.Write(writer, default, small));
+	}
+
 	private static float Next(Random random, float range) => (random.NextSingle() * 2 - 1) * range;
 
 	private static bool IsWithin(Vector3 actual, Vector3 expected, float tolerance) =>

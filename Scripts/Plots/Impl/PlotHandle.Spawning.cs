@@ -76,6 +76,12 @@ public partial class PlotHandle
 		Log.Debug(
 			"Spawned plot {PlotId} as {AssemblyCount} assemblies in {ElapsedMs:F3} ms", Id, _assemblies.Count,
 			Stopwatch.GetElapsedTime(timestamp).TotalMilliseconds);
+
+		// Streamed states carry 16-bit IDs, which only instance IDs restored from far larger plots exceed
+		if (IsStreaming && _assemblies.Count(static assembly => assembly.Id > AssemblyState.MaxId) is > 0 and var count)
+			Log.Warning(
+				"Plot {PlotId} has {Count} assemblies with IDs above {MaxId}, which other peers won't see move",
+				Id, count, AssemblyState.MaxId);
 	}
 
 	private void Despawn()

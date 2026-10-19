@@ -6,6 +6,7 @@
     <File Path="appsettings.json"/>
     <File Path="config.nsdepcop"/>
     <File Path="Directory.Build.props"/>
+    <File Path="Directory.Packages.props"/>
     <File Path="export_presets.cfg"/>
     <File Path="FodyWeavers.xml"/>
     <File Path="global.json"/>

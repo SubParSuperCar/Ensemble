@@ -5,8 +5,8 @@ updates:
     schedule:
       interval: 'cron'
       cronjob: '0 0 */3 * *'
-    # Bumped by hand: Estragonia/Lib/Avalonia.Skia.dll is patched against Avalonia 12.1.4 and its SkiaSharp, and
-    # GodotSharp must match Godot.NET.Sdk and CI's GODOT_VERSION
+    # Bumped by hand in Directory.Packages.props: Estragonia/Lib/Avalonia.Skia.dll is patched against one Avalonia
+    # version and its SkiaSharp, GodotSharp must match EnsembleGame.csproj's Godot.NET.Sdk, and Meziantou.Analyzer floats
     ignore:
       - dependency-name: 'Avalonia'
       - dependency-name: 'Avalonia.HarfBuzz'
@@ -15,6 +15,7 @@ updates:
       - dependency-name: 'Avalonia.Wayland'
       - dependency-name: 'Avalonia.X11'
       - dependency-name: 'GodotSharp'
+      - dependency-name: 'Meziantou.Analyzer'
       - dependency-name: 'SkiaSharp*'
   - package-ecosystem: 'github-actions'
     directory: '/'

@@ -1,4 +1,8 @@
+using EnsembleRoot.GdCore.Players;
+using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Scripts.Plots;
 using Lua;
+using Serilog;
 
 namespace EnsembleRoot.Execution;
 
@@ -57,6 +61,34 @@ public static partial class LuaExecutor
 	{
 		foreach (var (function, _) in Functions)
 			env[function.Name] = function;
+	}
+
+	private static (GdPlot Plot, PlotHandle Handle)? GetLocalPlot(string function)
+	{
+		if (LocalPlot is { } plot && GPlotManager.GetHandleOrNull(plot.Id) is { } handle)
+			return (plot, handle);
+
+		Log.Error("{Function} needs a plot; claim one first", function);
+		return null;
+	}
+
+	/// <summary>Finds a player by ID or, if unique, display name.</summary>
+	private static GdPlayer? FindPlayer(string query)
+	{
+		var players = GPlayers.GetAll();
+
+		if (players.FirstOrDefault(player => string.Equals(player.Id, query, StringComparison.Ordinal)) is { } byId)
+			return byId;
+
+		var named = players
+			.Where(other => string.Equals(other.Name, query, StringComparison.Ordinal))
+			.Take(2)
+			.ToArray();
+
+		if (named.Length > 1)
+			Log.Error("Several players are named {Name}; use a player ID instead", query);
+
+		return named.Length is 1 ? named[0] : null;
 	}
 
 	extension(LuaFunctionExecutionContext context)

@@ -12,7 +12,7 @@ public static class NetworkSnapshotRegistry
 	public static void Register(string snapshotId, Func<Array<Variant>> capture, Action<Array<Variant>> restore)
 	{
 		if (!EntriesBySnapshotId.TryAdd(snapshotId, new Entry(capture, restore)))
-			throw new InvalidOperationException($"Snapshot with id {snapshotId} is already registered.");
+			throw new InvalidOperationException($"Snapshot with ID {snapshotId} is already registered.");
 	}
 
 	// A failed snapshot is skipped, so the peer still receives the others

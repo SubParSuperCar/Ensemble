@@ -53,6 +53,7 @@ public partial class Ui : Control
 
 			_host = new AvaloniaControl
 			{
+				Name = "Avalonia Host",
 				FocusMode = FocusModeEnum.All,
 				MouseForcePassScrollEvents = false
 			};

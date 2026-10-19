@@ -31,7 +31,7 @@ public sealed class Assets : IAssets
 
 		if (_assetsById.ContainsKey(id))
 			throw new InvalidOperationException(
-				string.Create(CultureInfo.InvariantCulture, $"Asset with id {id} already exists."));
+				string.Create(CultureInfo.InvariantCulture, $"Asset with ID {id} already exists."));
 
 		var defaults = properties?.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 		var asset = new Asset(id, name, defaults, maxInstanceCount);

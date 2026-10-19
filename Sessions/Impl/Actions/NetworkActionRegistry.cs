@@ -23,10 +23,10 @@ public static class NetworkActionRegistry
 		if (tokenCost <= 0)
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture,
-				$"Token cost of action with id {actionId} must be positive, got {tokenCost}."));
+				$"Token cost of action with ID {actionId} must be positive, got {tokenCost}."));
 
 		if (!EntriesByActionId.TryAdd(actionId, new Entry(TAction.GetTokenCost, Execute<TAction>)))
-			throw new InvalidOperationException($"Action with id {actionId} is already registered.");
+			throw new InvalidOperationException($"Action with ID {actionId} is already registered.");
 	}
 
 	public static void Submit<TAction>(this TAction action) where TAction : INetworkAction<TAction> =>
@@ -45,7 +45,7 @@ public static class NetworkActionRegistry
 		string actionId, ref Array<Variant> payload, ActionSource source, bool isHost)
 	{
 		if (!EntriesByActionId.TryGetValue(actionId, out var entry))
-			return ActionValidation.Reject($"Action with id {actionId} not found.");
+			return ActionValidation.Reject($"Action with ID {actionId} not found.");
 
 		try
 		{
@@ -54,7 +54,7 @@ public static class NetworkActionRegistry
 		catch (Exception exception)
 		{
 			Log.Error(exception, "Failed to execute action {ActionId} from peer {PeerId}", actionId, source.PeerId);
-			return ActionValidation.Reject($"Action with id {actionId} failed to execute.");
+			return ActionValidation.Reject($"Action with ID {actionId} failed to execute.");
 		}
 	}
 

@@ -47,7 +47,7 @@ public sealed class Plots : IPlots
 
 		if (_plotsById.ContainsKey(id))
 			throw new InvalidOperationException(
-				string.Create(CultureInfo.InvariantCulture, $"Plot with id {id} already exists."));
+				string.Create(CultureInfo.InvariantCulture, $"Plot with ID {id} already exists."));
 
 		var plot = new Plot(
 			id, _assets, maxOccupantCount ?? _defaultMaxOccupantCount, maxInstanceCount ?? _defaultMaxInstanceCount);
@@ -61,13 +61,13 @@ public sealed class Plots : IPlots
 	public void SetPlot(Guid playerId, int? plotId = null, bool shouldResolveOwnerIfNullOrRelinquishing = false)
 	{
 		if (!Occupants.TryGet(playerId, out var occupant))
-			throw new KeyNotFoundException($"Occupant with player id {playerId} not found.");
+			throw new KeyNotFoundException($"Occupant with player ID {playerId} not found.");
 
 		IPlot? plot = null;
 
 		if (plotId is { } id && !_plotsById.TryGetValue(id, out plot))
 			throw new KeyNotFoundException(
-				string.Create(CultureInfo.InvariantCulture, $"Plot with id {id} not found."));
+				string.Create(CultureInfo.InvariantCulture, $"Plot with ID {id} not found."));
 
 		if (occupant.Plot is { } current)
 		{

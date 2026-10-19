@@ -37,7 +37,7 @@ public static partial class LuaExecutor
 
 		if (GPlots.GetPlot(plotId) is not { } plot)
 		{
-			Log.Error("Plot with id {PlotId} not found", plotId);
+			Log.Error("Plot with ID {PlotId} not found", plotId);
 			return context.ReturnNothing();
 		}
 
@@ -49,7 +49,7 @@ public static partial class LuaExecutor
 
 		stopwatch.Stop();
 		Log.Information(
-			"Added {Count} instance(s) to plot with id {PlotId} in {ElapsedMs:F3} ms",
+			"Added {Count} instance(s) to plot with ID {PlotId} in {ElapsedMs:F3} ms",
 			count, plotId, stopwatch.Elapsed.TotalMilliseconds);
 
 		return context.ReturnNothing();
@@ -65,7 +65,7 @@ public static partial class LuaExecutor
 
 		if (GPlots.GetPlot(plotId) is not { } plot)
 		{
-			Log.Error("Plot with id {PlotId} not found", plotId);
+			Log.Error("Plot with ID {PlotId} not found", plotId);
 			return context.ReturnNothing();
 		}
 
@@ -77,7 +77,7 @@ public static partial class LuaExecutor
 
 		stopwatch.Stop();
 		Log.Information(
-			"Removed {Count} instance(s) from plot with id {PlotId} in {ElapsedMs:F3} ms (deferred)",
+			"Removed {Count} instance(s) from plot with ID {PlotId} in {ElapsedMs:F3} ms (deferred)",
 			count, plotId, stopwatch.Elapsed.TotalMilliseconds);
 
 		return context.ReturnNothing();
@@ -99,7 +99,7 @@ public static partial class LuaExecutor
 
 		if (GPlots.GetPlot(plotId) is not { } plot)
 		{
-			Log.Error("Plot with id {PlotId} not found", plotId);
+			Log.Error("Plot with ID {PlotId} not found", plotId);
 			return context.Return();
 		}
 
@@ -111,7 +111,7 @@ public static partial class LuaExecutor
 		var instanceIds = new List<int>();
 
 		Log.Information(
-			"Stress testing plot with id {PlotId} with {Count} instance(s) for {Seconds} s...", plotId, count, seconds);
+			"Stress testing plot with ID {PlotId} with {Count} instance(s) for {Seconds} s...", plotId, count, seconds);
 		var start = Stopwatch.GetTimestamp();
 
 		try
@@ -245,7 +245,7 @@ public static partial class LuaExecutor
 			if (FindPlayer(query) is { } target && GPlayerManager.GetHandleOrNull(target.Id) is { } other)
 				handle.Teleport(other.Body.GlobalPosition + Vector3.Up);
 			else
-				Log.Error("Player with id or name {Query} not found", query);
+				Log.Error("Player with ID or name {Query} not found", query);
 		}
 		else
 		{
@@ -319,7 +319,7 @@ public static partial class LuaExecutor
 			return true;
 
 		Log.Error(
-			"Invalid instance count {Count} for plot with id {PlotId} ({Current}/{Max})",
+			"Invalid instance count {Count} for plot with ID {PlotId} ({Current}/{Max})",
 			count, plot.Id, instances.Count, instances.MaxCount);
 
 		return false;

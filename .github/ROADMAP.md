@@ -26,7 +26,7 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
 - [ ] PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
-- [ ] TextureTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
+- [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.

@@ -226,9 +226,10 @@ host gives both to one simulator until they separate, and their collisions becom
 - **Areas only see areas:** they sit on their own physics layer (Arbitration, 5) and monitor only that layer, so Jolt
   tests sphere pairs and nothing else, and no body or character pays for them. Overlaps of areas from the same plot,
   or from plots that already share a simulator, are ignored.
-- **Groups:** overlapping plots join with union-find, so three creations in a pile share one simulator. Each group's
-  simulator (**D9**, recommended: the simulator of the group's heaviest awake creation, as it's the one whose motion a
-  rewind would disturb most) gets the others as arbitration overrides, through the same broadcast as any hand-off.
+- **Groups:** overlapping plots join with union-find, so three creations in a pile share one simulator. Each group goes
+  to the simulator of its creation with the most assemblies (**D9**), which already carries the heaviest load, so the
+  work stays spread across players rather than piling onto the host; the others get arbitration overrides, through
+  the same broadcast as any hand-off.
 - **Release with hysteresis:** a group splits once its plots' areas have stopped overlapping for 2 s, and no plot
   changes simulator more than once every 2 s, so creations jostling at the edge don't flap between machines.
 - **Precedence:** a manual or timeout override beats arbitration, which beats the plot's owner. Despawning, an owner
@@ -374,4 +375,4 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 | D6 | Material ID 0                    | Debug checkerboard; plain assets default to -1                    |
 | D7 | Multiplayer or asset logic first | Multiplayer first                                                 |
 | D8 | Who receives input               | The simulator only; assets replicate input-driven looks           |
-| D9 | Who simulates an arbitrated pair | Open; recommended: the simulator of the heaviest awake creation   |
+| D9 | Who simulates an arbitrated pair | The simulator of the creation with the most assemblies            |

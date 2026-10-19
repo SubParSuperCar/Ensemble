@@ -51,6 +51,7 @@
                 <DropDownButton Grid.Column="2" ToolTip.Tip="Chat options.">
                     <DropDownButton.Flyout>
                         <Flyout Placement="TopEdgeAlignedRight" VerticalOffset="-2">
+                            <!-- 5 matches SimpleTheme's context menu padding, so the flyout lines up with menus -->
                             <StackPanel Spacing="5">
                                 <CheckBox
                                     Content="Profanity Filter"

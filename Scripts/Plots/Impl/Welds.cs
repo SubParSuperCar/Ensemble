@@ -35,6 +35,7 @@ public static class Welds
 			// Grown, so neighbors across a gap in the next cell are found
 			grid.Query(box with { Extents = box.Extents + Vector3.One * Epsilon }, candidates);
 
+			// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 			foreach (var other in candidates)
 			{
 				if (other <= key)

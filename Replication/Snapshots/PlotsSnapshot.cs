@@ -67,7 +67,7 @@ internal static class PlotsSnapshot
 					!HasFields(instance, InstanceFields) ||
 					IsLimitReached(plot.Instances.Count, plot.Instances.MaxCount))
 				{
-					Log.Warning("Skipped malformed or excess instance in snapshot of plot with id {PlotId}", plot.Id);
+					Log.Warning("Skipped malformed or excess instance in snapshot of plot with ID {PlotId}", plot.Id);
 					continue;
 				}
 

@@ -18,6 +18,8 @@ public abstract partial class AssetComponent : Node
 		OnInitialized();
 	}
 
-	/// <summary>Called once the handle's plot, instance, and assembly (if live) are set, and its creation exists.</summary>
+	/// <summary>
+	///     Called once the handle's plot, instance, and assembly (if live) are set, and its creation exists.
+	/// </summary>
 	protected virtual void OnInitialized() { }
 }

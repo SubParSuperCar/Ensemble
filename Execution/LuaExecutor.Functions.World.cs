@@ -269,7 +269,7 @@ public static partial class LuaExecutor
 			throw new InvalidOperationException("No assets loaded.");
 
 		var instances = plot.Instances;
-		var positionRange = GPlotManager.GetHandle(plot.Id).GridBoundarySize / 2;
+		var positionRange = (Vector3I)(GPlotManager.GetHandle(plot.Id).GridBoundarySize / 2);
 		var random = Random.Shared;
 
 		for (var i = 0; i < count; i++)
@@ -283,9 +283,9 @@ public static partial class LuaExecutor
 			{
 				// Retry if floating-point precision produces a vector that is not recognized as normalized
 				position = new Vector3(
-					random.Next(-(int)positionRange.X, (int)positionRange.X),
-					random.Next(0, (int)positionRange.Y * 2) + 1,
-					random.Next(-(int)positionRange.Z, (int)positionRange.Z));
+					random.Next(-positionRange.X, positionRange.X),
+					random.Next(0, positionRange.Y * 2) + 1,
+					random.Next(-positionRange.Z, positionRange.Z));
 
 				axis = position.Normalized();
 			} while (!axis.IsNormalized());

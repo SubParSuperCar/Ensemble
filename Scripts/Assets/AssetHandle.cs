@@ -12,7 +12,7 @@ namespace EnsembleRoot.Scripts.Assets;
 [GlobalClass]
 public partial class AssetHandle : RigidBody3D
 {
-	// An eighth of water's, as blocks are hollow shells like toy bricks, until materials have their own
+	// An eighth of water's, as blocks are hollow shells like toy bricks
 	public const float DefaultDensity = 1000 / 8f;
 
 	private bool _isBoundaryCalculated;

@@ -53,7 +53,7 @@ public partial class AssetManager : Node
 
 	public PackedScene GetPacked(int assetId) =>
 		GetPackedOrNull(assetId) ?? throw new KeyNotFoundException(
-			string.Create(CultureInfo.InvariantCulture, $"Packed scene with asset id {assetId} not found."));
+			string.Create(CultureInfo.InvariantCulture, $"Packed scene with asset ID {assetId} not found."));
 
 	public Aabb GetBoundary(int assetId) => _boundariesByAssetId.GetValueOrDefault(assetId);
 	public string GetCategory(int assetId) => _categoriesByAssetId.GetValueOrDefault(assetId, string.Empty);
@@ -64,7 +64,9 @@ public partial class AssetManager : Node
 	public IReadOnlyList<(Shape3D Shape, Transform3D Transform)> GetColliders(int assetId) =>
 		_collidersByAssetId.GetValueOrDefault(assetId, []);
 
-	/// <summary>Gets an instance's mass, from its material's density or else the asset's, and its center of mass.</summary>
+	/// <summary>
+	///     Gets an instance's mass, from its material's density or else the asset's, and its center of mass.
+	/// </summary>
 	public (float Mass, Vector3 CenterOfMass) GetMass(int assetId, AssetMaterial? material)
 	{
 		var (volume, centroid, density) = _volumesByAssetId.GetValueOrDefault(assetId);

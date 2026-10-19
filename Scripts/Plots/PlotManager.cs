@@ -67,7 +67,7 @@ public partial class PlotManager : Node
 
 	public PlotHandle GetHandle(int plotId) =>
 		GetHandleOrNull(plotId) ?? throw new KeyNotFoundException(
-			string.Create(CultureInfo.InvariantCulture, $"Handle with plot id {plotId} not found."));
+			string.Create(CultureInfo.InvariantCulture, $"Handle with plot ID {plotId} not found."));
 
 	private void OnLocalPlotChanged(GdPlot? _) => UpdateOutlines();
 

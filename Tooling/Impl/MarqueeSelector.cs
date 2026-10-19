@@ -47,9 +47,8 @@ public partial class MarqueeSelector : Node
 	public override void _UnhandledInput(InputEvent @event)
 	{
 		if (
-			_origin is not null || InputSink.IsSunk || !CanSelect ||
-			!Input.IsActionPressed(ToolCommon.SelectionMarqueeAction) ||
-			!@event.IsActionPressed(ToolCommon.TriggerAction))
+			_origin is not null || InputSink.IsSunk || !@event.IsActionPressed(ToolCommon.TriggerAction) ||
+			!Input.IsActionPressed(ToolCommon.SelectionMarqueeAction) || !CanSelect)
 			return;
 
 		GetViewport().SetInputAsHandled();

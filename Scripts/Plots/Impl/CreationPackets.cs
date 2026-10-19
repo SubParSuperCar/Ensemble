@@ -21,23 +21,23 @@ public static class CreationPackets
 	private const int SequenceBits = 16;
 	private const int CountBits = 16;
 
-	public static byte[] Write(BitWriter writer, CreationPacketHeader header, IReadOnlyList<AssemblyState> states)
+	public static byte[] Write(BitWriter writer, CreationPacketHeader header, ReadOnlySpan<AssemblyState> states)
 	{
 		if ((uint)header.PlotId > MaxPlotId)
 			throw new ArgumentOutOfRangeException(
 				nameof(header),
-				string.Create(CultureInfo.InvariantCulture, $"Plot id {header.PlotId} exceeds {MaxPlotId}."));
+				string.Create(CultureInfo.InvariantCulture, $"Plot ID {header.PlotId} exceeds {MaxPlotId}."));
 
-		if (states.Count > MaxStateCount)
+		if (states.Length > MaxStateCount)
 			throw new ArgumentOutOfRangeException(
 				nameof(states),
-				string.Create(CultureInfo.InvariantCulture, $"{states.Count} states exceed {MaxStateCount}."));
+				string.Create(CultureInfo.InvariantCulture, $"{states.Length} states exceed {MaxStateCount}."));
 
 		writer.Clear();
 		writer.Write((ulong)header.PlotId, PlotIdBits);
 		writer.Write(header.Epoch, EpochBits);
 		writer.Write(header.Sequence, SequenceBits);
-		writer.Write((ulong)states.Count, CountBits);
+		writer.Write((ulong)states.Length, CountBits);
 
 		foreach (var state in states)
 			state.Write(writer);

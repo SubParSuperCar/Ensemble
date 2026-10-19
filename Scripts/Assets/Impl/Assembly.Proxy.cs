@@ -9,7 +9,8 @@ public partial class Assembly
 	private const float ProxySnapDistance = 8f;
 	private const double MaxProxyExtrapolation = 1 / 10d;
 
-	// Beyond twice gravity's, the body hit something between the two states, so a curve would overshoot into it
+	// A velocity change beyond twice gravity's means the body hit something between the two states, so a curve would
+	// overshoot into it
 	private const float MaxCurvedAcceleration = 2 * 9.8f;
 
 	private readonly ProxyState[] _proxyStates = new ProxyState[ProxyBufferSize];
@@ -48,11 +49,8 @@ public partial class Assembly
 	/// <summary>Forgets the buffered states' times (another simulator's clock), keeping the proxy in place.</summary>
 	internal void ResetProxyTimeline()
 	{
-		if (IsSimulated || _proxyStateCount is 0)
-			return;
-
-		_proxyStates[0] = new ProxyState(double.NegativeInfinity, _proxyTransform, Vector3.Zero, Vector3.Zero);
-		_proxyStateCount = 1;
+		if (!IsSimulated && _proxyStateCount is not 0)
+			HoldProxy();
 	}
 
 	/// <summary>
@@ -64,7 +62,7 @@ public partial class Assembly
 		if (_proxyStateCount is 0)
 			return;
 
-		var latest = _proxyStates[_proxyStateCount - 1];
+		ref readonly var latest = ref _proxyStates[_proxyStateCount - 1];
 		Transform3D transform;
 
 		if (time >= latest.Time)
@@ -146,8 +144,7 @@ public partial class Assembly
 		{
 			IsSimulated = false;
 			_proxyTransform = GlobalTransform;
-			_proxyStates[0] = new ProxyState(double.NegativeInfinity, _proxyTransform, Vector3.Zero, Vector3.Zero);
-			_proxyStateCount = 1;
+			HoldProxy();
 
 			return;
 		}
@@ -167,6 +164,13 @@ public partial class Assembly
 		LinearVelocity = latest.LinearVelocity;
 		AngularVelocity = latest.AngularVelocity;
 		Sleeping = latest.IsAtRest;
+	}
+
+	// The proxy holds where it was last placed, and its timeline starts over with the next received state
+	private void HoldProxy()
+	{
+		_proxyStates[0] = new ProxyState(double.NegativeInfinity, _proxyTransform, Vector3.Zero, Vector3.Zero);
+		_proxyStateCount = 1;
 	}
 
 	// A kinematic body moved by a transform shoves what it touched on the way, so jumps leave the space for the move

@@ -9,8 +9,10 @@ public static class Paints
 
 	public static BaseMaterial3D Get(AssetMaterial? material, Color color)
 	{
-		if (!PaintsByKey.TryGetValue((material, color), out var paint))
-			PaintsByKey.Add((material, color), paint = Create(material, color));
+		var key = (material, color);
+
+		if (!PaintsByKey.TryGetValue(key, out var paint))
+			PaintsByKey.Add(key, paint = Create(material, color));
 
 		return paint;
 	}

@@ -13,7 +13,7 @@ public readonly record struct AssemblyState(
 	Vector3 LinearVelocity,
 	Vector3 AngularVelocity)
 {
-	public const int Bits = IdBits + 3 * PositionBits + 2 + 3 * RotationBits + 6 * VelocityBits;
+	public const int Bits = IdBits + 3 * PositionBits + RotationIndexBits + 3 * RotationBits + 6 * VelocityBits;
 	public const int MaxId = (1 << IdBits) - 1;
 
 	private const int IdBits = 16;
@@ -23,6 +23,7 @@ public readonly record struct AssemblyState(
 	private const float PositionScale = 512f;
 
 	// Smallest three: the largest component's index, then the others, each within +-1/sqrt(2)
+	private const int RotationIndexBits = 2;
 	private const int RotationBits = 10;
 	private const float RotationRange = (1 << RotationBits) - 1;
 	private const float Sqrt2 = 1.41421356f;
@@ -72,7 +73,7 @@ public readonly record struct AssemblyState(
 
 		// q and -q are the same rotation, so the largest component is sent as positive
 		var sign = components[largest] < 0 ? -1 : 1;
-		writer.Write((ulong)largest, 2);
+		writer.Write((ulong)largest, RotationIndexBits);
 
 		for (var i = 0; i < 4; i++)
 			if (i != largest)
@@ -84,7 +85,7 @@ public readonly record struct AssemblyState(
 
 	private static Quaternion ReadRotation(ref BitReader reader)
 	{
-		var largest = (int)reader.Read(2);
+		var largest = (int)reader.Read(RotationIndexBits);
 		Span<float> components = stackalloc float[4];
 		var sum = 0f;
 

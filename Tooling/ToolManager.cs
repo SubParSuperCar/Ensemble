@@ -22,6 +22,8 @@ public partial class ToolManager : Node, IAutoload
 	private readonly List<ToolBase> _spawnDisabledTools = [];
 	private readonly Dictionary<Type, ToolBase> _tools = [];
 
+	private bool _isEnteringSpawnedPlot;
+
 	public static ToolManager? Instance
 	{
 		get;
@@ -143,12 +145,20 @@ public partial class ToolManager : Node, IAutoload
 	}
 
 	// Raised before the spawn state in the same frame, so tools never carry over to another plot
-	private void OnLocalPlotChanged(GdPlot? _) => _spawnDisabledTools.Clear();
+	private void OnLocalPlotChanged(GdPlot? plot)
+	{
+		_spawnDisabledTools.Clear();
+
+		// Moving onto a plot that's already spawned isn't a spawn, so it leaves nothing to restore
+		_isEnteringSpawnedPlot = plot?.IsSpawned is true;
+	}
 
 	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned)
 	{
-		if (isSpawned is true)
+		if (isSpawned is true && !_isEnteringSpawnedPlot)
 			_spawnDisabledTools.AddRange(_enabledTools);
+
+		_isEnteringSpawnedPlot = false;
 
 		if (!CanEnableTools)
 		{

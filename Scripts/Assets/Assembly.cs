@@ -14,6 +14,7 @@ public partial class Assembly : RigidBody3D
 	private readonly List<AssetHandle> _members = [];
 
 	private float? _bounce;
+	private Aabb? _bounds;
 	private float _frictionMoment;
 	private float _mass;
 	private Vector3 _massMoment;
@@ -22,6 +23,9 @@ public partial class Assembly : RigidBody3D
 	public int Id { get; init; }
 
 	public IReadOnlyList<AssetHandle> Members => _members;
+
+	/// <summary>The bounds of the members' colliders, in the body's space, once built.</summary>
+	public Aabb Bounds { get; private set; }
 
 	public bool IsKilled { get; private set; }
 
@@ -37,6 +41,9 @@ public partial class Assembly : RigidBody3D
 			field = value;
 			FreezeMode = value ? FreezeModeEnum.Static : FreezeModeEnum.Kinematic;
 			Freeze = !value || _mass <= 0;
+
+			if (!value)
+				ProxyTransform = GlobalTransform;
 		}
 	}
 
@@ -60,6 +67,9 @@ public partial class Assembly : RigidBody3D
 			ShapeOwnerSetTransform(owner, transform * colliderTransform);
 		}
 
+		foreach (var bounds in GAssetManager.GetColliderBounds(member.AssetId))
+			_bounds = _bounds?.Merge(transform * bounds) ?? transform * bounds;
+
 		var (mass, centerOfMass) = GAssetManager.GetMass(member.AssetId, material);
 
 		_mass += mass;
@@ -77,10 +87,13 @@ public partial class Assembly : RigidBody3D
 	/// <remarks>Best done before entering the tree, like <see cref="AddMember" />.</remarks>
 	public void Build()
 	{
+		var center = _mass > 0 ? _massMoment / _mass : Vector3.Zero;
+
+		if (_bounds is { } bounds)
+			Bounds = bounds with { Position = bounds.Position - center };
+
 		if (_mass <= 0)
 			return;
-
-		var center = _massMoment / _mass;
 
 		foreach (var member in _members)
 			member.Transform = member.Transform.Translated(-center);

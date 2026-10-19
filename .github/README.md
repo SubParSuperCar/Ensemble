@@ -116,12 +116,13 @@ password only controls who can join, so don't use one that matters elsewhere.
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
 and characters are replicated. A spawned creation is simulated by its plot's owner and streamed to everyone else; when
-the owner leaves, the next one takes over, and the host steps in if a simulator stops responding. To try a poor
-connection without outside players, run `set_net_sim(120, 40, 0.05)` (latency and jitter in milliseconds, and a loss
-rate) on a client. Hosts can list peers (with their ping) using `dmp_peers()` and remove one using
-`kick_peer(peer_id, "reason")`, and kick players off plots with `kick_occupant("name or id")`, which plot owners can
-also use on their own plots. Display names are remembered between sessions. The host has authority over the session:
-they can clear any plot they occupy, and their chat messages bypass the profanity filter.
+the owner leaves, the next one takes over, and the host steps in if a simulator stops responding. Creations of different
+plots that come close share one simulator until they part. To try a poor connection without outside players, run
+`set_net_sim(120, 40, 0.05)` (latency and jitter in milliseconds, and a loss rate) on a client. Hosts can list peers
+(with their ping) using `dmp_peers()` and remove one using `kick_peer(peer_id, "reason")`, and kick players off plots
+with `kick_occupant("name or id")`, which plot owners can also use on their own plots. Display names are remembered
+between sessions. The host has authority over the session: they can clear any plot they occupy, and their chat messages
+bypass the profanity filter.
 
 Chat happens in the Text Chat widget, which opens in multiplayer: press `/` to type and `Enter` to send. Nametags are
 colored per display name, like in Roblox's legacy chat, joins and leaves are announced, and late joiners receive the
@@ -490,9 +491,10 @@ graph LR
     Assemblies --> Members["AssetHandle members + components"]
 ```
 
-The host decides who simulates each creation (an override, else the plot's owner, else itself) and broadcasts every
-change with an epoch. The simulator streams its moving assemblies; the host checks each packet, rate limits it, and
-relays it; everyone else moves frozen proxies along a 100 ms replay of the received states.
+The host decides who simulates each creation (an override, else the simulator its group shares while it's close to
+another plot's creation, else the plot's owner, else itself) and broadcasts every change with an epoch. The simulator
+streams its moving assemblies; the host checks each packet, rate limits it, and relays it; everyone else moves frozen
+proxies along a 100 ms replay of the received states.
 
 ```mermaid
 sequenceDiagram

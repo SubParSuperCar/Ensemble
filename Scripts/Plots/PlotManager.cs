@@ -63,6 +63,8 @@ public partial class PlotManager : Node
 			GPlotManager = null!;
 	}
 
+	public override void _PhysicsProcess(double delta) => UpdateArbitration(delta);
+
 	public PlotHandle? GetHandleOrNull(int plotId) => _handlesById.GetValueOrDefault(plotId);
 
 	public PlotHandle GetHandle(int plotId) =>

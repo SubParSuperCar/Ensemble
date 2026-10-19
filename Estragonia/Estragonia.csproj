@@ -18,14 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="12.1.4"/>
-    <PackageReference Include="Avalonia.HarfBuzz" Version="12.1.4"/>
-    <PackageReference Include="GodotSharp" Version="4.7.2"/>
-    <!-- Pinned to the SkiaSharp version Avalonia.Skia 12.1.4 is built against; newer major versions are incompatible -->
-    <PackageReference Include="SkiaSharp" Version="3.119.4"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="3.119.4"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="3.119.4"/>
-    <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="3.119.4"/>
+    <PackageReference Include="Avalonia"/>
+    <PackageReference Include="Avalonia.HarfBuzz"/>
+    <PackageReference Include="GodotSharp"/>
+    <PackageReference Include="SkiaSharp"/>
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux"/>
+    <PackageReference Include="SkiaSharp.NativeAssets.macOS"/>
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32"/>
   </ItemGroup>
 
   <ItemGroup>

@@ -13,9 +13,6 @@ concurrency:
   group: bin-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  GODOT_VERSION: '4.7.2'
-
 jobs:
   linux:
     name: Linux (x86_64)
@@ -27,6 +24,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
+      - name: Read Godot version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's|.*Sdk="Godot.NET.Sdk/\([^"]*\)".*|\1|p' EnsembleGame.csproj)"
+          [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
+          echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
 
       - name: Identify build
         run: |
@@ -117,6 +123,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
+      - name: Read Godot version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's|.*Sdk="Godot.NET.Sdk/\([^"]*\)".*|\1|p' EnsembleGame.csproj)"
+          [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
+          echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
 
       - name: Identify build
         run: |
@@ -211,6 +226,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
+      - name: Read Godot version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's|.*Sdk="Godot.NET.Sdk/\([^"]*\)".*|\1|p' EnsembleGame.csproj)"
+          [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
+          echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
 
       - name: Identify build
         run: |
@@ -311,6 +335,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
+      - name: Read Godot version
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's|.*Sdk="Godot.NET.Sdk/\([^"]*\)".*|\1|p' EnsembleGame.csproj)"
+          [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
+          echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
 
       - name: Identify build
         run: |

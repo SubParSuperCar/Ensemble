@@ -40,8 +40,8 @@ contract: they bend when something unforeseen comes up.
 
 ### Behaviors: components or subclasses
 
-Reusable behaviors are `AssetComponent` nodes dropped under the handle and configured by exports; unique assets
-(motor, servo, piston) subclass `AssetHandle`. Both get `Initialize` once their creation exists, and a handle lives in
+Reusable behaviors are `AssetComponent` nodes dropped under the handle and configured by exports; unique assets (motor,
+servo, piston) subclass `AssetHandle`. Both get `Initialize` once their creation exists, and a handle lives in
 one mode (build or live) for its whole life.
 
 ### Multi-piece assets (motors, hinges, pistons, suspension)
@@ -65,11 +65,11 @@ An asset can have several rigid **pieces** that move independently, like a motor
 ### Ticks
 
 - Opt-in interfaces, not base classes, so a wing component can sit on any asset:
-  - `ISimulationTicked.SimulationTick(in SimulationTick tick)` - physics logic (motors, forces, aerodynamics). Runs
-    only on the peer simulating the asset's mechanism, at 100 Hz, from one loop per plot in instance-ID order. Not
-    simulating means not ticked, so assets never check ownership themselves.
-  - Plain Godot `_Process` for visuals on every peer (lights, effects). Normal Godot callbacks stay available, but
-    heavy per-tick work belongs in the simulation tick.
+    - `ISimulationTicked.SimulationTick(in SimulationTick tick)` - physics logic (motors, forces, aerodynamics). Runs
+      only on the peer simulating the asset's mechanism, at 100 Hz, from one loop per plot in instance-ID order. Not
+      simulating means not ticked, so assets never check ownership themselves.
+    - Plain Godot `_Process` for visuals on every peer (lights, effects). Normal Godot callbacks stay available, but
+      heavy per-tick work belongs in the simulation tick.
 - The tick argument carries the infrastructure (body state, force accumulator, input, delta), so an asset implements
   one method and writes no plumbing.
 - `PlotHandle` collects the ticked handles and components once at spawn, so 1000 motors cost one engine callback plus
@@ -216,8 +216,8 @@ would fall through what it stands on. Options to prototype later:
 ### Shared simulators (later)
 
 Collisions between bodies with different simulators are one-sided. An `Area3D` around each mechanism (Jolt areas are
-cheap) reports when two mechanisms with different simulators get close; the host then gives both to one simulator
-(the host, or one of the owners) until they separate, with hysteresis. The override API above already supports it.
+cheap) reports when two mechanisms with different simulators get close; the host then gives both to one simulator (the
+host, or one of the owners) until they separate, with hysteresis. The override API above already supports it.
 
 ## 8. Replication
 
@@ -226,8 +226,8 @@ cheap) reports when two mechanisms with different simulators get close; the host
 - **Bit-packed, not byte-aligned.** Header: plot ID, epoch, sequence. Per moving assembly: ID (the group's lowest
   instance ID), position (1/512 m, relative to the plot), rotation (smallest three), and linear and angular velocity
   (see the bit budget in section 12).
-- An assembly's origin is its center of mass, so its position and velocities describe the point it rotates about
-  (with the plot's origin, proxies extrapolating a rolling ball swung it meters off course).
+- An assembly's origin is its center of mass, so its position and velocities describe the point it rotates about (with
+  the plot's origin, proxies extrapolating a rolling ball swung it meters off course).
 - Sleeping assemblies send nothing beyond the keepalive round-robin (section 7).
 - **Budget:** at most 256 states per plot per stream (about 130 KB/s per receiver); past it, awake assemblies take
   turns, each sent less often, and bodies that just fell asleep go first.
@@ -244,8 +244,8 @@ cheap) reports when two mechanisms with different simulators get close; the host
 
 ## 9. Aerodynamics and other forces (later)
 
-- An `Airfoil` component on any asset: area (from its collider bounds by default, overridable), a lift curve
-  (linear up to a stall angle, then falling), and drag. Each simulation tick it computes the local airflow from the
+- An `Airfoil` component on any asset: area (from its collider bounds by default, overridable), a lift curve (linear up
+  to a stall angle, then falling), and drag. Each simulation tick it computes the local airflow from the
   assembly's state (`v + w x r`) and adds lift and drag at its position to the accumulator: a few dozen float
   operations, no interop.
 - Thrusters and propellers work the same way: input-driven forces at a point.
@@ -266,8 +266,8 @@ Measured on an i7-9700K, 2000 loose instances (2000 assemblies, the worst case):
 | Initialize components                     | 15          | 22                 |
 | Total                                     | ~335        | ~300               |
 
-Welded creations are cheaper (one 2000-member assembly: ~280 ms). The rest is mostly Godot's own cost per node
-(~12 us to enter the tree), so the remaining wins are structural:
+Welded creations are cheaper (one 2000-member assembly: ~280 ms). The rest is mostly Godot's own cost per node (~12 us
+to enter the tree), so the remaining wins are structural:
 
 - Spawning works in one frame, which is simplest (nothing happens mid-build). Spreading it over a few frames (build
   assemblies in batches with frozen bodies, release together) would trade one hitch for several short frames, if the
@@ -295,14 +295,14 @@ work proportional to what moves and thinks, not to what exists.
 
 ## 12. Phases
 
-| Version | Track       | Content                                                                                   |
-|---------|-------------|-------------------------------------------------------------------------------------------|
-| 0.52.x  | Polish      | Token cost by instance count, `dmp_creation`, spawn speedups, the material bank (done)    |
-| 0.53.0  | Multiplayer | Phase 2 with the full authority model, but the host as the only simulator; proxies,       |
-|         |             | bit-packed wire format, epochs, keepalives, late joins                                    |
-| 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts (done)              |
-| 0.55.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,     |
-|         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                          |
+| Version | Track       | Content                                                                                |
+|---------|-------------|----------------------------------------------------------------------------------------|
+| 0.52.x  | Polish      | Token cost by instance count, `dmp_creation`, spawn speedups, the material bank (done) |
+| 0.53.0  | Multiplayer | Phase 2 with the full authority model, but the host as the only simulator; proxies,    |
+|         |             | bit-packed wire format, epochs, keepalives, late joins                                 |
+| 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts (done)           |
+| 0.55.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,  |
+|         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                       |
 
 ### 0.53.0 steps (Phase 2: multiplayer, the host simulating; done)
 
@@ -323,13 +323,13 @@ work proportional to what moves and thinks, not to what exists.
 
 Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):
 
-| Field            | Encoding                                                              | Bits |
-|------------------|-----------------------------------------------------------------------|------|
-| Assembly ID      | The group's lowest instance ID                                        | 16   |
-| Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m     | 72   |
-| Rotation         | Smallest three: 2-bit index, 3 x 10 bits                              | 32   |
-| Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                      | 42   |
-| Angular velocity | 1/32 rad/s steps, +-256 rad/s (a fast wheel spins past 100 rad/s)     | 42   |
+| Field            | Encoding                                                          | Bits |
+|------------------|-------------------------------------------------------------------|------|
+| Assembly ID      | The group's lowest instance ID                                    | 16   |
+| Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m | 72   |
+| Rotation         | Smallest three: 2-bit index, 3 x 10 bits                          | 32   |
+| Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                  | 42   |
+| Angular velocity | 1/32 rad/s steps, +-256 rad/s (a fast wheel spins past 100 rad/s) | 42   |
 
 ### 0.54.0 steps (Phase 3: plot owners simulate; done)
 

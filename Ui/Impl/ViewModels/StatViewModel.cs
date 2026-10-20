@@ -2,6 +2,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Utils;
+using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Messages;
 using EnsembleRoot.Ui.Impl.Services;
@@ -95,15 +96,26 @@ public sealed partial class StatViewModel : ViewModelBase
 			("Input Sinking", InputSink.IsSunk)
 		];
 
-		if (GPlayers.Local is not null && GPlayerManager.LocalHandle is { Body: var character })
-		{
-			stats.Add(("Char. Pos.", character.GlobalPosition.Round()));
-			stats.Add(("Char. Speed",
-				string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():0.###} m/s")));
-		}
+		AddSessionStats(stats);
 
 		var width = stats.Max(static stat => stat.Key.Length);
 		Text = string.Join('\n', stats.Select(stat => $"{stat.Key.PadRight(width)} = {stat.Value}"));
+	}
+
+	// Only some sessions have them: traffic in multiplayer, and the character once spawned
+	private static void AddSessionStats(List<(string Key, object Value)> stats)
+	{
+		if (GSessionManager.Mode is SessionMode.MultiPlayer)
+			stats.Add(("Net. Traffic",
+				$"{ByteFormat.Humanize((ulong)GSessionManager.ReceivedBytesPerSecond)}/s in, " +
+				$"{ByteFormat.Humanize((ulong)GSessionManager.SentBytesPerSecond)}/s out"));
+
+		if (GPlayers.Local is null || GPlayerManager.LocalHandle is not { Body: var character })
+			return;
+
+		stats.Add(("Char. Pos.", character.GlobalPosition.Round()));
+		stats.Add(("Char. Speed",
+			string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():0.###} m/s")));
 	}
 
 	private static double GetMonitorMs(Performance.Monitor monitor) =>

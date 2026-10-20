@@ -21,7 +21,8 @@ public partial class PlotHandle
 	// Past this, awake assemblies take turns (about 130 KB/s per receiver at most), each sent less often
 	private const int MaxStatesPerStream = 256;
 
-	// Sleeping assemblies are resent in turn, about 40 a second, so a lost final update can't leave a proxy off
+	// Sleeping assemblies are resent in turn, each about once a second but at most 40 a second, so a lost final update
+	// can't leave a proxy off
 	private const int KeepalivesPerStream = 2;
 
 	// A simulator with nothing to send still sends a header this often, so the host knows it's alive
@@ -49,6 +50,7 @@ public partial class PlotHandle
 
 	private int _awakeCursor;
 	private double _clock;
+	private double _keepaliveCredit;
 	private int _keepaliveIndex;
 	private long _receivedSequence;
 	private long _relayRefillTimestamp;
@@ -187,7 +189,10 @@ public partial class PlotHandle
 		if (_awakeAssemblies.Count > 0)
 			_awakeCursor = (_awakeCursor + room) % _awakeAssemblies.Count;
 
-		for (var i = 0; i < Math.Min(KeepalivesPerStream, _assemblies.Count); i++)
+		// Small creations would otherwise resend their few bodies many times a second
+		_keepaliveCredit = Math.Min(_keepaliveCredit + _assemblies.Count / (double)StreamRate, KeepalivesPerStream);
+
+		for (; _keepaliveCredit >= 1; _keepaliveCredit--)
 		{
 			_keepaliveIndex = (_keepaliveIndex + 1) % _assemblies.Count;
 			var assembly = _assemblies[_keepaliveIndex];

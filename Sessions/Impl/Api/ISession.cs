@@ -29,4 +29,7 @@ public interface ISession
 
 	string GetAddress(int peerId);
 	int GetPing(int peerId);
+
+	/// <summary>Gets the bytes received and sent since the last call, or since the session started.</summary>
+	(long Received, long Sent) PopTraffic();
 }

@@ -82,6 +82,12 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 	public int GetPing(int peerId) =>
 		(int)(GetRemote(peerId)?.GetStatistic(ENetPacketPeer.PeerStatistic.RoundTripTime) ?? 0);
 
+	public (long Received, long Sent) PopTraffic() =>
+		_peer?.Host is { } host
+			? ((long)host.PopStatistic(ENetConnection.HostStatistic.ReceivedData),
+				(long)host.PopStatistic(ENetConnection.HostStatistic.SentData))
+			: default;
+
 	// Godot would resolve the host name synchronously, freezing the main thread for up to the resolver's timeout
 	private async Task ResolveThenStartAsync(JoinConfig join)
 	{

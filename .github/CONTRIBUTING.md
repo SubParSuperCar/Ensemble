@@ -33,6 +33,10 @@
    Alternatively, you can place the executable in the project's `bin/` directory under one of the previously listed
    names. The directory is created by the first build.
 
+   To try multiplayer locally, the **Host + Client (Side by Side)** run configuration builds once, then hosts a session
+   in one window and joins it from another, each filling half of a 2560-pixel-wide screen (adjust the size at the top
+   of `Properties/side-by-side.sh`, or `.cmd` on Windows).
+
 ## Guidelines
 
 - **Keep changes focused.** One feature or fix per pull request, with a short description of what changed and why.

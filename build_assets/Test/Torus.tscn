@@ -32,7 +32,7 @@ outer_radius = 0.5
 rings = 8
 ring_segments = 4
 
-[node name="Test Torus" type="RigidBody3D" unique_id=726135581]
+[node name="Test Torus" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_wpl7w")
 AssetId = 6
 AssetName = &"Torus (TEST!)"

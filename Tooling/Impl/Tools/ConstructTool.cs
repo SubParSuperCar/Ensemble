@@ -252,9 +252,7 @@ public partial class ConstructTool : ToolBase
 
 		_preview = packed.Instantiate<AssetHandle>();
 		_preview.Name = "Preview";
-		_preview.Freeze = true;
-		_preview.CollisionLayer = 0;
-		_preview.CollisionMask = 0;
+		_preview.SetCollision(0, 0);
 		_preview.InputRayPickable = false;
 		_preview.Visible = false;
 

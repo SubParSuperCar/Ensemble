@@ -14,7 +14,7 @@ radial_segments = 32
 rings = 0
 cap_top = false
 
-[node name="Cone" type="RigidBody3D" unique_id=726135581]
+[node name="Cone" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_3jc1b")
 AssetId = 5
 AssetName = &"Cone"

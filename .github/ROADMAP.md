@@ -97,8 +97,10 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
   asset's `AssetHandle` in its scene (unique behaviors may subclass `AssetHandle`); handles bind to their plot and
   instance, then initialize their components once their whole creation exists, and live in one mode (build or live)
   for life. `Paintable` (material overrides from `_colorHex` / `_materialId`, opt-out by node) is the first, and the
-  `MaterialBank` pairs each material's look with its density, friction, and bounce. Next: a batched simulation tick for
-  many scripted blocks, then seats, input, and joints (see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md))
+  `MaterialBank` pairs each material's look with its density, friction, and bounce. `AssetPiece` children give
+  assets moving parts, welded on their own and linked by Godot joints authored in the scene (the first: Suspension).
+  Next: a batched simulation tick for many scripted blocks, then seats, input, and driven joints (see
+  [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md))
 - [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
 - [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
 - [ ] (L) A real map, built with Unibuilder
@@ -121,16 +123,15 @@ after them (asset logic, mechanisms, seats, input, physics authority, replicatio
 | Static instances | Build mode: frozen AssetHandles under `Instances/Static`, editable with the tools          |
 | Spawned / live   | A plot whose creation is simulated, under `Instances/Dynamic`; editing is locked           |
 | Abut             | Two collider boxes share part of a face within `Epsilon`; edges and corners don't count    |
-| Weld             | An automatic, unbreakable rigid link between two instances whose collider boxes abut       |
-| Group            | The instances connected by welds (one union-find component), even a single instance        |
-| Assembly         | The `RigidBody3D` built for one group; its ID is the group's lowest instance ID            |
-| Member           | An AssetHandle riding its assembly, with its own body out of the physics space             |
-| Mechanism        | (Later) Assemblies linked by joints; the unit of ownership                                 |
+| Weld             | An automatic, unbreakable rigid link between pieces of two instances whose boxes abut      |
+| Group            | The pieces connected by welds (one union-find component), even a single piece              |
+| Assembly         | The `RigidBody3D` built for one group; its ID is the group's index in weld order           |
+| Piece            | An asset's own colliders (piece 0) or an `AssetPiece` child, riding its group's assembly   |
+| Mechanism        | (Later) Assemblies linked by joints; one plot's always share its simulator                 |
 | Owner            | The peer that simulates a mechanism; the plot's owner by default (network ownership)       |
 | Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
 | Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
 | Anchor           | (Later) An asset that freezes its assembly while any anchor holds it                       |
-| Piece            | (Later) One moving part of an asset (a motor's head); never welds to its siblings          |
 | Passenger        | (Later, name TBD) A character seated in a creation                                         |
 
 ### Done (plumbing)
@@ -158,23 +159,25 @@ after them (asset logic, mechanisms, seats, input, physics authority, replicatio
 
 ### Spawn pipeline (per plot, on every peer)
 
-1. Welds - an edge for each instance pair with abutting collider boxes (`Obb.Abuts`, Baja Builders parity: either box,
-   grown by `Epsilon` along one of its axes and shrunk by it along the others, overlaps the other), one box per
-   collider, so assets may have several. Neighbors come from an ObbGrid (done: `Welds.Group`)
+1. Welds - an edge for each pair of pieces of different instances with abutting collider boxes (`Obb.Abuts`, Baja
+   Builders parity: either box, grown by `Epsilon` along one of its axes and shrunk by it along the others, overlaps the
+   other), one box per collider, so assets may have several. Neighbors come from an ObbGrid (done: `Welds.Group`)
 2. Groups - union-find over the weld edges; each connected component is one rigid group, even a group of one (done)
 3. Assembly bodies - a new `RigidBody3D` per group under `Instances/Dynamic`, with each asset's collision shapes
    registered on it through the shape-owner API (`CreateShapeOwner(asset)`, `ShapeOwnerAddShape`,
    `ShapeOwnerSetTransform`) at the asset's offset, reusing the `Shape3D` resources. Godot only counts shapes that are
    direct children of a body, so nesting bodies (or wrapping `Node3D` assets) wouldn't work (done: `Assembly`)
-4. Members - each asset is instantiated and parented under its assembly at its offset, with its own body out of the
-   physics space; meshes and scripts ride along. Assets stay `RigidBody3D` scenes (done)
+4. Pieces - each asset is instantiated once; its handle's own colliders (piece 0) and its `AssetPiece` children are
+   parented under their groups' assemblies at their offsets, with their own bodies out of the physics space; meshes
+   and scripts ride along. Handles and pieces are `StaticBody3D`s, so nothing moves in build mode (done)
 5. Mass - each asset's density times its volume by default (overridable later), summed, with the center of mass at the
    mass-weighted average position; Jolt derives the inertia from the shapes. Friction comes from the material later
    (done: `AssetHandle.Density`, water's by default)
-6. IDs - each assembly takes its group's lowest instance ID, so peers agree on IDs without sending them (done)
+6. IDs - each assembly takes its group's index, with instances in ID order and their pieces in order, so peers
+   agree on IDs without sending them (done)
 7. Raycasts - a hit's shape index leads back to the exact asset (`ShapeFindOwner`, then `ShapeOwnerGetOwner`)
-8. Joints (later) - hinge, piston, and suspension assets link two groups with Jolt joints; assemblies linked by joints
-   form a mechanism, the unit of ownership
+8. Joints - Godot joints authored in an asset's scene between its pieces link their assemblies at spawn (done:
+   Suspension); a plot's assemblies always share its simulator, so joints never span two machines
 
 Despawning frees the assemblies and re-enables the static instances (done). Assemblies that fall below -1024 m are
 switched off, not freed.

@@ -112,7 +112,8 @@ password only controls who can join, so don't use one that matters elsewhere.
 - **Dedicated server:** run the executable headless with user arguments, e.g.,
   `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port, or
   `--profanity-filter=false` to turn off the profanity filter). Every argument has a short form, e.g.,
-  `--p=7777 --pw=abc` (`j`, `mc`, `n`, `p`, `pf`, `pw`, and `u`).
+  `--p=7777 --pw=abc` (`j`, `mc`, `n`, `p`, `pf`, `pw`, and `u`). The same arguments work without `--headless`: a
+  regular window then hosts as a player (`--port`, with `--name`), or joins (`--join`), instead of opening the menu.
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
 and characters are replicated. A spawned creation is simulated by its plot's owner and streamed to everyone else; when
@@ -362,7 +363,7 @@ sequenceDiagram
 | `Standard + 4` | `DiagnosticLogger`       | all      | Logs a system report in the background           |
 | `Late`         | `WorldManager`           | all      | Instantiates the world scene                     |
 | `Late + 1`     | `UpdateChecker`          | client   | Checks GitHub for newer releases                 |
-| `Late + 1`     | `HeadlessSession`        | headless | Starts a dedicated server session                |
+| `Late + 1`     | `CommandLineSession`     | all      | Hosts or joins a session from command-line args  |
 | `Last`         | `Watchdog`               | all      | Detects main-thread stalls                       |
 
 </details>
@@ -406,6 +407,7 @@ classDiagram
     class Assembly
     class AssetManager
     class AssetHandle
+    class AssetPiece
 
     ICore --> IAsset
     ICore --> IPlot
@@ -414,7 +416,9 @@ classDiagram
     PlotManager --> PlotHandle : one per plot
     PlotHandle --> AssetHandle : one per instance (static)
     PlotHandle --> Assembly : one per welded group (spawned)
-    Assembly --> AssetHandle : members
+    Assembly --> AssetHandle : carries
+    Assembly --> AssetPiece : carries
+    AssetHandle --> AssetPiece : moving parts
     AssetManager ..> IAsset : loads meshes
     PlotHandle ..> IInstances : mirrors
 ```
@@ -478,17 +482,19 @@ player acting as the server.
   <summary><b>Live Creations</b></summary>
 
 Spawning (`SetPlotSpawnedAction`) builds the same physics on every peer from the plot's instances, so it sends no
-geometry. `PlotHandle` groups touching instances with `Welds.Group` (the `Obb.Abuts` face test, then union-find), and
-builds one `Assembly` (a `RigidBody3D`) per group, carrying its members' collision shapes and mass, with its origin on
-the center of mass. The members are ordinary `AssetHandle` scenes riding along out of the physics space, initialized
-once the creation exists. The static instances stay in sync with Core, only hidden and disabled while spawned.
+geometry. `PlotHandle` groups touching pieces (an asset's own colliders, or its `AssetPiece` children) with
+`Welds.Group` (the `Obb.Abuts` face test, then union-find), and builds one `Assembly` (a `RigidBody3D`) per group,
+carrying its pieces' collision shapes and mass, with its origin on the center of mass. The pieces' bodies ride along out
+of the physics space, Godot joints authored between an asset's pieces link their assemblies, and the handles are
+initialized once the creation exists. The static instances stay in sync with Core, only hidden and disabled while spawned.
 
 ```mermaid
 graph LR
     Core["Plot instances (Core)"] --> Welds["Welds.Group"]
     Welds --> Assemblies["One Assembly per group"]
     Bank["MaterialBank"] -->|density, friction, bounce| Assemblies
-    Assemblies --> Members["AssetHandle members + components"]
+    Assemblies --> Pieces["AssetHandle and AssetPiece bodies + components"]
+    Pieces --> Joints["Authored joints between assemblies"]
 ```
 
 The host decides who simulates each creation (an override, else the simulator its group shares while it's close to

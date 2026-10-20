@@ -12,7 +12,7 @@ height = 0.5
 radial_segments = 32
 rings = 16
 
-[node name="Sphere" type="RigidBody3D" unique_id=726135581]
+[node name="Sphere" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_hyqjw")
 AssetId = 1
 AssetName = &"Sphere"

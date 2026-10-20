@@ -1,7 +1,4 @@
 using System.Diagnostics;
-using System.Globalization;
-using EnsembleRoot.GdCore.Assets;
-using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots.Impl;
 using Godot;
 using Serilog;
@@ -19,18 +16,10 @@ public partial class PlotHandle
 	// Past the creation's bounds, so bodies resting on its surface count as touching it
 	private const float WakeMargin = 1 / 8f;
 
-	private const uint AssemblyMask =
-		PhysicsLayers.World | PhysicsLayers.Character | PhysicsLayers.StaticInstances | PhysicsLayers.DynamicInstances;
-
-	private readonly List<Assembly> _assemblies = [];
-	private readonly Dictionary<int, Assembly> _assembliesById = [];
 	private readonly List<Obb> _liftCandidates = [];
 	private readonly PlacementSolver _solver = new();
 
-	private Node3D _dynamicInstances = null!;
 	private double _sinceKillCheck;
-
-	public IReadOnlyList<Assembly> Assemblies => _assemblies;
 
 	private void ReadySpawning()
 	{
@@ -53,22 +42,14 @@ public partial class PlotHandle
 			Despawn();
 	}
 
-	// Every peer builds the same assemblies from the plot's state, so spawning sends no geometry
 	private void Spawn()
 	{
 		var timestamp = Stopwatch.GetTimestamp();
-		var instances = _plot.Instances.GetAll().ToDictionary(static instance => instance.Id);
-		var parts = instances.Values.Select(static instance => (instance.Id, GetColliderBoxes(instance))).ToList();
 
 		SetStaticInstancesEnabled(false);
 
 		SimulationEpoch++;
-
-		foreach (var group in Welds.Group(parts))
-			AddAssembly(group, instances);
-
-		foreach (var member in _assemblies.SelectMany(static assembly => assembly.Members))
-			member.Initialize(this, instances[member.InstanceId]);
+		BuildCreation();
 
 		MoveLocalCharacterClear();
 
@@ -80,11 +61,11 @@ public partial class PlotHandle
 			"Spawned plot {PlotId} as {AssemblyCount} assemblies in {ElapsedMs:F3} ms", Id, _assemblies.Count,
 			Stopwatch.GetElapsedTime(timestamp).TotalMilliseconds);
 
-		// Streamed states carry 16-bit IDs, which only instance IDs restored from far larger plots exceed
-		if (IsStreaming && _assemblies.Count(static assembly => assembly.Id > AssemblyState.MaxId) is > 0 and var count)
+		// Streamed states carry 16-bit IDs, which only creations far beyond any plot's quota exceed
+		if (IsStreaming && _assemblies.Count > AssemblyState.MaxId + 1)
 			Log.Warning(
-				"Plot {PlotId} has {Count} assemblies with IDs above {MaxId}, which other peers won't see move",
-				Id, count, AssemblyState.MaxId);
+				"Plot {PlotId} has {Count} assemblies, and other peers won't see those past the first {MaxCount} move",
+				Id, _assemblies.Count, AssemblyState.MaxId + 1);
 	}
 
 	private void Despawn()
@@ -103,7 +84,6 @@ public partial class PlotHandle
 			assembly.QueueFree();
 
 		_assemblies.Clear();
-		_assembliesById.Clear();
 		ResetReplication();
 		SetStaticInstancesEnabled(true);
 
@@ -136,40 +116,6 @@ public partial class PlotHandle
 	{
 		_staticInstances.ProcessMode = isEnabled ? ProcessModeEnum.Inherit : ProcessModeEnum.Disabled;
 		_staticInstances.Visible = isEnabled;
-	}
-
-	private static Obb[] GetColliderBoxes(GdInstance instance)
-	{
-		var transform = GetTransform(instance);
-		return [.. GAssetManager.GetColliderBounds(instance.Asset.Id).Select(bounds => Obb.From(bounds, transform))];
-	}
-
-	private void AddAssembly(int[] group, Dictionary<int, GdInstance> instances)
-	{
-		var assembly = new Assembly
-		{
-			Name = group[0].ToString(CultureInfo.InvariantCulture),
-			Id = group[0],
-			Transform = _staticInstances.GlobalTransform,
-			Freeze = true,
-			CollisionLayer = PhysicsLayers.DynamicInstances,
-			CollisionMask = AssemblyMask
-		};
-
-		foreach (var id in group)
-		{
-			var instance = instances[id];
-			assembly.AddMember(CreateHandle(instance, GetTransform(instance)), MaterialBank.Get(instance.Properties));
-		}
-
-		assembly.Build();
-		_dynamicInstances.AddChild(assembly);
-		assembly.Assemble();
-		assembly.IsSimulated = IsSimulatedLocally;
-		assembly.ResetPhysicsInterpolation();
-
-		_assemblies.Add(assembly);
-		_assembliesById.Add(assembly.Id, assembly);
 	}
 
 	// Placement ignores characters, so the creation may spawn around one; each peer moves its own, before physics does

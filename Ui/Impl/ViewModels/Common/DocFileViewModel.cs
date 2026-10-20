@@ -36,7 +36,8 @@ public sealed partial class DocFileViewModel : ViewModelBase
 		new("LICENSE.md", "LICENSE.md"),
 		new("LICENSE-ASSETS.txt", ".github/LICENSE-ASSETS.txt"),
 		new("LICENSE-CODE.txt", ".github/LICENSE-CODE.txt"),
-		new("ROADMAP.md", ".github/ROADMAP.md")
+		new("ROADMAP.md", ".github/ROADMAP.md"),
+		new("LIVE-CREATIONS.md", ".github/LIVE-CREATIONS.md")
 	];
 
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }

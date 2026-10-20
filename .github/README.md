@@ -349,22 +349,22 @@ sequenceDiagram
     M-->>G: AutoloadsReady
 ```
 
-| Order          | Autoload                 | Scope    | Role                                             |
-|----------------|--------------------------|----------|--------------------------------------------------|
-| `First`        | `Logger`                 | all      | Serilog setup and sinks                          |
-| `Early`        | `GdCore`                 | all      | Owns the Core instance and its Godot wrappers    |
-| `Early + 1`    | `SessionManager`         | all      | Single-player / host / join sessions, peers, RPC |
-| `Early + 2`    | `PlayerSync`             | all      | Mirrors session peers as GdCore players          |
-| `Early + 3`    | `ToolManager`            | client   | Creates and gates tools                          |
-| `Standard`     | `ChatManager`            | all      | Chat history, logs, and read-aloud               |
-| `Standard + 1` | `ProfanityFilterManager` | all      | The host's profanity filter for chat and names   |
-| `Standard + 2` | `ExeHasher`              | all      | Logs the executable's path, size, and hash       |
-| `Standard + 3` | `DiscordRpc`             | client   | Discord Rich Presence                            |
-| `Standard + 4` | `DiagnosticLogger`       | all      | Logs a system report in the background           |
-| `Late`         | `WorldManager`           | all      | Instantiates the world scene                     |
-| `Late + 1`     | `UpdateChecker`          | client   | Checks GitHub for newer releases                 |
-| `Late + 1`     | `CommandLineSession`     | all      | Hosts or joins a session from command-line args  |
-| `Last`         | `Watchdog`               | all      | Detects main-thread stalls                       |
+| Order          | Autoload                 | Scope  | Role                                             |
+|----------------|--------------------------|--------|--------------------------------------------------|
+| `First`        | `Logger`                 | all    | Serilog setup and sinks                          |
+| `Early`        | `GdCore`                 | all    | Owns the Core instance and its Godot wrappers    |
+| `Early + 1`    | `SessionManager`         | all    | Single-player / host / join sessions, peers, RPC |
+| `Early + 2`    | `PlayerSync`             | all    | Mirrors session peers as GdCore players          |
+| `Early + 3`    | `ToolManager`            | client | Creates and gates tools                          |
+| `Standard`     | `ChatManager`            | all    | Chat history, logs, and read-aloud               |
+| `Standard + 1` | `ProfanityFilterManager` | all    | The host's profanity filter for chat and names   |
+| `Standard + 2` | `ExeHasher`              | all    | Logs the executable's path, size, and hash       |
+| `Standard + 3` | `DiscordRpc`             | client | Discord Rich Presence                            |
+| `Standard + 4` | `DiagnosticLogger`       | all    | Logs a system report in the background           |
+| `Late`         | `WorldManager`           | all    | Instantiates the world scene                     |
+| `Late + 1`     | `UpdateChecker`          | client | Checks GitHub for newer releases                 |
+| `Late + 1`     | `CommandLineSession`     | all    | Hosts or joins a session from command-line args  |
+| `Last`         | `Watchdog`               | all    | Detects main-thread stalls                       |
 
 </details>
 

@@ -1,14 +1,17 @@
 [gd_scene format=3 uid="uid://cbkdi1uw6v7nj"]
 
-[ext_resource type="Script" path="res://build_assets/Advanced/Suspension.cs" id="1_uc1om"]
+[ext_resource type="Script" uid="uid://cldoqqo2i4yuu" path="res://build_assets/Advanced/Suspension.cs" id="1_uc1om"]
 [ext_resource type="Script" uid="uid://df6a4m2i61bg5" path="res://Scripts/Assets/AssetPiece.cs" id="2_piece"]
-
-[ext_resource type="Shader" path="res://shaders/coil.gdshader" id="3_coil"]
+[ext_resource type="Shader" uid="uid://b12vg150hs30f" path="res://shaders/coil.gdshader" id="3_coil"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(0.5, 0.1, 0.5)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nieao"]
+shading_mode = 2
+
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
+material = SubResource("StandardMaterial3D_nieao")
 size = Vector3(0.5, 0.1, 0.5)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_coil"]
@@ -23,8 +26,6 @@ shader_parameter/metallic = 0.0
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_coil"]
 material = SubResource("ShaderMaterial_coil")
-top_radius = 0.5
-bottom_radius = 0.5
 height = 1.0
 radial_segments = 8
 rings = 120
@@ -58,7 +59,7 @@ shape = SubResource("BoxShape3D_8kdi2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
 mesh = SubResource("BoxMesh_8kdi2")
 
-[node name="Coil" type="MeshInstance3D" parent="Bottom"]
+[node name="Coil" type="MeshInstance3D" parent="Bottom" unique_id=586094621]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
 custom_aabb = AABB(-0.1875, 0, -0.1875, 0.375, 1.85, 0.375)
 instance_shader_parameters/coil_length = 0.8
@@ -75,7 +76,7 @@ shape = SubResource("BoxShape3D_8kdi2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 mesh = SubResource("BoxMesh_8kdi2")
 
-[node name="Coil End" type="Marker3D" parent="Top"]
+[node name="Coil End" type="Marker3D" parent="Top" unique_id=844495758]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 
 [node name="Spring" type="Generic6DOFJoint3D" parent="." unique_id=1448128195]

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="AssetMaterial" format=3 uid="uid://b1spd65ih244"]
 
-[ext_resource type="Script" uid="uid://ctgp55iclfbsa" path="res://Scripts/Assets/AssetMaterial.cs" id="1_debug"]
+[ext_resource type="Script" uid="uid://ctgp55iclfbsa" path="res://Scripts/Assets/Materials/AssetMaterial.cs" id="1_debug"]
 
 [sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_debug"]
 

@@ -1,4 +1,4 @@
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 using Xunit;
 using static EnsembleRoot.Globals.Constants;

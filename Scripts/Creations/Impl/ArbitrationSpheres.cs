@@ -2,7 +2,7 @@ using Godot;
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Creations.Impl;
 
 /// <summary>
 ///     A creation's spheres for arbitration, one per assembly, in world space. Only the spheres within the other

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Plots.Placement;
 
 /// <summary>Moves a box resting against a surface to the nearest free spot, grid-aligned while snapping.</summary>
 /// <remarks>

@@ -1,7 +1,7 @@
 using System.Globalization;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 
 namespace EnsembleRoot.Scripts.Plots;
@@ -39,15 +39,16 @@ public partial class PlotHandle
 		_plot.Instances.Removed -= OnInstanceRemoved;
 	}
 
-	private static Transform3D GetTransform(GdInstance instance) =>
+	internal static Transform3D GetInstanceTransform(GdInstance instance) =>
 		new(new Basis(instance.Rotation), instance.Position * GridToWorldScale);
 
-	private static AssetHandle CreateHandle(GdInstance instance, Transform3D transform)
+	/// <summary>Instantiates an instance's asset, named after it and placed where it sits in the plot.</summary>
+	internal static AssetHandle CreateHandle(GdInstance instance)
 	{
 		var handle = GAssetManager.GetPacked(instance.Asset.Id).Instantiate<AssetHandle>();
 		handle.Name = string.Create(CultureInfo.InvariantCulture, $"{instance.Id}-{instance.Asset.Name}");
 		handle.InstanceId = instance.Id;
-		handle.Transform = transform;
+		handle.Transform = GetInstanceTransform(instance);
 
 		return handle;
 	}
@@ -65,14 +66,14 @@ public partial class PlotHandle
 	// The static instances mirror the plot even while it's spawned (hidden, out of the physics space)
 	private AssetHandle AddStaticInstance(GdInstance instance)
 	{
-		var transform = GetTransform(instance);
-
-		var handle = CreateHandle(instance, transform);
+		var handle = CreateHandle(instance);
 		handle.SetCollision(PhysicsLayers.StaticInstances, 0);
 
 		_staticInstances.AddChild(handle);
 		_handlesByInstanceId.Add(instance.Id, handle);
-		InstanceBoxes.Add(instance.Id, Obb.From(GAssetManager.GetBoundary(instance.Asset.Id), transform));
+
+		var box = Obb.From(GAssetManager.GetBoundary(instance.Asset.Id), GetInstanceTransform(instance));
+		InstanceBoxes.Add(instance.Id, box);
 
 		return handle;
 	}

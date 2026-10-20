@@ -1,5 +1,6 @@
 using EnsembleRoot.GdCore.Plots;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Plots.Outlines;
+using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -53,12 +54,7 @@ public partial class PlotHandle : Node3D
 		ExitInstances();
 	}
 
-	public override void _PhysicsProcess(double delta)
-	{
-		UpdateReplication(delta);
-		WatchSimulator(delta);
-		KillFallenAssemblies(delta);
-	}
+	public override void _PhysicsProcess(double delta) => WatchSimulator(delta);
 
 	public Vector3 WorldToGrid(Vector3 worldPosition) =>
 		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;

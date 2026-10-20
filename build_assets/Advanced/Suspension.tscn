@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://cbkdi1uw6v7nj"]
 
-[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_uc1om"]
-[ext_resource type="Script" path="res://Scripts/Assets/AssetPiece.cs" id="2_piece"]
+[ext_resource type="Script" path="res://build_assets/Advanced/Suspension.cs" id="1_uc1om"]
+[ext_resource type="Script" uid="uid://df6a4m2i61bg5" path="res://Scripts/Assets/AssetPiece.cs" id="2_piece"]
+
+[ext_resource type="Shader" path="res://shaders/coil.gdshader" id="3_coil"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(0.5, 0.1, 0.5)
@@ -9,11 +11,40 @@ size = Vector3(0.5, 0.1, 0.5)
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
 size = Vector3(0.5, 0.1, 0.5)
 
-[node name="Suspension" type="StaticBody3D" unique_id=726135581]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_coil"]
+render_priority = 0
+shader = ExtResource("3_coil")
+shader_parameter/color = Color(0.25, 0.625, 1, 1)
+shader_parameter/turns = 5.0
+shader_parameter/coil_radius = 0.1625
+shader_parameter/wire_radius = 0.025
+shader_parameter/roughness = 0.5
+shader_parameter/metallic = 0.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_coil"]
+material = SubResource("ShaderMaterial_coil")
+top_radius = 0.5
+bottom_radius = 0.5
+height = 1.0
+radial_segments = 8
+rings = 120
+cap_top = false
+cap_bottom = false
+
+[node name="Suspension" type="StaticBody3D" unique_id=726135581 node_paths=PackedStringArray("Spring", "Coil", "CoilEnd")]
 script = ExtResource("1_uc1om")
+Spring = NodePath("Spring")
+Coil = NodePath("Bottom/Coil")
+CoilEnd = NodePath("Top/Coil End")
 AssetId = 12
 AssetName = &"Suspension"
 Description = &"A boingy sproingy."
+Properties = Dictionary[StringName, Variant]({
+&"damping": 50.0,
+&"maxLength": 2.0,
+&"stiffness": 2000.0,
+&"targetLength": 1.0
+})
 MaxInstanceCount = 250
 
 [node name="Bottom" type="StaticBody3D" parent="." unique_id=1838132400]
@@ -27,6 +58,12 @@ shape = SubResource("BoxShape3D_8kdi2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
 mesh = SubResource("BoxMesh_8kdi2")
 
+[node name="Coil" type="MeshInstance3D" parent="Bottom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.15, 0)
+custom_aabb = AABB(-0.1875, 0, -0.1875, 0.375, 1.85, 0.375)
+instance_shader_parameters/coil_length = 0.8
+mesh = SubResource("CylinderMesh_coil")
+
 [node name="Top" type="StaticBody3D" parent="." unique_id=854620350]
 script = ExtResource("2_piece")
 
@@ -37,6 +74,9 @@ shape = SubResource("BoxShape3D_8kdi2")
 [node name="Top Mesh" type="MeshInstance3D" parent="Top" unique_id=1753757602]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
 mesh = SubResource("BoxMesh_8kdi2")
+
+[node name="Coil End" type="Marker3D" parent="Top"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 
 [node name="Spring" type="Generic6DOFJoint3D" parent="." unique_id=1448128195]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)

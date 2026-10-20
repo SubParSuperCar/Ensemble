@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Godot;
 
-namespace EnsembleRoot.Scripts.Assets;
+namespace EnsembleRoot.Scripts.Creations;
 
 public partial class Assembly
 {

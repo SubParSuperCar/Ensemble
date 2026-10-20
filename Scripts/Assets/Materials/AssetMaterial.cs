@@ -2,7 +2,7 @@ using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace EnsembleRoot.Scripts.Assets;
+namespace EnsembleRoot.Scripts.Assets.Materials;
 
 /// <summary>
 ///     What an instance is made of, chosen by its material ID property (see <see cref="MaterialBank" />): how it looks

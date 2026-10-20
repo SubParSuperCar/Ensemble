@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using EnsembleRoot.Scripts.Creations;
 using EnsembleRoot.Scripts.Plots.Impl;
 using Serilog;
 
@@ -13,8 +14,8 @@ public partial class PlotManager
 	private const double ArbitrationReviewInterval = 1 / 8d;
 
 	private readonly Dictionary<int, double> _arbitrationTimesByPlotId = [];
+	private readonly List<LiveCreation> _creations = [];
 	private readonly Dictionary<(int, int), PlotLink> _links = [];
-	private readonly List<PlotHandle> _spawnedHandles = [];
 
 	private double _arbitrationClock;
 	private double _sinceArbitrationReview;
@@ -41,8 +42,11 @@ public partial class PlotManager
 
 		_sinceArbitrationReview = 0;
 
-		_spawnedHandles.Clear();
-		_spawnedHandles.AddRange(_handlesById.Values.Where(static handle => handle.Assemblies.Count is not 0));
+		_creations.Clear();
+
+		foreach (var handle in _handlesById.Values)
+			if (handle.Creation is { Assemblies.Count: not 0 } creation)
+				_creations.Add(creation);
 
 		LinkCloseCreations();
 		ReviewArbitration();
@@ -51,18 +55,18 @@ public partial class PlotManager
 	// Only while two or more creations are spawned is there anything to compare
 	private void LinkCloseCreations()
 	{
-		if (_spawnedHandles.Count < 2)
+		if (_creations.Count < 2)
 			return;
 
-		foreach (var handle in _spawnedHandles)
-			handle.UpdateArbitrationSpheres();
+		foreach (var creation in _creations)
+			creation.UpdateArbitrationSpheres();
 
-		for (var i = 0; i < _spawnedHandles.Count; i++)
-			for (var j = i + 1; j < _spawnedHandles.Count; j++)
+		for (var i = 0; i < _creations.Count; i++)
+			for (var j = i + 1; j < _creations.Count; j++)
 			{
-				var (plot, other) = (_spawnedHandles[i], _spawnedHandles[j]);
-				var key = (Math.Min(plot.Id, other.Id), Math.Max(plot.Id, other.Id));
-				var isOverlapping = plot.ArbitrationSpheres.Overlaps(other.ArbitrationSpheres);
+				var (creation, other) = (_creations[i], _creations[j]);
+				var key = (Math.Min(creation.Plot.Id, other.Plot.Id), Math.Max(creation.Plot.Id, other.Plot.Id));
+				var isOverlapping = creation.ArbitrationSpheres.Overlaps(other.ArbitrationSpheres);
 
 				// Parted links keep the time they parted
 				if (_links.TryGetValue(key, out var link) ? link.IsOverlapping != isOverlapping : isOverlapping)
@@ -78,7 +82,7 @@ public partial class PlotManager
 			if (!link.IsOverlapping && _arbitrationClock - link.ChangeTime >= ArbitrationHoldTime)
 				_links.Remove(key);
 
-		var plots = _spawnedHandles.Select(static handle => (handle.Id, handle.Assemblies.Count)).ToList();
+		var plots = _creations.Select(static creation => (creation.Plot.Id, creation.Assemblies.Count)).ToList();
 
 		foreach (var (id, leaderId) in Arbitration.GetLeaders(plots, _links.Keys))
 		{

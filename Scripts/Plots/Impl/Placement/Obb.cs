@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using Godot;
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Plots.Placement;
 
 /// <summary>
 ///     An oriented bounding box tested with the Separating Axis Theorem: two boxes are disjoint if their projections

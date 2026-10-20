@@ -121,7 +121,7 @@ after them (asset logic, mechanisms, seats, input, physics authority, replicatio
 | Creation         | A plot's build as a whole, static or live (as in saves)                                    |
 | Instance         | One placed asset in Core: ID, asset, grid position, rotation, properties                   |
 | Static instances | Build mode: frozen AssetHandles under `Instances/Static`, editable with the tools          |
-| Spawned / live   | A plot whose creation is simulated, under `Instances/Dynamic`; editing is locked           |
+| Spawned / live   | A plot whose creation is simulated, as a `LiveCreation`; editing is locked                 |
 | Abut             | Two collider boxes share part of a face within `Epsilon`; edges and corners don't count    |
 | Weld             | An automatic, unbreakable rigid link between pieces of two instances whose boxes abut      |
 | Group            | The pieces connected by welds (one union-find component), even a single piece              |
@@ -163,7 +163,7 @@ after them (asset logic, mechanisms, seats, input, physics authority, replicatio
    Builders parity: either box, grown by `Epsilon` along one of its axes and shrunk by it along the others, overlaps the
    other), one box per collider, so assets may have several. Neighbors come from an ObbGrid (done: `Welds.Group`)
 2. Groups - union-find over the weld edges; each connected component is one rigid group, even a group of one (done)
-3. Assembly bodies - a new `RigidBody3D` per group under `Instances/Dynamic`, with each asset's collision shapes
+3. Assembly bodies - a new `RigidBody3D` per group under the plot's `LiveCreation`, with each asset's collision shapes
    registered on it through the shape-owner API (`CreateShapeOwner(asset)`, `ShapeOwnerAddShape`,
    `ShapeOwnerSetTransform`) at the asset's offset, reusing the `Shape3D` resources. Godot only counts shapes that are
    direct children of a body, so nesting bodies (or wrapping `Node3D` assets) wouldn't work (done: `Assembly`)

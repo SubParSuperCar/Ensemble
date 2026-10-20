@@ -4,7 +4,7 @@ using Godot;
 // ReSharper disable ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Plots.Placement;
 
 /// <summary>A uniform spatial hash of boxes, so placement only tests the obstacles near a box.</summary>
 public sealed class ObbGrid

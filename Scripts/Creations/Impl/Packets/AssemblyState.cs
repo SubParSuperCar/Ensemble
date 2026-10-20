@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using EnsembleRoot.Common.Networking;
 using Godot;
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Creations.Packets;
 
 /// <summary>An assembly's streamed state, in its plot's local space, quantized to <see cref="Bits" /> bits.</summary>
 [StructLayout(LayoutKind.Auto)]

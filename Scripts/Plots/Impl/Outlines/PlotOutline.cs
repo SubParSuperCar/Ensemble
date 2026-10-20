@@ -1,7 +1,7 @@
 using EnsembleRoot.Scripts.Adornments;
 using Godot;
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Plots.Outlines;
 
 /// <summary>A plot boundary outline that rises from the grid when raised and sinks back into it when lowered.</summary>
 public partial class PlotOutline : Node3D

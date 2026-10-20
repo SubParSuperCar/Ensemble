@@ -115,27 +115,17 @@ public partial class PlotHandle
 		SetSimulator(peerId);
 	}
 
-	/// <summary>
-	///     Hands the creation off: a new simulator resumes from the latest received state, and an old one freezes its
-	///     bodies into proxies where they are. Remaining proxies forget their timeline, since another simulator's
-	///     sequence numbers mean other moments.
-	/// </summary>
+	// A spawned creation is handed off at once (see LiveCreation.HandOff); an unspawned one starts out simulated by
+	// the peer
 	private void SetSimulator(int peerId)
 	{
 		SimulatorPeerId = peerId;
 		_sinceSimulatorHeard = 0;
 
-		if (!_plot.IsSpawned)
+		if (Creation is null)
 			return;
 
-		var isSimulated = IsSimulatedLocally;
-
-		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-		foreach (var assembly in _assemblies)
-			if (!assembly.IsKilled)
-				assembly.HandOff(isSimulated, _clock);
-
-		ResetReplication();
+		Creation.HandOff(IsSimulatedLocally);
 
 		Log.Debug(
 			"Plot {PlotId}'s creation is simulated by peer {PeerId} (epoch {Epoch})", Id, peerId, SimulationEpoch);
@@ -144,7 +134,7 @@ public partial class PlotHandle
 	// A simulator that stopped sending (a hung or hostile client) loses the creation to the host
 	private void WatchSimulator(double delta)
 	{
-		if (!GSessionManager.IsServer || IsSimulatedLocally || !_plot.IsSpawned)
+		if (!GSessionManager.IsServer || IsSimulatedLocally || Creation is null)
 			return;
 
 		_sinceSimulatorHeard += delta;

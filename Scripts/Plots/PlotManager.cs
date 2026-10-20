@@ -71,6 +71,14 @@ public partial class PlotManager : Node
 		GetHandleOrNull(plotId) ?? throw new KeyNotFoundException(
 			string.Create(CultureInfo.InvariantCulture, $"Handle with plot ID {plotId} not found."));
 
+	internal void WakeAssembliesNear(Aabb bounds, PlotHandle except)
+	{
+		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		foreach (var handle in _handlesById.Values)
+			if (handle != except)
+				handle.WakeAssemblies(bounds);
+	}
+
 	private void OnLocalPlotChanged(GdPlot? _) => UpdateOutlines();
 
 	private void UpdateOutlines()

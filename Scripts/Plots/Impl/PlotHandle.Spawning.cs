@@ -16,6 +16,9 @@ public partial class PlotHandle
 	private const double KillCheckInterval = 1d;
 	private const int MaxLiftPasses = 64;
 
+	// Past the creation's bounds, so bodies resting on its surface count as touching it
+	private const float WakeMargin = 1 / 8f;
+
 	private const uint AssemblyMask =
 		PhysicsLayers.World | PhysicsLayers.Character | PhysicsLayers.StaticInstances | PhysicsLayers.DynamicInstances;
 
@@ -94,6 +97,7 @@ public partial class PlotHandle
 		SimulationEpoch++;
 
 		GPlotManager.ForgetArbitration(this);
+		WakeNeighbors();
 
 		foreach (var assembly in _assemblies)
 			assembly.QueueFree();
@@ -104,6 +108,28 @@ public partial class PlotHandle
 		SetStaticInstancesEnabled(true);
 
 		Log.Debug("Despawned plot {PlotId}", Id);
+	}
+
+	/// <summary>Wakes this peer's sleeping bodies that touch the bounds, as something they rest on may be leaving.</summary>
+	internal void WakeAssemblies(Aabb bounds)
+	{
+		foreach (var assembly in _assemblies)
+			if (assembly is { IsSimulated: true, IsKilled: false, Sleeping: true } &&
+				(assembly.GlobalTransform * assembly.Bounds).Intersects(bounds))
+				assembly.Sleeping = false;
+	}
+
+	// Jolt leaves bodies asleep when what they rest on leaves the space, so other creations' bodies leaning on this one
+	// would hang in the air
+	private void WakeNeighbors()
+	{
+		var bounds = _assemblies
+			.Where(static assembly => !assembly.IsKilled)
+			.Select(static assembly => assembly.GlobalTransform * assembly.Bounds)
+			.Aggregate((Aabb?)null, static (sum, aabb) => sum?.Merge(aabb) ?? aabb);
+
+		if (bounds is { } creationBounds)
+			GPlotManager.WakeAssembliesNear(creationBounds.Grow(WakeMargin), this);
 	}
 
 	private void SetStaticInstancesEnabled(bool isEnabled)

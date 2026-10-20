@@ -31,6 +31,7 @@ public partial class SessionManager
 			RunPendingRpcs();
 
 		UpdatePings(delta);
+		UpdateTraffic(delta);
 	}
 
 	private static void RunSafely(Action action)

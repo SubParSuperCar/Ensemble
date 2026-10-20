@@ -28,4 +28,5 @@ public sealed class OfflineSession(SceneMultiplayer multiplayer) : ISession
 
 	public string GetAddress(int peerId) => string.Empty;
 	public int GetPing(int peerId) => 0;
+	public (long Received, long Sent) PopTraffic() => default;
 }

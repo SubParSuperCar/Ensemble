@@ -210,11 +210,11 @@ would fall through what it stands on. Options to prototype later:
 - **Late joiners:** `PlotsSnapshot` carries each plot's epoch, simulator, and the latest state of every assembly,
   moving or asleep, so proxies start exactly in place (later: seated characters and controller input).
 - **Lost packets for sleeping bodies:** a body's last update before sleeping may be lost, so sleeping assemblies get a
-  slow round-robin keepalive within a fixed per-plot budget (e.g., 32 assemblies a second), healing stale proxies
-  without scaling bandwidth with creation size.
-- **Support despawning (open):** a body handed off at rest starts asleep, and nothing wakes it if what held it up
-  despawns: a tower propped against a creation that despawned as its owner left kept leaning on nothing. Waking the
-  bodies near a despawning creation would fix it.
+  slow round-robin keepalive, each about once a second but at most 40 a second per plot, healing stale proxies
+  without scaling bandwidth with creation size (a flat 40 a second made a one-body creation resend itself 40 times).
+- **Support despawning:** Jolt leaves bodies asleep when what they rest on leaves the space, and a body handed off at
+  rest starts asleep, so a tower propped against a creation that despawned kept leaning on nothing. Despawning wakes
+  every peer's own sleeping bodies within the creation's bounds.
 
 ### Arbitration: shared simulators (0.55.0, done)
 

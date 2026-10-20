@@ -1,33 +1,37 @@
-[gd_scene format=3 uid="uid://c31rh3yruuct6"]
+[gd_scene format=3 uid="uid://b00m71tppiktg"]
 
-[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_3p2gs"]
-[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_msvos"]
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_s0jc2"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_rfv87"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
-size = Vector3(2, 0.5, 0.5)
+size = Vector3(3.5, 0.5, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lc0d5"]
+shading_mode = 2
 
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
-size = Vector3(2, 0.5, 0.5)
+material = SubResource("StandardMaterial3D_lc0d5")
+size = Vector3(3.5, 0.5, 0.5)
 
-[node name="Beam 4" type="StaticBody3D" unique_id=726135581]
-script = ExtResource("1_3p2gs")
-AssetId = 9
-AssetName = &"Beam 4"
-Description = &"Four cubes long, in one piece."
+[node name="Beam 7" type="StaticBody3D" unique_id=726135581]
+script = ExtResource("1_s0jc2")
+AssetId = 10
+AssetName = &"Beam x7"
+Description = &"Seven cubes long, in one piece."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1
 })
-MaxInstanceCount = 875
+MaxInstanceCount = 750
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=237803691]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0)
 shape = SubResource("BoxShape3D_8kdi2")
 
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, 0)
 mesh = SubResource("BoxMesh_8kdi2")
 
 [node name="Paintable" type="Node" parent="." unique_id=107636412]
-script = ExtResource("2_msvos")
+script = ExtResource("2_rfv87")
 metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

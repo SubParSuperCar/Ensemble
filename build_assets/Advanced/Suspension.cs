@@ -45,6 +45,7 @@ public partial class Suspension : AssetHandle
 	{
 		// Interpolated, as the plates are drawn
 		var length = MeasureCoil(Coil.GetGlobalTransformInterpolated(), CoilEnd.GetGlobalTransformInterpolated());
+
 		// ReSharper disable once CompareOfFloatsByEqualityOperator
 		if (length == _coilLength)
 			return;

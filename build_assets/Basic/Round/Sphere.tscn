@@ -6,7 +6,11 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_irkkq"]
 radius = 0.249
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3tig"]
+shading_mode = 2
+
 [sub_resource type="SphereMesh" id="SphereMesh_ruqy6"]
+material = SubResource("StandardMaterial3D_r3tig")
 radius = 0.25
 height = 0.5
 radial_segments = 32
@@ -18,8 +22,8 @@ AssetId = 1
 AssetName = &"Sphere"
 Description = &"A ball one cube across."
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "808080",
-&"_materialId": 0
+&"_colorHex": "FFFFFF",
+&"_materialId": -1
 })
 MaxInstanceCount = 500
 

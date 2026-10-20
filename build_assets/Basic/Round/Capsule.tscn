@@ -7,7 +7,11 @@
 radius = 0.249
 height = 0.998
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nw72c"]
+shading_mode = 2
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_nw72c"]
+material = SubResource("StandardMaterial3D_nw72c")
 radius = 0.25
 height = 1.0
 radial_segments = 32
@@ -18,7 +22,7 @@ AssetId = 11
 AssetName = &"Capsule"
 Description = &"A rounded rod, two cubes long."
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "8080FF",
+&"_colorHex": "FFFFFF",
 &"_materialId": 0
 })
 MaxInstanceCount = 500

@@ -10,8 +10,8 @@ contract: they bend when something unforeseen comes up.
 
 ## 1. How it works today
 
-A plot has two modes. In **build mode**, its instances are frozen asset scenes that players place and edit. In
-**live mode**, after spawning, they become physics: a `LiveCreation` that exists only until the plot despawns, so
+A plot has two modes. In **build mode**, its instances are frozen asset scenes that players place and edit. In **live
+mode**, after spawning, they become physics: a `LiveCreation` that exists only until the plot despawns, so
 nothing of a spawn outlives it.
 
 ```mermaid
@@ -161,6 +161,7 @@ much as Baja Builders did it (a model, two parts, and a constraint):
   length every frame from where the plates are drawn.
 
 ### Materials (the material bank)
+
 - A `MaterialBank` node under Main with a static `Instance` (no `Globals` accessor), exporting an array of
   `AssetMaterial` resources edited in the inspector. An asset's `_materialId` indexes it; `-1` (matching `Sentinels`)
   means none, the plain color. Painted materials are shared per material and color (`Paints`), so painted geometry
@@ -256,8 +257,8 @@ host gives both to one simulator until they separate, and their collisions becom
 - One unreliable-ordered RPC per plot per tick from the simulator (channel 2; characters use 1), relayed by the host
   to synced peers, as with characters.
 - **Bit-packed, not byte-aligned.** Header: plot ID, epoch, sequence. Per moving assembly: ID (its group's index in
-  weld order), position (1/512 m, relative to the plot), rotation (smallest three), and linear and angular velocity
-  (see the bit budget below).
+  weld order), position (1/512 m, relative to the plot), rotation (smallest three), and linear and angular velocity (see
+  the bit budget below).
 - An assembly's origin is its center of mass, so its position and velocities describe the point it rotates about (with
   the plot's origin, proxies extrapolating a rolling ball swung it meters off course).
 - Sleeping assemblies send nothing beyond the keepalive round-robin (section 4).

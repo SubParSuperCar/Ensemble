@@ -6,7 +6,11 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(0.5, 0.25, 0.5)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nwcny"]
+shading_mode = 2
+
 [sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
+material = SubResource("StandardMaterial3D_nwcny")
 size = Vector3(0.5, 0.25, 0.5)
 
 [node name="Half Slab" type="StaticBody3D" unique_id=726135581]

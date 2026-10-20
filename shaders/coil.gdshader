@@ -1,5 +1,7 @@
 shader_type spatial;
 
+render_mode vertex_lighting;
+
 // Bends a CylinderMesh (along Y, 1 unit tall) into a coil spring that stands on the node's origin and reaches up
 // coil_length, so each spring stretches on its own while sharing one material. The cylinder is the wire: its height
 // runs along the coil and its round section stays the wire's, so it needs enough rings for smooth turns (about 24 a

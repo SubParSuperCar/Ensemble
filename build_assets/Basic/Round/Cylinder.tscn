@@ -1,26 +1,30 @@
 [gd_scene format=3 uid="uid://coffwd0qtibsc"]
 
-[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_gk6lf"]
-[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_4d1fl"]
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_iytmm"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_3htee"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_gflwd"]
 height = 0.5
 radius = 0.999
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puxdk"]
+shading_mode = 2
+
 [sub_resource type="CylinderMesh" id="CylinderMesh_dvw24"]
+material = SubResource("StandardMaterial3D_puxdk")
 top_radius = 1.0
 bottom_radius = 1.0
 height = 0.5
 radial_segments = 32
 rings = 0
 
-[node name="Large Cylinder" type="StaticBody3D" unique_id=726135581]
-script = ExtResource("1_gk6lf")
+[node name="Cylinder" type="StaticBody3D" unique_id=726135581]
+script = ExtResource("1_iytmm")
 AssetId = 4
 AssetName = &"Large Cylinder"
 Description = &"A wide disc four cubes across, like a wheel."
 Properties = Dictionary[StringName, Variant]({
-&"_colorHex": "FF80FF",
+&"_colorHex": "404040",
 &"_materialId": -1
 })
 MaxInstanceCount = 750
@@ -32,5 +36,5 @@ shape = SubResource("CylinderShape3D_gflwd")
 mesh = SubResource("CylinderMesh_dvw24")
 
 [node name="Paintable" type="Node" parent="." unique_id=1136470923]
-script = ExtResource("2_4d1fl")
+script = ExtResource("2_3htee")
 metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

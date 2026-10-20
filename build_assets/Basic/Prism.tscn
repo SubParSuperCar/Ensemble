@@ -3,10 +3,14 @@
 [ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_s1ixw"]
 [ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_qcqr4"]
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_s1ixw"]
-points = PackedVector3Array(0, 0.25, 0.25, 0.25, -0.25, 0.25, 0, 0.25, -0.25, -0.25, -0.25, 0.25, 0.25, -0.25, -0.25, -0.25, -0.25, -0.25)
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_qcqr4"]
+points = PackedVector3Array(0.249, -0.249, 0.25, 0, 0.249, 0.25, -0.249, -0.249, 0.25, 0.249, -0.249, -0.25, 0, 0.249, -0.25, -0.249, -0.249, -0.25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qcqr4"]
+shading_mode = 2
 
 [sub_resource type="PrismMesh" id="PrismMesh_7fd65"]
+material = SubResource("StandardMaterial3D_qcqr4")
 size = Vector3(0.5, 0.5, 0.5)
 
 [node name="Prism" type="StaticBody3D" unique_id=726135581]
@@ -20,8 +24,9 @@ Properties = Dictionary[StringName, Variant]({
 })
 MaxInstanceCount = 1250
 
-[node name="Collider" type="CollisionShape3D" parent="." unique_id=841263352]
-shape = SubResource("ConvexPolygonShape3D_s1ixw")
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=1125222542]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)
+shape = SubResource("ConvexPolygonShape3D_qcqr4")
 
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
 mesh = SubResource("PrismMesh_7fd65")

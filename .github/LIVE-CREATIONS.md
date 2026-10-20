@@ -1,14 +1,81 @@
-# Live Creations (design)
+# Live Creations
 
-The design for everything after single-player spawning (v0.52.0): asset logic, mechanisms, seats, input, physics
-authority, replication, aerodynamics, and performance. It extends
+How spawned creations work today, from welding to replication ([**section 1**](#1-how-it-works-today) walks through
+it), and the design for what comes next: asset logic, mechanisms, input, seats, and aerodynamics. It extends
 [**Spawning and live physics**](./ROADMAP.md#spawning-and-live-physics-plan) in the roadmap, whose terms table this
-uses. Decisions are numbered **(D#)**; the table at the end lists them, resolved or open. The phases are a guide, not a
+uses. Decisions are numbered **(D#)**; the table at the end lists them, resolved or open. Plans are a guide, not a
 contract: they bend when something unforeseen comes up.
 
 ---
 
-## 1. Principles
+## 1. How it works today
+
+A plot has two modes. In **build mode**, its instances are frozen asset scenes that players place and edit. In
+**live mode**, after spawning, they become physics: a `LiveCreation` that exists only until the plot despawns, so
+nothing of a spawn outlives it.
+
+```mermaid
+graph TD
+    Core["Core: the plot's instances (persistent, replicated by actions)"]
+    Core --> Static["PlotHandle's static instances (build mode; always mirror Core)"]
+    Core -->|spawn| Live["LiveCreation (live mode; freed on despawn)"]
+    Live --> Assemblies["Assemblies: one rigid body per welded group"]
+    Assemblies --> Pieces["Pieces: handles and AssetPiece bodies riding along"]
+    Plot["PlotHandle: who simulates (epochs, overrides, arbitration)"] -->|hands off, routes packets| Live
+```
+
+### The life of a creation
+
+1. **Building.** Players place instances with actions, Core stores them, and each `PlotHandle` mirrors them as frozen
+   `AssetHandle` scenes (under `Instances/Static`), which the tools select and characters stand on.
+2. **Spawning.** The owner sends `SetPlotSpawnedAction`, and every peer, alike and on its own (no geometry is sent),
+   hides the static mirror and creates a `LiveCreation`. It welds every piece whose collider boxes share a face with
+   another instance's piece (`Welds`), builds one `Assembly` (a `RigidBody3D`) per welded group with its origin on its
+   center of mass, moves each piece into its assembly, links the assets' joints between assemblies, and initializes
+   the handles and their components. An assembly's ID is its group's index, so every peer agrees on IDs.
+3. **Who simulates.** One peer simulates each creation, and everyone else shows proxies: frozen kinematic copies that
+   characters can still stand on. The host decides: an override if any (from Lua, or a timeout), else the arbitrated
+   simulator (step 6), else the plot's owner, else itself, and it broadcasts each change with an epoch number. A
+   change hands the creation off: the new simulator unfreezes its proxies where they last were, and the old one
+   freezes its bodies into proxies.
+4. **Streaming.** The simulator sends its moving assemblies 20 times a second, bit-packed (about 25 bytes each),
+   through the host, which checks and rate limits every packet before relaying it. Sleeping assemblies are resent
+   about once a second, in case their final update was lost.
+5. **Proxies.** Each peer replays the received states 100 ms in the past, along curves through the positions and
+   velocities, so late or lost packets don't show.
+6. **Arbitration.** When creations of different plots come close, the host hands them all to one simulator (that of
+   the creation with the most assemblies), so their collisions are real physics on one machine, until they've been
+   apart for 2 s.
+7. **Despawning.** The owner despawns, or the last occupant leaves. Every peer wakes other creations' bodies that
+   rested on this one, frees the `LiveCreation` (and with it every assembly and stream buffer), and shows the static
+   mirror again.
+
+Late joiners get each plot's epoch, simulator, and every assembly's latest state in the plots snapshot, so their
+proxies start in place.
+
+### Where the code lives
+
+| Path                                | Role                                                                           |
+|-------------------------------------|--------------------------------------------------------------------------------|
+| `Scripts/Plots/PlotHandle.cs`       | A plot, with `Impl/PlotHandle.*.cs`: the static mirror (`Instances`), spawning |
+|                                     | (`Spawning`), who simulates (`Simulation`, `Arbitration`), and packets and     |
+|                                     | late joins (`Replication`)                                                     |
+| `Scripts/Plots/PlotManager.cs`      | All plots, and the host's arbitration between them                             |
+|                                     | (`Impl/PlotManager.Arbitration.cs`)                                            |
+| `Scripts/Plots/Impl/Placement/`     | Oriented boxes (`Obb`), their grid, and the placement rules and solver         |
+| `Scripts/Creations/LiveCreation.cs` | A spawned creation, with `Impl/LiveCreation.*.cs`: building (`Building`),      |
+|                                     | streaming and proxies (`Streaming`), and arbitration spheres and waking        |
+|                                     | (`Neighbors`)                                                                  |
+| `Scripts/Creations/Assembly.cs`     | One rigid body per welded group, with its proxy replay                         |
+|                                     | (`Impl/Assembly.Proxy.cs`)                                                     |
+| `Scripts/Creations/Impl/`           | Weld groups (`Welds`), arbitration spheres, and the wire format (`Packets/`)   |
+| `Scripts/Assets/`                   | `AssetHandle` (an asset's root and piece 0), `AssetPiece`, `AssetComponent`,   |
+|                                     | and `AssetManager` (each piece's colliders, bounds, and mass); `Components/`,  |
+|                                     | `Materials/`                                                                   |
+| `build_assets/`                     | The asset scenes, with asset scripts beside them (`Advanced/Suspension.cs`)    |
+| `shaders/coil.gdshader`             | The spring coil                                                                |
+
+## 2. Principles
 
 - **Core stays pure.** Live state (bodies, ownership, inputs, seats) is ephemeral: it lives in Scripts and Replication,
   and despawning discards it. Only build state (instances and their properties) is persistent and replicated by
@@ -25,7 +92,7 @@ contract: they bend when something unforeseen comes up.
 - **Nodes added at run time get explicit names,** never Godot's generated ones.
 - **Baja Builders parity for behavior,** improved where Godot allows.
 
-## 2. Asset authoring
+## 3. Asset authoring
 
 ### Where asset scripts live
 
@@ -35,8 +102,8 @@ contract: they bend when something unforeseen comes up.
   `Motor.cs`. Godot requires a script's file name to match its class, and asset scenes are PascalCase **(D1)**, so
   every `X.cs` pairs with its `X.tscn`. `AssetManager` only registers scenes, so the scripts don't disturb its scan.
 - `EnsembleGame.csproj` nests each script under the same-named `.tscn` or `.scn` beside it in the IDE, as `.axaml.cs`
-  nests under `.axaml` (the scenes are `None` items, so they can parent). With the first asset script,
-  `config.nsdepcop` gets a rule that nothing but `EnsembleRoot.BuildAssets.*` may reference it.
+  nests under `.axaml` (the scenes are `None` items, so they can parent), and `config.nsdepcop` lets nothing but
+  `EnsembleRoot.BuildAssets.*` reference an asset script.
 
 ### Behaviors: components or subclasses
 
@@ -65,118 +132,49 @@ much as Baja Builders did it (a model, two parts, and a constraint):
 - `AssetManager` warns at startup about anything spawning would ignore: bodies other than `AssetPiece` children, joints
   elsewhere than under the handle, and joints that don't link two of the asset's pieces.
 
-## 3. Asset logic at runtime
+### Asset scripts and properties
 
-### Ticks
+- An asset with behavior subclasses `AssetHandle` in a script beside its scene (`build_assets/Advanced/Suspension.cs`,
+  namespace `EnsembleRoot.BuildAssets.Advanced`). NsDepCop lets nothing outside `EnsembleRoot.BuildAssets` reference an
+  asset script, so the engine never depends on a concrete asset.
+- **Properties** are the asset's defaults (the handle's `Properties` export), copied into each instance and edited per
+  instance by actions (later, by the PropertyTool). Keys starting with `_` are the engine's (`_colorHex`,
+  `_materialId`); the others are the asset's own. `SetPropertiesAction` only checks that a key exists, keeps its type,
+  and is finite, so **each asset clamps what it reads** to what it supports (`AssetHandle.GetNumberProperty(key, min,
+  max)`): any stored value is safe, and the limits live with the code that knows them.
+- Exported node references (`[Export] public Node3D CoilEnd`) are resolved when the scene is instantiated, so they stay
+  valid however a live creation reparents the pieces; never look them up in the tree later.
+- A handle lives one of two lives, static (build mode) or live (`IsLive`), and previews are never initialized.
 
-- Opt-in interfaces, not base classes, so a wing component can sit on any asset:
-    - `ISimulationTicked.SimulationTick(in SimulationTick tick)` - physics logic (motors, forces, aerodynamics). Runs
-      only on the peer simulating the asset's mechanism, at 100 Hz, from one loop per plot in instance-ID order. Not
-      simulating means not ticked, so assets never check ownership themselves.
-    - Plain Godot `_Process` for visuals on every peer (lights, effects). Normal Godot callbacks stay available, but
-      heavy per-tick work belongs in the simulation tick.
-- The tick argument carries the infrastructure (body state, force accumulator, input, delta), so an asset implements
-  one method and writes no plumbing.
-- `PlotHandle` collects the ticked handles and components once at spawn, so 1000 motors cost one engine callback plus
-  1000 C# calls per tick.
+### Example: the Suspension
 
-### State and forces
+- Two plates, `Bottom` and `Top`, both `AssetPiece`s, each welding to its own neighbors. The handle has no colliders of
+  its own, so it rides the bottom plate's assembly.
+- `Spring`, a `Generic6DOFJoint3D` between them: its Y axis is a spring with travel limits, and every other axis is
+  locked (a 6DOF axis's limits default to 0 to 0).
+- `Suspension.cs` sets the spring from the instance's properties when live, clamped: `stiffness` (0 to 100,000 N/m),
+  `damping` (0 to 10,000 N s/m), `targetLength` (its rest length, end to end), and `maxLength` (up to 2 m end to end);
+  the plates never come closer than 0.1 m.
+- `Coil`, a cylinder bent into a helix by `shaders/coil.gdshader`, stands on the bottom plate and reaches `Coil End`,
+  a marker on the top plate. Its color, turns, coil radius, and wire thickness are material parameters, and its length
+  an instance parameter, so each coil stretches on its own with one shared material. While live, the script sets the
+  length every frame from where the plates are drawn.
 
-- `SimulationTick` exposes the assembly's state, read once per tick per assembly: transform, linear and angular
-  velocity, center of mass.
-- Forces go into a per-assembly C# accumulator (`tick.AddForce(force, position)`, `AddTorque`), flushed with one
-  `ApplyForce` / `ApplyTorque` per assembly per tick. A thousand wings make a thousand C# additions, not a thousand
-  interop calls.
-- Joint motors are driven through their joint (target velocity, max torque), set only when a value changes.
+### Materials (the material bank)
+- A `MaterialBank` node under Main with a static `Instance` (no `Globals` accessor), exporting an array of
+  `AssetMaterial` resources edited in the inspector. An asset's `_materialId` indexes it; `-1` (matching `Sentinels`)
+  means none, the plain color. Painted materials are shared per material and color (`Paints`), so painted geometry
+  still batches.
+- **(D5)** An `AssetMaterial` holds the look (`Look`, any `BaseMaterial3D` template, its albedo tinted by the
+  instance's color) and the physics (`Density`, `Friction`, `Bounce`), so `Paintable` and the mass calculation read the
+  same entry: rocks sink, wood floats, rubber grips, and ice slips. An instance without a material uses its asset's
+  `Density`.
+- **(D6)** ID 0 is the debug checkerboard (`resources/materials/Debug.tres`, today's look), so existing
+  `_materialId = 0` instances keep their look, and new plain assets default to `-1`.
+- An assembly has one physics material (Godot sets them per body), blended from its members' (mass-weighted friction,
+  minimum bounce). Wheels get grip by being their own assemblies on joints.
 
-### Ownership-dependent state
-
-Live asset state (a servo's target, a motor's throttle) is derived from inputs and physics, so a new simulator rebuilds
-it on hand-off. Anything that must survive a hand-off travels in the replication stream (section 8); nothing else is
-promised.
-
-## 4. Mechanisms and joints
-
-Most mechanisms only make sense with input, so they come after it; free hinges and springs (suspension) don't need it
-and may come earlier. Some glitching may be accepted at first.
-
-- A **mechanism** is a set of assemblies linked by joints. A joint can't span two machines, but each plot's creation
-  has one simulator (and arbitration merges close plots), so no joint ever does; mechanisms only matter once
-  simulators can differ within a plot.
-- Joint mapping in Godot with Jolt (the 6DOF spring, limits, and equilibrium point were verified in a prototype: a
-  spring sags exactly m g / k, and a limit left at 0 to 0 locks its axis):
-
-| Asset      | Joint                                      | Driven by                                             |
-|------------|--------------------------------------------|-------------------------------------------------------|
-| Hinge      | `HingeJoint3D`, free                       | -                                                     |
-| Motor      | `HingeJoint3D` with its motor              | Input sets the target velocity; max torque from props |
-| Servo      | `HingeJoint3D` with its motor and limits   | A P-controller in the simulation tick toward a target |
-| Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target             |
-| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)        |
-
-- Strengths are asset properties (non-underscore, so the future PropertyTool edits them), scaled for the default
-  density (125 kg/m3).
-- Joint stability suffers at large mass ratios (a 15 kg wheel on a 3 t car is 200:1). Mitigations: material densities
-  for wheels, more Jolt solver iterations, and testing early.
-
-## 5. Input
-
-- **Controller:** each spawned plot has at most one, chosen by occupant order among the plot's occupants sitting in
-  control seats, not by who sat down first. The owner is always the oldest occupant, so a seated owner always has
-  control. Players who don't occupy the plot never get control. No controller means no input.
-- **Input state:** the controller's pressed keys (Godot `Key`s; mouse buttons stay with the camera), from a fixed
-  table of up to 64 bindable keys (letters, digits, arrows, Space, Shift, ...), as a 64-bit mask. Every send carries
-  the whole state, so presses and releases are found by comparing with the previous mask: no start / stop bits or
-  toggles, and a lost packet can't invert a key.
-- **Bindings live on assets,** as editable properties suffixed `Key` (e.g., a motor's `forwardKey`, `reverseKey`), so
-  the future PropertyTool knows to show them as key pickers. Values are Godot `Key` codes as integers: compact in saves
-  and packets, shown by name in the UI (harder to hand-edit in JSON saves, an acceptable cost). Assets read
-  `tick.Input.IsPressed(Key.Q)`.
-- **Flow:** the controller samples its mask each physics tick (empty while the UI sinks input) and sends it to the
-  host whenever it changes, plus a few times a second while any key is held, so a lost packet heals itself and a key
-  can't stick. It's a custom RPC, not an action: it changes too often for the action rate limiter, and needs no
-  validation beyond "the sender is the plot's current controller", which the host checks.
-- **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
-  spin), not the plot owner as such. An asset whose look depends on input replicates that state itself (e.g., a glass
-  that turns from water to wine sends a bool to the other peers), and visuals that follow physics (a spinning rotor)
-  need nothing extra, since the proxies already move.
-- While seated, the controller's character doesn't walk; the camera keeps mouse look and follows the seat.
-- **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, consumed only when no seated asset
-  binds Space; otherwise the action's own key.
-
-## 6. Seats and characters
-
-- A `Seat` component makes any asset a seat; its `HasControls` export makes it a control seat (the Chair and Control
-  Chair assets).
-- **Sitting (D3):** on touch, as with Roblox's seats in BB, with a short cooldown after leaving so you don't sit right
-  back down. **Anyone may sit in any seat (D4),** but only the plot's occupants can control (section 5).
-- **While seated,** the character's body leaves the physics space (the same hop as teleports), is parented to the
-  seat's piece at its sit point, and its controller stops moving it. A seated character adds no weight, so a creation
-  behaves the same with or without riders.
-- **Leaving:** the body re-enters the space beside the seat (pushed clear of the creation like at spawn), and regains
-  control.
-- **Anything that moves or removes a seated character leaves the seat first:** teleports (H reset, `tp_char`,
-  despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed, the occupant leaving or
-  being kicked from the plot. `PlayerHandle.Teleport` calls `LeaveSeat()` before the hop, so every caller gets it.
-- **Replication:** a seated character replicates its seat (plot ID, instance ID) instead of its position; every peer
-  places it on its own copy of the seat, so it rides proxies smoothly.
-
-### Characters versus creations (research)
-
-Characters are kinematic: creations can't push them, a creation hitting one stops as if it hit a wall, and a walking
-character may shove a creation (see the Jolt kinematic note). The goal is the reverse: creations push characters, and
-characters never disturb creations. Godot's layers and masks can't make that one-way (a pair collides if either side's
-mask matches), and a collision exception would also hide creations from the character's own motion queries, so it
-would fall through what it stands on. Options to prototype later:
-
-- **Dynamic characters** (Roblox's model): pushed naturally and ride creations by friction; a large rework of
-  `CharacterController`.
-- **Kinematic characters that yield:** detect creations moving into the character each step and move it out of the
-  way first, so contact rarely builds.
-- Accept today's behavior until vehicles make it matter (the current choice). Players deliberately blocking others'
-  creations could later be handled by moderation (e.g., per-plot blocklists).
-
-## 7. Physics authority
+## 4. Physics authority
 
 ### Model
 
@@ -253,16 +251,16 @@ host gives both to one simulator until they separate, and their collisions becom
   bounds test each review, and 1,462 bodies the host simulates cost about 0.4 ms a review, mostly reading their
   transforms.
 
-## 8. Replication
+## 5. Replication
 
 - One unreliable-ordered RPC per plot per tick from the simulator (channel 2; characters use 1), relayed by the host
   to synced peers, as with characters.
 - **Bit-packed, not byte-aligned.** Header: plot ID, epoch, sequence. Per moving assembly: ID (its group's index in
   weld order), position (1/512 m, relative to the plot), rotation (smallest three), and linear and angular velocity
-  (see the bit budget in section 12).
+  (see the bit budget below).
 - An assembly's origin is its center of mass, so its position and velocities describe the point it rotates about (with
   the plot's origin, proxies extrapolating a rolling ball swung it meters off course).
-- Sleeping assemblies send nothing beyond the keepalive round-robin (section 7).
+- Sleeping assemblies send nothing beyond the keepalive round-robin (section 4).
 - **Budget:** at most 256 states per plot per stream (about 130 KB/s per receiver); past it, awake assemblies take
   turns, each sent less often, and bodies that just fell asleep go first.
 - **Proxies replay 100 ms behind:** each state is stamped with the simulator's moment (sequence numbers advance every
@@ -276,17 +274,138 @@ host gives both to one simulator until they separate, and their collisions becom
   simulator.
 - Seats: reliable sit / leave messages; seated characters stop sending positions.
 
-## 9. Aerodynamics and other forces (later)
+Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):
+
+| Field            | Encoding                                                          | Bits |
+|------------------|-------------------------------------------------------------------|------|
+| Assembly ID      | The group's index in weld order                                   | 16   |
+| Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m | 72   |
+| Rotation         | Smallest three: 2-bit index, 3 x 10 bits                          | 32   |
+| Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                  | 42   |
+| Angular velocity | 1/32 rad/s steps, +-256 rad/s (a fast wheel spins past 100 rad/s) | 42   |
+
+## 6. Asset logic at runtime (planned)
+
+### Ticks
+
+- Opt-in interfaces, not base classes, so a wing component can sit on any asset:
+    - `ISimulationTicked.SimulationTick(in SimulationTick tick)` - physics logic (motors, forces, aerodynamics). Runs
+      only on the peer simulating the asset's mechanism, at 100 Hz, from one loop per plot in instance-ID order. Not
+      simulating means not ticked, so assets never check ownership themselves.
+    - Plain Godot `_Process` for visuals on every peer (lights, effects). Normal Godot callbacks stay available, but
+      heavy per-tick work belongs in the simulation tick.
+- The tick argument carries the infrastructure (body state, force accumulator, input, delta), so an asset implements
+  one method and writes no plumbing.
+- `LiveCreation` collects the ticked handles and components once at spawn, so 1000 motors cost one engine callback plus
+  1000 C# calls per tick.
+
+### State and forces
+
+- `SimulationTick` exposes the assembly's state, read once per tick per assembly: transform, linear and angular
+  velocity, center of mass.
+- Forces go into a per-assembly C# accumulator (`tick.AddForce(force, position)`, `AddTorque`), flushed with one
+  `ApplyForce` / `ApplyTorque` per assembly per tick. A thousand wings make a thousand C# additions, not a thousand
+  interop calls.
+- Joint motors are driven through their joint (target velocity, max torque), set only when a value changes.
+
+### Ownership-dependent state
+
+Live asset state (a servo's target, a motor's throttle) is derived from inputs and physics, so a new simulator rebuilds
+it on hand-off. Anything that must survive a hand-off travels in the replication stream (section 5); nothing else is
+promised.
+
+## 7. Mechanisms and joints
+
+Most mechanisms only make sense with input, so they come after it; free hinges and springs (suspension) don't need it
+and may come earlier. Some glitching may be accepted at first.
+
+- A **mechanism** is a set of assemblies linked by joints. A joint can't span two machines, but each plot's creation
+  has one simulator (and arbitration merges close plots), so no joint ever does; mechanisms only matter once
+  simulators can differ within a plot.
+- Joint mapping in Godot with Jolt (the 6DOF spring, limits, and equilibrium point were verified in a prototype: a
+  spring sags exactly m g / k, and a limit left at 0 to 0 locks its axis):
+
+| Asset      | Joint                                      | Driven by                                             |
+|------------|--------------------------------------------|-------------------------------------------------------|
+| Hinge      | `HingeJoint3D`, free                       | -                                                     |
+| Motor      | `HingeJoint3D` with its motor              | Input sets the target velocity; max torque from props |
+| Servo      | `HingeJoint3D` with its motor and limits   | A P-controller in the simulation tick toward a target |
+| Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target             |
+| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)        |
+
+- Strengths are asset properties (non-underscore, so the future PropertyTool edits them), scaled for the default
+  density (125 kg/m3).
+- Joint stability suffers at large mass ratios (a 15 kg wheel on a 3 t car is 200:1). Mitigations: material densities
+  for wheels, more Jolt solver iterations, and testing early.
+
+## 8. Input (planned)
+
+- **Controller:** each spawned plot has at most one, chosen by occupant order among the plot's occupants sitting in
+  control seats, not by who sat down first. The owner is always the oldest occupant, so a seated owner always has
+  control. Players who don't occupy the plot never get control. No controller means no input.
+- **Input state:** the controller's pressed keys (Godot `Key`s; mouse buttons stay with the camera), from a fixed
+  table of up to 64 bindable keys (letters, digits, arrows, Space, Shift, ...), as a 64-bit mask. Every send carries
+  the whole state, so presses and releases are found by comparing with the previous mask: no start / stop bits or
+  toggles, and a lost packet can't invert a key.
+- **Bindings live on assets,** as editable properties suffixed `Key` (e.g., a motor's `forwardKey`, `reverseKey`), so
+  the future PropertyTool knows to show them as key pickers. Values are Godot `Key` codes as integers: compact in saves
+  and packets, shown by name in the UI (harder to hand-edit in JSON saves, an acceptable cost). Assets read
+  `tick.Input.IsPressed(Key.Q)`.
+- **Flow:** the controller samples its mask each physics tick (empty while the UI sinks input) and sends it to the
+  host whenever it changes, plus a few times a second while any key is held, so a lost packet heals itself and a key
+  can't stick. It's a custom RPC, not an action: it changes too often for the action rate limiter, and needs no
+  validation beyond "the sender is the plot's current controller", which the host checks.
+- **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
+  spin), not the plot owner as such. An asset whose look depends on input replicates that state itself (e.g., a glass
+  that turns from water to wine sends a bool to the other peers), and visuals that follow physics (a spinning rotor)
+  need nothing extra, since the proxies already move.
+- While seated, the controller's character doesn't walk; the camera keeps mouse look and follows the seat.
+- **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, consumed only when no seated asset
+  binds Space; otherwise the action's own key.
+
+## 9. Seats and characters (planned)
+
+- A `Seat` component makes any asset a seat; its `HasControls` export makes it a control seat (the Chair and Control
+  Chair assets).
+- **Sitting (D3):** on touch, as with Roblox's seats in BB, with a short cooldown after leaving so you don't sit right
+  back down. **Anyone may sit in any seat (D4),** but only the plot's occupants can control (section 8).
+- **While seated,** the character's body leaves the physics space (the same hop as teleports), is parented to the
+  seat's piece at its sit point, and its controller stops moving it. A seated character adds no weight, so a creation
+  behaves the same with or without riders.
+- **Leaving:** the body re-enters the space beside the seat (pushed clear of the creation like at spawn), and regains
+  control.
+- **Anything that moves or removes a seated character leaves the seat first:** teleports (H reset, `tp_char`,
+  despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed, the occupant leaving or
+  being kicked from the plot. `PlayerHandle.Teleport` calls `LeaveSeat()` before the hop, so every caller gets it.
+- **Replication:** a seated character replicates its seat (plot ID, instance ID) instead of its position; every peer
+  places it on its own copy of the seat, so it rides proxies smoothly.
+
+### Characters versus creations (research)
+
+Characters are kinematic: creations can't push them, a creation hitting one stops as if it hit a wall, and a walking
+character may shove a creation (see the Jolt kinematic note). The goal is the reverse: creations push characters, and
+characters never disturb creations. Godot's layers and masks can't make that one-way (a pair collides if either side's
+mask matches), and a collision exception would also hide creations from the character's own motion queries, so it
+would fall through what it stands on. Options to prototype later:
+
+- **Dynamic characters** (Roblox's model): pushed naturally and ride creations by friction; a large rework of
+  `CharacterController`.
+- **Kinematic characters that yield:** detect creations moving into the character each step and move it out of the
+  way first, so contact rarely builds.
+- Accept today's behavior until vehicles make it matter (the current choice). Players deliberately blocking others'
+  creations could later be handled by moderation (e.g., per-plot blocklists).
+
+## 10. Aerodynamics and other forces (later)
 
 - An `Airfoil` component on any asset: area (from its collider bounds by default, overridable), a lift curve (linear up
   to a stall angle, then falling), and drag. Each simulation tick it computes the local airflow from the
   assembly's state (`v + w x r`) and adds lift and drag at its position to the accumulator: a few dozen float
   operations, no interop.
 - Thrusters and propellers work the same way: input-driven forces at a point.
-- Buoyancy (from material densities, section 11) and optional global air drag fit the same accumulator.
+- Buoyancy (from material densities, section 3) and optional global air drag fit the same accumulator.
 - None of this costs anything for assets without these components.
 
-## 10. Performance
+## 11. Performance
 
 Measured on an i7-9700K, 2000 loose instances (2000 assemblies, the worst case):
 
@@ -312,96 +431,21 @@ to enter the tree), so the remaining wins are structural:
 At runtime: the batched simulation tick, force accumulators, cached body state, and sleeping bodies keep per-tick
 work proportional to what moves and thinks, not to what exists.
 
-## 11. Material bank (done)
+## 12. History
 
-- A `MaterialBank` node under Main with a static `Instance` (no `Globals` accessor), exporting an array of
-  `AssetMaterial` resources edited in the inspector. An asset's `_materialId` indexes it; `-1` (matching `Sentinels`)
-  means none, the plain color. Painted materials are shared per material and color (`Paints`), so painted geometry
-  still batches.
-- **(D5)** An `AssetMaterial` holds the look (`Look`, any `BaseMaterial3D` template, its albedo tinted by the
-  instance's color) and the physics (`Density`, `Friction`, `Bounce`), so `Paintable` and the mass calculation read the
-  same entry: rocks sink, wood floats, rubber grips, and ice slips. An instance without a material uses its asset's
-  `Density`.
-- **(D6)** ID 0 is the debug checkerboard (`resources/materials/Debug.tres`, today's look), so existing
-  `_materialId = 0` instances keep their look, and new plain assets default to `-1`.
-- An assembly has one physics material (Godot sets them per body), blended from its members' (mass-weighted friction,
-  minimum bounce). Wheels get grip by being their own assemblies on joints.
-
-## 12. Phases
-
-| Version | Track       | Content                                                                                |
-|---------|-------------|----------------------------------------------------------------------------------------|
-| 0.52.x  | Polish      | Token cost by instance count, `dmp_creation`, spawn speedups, the material bank (done) |
-| 0.53.0  | Multiplayer | Phase 2 with the full authority model, but the host as the only simulator; proxies,    |
-|         |             | bit-packed wire format, epochs, keepalives, late joins                                 |
-| 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts (done)           |
-| 0.55.0  | Multiplayer | Arbitration: creations close to each other share a simulator (section 7) (done)        |
-| 0.56.0  | Asset logic | Pieces and authored joints; the Suspension asset (done)                                |
-| 0.57.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then driven joints (Motor,      |
-|         |             | Servo, Piston), then Airfoil and other forces                                          |
-
-### 0.53.0 steps (Phase 2: multiplayer, the host simulating; done)
-
-1. **Authority model:** `PlotHandle.SimulatorPeerId` (the host for now), `IsSimulatedLocally`, and `SimulationEpoch`,
-   bumped on spawn and despawn on every peer. The simulator releases its assemblies; everyone else freezes theirs as
-   kinematic proxies (`Assembly.IsSimulated`). Overrides wait for 0.54.0, which needs them.
-2. **Codec:** `BitWriter` / `BitReader`, `AssemblyState`, and `CreationPackets`, with round-trip tests.
-3. **Streaming:** `PlotHandle.Replication.cs`: awake assemblies at 20 Hz on channel 2, chunked below the MTU; the
-   host accepts only the plot's simulator and relays to synced peers. Proxies extrapolated briefly with the streamed
-   velocities and eased toward that, snapping with the space hop (replaced by a 100 ms replay in 0.54.0).
-4. **Sleep keepalives:** a final at-rest state when an assembly falls asleep, then about 40 sleeping assemblies a
-   second in turn.
-5. **Late joins:** `PlotsSnapshot` carries every plot's epoch (spawned or not, or it would drift at the next spawn) and
-   each creation's states. It's part of `PlotsSnapshot` rather than its own snapshot, since snapshots restore in
-   registration order and the creation must restore after its plot spawns.
-6. **Unblocked and tested:** headless host and clients, the host simulating a tipping tower, a client's proxy
-   matching it, a late joiner seeing it in place, and a respawn keeping every epoch in step.
-
-Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):
-
-| Field            | Encoding                                                          | Bits |
-|------------------|-------------------------------------------------------------------|------|
-| Assembly ID      | The group's index in weld order                                   | 16   |
-| Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m | 72   |
-| Rotation         | Smallest three: 2-bit index, 3 x 10 bits                          | 32   |
-| Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                  | 42   |
-| Angular velocity | 1/32 rad/s steps, +-256 rad/s (a fast wheel spins past 100 rad/s) | 42   |
-
-### 0.54.0 steps (Phase 3: plot owners simulate; done)
-
-1. **Proxy accuracy:** assemblies centered on their mass, and proxies replaying 100 ms behind (section 8).
-2. **Simulator resolution:** the host picks the override, else the owner's peer, else itself, and broadcasts each
-   change with its epoch; late joiners get the simulator in `PlotsSnapshot`.
-3. **Hand-off:** `Assembly.HandOff` (section 7), tested with an owner leaving mid-fall.
-4. **Overrides:** per plot, host only, Lua `set_plot_simulator`; `dmp_creation` shows the simulator and epoch.
-5. **Validation and rate limits:** the host decodes before relaying and caps relays at 1.5 times the allowance.
-6. **Timeout:** heartbeats and the host's 3 s takeover, tested by freezing a simulator's process and resuming it.
-7. **Budget:** 256 states per plot per stream, in turns past it.
-8. **Poor connections:** `NetworkConditions` and Lua `set_net_sim`.
-
-### 0.55.0 steps (arbitration; done)
-
-1. **Bounds:** `Assembly.Bounds`, its colliders' bounds in its own space, measured as it's built.
-2. **Detection:** the host's sphere tests every 1/8 s (`ArbitrationSpheres`, with tests against brute force), linking
-   plots whose creations are close and holding each link 2 s after they part.
-3. **Groups:** `Arbitration.GetLeaders` (union-find; the most assemblies, then the lowest ID), with tests against a
-   brute-force flood.
-4. **Resolution:** an override, else the arbitrated simulator, else the owner, else the host; `dmp_creation` shows
-   whether a creation is arbitrated.
-5. **Tested** with headless peers: towers overlapping at spawn join; the leaning one topples away and its neighbor
-   returns 2 s later; respawning rejoins; a leaving simulator releases at once; and towers falling into each other
-   collide on one machine, ending in the same pose on every peer.
-
-### 0.56.0 steps (pieces and joints; done)
-
-1. **Bodies:** `AssetHandle` is a `StaticBody3D` (it was a frozen `RigidBody3D`, which nothing needed), and
-   `AssetPiece` children are too, so nothing in an asset moves in build mode.
-2. **Pieces:** `AssetManager` caches each piece's colliders, bounds, and mass; placement bounds cover every piece.
-3. **Welds:** over (instance, piece) parts, never between one instance's pieces, with tests.
-4. **IDs:** an assembly's ID is its group's index, as one instance's pieces may land in several groups.
-5. **Joints:** Godot joints authored between pieces, unlinked until live, then linked to the pieces' assemblies.
-6. **Tested** with headless peers: a Suspension between two cubes builds two assemblies, sags m g / k under the top
-   cube, keeps its joint through a hand-off to the host, and respawns.
+| Version | What it added                                                                                  |
+|---------|------------------------------------------------------------------------------------------------|
+| 0.52.0  | Single-player spawning: welds, assemblies, mass, the kill height                               |
+| 0.52.x  | Spawn token cost by instance count, `dmp_creation`, faster spawning, the material bank         |
+| 0.53.0  | Multiplayer with the host simulating: proxies, the bit-packed wire format, epochs, keepalives, |
+|         | late joins                                                                                     |
+| 0.54.0  | Plot owners simulate: host-decided hand-offs, overrides, timeouts, relay validation, the       |
+|         | stream budget, center-of-mass origins, the 100 ms replay, and the poor-connection simulator    |
+| 0.55.0  | Arbitration; traffic in the stats overlay; despawning wakes its neighbors                      |
+| 0.56.0  | Asset pieces and authored joints, the Suspension and its coil, asset scripts with clamped      |
+|         | properties, and `LiveCreation` split out of `PlotHandle`                                       |
+| Next    | Simulation ticks and force accumulators, seats, input masks, driven joints (Motor, Servo,      |
+|         | Piston), then Airfoil and other forces                                                         |
 
 ## 13. Decisions
 

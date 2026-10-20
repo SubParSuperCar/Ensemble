@@ -2,7 +2,7 @@ using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Replication.Actions;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Plots.Outlines;
 using EnsembleRoot.Tooling.Tools;
 using Godot;
 using Serilog;

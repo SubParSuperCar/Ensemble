@@ -158,7 +158,7 @@ State lives in three layers:
 - **GdCore** wraps Core in Godot `RefCounted` objects with signals, so scene code and the network layer can observe
   changes.
 - **Scripts** turns that into nodes: a `PlotHandle` per plot and an `AssetHandle` per instance, with physics,
-  highlights, and outlines.
+  highlights, and outlines, and a `LiveCreation` per spawned plot, which exists only until the plot despawns.
 
 Placement is validated by shared rules (bounds, overlaps, and quotas) that run on the client for previews and on the
 host for authority. Overlaps are resolved with oriented bounding boxes and the separating axis theorem, so previews

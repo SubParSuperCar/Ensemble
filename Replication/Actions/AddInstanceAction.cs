@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Plots.Placement;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;

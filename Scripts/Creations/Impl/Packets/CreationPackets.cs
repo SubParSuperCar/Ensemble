@@ -4,7 +4,7 @@ using EnsembleRoot.Common.Networking;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Creations.Packets;
 
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct CreationPacketHeader(int PlotId, ushort Epoch, ushort Sequence);

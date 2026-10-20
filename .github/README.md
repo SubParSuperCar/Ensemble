@@ -404,6 +404,7 @@ classDiagram
     class GdCore
     class PlotManager
     class PlotHandle
+    class LiveCreation
     class Assembly
     class AssetManager
     class AssetHandle
@@ -415,7 +416,8 @@ classDiagram
     GdCore ..> ICore : wraps
     PlotManager --> PlotHandle : one per plot
     PlotHandle --> AssetHandle : one per instance (static)
-    PlotHandle --> Assembly : one per welded group (spawned)
+    PlotHandle --> LiveCreation : while spawned
+    LiveCreation --> Assembly : one per welded group
     Assembly --> AssetHandle : carries
     Assembly --> AssetPiece : carries
     AssetHandle --> AssetPiece : moving parts
@@ -482,11 +484,13 @@ player acting as the server.
   <summary><b>Live Creations</b></summary>
 
 Spawning (`SetPlotSpawnedAction`) builds the same physics on every peer from the plot's instances, so it sends no
-geometry. `PlotHandle` groups touching pieces (an asset's own colliders, or its `AssetPiece` children) with
-`Welds.Group` (the `Obb.Abuts` face test, then union-find), and builds one `Assembly` (a `RigidBody3D`) per group,
-carrying its pieces' collision shapes and mass, with its origin on the center of mass. The pieces' bodies ride along out
-of the physics space, Godot joints authored between an asset's pieces link their assemblies, and the handles are
-initialized once the creation exists. The static instances stay in sync with Core, only hidden and disabled while spawned.
+geometry. `PlotHandle` creates a `LiveCreation`, which lives until the plot despawns: it groups touching pieces (an
+asset's own colliders, or its `AssetPiece` children) with `Welds.Group` (the `Obb.Abuts` face test, then union-find),
+and builds one `Assembly` (a `RigidBody3D`) per group, carrying its pieces' collision shapes and mass, with its origin
+on the center of mass. The pieces' bodies ride along out of the physics space, Godot joints authored between an asset's
+pieces link their assemblies, and the handles are initialized once the creation exists. The static instances stay in
+sync with Core, only hidden and disabled while spawned. [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) walks through it
+all, with a map of the code.
 
 ```mermaid
 graph LR
@@ -498,9 +502,9 @@ graph LR
 ```
 
 The host decides who simulates each creation (an override, else the simulator its group shares while it's close to
-another plot's creation, else the plot's owner, else itself) and broadcasts every change with an epoch. The simulator
-streams its moving assemblies; the host checks each packet, rate limits it, and relays it; everyone else moves frozen
-proxies along a 100 ms replay of the received states.
+another plot's creation, else the plot's owner, else itself) and broadcasts every change with an epoch. The simulator's
+creation streams its moving assemblies through the plot; the host checks each packet, rate limits it, and relays it;
+everyone else moves frozen proxies along a 100 ms replay of the received states.
 
 ```mermaid
 sequenceDiagram

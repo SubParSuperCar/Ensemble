@@ -1,5 +1,6 @@
 using EnsembleRoot.GdCore.Assets;
-using EnsembleRoot.Scripts.Assets.Impl;
+using EnsembleRoot.Scripts.Assets.Materials;
+using EnsembleRoot.Scripts.Assets.Materials.Impl;
 using Godot;
 using Godot.Collections;
 
@@ -8,8 +9,8 @@ using Godot.Collections;
 namespace EnsembleRoot.Scripts.Assets.Components;
 
 /// <summary>
-///     Paints every geometry under the handle, except <see cref="Excluded" />, with a material override from the
-///     instance's color and material (see <see cref="MaterialBank" />), following their changes.
+///     Paints every geometry of the handle and its pieces, except <see cref="Excluded" />, with a material override
+///     from the instance's color and material (see <see cref="MaterialBank" />), following their changes.
 /// </summary>
 [GlobalClass]
 public partial class Paintable : AssetComponent
@@ -25,17 +26,20 @@ public partial class Paintable : AssetComponent
 
 	protected override void OnInitialized()
 	{
-		_geometries = [.. GetGeometries(Handle).Except(Excluded)];
+		_geometries = [.. Handle.Pieces.Prepend<Node>(Handle).SelectMany(GetGeometries).Except(Excluded)];
 		_properties = Handle.Instance.Properties;
 
 		Apply();
 		_properties.Changed += OnPropertyChanged;
 	}
 
+	// Each piece is walked on its own, as a live creation moves the pieces out from under the handle
 	private static IEnumerable<GeometryInstance3D> GetGeometries(Node node) =>
-		node.GetChildren().SelectMany(static child => child is GeometryInstance3D geometry
-			? GetGeometries(child).Prepend(geometry)
-			: GetGeometries(child));
+		node.GetChildren()
+			.Where(static child => child is not AssetPiece)
+			.SelectMany(static child => child is GeometryInstance3D geometry
+				? GetGeometries(child).Prepend(geometry)
+				: GetGeometries(child));
 
 	private void OnPropertyChanged(string key, Variant value)
 	{

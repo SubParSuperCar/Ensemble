@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Replication.Actions;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Plots.Outlines;
 using EnsembleRoot.Sessions.Actions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;

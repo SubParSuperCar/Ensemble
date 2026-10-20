@@ -1,6 +1,7 @@
 using System.Globalization;
 using EnsembleRoot.GdCore.Plots;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Creations;
+using EnsembleRoot.Scripts.Plots.Outlines;
 using Godot;
 using Serilog;
 
@@ -71,12 +72,11 @@ public partial class PlotManager : Node
 		GetHandleOrNull(plotId) ?? throw new KeyNotFoundException(
 			string.Create(CultureInfo.InvariantCulture, $"Handle with plot ID {plotId} not found."));
 
-	internal void WakeAssembliesNear(Aabb bounds, PlotHandle except)
+	internal void WakeAssembliesNear(Aabb bounds, LiveCreation except)
 	{
-		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		foreach (var handle in _handlesById.Values)
-			if (handle != except)
-				handle.WakeAssemblies(bounds);
+			if (handle.Creation is { } creation && creation != except)
+				creation.WakeAssemblies(bounds);
 	}
 
 	private void OnLocalPlotChanged(GdPlot? _) => UpdateOutlines();

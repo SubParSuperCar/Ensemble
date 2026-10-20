@@ -4,7 +4,7 @@ using Godot.Collections;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace EnsembleRoot.Scripts.Assets;
+namespace EnsembleRoot.Scripts.Assets.Materials;
 
 /// <summary>The game's asset materials, indexed by the material ID property; None (-1) means no material.</summary>
 [GlobalClass]

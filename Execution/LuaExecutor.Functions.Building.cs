@@ -2,7 +2,7 @@ using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Plots;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Plots.Placement;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;

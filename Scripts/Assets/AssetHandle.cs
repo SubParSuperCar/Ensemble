@@ -1,5 +1,6 @@
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets.Impl;
+using EnsembleRoot.Scripts.Creations;
 using EnsembleRoot.Scripts.Plots;
 using Godot;
 using Serilog;
@@ -22,6 +23,9 @@ public partial class AssetHandle : StaticBody3D
 	public const float DefaultDensity = 1000 / 8f;
 
 	private bool _isBoundaryCalculated;
+
+	// Where each piece sits in the handle's space, as built: a live creation moves the pieces into their assemblies
+	private Transform3D[] _pieceTransforms = [];
 
 	[Export(PropertyHint.Range, "0,0,1,or_greater,hide_slider")]
 	public int AssetId { get; set; }
@@ -62,6 +66,7 @@ public partial class AssetHandle : StaticBody3D
 	/// <summary>The assembly carrying this handle while its plot is spawned, set for the handle's whole life.</summary>
 	public Assembly? Assembly { get; internal set; }
 
+	// ReSharper disable once MemberCanBeProtected.Global
 	public bool IsLive => Assembly is not null;
 
 	/// <summary>The asset's other pieces, in scene order, so piece <c>i</c> (from 1) is <c>Pieces[i - 1]</c>.</summary>
@@ -87,7 +92,7 @@ public partial class AssetHandle : StaticBody3D
 	public IEnumerable<(CollisionShape3D Collider, Transform3D Transform)> GetColliders(int piece)
 	{
 		Node3D body = piece is 0 ? this : Pieces[piece - 1];
-		var offset = piece is 0 ? Transform3D.Identity : body.Transform;
+		var offset = piece is 0 ? Transform3D.Identity : _pieceTransforms[piece - 1];
 
 		// Only direct children count, as a body only registers the shapes of its direct children
 		return body.GetChildren()
@@ -170,10 +175,18 @@ public partial class AssetHandle : StaticBody3D
 
 	protected virtual void OnInitialized() { }
 
+	/// <summary>
+	///     Reads a numeric property of the instance, clamped to what the asset supports: properties take any value of
+	///     their type, so each asset enforces its own limits where it uses them.
+	/// </summary>
+	protected float GetNumberProperty(string key, float min, float max) =>
+		Math.Clamp((float)Instance.Properties.GetValue(key).AsDouble(), min, max);
+
 	// Before anything moves the pieces; the joints are unlinked until live, so no build or preview links bodies
 	private void CollectPieces()
 	{
 		Pieces = [.. GetChildren().OfType<AssetPiece>()];
+		_pieceTransforms = [.. Pieces.Select(static piece => piece.Transform)];
 
 		for (var index = 0; index < Pieces.Count; index++)
 		{

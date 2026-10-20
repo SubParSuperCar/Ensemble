@@ -1,9 +1,11 @@
 using System.Globalization;
+using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Assets.Materials;
 using Godot;
 
 // ReSharper disable UnusedMember.Global
 
-namespace EnsembleRoot.Scripts.Assets;
+namespace EnsembleRoot.Scripts.Creations;
 
 /// <summary>
 ///     The rigid body of a group of welded pieces (an instance's own colliders, or one of its <see cref="AssetPiece" />

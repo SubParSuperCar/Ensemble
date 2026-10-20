@@ -1,6 +1,6 @@
 using Godot;
 
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Plots.Placement;
 
 public enum PlacementState : byte
 {

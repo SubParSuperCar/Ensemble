@@ -58,6 +58,23 @@
 	<!-- Tooling -->
 	<Disallowed From="EnsembleRoot.Tooling.*" To="EnsembleRoot.Execution.*" />
 
+	<!-- Asset scripts: the engine never depends on a concrete asset, and assets reach the game through Scripts only -->
+	<Disallowed From="EnsembleRoot" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Common.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Execution.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.GdCore.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Globals.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Replication.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Saving.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Scripts.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Sessions.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Tooling.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.Ui.*" To="EnsembleRoot.BuildAssets.*" />
+	<Disallowed From="EnsembleRoot.BuildAssets.*" To="EnsembleRoot.Replication.*" />
+	<Disallowed From="EnsembleRoot.BuildAssets.*" To="EnsembleRoot.Tooling.*" />
+	<Disallowed From="EnsembleRoot.BuildAssets.*" To="EnsembleRoot.Execution.*" />
+
 	<!-- Globals -->
 	<Disallowed From="EnsembleRoot.Globals.*" To="EnsembleRoot.Execution.*" />
 
@@ -65,6 +82,9 @@
 	<Disallowed From="EnsembleRoot" To="EnsembleRoot.Ui.*" />
 	<Disallowed From="EnsembleRoot" To="Avalonia.*" />
 	<Disallowed From="EnsembleRoot" To="Estragonia.*" />
+	<Disallowed From="EnsembleRoot.BuildAssets.*" To="EnsembleRoot.Ui.*" />
+	<Disallowed From="EnsembleRoot.BuildAssets.*" To="Avalonia.*" />
+	<Disallowed From="EnsembleRoot.BuildAssets.*" To="Estragonia.*" />
 	<Disallowed From="EnsembleRoot.Autoloading.*" To="EnsembleRoot.Ui.*" />
 	<Disallowed From="EnsembleRoot.Autoloading.*" To="Avalonia.*" />
 	<Disallowed From="EnsembleRoot.Autoloading.*" To="Estragonia.*" />

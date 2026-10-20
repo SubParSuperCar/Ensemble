@@ -10,7 +10,7 @@ points = PackedVector3Array(0.25, 0.25, 0.25, 0.25, 0.25, -0.25, -0.25, -0.25, 0
 left_to_right = 1.0
 size = Vector3(0.5, 0.5, 0.5)
 
-[node name="Wedge" type="RigidBody3D" unique_id=726135581]
+[node name="Wedge" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_8fm6w")
 AssetId = 2
 AssetName = &"Wedge"

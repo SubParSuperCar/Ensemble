@@ -18,7 +18,7 @@ radial_segments = 32
 rings = 16
 is_hemisphere = true
 
-[node name="Hemisphere" type="RigidBody3D" unique_id=726135581]
+[node name="Hemisphere" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_62e8s")
 AssetId = 7
 AssetName = &"Hemisphere"

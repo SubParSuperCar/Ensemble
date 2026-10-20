@@ -68,9 +68,7 @@ public partial class PlotHandle
 		var transform = GetTransform(instance);
 
 		var handle = CreateHandle(instance, transform);
-		handle.Freeze = true;
-		handle.CollisionLayer = PhysicsLayers.StaticInstances;
-		handle.CollisionMask = 0;
+		handle.SetCollision(PhysicsLayers.StaticInstances, 0);
 
 		_staticInstances.AddChild(handle);
 		_handlesByInstanceId.Add(instance.Id, handle);

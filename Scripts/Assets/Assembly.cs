@@ -6,12 +6,13 @@ using Godot;
 namespace EnsembleRoot.Scripts.Assets;
 
 /// <summary>
-///     The rigid body of a group of welded instances. Each member's colliders become shapes of this body, while the
-///     member itself rides along as a child, out of the physics space.
+///     The rigid body of a group of welded pieces (an instance's own colliders, or one of its <see cref="AssetPiece" />
+///     children). Each piece's colliders become shapes of this body, while the piece's own body rides along as a
+///     child, out of the physics space.
 /// </summary>
 public partial class Assembly : RigidBody3D
 {
-	private readonly List<AssetHandle> _members = [];
+	private readonly List<CollisionObject3D> _pieces = [];
 
 	private float? _bounce;
 	private Aabb? _bounds;
@@ -19,12 +20,13 @@ public partial class Assembly : RigidBody3D
 	private float _mass;
 	private Vector3 _massMoment;
 
-	/// <summary>The group's lowest instance ID, which every peer derives alike.</summary>
+	/// <summary>The group's index in weld order, which every peer derives alike.</summary>
 	public int Id { get; init; }
 
-	public IReadOnlyList<AssetHandle> Members => _members;
+	/// <summary>The pieces' bodies: handles (for their own colliders) and <see cref="AssetPiece" /> nodes.</summary>
+	public IReadOnlyList<CollisionObject3D> Pieces => _pieces;
 
-	/// <summary>The bounds of the members' colliders, in the body's space, once built.</summary>
+	/// <summary>The bounds of the pieces' colliders, in the body's space, once built.</summary>
 	public Aabb Bounds { get; private set; }
 
 	public bool IsKilled { get; private set; }
@@ -47,44 +49,49 @@ public partial class Assembly : RigidBody3D
 		}
 	}
 
-	/// <summary>Adopts a handle as a child, registers its colliders as shapes, and weighs it into the body.</summary>
+	/// <summary>
+	///     Adopts a piece's body as a child, registers the piece's colliders as shapes, and weighs it into the body. The
+	///     body is a handle for piece 0, placed at <paramref name="handleTransform" /> (in this body's space), or else an
+	///     <see cref="AssetPiece" />, placed where it sits relative to that handle.
+	/// </summary>
 	/// <remarks>
 	///     Best done before entering the tree, so the body enters the physics space with all of its shapes at once.
 	/// </remarks>
-	public void AddMember(AssetHandle member, AssetMaterial? material)
+	public void AddPiece(
+		CollisionObject3D body, Transform3D handleTransform, int assetId, int piece, AssetMaterial? material)
 	{
-		var transform = member.Transform;
+		var transform = piece is 0 ? handleTransform : handleTransform * body.Transform;
 
-		member.Assembly = this;
-		member.Freeze = true;
-		AddChild(member);
+		body.GetParent()?.RemoveChild(body);
+		body.Transform = transform;
+		AddChild(body);
 
-		foreach (var (shape, colliderTransform) in GAssetManager.GetColliders(member.AssetId))
+		foreach (var (shape, colliderTransform) in GAssetManager.GetColliders(assetId, piece))
 		{
-			var owner = CreateShapeOwner(member);
+			var owner = CreateShapeOwner(body);
 
 			ShapeOwnerAddShape(owner, shape);
-			ShapeOwnerSetTransform(owner, transform * colliderTransform);
+			ShapeOwnerSetTransform(owner, handleTransform * colliderTransform);
 		}
 
-		foreach (var bounds in GAssetManager.GetColliderBounds(member.AssetId))
-			_bounds = _bounds?.Merge(transform * bounds) ?? transform * bounds;
+		foreach (var bounds in GAssetManager.GetColliderBounds(assetId, piece))
+			_bounds = _bounds?.Merge(handleTransform * bounds) ?? handleTransform * bounds;
 
-		var (mass, centerOfMass) = GAssetManager.GetMass(member.AssetId, material);
+		var (mass, centerOfMass) = GAssetManager.GetMass(assetId, piece, material);
 
 		_mass += mass;
-		_massMoment += transform * centerOfMass * mass;
+		_massMoment += handleTransform * centerOfMass * mass;
 		_frictionMoment += (material?.Friction ?? AssetMaterial.DefaultFriction) * mass;
 		_bounce = MathF.Min(_bounce ?? float.PositiveInfinity, material?.Bounce ?? 0);
-		_members.Add(member);
+		_pieces.Add(body);
 	}
 
 	/// <summary>
-	///     Gives the body its members' mass, mass-weighted friction, and lowest bounce, and moves its origin onto the
+	///     Gives the body its pieces' mass, mass-weighted friction, and lowest bounce, and moves its origin onto the
 	///     center of mass, so its position and streamed velocities describe the same point it rotates about. It stays
 	///     frozen until <see cref="IsSimulated" /> is set.
 	/// </summary>
-	/// <remarks>Best done before entering the tree, like <see cref="AddMember" />.</remarks>
+	/// <remarks>Best done before entering the tree, like <see cref="AddPiece" />.</remarks>
 	public void Build()
 	{
 		var center = _mass > 0 ? _massMoment / _mass : Vector3.Zero;
@@ -95,8 +102,8 @@ public partial class Assembly : RigidBody3D
 		if (_mass <= 0)
 			return;
 
-		foreach (var member in _members)
-			member.Transform = member.Transform.Translated(-center);
+		foreach (var body in _pieces)
+			body.Transform = body.Transform.Translated(-center);
 
 		foreach (var owner in GetShapeOwners())
 			ShapeOwnerSetTransform((uint)owner, ShapeOwnerGetTransform((uint)owner).Translated(-center));
@@ -115,12 +122,12 @@ public partial class Assembly : RigidBody3D
 			PhysicsMaterialOverride = new PhysicsMaterial { Friction = friction, Bounce = bounce };
 	}
 
-	/// <summary>Takes the members' own bodies out of the physics space, leaving only this body's shapes.</summary>
-	/// <remarks>The assembly must be in the tree, so the members' bodies have entered the space they leave.</remarks>
+	/// <summary>Takes the pieces' own bodies out of the physics space, leaving only this body's shapes.</summary>
+	/// <remarks>The assembly must be in the tree, so the pieces' bodies have entered the space they leave.</remarks>
 	public void Assemble()
 	{
-		foreach (var member in _members)
-			PhysicsServer3D.BodySetSpace(member.GetRid(), default);
+		foreach (var body in _pieces)
+			PhysicsServer3D.BodySetSpace(body.GetRid(), default);
 	}
 
 	/// <summary>
@@ -136,5 +143,5 @@ public partial class Assembly : RigidBody3D
 	public override string ToString() =>
 		string.Create(
 			CultureInfo.InvariantCulture,
-			$"Assembly(id={Id}, members={_members.Count}, mass={Mass:F1}, sleeping={Sleeping}, killed={IsKilled})");
+			$"Assembly(id={Id}, pieces={_pieces.Count}, mass={Mass:F1}, sleeping={Sleeping}, killed={IsKilled})");
 }

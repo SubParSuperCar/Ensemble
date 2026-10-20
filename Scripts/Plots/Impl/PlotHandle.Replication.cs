@@ -289,7 +289,7 @@ public partial class PlotHandle
 		var origin = _staticInstances.GlobalTransform;
 
 		foreach (var state in _receivedStates)
-			if (_assembliesById.TryGetValue(state.Id, out var assembly) && !assembly.IsKilled)
+			if (state.Id < _assemblies.Count && _assemblies[state.Id] is { IsKilled: false } assembly)
 				assembly.AddProxyState(
 					time, StreamInterval, origin * new Transform3D(new Basis(state.Rotation), state.Position),
 					origin.Basis * state.LinearVelocity, origin.Basis * state.AngularVelocity);

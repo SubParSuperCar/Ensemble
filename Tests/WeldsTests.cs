@@ -9,24 +9,23 @@ public sealed class WeldsTests
 	private static readonly Aabb UnitCube = new(-Vector3.One / 2, Vector3.One);
 
 	[Fact]
-	public void Group_JoinsChainsAcrossFacesOnly_InIdOrderRegardlessOfInputOrder()
+	public void Group_JoinsChainsAcrossFacesOnly_InPartOrder()
 	{
-		// 2 abuts 0 abuts 5 in a row; 3 only meets 5 at an edge; 7 has no boxes; 4 is apart
-		(int Id, Obb[] Boxes)[] parts =
+		// 0 abuts 1 abuts 2 in a row; 3 only meets 2 at an edge; 4 is apart; 5 has no boxes
+		(int Owner, Obb[] Boxes)[] parts =
 		[
-			(5, [Cube(new Vector3(1, 0, 0))]), (3, [Cube(new Vector3(2, 1, 0))]), (7, []),
-			(0, [Cube(Vector3.Zero)]), (4, [Cube(new Vector3(9, 0, 0))]), (2, [Cube(new Vector3(-1, 0, 0))])
+			(10, [Cube(new Vector3(-1, 0, 0))]), (11, [Cube(Vector3.Zero)]), (12, [Cube(new Vector3(1, 0, 0))]),
+			(13, [Cube(new Vector3(2, 1, 0))]), (14, [Cube(new Vector3(9, 0, 0))]), (15, [])
 		];
 
-		Assert.Equal([[0, 2, 5], [3], [4], [7]], Welds.Group(parts));
-		Assert.Equal(Welds.Group(parts), Welds.Group([.. parts.Reverse()]));
+		Assert.Equal([[0, 1, 2], [3], [4], [5]], Welds.Group(parts));
 	}
 
 	[Fact]
 	public void Group_WeldsThroughAnyOfAPartsBoxes()
 	{
 		// Part 1's second box bridges it to part 2, while its first box only touches part 0
-		(int Id, Obb[] Boxes)[] parts =
+		(int Owner, Obb[] Boxes)[] parts =
 		[
 			(0, [Cube(Vector3.Zero)]), (1, [Cube(new Vector3(0, 1, 0)), Cube(new Vector3(0, 1, 2))]),
 			(2, [Cube(new Vector3(0, 1, 3))])
@@ -36,14 +35,28 @@ public sealed class WeldsTests
 	}
 
 	[Fact]
+	public void Group_NeverWeldsAnOwnersParts_ButOthersMayJoinThem()
+	{
+		// An instance's two pieces, stacked, with a neighbor beside the lower one
+		List<(int Owner, Obb[] Boxes)> parts =
+			[(7, [Cube(Vector3.Zero)]), (7, [Cube(new Vector3(0, 1, 0))]), (8, [Cube(new Vector3(1, 0, 0))])];
+
+		Assert.Equal([[0, 2], [1]], Welds.Group(parts));
+
+		// A part abutting both the neighbor and the upper piece closes the loop
+		parts.Add((9, [Cube(new Vector3(1, 1, 0))]));
+
+		Assert.Equal([[0, 1, 2, 3]], Welds.Group(parts));
+	}
+
+	[Fact]
 	public void Group_MatchesPairwiseAbutting_ForRandomRotatedAndOversizedBoxes()
 	{
 		var random = new Random(11);
 
 		for (var round = 0; round < 64; round++)
 		{
-			var id = 0;
-			var parts = new List<(int Id, Obb[] Boxes)>();
+			var parts = new List<(int Owner, Obb[] Boxes)>();
 
 			for (var i = random.Next(2, 40); i > 0; i--)
 			{
@@ -53,7 +66,8 @@ public sealed class WeldsTests
 				for (var box = 0; box < boxes.Length; box++)
 					boxes[box] = RandomBox(random, round % 5 is 0);
 
-				parts.Add((id += random.Next(1, 4), boxes));
+				// Some owners have several parts, as multi-piece instances do
+				parts.Add((random.Next(parts.Count / 2 + 1), boxes));
 			}
 
 			Assert.Equal(GroupPairwise(parts), Welds.Group(parts));
@@ -94,21 +108,20 @@ public sealed class WeldsTests
 		return vector.Normalized();
 	}
 
-	// The reference: every pair of parts tested directly, without the grid
-	private static List<int[]> GroupPairwise(List<(int Id, Obb[] Boxes)> parts)
+	// The reference: every pair of parts of different owners tested directly, without the grid
+	private static List<int[]> GroupPairwise(List<(int Owner, Obb[] Boxes)> parts)
 	{
 		var parents = Enumerable.Range(0, parts.Count).ToArray();
 
 		for (var i = 0; i < parts.Count; i++)
 			for (var j = i + 1; j < parts.Count; j++)
-				if (parts[i].Boxes.Any(box => parts[j].Boxes.Any(box.Abuts)))
+				if (parts[i].Owner != parts[j].Owner && parts[i].Boxes.Any(box => parts[j].Boxes.Any(box.Abuts)))
 					parents[Find(j)] = Find(i);
 
 		return
 		[
-			.. parts
-				.Select((part, index) => (part.Id, Root: Find(index)))
-				.GroupBy(static entry => entry.Root, static entry => entry.Id)
+			.. Enumerable.Range(0, parts.Count)
+				.GroupBy(Find)
 				.Select(static group => group.Order().ToArray())
 				.OrderBy(static group => group[0])
 		];

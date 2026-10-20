@@ -44,21 +44,26 @@ Reusable behaviors are `AssetComponent` nodes dropped under the handle and confi
 servo, piston) subclass `AssetHandle`. Both get `Initialize` once their creation exists, and a handle lives in
 one mode (build or live) for its whole life.
 
-### Multi-piece assets (motors, hinges, pistons, suspension)
+### Multi-piece assets (motors, hinges, pistons, suspension; done in 0.56.0)
 
-An asset can have several rigid **pieces** that move independently, like a motor's base and rotor.
+An asset can have several rigid **pieces** that move independently, like a suspension's top and bottom, authored
+much as Baja Builders did it (a model, two parts, and a constraint):
 
-- The handle's direct colliders form piece 0. Each `AssetPiece` node (a `Node3D` child) is another piece, with its own
-  direct colliders and meshes.
-- Welding works per piece: the weld graph's nodes become (instance ID, piece index), and an asset's pieces never weld
-  to each other (as in BB, where motors kept their head and base apart).
-- At spawn, each `AssetPiece` is reparented into its own piece's assembly (the handle rides piece 0's), and the
-  handle keeps references to its pieces. Components resolve references in `Initialize`, after reparenting, so the
-  tree is never walked later.
-- A joint component on the asset (e.g., `Hinge`) links the pieces' assemblies with a Godot joint at an authored anchor
-  (a `Marker3D`).
-- If a loop of welds puts both pieces in one assembly, the joint would join a body to itself; it's skipped with a
-  warning, as BB builds simply locked up.
+- The handle (a `StaticBody3D`) has its direct colliders as piece 0. Each `AssetPiece` child (also a `StaticBody3D`)
+  is another piece, with its own direct colliders and meshes. Neither ever moves in build mode.
+- Welding works per piece: the weld parts are (instance, piece) pairs, and an asset's pieces never weld to each other
+  (as in BB, where motors kept their head and base apart), though other parts may join them into one group.
+- A joint is an ordinary Godot joint node, a direct child of the handle, whose nodes are the handle or its pieces,
+  with every setting (springs, limits, motors) in the inspector. The handle collects its pieces and joints as it's
+  instantiated and unlinks the joints, so no build or preview links bodies; a live creation relinks each joint to its
+  pieces' assemblies, at the joint's place, once every assembly is in the tree.
+- At spawn, each piece with colliders is reparented into its own group's assembly; the handle rides its first welded
+  piece's (its own, unless it has no colliders), and pieces without colliders ride with it. The handle keeps
+  references to its pieces, so components never walk the tree after reparenting.
+- If a loop of welds puts both of a joint's pieces in one assembly, the joint would link a body to itself; it's
+  skipped with a warning, as BB builds simply locked up.
+- `AssetManager` warns at startup about anything spawning would ignore: bodies other than `AssetPiece` children, joints
+  elsewhere than under the handle, and joints that don't link two of the asset's pieces.
 
 ## 3. Asset logic at runtime
 
@@ -95,9 +100,11 @@ promised.
 Most mechanisms only make sense with input, so they come after it; free hinges and springs (suspension) don't need it
 and may come earlier. Some glitching may be accepted at first.
 
-- A **mechanism** is a set of assemblies linked by joints (union-find over joints, after welding). It is the unit of
-  simulation ownership, since a joint can't span two machines.
-- Joint mapping in Godot with Jolt (to verify in a prototype):
+- A **mechanism** is a set of assemblies linked by joints. A joint can't span two machines, but each plot's creation
+  has one simulator (and arbitration merges close plots), so no joint ever does; mechanisms only matter once
+  simulators can differ within a plot.
+- Joint mapping in Godot with Jolt (the 6DOF spring, limits, and equilibrium point were verified in a prototype: a
+  spring sags exactly m g / k, and a limit left at 0 to 0 locks its axis):
 
 | Asset      | Joint                                      | Driven by                                             |
 |------------|--------------------------------------------|-------------------------------------------------------|
@@ -105,7 +112,7 @@ and may come earlier. Some glitching may be accepted at first.
 | Motor      | `HingeJoint3D` with its motor              | Input sets the target velocity; max torque from props |
 | Servo      | `HingeJoint3D` with its motor and limits   | A P-controller in the simulation tick toward a target |
 | Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target             |
-| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Stiffness and damping from props                      |
+| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)        |
 
 - Strengths are asset properties (non-underscore, so the future PropertyTool edits them), scaled for the default
   density (125 kg/m3).
@@ -250,8 +257,8 @@ host gives both to one simulator until they separate, and their collisions becom
 
 - One unreliable-ordered RPC per plot per tick from the simulator (channel 2; characters use 1), relayed by the host
   to synced peers, as with characters.
-- **Bit-packed, not byte-aligned.** Header: plot ID, epoch, sequence. Per moving assembly: ID (the group's lowest
-  instance ID), position (1/512 m, relative to the plot), rotation (smallest three), and linear and angular velocity
+- **Bit-packed, not byte-aligned.** Header: plot ID, epoch, sequence. Per moving assembly: ID (its group's index in
+  weld order), position (1/512 m, relative to the plot), rotation (smallest three), and linear and angular velocity
   (see the bit budget in section 12).
 - An assembly's origin is its center of mass, so its position and velocities describe the point it rotates about (with
   the plot's origin, proxies extrapolating a rolling ball swung it meters off course).
@@ -329,8 +336,9 @@ work proportional to what moves and thinks, not to what exists.
 |         |             | bit-packed wire format, epochs, keepalives, late joins                                 |
 | 0.54.0  | Multiplayer | Phase 3: plot owners simulate; hand-off; host validation and timeouts (done)           |
 | 0.55.0  | Multiplayer | Arbitration: creations close to each other share a simulator (section 7) (done)        |
-| 0.56.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then pieces and joints (Hinge,  |
-|         |             | Motor, Servo, Piston, Suspension), then Airfoil and other forces                       |
+| 0.56.0  | Asset logic | Pieces and authored joints; the Suspension asset (done)                                |
+| 0.57.0+ | Asset logic | Simulation ticks and accumulators, seats, input masks, then driven joints (Motor,      |
+|         |             | Servo, Piston), then Airfoil and other forces                                          |
 
 ### 0.53.0 steps (Phase 2: multiplayer, the host simulating; done)
 
@@ -353,7 +361,7 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 
 | Field            | Encoding                                                          | Bits |
 |------------------|-------------------------------------------------------------------|------|
-| Assembly ID      | The group's lowest instance ID                                    | 16   |
+| Assembly ID      | The group's index in weld order                                   | 16   |
 | Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m | 72   |
 | Rotation         | Smallest three: 2-bit index, 3 x 10 bits                          | 32   |
 | Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                  | 42   |
@@ -383,6 +391,17 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 5. **Tested** with headless peers: towers overlapping at spawn join; the leaning one topples away and its neighbor
    returns 2 s later; respawning rejoins; a leaving simulator releases at once; and towers falling into each other
    collide on one machine, ending in the same pose on every peer.
+
+### 0.56.0 steps (pieces and joints; done)
+
+1. **Bodies:** `AssetHandle` is a `StaticBody3D` (it was a frozen `RigidBody3D`, which nothing needed), and
+   `AssetPiece` children are too, so nothing in an asset moves in build mode.
+2. **Pieces:** `AssetManager` caches each piece's colliders, bounds, and mass; placement bounds cover every piece.
+3. **Welds:** over (instance, piece) parts, never between one instance's pieces, with tests.
+4. **IDs:** an assembly's ID is its group's index, as one instance's pieces may land in several groups.
+5. **Joints:** Godot joints authored between pieces, unlinked until live, then linked to the pieces' assemblies.
+6. **Tested** with headless peers: a Suspension between two cubes builds two assemblies, sags m g / k under the top
+   cube, keeps its joint through a hand-off to the host, and respawns.
 
 ## 13. Decisions
 

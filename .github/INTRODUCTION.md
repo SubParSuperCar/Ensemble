@@ -174,6 +174,9 @@ already has the plot's instances:
   the same groups and IDs from the same instances.
 - **Members.** The pieces ride their assembly as ordinary asset scenes, with their own bodies taken out of the physics
   space, so meshes and scripts keep working while the assembly carries all of their collision shapes.
+- **Moving parts.** An asset can split into pieces, like a suspension's top and bottom, each welding to its own
+  neighbors, linked by ordinary Godot joints authored in the asset's scene, which connect their assemblies once
+  spawned.
 - **Mass and materials.** Each piece weighs its collider volume times its density, from its material if it has one.
   The material bank pairs each material's look (tinted by the piece's color) with its physics: density, friction, and
   bounciness.

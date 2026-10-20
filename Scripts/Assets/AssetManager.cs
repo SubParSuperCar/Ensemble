@@ -14,11 +14,10 @@ public partial class AssetManager : Node
 	// C# collections avoid interop on the placement hot path; GDScript reads them through the methods below
 	private readonly System.Collections.Generic.Dictionary<int, Aabb> _boundariesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, string> _categoriesByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, Aabb[]> _colliderBoundsByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, (Shape3D, Transform3D)[]> _collidersByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, float> _densitiesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, string> _descriptionsByAssetId = [];
+	private readonly System.Collections.Generic.Dictionary<int, PieceInfo[]> _piecesByAssetId = [];
 	private readonly System.Collections.Generic.Dictionary<int, PackedScene> _scenesByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, (float, Vector3, float)> _volumesByAssetId = [];
 
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
@@ -60,20 +59,29 @@ public partial class AssetManager : Node
 	public string GetCategory(int assetId) => _categoriesByAssetId.GetValueOrDefault(assetId, string.Empty);
 	public string? GetDescription(int assetId) => _descriptionsByAssetId.GetValueOrDefault(assetId);
 
-	public IReadOnlyList<Aabb> GetColliderBounds(int assetId) =>
-		_colliderBoundsByAssetId.GetValueOrDefault(assetId, []);
+	public int GetPieceCount(int assetId) => _piecesByAssetId.GetValueOrDefault(assetId, []).Length;
 
-	public IReadOnlyList<(Shape3D Shape, Transform3D Transform)> GetColliders(int assetId) =>
-		_collidersByAssetId.GetValueOrDefault(assetId, []);
+	/// <summary>Gets a piece's collider bounds, in its handle's space.</summary>
+	public IReadOnlyList<Aabb> GetColliderBounds(int assetId, int piece) => GetPiece(assetId, piece).Bounds;
+
+	/// <summary>Gets a piece's collider shapes, with their transforms in its handle's space.</summary>
+	public IReadOnlyList<(Shape3D Shape, Transform3D Transform)> GetColliders(int assetId, int piece) =>
+		GetPiece(assetId, piece).Colliders;
 
 	/// <summary>
-	///     Gets an instance's mass, from its material's density or else the asset's, and its center of mass.
+	///     Gets a piece's mass, from its instance's material's density or else the asset's, and its center of mass, in
+	///     its handle's space.
 	/// </summary>
-	public (float Mass, Vector3 CenterOfMass) GetMass(int assetId, AssetMaterial? material)
+	public (float Mass, Vector3 CenterOfMass) GetMass(int assetId, int piece, AssetMaterial? material)
 	{
-		var (volume, centroid, density) = _volumesByAssetId.GetValueOrDefault(assetId);
-		return ((material?.Density ?? density) * volume, centroid);
+		var info = GetPiece(assetId, piece);
+		return ((material?.Density ?? _densitiesByAssetId.GetValueOrDefault(assetId)) * info.Volume, info.Centroid);
 	}
+
+	private PieceInfo GetPiece(int assetId, int piece) =>
+		_piecesByAssetId.TryGetValue(assetId, out var pieces) && piece < pieces.Length
+			? pieces[piece]
+			: PieceInfo.Empty;
 
 	private void ScanDirectory(string path)
 	{
@@ -114,14 +122,10 @@ public partial class AssetManager : Node
 		var properties = handle.Properties;
 		var maxInstanceCount = handle.MaxInstanceCount;
 		var boundary = handle.BoundaryAabb;
-		var colliderBounds = handle.GetColliderBounds();
-
-		(Shape3D, Transform3D)[] colliders =
-			[.. handle.GetColliders().Select(static collider => (collider.Shape, collider.Transform))];
-
-		var (volume, centroid) = handle.CalculateVolume();
+		var pieces = Enumerable.Range(0, handle.PieceCount).Select(piece => GetPieceInfo(handle, piece)).ToArray();
 		var density = handle.Density;
 
+		WarnAboutStructure(handle, path);
 		instance.Free();
 
 		if (!_scenesByAssetId.TryAdd(id, scene))
@@ -132,9 +136,8 @@ public partial class AssetManager : Node
 
 		_categoriesByAssetId.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
 		_boundariesByAssetId.Add(id, boundary);
-		_colliderBoundsByAssetId.Add(id, colliderBounds);
-		_collidersByAssetId.Add(id, colliders);
-		_volumesByAssetId.Add(id, (volume, centroid, density));
+		_piecesByAssetId.Add(id, pieces);
+		_densitiesByAssetId.Add(id, density);
 
 		if (description is { IsEmpty: false })
 			_descriptionsByAssetId.Add(id, description.ToString());
@@ -145,5 +148,43 @@ public partial class AssetManager : Node
 			converted.Add(key.ToString(), value);
 
 		GAssets.Add(id, name, converted, maxInstanceCount is Default ? DefaultMaxInstanceCount : maxInstanceCount);
+	}
+
+	private static PieceInfo GetPieceInfo(AssetHandle handle, int piece)
+	{
+		var (volume, centroid) = handle.CalculateVolume(piece);
+
+		return new PieceInfo(
+			[.. handle.GetColliders(piece).Select(static collider => (collider.Collider.Shape, collider.Transform))],
+			handle.GetColliderBounds(piece), volume, centroid);
+	}
+
+	// Ensemble only moves the handle's own colliders and its AssetPiece children, and links only their joints, so
+	// anything else would quietly misbehave once spawned
+	private static void WarnAboutStructure(AssetHandle handle, string path)
+	{
+		foreach (var (joint, pieceA, pieceB) in handle.Joints)
+			if (pieceA is null || pieceB is null || pieceA == pieceB)
+				Log.Warning(
+					"Asset at {Path} has joint {Joint}, which must link two of its pieces (the handle or its pieces)",
+					path, joint.Name);
+
+		foreach (var node in handle.FindChildren("*", nameof(PhysicsBody3D)))
+			if (node is not AssetPiece || node.GetParent() != handle)
+				Log.Warning(
+					"Asset at {Path} has body {Body}, which is ignored: moving parts must be AssetPiece children",
+					path, handle.GetPathTo(node));
+
+		foreach (var node in handle.FindChildren("*", nameof(Joint3D)))
+			if (node.GetParent() != handle)
+				Log.Warning(
+					"Asset at {Path} has joint {Joint}, which is ignored: joints must be children of the handle",
+					path, handle.GetPathTo(node));
+	}
+
+	// A piece's colliders and their bounds in its handle's space, and its volume and centroid
+	private sealed record PieceInfo((Shape3D, Transform3D)[] Colliders, Aabb[] Bounds, float Volume, Vector3 Centroid)
+	{
+		public static PieceInfo Empty { get; } = new([], [], 0, default);
 	}
 }

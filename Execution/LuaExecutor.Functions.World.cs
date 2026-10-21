@@ -162,7 +162,10 @@ public static partial class LuaExecutor
 		if (WorldManager.Instance?.World is { } world)
 		{
 			if (world.GetNodeOrNull<WorldEnvironment>(SkyPath) is { } sky)
+			{
 				sky.Set(Sky3DEnabledProperty, false);
+				sky.Environment.GlowEnabled = false;
+			}
 
 			if (world.GetNodeOrNull<Node3D>(TerrainPath) is { } terrain)
 				terrain.Visible = false;

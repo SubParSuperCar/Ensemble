@@ -31,13 +31,13 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	public IReadOnlyList<DocFile> Files { get; } =
 	[
 		new("README.md", ".github/README.md"),
-		new("TECHNICAL.md", ".github/TECHNICAL.md"),
 		new("CONTRIBUTING.md", ".github/CONTRIBUTING.md"),
+		new("TECHNICAL.md", ".github/TECHNICAL.md"),
+		new("LIVE-CREATIONS.md", ".github/LIVE-CREATIONS.md"),
+		new("ROADMAP.md", ".github/ROADMAP.md"),
 		new("LICENSE.md", "LICENSE.md"),
 		new("LICENSE-ASSETS.txt", ".github/LICENSE-ASSETS.txt"),
-		new("LICENSE-CODE.txt", ".github/LICENSE-CODE.txt"),
-		new("ROADMAP.md", ".github/ROADMAP.md"),
-		new("LIVE-CREATIONS.md", ".github/LIVE-CREATIONS.md")
+		new("LICENSE-CODE.txt", ".github/LICENSE-CODE.txt")
 	];
 
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }

@@ -28,6 +28,8 @@ public partial class Ui : Control
 
 	public static readonly StringName ProcessTimeMonitor = "Ensemble/Time/UIProcess";
 
+	private static bool _isAntialiased = true;
+
 	private AvaloniaControl _host = null!;
 	private double _lastUiProcessTime;
 	private ulong _processStartTicks;
@@ -65,7 +67,7 @@ public partial class Ui : Control
 			AddChild(_host);
 
 			// Popups render in the top level's overlay layer, outside every view, so they inherit from here
-			TextOptions.SetTextRenderingMode(_host.GetTopLevel(), TextRenderingMode.Antialias);
+			ApplyAntialiasing(_host.GetTopLevel());
 
 			stopwatch.Stop();
 			Console.WriteLine(string.Create(
@@ -123,13 +125,21 @@ public partial class Ui : Control
 
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
 
-	// On the top level, like the text rendering mode above, so every view and popup inherits it
+	/// <summary>
+	///     Applies the UI's antialiasing to a top level. Separate windows don't inherit the main one's, so they apply
+	///     it themselves.
+	/// </summary>
+	public static void ApplyAntialiasing(Visual visual)
+	{
+		RenderOptions.SetEdgeMode(visual, _isAntialiased ? EdgeMode.Antialias : EdgeMode.Aliased);
+		TextOptions.SetTextRenderingMode(visual,
+			_isAntialiased ? TextRenderingMode.Antialias : TextRenderingMode.Alias);
+	}
+
 	private void DisableAntialiasing()
 	{
-		var topLevel = _host.GetTopLevel();
-
-		RenderOptions.SetEdgeMode(topLevel, EdgeMode.Aliased);
-		TextOptions.SetTextRenderingMode(topLevel, TextRenderingMode.Alias);
+		_isAntialiased = false;
+		ApplyAntialiasing(_host.GetTopLevel());
 	}
 
 	private static TextBlock CreateLoadingScreen() =>

@@ -34,10 +34,9 @@ public static class Constants
 	public const int RegexMatchTimeoutMs = 100;
 
 	/// <summary>
-	///     The world-space distance (about 2 mm) within which geometry counts as touching, for placement and welding.
-	///     It sits between the editor's 0.001 steps, so a 0.002 offset reliably exceeds it.
+	///     The world-space distance (about 0.5 mm) within which geometry counts as touching, for placement and welding.
 	/// </summary>
-	public const float Epsilon = 1 / 512f;
+	public const float Epsilon = 1 / 2048f;
 
 	public static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(3 / 16d);
 

@@ -174,7 +174,7 @@ public sealed partial class MainViewModel : ViewModelBase
 			CursorBlink = true,
 			CursorBlinkRate = TerminalCursorBlinkRateMs
 		};
-		TextOptions.SetTextRenderingMode(terminal, TextRenderingMode.Antialias);
+		Ui.ApplyAntialiasing(terminal);
 
 		_terminals.Add(terminal);
 		terminal.Closing += OnClosing;

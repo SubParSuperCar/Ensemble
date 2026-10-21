@@ -457,8 +457,9 @@ where the difference is small.
 - **Unshaded overlays.** Characters, highlights, and the plot grid are unshaded.
 - **Shadows.** The sun uses soft shadow filter quality 3, a shadow blur of 0.5, and a 64 m shadow distance, which
   keeps thin shapes (like the suspension's coil) crisp.
-- **`perf_mod()`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing, Sky3D, the
-  terrain, and the plots' night lights and characters' flashlights.
+- **`perf_mod()`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing (including
+  terminal windows opened afterward), glow, Sky3D, the terrain, and the plots' night lights and characters'
+  flashlights.
 - **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World,
   2 Character, 3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics
   ticks (highlights, the placement preview, other players' characters) opt out of interpolation.
@@ -495,8 +496,8 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
 - Chat messages are sanitized (whitespace collapsed, control characters removed, at most 256 characters) and checked
   identically on every peer. Chat lines and read-aloud speech shorten long sender names (default names end in a
   random suffix); everything else keeps the whole name.
-- The host's profanity filter matches a compressed word list case-insensitively and through common substitutions
-  (like "4" for "a"), while avoiding false positives inside ordinary words. Fully masked messages become `<Redacted>`.
+- The host's profanity filter matches a compressed word list case-insensitively and through common substitutions (like
+  "4" for "a"), while avoiding false positives inside ordinary words. Fully masked messages become `<Redacted>`.
 - Join and leave notices are posted locally, late joiners receive recent history, and messages can be logged to
   per-session text files (`user://chat_logs/`) and read aloud with text-to-speech.
 

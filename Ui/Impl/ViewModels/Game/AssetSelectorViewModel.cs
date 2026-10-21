@@ -96,7 +96,9 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		var category = GAssetManager.GetCategory(asset.Id);
 		var node = new AssetNode
 		{
-			Name = asset.Name, Id = asset.Id, Description = GAssetManager.GetDescription(asset.Id)
+			Name = asset.Name,
+			Id = asset.Id,
+			Description = GAssetManager.GetDescription(asset.Id)
 		};
 
 		_nodesByAssetId.Add(asset.Id, node);

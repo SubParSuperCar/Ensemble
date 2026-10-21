@@ -74,7 +74,7 @@ public partial class DestructTool : ToolBase
 
 	private static void Cover(SolidHighlight highlight, AssetHandle handle)
 	{
-		var aabb = handle.BoundaryAabb;
+		var aabb = GAssetManager.GetBoundary(handle.AssetId);
 		var transform = handle.GlobalTransform;
 		transform.Origin = transform * aabb.GetCenter();
 

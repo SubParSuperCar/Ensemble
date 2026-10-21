@@ -7,6 +7,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private static readonly StringName BoxSizeParameter = "box_size";
 	private static readonly StringName EdgeThicknessParameter = "edge_thickness";
 	private static readonly StringName FaceAlphaParameter = "face_alpha";
+	private static readonly StringName OpacityParameter = "opacity";
 
 	private readonly BoxMesh _box = new();
 
@@ -45,10 +46,24 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1 / 8f;
 
+	[Export(PropertyHint.Range, "0,1")]
+	public float Opacity
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdateOpacity();
+		}
+	} = 1f;
+
 	protected abstract Shader Shader { get; }
 
 	public override void _Ready()
 	{
+		// Highlights are placed between physics ticks, so interpolating would drag them from where they last were
+		PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
+
 		Material.Shader = Shader;
 		Material.RenderPriority = (int)Godot.Material.RenderPriorityMax;
 
@@ -58,6 +73,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 		UpdateMesh();
 		UpdateEdgeThickness();
 		UpdateFaceAlpha();
+		UpdateOpacity();
 	}
 
 	private void UpdateMesh()
@@ -73,4 +89,5 @@ public abstract partial class HighlightBase : MeshInstance3D
 
 	private void UpdateEdgeThickness() => Material.SetShaderParameter(EdgeThicknessParameter, EdgeThickness);
 	private void UpdateFaceAlpha() => Material.SetShaderParameter(FaceAlphaParameter, FaceAlpha);
+	private void UpdateOpacity() => Material.SetShaderParameter(OpacityParameter, Opacity);
 }

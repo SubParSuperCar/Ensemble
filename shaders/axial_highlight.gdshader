@@ -26,5 +26,5 @@ void fragment()
 	float line = dot(edge_axis, lines);
 
 	ALBEDO = mix(face_axis, edge_color, line);
-	ALPHA = FRONT_FACING ? mix(face_alpha, 1.0, line) : line;
+	ALPHA = (FRONT_FACING ? mix(face_alpha, 1.0, line) : line) * opacity;
 }

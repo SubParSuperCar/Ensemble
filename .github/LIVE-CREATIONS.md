@@ -1,12 +1,31 @@
 # Live Creations
 
 How spawned creations work today, from welding to replication ([**section 1**](#1-how-it-works-today) walks through
-it), and the design for what comes next: asset logic, mechanisms, input, seats, and aerodynamics. It extends
-[**Spawning and live physics**](./ROADMAP.md#spawning-and-live-physics-plan) in the roadmap, whose terms table this
-uses. Decisions are numbered **(D#)**; the table at the end lists them, resolved or open. Plans are a guide, not a
-contract: they bend when something unforeseen comes up.
+it), and the design for what comes next: asset logic, mechanisms, input, seats, and aerodynamics. The
+[**roadmap**](./ROADMAP.md#live-physics) tracks its progress. Decisions are numbered **(D#)**; the table at the end
+lists them, resolved or open. Plans are a guide, not a contract: they bend when something unforeseen comes up.
 
 ---
+
+## Terms
+
+| Term             | Meaning                                                                                    |
+|------------------|--------------------------------------------------------------------------------------------|
+| Creation         | A plot's build as a whole, static or live (as in saves)                                    |
+| Instance         | One placed asset in Core: ID, asset, grid position, rotation, properties                   |
+| Static instances | Build mode: frozen AssetHandles under `Instances/Static`, editable with the tools          |
+| Spawned / live   | A plot whose creation is simulated, as a `LiveCreation`; editing is locked                 |
+| Abut             | Two collider boxes share part of a face within `Epsilon`; edges and corners don't count    |
+| Weld             | An automatic, unbreakable rigid link between pieces of two instances whose boxes abut      |
+| Group            | The pieces connected by welds (one union-find component), even a single piece              |
+| Assembly         | The `RigidBody3D` built for one group; its ID is the group's index in weld order           |
+| Piece            | An asset's own colliders (piece 0) or an `AssetPiece` child, riding its group's assembly   |
+| Mechanism        | (Later) Assemblies linked by joints; one plot's always share its simulator                 |
+| Owner            | The peer that simulates a mechanism; the plot's owner by default (network ownership)       |
+| Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
+| Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
+| Anchor           | (Later) An asset that freezes its assembly while any anchor holds it                       |
+| Passenger        | (Later, name TBD) A character seated in a creation                                         |
 
 ## 1. How it works today
 
@@ -98,8 +117,8 @@ proxies start in place.
 
 - Engine-provided, reusable components stay in `Scripts/Assets/Components/` (e.g., `Paintable`, later `Seat`,
   `Airfoil`, `Anchor`).
-- Asset-specific scripts sit beside their scene in `build_assets/`: `build_assets/Mechanics/Motor.tscn` and
-  `Motor.cs`. Godot requires a script's file name to match its class, and asset scenes are PascalCase **(D1)**, so
+- Asset-specific scripts sit beside their scene in `build_assets/`: `build_assets/Advanced/Suspension.tscn` and
+  `Suspension.cs`. Godot requires a script's file name to match its class, and asset scenes are PascalCase **(D1)**, so
   every `X.cs` pairs with its `X.tscn`. `AssetManager` only registers scenes, so the scripts don't disturb its scan.
 - `EnsembleGame.csproj` nests each script under the same-named `.tscn` or `.scn` beside it in the IDE, as `.axaml.cs`
   nests under `.axaml` (the scenes are `None` items, so they can parent), and `config.nsdepcop` lets nothing but

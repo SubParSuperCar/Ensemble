@@ -22,8 +22,7 @@
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
                 <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
-                <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
-                <ColumnDefinition Width="Auto" SharedSizeGroup="Restore" />
+                <ColumnDefinition Width="Auto" SharedSizeGroup="Options" />
             </Grid.ColumnDefinitions>
 
             <Border
@@ -54,8 +53,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
                     <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Mutex" />
-                    <ColumnDefinition Width="Auto" SharedSizeGroup="Restore" />
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Options" />
                 </Grid.ColumnDefinitions>
 
                 <Border
@@ -109,20 +107,17 @@
                         IsEnabled="False" />
                 </Border>-->
 
-                <CheckBox
-                    Grid.Column="5"
-                    Content="Mut.Ex."
-                    Command="{Binding ToggleMutexEnforcedCommand}"
-                    IsChecked="{Binding IsMutexEnforced}"
-                    ToolTip.Tip="Mutual Exclusion: Toggles whether only one tool can be enabled at a time.&#x0a;Disables all other tools when you enable one."
-                    FlowDirection="RightToLeft" />
+                <StackPanel Grid.Column="5" Spacing="4" VerticalAlignment="Center" TextElement.FontSize="12">
+                    <CheckBox
+                        Content="Mut.Ex."
+                        IsChecked="{Binding IsMutexEnforced}"
+                        ToolTip.Tip="Mutual Exclusion: Toggles whether only one tool can be enabled at a time.&#x0a;Disables all other tools when you enable one." />
 
-                <CheckBox
-                    Grid.Column="6"
-                    Content="Restore"
-                    Command="{Binding ToggleRestoreOnDespawnCommand}"
-                    IsChecked="{Binding IsRestoreOnDespawnEnabled}"
-                    ToolTip.Tip="Toggles whether the tools that spawning your plot disabled are enabled again when it despawns." />
+                    <CheckBox
+                        Content="Restore"
+                        IsChecked="{Binding IsRestoreOnDespawnEnabled}"
+                        ToolTip.Tip="Toggles whether the tools that spawning your plot disabled are enabled again when it despawns." />
+                </StackPanel>
             </Grid>
         </Border>
     </StackPanel>

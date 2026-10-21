@@ -230,7 +230,7 @@ public partial class ChatManager : Node, IAutoload
 		_log = null;
 	}
 
-	// Masks would be read aloud symbol by symbol, and placeholders with their brackets
+	// Masks would be read aloud symbol by symbol, placeholders with their brackets, and an ellipsis by name
 	private static string ToSpeech(ChatMessage message)
 	{
 		if (message.IsNotice)
@@ -240,6 +240,6 @@ public partial class ChatManager : Node, IAutoload
 			? message.Text[1..^1]
 			: MaskRunRegex.Replace(message.Text, string.Empty);
 
-		return $"{message.SenderName} said: {text}";
+		return $"{ChatText.ShortenName(message.SenderName, string.Empty)} said: {text}";
 	}
 }

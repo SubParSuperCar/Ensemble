@@ -17,7 +17,7 @@ public partial class Paintable : AssetComponent
 {
 	public const string ColorKey = "_colorHex";
 
-	private GeometryInstance3D[] _geometries = [];
+	private (GeometryInstance3D Geometry, BaseMaterial3D.ShadingModeEnum Shading)[] _geometries = [];
 	private GdProperties? _properties;
 
 	[Export] public Array<GeometryInstance3D> Excluded { get; set; } = [];
@@ -26,7 +26,13 @@ public partial class Paintable : AssetComponent
 
 	protected override void OnInitialized()
 	{
-		_geometries = [.. Handle.Pieces.Prepend<Node>(Handle).SelectMany(GetGeometries).Except(Excluded)];
+		_geometries =
+		[
+			.. Handle.Pieces.Prepend<Node>(Handle)
+				.SelectMany(GetGeometries)
+				.Except(Excluded)
+				.Select(static geometry => (geometry, GetShading(geometry)))
+		];
 		_properties = Handle.Instance.Properties;
 
 		Apply();
@@ -41,6 +47,12 @@ public partial class Paintable : AssetComponent
 				? GetGeometries(child).Prepend(geometry)
 				: GetGeometries(child));
 
+	// Paint keeps the shading the asset was authored with, as per-vertex shading is far cheaper for many instances
+	private static BaseMaterial3D.ShadingModeEnum GetShading(GeometryInstance3D geometry) =>
+		geometry is MeshInstance3D { Mesh: not null } mesh && mesh.GetActiveMaterial(0) is BaseMaterial3D material
+			? material.ShadingMode
+			: BaseMaterial3D.ShadingModeEnum.PerPixel;
+
 	private void OnPropertyChanged(string key, Variant value)
 	{
 		if (string.Equals(key, ColorKey, StringComparison.OrdinalIgnoreCase) ||
@@ -52,9 +64,9 @@ public partial class Paintable : AssetComponent
 	{
 		var hex = _properties!.GetValue(ColorKey).AsString();
 		var color = Color.HtmlIsValid(hex) ? Color.FromHtml(hex) : Colors.White;
-		var paint = Paints.Get(MaterialBank.Get(_properties), color);
+		var material = MaterialBank.Get(_properties);
 
-		foreach (var geometry in _geometries)
-			geometry.MaterialOverride = paint;
+		foreach (var (geometry, shading) in _geometries)
+			geometry.MaterialOverride = Paints.Get(material, color, shading);
 	}
 }

@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using CommunityToolkit.Mvvm.Messaging;
+using EnsembleRoot.Common.Messages;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.World;
@@ -154,6 +156,8 @@ public static partial class LuaExecutor
 			root.Msaa3D = Viewport.Msaa.Disabled;
 			root.ScreenSpaceAA = Viewport.ScreenSpaceAAEnum.Disabled;
 		}
+
+		WeakReferenceMessenger.Default.Send(new DisableUiAntialiasingMessage());
 
 		if (WorldManager.Instance?.World is { } world)
 		{

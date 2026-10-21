@@ -8,9 +8,9 @@ public static class Welds
 {
 	/// <summary>
 	///     Gets the groups of welded parts, as part indices in ascending order, ordered by their lowest index, so every
-	///     peer derives the same groups from the same parts in the same order. Parts of one owner (an instance's pieces)
-	///     never weld to each other, though others may join them into one group, and a part without boxes is a group of
-	///     its own.
+	///     peer derives the same groups from the same parts in the same order. Parts of one owner (an instance's
+	///     pieces) never weld to each other, though others may join them into one group, and a part without boxes is a
+	///     group of its own.
 	/// </summary>
 	public static IReadOnlyList<int[]> Group(IReadOnlyList<(int Owner, Obb[] Boxes)> parts)
 	{

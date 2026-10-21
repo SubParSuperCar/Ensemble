@@ -2,6 +2,7 @@ uniform vec3 box_size;
 
 uniform float edge_thickness;
 uniform float face_alpha = 0.125;
+uniform float opacity = 1.0;
 
 varying vec3 local_position;
 

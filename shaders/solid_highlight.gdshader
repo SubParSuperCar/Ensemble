@@ -12,5 +12,5 @@ void fragment()
 	float line = max(lines.x, max(lines.y, lines.z));
 
 	ALBEDO = tint;
-	ALPHA = FRONT_FACING ? mix(face_alpha, 1.0, line) : line;
+	ALPHA = (FRONT_FACING ? mix(face_alpha, 1.0, line) : line) * opacity;
 }

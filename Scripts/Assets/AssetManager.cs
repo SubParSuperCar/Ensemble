@@ -110,24 +110,27 @@ public partial class AssetManager : Node
 		if (scene is null)
 			return;
 
+		// The instance is only read, so it is freed even when reading it throws
 		var instance = scene.Instantiate();
-		if (instance is not AssetHandle handle)
+
+		try
+		{
+			if (instance is AssetHandle handle)
+				Register(handle, scene, path);
+		}
+		finally
 		{
 			instance.Free();
-			return;
 		}
+	}
 
+	private void Register(AssetHandle handle, PackedScene scene, string path)
+	{
 		var id = handle.AssetId;
-		var name = handle.AssetName;
-		var description = handle.Description;
-		var properties = handle.Properties;
-		var maxInstanceCount = handle.MaxInstanceCount;
 		var boundary = handle.BoundaryAabb;
 		var pieces = Enumerable.Range(0, handle.PieceCount).Select(piece => GetPieceInfo(handle, piece)).ToArray();
-		var density = handle.Density;
 
 		WarnAboutStructure(handle, path);
-		instance.Free();
 
 		if (!_scenesByAssetId.TryAdd(id, scene))
 		{
@@ -138,17 +141,18 @@ public partial class AssetManager : Node
 		_categoriesByAssetId.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
 		_boundariesByAssetId.Add(id, boundary);
 		_piecesByAssetId.Add(id, pieces);
-		_densitiesByAssetId.Add(id, density);
+		_densitiesByAssetId.Add(id, handle.Density);
 
-		if (description is { IsEmpty: false })
+		if (handle.Description is { IsEmpty: false } description)
 			_descriptionsByAssetId.Add(id, description.ToString());
 
-		var converted = new Dictionary();
+		var properties = new Dictionary();
 
-		foreach (var (key, value) in properties)
-			converted.Add(key.ToString(), value);
+		foreach (var (key, value) in handle.Properties)
+			properties.Add(key.ToString(), value);
 
-		GAssets.Add(id, name, converted, maxInstanceCount is Default ? DefaultMaxInstanceCount : maxInstanceCount);
+		var maxInstanceCount = handle.MaxInstanceCount is Default ? DefaultMaxInstanceCount : handle.MaxInstanceCount;
+		GAssets.Add(id, handle.AssetName, properties, maxInstanceCount);
 	}
 
 	private static PieceInfo GetPieceInfo(AssetHandle handle, int piece)

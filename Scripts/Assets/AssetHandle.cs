@@ -88,7 +88,9 @@ public partial class AssetHandle : StaticBody3D
 	public TComponent? GetComponent<TComponent>() where TComponent : AssetComponent =>
 		Components.OfType<TComponent>().FirstOrDefault();
 
-	/// <summary>Gets a piece's colliders, with their transforms in the handle's space; piece 0 is the handle's own.</summary>
+	/// <summary>
+	///     Gets a piece's colliders, with their transforms in the handle's space; piece 0 is the handle's own.
+	/// </summary>
 	public IEnumerable<(CollisionShape3D Collider, Transform3D Transform)> GetColliders(int piece)
 	{
 		Node3D body = piece is 0 ? this : Pieces[piece - 1];
@@ -151,7 +153,9 @@ public partial class AssetHandle : StaticBody3D
 		OnInitialized();
 	}
 
-	/// <summary>Links each joint to its pieces' assemblies, once every assembly of the creation is in the tree.</summary>
+	/// <summary>
+	///     Links each joint to its pieces' assemblies, once every assembly of the creation is in the tree.
+	/// </summary>
 	internal void ConnectJoints()
 	{
 		foreach (var (joint, pieceA, pieceB) in Joints)

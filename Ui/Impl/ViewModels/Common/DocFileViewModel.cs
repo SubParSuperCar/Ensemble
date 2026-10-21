@@ -31,7 +31,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	public IReadOnlyList<DocFile> Files { get; } =
 	[
 		new("README.md", ".github/README.md"),
-		new("INTRODUCTION.md", ".github/INTRODUCTION.md"),
+		new("TECHNICAL.md", ".github/TECHNICAL.md"),
 		new("CONTRIBUTING.md", ".github/CONTRIBUTING.md"),
 		new("LICENSE.md", "LICENSE.md"),
 		new("LICENSE-ASSETS.txt", ".github/LICENSE-ASSETS.txt"),

@@ -221,6 +221,8 @@ metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
 [node name="SunLight" type="DirectionalLight3D" parent="Sky" unique_id=1782178301]
 transform = Transform3D(0.9985913, 0.04123192, -0.03339601, 0, 0.62940073, 0.7770809, 0.05306001, -0.7759862, 0.6285141, -0.03339601, 0.7770809, 0.6285141)
 shadow_enabled = true
+shadow_blur = 0.5
+directional_shadow_max_distance = 64.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="Sky" unique_id=2079591738]
 transform = Transform3D(0, -0.96049464, 0.27829847, 0.6677828, 0.2071532, 0.71495014, -0.7443562, 0.18584293, 0.64140177, 0.27829847, 0.71495014, 0.64140177)
@@ -253,8 +255,7 @@ save_16_bit = true
 label_distance = 512.0
 label_size = 24
 show_grid = true
-collision_shape_size = 8
-collision_radius = 16
+collision_mode = 3
 cast_shadows = 0
 show_region_grid = true
 show_checkered = true

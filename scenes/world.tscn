@@ -72,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.050176073, 0.050176073)
-shader_parameter/cirrus_position2 = Vector2(0.050176073, 0.050176073)
+shader_parameter/cirrus_position1 = Vector2(0.33698052, 0.33698052)
+shader_parameter/cirrus_position2 = Vector2(0.33698052, 0.33698052)
 shader_parameter/cirrus_texture = ExtResource("3_dss4m")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.2508756, 0.2508756)
+shader_parameter/cumulus_position = Vector2(1.6842428, 1.6842428)
 shader_parameter/cumulus_texture = ExtResource("4_7t5mc")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -159,7 +159,7 @@ points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20,
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0tnpc"]
 shading_mode = 2
 albedo_color = Color(0.5, 0.5, 0.5, 1)
-roughness = 0.6
+roughness = 0.5
 
 [node name="World" type="Node3D" unique_id=1840370715]
 script = ExtResource("1_o8fc1")
@@ -221,7 +221,7 @@ metadata/_custom_type_script = "uid://deo0gxkmk2ahd"
 [node name="SunLight" type="DirectionalLight3D" parent="Sky" unique_id=1782178301]
 transform = Transform3D(0.9985913, 0.04123192, -0.03339601, 0, 0.62940073, 0.7770809, 0.05306001, -0.7759862, 0.6285141, -0.03339601, 0.7770809, 0.6285141)
 shadow_enabled = true
-shadow_blur = 0.5
+shadow_blur = 0.75
 directional_shadow_max_distance = 64.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="Sky" unique_id=2079591738]

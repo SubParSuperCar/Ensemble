@@ -51,7 +51,7 @@
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />
         </Style>
 
-        <Style Selector="OverlayPopupHost, ContextMenu, MenuFlyoutPresenter">
+        <Style Selector="ContextMenu, MenuFlyoutPresenter">
             <Setter Property="FontSize" Value="{StaticResource MenuFontSize}" />
         </Style>
 

@@ -223,7 +223,7 @@ public partial class ConstructTool : ToolBase
 		if (ToolCommon.FindInHierarchy<AssetHandle>(collider) is not { } target || !ToolCommon.IsHandleLocal(target))
 			return Vector3.Zero;
 
-		var box = Obb.From(target.BoundaryAabb, target.Transform);
+		var box = Obb.From(GAssetManager.GetBoundary(target.AssetId), target.Transform);
 		var anchor = box.Center;
 		var envelope = box.Envelope;
 
@@ -254,6 +254,7 @@ public partial class ConstructTool : ToolBase
 		_preview.Name = "Preview";
 		_preview.SetCollision(0, 0);
 		_preview.InputRayPickable = false;
+		_preview.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 		_preview.Visible = false;
 
 		AddChild(_preview);
@@ -267,7 +268,8 @@ public partial class ConstructTool : ToolBase
 		_preview.AddChild(_solidHighlight);
 	}
 
-	// GeometryInstance3D.Transparency is ignored outside Forward+
+	// GeometryInstance3D.Transparency is ignored outside Forward+. Surfaces without a material draw with the default
+	// one, so they get a new one to fade.
 	private static void MakeTranslucent(Node root)
 	{
 		foreach (var node in root.FindChildren("*", nameof(MeshInstance3D), true, false))
@@ -276,7 +278,9 @@ public partial class ConstructTool : ToolBase
 
 			for (var surface = 0; surface < mesh.GetSurfaceOverrideMaterialCount(); surface++)
 			{
-				if (mesh.GetActiveMaterial(surface)?.Duplicate() is not BaseMaterial3D material)
+				var active = mesh.GetActiveMaterial(surface);
+
+				if ((active is null ? new StandardMaterial3D() : active.Duplicate()) is not BaseMaterial3D material)
 					continue;
 
 				material.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;

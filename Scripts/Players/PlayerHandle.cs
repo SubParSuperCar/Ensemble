@@ -59,7 +59,11 @@ public partial class PlayerHandle : Node3D
 		nametag.Text = $"\"{_player.Name}\"\n({Id})\n\u2193";
 
 		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
+		{
+			// Moved by Interpolate every frame, not by physics
+			Character.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 			return;
+		}
 
 		// Only the local body is controlled, so its script is swapped in place. Swapping invalidates the managed
 		// wrapper, so the node is fetched again by instance ID.

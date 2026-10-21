@@ -13,7 +13,9 @@ public partial class PlotHandle
 	/// </summary>
 	public int? ArbitratedSimulatorPeerId { get; private set; }
 
-	/// <summary>The creation's simulator apart from arbitration: the override if any, else the owner, else the host.</summary>
+	/// <summary>
+	///     The creation's simulator apart from arbitration: the override if any, else the owner, else the host.
+	/// </summary>
 	internal int BaseSimulatorPeerId => _simulatorOverride ?? GetOwnerPeerId() ?? HostPeerId;
 
 	internal void SetArbitratedSimulator(int? peerId)

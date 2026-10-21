@@ -1,6 +1,7 @@
 # Ensemble Roadmap
 
-A living checklist. Not exhaustive, not ordered by priority within a section, and subject to change.
+A living checklist. Not exhaustive, not ordered by priority within a section, and subject to change. The design behind
+spawned creations, and what comes next for them, lives in [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 
 - `[ ]` not started, `[x]` done, `(WIP)` in progress, `(deferred)` parked
 - `(S)` about a session, `(M)` a few sessions, `(L)` a week or more
@@ -11,20 +12,20 @@ A living checklist. Not exhaustive, not ordered by priority within a section, an
 
 The tool suite, in rough intended order of implementation.
 
-- DestructTool (Delete) - remove instances from the local plot (WIP)
+- [x] DestructTool (Delete) - remove instances from the local plot
     - [x] (S) SolidHighlight, a flat-color variant of AxialHighlight, red for destruct
-    - [x] (S) Raycast collision mask - hit World only, ignore characters
+    - [x] (S) Raycast collision mask - the tools' rays hit World and Static Instances only, never characters
     - [x] (S) "Clear All" toolbar button - visible only with DestructTool on, owner, not spawned; disabled at 0
       instances; double-click to confirm; disables DestructTool after use
     - [x] (M) Multi-selection - `Shift`-click to toggle, click a selected instance to delete them all, bulk
       `RemoveInstancesAction` (up to 256, token cost scales with count)
-    - [ ] (S) Finer raycast filtering once dedicated physics layers exist (plot base vs. instances)
 - ConstructTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
     - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation, snap
       along the surface with edges aligned to the targeted instance, and never clip
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
+    - [ ] (S) Fade the placement preview in and out as it appears and disappears
 - [ ] PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
 - [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
@@ -32,6 +33,9 @@ The tool suite, in rough intended order of implementation.
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
 - [x] (M) Marquee Selector - Alt+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
+- [x] (S) Plot outlines - the local plot's boundary rises from its grid in the active tool's color (white while hovered
+  in the Plot Selector), fading in and out as it rises and sinks
+- [ ] (S) Fade the delete tool's selection highlight boxes in and out, as the plot outlines do
 - [x] (S) Scripted building - Lua `add_inst`, `rm_insts`, `set_inst_prop`, and `dmp_insts` work on the local plot
   through the same actions (and validation) as the tools, so they also work in multiplayer
 - [ ] (M) Build share codes - `copy_build()` / `paste_build(code)` turn a plot into a short compressed text code to
@@ -46,9 +50,9 @@ The tool suite, in rough intended order of implementation.
 
 ## Multiplayer / replication
 
-SessionManager (Sessions/) has the infra (pluggable transports, versioned auth handshake, server-assigned player IDs,
-self-registering RPC actions and late-join snapshots, kicks, graceful shutdown notices). Actions and snapshots live in
-Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
+SessionManager (`Sessions/`) has the infrastructure (pluggable transports, a versioned auth handshake, server-assigned
+player IDs, self-registering RPC actions and late-join snapshots, kicks, graceful shutdown notices). Actions and
+snapshots live in `Replication/`, and actions are submitted with `new SetPlotAction(id).Submit()`.
 
 - [x] (M) Main-menu session sub-menu - Single-Player / Multi-Player, Host / Join, address, port, password, remembered
   display name
@@ -79,153 +83,50 @@ Replication/, and actions are submitted with `new SetPlotAction(id).Submit()`.
 - [ ] (M) Chat bubbles over players
 - [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override) and kicking
   occupants (owner or host; `KickOccupantAction` and `kick_occupant` done)
-- [x] (L) Physics replication - plot owners simulate their creations, streamed as bit-packed state over custom RPCs,
-  with host-decided hand-offs, timeouts, and relay limits, and proxies replayed 100 ms behind; see
-  [**Spawning and live physics**](#spawning-and-live-physics-plan)
+
+## Live physics
+
+Spawned plots become live creations: welded assemblies simulated by one peer and streamed to everyone else.
+[**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) explains how it works and holds the design for what comes next.
+
+- [x] (M) Prerequisites - physics layers, a game-wide `Epsilon` (1/512 m), multi-collider assets, the abut test, and
+  weld groups (0.52.0)
+- [x] (L) Single-player spawning - assemblies, members, mass, and a kill height (0.52.0); spawning moves the local
+  character out of the creation, and characters press their weight on what they stand on
+- [x] (L) Multiplayer with the host simulating - bit-packed state, proxies, epochs, keepalives, and late joins (0.53.0)
+- [x] (L) Owner authority - plot owners simulate, with host-decided hand-offs, overrides, timeouts, relay limits, and
+  proxies replayed 100 ms behind (0.54.0)
 - [x] (S) Poor-connection simulator - `set_net_sim(latency_ms, jitter_ms, loss)` delays and drops incoming live state
 - [x] (M) Creation arbitration - creations with different simulators that come close (the host's sphere tests at 1.5
-  times their bounds) share one simulator, their largest's, until they've been apart for 2 s; see
-  [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md)
-
-## Gameplay / content
-
-- (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction` and `set_plot_spawned` done; spawned plots become live,
-  welded creations, simulated by the plot's owner (the host as the fallback) and streamed to everyone else, handed
-  off when the owner changes, and an emptied plot despawns. Next: live asset logic; see
-  [**Spawning and live physics**](#spawning-and-live-physics-plan)
-- (WIP) (L) Live asset logic - infrastructure for assets with behavior. `AssetComponent`s are nodes dropped under an
-  asset's `AssetHandle` in its scene (unique behaviors may subclass `AssetHandle`); handles bind to their plot and
-  instance, then initialize their components once their whole creation exists, and live in one mode (build or live)
-  for life. `Paintable` (material overrides from `_colorHex` / `_materialId`, opt-out by node) is the first, and the
-  `MaterialBank` pairs each material's look with its density, friction, and bounce. `AssetPiece` children give
-  assets moving parts, welded on their own and linked by Godot joints authored in the scene (the first: Suspension).
-  Next: a batched simulation tick for many scripted blocks, then seats, input, and driven joints (see
-  [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md))
+  times their bounds) share one simulator, their largest's, until they've been apart for 2 s (0.55.0)
+- [x] (M) Asset pieces and authored joints - `AssetPiece` children move on their own, linked by Godot joints authored
+  in the asset's scene (the first: Suspension, with its coil)
+- [x] (S) Terrain collision everywhere - Terrain3D builds its whole collision up front, so bodies far from the local
+  character (another peer's creation, or a dedicated host's) stay on the ground
+- (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass
+  `AssetHandle`) initialize once their whole creation exists; `Paintable` and the `MaterialBank` are done. Next: a
+  batched simulation tick for many scripted blocks, then seats, input, and driven joints (motors, servos, pistons)
 - [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
-- [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
-- [ ] (L) A real map, built with Unibuilder
-- [ ] (L) Speaker asset (and/or a music player widget) - plays audio to nearby players. Open problems: moderating
-  inappropriate audio, replicating playback, and storing / fetching the audio in the first place
+- [ ] (M) Bandwidth - a per-client budget that favors near and fast bodies over far ones
+- [ ] (M) Characters riding moving creations (platform velocity)
+- [ ] (M) Anchors - an asset that freezes its assembly while it holds it
 
-## Spawning and live physics (plan)
+Known hard parts:
 
-The agreed design for spawned plots, from 2026-10-15; single-player live creations shipped in v0.52.0, host-simulated
-multiplayer in v0.53.0, and owner-simulated creations with hand-offs in v0.54.0. Everything
-after them (asset logic, mechanisms, seats, input, physics authority, replication) is designed in
-[**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
-
-### Terms
-
-| Term             | Meaning                                                                                    |
-|------------------|--------------------------------------------------------------------------------------------|
-| Creation         | A plot's build as a whole, static or live (as in saves)                                    |
-| Instance         | One placed asset in Core: ID, asset, grid position, rotation, properties                   |
-| Static instances | Build mode: frozen AssetHandles under `Instances/Static`, editable with the tools          |
-| Spawned / live   | A plot whose creation is simulated, as a `LiveCreation`; editing is locked                 |
-| Abut             | Two collider boxes share part of a face within `Epsilon`; edges and corners don't count    |
-| Weld             | An automatic, unbreakable rigid link between pieces of two instances whose boxes abut      |
-| Group            | The pieces connected by welds (one union-find component), even a single piece              |
-| Assembly         | The `RigidBody3D` built for one group; its ID is the group's index in weld order           |
-| Piece            | An asset's own colliders (piece 0) or an `AssetPiece` child, riding its group's assembly   |
-| Mechanism        | (Later) Assemblies linked by joints; one plot's always share its simulator                 |
-| Owner            | The peer that simulates a mechanism; the plot's owner by default (network ownership)       |
-| Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
-| Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
-| Anchor           | (Later) An asset that freezes its assembly while any anchor holds it                       |
-| Passenger        | (Later, name TBD) A character seated in a creation                                         |
-
-### Done (plumbing)
-
-- `SetPlotSpawnedAction(bool)` (the owner, or the host via Lua), the floating Spawn / Despawn button (owner only), and
-  `set_plot_spawned(is_spawned)`
-- The static instances always mirror Core; spawning only hides them and takes them out of the physics space (one
-  toggle on `Instances/Static`), so despawning is instant
-- The edit lock lives in the actions (`IsSpawned: false`); Core still accepts changes while spawned, since it's only
-  state
-- An emptied plot despawns (leaving clears its instances first; a disconnect keeps them)
-- Spawning moves the local character out of the creation (placement ignores characters), and characters press their
-  weight (70 kg) on the simulated body they stand on. Teleports briefly leave the physics space, since Jolt would
-  otherwise move a kinematic body through its surroundings and shove what it touched
-
-### Principles
-
-- Core stays pure data, and the static plot is the only persistent and replicated build state. Live state is
-  ephemeral: despawning discards it, and saves never see it
-- Every peer already has every plot's instances, so spawning sends no geometry; each peer builds the same assemblies
-  from Core, in instance ID order
-- No cross-machine physics determinism is assumed; live state is streamed, not lockstepped
-- No breakable welds, and no dynamic body cap (instance quotas are the limit; the host kicks lag bombers)
-- Collisions between creations with different owners may be imperfect (one-sided pushes); no custom physics
-
-### Spawn pipeline (per plot, on every peer)
-
-1. Welds - an edge for each pair of pieces of different instances with abutting collider boxes (`Obb.Abuts`, Baja
-   Builders parity: either box, grown by `Epsilon` along one of its axes and shrunk by it along the others, overlaps the
-   other), one box per collider, so assets may have several. Neighbors come from an ObbGrid (done: `Welds.Group`)
-2. Groups - union-find over the weld edges; each connected component is one rigid group, even a group of one (done)
-3. Assembly bodies - a new `RigidBody3D` per group under the plot's `LiveCreation`, with each asset's collision shapes
-   registered on it through the shape-owner API (`CreateShapeOwner(asset)`, `ShapeOwnerAddShape`,
-   `ShapeOwnerSetTransform`) at the asset's offset, reusing the `Shape3D` resources. Godot only counts shapes that are
-   direct children of a body, so nesting bodies (or wrapping `Node3D` assets) wouldn't work (done: `Assembly`)
-4. Pieces - each asset is instantiated once; its handle's own colliders (piece 0) and its `AssetPiece` children are
-   parented under their groups' assemblies at their offsets, with their own bodies out of the physics space; meshes
-   and scripts ride along. Handles and pieces are `StaticBody3D`s, so nothing moves in build mode (done)
-5. Mass - each asset's density times its volume by default (overridable later), summed, with the center of mass at the
-   mass-weighted average position; Jolt derives the inertia from the shapes. Friction comes from the material later
-   (done: `AssetHandle.Density`, water's by default)
-6. IDs - each assembly takes its group's index, with instances in ID order and their pieces in order, so peers
-   agree on IDs without sending them (done)
-7. Raycasts - a hit's shape index leads back to the exact asset (`ShapeFindOwner`, then `ShapeOwnerGetOwner`)
-8. Joints - Godot joints authored in an asset's scene between its pieces link their assemblies at spawn (done:
-   Suspension); a plot's assemblies always share its simulator, so joints never span two machines
-
-Despawning frees the assemblies and re-enables the static instances (done). Assemblies that fall below -1024 m are
-switched off, not freed.
-
-### Ownership and authority
-
-- The plot owner simulates its assemblies (like Roblox's network ownership); everyone else shows kinematic proxies
-  moved by the received state, so local characters can still stand on and collide with them. Each body is simulated
-  exactly once
-- When the owner leaves, the new owner takes over, with the host as the fallback; an empty plot despawns, so a
-  creation never outlives its occupants
-- API: host-authoritative, one call to set who simulates what, the host always the fallback
-- The host validates incoming state like character updates: only a plot's owner may send its bodies, values must be
-  finite and within the world, speeds are capped, and updates are rate limited
-
-### Replication
-
-- One unreliable, sequenced, batched message per plot per tick (a custom RPC with a packed byte payload), not one RPC
-  per body; `MultiplayerSynchronizer` doesn't suit thousands of changing bodies
-- About 24 bytes per body: ID, position, quantized rotation (smallest three), and quantized linear and angular
-  velocity. Sleeping bodies send nothing, and idle keepalives recover from losses
-- About 20 Hz, like characters, within a per-client bandwidth budget that favors near and fast bodies and slows far
-  ones. 50 moving bodies cost about 24 KB/s per receiver; 1000 loose ones about 480 KB/s, hence welding and the budget
-- Owner -> host -> synced peers, as with characters. Proxies interpolate about 100 ms behind, extrapolate briefly with
-  velocity on loss, and snap when far off
-- Late joins: PlotsSnapshot already carries the spawn state; the latest body states join it, so proxies start in place
-
-### Phases (each shippable)
-
-0. Prerequisites - physics layers (World, Character, Static Instances, Dynamic Instances), a game-wide `Epsilon`
-   (1/512 m) for placement and welding, multi-collider assets, the abut test and weld groups (with unit tests), and
-   spawning blocked in multiplayer until Phase 2
-1. Single-Player - assemblies, members, and mass; a kill height for assemblies; stress-test Jolt with about 5000 blocks
-2. Multiplayer with the host as the only simulator - batched state, proxies, interpolation, and late joins; proves the
-   wire format
-3. Owner authority - the same format, sent by the owner, relayed and validated by the host, with hand-off when the
-   owner changes
-4. Joints and motors - needs Live asset logic and Input management
-5. Polish - bandwidth tuning, characters riding moving creations (platform velocity), and arbitration: creations
-   that come close share one simulator (done in 0.55.0)
-
-### Known hard parts
-
-- Collisions between creations with different owners: arbitration hands close ones to one simulator, but fast ones
+- Collisions between creations with different simulators: arbitration hands close ones to one simulator, but fast ones
   may meet before the hand-off arrives (one-sided pushes until then)
 - Joint stability across large mass ratios
 - Bandwidth spikes when many loose bodies move at once
 - Characters standing on someone else's moving creation
+
+## Gameplay / content
+
+- (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction`, the floating Spawn / Despawn button (owner only), and
+  `set_plot_spawned` done; an emptied plot despawns. Next: live asset logic (see [**Live physics**](#live-physics))
+- [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
+- [ ] (L) A real map, built with Unibuilder
+- [ ] (L) Speaker asset (and/or a music player widget) - plays audio to nearby players. Open problems: moderating
+  inappropriate audio, replicating playback, and storing / fetching the audio in the first place
 
 ## UI / UX framework
 
@@ -245,13 +146,12 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 ## Housekeeping / infra
 
 - [x] (S) Saving/ - binary + JSON serializers, Zstd/Brotli compression, AES-256-GCM encryption, SHA-256 integrity
-- [x] (S) Tests/ project scaffold (xUnit v3, MTP)
+- [x] (S) Tests/ project (xUnit v3, MTP) - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline
+  roundtrips, HostEndPoint parsing, OBB/grid math, welds, placement, chat text, the profanity filter, NavigatorService
 - [x] (S) Sessions/Impl gdignored; Sentinels dependency removed
 - [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build warnings
-- [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
 - [x] (S) Dedicated 3D physics layers - World, Character, Static Instances, and Dynamic Instances
-- [x] (S) Populate Tests/ - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline roundtrips,
-  HostEndPoint parsing, OBB/grid math, NavigatorService
+- [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 

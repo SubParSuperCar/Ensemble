@@ -26,7 +26,7 @@
                 <TextBox
                     Name="MessageBox"
                     Text="{Binding Message}"
-                    PlaceholderText="Click here or press '/' to chat&#x2026;"
+                    PlaceholderText="Press '/' to chat&#x2026;"
                     KeyDown="OnMessageBoxKeyDown"
                     ToolTip.Tip="Type a message, then press Enter to send it. (Esc to stop typing)"
                     VerticalContentAlignment="Center"

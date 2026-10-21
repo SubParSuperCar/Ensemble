@@ -67,19 +67,8 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	[RelayCommand]
 	private static void ToggleDestructTool() => GToolManager.Toggle<DestructTool>();
 
-	[RelayCommand]
-	private void ToggleMutexEnforced()
-	{
-		GToolManager.UseMutex = !GToolManager.UseMutex;
-		IsMutexEnforced = GToolManager.UseMutex;
-	}
-
-	[RelayCommand]
-	private void ToggleRestoreOnDespawn()
-	{
-		GToolManager.RestoreOnDespawn = !GToolManager.RestoreOnDespawn;
-		IsRestoreOnDespawnEnabled = GToolManager.RestoreOnDespawn;
-	}
+	partial void OnIsMutexEnforcedChanged(bool value) => GToolManager.UseMutex = value;
+	partial void OnIsRestoreOnDespawnEnabledChanged(bool value) => GToolManager.RestoreOnDespawn = value;
 
 	private void OnToolIsEnabledChanged(ToolBase tool, bool isEnabled)
 	{

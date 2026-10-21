@@ -5,9 +5,9 @@ using Serilog;
 namespace EnsembleRoot.Scripts.Creations;
 
 /// <summary>
-///     A plot's creation while it's spawned: assemblies built from the plot's instances, alike on every peer, which this
-///     peer either simulates and streams or shows as proxies of the simulator's stream. It's created on spawning and
-///     freed on despawning, so nothing of it outlives a spawn. Its plot decides who simulates it (see
+///     A plot's creation while it's spawned: assemblies built from the plot's instances, alike on every peer, which
+///     this peer either simulates and streams or shows as proxies of the simulator's stream. It's created on spawning
+///     and freed on despawning, so nothing of it outlives a spawn. Its plot decides who simulates it (see
 ///     <see cref="PlotHandle.SimulatorPeerId" />) and routes its packets.
 /// </summary>
 public partial class LiveCreation : Node3D
@@ -34,9 +34,9 @@ public partial class LiveCreation : Node3D
 	}
 
 	/// <summary>
-	///     Hands the creation to this peer or away from it: a new simulator resumes from the latest received states, and
-	///     an old one freezes its bodies into proxies where they are. The stream and the proxies' timelines start over,
-	///     since another simulator's sequence numbers mean other moments.
+	///     Hands the creation to this peer or away from it: a new simulator resumes from the latest received states,
+	///     and an old one freezes its bodies into proxies where they are. The stream and the proxies' timelines start
+	///     over, since another simulator's sequence numbers mean other moments.
 	/// </summary>
 	internal void HandOff(bool isSimulated)
 	{

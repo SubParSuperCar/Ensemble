@@ -46,15 +46,12 @@ public partial class CharacterController : CharacterBody3D
 	{
 		PhysicsServer3D.BodySetEnableContinuousCollisionDetection(GetRid(), true);
 
-		// Terrain3D only generates collision around its camera, so this probe camera keeps it under the body while the
-		// view camera dollies away; otherwise, the body falls through the ground
-		var terrainFocus = new Camera3D { Name = "ShamCam", Current = false };
-		AddChild(terrainFocus);
-
-		if (Terrain?.IsClass("Terrain3D") is true)
-			Terrain.Call("set_camera", terrainFocus);
-
 		Camera.MakeCurrent();
+
+		// Terrain3D centers its mesh on its camera, and stops looking for one if there is none when it first looks
+		// (e.g., while a client joins), so it is handed the view camera
+		if (Terrain?.IsClass("Terrain3D") is true)
+			Terrain.Call("set_camera", Camera);
 	}
 
 	public override void _PhysicsProcess(double delta)

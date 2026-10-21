@@ -17,12 +17,12 @@
     <File Path=".github/CONTRIBUTING.md"/>
     <File Path=".github/dependabot.yml"/>
     <File Path=".github/IDEAS.md"/>
-    <File Path=".github/INTRODUCTION.md"/>
     <File Path=".github/LICENSE-ASSETS.txt"/>
     <File Path=".github/LICENSE-CODE.txt"/>
     <File Path=".github/LIVE-CREATIONS.md"/>
     <File Path=".github/README.md"/>
     <File Path=".github/ROADMAP.md"/>
+    <File Path=".github/TECHNICAL.md"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Scripts/">
     <File Path=".github/scripts/profanity-list.sh"/>
@@ -36,6 +36,7 @@
   <Folder Name="/Solution Items/IntelliJ Run Configs/">
     <File Path=".run/Editor.run.xml"/>
     <File Path=".run/EnsembleGame_ Player (PATH Launcher) (External Console).run.xml"/>
+    <File Path=".run/Host + Client (Side by Side).run.xml"/>
     <File Path=".run/Player (External Console).run.xml"/>
     <File Path=".run/Player.run.xml"/>
   </Folder>

@@ -1,5 +1,8 @@
 # Contributing
 
+Thanks for your interest in Ensemble. This page covers setting up a development environment, the everyday workflow, and
+the conventions the codebase follows. For a map of the code, see [**TECHNICAL.md**](/.github/TECHNICAL.md).
+
 ## How to Set Up and Contribute
 
 1. Download and install [Git](https://git-scm.com/install/). Git is already installed by default on many Linux
@@ -37,17 +40,34 @@
    in one window and joins it from another, each filling half of a 2560-pixel-wide screen (adjust the size at the top
    of `Properties/side-by-side.sh`, or `.cmd` on Windows).
 
+## Building and Testing
+
+- **Build:** `dotnet build Ensemble.slnx` builds every project. The game's `Release` and `ExportRelease`
+  configurations enable NativeAOT, whose analyzers flag trimming problems, so also check
+  `dotnet build EnsembleGame.csproj -c ExportRelease` before submitting.
+- **Test:** `dotnet test --solution Ensemble.slnx` runs the xUnit v3 tests. The repository uses
+  Microsoft.Testing.Platform, so a bare `dotnet test <path>` doesn't work.
+- **Try it:** the in-game console (`` ` `` or `F9`) runs Lua; `help()` lists every function, and functions such as
+  `loc_add_rand_insts(plot_id, count)`, `set_plot_spawned(true)`, and `set_net_sim(...)` help exercise building, live
+  physics, and poor connections without other players.
+
 ## Guidelines
 
 - **Keep changes focused.** One feature or fix per pull request, with a short description of what changed and why.
 - **Match the existing style.** Run Rider's **Code Cleanup** on changed files (formatting is defined by the repository's
-  `.editorconfig`), keep lines within 120 columns, and use ASCII only. Comments are kept to a minimum: explain why, not
-  what.
+  `.editorconfig`), keep lines within 120 columns, and use ASCII only (escape other characters, e.g., `\u2026`).
+  Comments are kept to a minimum: explain why, not what.
 - **Respect the module boundaries.** Layering is enforced at build time by NsDepCop (`config.nsdepcop`); see
-  [**Architecture**](/.github/README.md#architecture). `Core` stays plain C# with no Godot dependencies.
+  [**Module Layering**](/.github/TECHNICAL.md#module-layering). `Core` stays plain C# with no Godot dependencies, and
+  only `Ui` may use Avalonia.
+- **Keep Godot's view tidy.** Only the main file of a Godot class (a `Node`, `Resource`, or `RefCounted` script) belongs
+  where Godot can see it, with its committed `.uid` file. Partial classes and plain C# types go in the nearest `Impl/`
+  folder, which a `.gdignore` file hides from Godot; see [**What Godot Sees**](/.github/TECHNICAL.md#what-godot-sees).
+- **Mind performance.** Ensemble aims for very high frame rates: measure rendering and per-frame changes, avoid reading
+  many Godot objects through interop every frame, and keep cheap trade-offs (such as per-vertex shading on assets).
 - **Keep asset IDs stable.** Saves store each instance's `AssetId`, so once an asset ships, its ID must never change or
-  be reused; give new assets new IDs.
-- **Build cleanly and test.** The solution must build without warnings, and `dotnet test --solution Ensemble.slnx` must
-  pass. Add tests for real behavior and regressions rather than trivial operations.
+  be reused; give new assets new IDs. Asset scenes live in `build_assets/`, with any asset script beside its scene.
+- **Build cleanly and test.** The solution must build without warnings, and the tests must pass. Add tests for real
+  behavior and regressions rather than trivial operations.
 - **License your contributions.** By contributing, you agree that your code is licensed under GPL-3.0-or-later and your
   non-code assets under CC BY-NC-SA 4.0, as described in [**LICENSE.md**](/LICENSE.md).

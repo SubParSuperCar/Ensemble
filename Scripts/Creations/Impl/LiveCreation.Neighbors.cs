@@ -32,7 +32,9 @@ public partial class LiveCreation
 		}
 	}
 
-	/// <summary>Wakes this peer's sleeping bodies that touch the bounds, as something they rest on may be leaving.</summary>
+	/// <summary>
+	///     Wakes this peer's sleeping bodies that touch the bounds, as something they rest on may be leaving.
+	/// </summary>
 	internal void WakeAssemblies(Aabb bounds)
 	{
 		foreach (var assembly in _assemblies)

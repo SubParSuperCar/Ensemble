@@ -7,6 +7,7 @@ namespace EnsembleRoot.Common.Text;
 public static class ChatText
 {
 	public const int MaxLength = 256;
+	private const int MaxNameLength = 16;
 
 	/// <summary>
 	///     Trims <paramref name="text" />, collapses its whitespace (including line breaks) into single spaces, drops
@@ -35,6 +36,24 @@ public static class ChatText
 			sanitized.Length--;
 
 		return sanitized.ToString().TrimEnd();
+	}
+
+	/// <summary>
+	///     Shortens <paramref name="name" /> to <see cref="MaxNameLength" /> characters, ending in
+	///     <paramref name="suffix" />, for chat lines and speech: default names end in a long random suffix. Everything
+	///     else keeps the whole name.
+	/// </summary>
+	public static string ShortenName(string name, string suffix = "\u2026")
+	{
+		if (name.Length <= MaxNameLength)
+			return name;
+
+		var length = MaxNameLength - suffix.Length;
+
+		if (char.IsHighSurrogate(name[length - 1]))
+			length--;
+
+		return string.Concat(name.AsSpan(0, length), suffix);
 	}
 
 	public static bool IsValid(string text) =>

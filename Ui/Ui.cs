@@ -73,6 +73,8 @@ public partial class Ui : Control
 
 			WeakReferenceMessenger.Default.Register<Ui, SetUiRenderScaleMessage>(
 				this, static (ui, message) => ui._host.RenderScaling = message.Value);
+			WeakReferenceMessenger.Default.Register<Ui, DisableUiAntialiasingMessage>(
+				this, static (ui, _) => ui.DisableAntialiasing());
 
 			if (Main.AreAutoloadsLoaded)
 				SwapToRealUi();
@@ -99,6 +101,7 @@ public partial class Ui : Control
 			Performance.RemoveCustomMonitor(ProcessTimeMonitor);
 
 		WeakReferenceMessenger.Default.Unregister<SetUiRenderScaleMessage>(this);
+		WeakReferenceMessenger.Default.Unregister<DisableUiAntialiasingMessage>(this);
 		Dispatcher.UIThread.UnhandledException -= OnAvaloniaUnhandledException;
 	}
 
@@ -119,6 +122,15 @@ public partial class Ui : Control
 	}
 
 	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
+
+	// On the top level, like the text rendering mode above, so every view and popup inherits it
+	private void DisableAntialiasing()
+	{
+		var topLevel = _host.GetTopLevel();
+
+		RenderOptions.SetEdgeMode(topLevel, EdgeMode.Aliased);
+		TextOptions.SetTextRenderingMode(topLevel, TextRenderingMode.Alias);
+	}
 
 	private static TextBlock CreateLoadingScreen() =>
 		new()

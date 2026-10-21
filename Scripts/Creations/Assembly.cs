@@ -52,9 +52,9 @@ public partial class Assembly : RigidBody3D
 	}
 
 	/// <summary>
-	///     Adopts a piece's body as a child, registers the piece's colliders as shapes, and weighs it into the body. The
-	///     body is a handle for piece 0, placed at <paramref name="handleTransform" /> (in this body's space), or else an
-	///     <see cref="AssetPiece" />, placed where it sits relative to that handle.
+	///     Adopts a piece's body as a child, registers the piece's colliders as shapes, and weighs it into the body.
+	///     The body is a handle for piece 0, placed at <paramref name="handleTransform" /> (in this body's space), or
+	///     else an <see cref="AssetPiece" />, placed where it sits relative to that handle.
 	/// </summary>
 	/// <remarks>
 	///     Best done before entering the tree, so the body enters the physics space with all of its shapes at once.
@@ -64,7 +64,9 @@ public partial class Assembly : RigidBody3D
 	{
 		var transform = piece is 0 ? handleTransform : handleTransform * body.Transform;
 
+		// A piece leaves its asset's scene, whose root would stay its owner (owners only matter for saving scenes)
 		body.GetParent()?.RemoveChild(body);
+		body.Owner = null;
 		body.Transform = transform;
 		AddChild(body);
 

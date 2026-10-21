@@ -77,7 +77,7 @@ internal static class ToolCommon
 			if (handle.GetInstanceHandle(instance.Id) is not { } asset)
 				continue;
 
-			var center = asset.GlobalTransform * asset.BoundaryAabb.GetCenter();
+			var center = asset.GlobalTransform * GAssetManager.GetBoundary(asset.AssetId).GetCenter();
 
 			if (!camera.IsPositionBehind(center) && area.HasPoint(camera.UnprojectPosition(center)))
 				instanceIds.Add(instance.Id);

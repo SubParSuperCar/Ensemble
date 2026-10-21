@@ -3,6 +3,7 @@ using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Chat;
 using EnsembleRoot.Scripts.Profanity;
@@ -93,11 +94,17 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 	partial void OnIsTtsEnabledChanged(bool value) => GChatManager.IsTtsEnabled = value;
 
-	private void OnMessageAdded(ChatMessage message) =>
-		AddLine(
-			message.IsNotice
-				? new TextChatLine(null, default, message.Text)
-				: new TextChatLine($"[{message.SenderName}]:", message.SenderColor.ToAvaloniaColor(), message.Text));
+	private void OnMessageAdded(ChatMessage message)
+	{
+		if (message.IsNotice)
+		{
+			AddLine(new TextChatLine(null, default, message.Text));
+			return;
+		}
+
+		var nametag = $"[{ChatText.ShortenName(message.SenderName)}]:";
+		AddLine(new TextChatLine(nametag, message.SenderColor.ToAvaloniaColor(), message.Text));
+	}
 
 	// Local only, so the sender learns why a message went nowhere
 	private void OnActionRejected(string actionId, string reason)

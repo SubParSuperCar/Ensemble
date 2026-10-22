@@ -11,7 +11,7 @@
     <AvaloniaVersion>12.1.4</AvaloniaVersion>
     <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
     <GodotSharpVersion>4.7.2</GodotSharpVersion>
-    <LiveMarkdownVersion>2.4.3</LiveMarkdownVersion>
+    <LiveMarkdownVersion>2.5.1</LiveMarkdownVersion>
     <MicrosoftExtensionsVersion>10.0.13</MicrosoftExtensionsVersion>
     <!-- Pinned to the SkiaSharp version Avalonia.Skia is built against; newer major versions are incompatible -->
     <SkiaSharpVersion>3.119.4</SkiaSharpVersion>
@@ -43,7 +43,7 @@
     <PackageVersion Include="LuaCSharp" Version="0.5.7"/>
     <!-- An analyzer only, so it floats to the latest 3.x without touching the game's binaries -->
     <PackageVersion Include="Meziantou.Analyzer" Version="3.*"/>
-    <PackageVersion Include="MethodBoundaryAspect.Fody" Version="3.5.0"/>
+    <PackageVersion Include="MethodBoundaryAspect.Fody" Version="3.6.0"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0"/>
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)"/>

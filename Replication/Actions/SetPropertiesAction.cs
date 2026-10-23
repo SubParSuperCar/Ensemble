@@ -1,6 +1,4 @@
 using System.Runtime.CompilerServices;
-using EnsembleCoreRoot.Api.Assets;
-using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;
@@ -12,8 +10,6 @@ namespace EnsembleRoot.Replication.Actions;
 public readonly record struct SetPropertiesAction(InstanceReference Instance, Dictionary Properties)
 	: INetworkAction<SetPropertiesAction>
 {
-	private const int MaxStringLength = 256;
-
 	public static int TokenCost { get; } = 5;
 
 	public static SetPropertiesAction FromPayload(Array<Variant> payload) =>
@@ -32,32 +28,7 @@ public readonly record struct SetPropertiesAction(InstanceReference Instance, Di
 		if (Properties.Count is 0)
 			return Reject("No properties.");
 
-		var current = instance.Properties.Source.All;
-
-		foreach (var (key, value) in Properties)
-		{
-			var name = key.VariantType is Variant.Type.String or Variant.Type.StringName ? key.AsString() : null;
-
-			if (name is null || !current.TryGetValue(name, out var existing))
-				return Reject("Property not found.");
-
-			var updated = value.FromGodot();
-
-			if (updated.Type != existing.Type)
-				return Reject($"Property {name} must stay {existing.Type}.");
-
-			// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-			switch (updated.Type)
-			{
-				case CoreVariantType.Double when !double.IsFinite((double)updated):
-					return Reject($"Property {name} not finite.");
-
-				case CoreVariantType.String when ((string)updated).Length > MaxStringLength:
-					return Reject($"Property {name} too long.");
-			}
-		}
-
-		return Accept;
+		return PropertyRules.Validate(instance.Properties.Source.All, Properties);
 	}
 
 	public void Apply(ActionSource source) => Instance.Resolve(source.Plot!)!.Properties.UpdateAll(Properties);

@@ -62,6 +62,8 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
 - [x] (S) Instance references - actions verify an instance's ID against its asset and transform, since freed IDs are
   reused
 - [x] (S) SetPropertiesAction - type- and key-checked property edits, ready for PropertyTool
+- [x] (S) AddInstancesBulkAction - up to 256 instances with their properties in one request, placed in order and
+  skipped where they don't fit, ready for build share codes and loading saves
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
 - (WIP) (S) Peer UI - ping column and host kick context menu in the player list done (kick reason box TODO); server
   info panel next

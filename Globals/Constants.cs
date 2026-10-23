@@ -34,9 +34,19 @@ public static class Constants
 	public const int RegexMatchTimeoutMs = 100;
 
 	/// <summary>
-	///     The world-space distance (about 0.5 mm) within which geometry counts as touching, for placement and welding.
+	///     The narrowest and widest gaps (about 1 and 2 mm) by which an asset's colliders may sit inside its cell, so the
+	///     faces they inset never weld. Binary, just under the millimeters assets are authored in.
 	/// </summary>
-	public const float Epsilon = 1 / 2048f;
+	public const float MinColliderInset = 1 / 1024f;
+
+	/// <inheritdoc cref="MinColliderInset" />
+	public const float MaxColliderInset = 1 / 512f;
+
+	/// <summary>
+	///     The world-space distance (about 0.5 mm) within which geometry counts as touching, for placement and welding:
+	///     half the narrowest collider inset, so inset faces never touch.
+	/// </summary>
+	public const float Epsilon = MinColliderInset / 2;
 
 	public static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(3 / 16d);
 

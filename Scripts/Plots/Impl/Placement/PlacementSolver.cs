@@ -33,10 +33,15 @@ public sealed class PlacementSolver
 {
 	private const int MaxSettlePasses = 3;
 	private const int MaxResolvePasses = 3;
+
+	// Of a cell (about 16 mm at the plot's): past both faces' insets plus a round collider's tessellation (the
+	// hemisphere's hull falls about 4 mm short), well short of the finest real fraction a span uses (the suspension's
+	// plates are a fifth)
 	private const float SnapTolerance = 1 / 32f;
 
-	// About 4 mm, above the hairline offsets authors give colliders and below any real asset's off-grid placement
-	private const float LatticeTolerance = 1 / 256f;
+	// Twice the widest collider inset (about 4 mm): insets shift an origin off the lattice by at most half of one, and
+	// any real asset's off-lattice placement is centimeters
+	private const float LatticeTolerance = 2 * MaxColliderInset;
 
 	private readonly List<Obb> _candidates = [];
 

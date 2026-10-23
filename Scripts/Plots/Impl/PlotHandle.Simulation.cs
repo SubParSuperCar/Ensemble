@@ -9,7 +9,8 @@ public partial class PlotHandle
 {
 	private const int HostPeerId = (int)MultiplayerPeer.TargetPeerServer;
 
-	// The host takes over a creation whose simulator has sent nothing for this long (they send at least a heartbeat)
+	// The host takes over a creation whose simulator has sent nothing for this long: three missed heartbeats, which
+	// simulators send at least once a second
 	private const double SimulatorTimeout = 3d;
 
 	private int? _simulatorOverride;

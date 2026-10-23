@@ -31,7 +31,7 @@ public partial class ChatManager : Node, IAutoload
 	public const int MaxHistoryCount = 128;
 	public const long MaxLogFileBytes = 4 * 1024 * 1024;
 
-	// Like the Serilog file sink's retainedFileCountLimit
+	// A month of daily logs, like the game log's retainedFileCountLimit (appsettings.json)
 	private const int MaxLogFileCount = 30;
 	private const string LogFilePattern = "chat_*.log";
 

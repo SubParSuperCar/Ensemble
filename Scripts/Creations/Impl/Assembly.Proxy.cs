@@ -36,10 +36,15 @@ public partial class Assembly
 			if (time <= latest.Time)
 				return;
 
-			// The hold is a copy: retiming the latest state itself would drag moments already shown back toward the one
-			// before it
+			// A held proxy's state has no moment of its own, so it takes this one; any other was shown at its moment, so
+			// the hold is a copy, as retiming it would drag moments already shown back toward the state before it
 			if (time - latest.Time > 2 * interval && latest.IsAtRest)
+			{
+				if (double.IsNegativeInfinity(latest.Time))
+					--_proxyStateCount;
+
 				PushProxyState(latest with { Time = time - interval });
+			}
 		}
 
 		PushProxyState(new ProxyState(time, transform, linearVelocity, angularVelocity));
@@ -78,7 +83,8 @@ public partial class Assembly
 				: Interpolate(_proxyStates[index], _proxyStates[index + 1], time);
 		}
 
-		if (transform == ProxyTransform)
+		// A kinematic body moves toward its new transform, so one that isn't finite would never recover
+		if (transform == ProxyTransform || !transform.IsFinite())
 			return;
 
 		if (transform.Origin.DistanceTo(ProxyTransform.Origin) > ProxySnapDistance)

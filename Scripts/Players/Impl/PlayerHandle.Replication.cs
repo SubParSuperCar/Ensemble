@@ -173,10 +173,16 @@ public partial class PlayerHandle
 			if (time <= latest.Time)
 				return;
 
-			// A gap means the character idled, so it holds its pose until an interval before this state. The hold is a
-			// copy: retiming the latest state itself would drag moments already shown back toward the one before it.
+			// A gap means the character idled, so it holds its pose until an interval before this state. A restored
+			// state has no moment of its own, so it takes that one; any other was shown at its moment, so the hold is a
+			// copy, as retiming it would drag moments already shown back toward the state before it.
 			if (time - latest.Time > 2 * ReplicationInterval)
+			{
+				if (double.IsNegativeInfinity(latest.Time))
+					--_stateCount;
+
 				PushState(latest with { Time = time - ReplicationInterval });
+			}
 		}
 
 		PushState(new CharacterState(time, position, yaw));
@@ -194,7 +200,7 @@ public partial class PlayerHandle
 	private void Show(Vector3 position, float yaw, bool isJump)
 	{
 		// ReSharper disable once CompareOfFloatsByEqualityOperator
-		if (!isJump && position == _shownPosition && yaw == _shownYaw)
+		if ((!isJump && position == _shownPosition && yaw == _shownYaw) || !position.IsFinite() || !float.IsFinite(yaw))
 			return;
 
 		var body = Body;

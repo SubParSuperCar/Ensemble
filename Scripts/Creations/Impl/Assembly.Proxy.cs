@@ -31,19 +31,18 @@ public partial class Assembly
 			JumpProxy(transform);
 		else
 		{
-			ref var latest = ref _proxyStates[_proxyStateCount - 1];
+			var latest = _proxyStates[_proxyStateCount - 1];
 
 			if (time <= latest.Time)
 				return;
 
+			// The hold is a copy: retiming the latest state itself would drag moments already shown back toward the one
+			// before it
 			if (time - latest.Time > 2 * interval && latest.IsAtRest)
-				latest = latest with { Time = time - interval };
+				PushProxyState(latest with { Time = time - interval });
 		}
 
-		if (_proxyStateCount == ProxyBufferSize)
-			Array.Copy(_proxyStates, 1, _proxyStates, 0, --_proxyStateCount);
-
-		_proxyStates[_proxyStateCount++] = new ProxyState(time, transform, linearVelocity, angularVelocity);
+		PushProxyState(new ProxyState(time, transform, linearVelocity, angularVelocity));
 	}
 
 	/// <summary>Forgets the buffered states' times (another simulator's clock), keeping the proxy in place.</summary>
@@ -163,6 +162,14 @@ public partial class Assembly
 		LinearVelocity = latest.LinearVelocity;
 		AngularVelocity = latest.AngularVelocity;
 		Sleeping = latest.IsAtRest;
+	}
+
+	private void PushProxyState(in ProxyState state)
+	{
+		if (_proxyStateCount == ProxyBufferSize)
+			Array.Copy(_proxyStates, 1, _proxyStates, 0, --_proxyStateCount);
+
+		_proxyStates[_proxyStateCount++] = state;
 	}
 
 	// The proxy holds where it was last placed, and its timeline starts over with the next received state

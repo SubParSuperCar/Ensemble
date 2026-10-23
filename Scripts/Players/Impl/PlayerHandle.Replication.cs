@@ -165,20 +165,26 @@ public partial class PlayerHandle
 			Show(position, yaw, true);
 		else
 		{
-			ref var latest = ref _states[_stateCount - 1];
+			var latest = _states[_stateCount - 1];
 
 			if (time <= latest.Time)
 				return;
 
-			// A gap means the character idled, so it holds its pose until an interval before it moves again
+			// A gap means the character idled, so it holds its pose until an interval before this state. The hold is a
+			// copy: retiming the latest state itself would drag moments already shown back toward the one before it.
 			if (time - latest.Time > 2 * ReplicationInterval)
-				latest = latest with { Time = time - ReplicationInterval };
+				PushState(latest with { Time = time - ReplicationInterval });
 		}
 
+		PushState(new CharacterState(time, position, yaw));
+	}
+
+	private void PushState(CharacterState state)
+	{
 		if (_stateCount == StateBufferSize)
 			Array.Copy(_states, 1, _states, 0, --_stateCount);
 
-		_states[_stateCount++] = new CharacterState(time, position, yaw);
+		_states[_stateCount++] = state;
 	}
 
 	// Remembers what it last showed, so a character standing still costs no interop

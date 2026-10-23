@@ -464,7 +464,7 @@ where the difference is small.
   color, and shading, so painted geometry still batches). Per-vertex surfaces receive no light from area lights (the
   plots' night lights), nor spot or omni light shadows; directional shadows are still sampled per pixel.
 - **Unshaded overlays.** Characters, highlights, and the plot grid are unshaded.
-- **Shadows.** The sun uses soft shadow filter quality 3, a shadow blur of 0.5, and a 64 m shadow distance, which
+- **Shadows.** The sun uses soft shadow filter quality 3, a shadow blur of 0.75, and a 64 m shadow distance, which
   keeps thin shapes (like the suspension's coil) crisp.
 - **`perf_mod()`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing (including
   terminal windows opened afterward), glow, Sky3D, the terrain, and the plots' night lights and characters'

@@ -31,9 +31,6 @@ public partial class LiveCreation
 	// Proxies show the creation this far in the past, so a late state still arrives before it's needed
 	private const double InterpolationDelay = 2d / StreamRate;
 
-	// How fast a timeline adapts to states arriving later than before (they move it earlier at once)
-	private const double TimelineDriftRate = 1 / 16d;
-
 	// Whole physics ticks, so each sequence number stands for an exact moment on the simulator
 	private static readonly int StreamTicks = Math.Max(1, Engine.PhysicsTicksPerSecond / StreamRate);
 	private static readonly double StreamInterval = StreamTicks / (double)Engine.PhysicsTicksPerSecond;
@@ -43,21 +40,18 @@ public partial class LiveCreation
 	private readonly List<AssemblyState> _receivedStates = [];
 	private readonly List<Assembly> _restingAssemblies = [];
 	private readonly List<AssemblyState> _streamedStates = [];
+	private readonly StreamTimeline _timeline = new(StreamInterval);
 	private readonly BitWriter _writer = new(MaxPacketBytes);
 
 	private int _awakeCursor;
 	private double _clock;
 	private double _keepaliveCredit;
 	private int _keepaliveIndex;
-	private long _receivedSequence;
 	private long _relayRefillTimestamp;
 	private double _relayTokens;
 	private int _sinceStream;
 	private ushort _streamSequence;
 	private int _streamsSinceSent;
-
-	// The local time of sequence 0 on the simulator's clock, or null until the epoch's first state
-	private double? _timelineOrigin;
 
 	/// <summary>Every assembly's latest state, asleep or not, as one packet for a joining peer.</summary>
 	internal byte[] CaptureStates()
@@ -83,7 +77,7 @@ public partial class LiveCreation
 		Apply(header.Sequence);
 
 		// The sequence may come from a counter that isn't the simulator's, so live states start the timeline over
-		_timelineOrigin = null;
+		_timeline.Reset();
 	}
 
 	/// <summary>
@@ -118,7 +112,7 @@ public partial class LiveCreation
 	{
 		_awakeIds.Clear();
 		_sinceStream = 0;
-		_timelineOrigin = null;
+		_timeline.Reset();
 
 		foreach (var assembly in _assemblies)
 			assembly.ResetProxyTimeline();
@@ -240,29 +234,12 @@ public partial class LiveCreation
 
 	private void Apply(ushort sequence)
 	{
-		var time = GetStateTime(sequence);
+		var time = _timeline.GetTime(sequence, _clock);
 
 		foreach (var state in _receivedStates)
 			if (state.Id < _assemblies.Count && _assemblies[state.Id] is { IsKilled: false } assembly)
 				assembly.AddProxyState(
 					time, StreamInterval, Origin * new Transform3D(new Basis(state.Rotation), state.Position),
 					Origin.Basis * state.LinearVelocity, Origin.Basis * state.AngularVelocity);
-	}
-
-	// Maps a sequence number to local time, following the earliest arrivals, as later ones were only delayed
-	private double GetStateTime(ushort sequence)
-	{
-		_receivedSequence = _timelineOrigin is null
-			? sequence
-			: _receivedSequence + (short)(sequence - (ushort)_receivedSequence);
-
-		var simulatorTime = _receivedSequence * StreamInterval;
-		var origin = _clock - simulatorTime;
-
-		_timelineOrigin = _timelineOrigin is { } current && origin > current
-			? current + (origin - current) * TimelineDriftRate
-			: origin;
-
-		return simulatorTime + _timelineOrigin.Value;
 	}
 }

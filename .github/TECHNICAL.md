@@ -329,8 +329,9 @@ player acting as the server.
   rejected with a reason.
 - **Late joiners** receive snapshots (plots, instances, and live creations; characters; chat history; the filter
   state) before any further action reaches them, so nothing arrives out of order.
-- **Characters** replicate at 20 Hz while moving and once a second while idle, relayed by the host and interpolated on
-  other peers.
+- **Characters** replicate at 20 Hz while moving and once a second while idle, relayed by the host. Each state carries
+  the sender's physics-tick sequence, which `StreamTimeline` (shared with live creations) maps to local time, and other
+  peers show characters 100 ms in the past, between the buffered states around that moment.
 
 ```mermaid
 sequenceDiagram

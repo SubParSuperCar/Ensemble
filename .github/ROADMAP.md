@@ -73,7 +73,8 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or `--join=HOST:P`)
 - [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
   shown under the player list
-- (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, interpolated (no animation state yet)
+- (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, buffered and interpolated 100 ms behind
+  on the sender's timeline, like creations (no animation state yet)
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
 - [x] (L) Instance replication - placements, deletions, and property edits sync as validated actions, with the host
   as the authority and late joiners restored from snapshots

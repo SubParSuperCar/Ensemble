@@ -19,6 +19,7 @@ namespace EnsembleRoot.Scripts.Watchdog;
 public partial class Watchdog : Node, IAutoload
 {
 	private const int PollIntervalMs = (int)TimeSpan.MillisecondsPerSecond;
+
 	// Four times the longest the game blocks its main thread on purpose (a Lua script's 5 s budget)
 	private const int TimeoutMissCount = 20;
 

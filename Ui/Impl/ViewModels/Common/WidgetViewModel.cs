@@ -35,11 +35,11 @@ public sealed partial class WidgetViewModel : ViewModelBase
 	public string Title => Entry.Title;
 	public WidgetDescriptor Descriptor => Entry.Descriptor;
 
-	[ObservableProperty] public partial Rect Bounds { get; set; }
-	[ObservableProperty] public partial int ZIndex { get; set; }
-	[ObservableProperty] public partial bool IsActive { get; set; }
-	[ObservableProperty] public partial bool IsMaximized { get; set; }
-	[ObservableProperty] public partial bool IsClosing { get; set; }
+	[ObservableProperty] public partial Rect Bounds { get; private set; }
+	[ObservableProperty] public partial int ZIndex { get; internal set; }
+	[ObservableProperty] public partial bool IsActive { get; internal set; }
+	[ObservableProperty] public partial bool IsMaximized { get; private set; }
+	[ObservableProperty] public partial bool IsClosing { get; internal set; }
 
 	internal Rect RestoredBounds => _restoreBounds ?? Bounds;
 

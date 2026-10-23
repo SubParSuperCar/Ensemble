@@ -34,7 +34,7 @@ public sealed partial class WidgetEntry : ObservableObject
 	/// <summary>A count shown next to the title while positive, e.g., of unread messages.</summary>
 	[ObservableProperty]
 	[NotifyPropertyChangedFor(nameof(Label))]
-	public partial int BadgeCount { get; set; }
+	public partial int BadgeCount { get; internal set; }
 
 	public string Label =>
 		BadgeCount > 0 ? string.Create(CultureInfo.InvariantCulture, $"{Title} ({BadgeCount})") : Title;

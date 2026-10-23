@@ -15,7 +15,7 @@ public sealed partial class NavigatorService(IServiceProvider services) : Dispos
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ViewModelBase? Current { get; set; }
+	public partial ViewModelBase? Current { get; private set; }
 
 	public bool CanGoBack => _history.Count > 0;
 

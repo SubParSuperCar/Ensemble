@@ -29,7 +29,7 @@ public sealed partial class ToastViewModel : ViewModelBase
 	public string RepeatText => string.Create(CultureInfo.InvariantCulture, $"x{_repeatCount}");
 	public bool IsRepeated => _repeatCount > 1;
 
-	[ObservableProperty] public partial bool IsDismissing { get; set; }
+	[ObservableProperty] public partial bool IsDismissing { get; internal set; }
 
 	protected override void OnDispose() => _timer.Stop();
 

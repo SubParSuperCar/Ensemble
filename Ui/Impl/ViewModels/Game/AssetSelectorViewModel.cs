@@ -39,7 +39,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	private static ConstructTool Construct => GToolManager.Construct;
 
 	[ObservableProperty] public partial string FilterQuery { get; set; } = string.Empty;
-	[ObservableProperty] public partial string TotalQuota { get; set; } = QuotaFormat.Unknown;
+	[ObservableProperty] public partial string TotalQuota { get; private set; } = QuotaFormat.Unknown;
 
 	public ObservableCollection<INodeBase> VisibleItems { get; } = [];
 	public ObservableCollection<INodeBase> SelectedItems { get; } = [];
@@ -286,7 +286,7 @@ public sealed partial class AssetNode : ObservableObject, INodeBase
 	public int Id { get; init; }
 	public string? Description { get; init; }
 
-	[ObservableProperty] public partial string Quota { get; set; } = QuotaFormat.Unknown;
+	[ObservableProperty] public partial string Quota { get; internal set; } = QuotaFormat.Unknown;
 	public required string Name { get; init; }
 }
 

@@ -133,6 +133,6 @@ public sealed partial class PlotItem : ObservableObject
 {
 	public int Id { get; init; }
 
-	[ObservableProperty] public partial string OwnerName { get; set; } = string.Empty;
-	[ObservableProperty] public partial string Occupancy { get; set; } = string.Empty;
+	[ObservableProperty] public partial string OwnerName { get; internal set; } = string.Empty;
+	[ObservableProperty] public partial string Occupancy { get; internal set; } = string.Empty;
 }

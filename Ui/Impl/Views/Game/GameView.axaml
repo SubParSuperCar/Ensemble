@@ -14,23 +14,16 @@
     <Grid>
         <!-- Widgets render below the ribbon, the ToolBar, the player list, and the overlays -->
         <Grid RowDefinitions="Auto,4,*,Auto">
-            <Grid>
-                <ContentControl
-                    Content="{Binding Clock}"
-                    HorizontalAlignment="Center" VerticalAlignment="Top" />
+            <Border
+                BorderBrush="{StaticResource DangerBrush}" BorderThickness="{StaticResource BorderThickness}"
+                HorizontalAlignment="Left" VerticalAlignment="Top">
 
-                <!-- Drawn above the clock, so leaving the session is never blocked -->
-                <Border
-                    BorderBrush="{StaticResource DangerBrush}" BorderThickness="{StaticResource BorderThickness}"
-                    HorizontalAlignment="Left" VerticalAlignment="Top">
-
-                    <Button
-                        Content="&lt;- Menu | Quit Session (2x)"
-                        DoubleTapped="OnMenuButtonDoubleTapped"
-                        ToolTip.Tip="Stops the current session and returns to the menu. (Double-click)"
-                        Background="{DynamicResource TranslucentBackgroundBrush}" />
-                </Border>
-            </Grid>
+                <Button
+                    Content="&lt;- Menu | Quit Session (2x)"
+                    DoubleTapped="OnMenuButtonDoubleTapped"
+                    ToolTip.Tip="Stops the current session and returns to the menu. (Double-click)"
+                    Background="{DynamicResource TranslucentBackgroundBrush}" />
+            </Border>
 
             <Grid Grid.Row="2">
                 <v:WidgetDesktopView DataContext="{Binding Widgets}" />

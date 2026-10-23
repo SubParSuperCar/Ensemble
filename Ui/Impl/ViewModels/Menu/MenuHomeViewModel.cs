@@ -26,7 +26,7 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	// Loaded once and shared, as menu pages are recreated on every navigation
 	public static Bitmap? Icon { get; } = LoadBitmapFromGodotImage(GameIconPath);
 
-	[ObservableProperty] public partial string? Notice { get; set; }
+	[ObservableProperty] public partial string? Notice { get; private set; }
 
 	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;
 

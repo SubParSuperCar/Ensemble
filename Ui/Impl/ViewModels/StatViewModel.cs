@@ -24,16 +24,17 @@ public sealed partial class StatViewModel : ViewModelBase
 
 	private readonly DispatcherService _dispatcher;
 	private readonly Queue<double> _uiFrameTimes = [];
-	private double _sinceLastRefresh = RefreshInterval;
+	private double _sinceLastRefresh;
 
 	public StatViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
 
+		Refresh(GetNow());
 		dispatcher.UiProcess += OnUiProcess;
 	}
 
-	[ObservableProperty] public partial string Text { get; private set; } = "<Default>";
+	[ObservableProperty] public partial string Text { get; private set; } = string.Empty;
 
 	protected override void OnDispose()
 	{
@@ -46,7 +47,7 @@ public sealed partial class StatViewModel : ViewModelBase
 
 	private void OnUiProcess(UiProcessData data)
 	{
-		var now = Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
+		var now = GetNow();
 		_uiFrameTimes.Enqueue(now);
 
 		while (_uiFrameTimes.Count > 0 && now - _uiFrameTimes.Peek() > SampleWindow)
@@ -57,7 +58,11 @@ public sealed partial class StatViewModel : ViewModelBase
 			return;
 
 		_sinceLastRefresh %= RefreshInterval;
+		Refresh(now);
+	}
 
+	private void Refresh(double now)
+	{
 		var fps = Engine.GetFramesPerSecond();
 		var frameTimeMs = fps > 0 ? TimeSpan.MillisecondsPerSecond / fps : double.PositiveInfinity;
 
@@ -117,6 +122,8 @@ public sealed partial class StatViewModel : ViewModelBase
 		stats.Add(("Char. Speed",
 			string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():0.###} m/s")));
 	}
+
+	private static double GetNow() => Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
 
 	private static double GetMonitorMs(Performance.Monitor monitor) =>
 		Performance.GetMonitor(monitor) * TimeSpan.MillisecondsPerSecond;

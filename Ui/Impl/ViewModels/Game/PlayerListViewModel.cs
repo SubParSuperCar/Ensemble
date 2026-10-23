@@ -32,12 +32,12 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 	public bool IsMultiPlayer { get; } = GSessionManager.Mode is SessionMode.MultiPlayer;
 
-	[ObservableProperty] public partial string? PortMappingStatus { get; set; }
-	[ObservableProperty] public partial string? PortMappingDetail { get; set; }
+	[ObservableProperty] public partial string? PortMappingStatus { get; private set; }
+	[ObservableProperty] public partial string? PortMappingDetail { get; private set; }
 
 	[ObservableProperty]
 	[NotifyCanExecuteChangedFor(nameof(CopyJoinCodeCommand))]
-	public partial string? JoinCode { get; set; }
+	public partial string? JoinCode { get; private set; }
 
 	protected override void OnDispose()
 	{
@@ -153,7 +153,7 @@ public sealed partial class PlayerItem : ObservableObject
 	public bool IsLocal { get; init; }
 	public bool CanKick { get; init; }
 
-	[ObservableProperty] public partial int PingMs { get; set; }
+	[ObservableProperty] public partial int PingMs { get; internal set; }
 
 	// TODO: Let the host give a reason
 	[RelayCommand]

@@ -32,6 +32,10 @@
         </TransitioningContentControl>
 
         <ContentControl
+            Content="{Binding Clock}"
+            HorizontalAlignment="Center" VerticalAlignment="Top" />
+
+        <ContentControl
             Content="{Binding Stats}"
             HorizontalAlignment="Left" VerticalAlignment="Top"
             Margin="4,36,0,0"

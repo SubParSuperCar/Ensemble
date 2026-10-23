@@ -40,7 +40,7 @@ public sealed partial class JoinConfigViewModel : ViewModelBase
 	[NotifyCanExecuteChangedFor(nameof(JoinCommand))]
 	public partial string? DisplayName { get; set; } = SessionPreferences.DisplayName;
 
-	[ObservableProperty] public partial string? Status { get; set; }
+	[ObservableProperty] public partial string? Status { get; private set; }
 
 	protected override void OnDispose()
 	{

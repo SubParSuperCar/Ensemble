@@ -43,6 +43,7 @@ public sealed partial class MainViewModel : ViewModelBase
 		_dispatcher = dispatcher;
 
 		Stats = services.Create<StatViewModel>();
+		Clock = services.Create<ClockViewModel>();
 		Toasts = services.Create<ToastListViewModel>();
 
 		dispatcher.Input += OnInput;
@@ -58,19 +59,23 @@ public sealed partial class MainViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ViewModelBase? Main { get; set; }
+	public partial ViewModelBase? Main { get; private set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial StatViewModel? Stats { get; set; }
+	public partial StatViewModel? Stats { get; private set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ToastListViewModel? Toasts { get; set; }
+	public partial ClockViewModel? Clock { get; private set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ConsoleViewModel? Console { get; set; }
+	public partial ToastListViewModel? Toasts { get; private set; }
+
+	[ObservableProperty]
+	[property: DisposeOldObservableValueOnChanging]
+	public partial ConsoleViewModel? Console { get; private set; }
 
 	[ObservableProperty] public partial bool IsConsoleVisible { get; set; }
 
@@ -85,6 +90,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
 		Main = null;
 		Stats = null;
+		Clock = null;
 		Toasts = null;
 		IsConsoleVisible = false;
 	}

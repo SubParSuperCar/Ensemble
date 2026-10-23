@@ -39,8 +39,8 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	[ObservableProperty] public partial bool IsMutexEnforced { get; set; } = GToolManager.UseMutex;
 	[ObservableProperty] public partial bool IsRestoreOnDespawnEnabled { get; set; } = GToolManager.RestoreOnDespawn;
 
-	[ObservableProperty] public partial bool IsClearAllVisible { get; set; }
-	[ObservableProperty] public partial bool IsClearAllEnabled { get; set; }
+	[ObservableProperty] public partial bool IsClearAllVisible { get; private set; }
+	[ObservableProperty] public partial bool IsClearAllEnabled { get; private set; }
 
 	protected override void OnDispose()
 	{

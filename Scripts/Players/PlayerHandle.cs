@@ -102,7 +102,7 @@ public partial class PlayerHandle : Node3D
 	public override void _PhysicsProcess(double delta)
 	{
 		if (Controller is not null)
-			Replicate(delta);
+			Replicate();
 	}
 
 	public void Teleport(Vector3 position)

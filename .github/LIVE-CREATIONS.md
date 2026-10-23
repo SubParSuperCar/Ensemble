@@ -5,6 +5,10 @@ it), and the design for what comes next: asset logic, mechanisms, input, seats, 
 [**roadmap**](./ROADMAP.md#live-physics) tracks its progress. Decisions are numbered **(D#)**; the table at the end
 lists them, resolved or open. Plans are a guide, not a contract: they bend when something unforeseen comes up.
 
+> [!NOTE]
+> Ensemble moves fast, and this document may trail the code. Where they disagree, the code is right, and the
+> document is due a fix.
+
 ---
 
 ## Terms

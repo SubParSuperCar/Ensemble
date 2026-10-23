@@ -30,11 +30,9 @@ public partial class AssetManager : Node
 
 	public override void _Ready()
 	{
+		// A locked registry outlived an earlier world, so its assets are adopted rather than added
 		if (GAssets.IsLocked)
-		{
-			Log.Warning("{Class} is locked", nameof(GAssets));
-			return;
-		}
+			Log.Warning("{Class} is locked; adopting its assets", nameof(GAssets));
 
 		Log.Debug("Registering assets from {Directory}...", BuildAssetsDir);
 
@@ -152,7 +150,11 @@ public partial class AssetManager : Node
 			properties.Add(key.ToString(), value);
 
 		var maxInstanceCount = handle.MaxInstanceCount is Default ? DefaultMaxInstanceCount : handle.MaxInstanceCount;
-		GAssets.Add(id, handle.AssetName, properties, maxInstanceCount);
+
+		if (!GAssets.IsLocked)
+			GAssets.Add(id, handle.AssetName, properties, maxInstanceCount);
+		else if (GAssets.GetAsset(id) is null)
+			Log.Warning("Asset with ID {AssetId} is missing from the locked {Class}", id, nameof(GAssets));
 	}
 
 	private static PieceInfo GetPieceInfo(AssetHandle handle, int piece)

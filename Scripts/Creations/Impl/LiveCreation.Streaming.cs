@@ -192,7 +192,7 @@ public partial class LiveCreation
 		// Small creations would otherwise resend their few bodies many times a second
 		_keepaliveCredit = Math.Min(_keepaliveCredit + _assemblies.Count / (double)StreamRate, KeepalivesPerStream);
 
-		for (; _keepaliveCredit >= 1; _keepaliveCredit--)
+		for (; _keepaliveCredit >= 1 && _assemblies.Count > 0; _keepaliveCredit--)
 		{
 			_keepaliveIndex = (_keepaliveIndex + 1) % _assemblies.Count;
 			var assembly = _assemblies[_keepaliveIndex];

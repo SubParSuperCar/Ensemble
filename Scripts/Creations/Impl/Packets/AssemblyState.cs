@@ -18,7 +18,7 @@ public readonly record struct AssemblyState(
 
 	private const int IdBits = 16;
 
-	// 1/512 m steps (Epsilon) within +-16 km
+	// 1/512 m steps within +-16 km
 	private const int PositionBits = 24;
 	private const float PositionScale = 512f;
 

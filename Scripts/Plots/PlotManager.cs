@@ -27,21 +27,26 @@ public partial class PlotManager : Node
 	{
 		GPlotManager = this;
 
-		if (GPlots.IsLocked)
-		{
-			Log.Warning("{Class} is locked", nameof(GPlots));
-			return;
-		}
+		// A locked registry outlived an earlier world, so its plots are adopted rather than added
+		var isLocked = GPlots.IsLocked;
+
+		if (isLocked)
+			Log.Warning("{Class} is locked; adopting its plots", nameof(GPlots));
 
 		foreach (var handle in GetChildren().OfType<PlotHandle>())
 		{
 			Handles.Add(handle.Id, handle);
 			_handlesById.Add(handle.Id, handle);
 
-			GPlots.Add(
-				handle.Id,
-				handle.MaxOccupantCount is Default ? DefaultMaxOccupantCount : handle.MaxOccupantCount,
-				handle.MaxTotalInstanceCount is Default ? DefaultMaxTotalInstanceCount : handle.MaxTotalInstanceCount);
+			if (!isLocked)
+				GPlots.Add(
+					handle.Id,
+					handle.MaxOccupantCount is Default ? DefaultMaxOccupantCount : handle.MaxOccupantCount,
+					handle.MaxTotalInstanceCount is Default
+						? DefaultMaxTotalInstanceCount
+						: handle.MaxTotalInstanceCount);
+			else if (GPlots.GetPlot(handle.Id) is null)
+				Log.Warning("Plot with ID {PlotId} is missing from the locked {Class}", handle.Id, nameof(GPlots));
 		}
 
 		GPlots.Lock();

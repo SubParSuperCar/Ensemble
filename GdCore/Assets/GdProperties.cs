@@ -45,17 +45,26 @@ public partial class GdProperties : RefCounted
 		Source.UpdateAll(Converter.FromGodotProperties(properties));
 	}
 
+	/// <returns>Whether the property exists and the value keeps its type, and so was set.</returns>
+	public bool TryUpdate(string key, Variant value)
+	{
+		if (!Source.All.TryGetValue(key, out var current) || !IsSameType(value, current))
+			return false;
+
+		Source.Update(key, value.FromGodot());
+		return true;
+	}
+
 	public override string ToString() => Source.ToString()!;
 
 	// Unsupported Godot types convert to Null, so they would otherwise slip through as a type change
+	private static bool IsSameType(Variant value, CoreVariant current) =>
+		value.FromGodot().Type == current.Type &&
+		(current.Type is not CoreVariantType.Null || value.VariantType is Variant.Type.Nil);
+
 	private void Validate(string key, Variant value)
 	{
-		var converted = value.FromGodot();
-
-		if (
-			Source.All.TryGetValue(key, out var current) && (
-				converted.Type != current.Type ||
-				(converted.Type is CoreVariantType.Null && value.VariantType is not Variant.Type.Nil)))
+		if (Source.All.TryGetValue(key, out var current) && !IsSameType(value, current))
 			throw new ArgumentException($"Property {key} must stay {current.Type}.", nameof(value));
 	}
 }

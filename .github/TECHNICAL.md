@@ -4,6 +4,10 @@ How Ensemble is built: its stack, architecture, subsystems, and repository layou
 [**README**](./README.md); for setting up a development environment, see [**CONTRIBUTING.md**](./CONTRIBUTING.md); for
 spawned creations in depth, see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 
+> [!NOTE]
+> Ensemble moves fast, and this document may trail the code. Where they disagree, the code is right, and the
+> document is due a fix.
+
 ## Contents
 
 1. [**Stack**](#stack)

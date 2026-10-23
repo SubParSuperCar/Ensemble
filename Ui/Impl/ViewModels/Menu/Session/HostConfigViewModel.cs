@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Text;
 using EnsembleRoot.Scripts.Profanity;
+using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
@@ -51,7 +52,8 @@ public sealed partial class HostConfigViewModel : ViewModelBase
 		ProfanityFilterManager.IsPreferred = IsProfanityFilterEnabled;
 
 		GSessionManager.HostMultiPlayer(
-			(int?)Port ?? DefaultPort, Password, DisplayName, (int?)MaxClients ?? Unlimited, false, IsUpnpEnabled);
+			new HostConfig((int?)Port ?? DefaultPort, Password, (int?)MaxClients, IsUpnpEnabled: IsUpnpEnabled),
+			DisplayName);
 	}
 
 	private bool CanHost() => IsValidDisplayName(DisplayName);

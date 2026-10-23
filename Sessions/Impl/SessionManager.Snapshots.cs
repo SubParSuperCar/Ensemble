@@ -31,7 +31,7 @@ public partial class SessionManager
 	}
 
 	[Rpc]
-	private void RpcFinishSnapshots() => EmitSignal(SignalName.SessionSynced);
+	private void RpcFinishSnapshots() => EmitSignal(SignalName.SnapshotsFinished);
 
 	private void SendSnapshots(int peerId)
 	{

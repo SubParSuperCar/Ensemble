@@ -193,7 +193,7 @@ sequenceDiagram
 | `Standard + 4` | `DiagnosticLogger`       | all    | Logs a system report in the background           |
 | `Late`         | `WorldManager`           | all    | Instantiates the world scene for each session    |
 | `Late + 1`     | `UpdateChecker`          | client | Checks GitHub for newer releases                 |
-| `Late + 1`     | `CommandLineSession`     | all    | Hosts or joins a session from command-line args  |
+| `Late + 2`     | `CommandLineSession`     | all    | Hosts or joins a session from command-line args  |
 | `Last`         | `Watchdog`               | all    | Detects main-thread stalls                       |
 
 ---
@@ -434,7 +434,8 @@ graph LR
   the local plot is editable (not spawned), and optionally come back after a despawn (`RestoreOnDespawn`).
 - `ConstructTool` shows a translucent preview with an axial highlight, snaps edges (not centers) to the plot grid,
   resolves overlaps with oriented bounding boxes, and supports `RotateX/Y/Z()` and `ResetRotation()` in global or
-  local space.
+  local space. A shader material fades only if its `translucent_shader` metadata names a translucent variant of its
+  shader with an `opacity` uniform (such as the coil's), so opaque instances never pay for transparency.
 - `MultiSelector` holds a selection shared across tools: `Shift`-clicking toggles an instance, clicking a selected
   instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` box-selects by
   `Alt`-dragging (Baja Builders parity).
@@ -546,8 +547,9 @@ content versions leave room to migrate old saves.
   (universal), each with a lean ZIP and a `-debug` ZIP carrying symbols. `GdIgnore/PatchExport.cs` flattens the export
   layout at first launch.
 - **A JIT build** bundles Windows and Linux in one download, with every assembly as a separate file, for testing.
-- **CI** (GitHub Actions): `bin.yml` builds every tag (or on demand), smoke-tests the Linux package by booting a
-  headless server, and publishes a release with checksums; `src.yml` publishes source archives, and `cloc.yml` tracks
+- **CI** (GitHub Actions): `bin.yml` builds every tag (or on demand), runs the tests in the JIT build's configuration
+  (without blocking the release), smoke-tests the Linux package by booting a headless server, and publishes a release
+  with checksums; `src.yml` publishes source archives, and `cloc.yml` tracks
   lines of code. Dependabot keeps packages and actions current.
 - **Updates:** the game checks GitHub for newer releases on startup and offers each one once.
 

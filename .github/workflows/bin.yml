@@ -401,6 +401,11 @@ jobs:
           test -s out/data_EnsembleGame_windows_x86_64/EnsembleGame.dll
           chmod +x out/Ensemble.x86_64 out/Ensemble.sh
 
+      # ExportDebug, so export-only code (e.g., the UpdateChecker autoload) is tested too; failures don't block a release
+      - name: Test
+        continue-on-error: true
+        run: dotnet test --project Tests/Tests.csproj -c ExportDebug
+
       - name: Package
         run: |
           set -euo pipefail

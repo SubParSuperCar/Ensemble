@@ -23,4 +23,18 @@ public sealed class AutoloadRegistryTests
 			Assert.Equal(attribute.FailurePolicy, definition.FailurePolicy);
 		}
 	}
+
+	// Ties would fall back to type names, so autoloads that can run together must not share an order
+	[Fact]
+	public void GetAll_OrdersAreUniqueWithinScopes()
+	{
+		var definitions = AutoloadRegistry.GetAll();
+
+		foreach (var definition in definitions)
+			foreach (var other in definitions)
+				Assert.False(
+					definition.Type != other.Type && definition.Order == other.Order &&
+					(definition.Scope & other.Scope) is not AutoloadScope.None,
+					$"{definition.Type.Name} and {other.Type.Name} share order {definition.Order}.");
+	}
 }

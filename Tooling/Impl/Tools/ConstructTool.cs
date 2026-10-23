@@ -36,6 +36,9 @@ public partial class ConstructTool : ToolBase
 	private static readonly StringName RotateYAction = "tool_construct_rotate_y";
 	private static readonly StringName RotateZAction = "tool_construct_rotate_z";
 
+	private static readonly StringName TranslucentShaderMeta = "translucent_shader";
+	private static readonly StringName OpacityParameter = "opacity";
+
 	private static readonly Color InvalidTint = Colors.Red;
 
 	private readonly PlacementSolver _solver = new();
@@ -269,7 +272,8 @@ public partial class ConstructTool : ToolBase
 	}
 
 	// GeometryInstance3D.Transparency is ignored outside Forward+. Surfaces without a material draw with the default
-	// one, so they get a new one to fade.
+	// one, so they get a new one to fade. Shader materials fade only through a translucent variant of their shader,
+	// named by their metadata, with an opacity uniform.
 	private static void MakeTranslucent(Node root)
 	{
 		foreach (var node in root.FindChildren("*", nameof(MeshInstance3D), true, false))
@@ -277,16 +281,30 @@ public partial class ConstructTool : ToolBase
 			var mesh = (MeshInstance3D)node;
 
 			for (var surface = 0; surface < mesh.GetSurfaceOverrideMaterialCount(); surface++)
-			{
-				var active = mesh.GetActiveMaterial(surface);
+				if (MakeTranslucent(mesh.GetActiveMaterial(surface)) is { } material)
+					mesh.SetSurfaceOverrideMaterial(surface, material);
+		}
+	}
 
-				if ((active is null ? new StandardMaterial3D() : active.Duplicate()) is not BaseMaterial3D material)
-					continue;
-
+	private static Material? MakeTranslucent(Material? active)
+	{
+		switch (active is null ? new StandardMaterial3D() : active.Duplicate())
+		{
+			case BaseMaterial3D material:
 				material.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
 				material.AlbedoColor = material.AlbedoColor with { A = material.AlbedoColor.A * PreviewOpacity };
-				mesh.SetSurfaceOverrideMaterial(surface, material);
-			}
+
+				return material;
+
+			case ShaderMaterial material when
+				material.HasMeta(TranslucentShaderMeta) && material.GetMeta(TranslucentShaderMeta).Obj is Shader shader:
+				material.Shader = shader;
+				material.SetShaderParameter(OpacityParameter, PreviewOpacity);
+
+				return material;
+
+			default:
+				return null;
 		}
 	}
 

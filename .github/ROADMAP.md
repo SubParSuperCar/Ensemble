@@ -89,7 +89,7 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
 Spawned plots become live creations: welded assemblies simulated by one peer and streamed to everyone else.
 [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) explains how it works and holds the design for what comes next.
 
-- [x] (M) Prerequisites - physics layers, a game-wide `Epsilon` (1/512 m), multi-collider assets, the abut test, and
+- [x] (M) Prerequisites - physics layers, a game-wide `Epsilon` (1/2048 m), multi-collider assets, the abut test, and
   weld groups (0.52.0)
 - [x] (L) Single-player spawning - assemblies, members, mass, and a kill height (0.52.0); spawning moves the local
   character out of the creation, and characters press their weight on what they stand on

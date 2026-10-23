@@ -24,6 +24,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 	private const int NonceSize = 16;
 	private const int KeySize = 32;
 	private const int MaxShownVersionLength = 32;
+	private const int MaxPendingPerAddress = 4;
 
 	// About 0.1 s on a desktop CPU
 	private const int Argon2MemoryKiB = 32 * 1024;
@@ -31,7 +32,8 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 	private static readonly TimeSpan AuthTimeout = TimeSpan.FromSeconds(5);
 
-	// Slows online password guessing to one try per address per cooldown
+	// Slows online password guessing to a round of tries per address per cooldown, a round being the challenges an
+	// address may have pending at once (a few, for players sharing a network)
 	private static readonly TimeSpan FailureCooldown = TimeSpan.FromSeconds(3);
 
 	private readonly Dictionary<string, long> _lastFailureTimestampsByAddress = new(StringComparer.Ordinal);
@@ -40,7 +42,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 	private readonly byte[]? _password =
 		string.IsNullOrEmpty(password) ? null : Encoding.UTF8.GetBytes(password.Normalize(NormalizationForm.FormC));
 
-	private readonly Dictionary<long, byte[]> _pendingNoncesByPeerId = [];
+	private readonly Dictionary<long, (byte[] Nonce, string? Address)> _pendingChallengesByPeerId = [];
 	private readonly byte[] _version = Encoding.UTF8.GetBytes(version);
 
 	private bool _hasSentPassword;
@@ -77,7 +79,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 		multiplayer.AuthCallback = default;
 
 		_lastFailureTimestampsByAddress.Clear();
-		_pendingNoncesByPeerId.Clear();
+		_pendingChallengesByPeerId.Clear();
 		_multiplayer = null;
 	}
 
@@ -94,8 +96,10 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 			return;
 		}
 
+		var address = GetAddress(peerId);
+
 		if (
-			GetAddress(peerId) is { } address &&
+			address is not null &&
 			_lastFailureTimestampsByAddress.TryGetValue(address, out var lastFailure) &&
 			Stopwatch.GetElapsedTime(lastFailure) < FailureCooldown)
 		{
@@ -105,8 +109,16 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 			return;
 		}
 
+		if (address is not null && CountPendingChallenges(address) >= MaxPendingPerAddress)
+		{
+			Log.Warning("Peer {PeerId} joined while its address had too many pending challenges", peerId);
+			_multiplayer!.DisconnectPeer((int)peerId);
+
+			return;
+		}
+
 		var nonce = RandomNumberGenerator.GetBytes(NonceSize);
-		_pendingNoncesByPeerId[peerId] = nonce;
+		_pendingChallengesByPeerId[peerId] = (nonce, address);
 
 		_multiplayer!.SendAuth((int)peerId, [LockedFlag, .. _salt, .. nonce, .. _version]);
 	}
@@ -121,10 +133,10 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 	private void HandleServerMessage(long peerId, byte[] data)
 	{
-		if (!_pendingNoncesByPeerId.Remove(peerId, out var nonce))
+		if (!_pendingChallengesByPeerId.Remove(peerId, out var pending))
 			return;
 
-		var expected = HMACSHA256.HashData(_key!, nonce);
+		var expected = HMACSHA256.HashData(_key!, pending.Nonce);
 
 		if (data.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(data, expected))
 		{
@@ -200,7 +212,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 	private void OnPeerAuthenticationFailed(long peerId)
 	{
-		_pendingNoncesByPeerId.Remove(peerId);
+		_pendingChallengesByPeerId.Remove(peerId);
 
 		if (_isServer)
 			Log.Warning("Peer {PeerId} timed out or was rejected during authentication", peerId);
@@ -211,6 +223,10 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 	private string? GetAddress(long peerId) =>
 		(_multiplayer?.MultiplayerPeer as ENetMultiplayerPeer)?.GetPeer((int)peerId)?.GetRemoteAddress();
+
+	private int CountPendingChallenges(string address) =>
+		_pendingChallengesByPeerId.Values.Count(pending =>
+			string.Equals(pending.Address, address, StringComparison.Ordinal));
 
 	private void RecordFailure(long peerId)
 	{

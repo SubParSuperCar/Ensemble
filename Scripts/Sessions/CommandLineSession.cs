@@ -20,7 +20,7 @@ namespace EnsembleRoot.Scripts.Sessions;
 ///     and a client side by side, and returns to the menu when it ends.
 /// </remarks>
 [GlobalClass]
-[Autoload(Order = AutoloadOrder.Late + 1, FailurePolicy = AutoloadFailurePolicy.FailFast)]
+[Autoload(Order = AutoloadOrder.Late + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class CommandLineSession : Node, IAutoload
 {
 	private static readonly Dictionary<string, string> ArgAliases = new(StringComparer.OrdinalIgnoreCase)

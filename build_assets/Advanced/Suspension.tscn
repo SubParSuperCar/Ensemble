@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cldoqqo2i4yuu" path="res://build_assets/Advanced/Suspension.cs" id="1_uc1om"]
 [ext_resource type="Script" uid="uid://df6a4m2i61bg5" path="res://Scripts/Assets/AssetPiece.cs" id="2_piece"]
 [ext_resource type="Shader" uid="uid://b12vg150hs30f" path="res://shaders/coil.gdshader" id="3_coil"]
+[ext_resource type="Shader" path="res://shaders/coil_translucent.gdshader" id="4_coil"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(0.5, 0.1, 0.5)
@@ -23,6 +24,7 @@ shader_parameter/coil_radius = 0.1625
 shader_parameter/wire_radius = 0.025
 shader_parameter/roughness = 0.5
 shader_parameter/metallic = 0.0
+metadata/translucent_shader = ExtResource("4_coil")
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_coil"]
 material = SubResource("ShaderMaterial_coil")

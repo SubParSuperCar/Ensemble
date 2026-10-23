@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Reflection;
 using EnsembleRoot.Autoloading;
 using Xunit;
@@ -35,6 +36,8 @@ public sealed class AutoloadRegistryTests
 				Assert.False(
 					definition.Type != other.Type && definition.Order == other.Order &&
 					(definition.Scope & other.Scope) is not AutoloadScope.None,
-					$"{definition.Type.Name} and {other.Type.Name} share order {definition.Order}.");
+					string.Create(
+						CultureInfo.InvariantCulture,
+						$"{definition.Type.Name} and {other.Type.Name} share order {definition.Order}."));
 	}
 }

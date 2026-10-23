@@ -8,6 +8,7 @@ namespace EnsembleRoot.Saving.SerDes;
 internal static class SaveValidation
 {
 	public const int MaxInstanceCount = 1 << 20;
+	// The binary format writes the count plus one as a ushort, with 0 meaning none and the maximum reserved
 	public const int MaxPropertyCount = ushort.MaxValue - 2;
 	public const int MaxTotalPropertyCount = 1 << 20;
 	public const int MaxKeyByteCount = 256;

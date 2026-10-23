@@ -18,6 +18,7 @@ namespace EnsembleRoot.Sessions.Transports;
 public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig config, string version)
 	: ISession, IPortMappingSession
 {
+	// ENet's own, as its peer IDs are 12 bits
 	private const int MaxClientLimit = 4095;
 	private const int CloseTimeoutMs = 500;
 	private const int CloseServiceTimeoutMs = 10;

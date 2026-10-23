@@ -25,6 +25,9 @@ public partial class PlayerHandle
 
 	// Bounds what the host relays, since every update goes out to all other peers
 	private const double MinRelayInterval = 1d / ReplicationRate / 2;
+
+	// Where a float's resolution coarsens to MinReplicatedDistance, so any farther and the smallest replicated move
+	// can't be told apart
 	private const float MaxReplicatedCoordinate = 64 * 1024f;
 
 	// Whole physics ticks, so each sequence number stands for an exact moment on the sender

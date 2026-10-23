@@ -13,7 +13,6 @@ internal static class ToolCommon
 	public const string DissentSound = "dissent";
 
 	private const uint SelectableLayers = PhysicsLayers.World | PhysicsLayers.StaticInstances;
-	private const float RayLength = 1000f;
 	private const string SoundBus = "master";
 
 	public static readonly StringName TriggerAction = "tool_trigger";
@@ -53,7 +52,8 @@ internal static class ToolCommon
 
 		var mouse = Pointer.GetPosition(viewport);
 		var origin = camera.ProjectRayOrigin(mouse);
-		var end = origin + camera.ProjectRayNormal(mouse) * RayLength;
+		// As far as the camera draws, so anything shown can be targeted
+		var end = origin + camera.ProjectRayNormal(mouse) * camera.Far;
 
 		var query = PhysicsRayQueryParameters3D.Create(origin, end, mask);
 		var result = viewport.GetWorld3D().DirectSpaceState.IntersectRay(query);

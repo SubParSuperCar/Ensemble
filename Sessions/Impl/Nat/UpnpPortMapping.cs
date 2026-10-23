@@ -19,7 +19,9 @@ public sealed class UpnpPortMapping(int port) : IAsyncDisposable
 	private const string Description = "Ensemble";
 
 	private static readonly TimeSpan Lease = TimeSpan.FromHours(1);
-	private static readonly TimeSpan RenewInterval = TimeSpan.FromMinutes(20);
+
+	// A third of the lease, so the mapping outlives two failed renewals in a row
+	private static readonly TimeSpan RenewInterval = Lease / 3;
 
 	private static readonly Lock QueueLock = new();
 	private static Task _queueTail = Task.CompletedTask;

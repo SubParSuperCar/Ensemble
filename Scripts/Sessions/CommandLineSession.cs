@@ -2,6 +2,7 @@ using System.Globalization;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Scripts.Profanity;
+using EnsembleRoot.Sessions.Api;
 using Godot;
 using Serilog;
 using static EnsembleRoot.Sessions.SessionManager;
@@ -59,7 +60,7 @@ public partial class CommandLineSession : Node, IAutoload
 		if (args.GetValueOrDefault("join") is { } join)
 		{
 			if (HostEndPoint.TryParse(join, out var endPoint))
-				GSessionManager.JoinMultiPlayer(endPoint.Host, endPoint.Port, password, displayName);
+				GSessionManager.JoinMultiPlayer(new JoinConfig(endPoint.Host, endPoint.Port, password), displayName);
 			else
 				Callable.From(() => OnSessionFailed($"Invalid join address: {join}")).CallDeferred();
 		}
@@ -67,10 +68,13 @@ public partial class CommandLineSession : Node, IAutoload
 		{
 			ProfanityFilterManager.Override = GetBool(args, "profanity-filter");
 
+			var maxClientCount = GetInt(args, "max-clients") is { } count and not Unlimited ? count : (int?)null;
+			var config = new HostConfig(
+				GetInt(args, "port") ?? DefaultPort, password, maxClientCount, Main.IsHeadlessServer,
+				GetFlag(args, "upnp"));
+
 			// A dedicated host has no player, so no name
-			GSessionManager.HostMultiPlayer(
-				GetInt(args, "port") ?? DefaultPort, password, Main.IsHeadlessServer ? string.Empty : displayName,
-				GetInt(args, "max-clients") ?? Unlimited, Main.IsHeadlessServer, GetFlag(args, "upnp"));
+			GSessionManager.HostMultiPlayer(config, Main.IsHeadlessServer ? null : displayName);
 		}
 	}
 

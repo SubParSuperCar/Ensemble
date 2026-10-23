@@ -15,8 +15,9 @@ namespace EnsembleRoot.Sessions;
 /// </summary>
 /// <remarks>
 ///     A session is only started (<see cref="IsActive" />) once the local player has been registered. Clients then
-///     request snapshots and are synced once they're restored, while the server is synced right away. Confirmed
-///     actions are only sent to synced peers, so none can precede or duplicate a snapshot. Failures are handled
+///     request snapshots, and the host counts them as synced once it has sent them. Confirmed actions are only sent to
+///     synced peers, so none can precede or duplicate a snapshot. <see cref="SnapshotsFinished" /> marks the end of the
+///     snapshot stage, whether or not every snapshot restored (the server's ends right away). Failures are handled
 ///     deferred, so a session never ends mid-poll (e.g., from an RPC).
 /// </remarks>
 [GlobalClass]
@@ -42,11 +43,9 @@ public partial class SessionManager : Node
 	public delegate void SessionStoppedEventHandler();
 
 	[Signal]
-	public delegate void SessionSyncedEventHandler();
+	public delegate void SnapshotsFinishedEventHandler();
 
 	public const int DefaultPort = 7777;
-
-	private const int Unlimited = -1;
 
 	private static readonly StringName RestartAction = "debug_session_restart";
 
@@ -120,63 +119,35 @@ public partial class SessionManager : Node
 		StartSinglePlayer();
 	}
 
-	public void StartSinglePlayer() => StartSinglePlayer(string.Empty);
-
-	public void StartSinglePlayer(string? displayName)
+	public void StartSinglePlayer(string? displayName = null)
 	{
 		Log.Debug("Starting {Class}...", nameof(OfflineSession));
 		StartSession(new OfflineSession((SceneMultiplayer)Multiplayer), displayName);
 	}
 
-	public void HostMultiPlayer(int port) => HostMultiPlayer(port, string.Empty);
-	public void HostMultiPlayer(int port, string? password) => HostMultiPlayer(port, password, string.Empty);
-
-	public void HostMultiPlayer(int port, string? password, string? displayName) =>
-		HostMultiPlayer(port, password, displayName, Unlimited);
-
-	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients) =>
-		HostMultiPlayer(port, password, displayName, maxClients, false);
-
-	public void HostMultiPlayer(int port, string? password, string? displayName, int maxClients, bool isDedicated) =>
-		HostMultiPlayer(port, password, displayName, maxClients, isDedicated, false);
-
-	public void HostMultiPlayer(
-		int port, string? password, string? displayName, int maxClients, bool isDedicated, bool isUpnpEnabled)
+	public void HostMultiPlayer(HostConfig config, string? displayName = null)
 	{
 		Log.Debug(
 			"Hosting {Class}... (Port={Port}, MaxClients={MaxClients}, HasPassword={HasPassword}, " +
 			"IsDedicated={IsDedicated}, IsUpnpEnabled={IsUpnpEnabled})",
-			nameof(EnetSession), port,
-			maxClients is Unlimited ? "Unlimited" : maxClients.ToString(CultureInfo.InvariantCulture),
-			!string.IsNullOrEmpty(password), isDedicated, isUpnpEnabled);
-
-		var config = new HostConfig(
-			port, password, maxClients is Unlimited ? null : maxClients, isDedicated, isUpnpEnabled);
+			nameof(EnetSession), config.Port, config.MaxClientCount?.ToString(CultureInfo.InvariantCulture) ?? "Unlimited",
+			!string.IsNullOrEmpty(config.Password), config.IsDedicated, config.IsUpnpEnabled);
 
 		StartSession(new EnetSession((SceneMultiplayer)Multiplayer, config, GameVersion), displayName);
 	}
 
-	public void JoinMultiPlayer(string address, int port) => JoinMultiPlayer(address, port, string.Empty);
-
-	public void JoinMultiPlayer(string address, int port, string? password) =>
-		JoinMultiPlayer(address, port, password, string.Empty);
-
-	public void JoinMultiPlayer(string address, int port, string? password, string? displayName)
+	public void JoinMultiPlayer(JoinConfig config, string? displayName = null)
 	{
 		Log.Debug(
 			"Joining {Class}... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
-			nameof(EnetSession), address, port, !string.IsNullOrEmpty(password));
+			nameof(EnetSession), config.Address, config.Port, !string.IsNullOrEmpty(config.Password));
 
-		var config = new JoinConfig(address, port, password);
 		StartSession(new EnetSession((SceneMultiplayer)Multiplayer, config, GameVersion), displayName);
 	}
 
-	// ReSharper disable once UnusedMember.Global
-	public void StartSession(ISession session) => StartSession(session, string.Empty);
-
 	/// <summary>Stops the current session, if any, and starts <paramref name="session" />.</summary>
 	/// <remarks>The entry point for custom transports; the methods above build the built-in ones.</remarks>
-	public void StartSession(ISession session, string? displayName)
+	public void StartSession(ISession session, string? displayName = null)
 	{
 		StopSession();
 		var stopwatch = Stopwatch.StartNew();
@@ -296,7 +267,7 @@ public partial class SessionManager : Node
 		EmitSignal(SignalName.SessionStarted);
 
 		if (IsServer)
-			EmitSignal(SignalName.SessionSynced);
+			EmitSignal(SignalName.SnapshotsFinished);
 		else
 			RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcRequestSnapshots);
 	}

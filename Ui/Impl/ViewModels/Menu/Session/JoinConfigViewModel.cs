@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Common.Text;
+using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using EnsembleRoot.Ui.Impl.ViewModels.Utils;
@@ -67,7 +68,7 @@ public sealed partial class JoinConfigViewModel : ViewModelBase
 		SessionPreferences.JoinEndPoint = new HostEndPoint(address, port);
 		SessionPreferences.IsJoinByCode = IsCodeMethod;
 
-		GSessionManager.JoinMultiPlayer(address, port, Password, DisplayName);
+		GSessionManager.JoinMultiPlayer(new JoinConfig(address, port, Password), DisplayName);
 	}
 
 	private bool CanJoin() => IsValidDisplayName(DisplayName);

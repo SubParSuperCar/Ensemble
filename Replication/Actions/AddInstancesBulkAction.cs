@@ -15,6 +15,8 @@ namespace EnsembleRoot.Replication.Actions;
 public readonly record struct AddInstancesBulkAction(IReadOnlyList<InstanceSpec> Instances)
 	: INetworkAction<AddInstancesBulkAction>
 {
+	// Callers split larger builds into batches of this size
+	// ReSharper disable once MemberCanBePrivate.Global
 	public const int MaxCount = 256;
 
 	// Every peer builds each instance's scene, so a full batch costs about a third of a peer's token bucket

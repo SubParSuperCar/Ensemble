@@ -25,10 +25,9 @@ public readonly record struct SetPropertiesAction(InstanceReference Instance, Di
 		if (Instance.Resolve(plot) is not { } instance)
 			return Reject("Instance not found.");
 
-		if (Properties.Count is 0)
-			return Reject("No properties.");
-
-		return PropertyRules.Validate(instance.Properties.Source.All, Properties);
+		return Properties.Count is 0
+			? Reject("No properties.")
+			: PropertyRules.Validate(instance.Properties.Source.All, Properties);
 	}
 
 	public void Apply(ActionSource source) => Instance.Resolve(source.Plot!)!.Properties.UpdateAll(Properties);

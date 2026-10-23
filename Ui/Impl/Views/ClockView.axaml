@@ -10,7 +10,7 @@
 
     <TextBlock
         Text="{Binding Text}"
-        ToolTip.Tip="The local time, time zone, and session duration."
+        ToolTip.Tip="The local time, time zone, and session duration (in a session)."
         Background="{DynamicResource TranslucentBackgroundBrush}"
         HorizontalAlignment="Center" VerticalAlignment="Center"
         Padding="2" />

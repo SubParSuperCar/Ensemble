@@ -16,19 +16,30 @@ public sealed partial class ClockViewModel : ViewModelBase
 	{
 		_dispatcher = dispatcher;
 
+		Refresh();
 		dispatcher.UiProcess += OnUiProcess;
 	}
 
-	[ObservableProperty] public partial string Text { get; set; } = "<Default>";
+	[ObservableProperty] public partial string Text { get; private set; } = string.Empty;
 
 	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
 
-	private void OnUiProcess(UiProcessData data)
-	{
-		var sessionDuration = GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt;
-		var duration = sessionDuration.ToString(@"d\:hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
+	private void OnUiProcess(UiProcessData data) => Refresh();
 
-		Text = string.Create(
-			CultureInfo.CurrentCulture, $"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone} - {duration}");
+	// The session duration only exists during a session
+	private void Refresh()
+	{
+		var time = string.Create(CultureInfo.CurrentCulture, $"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone}");
+
+		if (!GSessionManager.IsActive)
+		{
+			Text = time;
+			return;
+		}
+
+		var duration = (GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt)
+			.ToString(@"d\:hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
+
+		Text = $"{time} - {duration}";
 	}
 }

@@ -22,14 +22,14 @@ public sealed partial class MarqueeViewModel : ViewModelBase
 		GToolManager.Marquee.AreaChanged += OnAreaChanged;
 	}
 
-	[ObservableProperty] public partial bool IsActive { get; set; }
+	[ObservableProperty] public partial bool IsActive { get; private set; }
 
 	/// <summary>The area in viewport pixels, kept once inactive so the marquee fades out in place.</summary>
 	[ObservableProperty]
-	public partial Rect Area { get; set; }
+	public partial Rect Area { get; private set; }
 
-	[ObservableProperty] public partial IBrush? Fill { get; set; }
-	[ObservableProperty] public partial IBrush? Stroke { get; set; }
+	[ObservableProperty] public partial IBrush? Fill { get; private set; }
+	[ObservableProperty] public partial IBrush? Stroke { get; private set; }
 
 	protected override void OnDispose() => GToolManager.Marquee.AreaChanged -= OnAreaChanged;
 

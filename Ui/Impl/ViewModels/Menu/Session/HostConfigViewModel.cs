@@ -34,7 +34,7 @@ public sealed partial class HostConfigViewModel : ViewModelBase
 	[NotifyCanExecuteChangedFor(nameof(HostCommand))]
 	public partial string? DisplayName { get; set; } = SessionPreferences.DisplayName;
 
-	[ObservableProperty] public partial string? Status { get; set; }
+	[ObservableProperty] public partial string? Status { get; private set; }
 
 	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;
 

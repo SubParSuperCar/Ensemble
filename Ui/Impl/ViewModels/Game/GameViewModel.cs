@@ -42,7 +42,6 @@ public sealed partial class GameViewModel : ViewModelBase
 		Widgets.Open<PlotSelectorViewModel>();
 
 		WidgetDrawer = _scope.ServiceProvider.GetRequiredService<WidgetDrawerViewModel>();
-		Clock = services.Create<ClockViewModel>();
 		PlayerList = services.Create<PlayerListViewModel>();
 		Marquee = services.Create<MarqueeViewModel>();
 
@@ -62,23 +61,19 @@ public sealed partial class GameViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ClockViewModel? Clock { get; set; }
+	public partial PlayerListViewModel? PlayerList { get; private set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial PlayerListViewModel? PlayerList { get; set; }
+	public partial ToolBarViewModel? ToolBar { get; private set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial ToolBarViewModel? ToolBar { get; set; }
+	public partial SpawnButtonViewModel? SpawnButton { get; private set; }
 
 	[ObservableProperty]
 	[property: DisposeOldObservableValueOnChanging]
-	public partial SpawnButtonViewModel? SpawnButton { get; set; }
-
-	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
-	public partial MarqueeViewModel? Marquee { get; set; }
+	public partial MarqueeViewModel? Marquee { get; private set; }
 
 	protected override void OnDispose()
 	{
@@ -91,7 +86,6 @@ public sealed partial class GameViewModel : ViewModelBase
 		IsPlotOwnerChanged -= OnIsPlotOwnerChanged;
 		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
 
-		Clock = null;
 		PlayerList = null;
 		ToolBar = null;
 		SpawnButton = null;

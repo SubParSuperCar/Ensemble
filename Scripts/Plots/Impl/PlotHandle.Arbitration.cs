@@ -1,5 +1,3 @@
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Scripts.Plots;
 
 public partial class PlotHandle

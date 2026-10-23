@@ -11,7 +11,8 @@ namespace EnsembleRoot.Scripts.Assets.Materials;
 [GlobalClass]
 public partial class AssetMaterial : Resource
 {
-	public const float DefaultFriction = 1f;
+	public const float DefaultFriction = 0.5f;
+	public const float DefaultBounce = 0.25f;
 
 	/// <summary>Painted geometry uses a copy of it, with the albedo tinted by the instance's color.</summary>
 	[Export]
@@ -24,5 +25,5 @@ public partial class AssetMaterial : Resource
 	public float Friction { get; set; } = DefaultFriction;
 
 	[Export(PropertyHint.Range, "0,1,0.001")]
-	public float Bounce { get; set; }
+	public float Bounce { get; set; } = DefaultBounce;
 }

@@ -21,6 +21,10 @@ namespace EnsembleRoot.Scripts.Plots.Placement;
 ///             cells snap as exactly whole, centering their slack. The grid is anchored to the hovered asset, if any.
 ///         </item>
 ///         <item>Raise: the box is lifted onto the plot floor if below it.</item>
+///         <item>
+///             Origin (the caller): the asset's origin, worked back from the box, rounds onto the half-cell lattice when
+///             within <see cref="LatticeTolerance" /> of it, as does the anchor (see <see cref="SnapToLattice" />).
+///         </item>
 ///     </list>
 ///     Snapping can land the box in another obstacle, so the steps repeat; a box still overlapping is left for
 ///     validation to reject.
@@ -30,6 +34,9 @@ public sealed class PlacementSolver
 	private const int MaxSettlePasses = 3;
 	private const int MaxResolvePasses = 3;
 	private const float SnapTolerance = 1 / 32f;
+
+	// About 4 mm, above the hairline offsets authors give colliders and below any real asset's off-grid placement
+	private const float LatticeTolerance = 1 / 256f;
 
 	private readonly List<Obb> _candidates = [];
 
@@ -56,6 +63,28 @@ public sealed class PlacementSolver
 		var whole = MathF.Round(cells, MidpointRounding.AwayFromZero);
 
 		return whole > 0 && MathF.Abs(cells - whole) <= SnapTolerance ? whole * cellSize / 2 : extent;
+	}
+
+	/// <summary>
+	///     Rounds a point onto the lattice of half <paramref name="cellSize" /> steps from <paramref name="anchor" />, per
+	///     axis, where it lies within <see cref="LatticeTolerance" />. Snapping aligns colliders' boxes, so a collider
+	///     inset or offset by a hair (e.g., to keep a face from welding) would otherwise carry its asset's origin, and
+	///     with it the meshes, off the grid by as much.
+	/// </summary>
+	public static Vector3 SnapToLattice(Vector3 point, Vector3 anchor, float cellSize)
+	{
+		var step = cellSize / 2;
+
+		for (var axis = 0; axis < 3; axis++)
+		{
+			var offset = point[axis] - anchor[axis];
+			var nearest = MathF.Round(offset / step, MidpointRounding.AwayFromZero) * step;
+
+			if (MathF.Abs(offset - nearest) <= LatticeTolerance)
+				point[axis] = anchor[axis] + nearest;
+		}
+
+		return point;
 	}
 
 	private Obb Resolve(Obb box, ObbGrid obstacles, Vector3 normal)

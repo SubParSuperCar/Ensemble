@@ -15,7 +15,6 @@ namespace EnsembleRoot.Scripts.Assets;
 ///     piece, and <see cref="AssetPiece" /> children form the others; joints between pieces are Godot joints, also
 ///     direct children, which only link bodies while the creation is live.
 /// </summary>
-// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 [GlobalClass]
 public partial class AssetHandle : StaticBody3D
 {

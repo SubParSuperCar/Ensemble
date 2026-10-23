@@ -25,7 +25,7 @@ AssetName = &"Large Cylinder"
 Description = &"A wide disc four cubes across, like a wheel."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "404040",
-&"_materialId": -1
+&"_materialId": 1
 })
 MaxInstanceCount = 750
 

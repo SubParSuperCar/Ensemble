@@ -96,7 +96,7 @@ proxies start in place.
 |                                     | and `AssetManager` (each piece's colliders, bounds, and mass); `Components/`,  |
 |                                     | `Materials/`                                                                   |
 | `build_assets/`                     | The asset scenes, with asset scripts beside them (`Advanced/Suspension.cs`)    |
-| `shaders/coil.gdshader`             | The spring coil                                                                |
+| `shaders/helix.gdshader`            | The spring coil (a helix)                                                      |
 
 ## 2. Principles
 
@@ -178,8 +178,8 @@ much as Baja Builders did it (a model, two parts, and a constraint):
 - `Suspension.cs` sets the spring from the instance's properties when live, clamped: `stiffness` (0 to 100,000 N/m),
   `damping` (0 to 10,000 N s/m), `targetLength` (its rest length, end to end), and `maxLength` (up to 2 m end to end);
   the plates never come closer than 0.1 m.
-- `Coil`, a cylinder bent into a helix by `shaders/coil.gdshader`, stands on the bottom plate and reaches `Coil End`,
-  a marker on the top plate. Its color, turns, coil radius, and wire thickness are material parameters, and its length
+- `Coil`, a cylinder bent into a helix by `shaders/helix.gdshader`, stands on the bottom plate and reaches `Coil End`,
+  a marker on the top plate. Its color, turns, helix radius, and tube thickness are material parameters, and its length
   an instance parameter, so each coil stretches on its own with one shared material. While live, the script sets the
   length every frame from where the plates are drawn.
 

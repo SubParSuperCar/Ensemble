@@ -25,8 +25,8 @@ Properties = Dictionary[StringName, Variant]({
 })
 MaxInstanceCount = 1250
 
-[node name="Collider" type="CollisionShape3D" parent="." unique_id=771520221]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, 0.001, 0)
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=1483978510]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.001, -0.001, 0)
 shape = SubResource("ConvexPolygonShape3D_bbrea")
 
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]

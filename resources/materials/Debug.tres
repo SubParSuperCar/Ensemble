@@ -14,3 +14,5 @@ texture_filter = 0
 resource_name = "Debug"
 script = ExtResource("1_debug")
 Look = SubResource("StandardMaterial3D_debug")
+Friction = 0.1
+Bounce = 0.1

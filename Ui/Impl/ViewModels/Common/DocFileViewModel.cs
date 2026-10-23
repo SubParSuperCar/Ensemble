@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -22,6 +23,10 @@ public sealed partial class DocFileViewModel : ViewModelBase
 
 	// Whoever swaps a source out of this field owns and disposes it
 	private CancellationTokenSource? _cts;
+
+	// LiveMarkdown makes each image a link to itself, which wins over a link around it, so linked images map to their
+	// link's target
+	private IReadOnlyDictionary<string, string> _linkTargetsByImageUrl = FrozenDictionary<string, string>.Empty;
 
 	public DocFileViewModel()
 	{
@@ -61,7 +66,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 		{
 			var (markdown, source) = await ReadAsync(file, token).ConfigureAwait(false);
 
-			var document = await Task
+			var (document, linkTargetsByImageUrl) = await Task
 				.Run(() => ResolveUrls(Markdown.Parse(markdown, MarkdownUpdateProducer.DefaultPipeline), file), token)
 				.ConfigureAwait(false);
 
@@ -71,6 +76,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 				if (token.IsCancellationRequested)
 					return;
 
+				_linkTargetsByImageUrl = linkTargetsByImageUrl;
 				Document = new MarkdownDocumentUpdate.Full(document);
 
 				stopwatch.Stop();
@@ -93,18 +99,24 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	}
 
 	[RelayCommand]
-	private static void OpenLink(LinkClickedEventArgs e)
+	private void OpenLink(LinkClickedEventArgs e)
 	{
+		var href = e.HRef is { } clicked && _linkTargetsByImageUrl.TryGetValue(clicked.OriginalString, out var target)
+			? new Uri(target, UriKind.RelativeOrAbsolute)
+			: e.HRef;
+
 		// Other schemes (e.g., file:) could run programs
-		if (e.HRef is { IsAbsoluteUri: true, Scheme: "https" or "http" or "mailto" } href)
+		if (href is { IsAbsoluteUri: true, Scheme: "https" or "http" or "mailto" })
 			OS.ShellOpen(href.AbsoluteUri);
 	}
 
 	/// <summary>
 	///     Points relative URLs at the repository on GitHub, even for local copies: images at their raw files, and
-	///     links at their pages. LiveMarkdown would otherwise resolve them as local file paths.
+	///     links at their pages. LiveMarkdown would otherwise resolve them as local file paths. Also maps each linked
+	///     image's URL to its link's target.
 	/// </summary>
-	private static MarkdownDocument ResolveUrls(MarkdownDocument document, DocFile file)
+	private static (MarkdownDocument Document, IReadOnlyDictionary<string, string> LinkTargetsByImageUrl) ResolveUrls(
+		MarkdownDocument document, DocFile file)
 	{
 		foreach (var link in document.Descendants<LinkInline>())
 		{
@@ -120,7 +132,13 @@ public sealed partial class DocFileViewModel : ViewModelBase
 				link.Url = resolved.ToString();
 		}
 
-		return document;
+		var linkTargetsByImageUrl = new Dictionary<string, string>(StringComparer.Ordinal);
+
+		foreach (var link in document.Descendants<LinkInline>())
+			if (link is { IsImage: true, Url: { } url, Parent: LinkInline { IsImage: false, Url: { } target } })
+				linkTargetsByImageUrl[url] = target;
+
+		return (document, linkTargetsByImageUrl);
 	}
 
 	// Prefers a local copy, falling back to the repository on GitHub

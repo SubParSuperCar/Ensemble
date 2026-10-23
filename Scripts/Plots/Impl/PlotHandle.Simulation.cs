@@ -3,8 +3,6 @@ using EnsembleRoot.Sessions;
 using Godot;
 using Serilog;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Scripts.Plots;
 
 public partial class PlotHandle

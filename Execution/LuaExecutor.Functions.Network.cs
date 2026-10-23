@@ -8,8 +8,6 @@ using EnsembleRoot.Sessions;
 using Lua;
 using Serilog;
 
-// ReSharper disable InconsistentNaming
-
 namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor

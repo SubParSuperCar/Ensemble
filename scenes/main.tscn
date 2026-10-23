@@ -10,6 +10,7 @@
 [ext_resource type="Resource" uid="uid://b1spd65ih244" path="res://resources/materials/Debug.tres" id="5_choun"]
 [ext_resource type="AudioStream" uid="uid://drpphn1pullkq" path="res://assets/audio/Affirm.mp3" id="5_tefeu"]
 [ext_resource type="AudioStream" uid="uid://oyn5pbkk2y54" path="res://assets/audio/Dissent.mp3" id="6_o6xl0"]
+[ext_resource type="Resource" uid="uid://bmusgyjy3u2lu" path="res://resources/materials/BuffedRubber.tres" id="6_ya4ey"]
 
 [sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_o6xl0"]
 random_pitch = 1.0293022
@@ -60,7 +61,7 @@ metadata/_custom_type_script = "uid://0hf0xbvnk1kd"
 
 [node name="Material Bank" type="Node" parent="." unique_id=1783696896]
 script = ExtResource("3_85g3d")
-Materials = Array[ExtResource("4_choun")]([ExtResource("5_choun")])
+Materials = Array[ExtResource("4_choun")]([ExtResource("5_choun"), ExtResource("6_ya4ey")])
 metadata/_custom_type_script = "uid://b07v03smb5kgp"
 
 [node name="Sound Bank" type="Node" parent="." unique_id=2070128617]

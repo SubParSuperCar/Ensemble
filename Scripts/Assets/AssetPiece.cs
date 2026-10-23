@@ -1,9 +1,6 @@
 using EnsembleRoot.Scripts.Creations;
 using Godot;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
-
 namespace EnsembleRoot.Scripts.Assets;
 
 /// <summary>

@@ -86,7 +86,7 @@ public partial class Assembly : RigidBody3D
 		_mass += mass;
 		_massMoment += handleTransform * centerOfMass * mass;
 		_frictionMoment += (material?.Friction ?? AssetMaterial.DefaultFriction) * mass;
-		_bounce = MathF.Min(_bounce ?? float.PositiveInfinity, material?.Bounce ?? 0);
+		_bounce = MathF.Min(_bounce ?? float.PositiveInfinity, material?.Bounce ?? AssetMaterial.DefaultBounce);
 		_pieces.Add(body);
 	}
 
@@ -115,14 +115,14 @@ public partial class Assembly : RigidBody3D
 		Transform = Transform.TranslatedLocal(center);
 
 		var friction = _frictionMoment / _mass;
-		var bounce = _bounce ?? 0;
+		var bounce = _bounce ?? AssetMaterial.DefaultBounce;
 
 		Mass = _mass;
 		CenterOfMassMode = CenterOfMassModeEnum.Custom;
 		CenterOfMass = Vector3.Zero;
 
-		// Godot's defaults need no material of their own
-		if (friction is not AssetMaterial.DefaultFriction || bounce is not 0)
+		// Godot's defaults (friction 1, bounce 0), not the asset materials', need no material of their own
+		if (friction is not 1f || bounce is not 0f)
 			PhysicsMaterialOverride = new PhysicsMaterial { Friction = friction, Bounce = bounce };
 	}
 

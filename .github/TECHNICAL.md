@@ -583,7 +583,7 @@ content versions leave room to migrate old saves.
 | `Estragonia/`           | The Avalonia-in-Godot bridge (forked and maintained here)                                |
 | `Tests/`                | Unit tests for Core, saving, geometry, welds, placement, chat text, and more             |
 | `scenes/`               | The main, world, plot, player, and camera scenes                                         |
-| `shaders/`              | Highlight, coil, and static-effect shaders                                               |
+| `shaders/`              | Highlight, helix, and static-effect shaders                                              |
 | `assets/`, `resources/` | Meshes, images, audio, materials, and terrain data                                       |
 | `addons/`               | Third-party Godot addons: Terrain3D, Sky3D, Resonate, and the Rider plugin               |
 | `GdIgnore/`             | Build-only code kept from Godot (`PatchExport`)                                          |

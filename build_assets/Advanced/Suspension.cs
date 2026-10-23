@@ -24,13 +24,13 @@ public partial class Suspension : AssetHandle
 	private const float MinGap = 0.1f;
 	private const float MaxReach = 2f;
 
-	private static readonly StringName CoilLengthParameter = "coil_length";
+	private static readonly StringName HelixLengthParameter = "helix_length";
 
 	private float _coilLength;
 
 	[Export] public Generic6DofJoint3D Spring { get; set; } = null!;
 
-	/// <summary>The coil, standing on the bottom plate, and drawn by the coil shader.</summary>
+	/// <summary>The coil, standing on the bottom plate, and drawn by the helix shader.</summary>
 	[Export]
 	public MeshInstance3D Coil { get; set; } = null!;
 
@@ -51,7 +51,7 @@ public partial class Suspension : AssetHandle
 			return;
 
 		_coilLength = length;
-		Coil.SetInstanceShaderParameter(CoilLengthParameter, length);
+		Coil.SetInstanceShaderParameter(HelixLengthParameter, length);
 	}
 
 	// The joint measures the top plate's travel from where it was built, with the plates' faces CoilLength apart

@@ -166,9 +166,19 @@ public partial class ConstructTool : ToolBase
 
 		var surface = plot.WorldToGrid(hit.Position) * PlotHandle.GridToWorldScale;
 		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
-		box = Settle(box.At(surface + normal * box.Radius(normal)), plot, normal, hit.Collider);
+		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
+		var anchor = cellSize is { } size ? GetGridAnchor(hit.Collider, normal, size) : Vector3.Zero;
 
-		_gridPosition = (box.Center - box.Basis * _previewBounds.GetCenter()) / PlotHandle.GridToWorldScale;
+		box = _solver.Settle(
+			box.At(surface + normal * box.Radius(normal)), PlotPlacement.GetObstacles(plot),
+			PlotPlacement.GetBounds(plot).Position.Y, normal, cellSize, anchor);
+
+		var origin = box.Center - box.Basis * _previewBounds.GetCenter();
+
+		if (cellSize is { } cell)
+			origin = PlacementSolver.SnapToLattice(origin, anchor, GetLatticeCell(cell));
+
+		_gridPosition = origin / PlotHandle.GridToWorldScale;
 		_state = PlotPlacement.Evaluate(plot, AssetId, _gridPosition, _rotation);
 
 		if (_state is PlacementState.OutOfBounds)
@@ -233,18 +243,12 @@ public partial class ConstructTool : ToolBase
 		for (var axis = 0; axis < 3; axis++)
 			anchor[axis] += (normal[axis] > 0 ? 1 : -1) * PlacementSolver.GetSnapExtent(envelope[axis], cellSize);
 
-		return anchor;
+		// The face is the collider's, so it's rounded onto the target's own lattice, as the target was placed
+		return PlacementSolver.SnapToLattice(anchor, target.Transform.Origin, GetLatticeCell(cellSize));
 	}
 
-	/// <summary>Settles a box resting against the hit surface (see <see cref="PlacementSolver" />).</summary>
-	private Obb Settle(Obb box, PlotHandle plot, Vector3 normal, Node3D collider)
-	{
-		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
-		var anchor = cellSize is { } size ? GetGridAnchor(collider, normal, size) : Vector3.Zero;
-
-		return _solver.Settle(
-			box, PlotPlacement.GetObstacles(plot), PlotPlacement.GetBounds(plot).Position.Y, normal, cellSize, anchor);
-	}
+	// The finer of the snapping cell and the plot's, which assets are built on
+	private static float GetLatticeCell(float cellSize) => MathF.Min(cellSize, PlotHandle.GridToWorldScale);
 
 	private void RebuildPreview()
 	{

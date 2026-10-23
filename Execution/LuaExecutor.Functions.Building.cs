@@ -9,8 +9,6 @@ using Godot.Collections;
 using Lua;
 using Serilog;
 
-// ReSharper disable InconsistentNaming
-
 namespace EnsembleRoot.Execution;
 
 // Scripted building on the local plot, through the same actions (and validation) as the tools

@@ -130,7 +130,8 @@ public partial class SessionManager : Node
 		Log.Debug(
 			"Hosting {Class}... (Port={Port}, MaxClients={MaxClients}, HasPassword={HasPassword}, " +
 			"IsDedicated={IsDedicated}, IsUpnpEnabled={IsUpnpEnabled})",
-			nameof(EnetSession), config.Port, config.MaxClientCount?.ToString(CultureInfo.InvariantCulture) ?? "Unlimited",
+			nameof(EnetSession), config.Port,
+			config.MaxClientCount?.ToString(CultureInfo.InvariantCulture) ?? "Unlimited",
 			!string.IsNullOrEmpty(config.Password), config.IsDedicated, config.IsUpnpEnabled);
 
 		StartSession(new EnetSession((SceneMultiplayer)Multiplayer, config, GameVersion), displayName);

@@ -74,7 +74,7 @@ public static class SaveConverter
 		return (skippedInstances, skippedValues);
 	}
 
-	// The rules replication enforces (SetPropertiesAction)
+	// The rules replication enforces (Replication/Actions/Impl/PropertyRules.cs)
 	private static bool IsApplicable(CoreVariant value, CoreVariant current) =>
 		value.Type == current.Type &&
 		value.Type switch

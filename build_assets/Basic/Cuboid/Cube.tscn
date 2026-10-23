@@ -16,7 +16,7 @@ size = Vector3(0.5, 0.5, 0.5)
 [node name="Cube" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_ahla0")
 AssetName = &"Cube"
-Description = &"The basic building block."
+Description = &"The Cube\n\nA timeless masterpiece of structural minimalism\nand geometric perfection. Featuring six (6)\nmeticulously crafted square faces, twelve (12)\nedges, and eight (8) vertices, the Cube represents\nthe absolute pinnacle of three-dimensional design.\n\nIts revolutionary 90-degree angles provide\nunparalleled compatibility with other right angles,\nwhile its flat surfaces offer exceptional support\nfor objects that prefer not to fall over. Its\ngroundbreaking uniformity ensures that no side\nis more important than another, promoting a\ntruly egalitarian building experience.\n\nWhether used as a foundation, a wall, a tower, a\nbridge, a staircase (with sufficient imagination),\nor another Cube, this versatile architectural\nmarvel is limited only by the user\'s creativity\nand the laws of physics.\n\nEngineered with zero unnecessary curves, zero\nunwanted holes, and an industry-leading six sides,\nthe Cube delivers a premium building experience\nwithout the unnecessary complexity of having\nmore than one kind of dimension.\n\nWidely regarded as the gold standard of cubes,\nit continues to redefine expectations in the\ncuboidal construction industry.\n\nRecommended for: Literally anything.\n\nDifficulty: Beginner.\nMastery: Impossible.\nRarity: Common (misleading).\nPrice: One (1) cube.\n\nThe Cube. Nothing is arbitrary. Everything is\nrelative. Except this. This is a Cube."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1

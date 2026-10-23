@@ -32,7 +32,7 @@ public partial class AssetHandle : StaticBody3D
 	[Export] public StringName AssetName { get; set; } = null!;
 
 	// Shown when hovering over the asset in the selector; test assets may go without
-	[Export(PropertyHint.MultilineText)] public StringName? Description { get; set; }
+	[Export] public StringName? Description { get; set; }
 
 	[Export] public Godot.Collections.Dictionary<StringName, Variant> Properties { get; set; } = [];
 

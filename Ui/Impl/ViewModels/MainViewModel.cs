@@ -164,7 +164,6 @@ public sealed partial class MainViewModel : ViewModelBase
 
 		var selectionBrush = app.FindResource("ThemeAccentBrush3") as IBrush ?? new SolidColorBrush(accent.Color, 0.4);
 
-		// TODO: Consider adding support for translucent terminal windows. Estragonia is likely the limiting factor.
 		var terminal = new TerminalWindow
 		{
 			Width = TerminalWidth,

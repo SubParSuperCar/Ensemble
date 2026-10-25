@@ -43,7 +43,7 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
-		new AddInstanceAction(assetId, position, rotation).Submit();
+		new AddInstancesAction([new InstanceSpec(assetId, position, rotation, new Dictionary())]).Submit();
 		return context.ReturnNothing();
 	}
 

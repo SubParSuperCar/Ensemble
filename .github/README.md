@@ -183,12 +183,14 @@ with `set_profanity_filter_on(false)`.
 
 | Action                                | Binding                                                    |
 |---------------------------------------|------------------------------------------------------------|
-| Move / run / jump                     | `WASD` or `Up` `Down` / `Shift` / `Space` or `Ctrl`        |
+| Move / run / jump                     | `WASD` or `Up` `Down` / `Shift` / `Space`                  |
 | Orbit / turn / zoom camera            | Right mouse / `Q` `E` or `Left` `Right` / wheel, `I` `O`   |
-| Toggle place / delete tool            | `1` / `2`                                                  |
-| Place or delete (tool trigger)        | Left mouse                                                 |
-| Toggle selection (delete tool)        | `Shift` + left mouse                                       |
-| Box-select (delete tool)              | `Alt` + drag (`Shift` toggles, `Esc` cancels)              |
+| Toggle place / delete / edit tool     | `1` / `2` / `3`                                            |
+| Place, delete, or select (trigger)    | Left mouse                                                 |
+| Toggle selection (delete / edit tool) | `Shift` + left mouse                                       |
+| Box-select (delete / edit tool)       | `Ctrl` + drag (`Shift` toggles, `Esc` cancels)             |
+| Copy / paste properties (edit tool)   | `Ctrl+C` / `Ctrl+V`                                        |
+| Undo / redo (tools)                   | `Ctrl+Z` / `Ctrl+X`                                        |
 | Rotate placement (X / Y / Z)          | `R` / `T` / `Y`                                            |
 | Reset character position              | Hold `H` for 1 second                                      |
 | Player list                           | `Tab`                                                      |

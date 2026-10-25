@@ -21,7 +21,7 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	{
 		IsConstructToolEnabled = GToolManager.IsEnabled<ConstructTool>();
 		IsDestructToolEnabled = GToolManager.IsEnabled<DestructTool>();
-		IsEditToolEnabled = GToolManager.IsEnabled<EditTool>();
+		IsPropertyToolEnabled = GToolManager.IsEnabled<PropertyTool>();
 		GToolManager.ToolIsEnabledChanged += OnToolIsEnabledChanged;
 
 		OnUndoRedoChanged();
@@ -36,11 +36,11 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 
 	public static IBrush ConstructBrush { get; } = new ImmutableSolidColorBrush(ConstructTool.Theme.ToAvaloniaColor());
 	public static IBrush DestructBrush { get; } = new ImmutableSolidColorBrush(DestructTool.Theme.ToAvaloniaColor());
-	public static IBrush EditBrush { get; } = new ImmutableSolidColorBrush(EditTool.Theme.ToAvaloniaColor());
+	public static IBrush PropertyBrush { get; } = new ImmutableSolidColorBrush(PropertyTool.Theme.ToAvaloniaColor());
 
 	[ObservableProperty] public partial bool IsConstructToolEnabled { get; set; }
 	[ObservableProperty] public partial bool IsDestructToolEnabled { get; set; }
-	[ObservableProperty] public partial bool IsEditToolEnabled { get; set; }
+	[ObservableProperty] public partial bool IsPropertyToolEnabled { get; set; }
 
 	[ObservableProperty] public partial bool IsMutexEnforced { get; set; } = GToolManager.UseMutex;
 	[ObservableProperty] public partial bool IsRestoreOnDespawnEnabled { get; set; } = GToolManager.RestoreOnDespawn;
@@ -78,7 +78,7 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	private static void ToggleDestructTool() => GToolManager.Toggle<DestructTool>();
 
 	[RelayCommand]
-	private static void ToggleEditTool() => GToolManager.Toggle<EditTool>();
+	private static void TogglePropertyTool() => GToolManager.Toggle<PropertyTool>();
 
 	[RelayCommand]
 	private static void Undo() => GToolManager.UndoRedo.Undo();
@@ -104,8 +104,8 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 				UpdateClearAll();
 				break;
 
-			case EditTool:
-				IsEditToolEnabled = isEnabled;
+			case PropertyTool:
+				IsPropertyToolEnabled = isEnabled;
 				break;
 		}
 	}

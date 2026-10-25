@@ -78,19 +78,19 @@
                         Content="Delete (2)"
                         Command="{Binding ToggleDestructToolCommand}"
                         IsChecked="{Binding IsDestructToolEnabled}"
-                        ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)&#x0a;&#x0a;Click an asset to delete it, or Shift-click to (de)select it.&#x0a;Alt-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Click a selected asset to delete the whole selection." />
+                        ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)&#x0a;&#x0a;Click an asset to delete it, or Shift-click to (de)select it.&#x0a;Ctrl-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Click a selected asset to delete the whole selection." />
                 </Border>
 
                 <Border
                     Grid.Column="2"
-                    BorderBrush="{x:Static vm:ToolBarViewModel.EditBrush}"
+                    BorderBrush="{x:Static vm:ToolBarViewModel.PropertyBrush}"
                     BorderThickness="{StaticResource BorderThickness}">
 
                     <ToggleButton
                         Content="Edit (3)"
-                        Command="{Binding ToggleEditToolCommand}"
-                        IsChecked="{Binding IsEditToolEnabled}"
-                        ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)&#x0a;&#x0a;Click an asset to select it, or Shift-click to (de)select it.&#x0a;Alt-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Ctrl+C copies the selection's shared properties; Ctrl+V pastes them onto the selection." />
+                        Command="{Binding TogglePropertyToolCommand}"
+                        IsChecked="{Binding IsPropertyToolEnabled}"
+                        ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)&#x0a;&#x0a;Click an asset to select it, or Shift-click to (de)select it.&#x0a;Ctrl-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Ctrl+C copies the selection's shared properties; Ctrl+V pastes them onto the selection." />
                 </Border>
 
                 <Border Grid.Column="3" BorderBrush="#E050E0" BorderThickness="{StaticResource BorderThickness}">

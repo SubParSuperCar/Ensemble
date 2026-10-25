@@ -45,7 +45,7 @@ public partial class ToolManager : Node, IAutoload
 
 	public ConstructTool Construct => Get<ConstructTool>();
 	public DestructTool Destruct => Get<DestructTool>();
-	public EditTool Edit => Get<EditTool>();
+	public PropertyTool Property => Get<PropertyTool>();
 
 	public MultiSelector Selector { get; } = new();
 	public UndoRedo UndoRedo { get; } = new();
@@ -95,8 +95,8 @@ public partial class ToolManager : Node, IAutoload
 			Toggle<ConstructTool>();
 		else if (@event.IsActionPressed(DestructTool.ToggleAction))
 			Toggle<DestructTool>();
-		else if (@event.IsActionPressed(EditTool.ToggleAction))
-			Toggle<EditTool>();
+		else if (@event.IsActionPressed(PropertyTool.ToggleAction))
+			Toggle<PropertyTool>();
 		else if (@event.IsActionPressed(UndoAction))
 			UndoRedo.Undo();
 		else if (@event.IsActionPressed(RedoAction))
@@ -199,7 +199,7 @@ public partial class ToolManager : Node, IAutoload
 	// The tools affirm on submit, so the host's rejection gets its own sound
 	private static void OnActionRejected(string actionId, string reason)
 	{
-		if (actionId is nameof(AddInstancesBulkAction) or nameof(RemoveInstancesAction) or nameof(SetPropertiesAction))
+		if (actionId is nameof(AddInstancesAction) or nameof(RemoveInstancesAction) or nameof(SetPropertiesAction))
 			ToolCommon.PlaySound(ToolCommon.DissentSound);
 	}
 }

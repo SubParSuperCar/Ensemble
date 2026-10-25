@@ -35,7 +35,7 @@ The tool suite, in rough intended order of implementation.
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
-- [x] (M) Marquee Selector - Alt+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
+- [x] (M) Marquee Selector - Ctrl+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
 - [x] (S) Plot outlines - the local plot's boundary rises from its grid in the active tool's color (white while hovered
   in the Plot Selector), fading in and out as it rises and sinks
 - [ ] (S) Fade the delete tool's selection highlight boxes in and out, as the plot outlines do
@@ -65,7 +65,7 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
 - [x] (S) Instance references - actions verify an instance's ID against its asset and transform, since freed IDs are
   reused
 - [x] (S) SetPropertiesAction - type- and key-checked property edits, up to 256 instances in one request
-- [x] (S) AddInstancesBulkAction - up to 256 instances with their properties in one request, placed in order and
+- [x] (S) AddInstancesAction - up to 256 instances with their properties in one request, placed in order and
   skipped where they don't fit, ready for build share codes and loading saves
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
 - (WIP) (S) Peer UI - ping column and host kick context menu in the player list done (kick reason box TODO); server

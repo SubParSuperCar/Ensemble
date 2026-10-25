@@ -9,11 +9,11 @@ using static EnsembleRoot.Sessions.Actions.ActionValidation;
 namespace EnsembleRoot.Replication.Actions;
 
 /// <summary>
-///     Adds many instances, with their properties, in one request (e.g., to paste or load a build). They're placed in
-///     order under the placement rules, so one that doesn't fit (anymore) is skipped and the rest still go.
+///     Adds instances, with their properties, in one request (e.g., to place, paste, or load a build). They're placed
+///     in order under the placement rules, so one that doesn't fit (anymore) is skipped and the rest still go.
 /// </summary>
-public readonly record struct AddInstancesBulkAction(IReadOnlyList<InstanceSpec> Instances)
-	: INetworkAction<AddInstancesBulkAction>
+public readonly record struct AddInstancesAction(IReadOnlyList<InstanceSpec> Instances)
+	: INetworkAction<AddInstancesAction>
 {
 	// Callers split larger builds into batches of this size
 	public const int MaxCount = 256;
@@ -24,7 +24,7 @@ public readonly record struct AddInstancesBulkAction(IReadOnlyList<InstanceSpec>
 	public static int GetTokenCost(Array<Variant> payload, ActionSource source) =>
 		(payload.Count + CountPerToken - 1) / CountPerToken;
 
-	public static AddInstancesBulkAction FromPayload(Array<Variant> payload) =>
+	public static AddInstancesAction FromPayload(Array<Variant> payload) =>
 		new([.. payload.Select(static spec => InstanceSpec.FromPayload(spec.AsGodotArray<Variant>()))]);
 
 	public Array<Variant> ToPayload() => [.. Instances.Select(static spec => (Variant)spec.ToPayload())];
@@ -78,5 +78,5 @@ public readonly record struct AddInstancesBulkAction(IReadOnlyList<InstanceSpec>
 		PlotPlacement.Evaluate(handle, spec.AssetId, spec.Position, spec.Rotation) is PlacementState.Valid;
 
 	[ModuleInitializer]
-	internal static void Register() => NetworkActionRegistry.Register<AddInstancesBulkAction>();
+	internal static void Register() => NetworkActionRegistry.Register<AddInstancesAction>();
 }

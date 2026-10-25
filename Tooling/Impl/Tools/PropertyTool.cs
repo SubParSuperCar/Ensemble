@@ -11,7 +11,7 @@ using Serilog;
 
 namespace EnsembleRoot.Tooling.Tools;
 
-/// <summary>A property as the EditTool tells them apart: by name, ignoring case as instances do, and by type.</summary>
+/// <summary>How the PropertyTool tells properties apart: by name, ignoring case as instances do, and type.</summary>
 public readonly record struct PropertyKey(string Name, CoreVariantType Type)
 {
 	public bool Equals(PropertyKey other) =>
@@ -20,20 +20,20 @@ public readonly record struct PropertyKey(string Name, CoreVariantType Type)
 	public override int GetHashCode() => HashCode.Combine(StringComparer.OrdinalIgnoreCase.GetHashCode(Name), Type);
 }
 
-/// <param name="IsMixed">Whether the instances differ, so <paramref name="Value" /> is the default instead.</param>
+/// <param name="IsMixed">Whether the instances differ, so <paramref name="Value" /> is the type's neutral one.</param>
 public readonly record struct EditableProperty(PropertyKey Key, CoreVariant Value, bool IsMixed);
 
 /// <summary>
 ///     Edits the selected instances' properties, except the engine's own (prefixed with an underscore). The instances
-///     that share a property (by name and type) show one value: theirs if they agree, the default otherwise.
+///     that share a property (by name and type) show one value: theirs if they agree, a neutral one otherwise.
 /// </summary>
-public partial class EditTool : ToolBase
+public partial class PropertyTool : ToolBase
 {
-	public static readonly StringName ToggleAction = "tool_edit_toggle";
+	public static readonly StringName ToggleAction = "tool_property_toggle";
 	public static readonly Color Theme = new("#00C000");
 
-	private static readonly StringName CopyAction = "tool_edit_copy";
-	private static readonly StringName PasteAction = "tool_edit_paste";
+	private static readonly StringName CopyAction = "tool_property_copy";
+	private static readonly StringName PasteAction = "tool_property_paste";
 
 	private readonly SelectionHighlights _highlights = new() { Name = "Highlights", Tint = Theme };
 	private readonly Dictionary<int, IProperties> _watchedProperties = [];
@@ -108,13 +108,10 @@ public partial class EditTool : ToolBase
 	// A value the instances disagree on turns null
 	private static CoreVariant Agree(CoreVariant left, CoreVariant right) => left == right ? left : CoreVariant.Null;
 
-	// Assets that disagree on the default too fall back to the type's
-	private static EditableProperty ToProperty(PropertyKey key, CoreVariant value, CoreVariant initial) =>
-		value.IsNull
-			? new EditableProperty(key, initial.IsNull ? GetZero(key.Type) : initial, true)
-			: new EditableProperty(key, value, false);
+	private static EditableProperty ToProperty(PropertyKey key, CoreVariant value) =>
+		value.IsNull ? new EditableProperty(key, GetNeutral(key.Type), true) : new EditableProperty(key, value, false);
 
-	private static CoreVariant GetZero(CoreVariantType type) =>
+	private static CoreVariant GetNeutral(CoreVariantType type) =>
 		type switch
 		{
 			CoreVariantType.Boolean => false,
@@ -129,27 +126,19 @@ public partial class EditTool : ToolBase
 
 	private List<EditableProperty> Merge()
 	{
-		var merged = new OrderedDictionary<PropertyKey, (CoreVariant Value, CoreVariant Default)>();
+		var merged = new Dictionary<PropertyKey, CoreVariant>();
 
 		foreach (var instance in GetSelected())
-		{
-			var defaults = instance.Asset.Source.Properties;
-
 			foreach (var (name, value) in instance.Properties.Source.All)
 			{
 				if (!IsEditable(name, value))
 					continue;
 
 				var key = new PropertyKey(name, value.Type);
-				var initial = defaults.GetValueOrDefault(name);
-
-				merged[key] = merged.TryGetValue(key, out var entry)
-					? (Agree(entry.Value, value), Agree(entry.Default, initial))
-					: (value, initial);
+				merged[key] = merged.TryGetValue(key, out var agreed) ? Agree(agreed, value) : value;
 			}
-		}
 
-		return [.. merged.Select(static pair => ToProperty(pair.Key, pair.Value.Value, pair.Value.Default))];
+		return [.. merged.Select(static pair => ToProperty(pair.Key, pair.Value))];
 	}
 
 	// Each instance takes the values of the properties it has under the same names and types

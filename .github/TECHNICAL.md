@@ -360,8 +360,7 @@ sequenceDiagram
 |----------------------------|--------------------------------------------------|
 | `SetPlotAction`            | Claims or releases a plot for the sender         |
 | `SetPlotSpawnedAction`     | Spawns or despawns a plot (owner or host)        |
-| `AddInstanceAction`        | Places an asset instance on the sender's plot    |
-| `AddInstancesBulkAction`   | Places up to 256 instances with their properties |
+| `AddInstancesAction`       | Places up to 256 instances with their properties |
 | `RemoveInstancesAction`    | Deletes up to 256 instances                      |
 | `SetPropertiesAction`      | Changes the properties of up to 256 instances    |
 | `ClearInstancesAction`     | Removes every instance on a plot (owner or host) |
@@ -430,12 +429,16 @@ graph LR
     AssetSelector["Asset Selector (Ui)"] --> Construct
     ToolManager --> Construct["ConstructTool (Place)"]
     ToolManager --> Destruct["DestructTool (Delete)"]
+    ToolManager --> Property["PropertyTool (Edit)"]
     ToolManager --> Selector["MultiSelector"]
     ToolManager --> Marquee["MarqueeSelector"]
+    ToolManager --> History["UndoRedo"]
     Destruct --> Selector
+    Property --> Selector
     Marquee --> Selector
-    Construct -->|"AddInstanceAction"| Net["SessionManager"]
+    Construct -->|"AddInstancesAction"| Net["SessionManager"]
     Destruct -->|"RemoveInstancesAction"| Net
+    Property -->|"SetPropertiesAction"| Net
 ```
 
 - `ToolManager` creates tools lazily and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while
@@ -446,7 +449,13 @@ graph LR
   shader with an `opacity` uniform (such as the coil's), so opaque instances never pay for transparency.
 - `MultiSelector` holds a selection shared across tools: `Shift`-clicking toggles an instance, clicking a selected
   instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` box-selects by
-  `Alt`-dragging (Baja Builders parity).
+  `Ctrl`-dragging (Baja Builders parity).
+- `PropertyTool` edits the selection's properties, except the engine's underscore-prefixed ones. Instances sharing a
+  property (by name and type) show one value, or a neutral one where they differ; `Ctrl+C` / `Ctrl+V` copy the agreed
+  values and paste them onto another selection.
+- `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
+  `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
+  history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
 - Highlights (`Scripts/Adornments/`) are box meshes with an edge shader, in two flavors: `AxialHighlight` (per-axis
   colors) and `SolidHighlight` (one tint). They opt out of physics interpolation, as they are placed between physics
   ticks. The local plot's outline rises from its grid in the active tool's color, fading in and out as it moves.

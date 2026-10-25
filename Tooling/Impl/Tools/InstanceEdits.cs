@@ -53,8 +53,8 @@ internal static class InstanceEdits
 
 	private static void SubmitAdd(IReadOnlyList<InstanceSpec> specs)
 	{
-		foreach (var chunk in specs.Chunk(AddInstancesBulkAction.MaxCount))
-			new AddInstancesBulkAction(chunk).Submit();
+		foreach (var chunk in specs.Chunk(AddInstancesAction.MaxCount))
+			new AddInstancesAction(chunk).Submit();
 	}
 
 	private static void SubmitRemove(IReadOnlyList<InstanceSpec> specs)

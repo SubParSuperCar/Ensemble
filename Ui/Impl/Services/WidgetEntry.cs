@@ -1,9 +1,9 @@
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Extensions;
 
 namespace EnsembleRoot.Ui.Impl.Services;
 
@@ -42,9 +42,6 @@ public sealed partial class WidgetEntry : ObservableObject
 	internal Rect? LastBounds { get; set; }
 	internal bool WasMaximized { get; set; }
 
-	[GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])", RegexOptions.None, RegexMatchTimeoutMs)]
-	private static partial Regex WordBoundaryRegex { get; }
-
 	internal ViewModelBase CreateContent() => _createContent();
 
 	[RelayCommand]
@@ -56,6 +53,6 @@ public sealed partial class WidgetEntry : ObservableObject
 			? type.Name[..^ViewModelSuffix.Length]
 			: type.Name;
 
-		return WordBoundaryRegex.Replace(name, " ");
+		return name.ToDisplayName();
 	}
 }

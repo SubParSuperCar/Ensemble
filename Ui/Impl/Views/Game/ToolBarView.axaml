@@ -22,6 +22,7 @@
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
                 <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
+                <ColumnDefinition Width="Auto" SharedSizeGroup="History" />
                 <ColumnDefinition Width="Auto" SharedSizeGroup="Options" />
             </Grid.ColumnDefinitions>
 
@@ -53,6 +54,7 @@
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Paint" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Move" />
                     <!-- <ColumnDefinition Width="Auto" SharedSizeGroup="Inspect" /> -->
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="History" />
                     <ColumnDefinition Width="Auto" SharedSizeGroup="Options" />
                 </Grid.ColumnDefinitions>
 
@@ -79,11 +81,16 @@
                         ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)&#x0a;&#x0a;Click an asset to delete it, or Shift-click to (de)select it.&#x0a;Alt-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Click a selected asset to delete the whole selection." />
                 </Border>
 
-                <Border Grid.Column="2" BorderBrush="#00C000" BorderThickness="{StaticResource BorderThickness}">
+                <Border
+                    Grid.Column="2"
+                    BorderBrush="{x:Static vm:ToolBarViewModel.EditBrush}"
+                    BorderThickness="{StaticResource BorderThickness}">
+
                     <ToggleButton
                         Content="Edit (3)"
-                        ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)"
-                        IsEnabled="False" />
+                        Command="{Binding ToggleEditToolCommand}"
+                        IsChecked="{Binding IsEditToolEnabled}"
+                        ToolTip.Tip="Toggles the editing (attribute) tool. (Bound to 3 / Three)&#x0a;&#x0a;Click an asset to select it, or Shift-click to (de)select it.&#x0a;Alt-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Ctrl+C copies the selection's shared properties; Ctrl+V pastes them onto the selection." />
                 </Border>
 
                 <Border Grid.Column="3" BorderBrush="#E050E0" BorderThickness="{StaticResource BorderThickness}">
@@ -107,7 +114,21 @@
                         IsEnabled="False" />
                 </Border>-->
 
-                <StackPanel Grid.Column="5" Spacing="4" VerticalAlignment="Center" TextElement.FontSize="12">
+                <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="4">
+                    <Button
+                        Content="&lt;-"
+                        Command="{Binding UndoCommand}"
+                        ToolTip.Tip="Undoes your last tool edit on this plot. (Bound to Ctrl+Z)"
+                        IsEnabled="{Binding IsUndoEnabled}" />
+
+                    <Button
+                        Content="-&gt;"
+                        Command="{Binding RedoCommand}"
+                        ToolTip.Tip="Redoes your last undone tool edit on this plot. (Bound to Ctrl+X)"
+                        IsEnabled="{Binding IsRedoEnabled}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="6" Spacing="4" VerticalAlignment="Center" TextElement.FontSize="12">
                     <CheckBox
                         Content="Mut.Ex."
                         IsChecked="{Binding IsMutexEnforced}"

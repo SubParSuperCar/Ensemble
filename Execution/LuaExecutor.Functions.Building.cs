@@ -124,7 +124,7 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
-		new SetPropertiesAction(InstanceReference.From(instance), new Dictionary { [key] = value })
+		new SetPropertiesAction([new PropertyEdit(InstanceReference.From(instance), new Dictionary { [key] = value })])
 			.Submit();
 
 		return context.ReturnNothing();

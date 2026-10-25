@@ -8,7 +8,6 @@ using Serilog;
 
 namespace EnsembleRoot.Scripts.DiscordRichPresence;
 
-// TODO: Fix benign errors in AOT export builds caused by IPC named pipe socket exceptions
 /// <remarks>
 ///     Shares only the activity (menu, single-player, hosting, or joined) and its elapsed time; never names,
 ///     addresses, ports, or player counts.

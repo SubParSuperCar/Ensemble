@@ -11,7 +11,7 @@ public static class SaveSerializerExtensions
 		public void Save(string path, CreationSaveData data, SaveOptions? options = null)
 		{
 			// Unique, so concurrent saves to one path can't mix their writes
-			var tempPath = $"{path}.{Guid.NewGuid():N}.tmp";
+			var tempPath = $"{path}.{Guid.CreateVersion7():N}.tmp";
 
 			try
 			{

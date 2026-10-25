@@ -10,7 +10,7 @@ namespace EnsembleRoot.Replication.Actions;
 /// <summary>The rules property edits follow: only existing properties, each keeping its type, within limits.</summary>
 internal static class PropertyRules
 {
-	private const int MaxStringLength = 256;
+	public const int MaxStringLength = 256;
 
 	public static ActionValidation Validate(IReadOnlyDictionary<string, CoreVariant> current, Dictionary properties)
 	{

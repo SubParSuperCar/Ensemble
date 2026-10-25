@@ -1,4 +1,3 @@
-// ReSharper disable EventNeverSubscribedTo.Global
 // ReSharper disable UnusedMember.Global
 
 namespace EnsembleRoot.Tooling;

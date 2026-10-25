@@ -21,7 +21,11 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	{
 		IsConstructToolEnabled = GToolManager.IsEnabled<ConstructTool>();
 		IsDestructToolEnabled = GToolManager.IsEnabled<DestructTool>();
+		IsEditToolEnabled = GToolManager.IsEnabled<EditTool>();
 		GToolManager.ToolIsEnabledChanged += OnToolIsEnabledChanged;
+
+		OnUndoRedoChanged();
+		GToolManager.UndoRedo.Changed += OnUndoRedoChanged;
 
 		OnLocalPlotChanged(LocalPlot);
 		LocalPlotChanged += OnLocalPlotChanged;
@@ -32,9 +36,11 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 
 	public static IBrush ConstructBrush { get; } = new ImmutableSolidColorBrush(ConstructTool.Theme.ToAvaloniaColor());
 	public static IBrush DestructBrush { get; } = new ImmutableSolidColorBrush(DestructTool.Theme.ToAvaloniaColor());
+	public static IBrush EditBrush { get; } = new ImmutableSolidColorBrush(EditTool.Theme.ToAvaloniaColor());
 
 	[ObservableProperty] public partial bool IsConstructToolEnabled { get; set; }
 	[ObservableProperty] public partial bool IsDestructToolEnabled { get; set; }
+	[ObservableProperty] public partial bool IsEditToolEnabled { get; set; }
 
 	[ObservableProperty] public partial bool IsMutexEnforced { get; set; } = GToolManager.UseMutex;
 	[ObservableProperty] public partial bool IsRestoreOnDespawnEnabled { get; set; } = GToolManager.RestoreOnDespawn;
@@ -42,9 +48,13 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	[ObservableProperty] public partial bool IsClearAllVisible { get; private set; }
 	[ObservableProperty] public partial bool IsClearAllEnabled { get; private set; }
 
+	[ObservableProperty] public partial bool IsUndoEnabled { get; private set; }
+	[ObservableProperty] public partial bool IsRedoEnabled { get; private set; }
+
 	protected override void OnDispose()
 	{
 		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
+		GToolManager.UndoRedo.Changed -= OnUndoRedoChanged;
 
 		LocalPlotChanged -= OnLocalPlotChanged;
 		IsPlotOwnerChanged -= OnClearAllConditionChanged;
@@ -67,6 +77,15 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 	[RelayCommand]
 	private static void ToggleDestructTool() => GToolManager.Toggle<DestructTool>();
 
+	[RelayCommand]
+	private static void ToggleEditTool() => GToolManager.Toggle<EditTool>();
+
+	[RelayCommand]
+	private static void Undo() => GToolManager.UndoRedo.Undo();
+
+	[RelayCommand]
+	private static void Redo() => GToolManager.UndoRedo.Redo();
+
 	partial void OnIsMutexEnforcedChanged(bool value) => GToolManager.UseMutex = value;
 	partial void OnIsRestoreOnDespawnEnabledChanged(bool value) => GToolManager.RestoreOnDespawn = value;
 
@@ -84,7 +103,17 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 				IsDestructToolEnabled = isEnabled;
 				UpdateClearAll();
 				break;
+
+			case EditTool:
+				IsEditToolEnabled = isEnabled;
+				break;
 		}
+	}
+
+	private void OnUndoRedoChanged()
+	{
+		IsUndoEnabled = GToolManager.UndoRedo.CanUndo;
+		IsRedoEnabled = GToolManager.UndoRedo.CanRedo;
 	}
 
 	private void OnLocalPlotChanged(GdPlot? plot)

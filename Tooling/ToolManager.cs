@@ -18,6 +18,9 @@ namespace EnsembleRoot.Tooling;
 	FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ToolManager : Node, IAutoload
 {
+	private static readonly StringName UndoAction = "tool_history_undo";
+	private static readonly StringName RedoAction = "tool_history_redo";
+
 	private readonly List<ToolBase> _enabledTools = [];
 	private readonly List<ToolBase> _spawnDisabledTools = [];
 	private readonly Dictionary<Type, ToolBase> _tools = [];
@@ -42,8 +45,10 @@ public partial class ToolManager : Node, IAutoload
 
 	public ConstructTool Construct => Get<ConstructTool>();
 	public DestructTool Destruct => Get<DestructTool>();
+	public EditTool Edit => Get<EditTool>();
 
 	public MultiSelector Selector { get; } = new();
+	public UndoRedo UndoRedo { get; } = new();
 	public MarqueeSelector Marquee { get; } = new() { Name = nameof(MarqueeSelector) };
 
 	internal IReadOnlyList<ToolBase> EnabledTools => _enabledTools;
@@ -53,6 +58,7 @@ public partial class ToolManager : Node, IAutoload
 	public void Initialize()
 	{
 		Selector.Initialize();
+		UndoRedo.Initialize();
 
 		Marquee.Initialize(this);
 		AddChild(Marquee);
@@ -70,6 +76,7 @@ public partial class ToolManager : Node, IAutoload
 	public override void _ExitTree()
 	{
 		Selector.Dispose();
+		UndoRedo.Dispose();
 
 		LocalPlotChanged -= OnLocalPlotChanged;
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
@@ -88,6 +95,12 @@ public partial class ToolManager : Node, IAutoload
 			Toggle<ConstructTool>();
 		else if (@event.IsActionPressed(DestructTool.ToggleAction))
 			Toggle<DestructTool>();
+		else if (@event.IsActionPressed(EditTool.ToggleAction))
+			Toggle<EditTool>();
+		else if (@event.IsActionPressed(UndoAction))
+			UndoRedo.Undo();
+		else if (@event.IsActionPressed(RedoAction))
+			UndoRedo.Redo();
 	}
 
 	public TTool Get<TTool>() where TTool : ToolBase, new() =>
@@ -186,7 +199,7 @@ public partial class ToolManager : Node, IAutoload
 	// The tools affirm on submit, so the host's rejection gets its own sound
 	private static void OnActionRejected(string actionId, string reason)
 	{
-		if (actionId is nameof(AddInstanceAction) or nameof(RemoveInstancesAction))
+		if (actionId is nameof(AddInstancesBulkAction) or nameof(RemoveInstancesAction) or nameof(SetPropertiesAction))
 			ToolCommon.PlaySound(ToolCommon.DissentSound);
 	}
 }

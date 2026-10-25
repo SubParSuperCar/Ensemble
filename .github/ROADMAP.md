@@ -26,7 +26,10 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
     - [ ] (S) Fade the placement preview in and out as it appears and disappears
-- [ ] PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
+- PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore (WIP)
+    - [x] (M) Selection and merged properties - one value where the selected instances agree, the default where they
+      differ, and separate entries for same-named properties of different types
+    - [ ] (M) Property Editor UI
 - [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
@@ -40,12 +43,12 @@ The tool suite, in rough intended order of implementation.
   through the same actions (and validation) as the tools, so they also work in multiplayer
 - [ ] (M) Build share codes - `copy_build()` / `paste_build(code)` turn a plot into a short compressed text code to
   paste in chat (reuses the save pipeline)
-- [ ] (M) Undo / redo - a local history the tools push to, not part of the actions (Lua and large scripted edits stay
+- [x] (M) Undo / redo - a local history the tools push to, not part of the actions (Lua and large scripted edits stay
   out of it): each entry pairs a redo with an undo thunk that submits the counter-action (e.g., re-adding removed
   instances), so validation still applies; `Ctrl+Z` / `Ctrl+X` (beside the clipboard keys, not `Ctrl+Y`), cleared
   when the local plot changes
-- [ ] (M) Clipboard - `Ctrl+C` / `Ctrl+V` copy an instance's properties (color, material, and the like) and paste them
-  onto others, next to undo / redo on the same hand
+- [x] (M) Clipboard - `Ctrl+C` / `Ctrl+V` copy the selection's shared properties and paste them onto others, next to
+  undo / redo on the same hand
 - [ ] (M) Build replays - record a plot's add / remove / property actions and replay them as a time-lapse
 
 ## Multiplayer / replication
@@ -61,7 +64,7 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
 - [x] (M) Add / Remove / ClearInstancesAction - ConstructTool, DestructTool, and "Clear All" go through actions
 - [x] (S) Instance references - actions verify an instance's ID against its asset and transform, since freed IDs are
   reused
-- [x] (S) SetPropertiesAction - type- and key-checked property edits, ready for PropertyTool
+- [x] (S) SetPropertiesAction - type- and key-checked property edits, up to 256 instances in one request
 - [x] (S) AddInstancesBulkAction - up to 256 instances with their properties in one request, placed in order and
   skipped where they don't fit, ready for build share codes and loading saves
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals

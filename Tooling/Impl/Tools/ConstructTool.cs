@@ -1,12 +1,10 @@
 using System.Diagnostics;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Utils;
-using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Plots.Placement;
-using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Serilog;
 
@@ -201,7 +199,7 @@ public partial class ConstructTool : ToolBase
 	{
 		if (CanPlace)
 		{
-			new AddInstanceAction(AssetId, _gridPosition, _rotation).Submit();
+			UndoRedo.Add(AssetId, _gridPosition, _rotation);
 			ToolCommon.PlaySound(ToolCommon.AffirmSound);
 
 			Log.Verbose(

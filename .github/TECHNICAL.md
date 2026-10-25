@@ -363,7 +363,7 @@ sequenceDiagram
 | `AddInstanceAction`        | Places an asset instance on the sender's plot    |
 | `AddInstancesBulkAction`   | Places up to 256 instances with their properties |
 | `RemoveInstancesAction`    | Deletes up to 256 instances                      |
-| `SetPropertiesAction`      | Changes an instance's properties                 |
+| `SetPropertiesAction`      | Changes the properties of up to 256 instances    |
 | `ClearInstancesAction`     | Removes every instance on a plot (owner or host) |
 | `KickOccupantAction`       | Removes a player from their plot (owner or host) |
 | `SendChatMessageAction`    | Posts a chat message (filtered by the host)      |

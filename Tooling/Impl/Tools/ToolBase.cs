@@ -13,6 +13,7 @@ public abstract partial class ToolBase : Node
 	public virtual bool UsesSelection => false;
 
 	protected MultiSelector Selector => _control.Selector;
+	protected UndoRedo UndoRedo => _control.UndoRedo;
 
 	public void Enable() => _control.RequestEnable();
 	public void Disable() => _control.RequestDisable();

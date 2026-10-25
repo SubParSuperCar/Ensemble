@@ -5,6 +5,7 @@ namespace EnsembleRoot.Tooling;
 internal sealed class ToolControl(ToolManager manager, ToolBase tool)
 {
 	public MultiSelector Selector => manager.Selector;
+	public UndoRedo UndoRedo => manager.UndoRedo;
 
 	public void RequestEnable() => manager.RequestEnable(tool);
 	public void RequestDisable() => ToolManager.RequestDisable(tool);

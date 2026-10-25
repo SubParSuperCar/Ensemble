@@ -123,7 +123,16 @@ public partial class Ui : Control
 		_services = null;
 	}
 
-	public override void _Input(InputEvent @event) => WeakReferenceMessenger.Default.Send(new InputMessage(@event));
+	public override void _Input(InputEvent @event)
+	{
+		// Clicking off the UI drops its focus, releasing the input sink before the game handles the click
+		if (
+			@event is InputEventMouseButton { Pressed: true, ButtonIndex: <= MouseButton.Middle } press &&
+			_host.MakeInputLocal(press) is InputEventMouseButton local && !_host._HasPoint(local.Position))
+			_host.GetTopLevel().FocusManager.Focus(null);
+
+		WeakReferenceMessenger.Default.Send(new InputMessage(@event));
+	}
 
 	/// <summary>
 	///     Applies the UI's antialiasing to a top level. Separate windows don't inherit the main one's, so they apply

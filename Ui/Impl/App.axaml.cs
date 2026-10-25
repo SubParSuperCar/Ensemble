@@ -6,6 +6,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Reactive;
 using Avalonia.Styling;
+using Avalonia.VisualTree;
 using AvaloniaEdit.Editing;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Input;
@@ -34,6 +35,7 @@ public sealed class App : Application
 
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
+		InputElement.PointerPressedEvent.AddClassHandler<TopLevel>(OnPointerPressed, RoutingStrategies.Tunnel);
 
 		var focusObserver = new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged);
 		InputElement.GotFocusEvent.Raised.Subscribe(focusObserver);
@@ -84,6 +86,16 @@ public sealed class App : Application
 
 		if (args.Key is Key.Space || (IsInSession && (args.Key is Key.Tab || IsNavigationKey(args.Key))))
 			args.Handled = true;
+	}
+
+	// Pressing what can't take focus drops it, as pressing off the UI does (see Ui), so the input sink is released
+	private static void OnPointerPressed(TopLevel topLevel, PointerPressedEventArgs args)
+	{
+		for (var visual = args.Source as Visual; visual is not (null or TopLevel); visual = visual.GetVisualParent())
+			if (visual is InputElement { Focusable: true, IsEffectivelyEnabled: true })
+				return;
+
+		topLevel.FocusManager.Focus(null);
 	}
 
 	private static bool IsNavigationKey(Key key) =>

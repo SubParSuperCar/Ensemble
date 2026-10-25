@@ -6,6 +6,7 @@ using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Impl.Extensions;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;
 
@@ -34,7 +35,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	public ObservableCollection<PropertyItem> VisibleItems { get; } = [];
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(7, 21, 7, 11))
+	// Where the Asset Selector opens, as their tools are rarely enabled together
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 21, 7, 11))
 	{
 		Description = "Lets you view and edit the selected assets' properties.",
 		MinSize = new Size(320, 192)
@@ -95,8 +97,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		PropertyItem[] items =
 		[
 			.. _itemsByKey.Values
-				.Where(item => item.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
-				.OrderBy(static item => item.Name, StringComparer.OrdinalIgnoreCase)
+				.Where(item => item.Matches(query))
+				.OrderBy(static item => item.DisplayName, StringComparer.OrdinalIgnoreCase)
 				.ThenBy(static item => item.Key.Type)
 		];
 
@@ -140,8 +142,8 @@ public abstract partial class PropertyItem(PropertyKey key) : ObservableObject
 	private bool _isSyncing;
 
 	public PropertyKey Key { get; } = key;
-	public string Name => Key.Name;
-	public string Description => $"{Name} ({TypeName})";
+	public string DisplayName { get; } = key.Name.ToDisplayName();
+	public string Description => $"{Key.Name} ({TypeName})";
 
 	public string Placeholder => IsMixed ? "<Mixed>" : $"<{TypeName}>";
 
@@ -162,12 +164,16 @@ public abstract partial class PropertyItem(PropertyKey key) : ObservableObject
 		_isSyncing = false;
 	}
 
+	internal bool Matches(string query) =>
+		DisplayName.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+		Key.Name.Contains(query, StringComparison.OrdinalIgnoreCase);
+
 	protected abstract void Load(CoreVariant value);
 
 	protected void Commit(CoreVariant value)
 	{
 		if (!_isSyncing)
-			GToolManager.Property.SetProperty(Name, value);
+			GToolManager.Property.SetProperty(Key.Name, value);
 	}
 }
 

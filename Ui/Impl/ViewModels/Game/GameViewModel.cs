@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Scripts.Chat;
@@ -15,6 +16,8 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class GameViewModel : ViewModelBase
 {
+	private const DynamicallyAccessedMemberTypes Constructors = DynamicallyAccessedMemberTypes.PublicConstructors;
+
 	private static readonly StringName TogglePlayerListAction = "ui_player_list_toggle";
 
 	private readonly DispatcherService _dispatcher;
@@ -52,7 +55,8 @@ public sealed partial class GameViewModel : ViewModelBase
 		OnIsPlotOwnerChanged(IsPlotOwner);
 		IsPlotOwnerChanged += OnIsPlotOwnerChanged;
 
-		OnToolIsEnabledChanged(null, GToolManager.IsEnabled<ConstructTool>());
+		SetWidgetOpen<AssetSelectorViewModel>(GToolManager.IsEnabled<ConstructTool>());
+		SetWidgetOpen<PropertyEditorViewModel>(GToolManager.IsEnabled<PropertyTool>());
 		GToolManager.ToolIsEnabledChanged += OnToolIsEnabledChanged;
 	}
 
@@ -106,15 +110,28 @@ public sealed partial class GameViewModel : ViewModelBase
 	private void OnIsPlotOwnerChanged(bool? isOwner) =>
 		SpawnButton = isOwner is true ? SpawnButton ?? _services.Create<SpawnButtonViewModel>() : null;
 
-	private void OnToolIsEnabledChanged(ToolBase? tool, bool isEnabled)
+	// The tools with settings or views of their own show them while enabled
+	private void OnToolIsEnabledChanged(ToolBase tool, bool isEnabled)
 	{
-		if (tool is not (null or ConstructTool))
-			return;
+		switch (tool)
+		{
+			case ConstructTool:
+				SetWidgetOpen<AssetSelectorViewModel>(isEnabled);
+				break;
 
-		if (isEnabled)
-			Widgets.Open<AssetSelectorViewModel>();
+			case PropertyTool:
+				SetWidgetOpen<PropertyEditorViewModel>(isEnabled);
+				break;
+		}
+	}
+
+	private void SetWidgetOpen<[DynamicallyAccessedMembers(Constructors)] TWidget>(bool isOpen)
+		where TWidget : ViewModelBase, IWidget
+	{
+		if (isOpen)
+			Widgets.Open<TWidget>();
 		else
-			Widgets.Close<AssetSelectorViewModel>();
+			Widgets.Close<TWidget>();
 	}
 
 	// Counts other players' messages that arrive while the chat is closed

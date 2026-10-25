@@ -26,10 +26,11 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
     - [ ] (S) Fade the placement preview in and out as it appears and disappears
-- PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore (WIP)
-    - [x] (M) Selection and merged properties - one value where the selected instances agree, the default where they
-      differ, and separate entries for same-named properties of different types
-    - [ ] (M) Property Editor UI
+- PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
+    - [x] (M) Selection and merged properties - one value where the selected instances agree, a neutral one (marked
+      mixed) where they differ, and separate entries for same-named properties of different types
+    - [x] (M) Property Editor UI - a filterable, alphabetical list with an editor per type, mixed markers, and copy /
+      paste buttons, open while the tool is enabled
 - [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
@@ -141,8 +142,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) Split DocFileView / WebBrowserView - base views/VMs moved to Views/Common + ViewModels/Common, no
   NavigatorService dependency; MenuDocFileView / MenuWebBrowserView wrappers add the Back button for menu use
 - (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
-  maximizable frames with fades, a collapsible widget drawer with badges; Plot Selector, Asset Selector, Web Browser,
-  Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and persisted layouts
+  maximizable frames with fades, a collapsible widget drawer with badges; Plot Selector, Asset Selector, Property
+  Editor, Web Browser, Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and persisted layouts
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 - [ ] (S) Main menu personality - community links (e.g., Discord) and randomized flavor text

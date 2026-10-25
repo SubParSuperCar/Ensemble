@@ -1,9 +1,115 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="EnsembleRoot.Ui.Impl.Views.Game.PropertyEditorView">
-    Welcome to Avalonia!
-</UserControl>
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="192"
+    x:Class="EnsembleRoot.Ui.Impl.Views.PropertyEditorView"
+    x:DataType="vm:PropertyEditorViewModel">
 
+    <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="4">
+        <Grid RowDefinitions="Auto,*" RowSpacing="4">
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="4">
+                <TextBox
+                    Text="{Binding FilterQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    PlaceholderText="Filter Properties&#x2026;"
+                    GotFocus="OnFilterBoxGotFocus"
+                    ToolTip.Tip="Filters the property list below by name." />
+
+                <Button
+                    Grid.Column="1"
+                    Content="Copy"
+                    Command="{Binding CopyCommand}"
+                    ToolTip.Tip="Copies the properties the selected assets agree on. (Bound to Ctrl+C)"
+                    IsEnabled="{Binding IsCopyEnabled}" />
+
+                <Button
+                    Grid.Column="2"
+                    Content="Paste"
+                    Command="{Binding PasteCommand}"
+                    ToolTip.Tip="Pastes the copied properties onto the selected assets that have them. (Bound to Ctrl+V)"
+                    IsEnabled="{Binding IsPasteEnabled}" />
+            </Grid>
+
+            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl Name="Items" ItemsSource="{Binding VisibleItems}" Grid.IsSharedSizeScope="True">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="2" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <!-- Each property type gets its own editor -->
+                    <ItemsControl.DataTemplates>
+                        <DataTemplate DataType="vm:TogglePropertyItem">
+                            <CheckBox IsChecked="{Binding Value}" />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="vm:IntegerPropertyItem">
+                            <NumericUpDown
+                                Value="{Binding Value}"
+                                PlaceholderText="{Binding Placeholder}"
+                                Minimum="-9223372036854775808" Maximum="9223372036854775807"
+                                Increment="1"
+                                FormatString="0" ParsingNumberStyle="Integer" />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="vm:NumberPropertyItem">
+                            <NumericUpDown
+                                Value="{Binding Value}"
+                                PlaceholderText="{Binding Placeholder}"
+                                Increment="0.125" />
+                        </DataTemplate>
+
+                        <DataTemplate DataType="vm:TextPropertyItem">
+                            <TextBox
+                                Text="{Binding Value, UpdateSourceTrigger=LostFocus}"
+                                PlaceholderText="{Binding Placeholder}"
+                                MaxLength="{x:Static vm:PropertyEditorViewModel.MaxTextLength}" />
+                        </DataTemplate>
+                    </ItemsControl.DataTemplates>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="vm:PropertyItem">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Name" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="Mixed" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Text="{Binding Name}"
+                                    ToolTip.Tip="{Binding Description}"
+                                    VerticalAlignment="Center"
+                                    MaxWidth="160"
+                                    Margin="0,0,4,0"
+                                    TextTrimming="CharacterEllipsis" />
+
+                                <ContentControl Grid.Column="1" Content="{Binding}" />
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="&#x26A0;"
+                                    ToolTip.Tip="The selected assets differ in this property. Setting it sets it on all of them."
+                                    VerticalAlignment="Center"
+                                    Margin="4,0,0,0"
+                                    IsVisible="{Binding IsMixed}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
+            <TextBlock
+                Grid.Row="1"
+                Text="{Binding Notice}"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                TextAlignment="Center" TextWrapping="Wrap"
+                Opacity="0.75"
+                IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        </Grid>
+    </Border>
+
+</UserControl>

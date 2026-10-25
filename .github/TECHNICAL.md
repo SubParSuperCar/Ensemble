@@ -427,6 +427,7 @@ what comes next (asset logic, mechanisms, input, and seats).
 graph LR
     ToolBar["ToolBar (Ui)"] --> ToolManager
     AssetSelector["Asset Selector (Ui)"] --> Construct
+    PropertyEditor["Property Editor (Ui)"] --> Property
     ToolManager --> Construct["ConstructTool (Place)"]
     ToolManager --> Destruct["DestructTool (Delete)"]
     ToolManager --> Property["PropertyTool (Edit)"]
@@ -497,9 +498,9 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
   `IScopedObject`, `ISingletonObject`); views bind to view models through `IViewFor<TViewModel>` and
   `ViewLocatorService`.
 - **Navigation.** `NavigatorService` handles menu navigation (`GoTo<TViewModel>()`, `GoBack()`).
-- **Widgets.** In-game windows (Plot Selector, Asset Selector, Text Chat, Web Browser, Lua Editor, Log Output) are
-  widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed by `WidgetManagerService`;
-  they drag, resize, maximize, and reopen where they were.
+- **Widgets.** In-game windows (Plot Selector, Asset Selector, Property Editor, Text Chat, Web Browser, Lua Editor,
+  Log Output) are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed by
+  `WidgetManagerService`; they drag, resize, maximize, and reopen where they were.
 - **Theming** follows the OS's light or dark mode and accent color, adjusting colors in the Oklab color space to keep
   text readable.
 - **Rich tools:** a Markdown document viewer (with Mermaid diagrams) for these docs, a Lua editor with syntax

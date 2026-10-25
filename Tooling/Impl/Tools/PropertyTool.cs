@@ -4,11 +4,6 @@ using EnsembleRoot.GdCore.Assets;
 using Godot;
 using Serilog;
 
-// ReSharper disable EventNeverSubscribedTo.Global
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable UnusedMember.Global
-
 namespace EnsembleRoot.Tooling.Tools;
 
 /// <summary>How the PropertyTool tells properties apart: by name, ignoring case as instances do, and type.</summary>
@@ -79,6 +74,23 @@ public partial class PropertyTool : ToolBase
 	/// <summary>Sets a property on each selected instance that has it under the same name and type.</summary>
 	public void SetProperty(string name, CoreVariant value) =>
 		Apply(new Dictionary<PropertyKey, CoreVariant> { [new PropertyKey(name, value.Type)] = value });
+
+	/// <summary>Copies the properties the selected instances agree on, so pasting never spreads a mixed one.</summary>
+	public void Copy()
+	{
+		var properties = Merge()
+			.Where(static property => !property.IsMixed)
+			.ToDictionary(static property => property.Key, static property => property.Value);
+
+		if (properties.Count > 0)
+			Clipboard.SetAll(properties);
+
+		ToolCommon.PlaySound(properties.Count > 0 ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
+		Log.Verbose("Copied {Count} property value(s)", properties.Count);
+	}
+
+	public void Paste() =>
+		ToolCommon.PlaySound(Apply(Clipboard.Contents) ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
 
 	protected override void OnEnable()
 	{
@@ -169,23 +181,6 @@ public partial class PropertyTool : ToolBase
 
 		return true;
 	}
-
-	// Mixed values are left out, so pasting never spreads a default the source instances didn't have
-	private void Copy()
-	{
-		var properties = Merge()
-			.Where(static property => !property.IsMixed)
-			.ToDictionary(static property => property.Key, static property => property.Value);
-
-		if (properties.Count > 0)
-			Clipboard.SetAll(properties);
-
-		ToolCommon.PlaySound(properties.Count > 0 ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
-		Log.Verbose("Copied {Count} property value(s)", properties.Count);
-	}
-
-	private void Paste() =>
-		ToolCommon.PlaySound(Apply(Clipboard.Contents) ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
 
 	// A press selects only the hovered instance, or toggles it, and a press on nothing clears the selection
 	private void Select(int? hoveredId, bool isToggling)

@@ -17,13 +17,6 @@ public static partial class LuaExecutor
 	// Worse than any real connection worth simulating
 	private const int MaxSimulatedDelayMs = 4096;
 
-	private static ValueTask<int> ban_peer(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
-	{
-		GSessionManager.Ban(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
-
-		return context.ReturnNothing();
-	}
-
 	private static ValueTask<int> dmp_peers(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var manager = GSessionManager;
@@ -36,13 +29,6 @@ public static partial class LuaExecutor
 			manager.Mode, GameVersion, manager.Port, manager.HasPassword, manager.IsDedicated,
 			manager.PortMappingState, GProfanityFilterManager.IsEnabled, ProfanityFilterManager.IsPreferred,
 			string.Join('\n', peers));
-
-		return context.ReturnNothing();
-	}
-
-	private static ValueTask<int> kick_peer(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
-	{
-		GSessionManager.Kick(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
 
 		return context.ReturnNothing();
 	}

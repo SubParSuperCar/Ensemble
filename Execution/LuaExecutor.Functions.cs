@@ -13,12 +13,14 @@ public static partial class LuaExecutor
 	private static readonly (LuaFunction Function, string Parameters)[] Functions =
 	[
 		(new LuaFunction(nameof(add_inst), add_inst), "asset_id, x?, y?, z?, rx?, ry?, rz?"),
+		(new LuaFunction(nameof(ban_addr), ban_addr), "address, reason?"),
 		(new LuaFunction(nameof(ban_peer), ban_peer), "peer_id, reason?"),
 		(new LuaFunction(nameof(cap_fps), cap_fps), "fps?"),
 		(new LuaFunction(nameof(chat), chat), "message"),
 		(new LuaFunction(nameof(clr_insts), clr_insts), ""),
 		(new LuaFunction(nameof(clr_log), clr_log), ""),
 		(new LuaFunction(nameof(dmp_asm_info), dmp_asm_info), ""),
+		(new LuaFunction(nameof(dmp_bans), dmp_bans), ""),
 		(new LuaFunction(nameof(dmp_chat), dmp_chat), ""),
 		(new LuaFunction(nameof(dmp_creation), dmp_creation), "plot_id?"),
 		(new LuaFunction(nameof(dmp_env), dmp_env), ""),
@@ -55,6 +57,8 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(set_vsync_mode), set_vsync_mode), "mode"),
 		(new LuaFunction(nameof(tp_char), tp_char), "player? | x, y, z"),
 		(new LuaFunction(nameof(tts), tts), "text, culture?, rate?, pitch?, volume?"),
+		(new LuaFunction(nameof(unban_addr), unban_addr), "address"),
+		(new LuaFunction(nameof(unban_all), unban_all), ""),
 		(new LuaFunction(nameof(wait), wait), "seconds?")
 	];
 

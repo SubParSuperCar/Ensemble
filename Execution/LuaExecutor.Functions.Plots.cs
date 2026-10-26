@@ -1,3 +1,4 @@
+using System.Globalization;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Sessions.Actions;
 using Lua;
@@ -10,13 +11,9 @@ public static partial class LuaExecutor
 	private static ValueTask<int> dmp_creation(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var plotId = context.IsArgumentOmitted(0) ? LocalPlot?.Id : context.GetArgument<int>(0);
-
-		if (plotId is not { } id || GPlotManager.GetHandleOrNull(id) is not { } handle)
-		{
-			Log.Error("{Function} needs a plot ID or a claimed plot", nameof(dmp_creation));
+		if (FindPlot(context.GetArgumentOrNull<int>(0), nameof(dmp_creation)) is not { Id: var id } ||
+			GPlotManager.GetHandleOrNull(id) is not { } handle)
 			return context.ReturnNothing();
-		}
 
 		if (handle.Creation is not { } creation)
 			Log.Information("Plot {PlotId}'s creation isn't spawned", id);
@@ -33,12 +30,39 @@ public static partial class LuaExecutor
 	private static ValueTask<int> kick_occupant(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var query = context.GetArgument<string>(0);
-
-		if (FindPlayer(query) is { } player)
+		if (FindPlayer(context.GetArgument<LuaValue>(0)) is { } player)
 			new KickOccupantAction(player.Id).Submit();
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> dmp_plots(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var plots = GPlots.GetAll().OrderBy(static plot => plot.Id).Select(static plot =>
+		{
+			var (instances, occupants) = (plot.Instances, plot.Occupants);
+			var names = string.Join(", ", occupants.GetAll().Select(static occupant => occupant.Player.Name));
+
+			return string.Create(
+				CultureInfo.InvariantCulture,
+				$"Plot {plot.Id}: {instances.Count}/{FormatMax(instances.MaxCount)} instance(s), " +
+				$"{occupants.Count}/{FormatMax(occupants.MaxCount)} occupant(s) " +
+				$"(Owner={occupants.Owner?.Player.Name}, Occupants=[{names}], IsSpawned={plot.IsSpawned})");
+		});
+
+		Log.Information("Plots (local {LocalPlotId}):\n{Plots}", LocalPlot?.Id, string.Join('\n', plots));
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_plot(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var plotId = context.GetArgumentOrNull<int>(0);
+
+		if (plotId is { } id && GPlots.GetPlot(id) is null)
+			Log.Error("Plot with ID {PlotId} not found", id);
 		else
-			Log.Error("Player with ID or name {Query} not found", query);
+			new SetPlotAction(plotId).Submit();
 
 		return context.ReturnNothing();
 	}
@@ -47,7 +71,10 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var plotId = context.GetArgument<int>(0);
-		int? peerId = context.IsArgumentOmitted(1) ? null : context.GetArgument<int>(1);
+		var peerId = context.IsArgumentOmitted(1) ? null : FindPeerId(context.GetArgument<LuaValue>(1));
+
+		if (!context.IsArgumentOmitted(1) && peerId is null)
+			return context.ReturnNothing();
 
 		if (GPlotManager.GetHandleOrNull(plotId) is not { } handle)
 			Log.Error("Plot with ID {PlotId} not found", plotId);
@@ -67,4 +94,7 @@ public static partial class LuaExecutor
 
 		return context.ReturnNothing();
 	}
+
+	private static string FormatMax(int maxCount) =>
+		maxCount is Unlimited ? "unlimited" : maxCount.ToString(CultureInfo.InvariantCulture);
 }

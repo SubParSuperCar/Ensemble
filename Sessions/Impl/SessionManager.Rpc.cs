@@ -25,6 +25,10 @@ public partial class SessionManager
 	private readonly Dictionary<int, Queue<PendingRpc>> _pendingRpcsByPeerId = [];
 	private readonly ConcurrentDictionary<int, TokenBucketRateLimiter> _rateLimitersByPeerId = [];
 
+	/// <summary>How long a drained rate limiter takes to regain <paramref name="tokens" />, for pacing.</summary>
+	public static TimeSpan GetRefillTime(int tokens) =>
+		RateLimiterOptions.ReplenishmentPeriod * Math.Ceiling(tokens / (double)RateLimiterOptions.TokensPerPeriod);
+
 	public override void _Process(double delta)
 	{
 		if (_pendingRpcsByPeerId.Count > 0)

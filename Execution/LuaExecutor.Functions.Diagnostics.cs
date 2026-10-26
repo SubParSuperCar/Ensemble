@@ -94,10 +94,14 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> help(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var functions = Functions.Select(static entry => $"-> {entry.Function.Name}({entry.Parameters})");
+		var query = context.GetArgumentOrDefault(0, string.Empty);
+		var functions = Functions
+			.Where(entry => entry.Function.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
+			.Select(static entry => $"-> {entry.Function.Name}({entry.Parameters})");
 
 		Log.Information(
-			"Custom functions (\"?\" = optional, \"|\" = or, \"loc_\" = local only):\n{Functions}",
+			"Custom functions (\"?\" = optional, \"|\" = or, \"loc_\" = local only, player = peer ID, player ID, " +
+			"or name):\n{Functions}",
 			string.Join('\n', functions));
 
 		return context.ReturnNothing();

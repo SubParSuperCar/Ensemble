@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using EnsembleRoot.Common.Utils;
+using Godot;
 using Lua;
 using Lua.Standard;
 using Serilog;
@@ -72,4 +74,25 @@ public static partial class LuaExecutor
 	// Yielding doesn't block the main thread, so it pauses the budget
 	private static void PauseBudget() => Budget.Value?.CancelAfter(Timeout.InfiniteTimeSpan);
 	private static void ResumeBudget() => Budget.Value?.CancelAfter(MaxBlockingTime);
+
+	/// <summary>Yields for <paramref name="delay" />, then until the next frame.</summary>
+	private static async Task DelayAsync(TimeSpan delay, CancellationToken cancellationToken)
+	{
+		PauseBudget();
+
+		try
+		{
+#pragma warning disable MA0166
+			await Task.Delay(delay, cancellationToken).ConfigureAwait(true);
+#pragma warning restore MA0166
+
+			// Godot runs queued continuations until none are left, so a script whose work outlasted its wait would
+			// resume within the same frame forever, hanging the game while its budget kept resetting
+			await ((SceneTree)Engine.GetMainLoop()).ToSignalAsync(SceneTree.SignalName.ProcessFrame);
+		}
+		finally
+		{
+			ResumeBudget();
+		}
+	}
 }

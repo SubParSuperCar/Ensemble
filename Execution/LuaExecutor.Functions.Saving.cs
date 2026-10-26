@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
+using EnsembleRoot.Common.Interop;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
@@ -12,6 +13,7 @@ using Godot;
 using Godot.Collections;
 using Lua;
 using Serilog;
+using TinyDialogsNet;
 
 namespace EnsembleRoot.Execution;
 
@@ -23,9 +25,7 @@ public static partial class LuaExecutor
 	private const string JsonExtension = ".json";
 	private const string BackupSuffix = ".bak";
 	private const int MaxCreationNameLength = 64;
-
-	// Long enough to notice the warning toast and cancel
-	private static readonly TimeSpan DeletionDelay = TimeSpan.FromSeconds(5);
+	private const string DeletionTitle = "Delete Saved Creation";
 
 	private static ValueTask<int> dmp_saves(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -204,17 +204,29 @@ public static partial class LuaExecutor
 		}
 
 		var fileName = Path.GetFileName(path);
-		Log.Warning(
-			"Deleting {File} in {Seconds} s; press Cancel Runners to keep it", fileName, DeletionDelay.TotalSeconds);
+		var backupName = Path.GetFileName(GetBackupPath(path));
+		var hasBackup = File.Exists(GetBackupPath(path));
+
+		var prompt = hasBackup
+			? $"Delete the saved creation {fileName}?\n\nThis cannot be undone, though its backup {backupName} stays."
+			: $"Delete the saved creation {fileName}?\n\nThis cannot be undone.";
+
+		bool isConfirmed;
 
 		try
 		{
-			await DelayAsync(DeletionDelay, cancellationToken).ConfigureAwait(true);
+			isConfirmed = await ConfirmAsync(DeletionTitle, prompt, cancellationToken).ConfigureAwait(true);
 		}
 		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
 		{
-			Log.Information("Kept {File}", fileName);
+			Log.Information("Kept {File}; its dialog no longer does anything", fileName);
 			throw;
+		}
+
+		if (!isConfirmed || !File.Exists(path))
+		{
+			Log.Information("Kept {File}", fileName);
+			return context.Return();
 		}
 
 		try
@@ -229,8 +241,8 @@ public static partial class LuaExecutor
 
 		Log.Information("Deleted {File}", fileName);
 
-		if (File.Exists(GetBackupPath(path)))
-			Log.Information("Its backup {Backup} remains", Path.GetFileName(GetBackupPath(path)));
+		if (hasBackup)
+			Log.Information("Its backup {Backup} remains", backupName);
 
 		return context.Return();
 	}
@@ -363,6 +375,40 @@ public static partial class LuaExecutor
 	// TryParse also takes any number, defined or not
 	private static CompressionType? ToCompression(string? text) =>
 		Enum.TryParse(text, true, out CompressionType compression) && Enum.IsDefined(compression) ? compression : null;
+
+	/// <summary>Asks a Yes / No question, true only for an explicit Yes.</summary>
+	/// <remarks>
+	///     The dialog blocks its thread, so it runs on the thread pool. A dialog that can't open reads as No, and
+	///     canceling stops the wait, not the dialog.
+	/// </remarks>
+	private static async Task<bool> ConfirmAsync(string title, string prompt, CancellationToken cancellationToken)
+	{
+		PauseBudget();
+
+		try
+		{
+			return await Task.Run(() => Confirm(title, prompt), CancellationToken.None)
+				.WaitAsync(cancellationToken)
+				.ConfigureAwait(true);
+		}
+		finally
+		{
+			ResumeBudget();
+		}
+	}
+
+	private static bool Confirm(string title, string prompt)
+	{
+		try
+		{
+			return YesNoDialog.Ask(title, Main.SanitizeMessageBoxBody(prompt), MessageBoxIconType.Warning, false);
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "Failed to show the {Title} dialog", title);
+			return false;
+		}
+	}
 
 	// castle.ensb -> castle.bak.ensb, so the backup keeps its format's extension and loads like any save
 	private static string GetBackupPath(string path) =>

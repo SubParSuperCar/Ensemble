@@ -207,7 +207,7 @@ The camera also zooms with `-` `=` and `Page Down` `Page Up`, and most actions h
 `dmp_inp_map()` in the console for the full input map, and `help()` for every console function (or `help("creation")`
 for those whose names match). To keep a build, run `save_creation("castle")`; `load_creation("castle")` adds it to your
 plot again, even in another session. Saving over it keeps the previous version as `castle.bak.ensb`, and
-`rm_creation("castle")` deletes it after 5 seconds unless you press Cancel Runners.
+`rm_creation("castle")` deletes it once you confirm.
 
 </details>
 

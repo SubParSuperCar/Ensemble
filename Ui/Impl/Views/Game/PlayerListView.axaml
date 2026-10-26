@@ -76,6 +76,11 @@
                                                 Header="Kick"
                                                 Command="{Binding KickCommand}"
                                                 ToolTip.Tip="Disconnects this player from the session." />
+
+                                            <MenuItem
+                                                Header="IP Ban"
+                                                Command="{Binding BanCommand}"
+                                                ToolTip.Tip="Disconnects this player and blocks their IP address, and so their whole network, for the rest of the session." />
                                         </ContextMenu>
                                     </Template>
                                 </Setter>

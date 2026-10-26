@@ -534,7 +534,8 @@ its parameters. Scripts get a 5-second blocking budget between yields.
 | Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`    |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`             |
 | Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode` |
-| Network     | `dmp_peers`, `kick_peer`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`        |
+| Network     | `ban_peer`, `dmp_peers`, `kick_peer`, `log_lan_ip4_addr`, `log_wan_ip4_addr`,          |
+|             | `set_net_sim`                                                                          |
 | Plots       | `dmp_creation`, `kick_occupant`, `set_plot_simulator`, `set_plot_spawned`              |
 | World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,  |
 |             | `set_static_shader_on`, `tp_char`                                                      |

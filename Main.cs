@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Interop;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Watchdog;
 using Godot;
@@ -95,11 +96,7 @@ public partial class Main : Node
 
 		try
 		{
-			var response = TinyDialogs.MessageBox(
-				topic, SanitizeMessageBoxBody(prompt),
-				MessageBoxDialogType.YesNo, MessageBoxIconType.Error, MessageBoxButton.No);
-
-			return response is MessageBoxButton.Yes;
+			return YesNoDialog.Ask(topic, SanitizeMessageBoxBody(prompt), MessageBoxIconType.Error, false);
 		}
 		catch (Exception exception)
 		{

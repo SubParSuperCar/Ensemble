@@ -26,6 +26,16 @@ ring_segments = 4
 script = ExtResource("1_wpl7w")
 AssetId = 6
 AssetName = &"Torus (TEST!)"
+Properties = Dictionary[StringName, Variant]({
+&"aNormalStringLOL": &"Lorem ipsum dolor sit amet.",
+&"damping": 50.0,
+&"doesNullWork": null,
+&"isEnsembleCool": true,
+&"someFloat": 67.698,
+&"someInt64": -69,
+&"stringNameTest": &"Let\'s see if StringName works!",
+&"targetLength": 0.1
+})
 MaxInstanceCount = -1
 Density = 500.0
 

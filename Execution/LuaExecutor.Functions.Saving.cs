@@ -15,6 +15,8 @@ using Lua;
 using Serilog;
 using TinyDialogsNet;
 
+// ReSharper disable ExceptionLoggedAsTextProblem
+
 namespace EnsembleRoot.Execution;
 
 // Creations are files in user://creations/: JSON when named *.json, binary otherwise (.ensb if no extension is given)

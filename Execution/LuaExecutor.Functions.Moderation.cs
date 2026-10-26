@@ -14,7 +14,8 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> ban_peer(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		GSessionManager.Ban(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
+		if (FindPeerId(context.GetArgument<LuaValue>(0)) is { } peerId)
+			GSessionManager.Ban(peerId, context.GetArgumentOrDefault(1, string.Empty));
 
 		return context.ReturnNothing();
 	}
@@ -32,7 +33,8 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> kick_peer(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		GSessionManager.Kick(context.GetArgument<int>(0), context.GetArgumentOrDefault(1, string.Empty));
+		if (FindPeerId(context.GetArgument<LuaValue>(0)) is { } peerId)
+			GSessionManager.Kick(peerId, context.GetArgumentOrDefault(1, string.Empty));
 
 		return context.ReturnNothing();
 	}

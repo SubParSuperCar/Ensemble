@@ -42,6 +42,8 @@ The tool suite, in rough intended order of implementation.
 - [ ] (S) Fade the delete tool's selection highlight boxes in and out, as the plot outlines do
 - [x] (S) Scripted building - Lua `add_inst`, `rm_insts`, `set_inst_prop`, and `dmp_insts` work on the local plot
   through the same actions (and validation) as the tools, so they also work in multiplayer
+- [x] (S) Console saves - `save_creation` / `load_creation` (through AddInstancesAction batches, paced under the rate
+  limit) / `loc_load_creation` / `dmp_saves`, in `user://creations/`; the Saves UI below will share the same path
 - [ ] (M) Build share codes - `copy_build()` / `paste_build(code)` turn a plot into a short compressed text code to
   paste in chat (reuses the save pipeline)
 - [x] (M) Undo / redo - a local history the tools push to, not part of the actions (Lua and large scripted edits stay
@@ -79,7 +81,7 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
   shown under the player list
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, buffered and interpolated 100 ms behind
   on the sender's timeline, like creations (no animation state yet)
-- [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char("name or id")` in Lua
+- [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char(player)` in Lua
 - [x] (L) Instance replication - placements, deletions, and property edits sync as validated actions, with the host
   as the authority and late joiners restored from snapshots
 - (WIP) (M) Plot ownership / edit permissions over the wire - SetPlotAction + occupant/owner checks done

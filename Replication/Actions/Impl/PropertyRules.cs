@@ -21,22 +21,23 @@ internal static class PropertyRules
 			if (name is null || !current.TryGetValue(name, out var existing))
 				return Reject("Property not found.");
 
-			var updated = value.FromGodot();
-
-			if (updated.Type != existing.Type)
-				return Reject($"Property {name} must stay {existing.Type}.");
-
-			// ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
-			switch (updated.Type)
-			{
-				case CoreVariantType.Double when !double.IsFinite((double)updated):
-					return Reject($"Property {name} not finite.");
-
-				case CoreVariantType.String when ((string)updated).Length > MaxStringLength:
-					return Reject($"Property {name} too long.");
-			}
+			if (Validate(name, existing, value.FromGodot()) is { IsValid: false } validation)
+				return validation;
 		}
 
 		return Accept;
+	}
+
+	public static ActionValidation Validate(string name, CoreVariant existing, CoreVariant updated)
+	{
+		if (updated.Type != existing.Type)
+			return Reject($"Property {name} must stay {existing.Type}.");
+
+		if (updated.Type is CoreVariantType.Double && !double.IsFinite((double)updated))
+			return Reject($"Property {name} not finite.");
+
+		return updated.Type is CoreVariantType.String && ((string)updated).Length > MaxStringLength
+			? Reject($"Property {name} too long.")
+			: Accept;
 	}
 }

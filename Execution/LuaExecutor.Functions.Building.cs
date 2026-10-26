@@ -55,9 +55,18 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
+	private static ValueTask<int> dmp_assets(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var assets = GAssets.GetAll().OrderBy(static asset => asset.Id);
+
+		Log.Information("Assets: {Count}\n{Assets}", GAssets.Count, string.Join('\n', assets));
+
+		return context.ReturnNothing();
+	}
+
 	private static ValueTask<int> dmp_insts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(dmp_insts)) is not var (plot, _))
+		if (FindPlot(context.GetArgumentOrNull<int>(0), nameof(dmp_insts)) is not { } plot)
 			return context.ReturnNothing();
 
 		var instances = plot.Instances.Source.All.OrderBy(static instance => instance.Id);

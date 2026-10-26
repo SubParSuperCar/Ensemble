@@ -530,19 +530,30 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
 The in-game console (`` ` `` or `F9`) runs Lua through `LuaExecutor.ExecuteAsync`; `help()` lists every function with
 its parameters. Scripts get a 5-second blocking budget between yields.
 
-| Group       | Functions                                                                              |
-|-------------|----------------------------------------------------------------------------------------|
-| App         | `quit`, `restart`, `set_clock_offset`, `tts`, `wait`                                   |
-| Building    | `add_inst`, `clr_insts`, `dmp_insts`, `rm_insts`, `set_inst_prop`                      |
-| Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`    |
-| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`             |
-| Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode` |
-| Moderation  | `ban_addr`, `ban_peer`, `dmp_bans`, `kick_peer`, `unban_addr`, `unban_all`             |
-| Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                     |
-| Plots       | `dmp_creation`, `kick_occupant`, `set_plot_simulator`, `set_plot_spawned`              |
-| World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,  |
-|             | `set_static_shader_on`, `tp_char`                                                      |
+| Group       | Functions                                                                                          |
+|-------------|----------------------------------------------------------------------------------------------------|
+| App         | `quit`, `restart`, `set_clock_offset`, `tts`, `wait`                                               |
+| Building    | `add_inst`, `clr_insts`, `dmp_assets`, `dmp_insts`, `rm_insts`, `set_inst_prop`                    |
+| Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`                |
+| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`                         |
+| Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`             |
+| Moderation  | `ban_addr`, `ban_peer`, `dmp_bans`, `kick_peer`, `unban_addr`, `unban_all`                         |
+| Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                                 |
+| Plots       | `dmp_creation`, `dmp_plots`, `kick_occupant`, `set_plot`, `set_plot_simulator`, `set_plot_spawned` |
+| Saving      | `dmp_saves`, `load_creation`, `loc_load_creation`, `save_creation`                                 |
+| World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,              |
+|             | `set_static_shader_on`, `tp_char`                                                                  |
 
+- **Conventions:** functions log their results (`dmp_` ones dump state for reading) and return nothing unless noted,
+  e.g., `wait` returns the seconds waited. A `player` argument is a peer ID, a player ID, or a unique display name; an
+  omitted `plot_id` means the local plot; and `loc_` functions edit Core directly, skipping the network and placement
+  rules, so they only run in single-player.
+- **Creations:** `save_creation("name", { plot_id = 1, compression = "zstandard", level = 19, password = "secret",
+  checksum = true })` saves a plot (every option is optional) to `user://creations/`, as JSON if the name ends in
+  `.json` and binary (`.ensb`) otherwise. `load_creation("name", "password")` adds a save to the local plot through
+  `AddInstancesAction` batches, paced under the rate limit on clients, so placement rules apply and others see it;
+  `loc_load_creation(plot_id, "name")` adds it directly. Loads skip unknown assets and invalid values, and add to what
+  is already there (`clr_insts()` first to replace it).
 - **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for
   warnings.
 - **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging
@@ -554,12 +565,12 @@ its parameters. Scripts get a 5-second blocking budget between yields.
 
 ## Saving
 
-The save format is finished, though the game doesn't use it yet. Creations serialize to a compact binary format (or
-JSON), wrapped in an envelope with optional Zstandard or Brotli compression, an optional SHA-256 checksum, and optional
-AES-256-GCM encryption keyed with Argon2id. Readers reject corrupt data and bound the file size, the decompressed size,
-and every count and string, so a malicious file can't exhaust memory. Loading favors recovery: unknown assets, capped
-instances, and invalid property values are skipped and counted, never rejecting a whole save. Separate layout and
-content versions leave room to migrate old saves.
+The save format is finished; the console saves and loads creations with it (see above), and a Saves UI comes later.
+Creations serialize to a compact binary format (or JSON), wrapped in an envelope with optional Zstandard or Brotli
+compression, an optional SHA-256 checksum, and optional AES-256-GCM encryption keyed with Argon2id. Readers reject
+corrupt data and bound the file size, the decompressed size, and every count and string, so a malicious file can't
+exhaust memory. Loading favors recovery: unknown assets, capped instances, and invalid property values are skipped and
+counted, never rejecting a whole save. Separate layout and content versions leave room to migrate old saves.
 
 ---
 

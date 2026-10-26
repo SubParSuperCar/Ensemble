@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Messages;
-using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.World;
 using EnsembleRoot.Sessions.Api;
@@ -108,7 +107,6 @@ public static partial class LuaExecutor
 		if (!IsValidInstanceCount(plot, count))
 			return context.Return();
 
-		var tree = (SceneTree)Engine.GetMainLoop();
 		var frameTimesMs = new List<double>();
 		var instanceIds = new List<int>();
 
@@ -123,8 +121,7 @@ public static partial class LuaExecutor
 
 			for (var last = Stopwatch.GetTimestamp(); Stopwatch.GetElapsedTime(start).TotalSeconds < seconds;)
 			{
-				await NextFrameAsync(tree).ConfigureAwait(true);
-				cancellationToken.ThrowIfCancellationRequested();
+				await DelayAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(true);
 
 				var now = Stopwatch.GetTimestamp();
 				frameTimesMs.Add(Stopwatch.GetElapsedTime(last, now).TotalMilliseconds);
@@ -245,14 +242,15 @@ public static partial class LuaExecutor
 			Log.Error("No local character to teleport");
 		else if (context.IsArgumentOmitted(0))
 			handle.Respawn();
-		else if (context.GetArgument<LuaValue>(0) is { Type: LuaValueType.String } argument)
+		else if (context.IsArgumentOmitted(1))
 		{
-			var query = argument.Read<string>();
+			if (FindPlayer(context.GetArgument<LuaValue>(0)) is not { } target)
+				return context.ReturnNothing();
 
-			if (FindPlayer(query) is { } target && GPlayerManager.GetHandleOrNull(target.Id) is { } other)
+			if (GPlayerManager.GetHandleOrNull(target.Id) is { } other)
 				handle.Teleport(other.Body.GlobalPosition + Vector3.Up);
 			else
-				Log.Error("Player with ID or name {Query} not found", query);
+				Log.Error("Player {Name} has no character", target.Name);
 		}
 		else
 		{
@@ -300,20 +298,6 @@ public static partial class LuaExecutor
 			var rotation = new Quaternion(axis, (float)((random.NextDouble() - 0.5) * Math.Tau));
 			var instance = instances.Add(assetId, position, rotation);
 			addedIds?.Add(instance.Id);
-		}
-	}
-
-	private static async Task NextFrameAsync(SceneTree tree)
-	{
-		PauseBudget();
-
-		try
-		{
-			await tree.ToSignalAsync(SceneTree.SignalName.ProcessFrame);
-		}
-		finally
-		{
-			ResumeBudget();
 		}
 	}
 

@@ -58,10 +58,11 @@ are the same, without Roblox's limits.
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.
-- **Tinker** with a built-in Lua console, and even a web browser and system terminal inside the game.
+- **Tinker** with a built-in Lua console (which also saves and loads creations for now), and even a web browser and
+  system terminal inside the game.
 
-Moving parts you can drive (motors, hinges, pistons, and seats), saving and loading creations, a real map, and more
-building tools are on the way; see the [**roadmap**](./ROADMAP.md).
+Moving parts you can drive (motors, hinges, pistons, and seats), a Saves menu, a real map, and more building tools are
+on the way; see the [**roadmap**](./ROADMAP.md).
 
 ---
 
@@ -157,13 +158,13 @@ and characters are replicated. A spawned creation is simulated by its plot's own
 the owner leaves, the next one takes over, and the host steps in if a simulator stops responding. Creations of different
 plots that come close share one simulator until they part. To try a poor connection without outside players, run
 `set_net_sim(120, 40, 0.05)` (latency and jitter in milliseconds, and a loss rate) on a client. Hosts can list peers
-(with their ping) using `dmp_peers()`, remove one using `kick_peer(peer_id, "reason")`, and ban one's IP address for the
-rest of the session using `ban_peer(peer_id, "reason")` (both also in the player list's right-click menu).
-`ban_addr("address", "reason")` bans an address directly, kicking anyone connected from it, `dmp_bans()` lists the bans,
-and `unban_addr("address")` and `unban_all()` lift them. Players can be kicked off plots with
-`kick_occupant("name or id")`, which plot owners can also use on their own plots. Display names are remembered between
-sessions. The host has authority over the session: they can clear any plot they occupy, and their chat messages bypass
-the profanity filter.
+(with their ping) using `dmp_peers()`, remove one using `kick_peer(player, "reason")`, and ban one's IP address for the
+rest of the session using `ban_peer(player, "reason")` (both also in the player list's right-click menu), where a player
+is a peer ID, a player ID, or a display name. `ban_addr("address", "reason")` bans an address directly, kicking anyone
+connected from it, `dmp_bans()` lists the bans, and `unban_addr("address")` and `unban_all()` lift them. Players can be
+kicked off plots with `kick_occupant(player)`, which plot owners can also use on their own plots. Display names are
+remembered between sessions. The host has authority over the session: they can clear any plot they occupy, and their
+chat messages bypass the profanity filter.
 
 Chat happens in the Text Chat widget, which opens in multiplayer: press `/` to type and `Enter` to send. Nametags are
 colored per display name, like in Roblox's legacy chat, joins and leaves are announced, and late joiners receive the
@@ -203,7 +204,9 @@ with `set_profanity_filter_on(false)`.
 | Start (or restart) single-player game | `Esc` (outside multiplayer; restarting discards the build) |
 
 The camera also zooms with `-` `=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run
-`dmp_inp_map()` in the console for the full input map, and `help()` for every console function.
+`dmp_inp_map()` in the console for the full input map, and `help()` for every console function (or `help("creation")`
+for those whose names match). To keep a build, run `save_creation("castle")`; `load_creation("castle")` adds it to your
+plot again, even in another session.
 
 </details>
 

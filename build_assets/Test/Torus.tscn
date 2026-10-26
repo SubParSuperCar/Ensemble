@@ -31,8 +31,8 @@ Properties = Dictionary[StringName, Variant]({
 &"damping": 50.0,
 &"doesNullWork": null,
 &"isEnsembleCool": true,
-&"someFloat": 67.698,
 &"someInt64": -69,
+&"somePreciseFloat": 67.698,
 &"stringNameTest": &"Let\'s see if StringName works!",
 &"targetLength": 0.1
 })

@@ -540,7 +540,7 @@ its parameters. Scripts get a 5-second blocking budget between yields.
 | Moderation  | `ban_addr`, `ban_peer`, `dmp_bans`, `kick_peer`, `unban_addr`, `unban_all`                         |
 | Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                                 |
 | Plots       | `dmp_creation`, `dmp_plots`, `kick_occupant`, `set_plot`, `set_plot_simulator`, `set_plot_spawned` |
-| Saving      | `dmp_saves`, `load_creation`, `loc_load_creation`, `save_creation`                                 |
+| Saving      | `dmp_saves`, `load_creation`, `loc_load_creation`, `rm_creation`, `save_creation`                  |
 | World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,              |
 |             | `set_static_shader_on`, `tp_char`                                                                  |
 
@@ -553,7 +553,12 @@ its parameters. Scripts get a 5-second blocking budget between yields.
   `.json` and binary (`.ensb`) otherwise. `load_creation("name", "password")` adds a save to the local plot through
   `AddInstancesAction` batches, paced under the rate limit on clients, so placement rules apply and others see it;
   `loc_load_creation(plot_id, "name")` adds it directly. Loads skip unknown assets and invalid values, and add to what
-  is already there (`clr_insts()` first to replace it).
+  is already there (`clr_insts()` first to replace it). Overwriting a save first copies the old file to a backup
+  (`castle.ensb` to `castle.bak.ensb`, one generation), and `rm_creation("name")` deletes after a 5-second warning that
+  Cancel Runners stops. Deletion doesn't overwrite the file first: SSDs and copy-on-write file systems (btrfs, APFS,
+  ZFS) write overwrites elsewhere, snapshots keep old blocks, and atomic saves never wrote over earlier versions, so a
+  shred would promise what it can't keep. Password-protected saves are the real protection, since every leftover copy
+  stays encrypted.
 - **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for
   warnings.
 - **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging

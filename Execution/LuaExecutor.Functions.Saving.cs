@@ -21,7 +21,11 @@ public static partial class LuaExecutor
 	private const string CreationsPath = "user://creations";
 	private const string BinaryExtension = ".ensb";
 	private const string JsonExtension = ".json";
+	private const string BackupSuffix = ".bak";
 	private const int MaxCreationNameLength = 64;
+
+	// Long enough to notice the warning toast and cancel
+	private static readonly TimeSpan DeletionDelay = TimeSpan.FromSeconds(5);
 
 	private static ValueTask<int> dmp_saves(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -144,7 +148,7 @@ public static partial class LuaExecutor
 
 		var data = SaveConverter.ToSaveData(plot.Instances.Source);
 		var serializer = GetSerializer(path);
-		var isOverwrite = File.Exists(path);
+		var backupPath = File.Exists(path) ? GetBackupPath(path) : null;
 		var stopwatch = Stopwatch.StartNew();
 
 		// Password key derivation and compression take a while, so they run off the main thread
@@ -156,6 +160,11 @@ public static partial class LuaExecutor
 				() =>
 				{
 					Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
+					// A copy, so a failed save still leaves the original in place
+					if (backupPath is not null)
+						File.Copy(path, backupPath, true);
+
 					serializer.Save(path, data, options);
 				},
 				cancellationToken).ConfigureAwait(true);
@@ -171,9 +180,57 @@ public static partial class LuaExecutor
 		}
 
 		Log.Information(
-			"Saved {Count} instance(s) from plot {PlotId} to {Path}{Overwrite} in {ElapsedMs:F3} ms",
-			data.Instances.Count, plot.Id, path, isOverwrite ? " (overwritten)" : string.Empty,
-			stopwatch.Elapsed.TotalMilliseconds);
+			"Saved {Count} instance(s) from plot {PlotId} to {Path} in {ElapsedMs:F3} ms",
+			data.Instances.Count, plot.Id, path, stopwatch.Elapsed.TotalMilliseconds);
+
+		if (backupPath is not null)
+			Log.Warning("Overwrote {Name}; the previous version is now {Backup}", name, Path.GetFileName(backupPath));
+
+		return context.Return();
+	}
+
+	private static async ValueTask<int> rm_creation(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var name = context.GetArgument<string>(0);
+
+		if (GetCreationPath(name) is not { } path)
+			return context.Return();
+
+		if (!File.Exists(path))
+		{
+			Log.Error("No saved creation named {Name} (see dmp_saves())", name);
+			return context.Return();
+		}
+
+		var fileName = Path.GetFileName(path);
+		Log.Warning(
+			"Deleting {File} in {Seconds} s; press Cancel Runners to keep it", fileName, DeletionDelay.TotalSeconds);
+
+		try
+		{
+			await DelayAsync(DeletionDelay, cancellationToken).ConfigureAwait(true);
+		}
+		catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+		{
+			Log.Information("Kept {File}", fileName);
+			throw;
+		}
+
+		try
+		{
+			File.Delete(path);
+		}
+		catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+		{
+			Log.Error("Failed to delete {File}: {Error}", fileName, exception.Message);
+			return context.Return();
+		}
+
+		Log.Information("Deleted {File}", fileName);
+
+		if (File.Exists(GetBackupPath(path)))
+			Log.Information("Its backup {Backup} remains", Path.GetFileName(GetBackupPath(path)));
 
 		return context.Return();
 	}
@@ -306,6 +363,10 @@ public static partial class LuaExecutor
 	// TryParse also takes any number, defined or not
 	private static CompressionType? ToCompression(string? text) =>
 		Enum.TryParse(text, true, out CompressionType compression) && Enum.IsDefined(compression) ? compression : null;
+
+	// castle.ensb -> castle.bak.ensb, so the backup keeps its format's extension and loads like any save
+	private static string GetBackupPath(string path) =>
+		Path.ChangeExtension(path, null) + BackupSuffix + Path.GetExtension(path);
 
 	private static ISaveSerializer GetSerializer(string path) =>
 		string.Equals(Path.GetExtension(path), JsonExtension, StringComparison.OrdinalIgnoreCase)

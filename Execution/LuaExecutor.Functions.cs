@@ -46,6 +46,7 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(print), print), "..."),
 		(new LuaFunction(nameof(quit), quit), "force?"),
 		(new LuaFunction(nameof(restart), restart), ""),
+		(new LuaFunction(nameof(rm_creation), rm_creation), "name"),
 		(new LuaFunction(nameof(rm_insts), rm_insts), "instance_id, ..."),
 		(new LuaFunction(nameof(save_creation), save_creation), "name, options?"),
 		(new LuaFunction(nameof(set_chat_log_on), set_chat_log_on), "is_on"),

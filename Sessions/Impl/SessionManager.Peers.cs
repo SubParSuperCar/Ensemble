@@ -103,7 +103,7 @@ public partial class SessionManager
 		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		foreach (var peerId in _peersById.Keys)
 		{
-			if (peerId != LocalPeerId)
+			if (peerId != LocalPeerId && !_kickedPeerIds.Contains(peerId))
 				RpcId(peerId, method, args);
 		}
 	}
@@ -183,6 +183,15 @@ public partial class SessionManager
 			return;
 
 		var peerId = (int)id;
+
+		if (IsBanned(peerId))
+		{
+			Log.Information("Turning away banned peer {PeerId}...", peerId);
+			Disconnect(peerId, "Banned from this session.");
+
+			return;
+		}
+
 		var session = _session;
 
 		GetTree().CreateTimer(RegistrationTimeout.TotalSeconds).Timeout += () =>

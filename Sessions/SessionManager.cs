@@ -187,9 +187,17 @@ public partial class SessionManager : Node
 		}
 
 		Log.Information("Kicking peer {PeerId}... (Reason={Reason})", peerId, reason);
-		RpcId(peerId, MethodName.RpcEndSession, reason.Length is 0 ? "Kicked by host." : $"Kicked by host: {reason}");
+		Disconnect(peerId, reason.Length is 0 ? "Kicked by host." : $"Kicked by host: {reason}");
+	}
 
-		// Until disconnected, it may ignore the kick, so it gets no more updates and its requests are dropped
+	[Rpc]
+	private void RpcEndSession(string reason) => OnSessionFailed(reason);
+
+	private void Disconnect(int peerId, string notice)
+	{
+		RpcId(peerId, MethodName.RpcEndSession, notice);
+
+		// Until disconnected, it may ignore the notice, so it gets no more updates and its requests are dropped
 		_syncedPeerIds.Remove(peerId);
 		_kickedPeerIds.Add(peerId);
 
@@ -201,9 +209,6 @@ public partial class SessionManager : Node
 				((SceneMultiplayer)Multiplayer).DisconnectPeer(peerId);
 		};
 	}
-
-	[Rpc]
-	private void RpcEndSession(string reason) => OnSessionFailed(reason);
 
 	private void EndSession(string? failureReason)
 	{
@@ -233,6 +238,7 @@ public partial class SessionManager : Node
 
 		ClearPeers();
 		ClearRpcState();
+		ClearBans();
 
 		UtcStartedAt = default;
 		LocalPeerId = 0;

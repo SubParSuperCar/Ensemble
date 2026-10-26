@@ -13,6 +13,7 @@ public static partial class LuaExecutor
 	private static readonly (LuaFunction Function, string Parameters)[] Functions =
 	[
 		(new LuaFunction(nameof(add_inst), add_inst), "asset_id, x?, y?, z?, rx?, ry?, rz?"),
+		(new LuaFunction(nameof(ban_peer), ban_peer), "peer_id, reason?"),
 		(new LuaFunction(nameof(cap_fps), cap_fps), "fps?"),
 		(new LuaFunction(nameof(chat), chat), "message"),
 		(new LuaFunction(nameof(clr_insts), clr_insts), ""),

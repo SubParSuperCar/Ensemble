@@ -158,4 +158,7 @@ public sealed partial class PlayerItem : ObservableObject
 	// TODO: Let the host give a reason
 	[RelayCommand]
 	private void Kick() => GSessionManager.Kick(PeerId);
+
+	[RelayCommand]
+	private void Ban() => GSessionManager.Ban(PeerId);
 }

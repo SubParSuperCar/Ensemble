@@ -69,8 +69,8 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
 - [x] (S) AddInstancesAction - up to 256 instances with their properties in one request, placed in order and
   skipped where they don't fit, ready for build share codes and loading saves
 - [x] (M) SessionManager v2 - `Peer` objects (address, ping), `Config` / server info, `PeerRegistered(Peer)` signals
-- (WIP) (S) Peer UI - ping column and host kick context menu in the player list done (kick reason box TODO); server
-  info panel next
+- (WIP) (S) Peer UI - ping column and host kick / IP ban context menu in the player list done (reason box TODO);
+  server info panel next
 - [x] (S) DTLS - ENet traffic is encrypted with the host's self-signed certificate (created once, kept in `user://`);
   clients don't verify it yet, so it stops eavesdropping and tampering, not impersonation
 - [ ] (S) Host certificate pinning - clients remember a host's certificate on first join and warn if it changes
@@ -88,7 +88,10 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
   nothing else remains), late-join history snapshot, optional per-session file logs, and Lua functions
 - [x] (S) Profanity filter - host-chosen (remembered), masks chat profanity and replaces inappropriate display names
 - [ ] (M) Chat bubbles over players
-- [ ] (M) Plot Manager (replaces the Plot Selector) - join requests for owners (the host can override) and kicking
+- [ ] (M) Plot join consent - joining a plot that has an owner asks them "Let <name> join your plot?" (Accept / Deny);
+  no answer within 10 s denies it, and the host joins any plot without asking. A host-validated request / answer pair
+  (one pending request per player, dropped when either leaves or the plot's owner changes), plus the prompt's layout
+- [ ] (M) Plot Manager (replaces the Plot Selector) - join requests through the consent prompt above, and kicking
   occupants (owner or host; `KickOccupantAction` and `kick_occupant` done)
 
 ## Live physics

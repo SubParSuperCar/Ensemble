@@ -206,8 +206,9 @@ with `set_profanity_filter_on(false)`.
 The camera also zooms with `-` `=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run
 `dmp_inp_map()` in the console for the full input map, and `help()` for every console function (or `help("creation")`
 for those whose names match). To keep a build, run `save_creation("castle")`; `load_creation("castle")` adds it to your
-plot again, even in another session. Saving over it keeps the previous version as `castle.bak.ensb`, and
-`rm_creation("castle")` deletes it once you confirm.
+plot again, even in another session. Saving over it keeps the previous version as `castle.bak.ensb`;
+`rm_creation("castle")` moves it to your Recycle Bin (or Trash), and `rm_creation("castle", true)` deletes it for good
+once you confirm.
 
 </details>
 

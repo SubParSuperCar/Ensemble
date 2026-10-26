@@ -25,7 +25,7 @@ public static partial class LuaExecutor
 	private const string JsonExtension = ".json";
 	private const string BackupSuffix = ".bak";
 	private const int MaxCreationNameLength = 64;
-	private const string DeletionTitle = "Delete Saved Creation";
+	private const string DeletionTitle = "Permanently Delete Saved Creation";
 
 	private static ValueTask<int> dmp_saves(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -193,6 +193,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var name = context.GetArgument<string>(0);
+		var isPermanent = context.GetArgumentOrDefault(1, false);
 
 		if (GetCreationPath(name) is not { } path)
 			return context.Return();
@@ -203,13 +204,44 @@ public static partial class LuaExecutor
 			return context.Return();
 		}
 
+		var backupPath = GetBackupPath(path);
+		var hasBackup = File.Exists(backupPath);
+
+		var isRemoved = isPermanent
+			? await DeletePermanentlyAsync(path, hasBackup, cancellationToken).ConfigureAwait(true)
+			: MoveToTrash(path);
+
+		if (isRemoved && hasBackup)
+			Log.Information("Its backup {Backup} remains", Path.GetFileName(backupPath));
+
+		return context.Return();
+	}
+
+	// Reversible from the OS's trash, so it needs no confirmation
+	private static bool MoveToTrash(string path)
+	{
 		var fileName = Path.GetFileName(path);
-		var backupName = Path.GetFileName(GetBackupPath(path));
-		var hasBackup = File.Exists(GetBackupPath(path));
+		var result = OS.MoveToTrash(path);
+
+		if (result is not Error.Ok)
+		{
+			Log.Error("Failed to move {File} to the trash: {Error}", fileName, result);
+			return false;
+		}
+
+		Log.Information("Moved {File} to the trash", fileName);
+		return true;
+	}
+
+	private static async Task<bool> DeletePermanentlyAsync(
+		string path, bool hasBackup, CancellationToken cancellationToken)
+	{
+		var fileName = Path.GetFileName(path);
+		var question = $"Permanently delete the saved creation {fileName}?\n\nThis cannot be undone";
 
 		var prompt = hasBackup
-			? $"Delete the saved creation {fileName}?\n\nThis cannot be undone, though its backup {backupName} stays."
-			: $"Delete the saved creation {fileName}?\n\nThis cannot be undone.";
+			? $"{question}, though its backup {Path.GetFileName(GetBackupPath(path))} stays."
+			: $"{question}.";
 
 		bool isConfirmed;
 
@@ -226,7 +258,7 @@ public static partial class LuaExecutor
 		if (!isConfirmed || !File.Exists(path))
 		{
 			Log.Information("Kept {File}", fileName);
-			return context.Return();
+			return false;
 		}
 
 		try
@@ -236,15 +268,11 @@ public static partial class LuaExecutor
 		catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
 		{
 			Log.Error("Failed to delete {File}: {Error}", fileName, exception.Message);
-			return context.Return();
+			return false;
 		}
 
-		Log.Information("Deleted {File}", fileName);
-
-		if (hasBackup)
-			Log.Information("Its backup {Backup} remains", backupName);
-
-		return context.Return();
+		Log.Information("Permanently deleted {File}", fileName);
+		return true;
 	}
 
 	private static async Task<CreationSaveData?> LoadCreationAsync(

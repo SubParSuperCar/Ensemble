@@ -46,8 +46,8 @@ The tool suite, in rough intended order of implementation.
 - [x] (S) Scripted building - Lua `add_inst`, `rm_insts`, `set_inst_prop`, and `dmp_insts` work on the local plot
   through the same actions (and validation) as the tools, so they also work in multiplayer
 - [x] (S) Console saves - `save_creation` / `load_creation` (through AddInstancesAction batches, paced under the rate
-  limit) / `loc_load_creation` / `rm_creation` (confirmed in a Yes / No dialog) / `dmp_saves`, with a one-generation
-  backup on overwrite, in `user://creations/`; the Saves UI below will share the same path
+  limit) / `loc_load_creation` / `rm_creation` (to the OS trash, or for good after a Yes / No dialog) / `dmp_saves`,
+  with a one-generation backup on overwrite, in `user://creations/`; the Saves UI below will share the same path
 - [ ] (M) Build share codes - `copy_build()` / `paste_build(code)` turn a plot into a short compressed text code to
   paste in chat (reuses the save pipeline)
 - [x] (M) Undo / redo - a local history the tools push to, not part of the actions (Lua and large scripted edits stay

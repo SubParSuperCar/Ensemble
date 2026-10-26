@@ -554,11 +554,12 @@ its parameters. Scripts get a 5-second blocking budget between yields.
   `AddInstancesAction` batches, paced under the rate limit on clients, so placement rules apply and others see it;
   `loc_load_creation(plot_id, "name")` adds it directly. Loads skip unknown assets and invalid values, and add to what
   is already there (`clr_insts()` first to replace it). Overwriting a save first copies the old file to a backup
-  (`castle.ensb` to `castle.bak.ensb`, one generation), and `rm_creation("name")` deletes only after a native Yes / No
-  dialog (No by default where the OS supports it; shown off the main thread, so the game keeps running). Deletion
-  doesn't overwrite the file first: SSDs and copy-on-write file systems (btrfs, APFS, ZFS) write overwrites elsewhere,
-  snapshots keep old blocks, and atomic saves never wrote over earlier versions, so a shred would promise what it can't
-  keep. Password-protected saves are the real protection, since every leftover copy stays encrypted.
+  (`castle.ensb` to `castle.bak.ensb`, one generation), and `rm_creation("name")` moves a save to the OS's trash
+  (Recycle Bin, Trash), while `rm_creation("name", true)` deletes it for good after a native Yes / No dialog (No by
+  default where the OS supports it; shown off the main thread, so the game keeps running). Permanent deletion doesn't
+  overwrite the file first: SSDs and copy-on-write file systems (btrfs, APFS, ZFS) write overwrites elsewhere, snapshots
+  keep old blocks, and atomic saves never wrote over earlier versions, so a shred would promise what it can't keep.
+  Password-protected saves are the real protection, since every leftover copy stays encrypted.
 - **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for
   warnings.
 - **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging

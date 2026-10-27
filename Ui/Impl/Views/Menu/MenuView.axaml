@@ -2,7 +2,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    xmlns:g="clr-namespace:EnsembleRoot.Globals"
+    xmlns:cm="clr-namespace:EnsembleRoot.Common"
     x:Class="EnsembleRoot.Ui.Impl.Views.MenuView"
     x:DataType="vm:MenuViewModel">
 
@@ -23,11 +23,11 @@
             <TransitioningContentControl.PageTransition>
                 <CompositePageTransition>
                     <CrossFade
-                        Duration="{x:Static g:Constants.AnimationDuration}"
+                        Duration="{x:Static cm:Constants.AnimationDuration}"
                         FadeInEasing="QuadraticEaseOut" FadeOutEasing="QuadraticEaseInOut" />
 
                     <PageSlide
-                        Duration="{x:Static g:Constants.AnimationDuration}"
+                        Duration="{x:Static cm:Constants.AnimationDuration}"
                         SlideInEasing="QuadraticEaseOut" SlideOutEasing="QuadraticEaseInOut" />
                 </CompositePageTransition>
             </TransitioningContentControl.PageTransition>

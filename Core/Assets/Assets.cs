@@ -5,7 +5,7 @@ using EnsembleCoreRoot.Api.Assets;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public sealed class Assets : IAssets
+internal sealed class Assets : IAssets
 {
 	private readonly Dictionary<int, IAsset> _assetsById = [];
 

@@ -5,7 +5,7 @@ using EnsembleCoreRoot.Api.Assets;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public sealed class Asset(
+internal sealed class Asset(
 	int id,
 	string? name = null,
 	FrozenDictionary<string, CoreVariant>? properties = null,

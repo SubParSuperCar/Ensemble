@@ -6,7 +6,7 @@ using EnsembleCoreRoot.Api.Plots;
 namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
-public sealed class Plots : IPlots
+internal sealed class Plots : IPlots
 {
 	private readonly IAssets _assets;
 	private readonly int? _defaultMaxInstanceCount;

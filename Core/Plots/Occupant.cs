@@ -5,7 +5,7 @@ using EnsembleCoreRoot.Api.Plots;
 namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
-public sealed class Occupant(IPlayer player) : IOccupant
+internal sealed class Occupant(IPlayer player) : IOccupant
 {
 	public Plot? Plot { get; private set; }
 	public IPlayer Player { get; } = player;

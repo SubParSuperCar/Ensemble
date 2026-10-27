@@ -141,8 +141,8 @@ graph TD
 
 Each accessor throws a descriptive error, rather than returning null, when its target doesn't exist yet. `GContext`
 exposes the local player's state (`LocalPlot`, `IsPlotOwner`, `IsLocalPlotSpawned`, each with a change event), and
-`Constants` (e.g., `AnimationDuration`, `GameVersion`, `PhysicsLayers`) and Core's `Sentinels` (`Unlimited = -1`,
-`None = -1`, `Default = 0`) are imported the same way.
+`Constants` (in `Common/`, so the foundation can use it; e.g., `AnimationDuration`, `GameVersion`, `PhysicsLayers`)
+and Core's `Sentinels` (`Unlimited = -1`, `None = -1`, `Default = 0`) are imported the same way.
 
 ### What Godot Sees
 
@@ -626,8 +626,8 @@ counted, never rejecting a whole save. Separate layout and content versions leav
 | `Tooling/`              | The building tools, selection, and their manager                                         |
 | `Execution/`            | The Lua console's executor and functions                                                 |
 | `Ui/`                   | The Avalonia views, view models, widgets, controls, and services                         |
-| `Globals/`              | Globally imported accessors, constants, and local-player context                         |
-| `Common/`               | Shared utilities: text, audio, input, bit codecs, logging, time, and UI messages         |
+| `Globals/`              | Globally imported accessors and local-player context                                     |
+| `Common/`               | Shared constants and utilities: text, audio, input, bit codecs, logging, time, messages  |
 | `Saving/`               | The save format and pipeline                                                             |
 | `Autoloading/`          | The `[Autoload]` attribute, orders, scopes, and failure policies                         |
 | `AutoloadGenerator/`    | The source generator behind `AutoloadRegistry`                                           |

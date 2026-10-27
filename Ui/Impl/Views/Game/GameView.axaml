@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    xmlns:g="clr-namespace:EnsembleRoot.Globals"
+    xmlns:cm="clr-namespace:EnsembleRoot.Common"
     xmlns:e="using:EnsembleRoot.Ui.Impl.Easings"
     xmlns:v="using:EnsembleRoot.Ui.Impl.Views"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -36,10 +36,10 @@
 
                     <TransitioningContentControl.PageTransition>
                         <CompositePageTransition>
-                            <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
+                            <CrossFade Duration="{x:Static cm:Constants.AnimationDuration}" />
                             <Rotate3DTransition
                                 Orientation="Vertical"
-                                Duration="{x:Static g:Constants.AnimationDuration}" />
+                                Duration="{x:Static cm:Constants.AnimationDuration}" />
                         </CompositePageTransition>
                     </TransitioningContentControl.PageTransition>
                 </TransitioningContentControl>
@@ -54,7 +54,7 @@
                     <CompositePageTransition>
                         <PageSlide
                             Orientation="Vertical"
-                            Duration="{x:Static g:Constants.AnimationDuration}"
+                            Duration="{x:Static cm:Constants.AnimationDuration}"
                             SlideInEasing="CubicEaseOut">
 
                             <PageSlide.SlideOutEasing>
@@ -63,7 +63,7 @@
                         </PageSlide>
 
                         <CrossFade
-                            Duration="{x:Static g:Constants.AnimationDuration}"
+                            Duration="{x:Static cm:Constants.AnimationDuration}"
                             FadeInEasing="CubicEaseOut" />
                     </CompositePageTransition>
                 </TransitioningContentControl.PageTransition>
@@ -80,7 +80,7 @@
             HorizontalAlignment="Left" VerticalAlignment="Bottom">
 
             <TransitioningContentControl.PageTransition>
-                <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
+                <CrossFade Duration="{x:Static cm:Constants.AnimationDuration}" />
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
 

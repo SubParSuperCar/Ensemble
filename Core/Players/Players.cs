@@ -4,7 +4,7 @@ using EnsembleCoreRoot.Globals;
 namespace EnsembleCoreRoot.Players;
 
 /// <inheritdoc />
-public sealed class Players(TimeProvider? timeProvider = null) : IPlayers
+internal sealed class Players(TimeProvider? timeProvider = null) : IPlayers
 {
 	private readonly Dictionary<Guid, IPlayer> _playersById = [];
 

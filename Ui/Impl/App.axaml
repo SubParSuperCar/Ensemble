@@ -1,7 +1,7 @@
 <Application
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:g="clr-namespace:EnsembleRoot.Globals"
+    xmlns:cm="clr-namespace:EnsembleRoot.Common"
     x:Class="EnsembleRoot.Ui.Impl.App"
     RequestedThemeVariant="Default">
 
@@ -65,7 +65,7 @@
 
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{x:Static g:Constants.AnimationDuration}" />
+                    <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
                 </Transitions>
             </Setter>
         </Style>
@@ -79,7 +79,7 @@
 
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{x:Static g:Constants.AnimationDuration}" />
+                    <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
                 </Transitions>
             </Setter>
         </Style>

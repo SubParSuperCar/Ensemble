@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    xmlns:g="clr-namespace:EnsembleRoot.Globals"
+    xmlns:cm="clr-namespace:EnsembleRoot.Common"
     xmlns:li="using:LoadingIndicators.Avalonia"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Impl.Views.MainView"
@@ -14,7 +14,7 @@
         <Style Selector="TextBlock#Watermark">
             <Setter Property="Transitions">
                 <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{x:Static g:Constants.AnimationDuration}" />
+                    <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
                 </Transitions>
             </Setter>
         </Style>
@@ -27,7 +27,7 @@
     <Grid>
         <TransitioningContentControl Content="{Binding Main}">
             <TransitioningContentControl.PageTransition>
-                <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
+                <CrossFade Duration="{x:Static cm:Constants.AnimationDuration}" />
             </TransitioningContentControl.PageTransition>
         </TransitioningContentControl>
 
@@ -49,8 +49,8 @@
 
                 <TransitioningContentControl.PageTransition>
                     <CompositePageTransition>
-                        <CrossFade Duration="{x:Static g:Constants.AnimationDuration}" />
-                        <Rotate3DTransition Orientation="Vertical" Duration="{x:Static g:Constants.AnimationDuration}" />
+                        <CrossFade Duration="{x:Static cm:Constants.AnimationDuration}" />
+                        <Rotate3DTransition Orientation="Vertical" Duration="{x:Static cm:Constants.AnimationDuration}" />
                     </CompositePageTransition>
                 </TransitioningContentControl.PageTransition>
             </TransitioningContentControl>

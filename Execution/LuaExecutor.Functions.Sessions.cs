@@ -8,6 +8,7 @@ using EnsembleRoot.Sessions.Api;
 using Godot;
 using Lua;
 using Serilog;
+using static EnsembleRoot.Scripts.Sessions.CommandLineSession;
 using static EnsembleRoot.Sessions.SessionManager;
 
 namespace EnsembleRoot.Execution;
@@ -175,19 +176,19 @@ public static partial class LuaExecutor
 
 		info.ArgumentList.Add("--headless");
 		info.ArgumentList.Add("--");
-		info.ArgumentList.Add(string.Create(CultureInfo.InvariantCulture, $"--port={port}"));
+		info.ArgumentList.Add(FormatArg(PortArg, port.ToString(CultureInfo.InvariantCulture)));
 
 		if (options.Password is { } password)
-			info.ArgumentList.Add($"--password={password}");
+			info.ArgumentList.Add(FormatArg(PasswordArg, password));
 
 		if (options.MaxClients is { } maxClients)
-			info.ArgumentList.Add(string.Create(CultureInfo.InvariantCulture, $"--max-clients={maxClients}"));
+			info.ArgumentList.Add(FormatArg(MaxClientsArg, maxClients.ToString(CultureInfo.InvariantCulture)));
 
 		if (options.IsUpnpEnabled is true)
-			info.ArgumentList.Add("--upnp");
+			info.ArgumentList.Add(FormatArg(UpnpArg));
 
 		if (options.IsProfanityFilterEnabled is { } isEnabled)
-			info.ArgumentList.Add(isEnabled ? "--profanity-filter=true" : "--profanity-filter=false");
+			info.ArgumentList.Add(FormatArg(ProfanityFilterArg, isEnabled ? "true" : "false"));
 
 		var process = Process.Start(info) ?? throw new InvalidOperationException("Failed to start the server.");
 

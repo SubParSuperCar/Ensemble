@@ -5,7 +5,7 @@ using EnsembleCoreRoot.Api.Players;
 namespace EnsembleCoreRoot.Players;
 
 /// <inheritdoc />
-public sealed class Player(Guid id, string? name = null, TimeProvider? timeProvider = null) : IPlayer
+internal sealed class Player(Guid id, string? name = null, TimeProvider? timeProvider = null) : IPlayer
 {
 	public Guid Id { get; } = id;
 	public string Name { get; } = name ?? $"Player {ToShortGuid(id)}";

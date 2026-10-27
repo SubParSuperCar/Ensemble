@@ -3,7 +3,7 @@ using EnsembleCoreRoot.Api.Plots;
 namespace EnsembleCoreRoot.Plots;
 
 /// <inheritdoc />
-public sealed class Occupants : IOccupants
+internal sealed class Occupants : IOccupants
 {
 	private readonly OrderedDictionary<Guid, IOccupant> _occupantsByPlayerId = [];
 	private readonly Plot _plot;

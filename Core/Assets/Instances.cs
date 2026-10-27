@@ -8,7 +8,7 @@ using EnsembleCoreRoot.Utils;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public sealed class Instances : IInstances
+internal sealed class Instances : IInstances
 {
 	private readonly IAssets _assets;
 	private readonly Dictionary<int, int> _countsByAssetId = [];

@@ -4,7 +4,7 @@ using EnsembleCoreRoot.Api.Assets;
 namespace EnsembleCoreRoot.Assets;
 
 /// <inheritdoc />
-public sealed class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties
+internal sealed class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties
 {
 	private readonly Dictionary<string, CoreVariant> _valuesByKey =
 		new(values ?? FrozenDictionary<string, CoreVariant>.Empty, StringComparer.OrdinalIgnoreCase);

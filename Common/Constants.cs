@@ -3,7 +3,7 @@ using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace EnsembleRoot.Globals;
+namespace EnsembleRoot.Common;
 
 public static class Constants
 {

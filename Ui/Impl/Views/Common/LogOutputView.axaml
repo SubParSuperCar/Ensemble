@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    xmlns:g="clr-namespace:EnsembleRoot.Globals"
+    xmlns:cm="clr-namespace:EnsembleRoot.Common"
     mc:Ignorable="d" d:DesignWidth="448" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Impl.Views.LogOutputView"
     x:DataType="vm:LogOutputViewModel">
@@ -13,7 +13,7 @@
         <Style Selector="SelectableTextBlock#Output">
             <Style.Animations>
                 <Animation
-                    Duration="{x:Static g:Constants.AnimationDuration}"
+                    Duration="{x:Static cm:Constants.AnimationDuration}"
                     IterationCount="Infinite"
                     PlaybackDirection="Alternate">
 

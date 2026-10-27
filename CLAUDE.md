@@ -43,7 +43,7 @@ Rules that carry the design:
 - **Godot sees only what it must.** Only a Godot class's main file is Godot-visible; partials and plain C# types go
   in a `.gdignore`d `Impl/` folder beside it. `Impl` never appears in a namespace: partials keep their class's, and
   plain types take their folder's (`Scripts/Plots/Impl/Placement/` is `EnsembleRoot.Scripts.Plots.Placement`).
-- **One source of truth.** Paths and shared values live in `Globals/Constants.cs`; a name has one owner (e.g.,
+- **One source of truth.** Paths and shared values live in `Common/Constants.cs`; a name has one owner (e.g.,
   `CommandLineSession` owns its flag names); identifiers inside strings use `nameof`.
 - **Godot types at Godot boundaries.** GDScript-facing APIs use Godot types; internals use C# collections and .NET
   math (`MathF`, `float.Lerp`) over `Mathf` where equivalent.

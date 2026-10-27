@@ -1,7 +1,7 @@
 using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 using Xunit;
-using static EnsembleRoot.Globals.Constants;
+using static EnsembleRoot.Common.Constants;
 
 namespace EnsembleRoot.Tests;
 

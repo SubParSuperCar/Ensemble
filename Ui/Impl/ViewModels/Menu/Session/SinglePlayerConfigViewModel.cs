@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using EnsembleRoot.Scripts.Sessions.Impl;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
-using EnsembleRoot.Ui.Impl.ViewModels.Utils;
 using static EnsembleRoot.Sessions.SessionManager;
 
 namespace EnsembleRoot.Ui.Impl.ViewModels;

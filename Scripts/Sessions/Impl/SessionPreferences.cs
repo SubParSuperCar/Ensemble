@@ -1,10 +1,10 @@
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Common.Utils;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels.Utils;
+namespace EnsembleRoot.Scripts.Sessions.Impl;
 
 // Passwords aren't remembered, since the user data is plain text
-internal static class SessionPreferences
+public static class SessionPreferences
 {
 	private const string Section = "session";
 	private const string DisplayNameKey = "display_name";

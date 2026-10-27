@@ -22,6 +22,7 @@ public static partial class LuaExecutor
 
 		var state = LuaState.Create();
 		state.OpenStandardLibraries();
+		state.ModuleLoader = new ScriptModuleLoader(ProjectSettings.GlobalizePath(ScriptsPath));
 		InjectCustomFunctions(state.Environment);
 
 		using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -66,7 +67,9 @@ public static partial class LuaExecutor
 
 		stopwatch.Stop();
 		Log.Information(
-			"< [{Results}] ({ElapsedMs:F3} ms)", string.Join(", ", results), stopwatch.Elapsed.TotalMilliseconds);
+			"< [{Results}] ({ElapsedMs:F3} ms)",
+			string.Join(", ", results.Select(static result => LuaValueFormatter.Format(result, true))),
+			stopwatch.Elapsed.TotalMilliseconds);
 
 		return new LuaResult(LuaOutcome.Succeeded, results);
 	}

@@ -109,9 +109,13 @@ public partial class ConstructTool : ToolBase
 	public void RotateY() => Rotate(Vector3.Right);
 	public void RotateZ() => Rotate(Vector3.Back);
 
-	public void ResetRotation()
+	public void ResetRotation() => SetRotation(Quaternion.Identity);
+
+	public void SetRotation(Quaternion rotation)
 	{
-		_rotation = Quaternion.Identity;
+		_rotation = rotation.Normalized();
+
+		// The last evaluation was for the old rotation, so placing waits for the next one
 		_state = null;
 	}
 

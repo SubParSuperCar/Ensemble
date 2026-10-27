@@ -153,6 +153,9 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
   maximizable frames with fades, a collapsible widget drawer with badges; Plot Selector, Asset Selector, Property
   Editor, Web Browser, Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and persisted layouts
+- [x] (M) Developer console - Lua functions for sessions (`start_sp`, `host_mp`, `join_mp`, and `host_server` for a
+  local headless server to join), the tools and their history, creations, plots, and moderation; `help()` with
+  descriptions, readable tables in `print` and results, and `user://scripts/` for `run_script` and `require`
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 - [ ] (S) Main menu personality - community links (e.g., Discord) and randomized flavor text
@@ -163,7 +166,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 
 - [x] (S) Saving/ - binary + JSON serializers, Zstd/Brotli compression, AES-256-GCM encryption, SHA-256 integrity
 - [x] (S) Tests/ project (xUnit v3, MTP) - Occupants ownership, Instances IDs (HoleyArray), CoreVariant, save-pipeline
-  roundtrips, HostEndPoint parsing, OBB/grid math, welds, placement, chat text, the profanity filter, NavigatorService
+  roundtrips, HostEndPoint parsing, OBB/grid math, welds, placement, chat text, the profanity filter, NavigatorService,
+  Lua value formatting
 - [x] (S) Sessions/Impl gdignored; Sentinels dependency removed
 - [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build warnings
 - [x] (S) Dedicated 3D physics layers - World, Character, Static Instances, and Dynamic Instances
@@ -177,6 +181,23 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
   can list encrypted saves (deferred)
 - [ ] (L) Comprehensive Saves UI - browser, thumbnails, autosave ring buffer, per-save password prompt, soft delete
   (deferred)
+- [ ] (L) Code Editor with C# (JIT builds only) - the Lua Editor becomes a Code Editor with Lua and C# modes. C#
+  snippets compile with Roslyn scripting (`Microsoft.CodeAnalysis.CSharp.Scripting`) and run on the main thread with the
+  whole game in reach, so nothing needs a binding first. Caveats:
+    - NativeAOT releases can't run it: there's no JIT and no loading assemblies at runtime, and trimming drops what only
+      a snippet would use. It fits editor runs, debug exports, and the `-jit` builds (untrimmed), with Roslyn (about
+      10 MiB) referenced only without `NATIVE_AOT` and the mode hidden where `BuildInfo.IsNativeAot`
+    - Every snippet is a new assembly, so they need a collectible `AssemblyLoadContext` that resolves the game's
+      assemblies from the game's own context (`AssemblyLoadContext.GetLoadContext(typeof(Main).Assembly)`); otherwise
+      each run leaks, type identities split, and a snippet pinning the game assembly blocks the editor's assembly
+      reloads (the godot#78513 failure mode)
+    - Snippets can use the game's types but not declare Godot script classes (no source generators or script
+      registration at runtime), compile against the loaded assemblies' files, and must keep Godot calls on the main
+      thread
+    - The first compile takes a second or two (warm Roslyn up off the main thread), later ones tens to hundreds of
+      milliseconds
+    - Full access cuts both ways: a snippet can corrupt state or crash the game. Lua's `io` and `os` are unrestricted
+      already, so the trust model is the same: it's your own console
 - [ ] (L) In-world screens (low priority) - Avalonia UI rendered onto 3D meshes, e.g., a "monitor" asset showing the
   console, Lua editor, chat, or system terminal, for whole in-game workstations (with speakers). Estragonia is brittle
   about when Avalonia controls get instantiated, so the timing needs care first

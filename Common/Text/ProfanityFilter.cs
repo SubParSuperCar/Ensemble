@@ -6,12 +6,7 @@ using Serilog;
 
 namespace EnsembleRoot.Common.Text;
 
-/// <summary>
-///     Masks profanity in text (e.g., chat messages) with <see cref="Mask" /> characters, or replaces the text with
-///     <see cref="Redacted" /> if nothing else would remain (or <see cref="Failed" /> if matching times out or the list
-///     failed to load).
-///     Thread-safe.
-/// </summary>
+/// <summary>Masks profanity in text, such as chat messages. Thread-safe.</summary>
 /// <remarks>
 ///     Uses David Sojevic's English profanity-list (MIT; see ProfanityList.LICENSE.txt), matching case-insensitively
 ///     and through common substitutions (e.g., "4" for "a"). Entries also match inside words, masking the whole word,
@@ -25,11 +20,10 @@ namespace EnsembleRoot.Common.Text;
 /// </remarks>
 public static class ProfanityFilter
 {
-	// ReSharper disable once MemberCanBePrivate.Global
-	public const char Mask = '#';
-
 	public const string Redacted = "<Redacted>";
 	public const string Failed = "<Filter Error>";
+
+	private const char Mask = '#';
 
 	private const string ListResourceName = "EnsembleRoot.Common.Text.ProfanityList.json.gz";
 	private const string CoreGroup = "core";
@@ -77,8 +71,9 @@ public static class ProfanityFilter
 		});
 
 	/// <summary>
-	///     Masks the profanity in <paramref name="text" />, or returns <see cref="Redacted" /> if no letter or digit
-	///     would remain unmasked, or <see cref="Failed" /> if matching times out or the list failed to load.
+	///     Masks the profanity in <paramref name="text" /> with <see cref="Mask" /> characters, or returns
+	///     <see cref="Redacted" /> if no letter or digit would remain unmasked, or <see cref="Failed" /> if matching
+	///     times out or the list failed to load.
 	/// </summary>
 	public static string Censor(string text)
 	{
@@ -88,9 +83,9 @@ public static class ProfanityFilter
 		{
 			entries = Entries.Value;
 		}
-		// The lazy list caches its load failure, so it would otherwise rethrow on every call
 		catch (Exception exception)
 		{
+			// The lazy list caches its load failure, so it would otherwise log on every call
 			if (Interlocked.Exchange(ref _hasLoggedLoadFailure, 1) is 0)
 				Log.Error(exception, "Failed to load the profanity list");
 

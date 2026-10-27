@@ -10,8 +10,15 @@ public sealed class ChatTextTests
 	[InlineData("a \t\r\n b", "a b")]
 	[InlineData("a\ab\u200Bc", "abc")]
 	[InlineData("a \a b", "a b")]
+	[InlineData("trailing control \a", "trailing control")]
 	[InlineData("\a", "")]
-	public void Sanitize_Normalizes(string text, string expected) => Assert.Equal(expected, ChatText.Sanitize(text));
+	public void Sanitize_Normalizes(string text, string expected)
+	{
+		var sanitized = ChatText.Sanitize(text);
+
+		Assert.Equal(expected, sanitized);
+		Assert.Equal(sanitized, ChatText.Sanitize(sanitized));
+	}
 
 	[Fact]
 	public void Sanitize_LongText_TruncatesWithoutSplittingSurrogates()
@@ -22,13 +29,6 @@ public sealed class ChatTextTests
 		Assert.Equal(ChatText.MaxLength - 1, sanitized.Length);
 		Assert.True(ChatText.IsValid(sanitized));
 	}
-
-	[Theory]
-	[InlineData("hi")]
-	[InlineData(" padded ")]
-	[InlineData("tab\tbed")]
-	[InlineData("trailing control \a")]
-	public void Sanitize_Output_IsValid(string text) => Assert.True(ChatText.IsValid(ChatText.Sanitize(text)));
 
 	[Theory]
 	[InlineData("")]

@@ -10,9 +10,6 @@ public static class TextElements
 	/// </summary>
 	public static string Truncate(string value, int maxLength)
 	{
-		if (maxLength <= 0)
-			return string.Empty;
-
 		var elements = StringInfo.ParseCombiningCharacters(value);
 
 		if (elements.Length <= maxLength)

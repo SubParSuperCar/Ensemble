@@ -202,11 +202,10 @@ public partial class Logger : Node, IAutoload
 		{
 			return YesNoDialog.Ask(
 				"Ensemble Settings Defaults Changed",
-				Main.SanitizeMessageBoxBody(
-					$"This version of Ensemble ships a newer default {AppSettingsJson} than the one in your user " +
-					"data directory, which has been edited or is from an older version.\n\n" +
-					"Replace yours with the new defaults? Your current file will be kept as a .bak backup.\n" +
-					"You will not be asked again until the defaults change."),
+				$"This version of Ensemble ships a newer default {AppSettingsJson} than the one in your user " +
+				"data directory, which has been edited or is from an older version.\n\n" +
+				"Replace yours with the new defaults? Your current file will be kept as a .bak backup.\n" +
+				"You will not be asked again until the defaults change.",
 				MessageBoxIconType.Question, false);
 		}
 		catch

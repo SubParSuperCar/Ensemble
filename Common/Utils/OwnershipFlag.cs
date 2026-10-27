@@ -1,7 +1,3 @@
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedMethodReturnValue.Global
-
 namespace EnsembleRoot.Common.Utils;
 
 /// <summary>A flag that stays set while any owner holds it, so owners can't release each other's holds.</summary>
@@ -11,38 +7,24 @@ public sealed class OwnershipFlag
 	private readonly Lock _lock = new();
 	private readonly HashSet<object> _owners = new(ReferenceEqualityComparer.Instance);
 
-	public bool IsSet => Count > 0;
-
-	public int Count
+	public bool IsSet
 	{
 		get
 		{
 			lock (_lock)
-				return _owners.Count;
+				return _owners.Count > 0;
 		}
 	}
 
-	public bool IsHeldBy(object owner)
+	public void Acquire(object owner)
 	{
 		lock (_lock)
-			return _owners.Contains(owner);
+			_owners.Add(owner);
 	}
 
-	public bool Acquire(object owner)
+	public void Release(object owner)
 	{
 		lock (_lock)
-			return _owners.Add(owner);
-	}
-
-	public bool Release(object owner)
-	{
-		lock (_lock)
-			return _owners.Remove(owner);
-	}
-
-	public void ReleaseAll()
-	{
-		lock (_lock)
-			_owners.Clear();
+			_owners.Remove(owner);
 	}
 }

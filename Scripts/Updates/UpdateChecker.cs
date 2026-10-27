@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Interop;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Common.Utils;
 using Godot;
@@ -43,17 +44,16 @@ public partial class UpdateChecker : Node, IAutoload
 	{
 		try
 		{
-			var response = TinyDialogs.MessageBox(
+			var isAccepted = YesNoDialog.Ask(
 				"Ensemble Update Available",
-				Main.SanitizeMessageBoxBody(
-					$"Ensemble v{latest} is available (you have v{current}).\n\n" +
-					"Open its release page to download it?\nYou will not be asked again for this version."),
-				MessageBoxDialogType.YesNo, MessageBoxIconType.Question, MessageBoxButton.Yes);
+				$"Ensemble v{latest} is available (you have v{current}).\n\n" +
+				"Open its release page to download it?\nYou will not be asked again for this version.",
+				MessageBoxIconType.Question, true);
 
 			// Only once answered, so a failed dialog asks again next launch
 			Callable.From(() => UserData.SetValue(Section, OfferedVersionKey, latest.ToString())).CallDeferred();
 
-			if (response is MessageBoxButton.Yes)
+			if (isAccepted)
 				Callable.From(() => OS.ShellOpen(url)).CallDeferred();
 		}
 		catch (Exception exception)

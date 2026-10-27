@@ -36,8 +36,8 @@ public static class Constants
 	public const int RegexMatchTimeoutMs = 100;
 
 	/// <summary>
-	///     The narrowest and widest gaps (about 1 and 2 mm) by which an asset's colliders may sit inside its cell, so the
-	///     faces they inset never weld. Binary, just under the millimeters assets are authored in.
+	///     The narrowest and widest gaps (about 1 and 2 mm) by which an asset's colliders may sit inside its cell, so
+	///     the faces they inset never weld. Binary, just under the millimeters assets are authored in.
 	/// </summary>
 	public const float MinColliderInset = 1 / 1024f;
 

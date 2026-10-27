@@ -14,8 +14,7 @@ namespace EnsembleRoot.Common.Audio;
 /// </remarks>
 public static class TextToSpeech
 {
-	// ReSharper disable once MemberCanBePrivate.Global
-	public const int MaxQueuedCount = 8;
+	private const int MaxQueuedCount = 8;
 
 	private static readonly Channel<Utterance> Queue = Channel.CreateBounded<Utterance>(
 		new BoundedChannelOptions(MaxQueuedCount) { FullMode = BoundedChannelFullMode.DropWrite, SingleReader = true });
@@ -55,7 +54,8 @@ public static class TextToSpeech
 					if (token.IsCancellationRequested)
 						continue;
 
-					if (!await speaker.SpeakAsync(text, voice, rate, pitch, volume).ConfigureAwait(false) &&
+					if (
+						!await speaker.SpeakAsync(text, voice, rate, pitch, volume).ConfigureAwait(false) &&
 						!token.IsCancellationRequested)
 						Log.Warning("Failed to play TTS");
 				}

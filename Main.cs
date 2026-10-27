@@ -89,14 +89,14 @@ public partial class Main : Node
 		Environment.FailFast(null, exception);
 	}
 
-	public static bool AskUser(string topic, string prompt)
+	public static bool AskUser(string title, string message)
 	{
 		var token = new object();
 		Watchdog.Suspension.Acquire(token);
 
 		try
 		{
-			return YesNoDialog.Ask(topic, SanitizeMessageBoxBody(prompt), MessageBoxIconType.Error, false);
+			return YesNoDialog.Ask(title, message, MessageBoxIconType.Error, false);
 		}
 		catch (Exception exception)
 		{
@@ -111,12 +111,6 @@ public partial class Main : Node
 
 	public static string FormatFailureMessage(string action, Exception exception, string consequence) =>
 		$"{action}:\n\n{exception}\n\nContinue anyway?\n{consequence}";
-
-	public static string SanitizeMessageBoxBody(string message) =>
-		message
-			.Replace("\"", string.Empty, StringComparison.Ordinal)
-			.Replace("'", string.Empty, StringComparison.Ordinal)
-			.Replace("`", string.Empty, StringComparison.Ordinal);
 
 	private static void PCall(Action action)
 	{
@@ -233,7 +227,7 @@ public partial class Main : Node
 	private async Task LoadDeferredAsync()
 	{
 		// TODO: Await a readiness signal (if one exists) instead of a magic number of frames
-		// Testing showed that the Avalonia UI takes exactly 3 frames to appear, for unclear reasons.
+		// Testing showed that the Avalonia UI takes exactly 3 frames to appear, for unclear reasons
 		var renderingServer = RenderingServer.Singleton;
 
 		for (var i = 0; i < 3; i++)
@@ -281,7 +275,7 @@ public partial class Main : Node
 
 	private bool LoadAutoload(AutoloadDefinition definition)
 	{
-		var fullName = definition.Type.FullName;
+		var fullName = definition.Type.FullName!;
 		var stage = AutoloadLoadStage.Factory;
 		Node? instance = null;
 
@@ -294,8 +288,7 @@ public partial class Main : Node
 			var start = Stopwatch.GetTimestamp();
 			instance = definition.Factory();
 
-			if (fullName is not null)
-				instance.Name = fullName[(fullName.IndexOf('.', StringComparison.Ordinal) + 1)..].Replace('.', '-');
+			instance.Name = fullName[(fullName.IndexOf('.', StringComparison.Ordinal) + 1)..].Replace('.', '-');
 
 			stage = AutoloadLoadStage.AddChild;
 			AddChild(instance);

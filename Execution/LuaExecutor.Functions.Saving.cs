@@ -432,7 +432,7 @@ public static partial class LuaExecutor
 	{
 		try
 		{
-			return YesNoDialog.Ask(title, Main.SanitizeMessageBoxBody(prompt), MessageBoxIconType.Warning, false);
+			return YesNoDialog.Ask(title, prompt, MessageBoxIconType.Warning, false);
 		}
 		catch (Exception exception)
 		{

@@ -34,8 +34,7 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 
 	public void Emit(LogEvent logEvent)
 	{
-		var entry = new LogEntry(
-			logEvent.Timestamp, logEvent.Level, Format(MessageFormatter, logEvent), Format(TextFormatter, logEvent));
+		var entry = new LogEntry(logEvent.Level, Format(MessageFormatter, logEvent), Format(TextFormatter, logEvent));
 
 		var isVerbose = logEvent.Level is LogEventLevel.Verbose;
 		var (queue, capacity) = isVerbose ? (VerboseEntries, MaxVerboseEntries) : (Entries, MaxEntries);

@@ -8,7 +8,7 @@ namespace EnsembleRoot.Common.Interop;
 ///     TinyDialogsNet 2.0.0 passes tinyfd Yes as the default for <see cref="MessageBoxButton.No" /> in yes / no boxes,
 ///     so Enter answered Yes; this sets the default itself. Windows and macOS honor it, but tinyfd can't set one for
 ///     zenity or kdialog, which focus Yes. It blocks the calling thread until answered, and a box that can't open
-///     (e.g., without a dialog tool on Linux) answers No.
+///     (e.g., without a dialog tool on Linux) answers No. tinyfd rejects quotes, so the message drops them.
 /// </remarks>
 internal static class YesNoDialog
 {
@@ -31,6 +31,7 @@ internal static class YesNoDialog
 		};
 
 		var defaultButton = isYesDefault ? 1 : 0;
+		message = RemoveQuotes(message);
 
 		var response = OperatingSystem.IsWindows()
 			? MessageBoxUtf16(title, message, DialogType, iconName, defaultButton)
@@ -38,6 +39,12 @@ internal static class YesNoDialog
 
 		return response is 1;
 	}
+
+	private static string RemoveQuotes(string text) =>
+		text
+			.Replace("\"", string.Empty, StringComparison.Ordinal)
+			.Replace("'", string.Empty, StringComparison.Ordinal)
+			.Replace("`", string.Empty, StringComparison.Ordinal);
 
 #pragma warning disable CA2101, SYSLIB1054
 	[DllImport(LibraryName, EntryPoint = "tinyfd_messageBox", CallingConvention = CallingConvention.Cdecl)]

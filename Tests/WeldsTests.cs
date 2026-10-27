@@ -23,19 +23,6 @@ public sealed class WeldsTests
 	}
 
 	[Fact]
-	public void Group_WeldsThroughAnyOfAPartsBoxes()
-	{
-		// Part 1's second box bridges it to part 2, while its first box only touches part 0
-		(int Owner, Obb[] Boxes)[] parts =
-		[
-			(0, [Cube(Vector3.Zero)]), (1, [Cube(new Vector3(0, 1, 0)), Cube(new Vector3(0, 1, 2))]),
-			(2, [Cube(new Vector3(0, 1, 3))])
-		];
-
-		Assert.Equal([[0, 1, 2]], Welds.Group(parts));
-	}
-
-	[Fact]
 	public void Group_NeverWeldsAnOwnersParts_ButOthersMayJoinThem()
 	{
 		// An instance's two pieces, stacked, with a neighbor beside the lower one

@@ -54,7 +54,8 @@ public partial class Paintable : AssetComponent
 
 	private void OnPropertyChanged(string key, Variant value)
 	{
-		if (string.Equals(key, ColorKey, StringComparison.OrdinalIgnoreCase) ||
+		if (
+			string.Equals(key, ColorKey, StringComparison.OrdinalIgnoreCase) ||
 			string.Equals(key, MaterialBank.PropertyKey, StringComparison.OrdinalIgnoreCase))
 			Apply();
 	}

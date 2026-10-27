@@ -3,8 +3,6 @@ using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Assets.Materials;
 using Godot;
 
-// ReSharper disable UnusedMember.Global
-
 namespace EnsembleRoot.Scripts.Creations;
 
 /// <summary>
@@ -16,7 +14,7 @@ public partial class Assembly : RigidBody3D
 {
 	private readonly List<CollisionObject3D> _pieces = [];
 
-	private float? _bounce;
+	private float _bounce = float.PositiveInfinity;
 	private Aabb? _bounds;
 	private float _frictionMoment;
 	private float _mass;
@@ -24,9 +22,6 @@ public partial class Assembly : RigidBody3D
 
 	/// <summary>The group's index in weld order, which every peer derives alike.</summary>
 	public int Id { get; init; }
-
-	/// <summary>The pieces' bodies: handles (for their own colliders) and <see cref="AssetPiece" /> nodes.</summary>
-	public IReadOnlyList<CollisionObject3D> Pieces => _pieces;
 
 	/// <summary>The bounds of the pieces' colliders, in the body's space, once built.</summary>
 	public Aabb Bounds { get; private set; }
@@ -59,7 +54,7 @@ public partial class Assembly : RigidBody3D
 	/// <remarks>
 	///     Best done before entering the tree, so the body enters the physics space with all of its shapes at once.
 	/// </remarks>
-	public void AddPiece(
+	internal void AddPiece(
 		CollisionObject3D body, Transform3D handleTransform, int assetId, int piece, AssetMaterial? material)
 	{
 		var transform = piece is 0 ? handleTransform : handleTransform * body.Transform;
@@ -86,7 +81,7 @@ public partial class Assembly : RigidBody3D
 		_mass += mass;
 		_massMoment += handleTransform * centerOfMass * mass;
 		_frictionMoment += (material?.Friction ?? AssetMaterial.DefaultFriction) * mass;
-		_bounce = MathF.Min(_bounce ?? float.PositiveInfinity, material?.Bounce ?? AssetMaterial.DefaultBounce);
+		_bounce = MathF.Min(_bounce, material?.Bounce ?? AssetMaterial.DefaultBounce);
 		_pieces.Add(body);
 	}
 
@@ -96,7 +91,7 @@ public partial class Assembly : RigidBody3D
 	///     frozen until <see cref="IsSimulated" /> is set.
 	/// </summary>
 	/// <remarks>Best done before entering the tree, like <see cref="AddPiece" />.</remarks>
-	public void Build()
+	internal void Build()
 	{
 		var center = _mass > 0 ? _massMoment / _mass : Vector3.Zero;
 
@@ -115,20 +110,19 @@ public partial class Assembly : RigidBody3D
 		Transform = Transform.TranslatedLocal(center);
 
 		var friction = _frictionMoment / _mass;
-		var bounce = _bounce ?? AssetMaterial.DefaultBounce;
 
 		Mass = _mass;
 		CenterOfMassMode = CenterOfMassModeEnum.Custom;
 		CenterOfMass = Vector3.Zero;
 
 		// Godot's defaults (friction 1, bounce 0), not the asset materials', need no material of their own
-		if (friction is not 1f || bounce is not 0f)
-			PhysicsMaterialOverride = new PhysicsMaterial { Friction = friction, Bounce = bounce };
+		if (friction is not 1f || _bounce is not 0f)
+			PhysicsMaterialOverride = new PhysicsMaterial { Friction = friction, Bounce = _bounce };
 	}
 
 	/// <summary>Takes the pieces' own bodies out of the physics space, leaving only this body's shapes.</summary>
 	/// <remarks>The assembly must be in the tree, so the pieces' bodies have entered the space they leave.</remarks>
-	public void Assemble()
+	internal void Assemble()
 	{
 		foreach (var body in _pieces)
 			PhysicsServer3D.BodySetSpace(body.GetRid(), default);
@@ -137,7 +131,7 @@ public partial class Assembly : RigidBody3D
 	/// <summary>
 	///     Switches the assembly off (out of the physics space, hidden), as only despawning frees a creation.
 	/// </summary>
-	public void Kill()
+	internal void Kill()
 	{
 		IsKilled = true;
 		ProcessMode = ProcessModeEnum.Disabled;

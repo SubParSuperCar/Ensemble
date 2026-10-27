@@ -2,8 +2,6 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using EnsembleRoot.Common.Networking;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Scripts.Creations.Packets;
 
 [StructLayout(LayoutKind.Auto)]
@@ -14,8 +12,8 @@ public static class CreationPackets
 {
 	public const int HeaderBits = PlotIdBits + EpochBits + SequenceBits + CountBits;
 	public const int MaxPlotId = (1 << PlotIdBits) - 1;
-	public const int MaxStateCount = (1 << CountBits) - 1;
 
+	private const int MaxStateCount = (1 << CountBits) - 1;
 	private const int PlotIdBits = 8;
 	private const int EpochBits = 16;
 	private const int SequenceBits = 16;
@@ -57,7 +55,7 @@ public static class CreationPackets
 		var count = (int)reader.Read(CountBits);
 		states.Clear();
 
-		if (reader.IsOverrun || (long)count * AssemblyState.Bits > reader.RemainingBits)
+		if ((long)count * AssemblyState.Bits > reader.RemainingBits)
 			return false;
 
 		for (var i = 0; i < count; i++)

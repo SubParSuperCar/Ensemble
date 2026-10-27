@@ -5,7 +5,6 @@ using Godot;
 using Serilog;
 
 // ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
 
 namespace EnsembleRoot.Scripts.Assets;
 
@@ -83,6 +82,7 @@ public partial class AssetHandle : StaticBody3D
 			CollectPieces();
 	}
 
+	// ReSharper disable once UnusedMember.Global
 	public TComponent? GetComponent<TComponent>() where TComponent : AssetComponent =>
 		Components.OfType<TComponent>().FirstOrDefault();
 
@@ -224,7 +224,7 @@ public partial class AssetHandle : StaticBody3D
 		};
 
 	private Aabb CalculateBoundary() =>
-		Enumerable.Range(0, PieceCount).SelectMany(GetColliderBounds).ToArray() is [var first, .. var rest]
-			? rest.Aggregate(first, static (sum, aabb) => sum.Merge(aabb))
-			: default;
+		Enumerable.Range(0, PieceCount)
+			.SelectMany(GetColliderBounds)
+			.Aggregate((Aabb?)null, static (sum, aabb) => sum?.Merge(aabb) ?? aabb) ?? default;
 }

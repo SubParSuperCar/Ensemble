@@ -48,7 +48,6 @@ public partial class LiveCreation : Node3D
 		ResetStream();
 	}
 
-	// Only despawning frees a creation, so assemblies that fell out of the world are switched off instead
 	private void KillFallenAssemblies(double delta)
 	{
 		_sinceKillCheck += delta;

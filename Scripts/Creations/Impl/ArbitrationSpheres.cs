@@ -1,4 +1,5 @@
 using Godot;
+using Sphere = (Godot.Vector3 Center, float Radius);
 
 // ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 
@@ -11,8 +12,8 @@ namespace EnsembleRoot.Scripts.Creations;
 /// </summary>
 public sealed class ArbitrationSpheres
 {
-	private readonly List<(Vector3 Center, float Radius)> _candidates = [];
-	private readonly List<(Vector3 Center, float Radius)> _spheres = [];
+	private readonly List<Sphere> _candidates = [];
+	private readonly List<Sphere> _spheres = [];
 
 	private Aabb _bounds;
 
@@ -46,6 +47,6 @@ public sealed class ArbitrationSpheres
 		return false;
 	}
 
-	private static bool Touches((Vector3 Center, float Radius) sphere, Aabb box) =>
+	private static bool Touches(Sphere sphere, Aabb box) =>
 		sphere.Center.Clamp(box.Position, box.End).DistanceSquaredTo(sphere.Center) < sphere.Radius * sphere.Radius;
 }

@@ -5,21 +5,15 @@ using Godot;
 using Godot.Collections;
 using Serilog;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Scripts.Assets;
 
 [GlobalClass]
 public partial class AssetManager : Node
 {
-	// C# collections avoid interop on the placement hot path; GDScript reads them through the methods below
-	private readonly System.Collections.Generic.Dictionary<int, Aabb> _boundariesByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, string> _categoriesByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, float> _densitiesByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, string> _descriptionsByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, PieceInfo[]> _piecesByAssetId = [];
-	private readonly System.Collections.Generic.Dictionary<int, PackedScene> _scenesByAssetId = [];
+	// A C# dictionary avoids interop on the placement hot path; GDScript reads it through the methods below
+	private readonly System.Collections.Generic.Dictionary<int, AssetInfo> _assetsById = [];
 
+	// ReSharper disable once MemberCanBePrivate.Global
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxInstanceCount { get; set; }
 
@@ -39,7 +33,7 @@ public partial class AssetManager : Node
 		ScanDirectory(BuildAssetsDir);
 		GAssets.Lock();
 
-		Log.Debug("Registered {Count} asset(s)", _scenesByAssetId.Count);
+		Log.Debug("Registered {Count} asset(s)", _assetsById.Count);
 	}
 
 	public override void _ExitTree()
@@ -48,17 +42,17 @@ public partial class AssetManager : Node
 			GAssetManager = null!;
 	}
 
-	public PackedScene? GetPackedOrNull(int assetId) => _scenesByAssetId.GetValueOrDefault(assetId);
+	public PackedScene? GetPackedOrNull(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Scene;
 
 	public PackedScene GetPacked(int assetId) =>
 		GetPackedOrNull(assetId) ?? throw new KeyNotFoundException(
 			string.Create(CultureInfo.InvariantCulture, $"Packed scene with asset ID {assetId} not found."));
 
-	public Aabb GetBoundary(int assetId) => _boundariesByAssetId.GetValueOrDefault(assetId);
-	public string GetCategory(int assetId) => _categoriesByAssetId.GetValueOrDefault(assetId, string.Empty);
-	public string? GetDescription(int assetId) => _descriptionsByAssetId.GetValueOrDefault(assetId);
+	public Aabb GetBoundary(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Boundary ?? default;
+	public string GetCategory(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Category ?? string.Empty;
+	public string? GetDescription(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Description;
 
-	public int GetPieceCount(int assetId) => _piecesByAssetId.GetValueOrDefault(assetId, []).Length;
+	public int GetPieceCount(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Pieces.Length ?? 0;
 
 	/// <summary>Gets a piece's collider bounds, in its handle's space.</summary>
 	public IReadOnlyList<Aabb> GetColliderBounds(int assetId, int piece) => GetPiece(assetId, piece).Bounds;
@@ -74,12 +68,14 @@ public partial class AssetManager : Node
 	public (float Mass, Vector3 CenterOfMass) GetMass(int assetId, int piece, AssetMaterial? material)
 	{
 		var info = GetPiece(assetId, piece);
-		return ((material?.Density ?? _densitiesByAssetId.GetValueOrDefault(assetId)) * info.Volume, info.Centroid);
+		var density = material?.Density ?? _assetsById.GetValueOrDefault(assetId)?.Density ?? 0f;
+
+		return (density * info.Volume, info.Centroid);
 	}
 
 	private PieceInfo GetPiece(int assetId, int piece) =>
-		_piecesByAssetId.TryGetValue(assetId, out var pieces) && piece < pieces.Length
-			? pieces[piece]
+		_assetsById.TryGetValue(assetId, out var asset) && piece < asset.Pieces.Length
+			? asset.Pieces[piece]
 			: PieceInfo.Empty;
 
 	private void ScanDirectory(string path)
@@ -108,7 +104,6 @@ public partial class AssetManager : Node
 		if (scene is null)
 			return;
 
-		// The instance is only read, so it is freed even when reading it throws
 		var instance = scene.Instantiate();
 
 		try
@@ -125,24 +120,18 @@ public partial class AssetManager : Node
 	private void Register(AssetHandle handle, PackedScene scene, string path)
 	{
 		var id = handle.AssetId;
-		var boundary = handle.BoundaryAabb;
+		var category = path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/");
+		var description = handle.Description is { IsEmpty: false } text ? text.ToString() : null;
 		var pieces = Enumerable.Range(0, handle.PieceCount).Select(piece => GetPieceInfo(handle, piece)).ToArray();
+		var asset = new AssetInfo(scene, category, description, handle.BoundaryAabb, handle.Density, pieces);
 
 		WarnAboutStructure(handle, path);
 
-		if (!_scenesByAssetId.TryAdd(id, scene))
+		if (!_assetsById.TryAdd(id, asset))
 		{
 			Log.Warning("Skipped duplicate asset ID {AssetId} at {Path}", id, path);
 			return;
 		}
-
-		_categoriesByAssetId.Add(id, path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/"));
-		_boundariesByAssetId.Add(id, boundary);
-		_piecesByAssetId.Add(id, pieces);
-		_densitiesByAssetId.Add(id, handle.Density);
-
-		if (handle.Description is { IsEmpty: false } description)
-			_descriptionsByAssetId.Add(id, description.ToString());
 
 		var properties = new Dictionary();
 
@@ -189,7 +178,14 @@ public partial class AssetManager : Node
 					path, handle.GetPathTo(node));
 	}
 
-	// A piece's colliders and their bounds in its handle's space, and its volume and centroid
+	private sealed record AssetInfo(
+		PackedScene Scene,
+		string Category,
+		string? Description,
+		Aabb Boundary,
+		float Density,
+		PieceInfo[] Pieces);
+
 	private sealed record PieceInfo((Shape3D, Transform3D)[] Colliders, Aabb[] Bounds, float Volume, Vector3 Centroid)
 	{
 		public static PieceInfo Empty { get; } = new([], [], 0, default);

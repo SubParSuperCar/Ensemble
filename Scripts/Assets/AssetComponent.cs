@@ -1,7 +1,5 @@
 using Godot;
 
-// ReSharper disable MemberCanBeProtected.Global
-
 namespace EnsembleRoot.Scripts.Assets;
 
 /// <summary>
@@ -10,6 +8,7 @@ namespace EnsembleRoot.Scripts.Assets;
 /// </summary>
 public abstract partial class AssetComponent : Node
 {
+	// ReSharper disable once MemberCanBeProtected.Global
 	public AssetHandle Handle { get; private set; } = null!;
 
 	internal void Initialize(AssetHandle handle)

@@ -1,5 +1,4 @@
 using System.Collections.Frozen;
-using System.Text;
 using EnsembleCoreRoot.Api.Assets;
 
 namespace EnsembleCoreRoot.Assets;
@@ -34,17 +33,6 @@ public sealed class Properties(IReadOnlyDictionary<string, CoreVariant>? values 
 
 	public override string ToString() => Format(_valuesByKey);
 
-	internal static string Format(IReadOnlyCollection<KeyValuePair<string, CoreVariant>> values)
-	{
-		if (values.Count is 0)
-			return "{}";
-
-		var builder = new StringBuilder("{");
-
-		foreach (var (key, value) in values)
-			builder.Append(key).Append(": ").Append(value).Append(", ");
-
-		builder.Length -= 2;
-		return builder.Append('}').ToString();
-	}
+	internal static string Format(IEnumerable<KeyValuePair<string, CoreVariant>> values) =>
+		"{" + string.Join(", ", values.Select(static pair => $"{pair.Key}: {pair.Value}")) + "}";
 }

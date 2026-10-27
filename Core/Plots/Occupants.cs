@@ -10,8 +10,7 @@ public sealed class Occupants : IOccupants
 
 	public Occupants(Plot plot, int? maxCount = null)
 	{
-		if (maxCount is { } count and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(maxCount));
+		ThrowIfInvalidMaxCount(maxCount);
 
 		_plot = plot;
 		MaxCount = maxCount ?? Unlimited;

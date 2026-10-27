@@ -155,7 +155,7 @@ public partial class Main : Node
 	{
 		Log.Error(exception, "Failed to load {Type} during {Stage} stage", definition.Type.FullName, stage);
 
-		switch (definition.FailurePolicy)
+		switch (definition.Attribute.FailurePolicy)
 		{
 			case AutoloadFailurePolicy.LogAndContinue:
 				break;
@@ -264,8 +264,8 @@ public partial class Main : Node
 	{
 		var start = Stopwatch.GetTimestamp();
 		var definitions = AutoloadRegistry.GetAll()
-			.Where(static definition => (definition.Scope & RuntimeScope) is not AutoloadScope.None)
-			.OrderBy(static definition => definition.Order);
+			.Where(static definition => (definition.Attribute.Scope & RuntimeScope) is not AutoloadScope.None)
+			.OrderBy(static definition => definition.Attribute.Order);
 
 		var loadedCount = 0;
 
@@ -287,7 +287,7 @@ public partial class Main : Node
 
 		Log.Debug(
 			"Loading {Type}... (Scope={Scope}, Order={Order}, FailurePolicy={FailurePolicy})",
-			fullName, definition.Scope, definition.Order, definition.FailurePolicy);
+			fullName, definition.Attribute.Scope, definition.Attribute.Order, definition.Attribute.FailurePolicy);
 
 		try
 		{

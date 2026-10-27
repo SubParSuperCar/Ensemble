@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 
-// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable SwitchExpressionHandlesSomeKnownEnumValuesWithExceptionInDefault
 
 namespace EnsembleCoreRoot.Api.Assets;
@@ -46,6 +45,7 @@ public readonly struct CoreVariant : IEquatable<CoreVariant>
 		_integer = value;
 	}
 
+	// ReSharper disable once MemberCanBePrivate.Global
 	public CoreVariant(float value) : this((double)value) { }
 
 	public CoreVariant(double value) : this()

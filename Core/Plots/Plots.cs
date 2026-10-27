@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleCoreRoot.Api.Plots;
 
@@ -24,11 +23,7 @@ public sealed class Plots : IPlots
 		_defaultMaxInstanceCount = defaultMaxInstanceCount;
 	}
 
-	internal OccupantRegistry Occupants
-	{
-		get => field ??= new OccupantRegistry();
-		init;
-	}
+	internal OccupantRegistry Occupants { get; } = new();
 
 	public IReadOnlyDictionary<int, IPlot> All => _plotsById;
 	public bool IsLocked { get; private set; }
@@ -42,8 +37,6 @@ public sealed class Plots : IPlots
 			throw new InvalidOperationException("Plots registry is locked.");
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
-		ThrowIfInvalidMaxCount(maxOccupantCount);
-		ThrowIfInvalidMaxCount(maxInstanceCount);
 
 		if (_plotsById.ContainsKey(id))
 			throw new InvalidOperationException(
@@ -99,12 +92,5 @@ public sealed class Plots : IPlots
 		}
 
 		IsLocked = false;
-	}
-
-	private static void ThrowIfInvalidMaxCount(
-		int? maxCount, [CallerArgumentExpression(nameof(maxCount))] string? paramName = null)
-	{
-		if (maxCount is { } count and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(count, paramName);
 	}
 }

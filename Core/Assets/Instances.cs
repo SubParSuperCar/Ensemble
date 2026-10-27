@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleCoreRoot.Utils;
 
@@ -10,13 +11,12 @@ namespace EnsembleCoreRoot.Assets;
 public sealed class Instances : IInstances
 {
 	private readonly IAssets _assets;
-	private readonly Counts<int> _countsByAssetId = new();
+	private readonly Dictionary<int, int> _countsByAssetId = [];
 	private readonly HoleyArray<Instance> _instancesById = new();
 
 	public Instances(IAssets assets, int? maxCount = null)
 	{
-		if (maxCount is { } count and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(maxCount));
+		ThrowIfInvalidMaxCount(maxCount);
 
 		_assets = assets;
 		MaxCount = maxCount ?? Unlimited;
@@ -24,20 +24,20 @@ public sealed class Instances : IInstances
 		_instancesById.Added += (id, instance) =>
 		{
 			instance.Id = id;
-			_countsByAssetId.Increment(instance.Asset.Id);
+			CollectionsMarshal.GetValueRefOrAddDefault(_countsByAssetId, instance.Asset.Id, out _)++;
 			Added?.Invoke(instance);
 		};
 
 		_instancesById.Removed += (_, instance) =>
 		{
-			_countsByAssetId.Decrement(instance.Asset.Id);
+			_countsByAssetId[instance.Asset.Id]--;
 			Removed?.Invoke(instance);
 		};
 	}
 
 	public IEnumerable<IInstance> All => _instancesById.GetAll();
 
-	public int Count => _countsByAssetId.Total;
+	public int Count => _instancesById.Count;
 	public int MaxCount { get; }
 
 	public event Action<IInstance>? Added;
@@ -53,13 +53,10 @@ public sealed class Instances : IInstances
 
 	public IInstance Add(int assetId, Vector3 position, Quaternion rotation, int? instanceId = null)
 	{
-		if (instanceId is { } id)
-			ArgumentOutOfRangeException.ThrowIfNegative(id, nameof(instanceId));
-
 		var instance = new Instance(GetAsset(assetId), position, rotation);
 
-		if (instanceId is { } slot)
-			_instancesById.AddAt(instance, slot);
+		if (instanceId is { } id)
+			_instancesById.AddAt(instance, id);
 		else
 			_instancesById.Add(instance);
 
@@ -68,11 +65,9 @@ public sealed class Instances : IInstances
 
 	public void Remove(int instanceId)
 	{
-		if (!TryGet(instanceId, out _))
+		if (!_instancesById.Remove(instanceId))
 			throw new KeyNotFoundException(
 				string.Create(CultureInfo.InvariantCulture, $"Instance with ID {instanceId} not found."));
-
-		_instancesById.Remove(instanceId);
 	}
 
 	public void Clear()
@@ -81,7 +76,9 @@ public sealed class Instances : IInstances
 			_instancesById.Remove(instance.Id);
 	}
 
-	public Quota GetQuota(int assetId) => (_countsByAssetId.Get(assetId), GetAsset(assetId).MaxInstanceCount);
+	public Quota GetQuota(int assetId) =>
+		(_countsByAssetId.GetValueOrDefault(assetId), GetAsset(assetId).MaxInstanceCount);
+
 	public IReadOnlyDictionary<int, Quota> GetAllQuotas() => _assets.All.Keys.ToDictionary(static id => id, GetQuota);
 
 	private IAsset GetAsset(int assetId) =>

@@ -1,4 +1,3 @@
-using System.Globalization;
 using Godot;
 using Godot.Collections;
 using Serilog;
@@ -17,16 +16,8 @@ public static class NetworkActionRegistry
 
 	public static void Register<TAction>() where TAction : INetworkAction<TAction>
 	{
-		var actionId = TAction.Id;
-		var tokenCost = TAction.TokenCost;
-
-		if (tokenCost <= 0)
-			throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture,
-				$"Token cost of action with ID {actionId} must be positive, got {tokenCost}."));
-
-		if (!EntriesByActionId.TryAdd(actionId, new Entry(TAction.GetTokenCost, Execute<TAction>)))
-			throw new InvalidOperationException($"Action with ID {actionId} is already registered.");
+		if (!EntriesByActionId.TryAdd(TAction.Id, new Entry(TAction.GetTokenCost, Execute<TAction>)))
+			throw new InvalidOperationException($"Action with ID {TAction.Id} is already registered.");
 	}
 
 	public static void Submit<TAction>(this TAction action) where TAction : INetworkAction<TAction> =>
@@ -38,18 +29,18 @@ public static class NetworkActionRegistry
 			: DefaultTokenCost;
 
 	/// <summary>
-	///     Validates and applies an action. As host, rewrites it first, replacing <paramref name="payload" /> with the
-	///     rewritten action's.
+	///     Validates and applies an action. On the server, rewrites it first, replacing <paramref name="payload" />
+	///     with the rewritten action's.
 	/// </summary>
 	internal static ActionValidation Execute(
-		string actionId, ref Array<Variant> payload, ActionSource source, bool isHost)
+		string actionId, ref Array<Variant> payload, ActionSource source, bool isServer)
 	{
 		if (!EntriesByActionId.TryGetValue(actionId, out var entry))
 			return ActionValidation.Reject($"Action with ID {actionId} not found.");
 
 		try
 		{
-			return entry.Run(ref payload, source, isHost);
+			return entry.Run(ref payload, source, isServer);
 		}
 		catch (Exception exception)
 		{
@@ -58,7 +49,7 @@ public static class NetworkActionRegistry
 		}
 	}
 
-	private static ActionValidation Execute<TAction>(ref Array<Variant> payload, ActionSource source, bool isHost)
+	private static ActionValidation Execute<TAction>(ref Array<Variant> payload, ActionSource source, bool isServer)
 		where TAction : INetworkAction<TAction>
 	{
 		var action = TAction.FromPayload(payload);
@@ -67,7 +58,7 @@ public static class NetworkActionRegistry
 		if (!validation.IsValid)
 			return validation;
 
-		if (isHost)
+		if (isServer)
 		{
 			action = action.Rewrite(source);
 			payload = action.ToPayload();
@@ -77,7 +68,7 @@ public static class NetworkActionRegistry
 		return validation;
 	}
 
-	private delegate ActionValidation ExecuteHandler(ref Array<Variant> payload, ActionSource source, bool isHost);
+	private delegate ActionValidation ExecuteHandler(ref Array<Variant> payload, ActionSource source, bool isServer);
 
 	private readonly record struct Entry(Func<Array<Variant>, ActionSource, int> GetCost, ExecuteHandler Run);
 }

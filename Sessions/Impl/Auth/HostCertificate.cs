@@ -22,10 +22,9 @@ public static class HostCertificate
 		var key = new CryptoKey();
 		var certificate = new X509Certificate();
 
-		if (FileAccess.FileExists(HostKeyPath) &&
-			FileAccess.FileExists(HostCertificatePath) &&
-			key.Load(HostKeyPath) is Error.Ok &&
-			certificate.Load(HostCertificatePath) is Error.Ok)
+		if (
+			FileAccess.FileExists(HostKeyPath) && FileAccess.FileExists(HostCertificatePath) &&
+			key.Load(HostKeyPath) is Error.Ok && certificate.Load(HostCertificatePath) is Error.Ok)
 			return TlsOptions.Server(key, certificate);
 
 		Log.Debug("Creating host certificate...");

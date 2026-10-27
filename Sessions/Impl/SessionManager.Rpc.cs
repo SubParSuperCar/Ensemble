@@ -1,8 +1,7 @@
-using System.Collections.Concurrent;
 using System.Threading.RateLimiting;
 using EnsembleRoot.Sessions.Actions;
 using Serilog;
-using PendingRpc = (System.Threading.Tasks.Task<bool?> Lease, System.Action Action, System.Action? OnDropped);
+using PendingRpc = (System.Threading.Tasks.Task<bool> Lease, System.Action Action, System.Action? OnDropped);
 
 namespace EnsembleRoot.Sessions;
 
@@ -19,24 +18,13 @@ public partial class SessionManager
 		AutoReplenishment = true
 	};
 
-	private readonly HashSet<int> _kickedPeerIds = [];
-
 	// Per sender, so a lease granted out of order can't run a request before an earlier one. Main thread only.
 	private readonly Dictionary<int, Queue<PendingRpc>> _pendingRpcsByPeerId = [];
-	private readonly ConcurrentDictionary<int, TokenBucketRateLimiter> _rateLimitersByPeerId = [];
+	private readonly Dictionary<int, TokenBucketRateLimiter> _rateLimitersByPeerId = [];
 
 	/// <summary>How long a drained rate limiter takes to regain <paramref name="tokens" />, for pacing.</summary>
 	public static TimeSpan GetRefillTime(int tokens) =>
 		RateLimiterOptions.ReplenishmentPeriod * Math.Ceiling(tokens / (double)RateLimiterOptions.TokensPerPeriod);
-
-	public override void _Process(double delta)
-	{
-		if (_pendingRpcsByPeerId.Count > 0)
-			RunPendingRpcs();
-
-		UpdatePings(delta);
-		UpdateTraffic(delta);
-	}
 
 	private static void RunSafely(Action action)
 	{
@@ -50,22 +38,14 @@ public partial class SessionManager
 		}
 	}
 
-	// Null means the limiter was disposed, so the request is skipped
-	private static async Task<bool?> AcquireAsync(int senderId, TokenBucketRateLimiter limiter, int tokens)
+	private static async Task<bool> AcquireAsync(int senderId, TokenBucketRateLimiter limiter, int tokens)
 	{
-		try
-		{
-			using var lease = await limiter.AcquireAsync(tokens).ConfigureAwait(false);
+		using var lease = await limiter.AcquireAsync(tokens).ConfigureAwait(false);
 
-			if (!lease.IsAcquired)
-				Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
+		if (!lease.IsAcquired)
+			Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
 
-			return lease.IsAcquired;
-		}
-		catch (ObjectDisposedException)
-		{
-			return null;
-		}
+		return lease.IsAcquired;
 	}
 
 	private void RunPendingRpcs()
@@ -81,31 +61,25 @@ public partial class SessionManager
 				if (queue.Count is 0)
 					_pendingRpcsByPeerId.Remove(peerId);
 
-				switch (pending.Lease.Result)
-				{
-					case true:
-						RunSafely(pending.Action);
-						break;
-
-					case false when pending.OnDropped is not null:
-						RunSafely(pending.OnDropped);
-						break;
-				}
+				if (pending.Lease.Result)
+					RunSafely(pending.Action);
+				else if (pending.OnDropped is not null)
+					RunSafely(pending.OnDropped);
 			}
 	}
 
 	private void DisposeRateLimiter(int peerId)
 	{
-		if (_rateLimitersByPeerId.TryRemove(peerId, out var limiter))
+		if (_rateLimitersByPeerId.Remove(peerId, out var limiter))
 			limiter.Dispose();
 	}
 
 	private void ClearRpcState()
 	{
-		foreach (var peerId in _rateLimitersByPeerId.Keys)
-			DisposeRateLimiter(peerId);
+		foreach (var limiter in _rateLimitersByPeerId.Values)
+			limiter.Dispose();
 
-		_kickedPeerIds.Clear();
+		_rateLimitersByPeerId.Clear();
 		_pendingRpcsByPeerId.Clear();
 	}
 
@@ -118,16 +92,12 @@ public partial class SessionManager
 		if (_kickedPeerIds.Contains(senderId))
 			return;
 
-		var lease = tokens > RateLimiterOptions.TokenLimit
-			? Task.FromResult<bool?>(false)
-			: AcquireAsync(
-				senderId,
-				_rateLimitersByPeerId.GetOrAdd(senderId, static _ => new TokenBucketRateLimiter(RateLimiterOptions)),
-				tokens);
+		if (!_rateLimitersByPeerId.TryGetValue(senderId, out var limiter))
+			_rateLimitersByPeerId[senderId] = limiter = new TokenBucketRateLimiter(RateLimiterOptions);
 
 		if (!_pendingRpcsByPeerId.TryGetValue(senderId, out var queue))
 			_pendingRpcsByPeerId[senderId] = queue = [];
 
-		queue.Enqueue((lease, action, onDropped));
+		queue.Enqueue((AcquireAsync(senderId, limiter, tokens), action, onDropped));
 	}
 }

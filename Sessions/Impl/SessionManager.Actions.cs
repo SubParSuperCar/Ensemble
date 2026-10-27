@@ -42,7 +42,7 @@ public partial class SessionManager
 	[Rpc]
 	private void RpcConfirmAction(string actionId, Array<Variant> payload, int sourcePeerId)
 	{
-		var result = ExecuteAction(actionId, ref payload, sourcePeerId, false);
+		var result = ExecuteAction(actionId, ref payload, sourcePeerId);
 
 		if (!result.IsValid)
 			Log.Warning(
@@ -56,7 +56,7 @@ public partial class SessionManager
 
 	private void HandleAction(string actionId, Array<Variant> payload, int sourcePeerId)
 	{
-		var result = ExecuteAction(actionId, ref payload, sourcePeerId, true);
+		var result = ExecuteAction(actionId, ref payload, sourcePeerId);
 
 		if (result.IsValid)
 		{
@@ -75,17 +75,16 @@ public partial class SessionManager
 		// The sender may have disconnected while its request waited on the rate limiter
 		if (sourcePeerId == LocalPeerId)
 			EmitSignal(SignalName.ActionRejected, actionId, reason);
-		else if (Multiplayer.GetPeers().Contains(sourcePeerId))
+		else if (IsPeerConnected(sourcePeerId))
 			RpcId(sourcePeerId, MethodName.RpcRejectAction, actionId, reason);
 	}
 
-	private ActionValidation ExecuteAction(
-		string actionId, ref Array<Variant> payload, int sourcePeerId, bool isHost)
+	private ActionValidation ExecuteAction(string actionId, ref Array<Variant> payload, int sourcePeerId)
 	{
 		if (!_peersById.TryGetValue(sourcePeerId, out var peer))
 			return ActionValidation.Reject("Peer not registered.");
 
 		var source = new ActionSource(sourcePeerId, peer.PlayerId);
-		return NetworkActionRegistry.Execute(actionId, ref payload, source, isHost);
+		return NetworkActionRegistry.Execute(actionId, ref payload, source, IsServer);
 	}
 }

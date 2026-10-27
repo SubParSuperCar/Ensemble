@@ -9,7 +9,8 @@ public interface INetworkAction<out TSelf> where TSelf : INetworkAction<TSelf>
 	static virtual int TokenCost => NetworkActionRegistry.DefaultTokenCost;
 
 	/// <summary>
-	///     Prices a request before it is deserialized, so it must not trust the payload's shape. Costs are clamped to
+	///     Prices a request before it is deserialized, so it must not trust the payload's shape. Costs are clamped
+	///     between <see cref="NetworkActionRegistry.DefaultTokenCost" /> and
 	///     <see cref="NetworkActionRegistry.MaxTokenCost" />.
 	/// </summary>
 	static virtual int GetTokenCost(Array<Variant> payload, ActionSource source) => TSelf.TokenCost;

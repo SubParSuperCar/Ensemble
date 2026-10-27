@@ -1,25 +1,22 @@
 using System.Diagnostics;
 using Godot;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Sessions;
 
 /// <summary>
 ///     Simulates a poor connection on this peer, for testing without outside players: incoming live state (creations
-///     and characters) is delayed by <see cref="LatencyMs" /> plus up to <see cref="JitterMs" />, kept in order like
-///     ENet's ordered channels, and a <see cref="LossRate" /> share of it is dropped. Reliable traffic is untouched,
-///     since dropping it above ENet would break its guarantees.
+///     and characters) is delayed by a latency plus up to a jitter, kept in order like ENet's ordered channels, and a
+///     loss rate's share of it is dropped. Reliable traffic is untouched, since dropping it above ENet would break its
+///     guarantees.
 /// </summary>
 public static class NetworkConditions
 {
+	private static int _latencyMs;
+	private static int _jitterMs;
+	private static double _lossRate;
 	private static long _lastDueTimestamp;
 
-	public static int LatencyMs { get; private set; }
-	public static int JitterMs { get; private set; }
-	public static double LossRate { get; private set; }
-
-	public static bool IsSimulated => LatencyMs > 0 || JitterMs > 0 || LossRate > 0;
+	private static bool IsSimulated => _latencyMs > 0 || _jitterMs > 0 || _lossRate > 0;
 
 	public static void Set(int latencyMs, int jitterMs, double lossRate)
 	{
@@ -28,9 +25,9 @@ public static class NetworkConditions
 		ArgumentOutOfRangeException.ThrowIfNegative(lossRate);
 		ArgumentOutOfRangeException.ThrowIfGreaterThan(lossRate, 1d);
 
-		LatencyMs = latencyMs;
-		JitterMs = jitterMs;
-		LossRate = lossRate;
+		_latencyMs = latencyMs;
+		_jitterMs = jitterMs;
+		_lossRate = lossRate;
 	}
 
 	/// <summary>
@@ -44,11 +41,11 @@ public static class NetworkConditions
 			return;
 		}
 
-		if (Random.Shared.NextDouble() < LossRate)
+		if (Random.Shared.NextDouble() < _lossRate)
 			return;
 
 		var now = Stopwatch.GetTimestamp();
-		var delayMs = LatencyMs + Random.Shared.Next(JitterMs + 1);
+		var delayMs = _latencyMs + Random.Shared.Next(_jitterMs + 1);
 		var due = Math.Max(now + delayMs * Stopwatch.Frequency / 1000, _lastDueTimestamp);
 
 		_lastDueTimestamp = due;

@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
-using EnsembleRoot.Sessions.Api;
 using Godot;
 using Konscious.Security.Cryptography;
 using Serilog;
@@ -15,7 +14,7 @@ namespace EnsembleRoot.Sessions.Auth;
 ///     Clients of a locked host answer with the nonce's HMAC-SHA256, keyed with the password's Argon2id hash under the
 ///     host's per-session salt, so a sniffed exchange costs an attacker one Argon2id run per guessed password.
 /// </remarks>
-public sealed class HandshakeAuthenticator(string version, string? password) : IPeerAuthenticator
+public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string version, string? password)
 {
 	private const byte OpenFlag = 0;
 	private const byte LockedFlag = 1;
@@ -47,16 +46,16 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 	private bool _hasSentPassword;
 	private bool _isServer;
+	private bool _isStarted;
 	private byte[]? _key;
-	private SceneMultiplayer? _multiplayer;
 	private byte[] _salt = [];
 
 	public event Action<string>? Failed;
 
-	public void StartAuth(SceneMultiplayer multiplayer, bool isServer)
+	public void StartAuth(bool isServer)
 	{
-		_multiplayer = multiplayer;
 		_isServer = isServer;
+		_isStarted = true;
 		_hasSentPassword = false;
 
 		if (isServer && _password is not null)
@@ -72,15 +71,15 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 		multiplayer.PeerAuthenticationFailed += OnPeerAuthenticationFailed;
 	}
 
-	public void StopAuth(SceneMultiplayer multiplayer)
+	public void StopAuth()
 	{
 		multiplayer.PeerAuthenticating -= OnPeerAuthenticating;
 		multiplayer.PeerAuthenticationFailed -= OnPeerAuthenticationFailed;
 		multiplayer.AuthCallback = default;
 
+		_isStarted = false;
 		_lastFailureTimestampsByAddress.Clear();
 		_pendingChallengesByPeerId.Clear();
-		_multiplayer = null;
 	}
 
 	private void OnPeerAuthenticating(long peerId)
@@ -90,13 +89,13 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 		if (_key is null)
 		{
-			_multiplayer!.SendAuth((int)peerId, [OpenFlag, .. _version]);
-			_multiplayer.CompleteAuth((int)peerId);
+			multiplayer.SendAuth((int)peerId, [OpenFlag, .. _version]);
+			multiplayer.CompleteAuth((int)peerId);
 
 			return;
 		}
 
-		var address = GetAddress(peerId);
+		var address = GetAddressKey(peerId);
 
 		if (
 			address is not null &&
@@ -104,7 +103,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 			Stopwatch.GetElapsedTime(lastFailure) < FailureCooldown)
 		{
 			Log.Warning("Peer {PeerId} retried a password too soon", peerId);
-			_multiplayer!.DisconnectPeer((int)peerId);
+			multiplayer.DisconnectPeer((int)peerId);
 
 			return;
 		}
@@ -112,7 +111,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 		if (address is not null && CountPendingChallenges(address) >= MaxPendingPerAddress)
 		{
 			Log.Warning("Peer {PeerId} joined while its address had too many pending challenges", peerId);
-			_multiplayer!.DisconnectPeer((int)peerId);
+			multiplayer.DisconnectPeer((int)peerId);
 
 			return;
 		}
@@ -120,7 +119,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 		var nonce = RandomNumberGenerator.GetBytes(NonceSize);
 		_pendingChallengesByPeerId[peerId] = (nonce, address);
 
-		_multiplayer!.SendAuth((int)peerId, [LockedFlag, .. _salt, .. nonce, .. _version]);
+		multiplayer.SendAuth((int)peerId, [LockedFlag, .. _salt, .. nonce, .. _version]);
 	}
 
 	private void OnAuthMessage(long peerId, byte[] data)
@@ -142,12 +141,12 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 		{
 			Log.Warning("Peer {PeerId} failed password authentication", peerId);
 			RecordFailure(peerId);
-			_multiplayer!.DisconnectPeer((int)peerId);
+			multiplayer.DisconnectPeer((int)peerId);
 
 			return;
 		}
 
-		_multiplayer!.CompleteAuth((int)peerId);
+		multiplayer.CompleteAuth((int)peerId);
 	}
 
 	private void HandleClientMessage(long peerId, byte[] data)
@@ -169,7 +168,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 		if (!isLocked)
 		{
-			_multiplayer!.CompleteAuth((int)peerId);
+			multiplayer.CompleteAuth((int)peerId);
 			return;
 		}
 
@@ -185,7 +184,6 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 	// Argon2id takes about 0.1 s, so it runs off the main thread
 	private async Task AnswerAsync(long peerId, byte[] salt, byte[] nonce)
 	{
-		var multiplayer = _multiplayer;
 		byte[] key;
 
 		try
@@ -200,8 +198,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 			return;
 		}
 
-		// Stopped meanwhile
-		if (multiplayer is null || !ReferenceEquals(_multiplayer, multiplayer))
+		if (!_isStarted)
 			return;
 
 		multiplayer.SendAuth((int)peerId, HMACSHA256.HashData(key, nonce));
@@ -221,8 +218,11 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 			Failed?.Invoke(_hasSentPassword ? "Incorrect password." : "Authentication failed.");
 	}
 
-	private string? GetAddress(long peerId) =>
-		(_multiplayer?.MultiplayerPeer as ENetMultiplayerPeer)?.GetPeer((int)peerId)?.GetRemoteAddress();
+	private string? GetAddressKey(long peerId) =>
+		(multiplayer.MultiplayerPeer as ENetMultiplayerPeer)?.GetPeer((int)peerId)?.GetRemoteAddress() is { } address &&
+		AddressKey.TryCreate(address, out var key)
+			? key
+			: null;
 
 	private int CountPendingChallenges(string address) =>
 		_pendingChallengesByPeerId.Values.Count(pending =>
@@ -230,7 +230,7 @@ public sealed class HandshakeAuthenticator(string version, string? password) : I
 
 	private void RecordFailure(long peerId)
 	{
-		if (GetAddress(peerId) is not { } address)
+		if (GetAddressKey(peerId) is not { } address)
 			return;
 
 		foreach (var (stale, timestamp) in _lastFailureTimestampsByAddress)

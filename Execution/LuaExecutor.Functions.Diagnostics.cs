@@ -97,11 +97,11 @@ public static partial class LuaExecutor
 		var query = context.GetArgumentOrDefault(0, string.Empty);
 		var functions = Functions
 			.Where(entry => entry.Function.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
-			.Select(static entry => $"-> {entry.Function.Name}({entry.Parameters})");
+			.Select(static entry => $"-> {entry.Function.Name}({entry.Parameters}): {entry.Description}");
 
 		Log.Information(
-			"Custom functions (\"?\" = optional, \"|\" = or, \"loc_\" = local only, player = peer ID, player ID, " +
-			"or name):\n{Functions}",
+			"Custom functions (\"?\" = optional, \"|\" = or, \"{{...}}\" = options table, \"loc_\" = local only, " +
+			"player = peer ID, player ID, or name):\n{Functions}",
 			string.Join('\n', functions));
 
 		return context.ReturnNothing();
@@ -109,7 +109,8 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> print(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		Log.Information("Lua: \"{Message}\"", string.Join(' ', [.. context.Arguments]));
+		var values = context.Arguments.ToArray().Select(static value => LuaValueFormatter.Format(value));
+		Log.Information("Lua: \"{Message}\"", string.Join(' ', values));
 
 		return context.ReturnNothing();
 	}
@@ -130,7 +131,7 @@ public static partial class LuaExecutor
 				LuaValueType.Function => "<function>",
 				LuaValueType.UserData => "<userdata>",
 				LuaValueType.Thread => "<thread>",
-				LuaValueType.String => $"\"{EscapeString(luaValue.Read<string>())}\"",
+				LuaValueType.String => $"\"{LuaValueFormatter.Escape(luaValue.Read<string>())}\"",
 				_ => luaValue.ToString()
 			};
 
@@ -140,11 +141,4 @@ public static partial class LuaExecutor
 				DumpTable(lines, childTable!, childPath, visited);
 		}
 	}
-
-	private static string EscapeString(string value) =>
-		value
-			.Replace("\\", @"\\", StringComparison.Ordinal)
-			.Replace("\"", "\\\"", StringComparison.Ordinal)
-			.Replace("\r", "\\r", StringComparison.Ordinal)
-			.Replace("\n", "\\n", StringComparison.Ordinal);
 }

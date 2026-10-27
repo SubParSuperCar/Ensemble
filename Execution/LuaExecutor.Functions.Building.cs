@@ -27,10 +27,7 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 		}
 
-		var rotation = Quaternion.FromEuler(new Vector3(
-			float.DegreesToRadians(context.GetArgumentOrDefault(4, 0f)),
-			float.DegreesToRadians(context.GetArgumentOrDefault(5, 0f)),
-			float.DegreesToRadians(context.GetArgumentOrDefault(6, 0f)))).Normalized();
+		var rotation = context.GetRotationArguments(4);
 
 		var position = new Vector3(
 			context.GetArgumentOrDefault(1, 0f),

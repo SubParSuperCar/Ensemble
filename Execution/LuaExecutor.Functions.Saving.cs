@@ -26,7 +26,7 @@ public static partial class LuaExecutor
 	private const string BinaryExtension = ".ensb";
 	private const string JsonExtension = ".json";
 	private const string BackupSuffix = ".bak";
-	private const int MaxCreationNameLength = 64;
+	private const int MaxFileNameLength = 64;
 	private const string DeletionTitle = "Permanently Delete Saved Creation";
 
 	private static ValueTask<int> dmp_saves(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
@@ -384,22 +384,24 @@ public static partial class LuaExecutor
 		return true;
 	}
 
+	private static string? GetCreationPath(string name) => GetUserFilePath(CreationsPath, name, BinaryExtension);
+
 	// Plain names only, portable to every OS's file system
-	private static string? GetCreationPath(string name)
+	private static string? GetUserFilePath(string directory, string name, string defaultExtension)
 	{
 		if (
-			name is not { Length: > 0 and <= MaxCreationNameLength } || name[0] is '.' || name[^1] is '.' or ' ' ||
+			name is not { Length: > 0 and <= MaxFileNameLength } || name[0] is '.' || name[^1] is '.' or ' ' ||
 			!name.All(static c => char.IsAsciiLetterOrDigit(c) || c is ' ' or '-' or '_' or '.'))
 		{
 			Log.Error(
-				"Invalid creation name {Name}: use up to {Max} letters, digits, spaces, '-', '_', and '.'",
-				name, MaxCreationNameLength);
+				"Invalid name {Name}: use up to {Max} letters, digits, spaces, '-', '_', and '.'",
+				name, MaxFileNameLength);
 
 			return null;
 		}
 
-		var fileName = Path.HasExtension(name) ? name : name + BinaryExtension;
-		return Path.Join(ProjectSettings.GlobalizePath(CreationsPath), fileName);
+		var fileName = Path.HasExtension(name) ? name : name + defaultExtension;
+		return Path.Join(ProjectSettings.GlobalizePath(directory), fileName);
 	}
 
 	// TryParse also takes any number, defined or not

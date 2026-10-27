@@ -528,7 +528,8 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
 ## Lua Console and Diagnostics
 
 The in-game console (`` ` `` or `F9`) runs Lua through `LuaExecutor.ExecuteAsync`; `help()` lists every function with
-its parameters. Scripts get a 5-second blocking budget between yields.
+its parameters and what it does (`help("server")` narrows it down). Scripts get a 5-second blocking budget between
+yields, and `print` and returned values show what tables hold.
 
 | Group       | Functions                                                                                          |
 |-------------|----------------------------------------------------------------------------------------------------|
@@ -541,13 +542,27 @@ its parameters. Scripts get a 5-second blocking budget between yields.
 | Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                                 |
 | Plots       | `dmp_creation`, `dmp_plots`, `kick_occupant`, `set_plot`, `set_plot_simulator`, `set_plot_spawned` |
 | Saving      | `dmp_saves`, `load_creation`, `loc_load_creation`, `rm_creation`, `save_creation`                  |
+| Scripts     | `dmp_scripts`, `run_script` (and `require`)                                                        |
+| Sessions    | `host_mp`, `host_server`, `join_mp`, `start_sp`, `stop_servers`, `stop_session`                    |
+| Tools       | `redo`, `set_construct_asset`, `set_construct_rot`, `set_tool_on`, `undo`                          |
 | World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,              |
 |             | `set_static_shader_on`, `tp_char`                                                                  |
 
 - **Conventions:** functions log their results (`dmp_` ones dump state for reading) and return nothing unless noted,
-  e.g., `wait` returns the seconds waited. A `player` argument is a peer ID, a player ID, or a unique display name; an
-  omitted `plot_id` means the local plot; and `loc_` functions edit Core directly, skipping the network and placement
-  rules, so they only run in single-player.
+  e.g., `wait` returns the seconds waited, `host_server` its process ID, and `run_script` whatever the script returns. A
+  `player` argument is a peer ID, a player ID, or a unique display name; an omitted `plot_id` means the local plot;
+  `{...}` parameters are tables of options (`host_mp({ port = 7800, upnp = false })`), each optional; and `loc_`
+  functions edit Core directly, skipping the network and placement rules, so they only run in single-player.
+- **Sessions and tools:** `start_sp`, `host_mp`, and `join_mp` go through the same `SessionManager` calls as the menu,
+  which follows along, and default to its remembered display name, port, and UPnP choice (Lua never changes them).
+  `host_server()` starts a headless dedicated server on this machine (the same executable, plus `--path` for project
+  runs) and returns once its UDP port is bound, so `host_server() join_mp("127.0.0.1")` tests multiplayer from one
+  window; servers stop with `stop_servers()` or when the game quits, and log to the usual files.
+  `set_tool_on("construct", true)` and the `set_construct_` functions drive the tools as the tool bar does (mutex
+  included), and `undo` / `redo` walk the same history; headless servers have no tools.
+- **Scripts:** files in `user://scripts/` run with `run_script("name")` (in the calling script's environment) and load
+  as modules with `require("name")`, so setups and helpers can be kept and shared. Each console run still starts a fresh
+  Lua state, so globals don't carry over between runs.
 - **Creations:** `save_creation("name", { plot_id = 1, compression = "zstandard", level = 19, password = "secret",
   checksum = true })` saves a plot (every option is optional) to `user://creations/`, as JSON if the name ends in
   `.json` and binary (`.ensb`) otherwise. `load_creation("name", "password")` adds a save to the local plot through

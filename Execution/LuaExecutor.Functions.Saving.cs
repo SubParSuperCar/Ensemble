@@ -19,10 +19,9 @@ using TinyDialogsNet;
 
 namespace EnsembleRoot.Execution;
 
-// Creations are files in user://creations/: JSON when named *.json, binary otherwise (.ensb if no extension is given)
+// Creations are files in CreationsDir: JSON when named *.json, binary otherwise (.ensb if no extension is given)
 public static partial class LuaExecutor
 {
-	private const string CreationsPath = "user://creations";
 	private const string BinaryExtension = ".ensb";
 	private const string JsonExtension = ".json";
 	private const string BackupSuffix = ".bak";
@@ -31,7 +30,7 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> dmp_saves(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var directory = new DirectoryInfo(ProjectSettings.GlobalizePath(CreationsPath));
+		var directory = new DirectoryInfo(ProjectSettings.GlobalizePath(CreationsDir));
 		IEnumerable<FileInfo> files =
 			directory.Exists ? directory.GetFiles().OrderBy(static file => file.Name, StringComparer.Ordinal) : [];
 
@@ -202,7 +201,7 @@ public static partial class LuaExecutor
 
 		if (!File.Exists(path))
 		{
-			Log.Error("No saved creation named {Name} (see dmp_saves())", name);
+			Log.Error("No saved creation named {Name} (see {Function}())", name, nameof(dmp_saves));
 			return context.Return();
 		}
 
@@ -285,7 +284,7 @@ public static partial class LuaExecutor
 
 		if (!File.Exists(path))
 		{
-			Log.Error("No saved creation named {Name} (see dmp_saves())", name);
+			Log.Error("No saved creation named {Name} (see {Function}())", name, nameof(dmp_saves));
 			return null;
 		}
 
@@ -384,7 +383,7 @@ public static partial class LuaExecutor
 		return true;
 	}
 
-	private static string? GetCreationPath(string name) => GetUserFilePath(CreationsPath, name, BinaryExtension);
+	private static string? GetCreationPath(string name) => GetUserFilePath(CreationsDir, name, BinaryExtension);
 
 	// Plain names only, portable to every OS's file system
 	private static string? GetUserFilePath(string directory, string name, string defaultExtension)

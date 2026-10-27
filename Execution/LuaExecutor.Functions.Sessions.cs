@@ -99,8 +99,8 @@ public static partial class LuaExecutor
 		}
 
 		Log.Information(
-			"Headless server listening on port {Port} (PID {ProcessId}); join it with join_mp(\"{Address}\")",
-			port, process.Id, string.Create(CultureInfo.InvariantCulture, $"127.0.0.1:{port}"));
+			"Headless server listening on port {Port} (PID {ProcessId}); join it with {Function}(\"{Address}\")",
+			port, process.Id, nameof(join_mp), string.Create(CultureInfo.InvariantCulture, $"127.0.0.1:{port}"));
 
 		return context.Return(process.Id);
 	}
@@ -170,7 +170,7 @@ public static partial class LuaExecutor
 		if (!OS.HasFeature("template"))
 		{
 			info.ArgumentList.Add("--path");
-			info.ArgumentList.Add(ProjectSettings.GlobalizePath("res://"));
+			info.ArgumentList.Add(ProjectSettings.GlobalizePath(ResourceScheme));
 		}
 
 		info.ArgumentList.Add("--headless");

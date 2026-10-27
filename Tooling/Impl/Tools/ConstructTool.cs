@@ -339,14 +339,11 @@ public partial class ConstructTool : ToolBase
 	{
 		var increment = new Quaternion(axis, SnappingIncrementAngularRadians);
 
-		_rotation = (RotationSpace switch
+		SetRotation(RotationSpace switch
 		{
 			RotationSpace.Global => increment * _rotation,
 			RotationSpace.Local => _rotation * increment,
 			_ => throw new UnreachableException()
-		}).Normalized();
-
-		// The last evaluation was for the old rotation, so placing waits for the next one
-		_state = null;
+		});
 	}
 }

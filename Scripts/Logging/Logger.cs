@@ -120,8 +120,8 @@ public partial class Logger : Node, IAutoload
 
 	private static LoggerConfiguration CreateConfig(string logDir, bool useUserCopy, out string? syncNote)
 	{
-		syncNote = null;
-		var bytes = useUserCopy ? ReadUserAppSettings(out syncNote) : ReadAllBytesOrThrow(AppSettingsPath);
+		syncNote = useUserCopy ? SyncUserAppSettings() : null;
+		var bytes = ReadAllBytesOrThrow(useUserCopy ? UserAppSettingsPath : AppSettingsPath);
 
 		var configuration = new ConfigurationBuilder()
 			.AddJsonStream(new MemoryStream(bytes))
@@ -133,21 +133,6 @@ public partial class Logger : Node, IAutoload
 			.Build();
 
 		return CreateBaseConfig().ReadFrom.Configuration(configuration);
-	}
-
-	private static byte[] ReadUserAppSettings(out string? syncNote)
-	{
-		syncNote = null;
-
-		try
-		{
-			syncNote = SyncUserAppSettings();
-			return ReadAllBytesOrThrow(UserAppSettingsPath);
-		}
-		catch
-		{
-			return ReadAllBytesOrThrow(AppSettingsPath);
-		}
 	}
 
 	/// <summary>

@@ -29,7 +29,8 @@ public partial class ChatManager : Node, IAutoload
 	public delegate void MessageAddedEventHandler(ChatMessage message);
 
 	public const int MaxHistoryCount = 128;
-	public const long MaxLogFileBytes = 4 * 1024 * 1024;
+
+	private const long MaxLogFileBytes = 4 * 1024 * 1024;
 
 	// A month of daily logs, like the game log's retainedFileCountLimit (appsettings.json)
 	private const int MaxLogFileCount = 30;

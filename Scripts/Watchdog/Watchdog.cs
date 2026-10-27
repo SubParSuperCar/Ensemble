@@ -5,8 +5,6 @@ using EnsembleRoot.Common.Utils;
 using Godot;
 using Serilog;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Scripts.Watchdog;
 
 /// <summary>Fails fast when the main thread stops sending heartbeats for too long, i.e., when it hangs.</summary>
@@ -18,8 +16,6 @@ namespace EnsembleRoot.Scripts.Watchdog;
 [Autoload(Order = AutoloadOrder.Last, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class Watchdog : Node, IAutoload
 {
-	private const int PollIntervalMs = (int)TimeSpan.MillisecondsPerSecond;
-
 	// Four times the longest the game blocks its main thread on purpose (a Lua script's 5 s budget)
 	private const int TimeoutMissCount = 20;
 
@@ -27,19 +23,18 @@ public partial class Watchdog : Node, IAutoload
 	private static readonly StringName HangAction = "debug_hang";
 #endif
 
+	private static readonly TimeSpan PollInterval = TimeSpan.FromSeconds(1);
+
 	private static byte _heartbeatFlag;
 
 	private readonly CancellationTokenSource _cts = new();
 	private Thread? _pollThread;
-
-	public static Watchdog? Instance { get; private set; }
 
 	/// <summary>Suspends hang detection while held by any owner. Thread-safe.</summary>
 	public static OwnershipFlag Suspension { get; } = new();
 
 	public void Initialize()
 	{
-		Instance = this;
 		ProcessMode = ProcessModeEnum.Always;
 
 		Heartbeat();
@@ -51,10 +46,7 @@ public partial class Watchdog : Node, IAutoload
 	public override void _ExitTree()
 	{
 		_cts.Cancel();
-		_pollThread?.Join(PollIntervalMs);
-
-		if (ReferenceEquals(Instance, this))
-			Instance = null;
+		_pollThread?.Join(PollInterval);
 	}
 
 #if ENSEMBLE_DEBUG
@@ -70,7 +62,7 @@ public partial class Watchdog : Node, IAutoload
 
 	public override void _Process(double delta) => Heartbeat();
 
-	public static void Heartbeat() => Volatile.Write(ref _heartbeatFlag, 1);
+	private static void Heartbeat() => Volatile.Write(ref _heartbeatFlag, 1);
 
 	private static void OnMissed(int missCount)
 	{
@@ -81,7 +73,7 @@ public partial class Watchdog : Node, IAutoload
 
 		var message = string.Create(
 			CultureInfo.InvariantCulture,
-			$"Main thread missed {missCount} heartbeat(s) in ~{missCount * PollIntervalMs} ms.");
+			$"Main thread missed {missCount} heartbeat(s) in ~{(missCount * PollInterval).TotalSeconds} s.");
 
 		// FailFast shows the crash popup
 		Log.Fatal("{Message}", message);
@@ -94,7 +86,7 @@ public partial class Watchdog : Node, IAutoload
 		{
 			var missCount = 0;
 
-			while (!_cts.Token.WaitHandle.WaitOne(PollIntervalMs))
+			while (!_cts.Token.WaitHandle.WaitOne(PollInterval))
 			{
 				if (Interlocked.Exchange(ref _heartbeatFlag, 0) is 1 || Suspension.IsSet || Debugger.IsAttached)
 					missCount = 0;
@@ -102,7 +94,7 @@ public partial class Watchdog : Node, IAutoload
 					OnMissed(++missCount);
 			}
 		}
-		catch (Exception exception) when (exception is not OperationCanceledException)
+		catch (Exception exception)
 		{
 			Main.FailFast(exception);
 		}

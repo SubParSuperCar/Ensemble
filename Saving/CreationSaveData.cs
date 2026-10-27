@@ -8,7 +8,7 @@ namespace EnsembleRoot.Saving;
 public sealed class CreationSaveData
 {
 	public byte Version { get; init; } = 1;
-	public DateTimeOffset UtcCreatedAt { get; init; } = GTimeProvider.GetUtcNow();
+	public DateTimeOffset UtcCreatedAt { get; init; } = TimeProvider.System.GetUtcNow();
 
 	public List<SaveInstance> Instances { get; init; } = [];
 }

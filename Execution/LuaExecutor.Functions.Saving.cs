@@ -147,7 +147,7 @@ public static partial class LuaExecutor
 			return context.Return();
 		}
 
-		var data = SaveConverter.ToSaveData(plot.Instances.Source);
+		var data = SaveConverter.ToSaveData(plot.Instances.Source, GTimeProvider);
 		var serializer = GetSerializer(path);
 		var backupPath = File.Exists(path) ? GetBackupPath(path) : null;
 		var stopwatch = Stopwatch.StartNew();

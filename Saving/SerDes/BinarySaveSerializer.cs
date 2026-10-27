@@ -24,6 +24,10 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 	public void Serialize(Stream stream, CreationSaveData data)
 	{
+		if (data.Instances.Count > MaxInstanceCount)
+			throw new InvalidOperationException(string.Create(
+				CultureInfo.InvariantCulture, $"Saves support at most {MaxInstanceCount} instances."));
+
 		using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
 		writer.Write(Magic);
@@ -31,11 +35,6 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 		writer.Write(data.Version);
 		writer.Write(data.UtcCreatedAt.UtcTicks);
-
-		if (data.Instances.Count > MaxInstanceCount)
-			throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture, $"Saves support at most {MaxInstanceCount} instances."));
-
 		writer.Write(data.Instances.Count + 1);
 
 		foreach (var instance in data.Instances)

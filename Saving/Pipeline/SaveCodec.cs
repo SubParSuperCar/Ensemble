@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using ZstdSharp;
 
 namespace EnsembleRoot.Saving.Pipeline;
 
@@ -18,8 +19,7 @@ internal static class SaveCodec
 			var salt = SaveCrypto.CreateSalt();
 
 			var header = SaveEnvelope.WriteHeader(
-				stream, options.Compression, EncryptionType.Aes256Gcm, SaveFlags.None, default,
-				GetKdfParameters(encryption), salt);
+				stream, options.Compression, EncryptionType.Aes256Gcm, default, GetKdfParameters(encryption), salt);
 
 			SaveCrypto.Encrypt(stream, bytes, header, encryption, salt);
 			return;
@@ -31,8 +31,7 @@ internal static class SaveCodec
 			SHA256.HashData(bytes, checksum);
 
 		SaveEnvelope.WriteHeader(
-			stream, options.Compression, EncryptionType.None, options.UseChecksum ? SaveFlags.Checksum : SaveFlags.None,
-			checksum, KdfParameters.None, default);
+			stream, options.Compression, EncryptionType.None, checksum, KdfParameters.None, default);
 
 		stream.Write(bytes);
 	}
@@ -85,8 +84,21 @@ internal static class SaveCodec
 		if (decompressor is null)
 			return serializer.Deserialize(source);
 
-		using var payload = ReadToEnd(decompressor);
+		using var payload = ReadDecompressed(decompressor);
 		return serializer.Deserialize(payload);
+	}
+
+	// The decoders report corrupt data with their own exception types
+	private static MemoryStream ReadDecompressed(Stream decompressor)
+	{
+		try
+		{
+			return ReadToEnd(decompressor);
+		}
+		catch (Exception exception) when (exception is ZstdException or InvalidOperationException)
+		{
+			throw new InvalidDataException("Save data is corrupt.", exception);
+		}
 	}
 
 	// Bounds the memory a crafted file or a decompression bomb can take

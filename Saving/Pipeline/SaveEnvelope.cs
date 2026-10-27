@@ -1,8 +1,6 @@
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
-// ReSharper disable NotAccessedPositionalProperty.Global
-
 namespace EnsembleRoot.Saving.Pipeline;
 
 internal enum KdfFunction : byte
@@ -50,11 +48,11 @@ internal static class SaveEnvelope
 	private static ReadOnlySpan<byte> Magic => "ENSV"u8;
 
 	public static byte[] WriteHeader(
-		Stream stream, CompressionType compression, EncryptionType encryption, SaveFlags flags,
-		ReadOnlySpan<byte> checksum, KdfParameters kdf, ReadOnlySpan<byte> salt)
+		Stream stream, CompressionType compression, EncryptionType encryption, ReadOnlySpan<byte> checksum,
+		KdfParameters kdf, ReadOnlySpan<byte> salt)
 	{
 		var isEncrypted = encryption is not EncryptionType.None;
-		var hasChecksum = flags.HasFlag(SaveFlags.Checksum);
+		var hasChecksum = !checksum.IsEmpty;
 
 		var header = new byte[
 			PrefixSize + (hasChecksum ? ChecksumSize : 0) + (isEncrypted ? KdfBlockSize + salt.Length : 0)];
@@ -63,7 +61,7 @@ internal static class SaveEnvelope
 		header[4] = Version;
 		header[5] = (byte)compression;
 		header[6] = (byte)encryption;
-		header[7] = (byte)flags;
+		header[7] = (byte)(hasChecksum ? SaveFlags.Checksum : SaveFlags.None);
 
 		var offset = PrefixSize;
 
@@ -122,8 +120,7 @@ internal static class SaveEnvelope
 		}
 
 		if (encryption is EncryptionType.None)
-			return new Header(
-				compression, encryption, flags, checksum, KdfParameters.None, [], authenticated.ToArray());
+			return new Header(compression, encryption, checksum, KdfParameters.None, [], authenticated.ToArray());
 
 		if (encryption is not EncryptionType.Aes256Gcm)
 			throw new InvalidDataException($"Unsupported encryption type: {prefix[6]}.");
@@ -142,13 +139,12 @@ internal static class SaveEnvelope
 		stream.ReadExactly(salt);
 		authenticated.Write(salt);
 
-		return new Header(compression, encryption, flags, checksum, kdfParameters, salt, authenticated.ToArray());
+		return new Header(compression, encryption, checksum, kdfParameters, salt, authenticated.ToArray());
 	}
 
 	public readonly record struct Header(
 		CompressionType Compression,
 		EncryptionType Encryption,
-		SaveFlags Flags,
 		byte[]? Checksum,
 		KdfParameters Kdf,
 		byte[] Salt,

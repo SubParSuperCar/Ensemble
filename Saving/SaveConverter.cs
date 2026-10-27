@@ -1,16 +1,14 @@
 using EnsembleCoreRoot.Api.Assets;
 
-// ReSharper disable UnusedMember.Global
-
 namespace EnsembleRoot.Saving;
 
 public static class SaveConverter
 {
 	private const int MaxStringLength = 256;
 
-	public static CreationSaveData ToSaveData(IInstances instances)
+	public static CreationSaveData ToSaveData(IInstances instances, TimeProvider timeProvider)
 	{
-		var save = new CreationSaveData();
+		var save = new CreationSaveData { UtcCreatedAt = timeProvider.GetUtcNow() };
 
 		foreach (var instance in instances.All)
 		{

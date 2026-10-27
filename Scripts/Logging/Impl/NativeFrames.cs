@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 
-namespace EnsembleRoot.Scripts.Logging.Impl;
+namespace EnsembleRoot.Scripts.Logging;
 
 /// <summary>
 ///     Describes an exception's frames as module offsets (e.g., <c>EnsembleGame.so+0x1a2b3c</c>) under NativeAOT,

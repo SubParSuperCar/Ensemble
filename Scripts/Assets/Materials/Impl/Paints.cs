@@ -1,6 +1,6 @@
 using Godot;
 
-namespace EnsembleRoot.Scripts.Assets.Materials.Impl;
+namespace EnsembleRoot.Scripts.Assets.Materials;
 
 /// <summary>
 ///     Shares one painted material per asset material, color, and shading, so painted geometry still batches.

@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EnsembleRoot.Scripts.Sessions.Impl;
+using EnsembleRoot.Scripts.Sessions;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;
 using static EnsembleRoot.Sessions.SessionManager;

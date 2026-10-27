@@ -5,8 +5,6 @@ using EnsembleRoot.Sessions.Auth;
 using EnsembleRoot.Sessions.Nat;
 using Godot;
 
-#pragma warning disable CA1001
-
 namespace EnsembleRoot.Sessions.Transports;
 
 /// <summary>
@@ -53,9 +51,7 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 
 	public Task StopSession()
 	{
-#pragma warning disable MA0042
-		_resolveCts.Cancel();
-#pragma warning restore MA0042
+		_ = _resolveCts.CancelAsync();
 
 		// Nothing is wired up if starting failed, and disconnecting unconnected Godot signals logs errors
 		if (_peer is not { } peer)

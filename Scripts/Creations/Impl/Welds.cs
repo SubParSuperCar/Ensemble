@@ -1,7 +1,7 @@
 using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 
-namespace EnsembleRoot.Scripts.Creations.Impl;
+namespace EnsembleRoot.Scripts.Creations;
 
 /// <summary>Groups parts welded by abutting boxes (see <see cref="Obb.Abuts" />) into rigid groups.</summary>
 public static class Welds

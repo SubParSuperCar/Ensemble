@@ -3,7 +3,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Environment = System.Environment;
 
-namespace EnsembleRoot.Scripts.Logging.Impl;
+namespace EnsembleRoot.Scripts.Logging;
 
 public sealed class LogEnricher : ILogEventEnricher
 {

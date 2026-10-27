@@ -1,4 +1,4 @@
-using EnsembleRoot.Scripts.Assets.Impl;
+using EnsembleRoot.Scripts.Assets;
 using Godot;
 using Xunit;
 

@@ -1,6 +1,5 @@
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets.Materials;
-using EnsembleRoot.Scripts.Assets.Materials.Impl;
 using Godot;
 using Godot.Collections;
 

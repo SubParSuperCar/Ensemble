@@ -1,4 +1,4 @@
-using EnsembleRoot.Scripts.Chat.Impl;
+using EnsembleRoot.Scripts.Chat;
 using Godot;
 using Xunit;
 

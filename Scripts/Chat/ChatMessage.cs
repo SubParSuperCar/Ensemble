@@ -1,5 +1,4 @@
 using EnsembleRoot.Common.Text;
-using EnsembleRoot.Scripts.Chat.Impl;
 using Godot;
 using Godot.Collections;
 

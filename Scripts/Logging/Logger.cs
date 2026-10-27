@@ -4,7 +4,6 @@ using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Interop;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Common.Utils;
-using EnsembleRoot.Scripts.Logging.Impl;
 using Godot;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

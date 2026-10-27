@@ -14,7 +14,6 @@ internal sealed class HoleyArray<TValue> where TValue : class
 	private readonly List<TValue?> _items = [];
 	private int _nextFreeIndex;
 
-	// ReSharper disable once MemberCanBePrivate.Global
 	public int Count { get; private set; }
 
 	public event Action<int, TValue>? Added;
@@ -61,11 +60,10 @@ internal sealed class HoleyArray<TValue> where TValue : class
 		Added?.Invoke(index, item);
 	}
 
-	public void Remove(int index)
+	public bool Remove(int index)
 	{
 		if (!TryGet(index, out var item))
-			throw new KeyNotFoundException(
-				string.Create(CultureInfo.InvariantCulture, $"Item at index {index} not found."));
+			return false;
 
 		_items[index] = null;
 		Count--;
@@ -86,6 +84,7 @@ internal sealed class HoleyArray<TValue> where TValue : class
 		}
 
 		Removed?.Invoke(index, item);
+		return true;
 	}
 
 	private void Place(TValue item, int index)

@@ -15,7 +15,6 @@ public sealed class Plot : IPlot
 		Instances = new Instances(assets, maxInstanceCount);
 	}
 
-	// Rider's Code Cleanup moves Occupants apart from Instances; don't fight it
 	public Occupants Occupants { get; }
 
 	public int Id { get; }
@@ -26,23 +25,8 @@ public sealed class Plot : IPlot
 	public bool IsSpawned { get; private set; }
 	public event Action<bool>? IsSpawnedChanged;
 
-	public void Spawn()
-	{
-		if (IsSpawned)
-			return;
-
-		IsSpawned = true;
-		IsSpawnedChanged?.Invoke(IsSpawned);
-	}
-
-	public void Despawn()
-	{
-		if (!IsSpawned)
-			return;
-
-		IsSpawned = false;
-		IsSpawnedChanged?.Invoke(IsSpawned);
-	}
+	public void Spawn() => SetIsSpawned(true);
+	public void Despawn() => SetIsSpawned(false);
 
 	public void Reset()
 	{
@@ -53,4 +37,13 @@ public sealed class Plot : IPlot
 
 	public override string ToString() =>
 		string.Create(CultureInfo.InvariantCulture, $"Plot(id={Id}, isSpawned={IsSpawned})");
+
+	private void SetIsSpawned(bool isSpawned)
+	{
+		if (isSpawned == IsSpawned)
+			return;
+
+		IsSpawned = isSpawned;
+		IsSpawnedChanged?.Invoke(isSpawned);
+	}
 }

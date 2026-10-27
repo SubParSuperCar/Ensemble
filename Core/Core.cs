@@ -2,7 +2,6 @@ using EnsembleCoreRoot.Api;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleCoreRoot.Api.Players;
 using EnsembleCoreRoot.Api.Plots;
-using EnsembleCoreRoot.Plots;
 
 namespace EnsembleCoreRoot;
 
@@ -23,20 +22,18 @@ public sealed class Core : ICore
 		int? defaultMaxInstanceCount = null,
 		TimeProvider? timeProvider = null)
 	{
-		var occupants = new OccupantRegistry();
+		_assets = new Assets.Assets();
+		_plots = new Plots.Plots(_assets, defaultMaxOccupantCount, defaultMaxInstanceCount);
 
 		_players = new Players.Players(timeProvider);
-		_players.Added += occupants.Add;
-		_players.Removed += occupants.Remove;
+		_players.Added += _plots.Occupants.Add;
+		_players.Removed += _plots.Occupants.Remove;
 
-		if (localPlayerId is { } id)
-		{
-			_players.Add(id, localPlayerName);
-			_players.SetLocal(id);
-		}
+		if (localPlayerId is not { } id)
+			return;
 
-		_assets = new Assets.Assets();
-		_plots = new Plots.Plots(_assets, defaultMaxOccupantCount, defaultMaxInstanceCount) { Occupants = occupants };
+		_players.Add(id, localPlayerName);
+		_players.SetLocal(id);
 	}
 
 	public IPlayers Players => _players;

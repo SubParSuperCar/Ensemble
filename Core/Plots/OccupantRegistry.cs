@@ -10,13 +10,7 @@ internal sealed class OccupantRegistry
 	public bool TryGet(Guid playerId, [NotNullWhen(true)] out Occupant? occupant) =>
 		_occupantsByPlayerId.TryGetValue(playerId, out occupant);
 
-	public void Add(IPlayer player)
-	{
-		if (_occupantsByPlayerId.ContainsKey(player.Id))
-			throw new InvalidOperationException($"Occupant for player with ID {player.Id} already exists.");
-
-		_occupantsByPlayerId.Add(player.Id, new Occupant(player));
-	}
+	public void Add(IPlayer player) => _occupantsByPlayerId.Add(player.Id, new Occupant(player));
 
 	public void Remove(IPlayer player)
 	{

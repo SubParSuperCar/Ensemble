@@ -2,9 +2,4 @@ using Godot;
 
 namespace EnsembleRoot.Autoloading;
 
-public readonly record struct AutoloadDefinition(
-	Type Type,
-	AutoloadScope Scope,
-	sbyte Order,
-	AutoloadFailurePolicy FailurePolicy,
-	Func<Node> Factory);
+public readonly record struct AutoloadDefinition(Type Type, AutoloadAttribute Attribute, Func<Node> Factory);

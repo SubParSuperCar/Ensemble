@@ -26,8 +26,7 @@ public sealed class Assets : IAssets
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
 
-		if (maxInstanceCount is { } count and not Unlimited)
-			ArgumentOutOfRangeException.ThrowIfNegative(count, nameof(maxInstanceCount));
+		ThrowIfInvalidMaxCount(maxInstanceCount);
 
 		if (_assetsById.ContainsKey(id))
 			throw new InvalidOperationException(

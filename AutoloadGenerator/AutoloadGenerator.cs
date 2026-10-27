@@ -1,7 +1,7 @@
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
 
 namespace AutoloadGenerator;
@@ -12,91 +12,47 @@ public sealed class AutoloadGenerator : IIncrementalGenerator
 	private const string AttributeMetadataName = "EnsembleRoot.Autoloading.AutoloadAttribute";
 	private const string HintName = "AutoloadRegistry.g.cs";
 
-	private const string ScopePropertyName = "Scope";
-	private const string OrderPropertyName = "Order";
-	private const string FailurePolicyPropertyName = "FailurePolicy";
-
 	public void Initialize(IncrementalGeneratorInitializationContext context)
 	{
 		var autoloads = context.SyntaxProvider.ForAttributeWithMetadataName(
 			AttributeMetadataName,
 			static (_, _) => true,
-			static (target, _) =>
-			{
-				var attribute = target.Attributes[0];
-
-				return (
-					TypeName: target.TargetSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-					Scope: GetScope(attribute),
-					Order: GetOrder(attribute),
-					FailurePolicy: GetFailurePolicy(attribute));
-			});
+			static (target, _) => (
+				TypeName: target.TargetSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+				Arguments: string.Join(
+					", ",
+					target.Attributes[0].NamedArguments.Select(static argument =>
+						$"{argument.Key} = {argument.Value.ToCSharpString()}"))));
 
 		context.RegisterSourceOutput(autoloads.Collect(), Generate);
 	}
 
 	private static void Generate(
-		SourceProductionContext context,
-		ImmutableArray<(string TypeName, string Scope, string Order, string FailurePolicy)> autoloads)
+		SourceProductionContext context, ImmutableArray<(string TypeName, string Arguments)> autoloads)
 	{
-		var source = new StringBuilder();
+		var source = string.Join(
+			"\n",
+			[
+				"""
+				namespace EnsembleRoot.Autoloading;
 
-		source.AppendLine(
-			"""
-			namespace EnsembleRoot.Autoloading;
+				public static partial class AutoloadRegistry
+				{
+					public static partial AutoloadDefinition[] GetAll() =>
+					[
+				""",
+				.. autoloads
+					.OrderBy(static autoload => autoload.TypeName, StringComparer.Ordinal)
+					.Select(static autoload =>
+						$"\t\tnew(typeof({autoload.TypeName}), new() {{ {autoload.Arguments} }}, " +
+						$"static () => new {autoload.TypeName}()),"),
+				"""
+					];
+				}
 
-			public static partial class AutoloadRegistry
-			{
-				public static partial AutoloadDefinition[] GetAll() =>
-				[
-			""");
+				"""
+			]);
 
-		foreach (var autoload in autoloads.OrderBy(static autoload => autoload.TypeName, StringComparer.Ordinal))
-#pragma warning disable MA0028
-			source.AppendLine(
-#pragma warning restore MA0028
-				$"\t\tnew(typeof({autoload.TypeName}), {autoload.Scope}, {autoload.Order}, {autoload.FailurePolicy}, " +
-				$"static () => new {autoload.TypeName}()),");
-
-		source.AppendLine(
-			"""
-				];
-			}
-			""");
-
-		context.AddSource(HintName, SourceText.From(source.ToString(), Encoding.UTF8));
-	}
-
-	private static string GetScope(AttributeData attribute) =>
-		TryGetNamedArgument(attribute, ScopePropertyName, out var value)
-			? FormatEnumCast("AutoloadScope", value)
-			: "AutoloadScope.RegularClient | AutoloadScope.HeadlessServer";
-
-	private static string GetOrder(AttributeData attribute) =>
-		TryGetNamedArgument(attribute, OrderPropertyName, out var value)
-			? Convert.ToSByte(value, CultureInfo.InvariantCulture).ToString(CultureInfo.InvariantCulture)
-			: "AutoloadOrder.Standard";
-
-	private static string GetFailurePolicy(AttributeData attribute) =>
-		TryGetNamedArgument(attribute, FailurePolicyPropertyName, out var value)
-			? FormatEnumCast("AutoloadFailurePolicy", value)
-			: "AutoloadFailurePolicy.AskUser";
-
-	private static string FormatEnumCast(string type, object? value) =>
-		string.Format(
-			CultureInfo.InvariantCulture, "({0}){1}", type, Convert.ToInt32(value, CultureInfo.InvariantCulture));
-
-	private static bool TryGetNamedArgument(AttributeData attribute, string name, out object? value)
-	{
-		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-		foreach (var argument in attribute.NamedArguments)
-			if (string.Equals(argument.Key, name, StringComparison.Ordinal))
-			{
-				value = argument.Value.Value;
-				return true;
-			}
-
-		value = null;
-		return false;
+		context.AddSource(HintName, SourceText.From(source, Encoding.UTF8));
 	}
 }

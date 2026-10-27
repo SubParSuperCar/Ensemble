@@ -105,7 +105,8 @@ public partial class CharacterController : CharacterBody3D
 		{
 			var collision = GetSlideCollision(i);
 
-			if (collision.GetCollider() is not RigidBody3D { Freeze: false } body ||
+			if (
+				collision.GetCollider() is not RigidBody3D { Freeze: false } body ||
 				!IsFloorNormal(collision.GetNormal()))
 				continue;
 

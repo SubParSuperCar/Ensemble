@@ -7,8 +7,6 @@ using Godot;
 using Serilog;
 using static EnsembleRoot.Sessions.SessionManager;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Scripts.Sessions;
 
 /// <summary>
@@ -26,13 +24,14 @@ namespace EnsembleRoot.Scripts.Sessions;
 [Autoload(Order = AutoloadOrder.Late + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class CommandLineSession : Node, IAutoload
 {
-	public const string JoinArg = "join";
 	public const string MaxClientsArg = "max-clients";
-	public const string NameArg = "name";
 	public const string PasswordArg = "password";
 	public const string PortArg = "port";
 	public const string ProfanityFilterArg = "profanity-filter";
 	public const string UpnpArg = "upnp";
+
+	private const string JoinArg = "join";
+	private const string NameArg = "name";
 
 	private static readonly Dictionary<string, string> ArgAliases = new(StringComparer.OrdinalIgnoreCase)
 	{

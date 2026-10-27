@@ -17,6 +17,7 @@ public partial class PlayerHandle : Node3D
 	private static readonly StringName ResetAction = "character_reset";
 
 	private Aabb? _bodyBounds;
+	private CharacterController? _controller;
 	private GdOccupant _occupant = null!;
 	private GdPlayer _player = null!;
 	private GdPlot? _plot;
@@ -31,13 +32,9 @@ public partial class PlayerHandle : Node3D
 
 	public string Id { get; set; } = null!;
 
-	public CharacterBody3D Body => Character ?? Controller!;
+	public CharacterBody3D Body { get; private set; } = null!;
 
 	public Aabb BodyBounds => _bodyBounds ??= CalculateBodyBounds();
-
-	private CharacterBody3D? Character { get; set; }
-	private CharacterController? Controller { get; set; }
-	private PopperCam? Camera { get; set; }
 
 	private Vector3 SpawnOffset => new(0, -BodyBounds.Position.Y, 0);
 
@@ -52,37 +49,35 @@ public partial class PlayerHandle : Node3D
 
 	public override void _Ready()
 	{
-		Character = GetNode<CharacterBody3D>("Character");
-		Character.GlobalPosition = SpawnLocation;
+		Body = GetNode<CharacterBody3D>("Character");
+		Body.GlobalPosition = SpawnLocation;
 
-		var nametag = Character.GetNode<Label3D>("Nametag");
+		var nametag = Body.GetNode<Label3D>("Nametag");
 		nametag.Text = $"\"{_player.Name}\"\n({Id})\n\u2193";
 
 		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
 		{
 			// Moved by Interpolate every frame, not by physics
-			Character.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
+			Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 			return;
 		}
 
 		// Only the local body is controlled, so its script is swapped in place. Swapping invalidates the managed
 		// wrapper, so the node is fetched again by instance ID.
-		var instanceId = Character.GetInstanceId();
-		Character.SetScript(CharacterControllerScript);
-		Character = null;
+		var instanceId = Body.GetInstanceId();
+		Body.SetScript(CharacterControllerScript);
+		Body = _controller = (CharacterController)InstanceFromId(instanceId)!;
 
-		Controller = (CharacterController)InstanceFromId(instanceId)!;
+		var camera = CameraScene.Instantiate<PopperCam>();
+		AddChild(camera);
+		camera.Focus = _controller;
 
-		Camera = CameraScene.Instantiate<PopperCam>();
-		AddChild(Camera);
-		Camera.Focus = Controller;
-
-		Controller.Camera = Camera.GetNode<Camera3D>("Camera");
-		Controller.Terrain = TerrainNode;
+		_controller.Camera = camera.GetNode<Camera3D>("Camera");
+		_controller.Terrain = TerrainNode;
 
 		// The node was already ready before the swap, so the new script is started by hand
-		Controller._Ready();
-		Controller.SetPhysicsProcess(true);
+		_controller._Ready();
+		_controller.SetPhysicsProcess(true);
 	}
 
 	public override void _ExitTree()
@@ -93,7 +88,7 @@ public partial class PlayerHandle : Node3D
 
 	public override void _Process(double delta)
 	{
-		if (Controller is null)
+		if (_controller is null)
 			Interpolate(delta);
 		else
 			UpdateReset(delta);
@@ -101,7 +96,7 @@ public partial class PlayerHandle : Node3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (Controller is not null)
+		if (_controller is not null)
 			Replicate();
 	}
 
@@ -119,15 +114,14 @@ public partial class PlayerHandle : Node3D
 	// leaving the space for the move makes it a jump
 	private void Jump(Vector3 position)
 	{
-		var body = Body;
-		var rid = body.GetRid();
+		var rid = Body.GetRid();
 		var space = PhysicsServer3D.BodyGetSpace(rid);
 
 		PhysicsServer3D.BodySetSpace(rid, default);
-		body.GlobalPosition = position;
-		body.ForceUpdateTransform();
+		Body.GlobalPosition = position;
+		Body.ForceUpdateTransform();
 		PhysicsServer3D.BodySetSpace(rid, space);
-		body.ResetPhysicsInterpolation();
+		Body.ResetPhysicsInterpolation();
 	}
 
 	private void UpdateReset(double delta)
@@ -164,7 +158,7 @@ public partial class PlayerHandle : Node3D
 
 	private void ReturnToPlot()
 	{
-		if (_plot is null || Controller is null)
+		if (_plot is null || _controller is null)
 			return;
 
 		var handle = GPlotManager.GetHandle(_plot.Id);

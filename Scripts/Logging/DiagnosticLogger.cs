@@ -102,7 +102,8 @@ public partial class DiagnosticLogger : Node, IAutoload
 			}
 			catch (Exception exception)
 			{
-				Log.Error(exception, "Failed to read the Linux kernel version from {Path}", LinuxKernelVersionFilePath);
+				Log.Warning(
+					exception, "Failed to read the Linux kernel version from {Path}", LinuxKernelVersionFilePath);
 			}
 
 			Add(entries, "Shell", Environment.GetEnvironmentVariable("SHELL"));
@@ -117,10 +118,10 @@ public partial class DiagnosticLogger : Node, IAutoload
 
 	private static void AddHardwareInfo(List<Entry> entries)
 	{
-		var hwInfo = new HardwareInfo(logger: new Logger<HardwareInfo>(Logger.Factory!));
-		hwInfo.RefreshCPUList(false, includePerformanceCounter: false);
+		var hardware = new HardwareInfo(logger: new Logger<HardwareInfo>(Logger.Factory!));
+		hardware.RefreshCPUList(false, includePerformanceCounter: false);
 
-		foreach (var cpu in hwInfo.CpuList)
+		foreach (var cpu in hardware.CpuList)
 		{
 			Add(entries, "CPU", cpu.Name);
 			Add(entries, "Topology", $"{cpu.NumberOfCores}C / {cpu.NumberOfLogicalProcessors}T");
@@ -130,37 +131,37 @@ public partial class DiagnosticLogger : Node, IAutoload
 					string.Create(CultureInfo.InvariantCulture, $"{cpu.MaxClockSpeed / 1000f:F2} GHz"));
 		}
 
-		hwInfo.RefreshVideoControllerList();
-		foreach (var gpu in hwInfo.VideoControllerList)
+		hardware.RefreshVideoControllerList();
+		foreach (var gpu in hardware.VideoControllerList)
 			Add(entries, "GPU", gpu.Name);
 
-		hwInfo.RefreshMemoryStatus();
-		var totalMemory = hwInfo.MemoryStatus.TotalPhysical;
-		var usedMemory = totalMemory - hwInfo.MemoryStatus.AvailablePhysical;
+		hardware.RefreshMemoryStatus();
+		var totalMemory = hardware.MemoryStatus.TotalPhysical;
+		var usedMemory = totalMemory - hardware.MemoryStatus.AvailablePhysical;
 		Add(entries, "Memory", $"{ByteFormat.Humanize(usedMemory)} / {ByteFormat.Humanize(totalMemory)}");
 
-		hwInfo.RefreshMotherboardList();
-		if (hwInfo.MotherboardList.FirstOrDefault() is { } board)
+		hardware.RefreshMotherboardList();
+		if (hardware.MotherboardList.FirstOrDefault() is { } board)
 			Add(entries, "Board", $"{board.Manufacturer} {board.Product}");
 
-		hwInfo.RefreshBIOSList();
-		if (hwInfo.BiosList.FirstOrDefault() is { } bios)
+		hardware.RefreshBIOSList();
+		if (hardware.BiosList.FirstOrDefault() is { } bios)
 			Add(entries, "BIOS", $"{bios.Manufacturer} {bios.Version}");
 
-		hwInfo.RefreshDriveList();
-		foreach (var drive in hwInfo.DriveList.OrderBy(static drive => drive.Model, StringComparer.OrdinalIgnoreCase))
+		hardware.RefreshDriveList();
+		foreach (var drive in hardware.DriveList.OrderBy(static drive => drive.Model, StringComparer.OrdinalIgnoreCase))
 			Add(entries, "Drive", $"{drive.Model} ({ByteFormat.Humanize(drive.Size)})");
 
-		hwInfo.RefreshMonitorList();
-		foreach (var monitor in hwInfo.MonitorList)
+		hardware.RefreshMonitorList();
+		foreach (var monitor in hardware.MonitorList)
 			Add(entries, "Monitor", monitor.Name);
 
-		hwInfo.RefreshNetworkAdapterList(false, false);
-		foreach (
-			var nic in hwInfo.NetworkAdapterList
-				.Where(static adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")
-				.OrderBy(static adapter => adapter.Name, StringComparer.OrdinalIgnoreCase))
-			Add(entries, "NIC", nic.Name);
+		hardware.RefreshNetworkAdapterList(false, false);
+		var adapters = hardware.NetworkAdapterList
+			.Where(static adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")
+			.OrderBy(static adapter => adapter.Name, StringComparer.OrdinalIgnoreCase);
+		foreach (var adapter in adapters)
+			Add(entries, "NIC", adapter.Name);
 	}
 
 	private static void AddLocaleInfo(List<Entry> entries)

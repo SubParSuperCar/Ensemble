@@ -50,13 +50,13 @@ public partial class PlayerHandle
 
 	/// <summary>The local character's state, or the latest one received for another's (if any).</summary>
 	public (Vector3 Position, float Yaw)? ReplicatedState =>
-		Controller is not null ? (Body.GlobalPosition, Body.GlobalRotation.Y) :
+		_controller is not null ? (Body.GlobalPosition, Body.GlobalRotation.Y) :
 		_stateCount > 0 ? (_states[_stateCount - 1].Position, _states[_stateCount - 1].Yaw) : null;
 
 	/// <summary>Places another's character from a snapshot, unless an update already did.</summary>
 	public void RestoreReplicatedState(Vector3 position, float yaw)
 	{
-		if (Controller is not null || _stateCount > 0 || !IsValidState(position, yaw))
+		if (_controller is not null || _stateCount > 0 || !IsValidState(position, yaw))
 			return;
 
 		// Held until live states arrive, which start the timeline
@@ -200,17 +200,15 @@ public partial class PlayerHandle
 	private void Show(Vector3 position, float yaw, bool isJump)
 	{
 		// ReSharper disable once CompareOfFloatsByEqualityOperator
-		if ((!isJump && position == _shownPosition && yaw == _shownYaw) || !position.IsFinite() || !float.IsFinite(yaw))
+		if (!isJump && position == _shownPosition && yaw == _shownYaw)
 			return;
-
-		var body = Body;
 
 		if (isJump || position.DistanceTo(_shownPosition) > SnapDistance)
 			Jump(position);
 		else
-			body.GlobalPosition = position;
+			Body.GlobalPosition = position;
 
-		body.GlobalRotation = body.GlobalRotation with { Y = yaw };
+		Body.GlobalRotation = Body.GlobalRotation with { Y = yaw };
 
 		_shownPosition = position;
 		_shownYaw = yaw;

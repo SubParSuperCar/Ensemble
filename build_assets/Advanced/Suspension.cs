@@ -54,7 +54,7 @@ public partial class Suspension : AssetHandle
 		Coil.SetInstanceShaderParameter(HelixLengthParameter, length);
 	}
 
-	// The joint measures the top plate's travel from where it was built, with the plates' faces CoilLength apart
+	// The joint measures the top plate's travel from where it was built, so it takes each length less the built one
 	protected override void OnInitialized()
 	{
 		if (!IsLive)
@@ -62,11 +62,11 @@ public partial class Suspension : AssetHandle
 
 		// Nothing has moved yet, so this is the gap as built
 		var builtGap = MeasureCoil(Coil.GlobalTransform, CoilEnd.GlobalTransform);
-		var plates = BoundaryAabb.Size.Y - builtGap;
+		var builtLength = BoundaryAabb.Size.Y;
+		var plates = builtLength - builtGap;
 		var minLength = plates + MinGap;
 		var maxLength = GetNumberProperty(MaxLengthKey, minLength, MaxReach);
 		var targetLength = GetNumberProperty(TargetLengthKey, minLength, maxLength);
-		var builtLength = plates + builtGap;
 
 		var stiffness = GetNumberProperty(StiffnessKey, 0, MaxStiffness);
 		var damping = GetNumberProperty(DampingKey, 0, MaxDamping);

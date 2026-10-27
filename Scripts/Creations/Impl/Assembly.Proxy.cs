@@ -11,7 +11,8 @@ public partial class Assembly
 
 	// A velocity change beyond twice gravity's means the body hit something between the two states, so a curve would
 	// overshoot into it
-	private const float MaxCurvedAcceleration = 2 * 9.8f;
+	private static readonly float MaxCurvedAcceleration =
+		2 * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
 
 	private readonly ProxyState[] _proxyStates = new ProxyState[ProxyBufferSize];
 	private int _proxyStateCount;
@@ -36,8 +37,8 @@ public partial class Assembly
 			if (time <= latest.Time)
 				return;
 
-			// A held proxy's state has no moment of its own, so it takes this one; any other was shown at its moment, so
-			// the hold is a copy, as retiming it would drag moments already shown back toward the state before it
+			// A held proxy's state has no moment of its own, so it takes this one; any other was shown at its moment,
+			// so the hold is a copy, as retiming it would drag moments already shown back toward the state before it
 			if (time - latest.Time > 2 * interval && latest.IsAtRest)
 			{
 				if (double.IsNegativeInfinity(latest.Time))

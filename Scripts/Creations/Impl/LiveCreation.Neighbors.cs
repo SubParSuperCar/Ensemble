@@ -37,7 +37,8 @@ public partial class LiveCreation
 	internal void WakeAssemblies(Aabb bounds)
 	{
 		foreach (var assembly in _assemblies)
-			if (assembly is { IsSimulated: true, IsKilled: false, Sleeping: true } &&
+			if (
+				assembly is { IsSimulated: true, IsKilled: false, Sleeping: true } &&
 				(assembly.GlobalTransform * assembly.Bounds).Intersects(bounds))
 				assembly.Sleeping = false;
 	}

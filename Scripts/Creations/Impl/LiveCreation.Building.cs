@@ -29,7 +29,7 @@ public partial class LiveCreation
 		// A handle rides the assembly of its first welded piece, its own colliders (piece 0) unless it has none
 		var parts = instances
 			.SelectMany(static instance => GetWeldedPieces(instance.Asset.Id)
-				.Select((piece, order) => new WeldedPiece(instance, piece, order is 0)))
+				.Select((piece, order) => new WeldPart(instance, piece, order is 0)))
 			.ToList();
 
 		var groups = Welds.Group([.. parts.Select(static part => (part.Instance.Id, GetColliderBoxes(part)))]);
@@ -66,7 +66,7 @@ public partial class LiveCreation
 		return pieces is [] ? [0] : pieces;
 	}
 
-	private static Obb[] GetColliderBoxes(WeldedPiece part)
+	private static Obb[] GetColliderBoxes(WeldPart part)
 	{
 		var transform = PlotHandle.GetInstanceTransform(part.Instance);
 		var bounds = GAssetManager.GetColliderBounds(part.Instance.Asset.Id, part.Piece);
@@ -74,7 +74,7 @@ public partial class LiveCreation
 		return [.. bounds.Select(aabb => Obb.From(aabb, transform))];
 	}
 
-	private void AddAssembly(int id, WeldedPiece[] parts, Dictionary<int, AssetHandle> handles)
+	private void AddAssembly(int id, WeldPart[] parts, Dictionary<int, AssetHandle> handles)
 	{
 		var assembly = new Assembly
 		{
@@ -114,7 +114,6 @@ public partial class LiveCreation
 		_assemblies.Add(assembly);
 	}
 
-	// One weld part: an instance's piece, and whether its handle rides the piece's assembly
 	[StructLayout(LayoutKind.Auto)]
-	private readonly record struct WeldedPiece(GdInstance Instance, int Piece, bool IsRidden);
+	private readonly record struct WeldPart(GdInstance Instance, int Piece, bool IsRidden);
 }

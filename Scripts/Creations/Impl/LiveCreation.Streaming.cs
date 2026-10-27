@@ -86,7 +86,8 @@ public partial class LiveCreation
 	/// </summary>
 	internal bool TryReceive(byte[] data, bool isRelaying)
 	{
-		if (data.Length > MaxPacketBytes || !TryRead(data, out var header) ||
+		if (
+			data.Length > MaxPacketBytes || !TryRead(data, out var header) ||
 			(isRelaying && !TryTakeRelayTokens(_receivedStates.Count + 1)))
 			return false;
 
@@ -191,7 +192,8 @@ public partial class LiveCreation
 			_keepaliveIndex = (_keepaliveIndex + 1) % _assemblies.Count;
 			var assembly = _assemblies[_keepaliveIndex];
 
-			if (assembly is { IsKilled: false, Sleeping: true, Id: <= AssemblyState.MaxId } &&
+			if (
+				assembly is { IsKilled: false, Sleeping: true, Id: <= AssemblyState.MaxId } &&
 				!_awakeIds.Contains(assembly.Id))
 				_streamedStates.Add(GetState(assembly, toLocal, false));
 		}

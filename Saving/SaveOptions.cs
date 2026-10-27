@@ -1,5 +1,3 @@
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace EnsembleRoot.Saving;
 
 public enum CompressionType : byte
@@ -51,5 +49,7 @@ public sealed record LoadOptions
 	public static LoadOptions Default { get; } = new();
 
 	public string? Password { get; init; }
+
+	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 	public ReadOnlyMemory<byte>? Key { get; init; }
 }

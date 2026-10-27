@@ -26,7 +26,7 @@ internal static class CoreVariantSerializer
 	/// <summary>Reads a string written by <see cref="WriteString" />, up to a byte count.</summary>
 	public static string ReadString(BinaryReader reader, int maxByteCount)
 	{
-		var byteCount = reader.Read7BitEncodedInt();
+		var byteCount = ReadLength(reader);
 		if (byteCount < 0 || byteCount > maxByteCount)
 			throw new InvalidDataException("Invalid string length.");
 
@@ -75,5 +75,17 @@ internal static class CoreVariantSerializer
 				string.Create(CultureInfo.InvariantCulture, $"String exceeds {maxByteCount} UTF-8 bytes."));
 
 		writer.Write(value);
+	}
+
+	private static int ReadLength(BinaryReader reader)
+	{
+		try
+		{
+			return reader.Read7BitEncodedInt();
+		}
+		catch (FormatException exception)
+		{
+			throw new InvalidDataException("Invalid string length.", exception);
+		}
 	}
 }

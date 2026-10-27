@@ -34,15 +34,17 @@ public sealed class SaveTests : IDisposable
 		AssertEquivalent(original, serializer.Load(_path));
 	}
 
-	[Fact]
-	public void SaveThenLoad_WithPassword_RoundTrips()
+	[Theory]
+	[InlineData(Password, Password)]
+	[InlineData("caf\u0065\u0301", "caf\u00E9")]
+	public void SaveThenLoad_WithPassword_RoundTrips(string savePassword, string loadPassword)
 	{
 		var serializer = new BinarySaveSerializer();
 		var original = CreateSaveData();
 
-		serializer.Save(_path, original, new SaveOptions { Encryption = CreatePassword() });
+		serializer.Save(_path, original, new SaveOptions { Encryption = CreatePassword(savePassword) });
 
-		AssertEquivalent(original, serializer.Load(_path, new LoadOptions { Password = Password }));
+		AssertEquivalent(original, serializer.Load(_path, new LoadOptions { Password = loadPassword }));
 	}
 
 	[Fact]
@@ -57,17 +59,6 @@ public sealed class SaveTests : IDisposable
 
 		AssertEquivalent(original, serializer.Load(_path));
 		Assert.Empty(Directory.GetFiles(Path.GetDirectoryName(_path)!, $"{Path.GetFileName(_path)}.*.tmp"));
-	}
-
-	[Fact]
-	public void SaveThenLoad_WithPasswordInOtherNormalization_RoundTrips()
-	{
-		var serializer = new BinarySaveSerializer();
-		var original = CreateSaveData();
-
-		serializer.Save(_path, original, new SaveOptions { Encryption = CreatePassword("caf\u0065\u0301") });
-
-		AssertEquivalent(original, serializer.Load(_path, new LoadOptions { Password = "caf\u00E9" }));
 	}
 
 	[Theory]
@@ -115,6 +106,15 @@ public sealed class SaveTests : IDisposable
 
 		var exception = Assert.Throws<InvalidDataException>(() => new BinarySaveSerializer().Load(_path));
 		Assert.Contains("too large", exception.Message, StringComparison.Ordinal);
+	}
+
+	[Theory]
+	[InlineData(CompressionType.Zstandard)]
+	[InlineData(CompressionType.Brotli)]
+	public void Load_CorruptCompressedPayload_ThrowsInvalidData(CompressionType compression)
+	{
+		File.WriteAllBytes(_path, [.. "ENSV"u8, 0, (byte)compression, 0, 0, .. Enumerable.Repeat((byte)0xA5, 64)]);
+		Assert.Throws<InvalidDataException>(() => new BinarySaveSerializer().Load(_path));
 	}
 
 	[Fact]

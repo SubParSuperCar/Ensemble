@@ -39,26 +39,10 @@ public sealed class BinarySaveSerializerTests
 		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
 	}
 
-	[Fact]
-	public void Deserialize_DuplicatePropertyKey_Throws()
-	{
-		var data = CreateSaveData();
-		data.Instances[0] = new SaveInstance
-		{
-			AssetId = 1,
-			Position = Vector3.One,
-			Rotation = Quaternion.Identity,
-			Properties = new Dictionary<string, CoreVariant>(StringComparer.Ordinal) { ["a"] = 1, ["b"] = 2 }
-		};
-
-		var bytes = Serialize(data);
-		bytes[Array.LastIndexOf(bytes, (byte)'b')] = (byte)'a';
-
-		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
-	}
-
-	[Fact]
-	public void Deserialize_PropertyKeysDifferingInCase_Throws()
+	[Theory]
+	[InlineData('a')]
+	[InlineData('A')]
+	public void Deserialize_DuplicatePropertyKey_Throws(char duplicate)
 	{
 		var data = CreateSaveData();
 		data.Instances[0] = new SaveInstance
@@ -69,7 +53,7 @@ public sealed class BinarySaveSerializerTests
 		};
 
 		var bytes = Serialize(data);
-		bytes[Array.LastIndexOf(bytes, (byte)'b')] = (byte)'A';
+		bytes[Array.LastIndexOf(bytes, (byte)'b')] = (byte)duplicate;
 
 		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(bytes)));
 	}
@@ -130,8 +114,10 @@ public sealed class BinarySaveSerializerTests
 		Assert.Throws<InvalidOperationException>(() => Serialize(data));
 	}
 
-	[Fact]
-	public void Deserialize_OversizedStringLength_Throws()
+	[Theory]
+	[InlineData(new byte[] { 0xFF, 0xFF, 0x7F })]
+	[InlineData(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF })]
+	public void Deserialize_InvalidStringLength_Throws(byte[] prefix)
 	{
 		var data = CreateSaveData();
 		data.Instances[0] = new SaveInstance
@@ -143,8 +129,8 @@ public sealed class BinarySaveSerializerTests
 
 		var bytes = Serialize(data);
 
-		// Swaps the value's one-byte length prefix for a 7-bit-encoded length of 2 MiB - 1
-		byte[] corrupted = [.. bytes[..^2], 0xFF, 0xFF, 0x7F, .. bytes[^1..]];
+		// Swaps the value's one-byte length prefix for 2 MiB - 1, then for a malformed 7-bit encoding
+		byte[] corrupted = [.. bytes[..^2], .. prefix, .. bytes[^1..]];
 
 		Assert.Throws<InvalidDataException>(() => Serializer.Deserialize(new MemoryStream(corrupted)));
 	}

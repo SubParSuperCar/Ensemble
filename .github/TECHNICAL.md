@@ -318,9 +318,10 @@ through the optional `IPortMappingSession` capability) or `OfflineSession` (sing
 plugged in through `SessionManager.StartSession(ISession)`. In single-player, the same path runs locally, with the
 player acting as the server.
 
-- **Handshake.** Versions must match exactly. Password-protected hosts send a nonce that clients answer with an
-  HMAC-SHA256 of the password, so the password never crosses the network. ENet traffic is DTLS-encrypted with the
-  host's self-signed certificate, which clients don't verify yet.
+- **Handshake.** Versions must match exactly. Password-protected hosts send a salt and a nonce, which clients answer
+  with an HMAC-SHA256 keyed by the password's Argon2id hash, so the password never crosses the network and a sniffed
+  exchange costs an attacker one Argon2id run per guess. ENet traffic is DTLS-encrypted with the host's self-signed
+  certificate, which clients don't verify yet.
 - **Identity.** The host assigns every player a GUID and validates display names (alphanumeric, at most 24
   characters), replacing inappropriate ones with the default name when its profanity filter is on.
 - **Actions.** Every world change (and chat message) is a `readonly record struct` implementing

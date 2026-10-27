@@ -50,7 +50,6 @@ public partial class SessionManager : Node
 	private static readonly StringName RestartAction = "debug_session_restart";
 
 	private static readonly TimeSpan RegistrationTimeout = TimeSpan.FromSeconds(10);
-	private static readonly TimeSpan KickTimeout = TimeSpan.FromSeconds(2);
 	private static readonly TimeSpan StopTimeout = TimeSpan.FromSeconds(1);
 
 	private string _displayName = string.Empty;
@@ -83,6 +82,8 @@ public partial class SessionManager : Node
 	public int Port => Config?.Port ?? 0;
 	public bool HasPassword => !string.IsNullOrEmpty(Config?.Password);
 	public bool IsDedicated => Config is HostConfig { IsDedicated: true };
+
+	private SceneMultiplayer SceneMultiplayer => (SceneMultiplayer)Multiplayer;
 
 	public override void _EnterTree()
 	{
@@ -119,10 +120,19 @@ public partial class SessionManager : Node
 		StartSinglePlayer();
 	}
 
+	public override void _Process(double delta)
+	{
+		if (_pendingRpcsByPeerId.Count > 0)
+			RunPendingRpcs();
+
+		UpdatePings(delta);
+		UpdateTraffic(delta);
+	}
+
 	public void StartSinglePlayer(string? displayName = null)
 	{
 		Log.Debug("Starting {Class}...", nameof(OfflineSession));
-		StartSession(new OfflineSession((SceneMultiplayer)Multiplayer), displayName);
+		StartSession(new OfflineSession(SceneMultiplayer), displayName);
 	}
 
 	public void HostMultiPlayer(HostConfig config, string? displayName = null)
@@ -134,7 +144,7 @@ public partial class SessionManager : Node
 			config.MaxClientCount?.ToString(CultureInfo.InvariantCulture) ?? "Unlimited",
 			!string.IsNullOrEmpty(config.Password), config.IsDedicated, config.IsUpnpEnabled);
 
-		StartSession(new EnetSession((SceneMultiplayer)Multiplayer, config, GameVersion), displayName);
+		StartSession(new EnetSession(SceneMultiplayer, config, GameVersion), displayName);
 	}
 
 	public void JoinMultiPlayer(JoinConfig config, string? displayName = null)
@@ -143,7 +153,7 @@ public partial class SessionManager : Node
 			"Joining {Class}... (Address={Address}, Port={Port}, HasPassword={HasPassword})",
 			nameof(EnetSession), config.Address, config.Port, !string.IsNullOrEmpty(config.Password));
 
-		StartSession(new EnetSession((SceneMultiplayer)Multiplayer, config, GameVersion), displayName);
+		StartSession(new EnetSession(SceneMultiplayer, config, GameVersion), displayName);
 	}
 
 	/// <summary>Stops the current session, if any, and starts <paramref name="session" />.</summary>
@@ -161,7 +171,7 @@ public partial class SessionManager : Node
 		AttachPortMapping(session);
 
 		// Decoded objects could carry scripts from any peer; custom transports must not turn this on
-		((SceneMultiplayer)Multiplayer).AllowObjectDecoding = false;
+		SceneMultiplayer.AllowObjectDecoding = false;
 		session.StartSession();
 		stopwatch.Stop();
 
@@ -176,39 +186,8 @@ public partial class SessionManager : Node
 	/// <remarks>Deferred, so it is safe to call from session signal handlers.</remarks>
 	public void FailSession(string reason) => OnSessionFailed(reason);
 
-	public void Kick(int peerId) => Kick(peerId, string.Empty);
-
-	public void Kick(int peerId, string reason)
-	{
-		if (!IsServer || peerId == LocalPeerId || !Multiplayer.GetPeers().Contains(peerId))
-		{
-			Log.Warning("Cannot kick peer {PeerId}", peerId);
-			return;
-		}
-
-		Log.Information("Kicking peer {PeerId}... (Reason={Reason})", peerId, reason);
-		Disconnect(peerId, reason.Length is 0 ? "Kicked by host." : $"Kicked by host: {reason}");
-	}
-
 	[Rpc]
 	private void RpcEndSession(string reason) => OnSessionFailed(reason);
-
-	private void Disconnect(int peerId, string notice)
-	{
-		RpcId(peerId, MethodName.RpcEndSession, notice);
-
-		// Until disconnected, it may ignore the notice, so it gets no more updates and its requests are dropped
-		_syncedPeerIds.Remove(peerId);
-		_kickedPeerIds.Add(peerId);
-
-		var session = _session;
-
-		GetTree().CreateTimer(KickTimeout.TotalSeconds).Timeout += () =>
-		{
-			if (ReferenceEquals(_session, session) && Multiplayer.GetPeers().Contains(peerId))
-				((SceneMultiplayer)Multiplayer).DisconnectPeer(peerId);
-		};
-	}
 
 	private void EndSession(string? failureReason)
 	{
@@ -238,7 +217,7 @@ public partial class SessionManager : Node
 
 		ClearPeers();
 		ClearRpcState();
-		ClearBans();
+		ClearModeration();
 
 		UtcStartedAt = default;
 		LocalPeerId = 0;
@@ -264,6 +243,17 @@ public partial class SessionManager : Node
 		{
 			Log.Error(exception, "Failed to clean up a stopped session");
 		}
+	}
+
+	private void ScheduleForSession(TimeSpan delay, Action action)
+	{
+		var session = _session;
+
+		GetTree().CreateTimer(delay.TotalSeconds).Timeout += () =>
+		{
+			if (ReferenceEquals(_session, session))
+				action();
+		};
 	}
 
 	private void Activate()
@@ -296,14 +286,11 @@ public partial class SessionManager : Node
 		}
 
 		RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcRequestRegister, _displayName);
-
-		var session = _session;
-
-		GetTree().CreateTimer(RegistrationTimeout.TotalSeconds).Timeout += () =>
+		ScheduleForSession(RegistrationTimeout, () =>
 		{
-			if (ReferenceEquals(_session, session) && !IsActive)
+			if (!IsActive)
 				OnSessionFailed("Registration timed out.");
-		};
+		});
 	}
 
 	private void OnSessionFailed(string reason)

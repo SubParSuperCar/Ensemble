@@ -1,29 +1,39 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using System.Net;
-using System.Net.Sockets;
 using Serilog;
 
 namespace EnsembleRoot.Sessions;
 
 public partial class SessionManager
 {
-	private const string SubnetSuffix = "/64";
+	private static readonly TimeSpan KickTimeout = TimeSpan.FromSeconds(2);
 
-	// Server-side, until the session ends. IPv6 hosts pick addresses within their /64 freely, so a ban covers it.
+	// Server-side, until the session ends; keyed by AddressKey
 	private readonly HashSet<string> _bannedAddresses = new(StringComparer.Ordinal);
+
+	private readonly HashSet<int> _kickedPeerIds = [];
 
 	/// <remarks>IPv4 addresses and IPv6 /64 prefixes (e.g., <c>2001:db8::/64</c>), as unbans accept them.</remarks>
 	public IReadOnlyCollection<string> BannedAddresses => _bannedAddresses;
+
+	public void Kick(int peerId) => Kick(peerId, string.Empty);
+
+	public void Kick(int peerId, string reason)
+	{
+		if (!IsServer || !IsPeerConnected(peerId))
+		{
+			Log.Warning("Cannot kick peer {PeerId}", peerId);
+			return;
+		}
+
+		Log.Information("Kicking peer {PeerId}... (Reason={Reason})", peerId, reason);
+		Disconnect(peerId, reason.Length is 0 ? "Kicked by host." : $"Kicked by host: {reason}");
+	}
 
 	public void Ban(int peerId) => Ban(peerId, string.Empty);
 
 	/// <summary>Bans <paramref name="peerId" />'s IP address, like <see cref="BanAddress(string, string)" />.</summary>
 	public void Ban(int peerId, string reason)
 	{
-		if (
-			!IsServer || peerId == LocalPeerId || !Multiplayer.GetPeers().Contains(peerId) ||
-			_session?.GetAddress(peerId) is not { Length: > 0 } address)
+		if (!IsServer || !IsPeerConnected(peerId) || _session?.GetAddress(peerId) is not { Length: > 0 } address)
 		{
 			Log.Warning("Cannot ban peer {PeerId}", peerId);
 			return;
@@ -38,7 +48,7 @@ public partial class SessionManager
 	/// <remarks>The host is never affected, even when clients share its address.</remarks>
 	public void BanAddress(string address, string reason)
 	{
-		if (!IsServer || !TryGetBanKey(address, out var key))
+		if (!IsServer || !AddressKey.TryCreate(address, out var key))
 		{
 			Log.Warning("Cannot ban address {Address}", address);
 			return;
@@ -55,16 +65,14 @@ public partial class SessionManager
 		var notice = reason.Length is 0 ? "Banned by host." : $"Banned by host: {reason}";
 
 		foreach (var peerId in Multiplayer.GetPeers())
-		{
 			if (!_kickedPeerIds.Contains(peerId) && IsBanned(peerId))
 				Disconnect(peerId, notice);
-		}
 	}
 
 	/// <remarks>Peers already kicked by the ban are still disconnected.</remarks>
 	public void UnbanAddress(string address)
 	{
-		if (!TryGetBanKey(address, out var key) || !_bannedAddresses.Remove(key))
+		if (!AddressKey.TryCreate(address, out var key) || !_bannedAddresses.Remove(key))
 		{
 			Log.Warning("Address {Address} is not banned", address);
 			return;
@@ -76,39 +84,32 @@ public partial class SessionManager
 	public void UnbanAll()
 	{
 		Log.Information("Unbanned {Count} address(es)", _bannedAddresses.Count);
-		ClearBans();
+		_bannedAddresses.Clear();
 	}
 
 	private bool IsBanned(int peerId) =>
 		_bannedAddresses.Count > 0 && _session?.GetAddress(peerId) is { } address &&
-		TryGetBanKey(address, out var key) && _bannedAddresses.Contains(key);
+		AddressKey.TryCreate(address, out var key) && _bannedAddresses.Contains(key);
 
-	private void ClearBans() => _bannedAddresses.Clear();
-
-	// Stricter than IPAddress.TryParse, which takes shorthands like "12345" (0.0.48.57), and takes back an IPv6 key
-	private static bool TryGetBanKey(string address, [NotNullWhen(true)] out string? key)
+	private void Disconnect(int peerId, string notice)
 	{
-		key = null;
+		RpcId(peerId, MethodName.RpcEndSession, notice);
 
-		var hasSuffix = address.EndsWith(SubnetSuffix, StringComparison.Ordinal);
-		var text = hasSuffix ? address[..^SubnetSuffix.Length] : address;
+		// Until disconnected, it may ignore the notice, so it gets no more updates and its requests are dropped
+		_syncedPeerIds.Remove(peerId);
+		_kickedPeerIds.Add(peerId);
+		_pendingRpcsByPeerId.Remove(peerId);
 
-		if (!IPAddress.TryParse(text, out var ip) || ip.Equals(IPAddress.Any) || ip.Equals(IPAddress.IPv6Any))
-			return false;
-
-		if (ip.AddressFamily is AddressFamily.InterNetwork || ip.IsIPv4MappedToIPv6)
+		ScheduleForSession(KickTimeout, () =>
 		{
-			key = !hasSuffix && (ip.IsIPv4MappedToIPv6 || text.AsSpan().Count('.') is 3)
-				? ip.MapToIPv4().ToString()
-				: null;
+			if (IsPeerConnected(peerId))
+				ForceDisconnect(peerId);
+		});
+	}
 
-			return key is not null;
-		}
-
-		var bytes = ip.GetAddressBytes();
-		bytes.AsSpan(8).Clear();
-		key = string.Create(CultureInfo.InvariantCulture, $"{new IPAddress(bytes)}{SubnetSuffix}");
-
-		return true;
+	private void ClearModeration()
+	{
+		_bannedAddresses.Clear();
+		_kickedPeerIds.Clear();
 	}
 }

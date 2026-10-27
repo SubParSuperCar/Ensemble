@@ -11,12 +11,12 @@ public partial class SessionManager
 {
 	public const int MaxDisplayNameLength = 24;
 
-	private static readonly TimeSpan PingInterval = TimeSpan.FromSeconds(1);
+	private const double PingInterval = 1d;
 
 	private readonly System.Collections.Generic.Dictionary<int, Peer> _peersById = [];
 	private readonly System.Collections.Generic.Dictionary<string, Peer> _peersByPlayerId = [];
 
-	private double _sinceLastPingUpdate;
+	private double _sincePingUpdate;
 
 	/// <summary>
 	///     Host-side check of joining players' display names (e.g., a profanity filter). Rejected names are replaced
@@ -27,7 +27,7 @@ public partial class SessionManager
 	public IReadOnlyDictionary<int, Peer> Peers => _peersById;
 	public Peer? LocalPeer => GetPeer(LocalPeerId);
 
-	/// <remarks>An empty display name is valid; Core then derives one from the player ID.</remarks>
+	/// <remarks>An empty display name is valid, leaving the game to derive one from the player ID.</remarks>
 	public static bool IsValidDisplayName(string? displayName) =>
 		displayName is null ||
 		(displayName.Length <= MaxDisplayNameLength && displayName.All(char.IsAsciiLetterOrDigit));
@@ -73,9 +73,18 @@ public partial class SessionManager
 			GetPeer(peerIds[i])?.SetPing(pings[i]);
 	}
 
+	private bool IsPeerConnected(int peerId) => Multiplayer.GetPeers().Contains(peerId);
+
+	// SceneMultiplayer drops a peer it disconnects without emitting PeerDisconnected, so its player would linger
+	private void ForceDisconnect(int peerId)
+	{
+		SceneMultiplayer.DisconnectPeer(peerId);
+		OnPeerDisconnected(peerId);
+	}
+
 	private void RegisterPeer(int peerId, string displayName)
 	{
-		if (_peersById.ContainsKey(peerId) || (peerId != LocalPeerId && !Multiplayer.GetPeers().Contains(peerId)))
+		if (_peersById.ContainsKey(peerId) || (peerId != LocalPeerId && !IsPeerConnected(peerId)))
 			return;
 
 		if (!IsValidDisplayName(displayName))
@@ -102,10 +111,8 @@ public partial class SessionManager
 	{
 		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		foreach (var peerId in _peersById.Keys)
-		{
 			if (peerId != LocalPeerId && !_kickedPeerIds.Contains(peerId))
 				RpcId(peerId, method, args);
-		}
 	}
 
 	private void AddPeer(int peerId, string playerId, string displayName)
@@ -151,7 +158,7 @@ public partial class SessionManager
 		foreach (var peerId in _peersById.Keys.ToArray())
 			RemovePeer(peerId);
 
-		_sinceLastPingUpdate = 0d;
+		_sincePingUpdate = 0d;
 	}
 
 	private void UpdatePings(double delta)
@@ -159,11 +166,11 @@ public partial class SessionManager
 		if (!IsServer || _session is not { } session)
 			return;
 
-		_sinceLastPingUpdate += delta;
-		if (_sinceLastPingUpdate < PingInterval.TotalSeconds)
+		_sincePingUpdate += delta;
+		if (_sincePingUpdate < PingInterval)
 			return;
 
-		_sinceLastPingUpdate = 0d;
+		_sincePingUpdate = 0d;
 
 		foreach (var peer in _peersById.Values.Where(static peer => !peer.IsHost))
 			peer.SetPing(session.GetPing(peer.Id));
@@ -174,7 +181,6 @@ public partial class SessionManager
 			_peersById.Values.Select(static peer => peer.PingMs).ToArray());
 	}
 
-	// Clients time out their own registration, but a stalled or hostile one would otherwise keep its slot
 	private void OnPeerConnected(long id)
 	{
 		Log.Debug("Peer connected: {PeerId}", id);
@@ -192,18 +198,15 @@ public partial class SessionManager
 			return;
 		}
 
-		var session = _session;
-
-		GetTree().CreateTimer(RegistrationTimeout.TotalSeconds).Timeout += () =>
+		// Clients time out their own registration, but a stalled or hostile one would otherwise keep its slot
+		ScheduleForSession(RegistrationTimeout, () =>
 		{
-			if (
-				!ReferenceEquals(_session, session) || _peersById.ContainsKey(peerId) ||
-				!Multiplayer.GetPeers().Contains(peerId))
+			if (_peersById.ContainsKey(peerId) || !IsPeerConnected(peerId))
 				return;
 
 			Log.Warning("Peer {PeerId} didn't register in time", peerId);
-			((SceneMultiplayer)Multiplayer).DisconnectPeer(peerId);
-		};
+			ForceDisconnect(peerId);
+		});
 	}
 
 	private void OnPeerDisconnected(long id)

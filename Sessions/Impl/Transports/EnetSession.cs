@@ -23,10 +23,7 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 	private const int CloseTimeoutMs = 500;
 	private const int CloseServiceTimeoutMs = 10;
 
-#pragma warning disable CA1859
-	private readonly IPeerAuthenticator _authenticator = new HandshakeAuthenticator(version, config.Password);
-#pragma warning restore CA1859
-
+	private readonly HandshakeAuthenticator _authenticator = new(multiplayer, version, config.Password);
 	private readonly CancellationTokenSource _resolveCts = new();
 
 	private ENetMultiplayerPeer? _peer;
@@ -69,7 +66,7 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 		multiplayer.ServerDisconnected -= OnServerDisconnected;
 
 		_authenticator.Failed -= OnFailed;
-		_authenticator.StopAuth(multiplayer);
+		_authenticator.StopAuth();
 
 		Close(peer);
 		_peer = null;
@@ -139,7 +136,7 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 		}
 
 		_authenticator.Failed += OnFailed;
-		_authenticator.StartAuth(multiplayer, IsServer);
+		_authenticator.StartAuth(IsServer);
 
 		multiplayer.ConnectedToServer += OnConnectedToServer;
 		multiplayer.ConnectionFailed += OnConnectionFailed;
@@ -155,7 +152,7 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 		Started?.Invoke();
 	}
 
-	// Clients can't verify the host's self-signed certificate yet, so this stops eavesdropping and tampering only
+	// Stops eavesdroppers, not a man in the middle, as clients can't verify the host's self-signed certificate yet
 	private Error SetUpDtls(ENetConnection host, string? address) =>
 		IsServer
 			? host.DtlsServerSetup(HostCertificate.ServerOptions)

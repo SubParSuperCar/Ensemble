@@ -105,7 +105,8 @@ public sealed class UpnpPortMapping(int port) : IAsyncDisposable
 
 	private string Map()
 	{
-		if ((Upnp.UpnpResult)_upnp.Discover() is not Upnp.UpnpResult.Success ||
+		if (
+			(Upnp.UpnpResult)_upnp.Discover() is not Upnp.UpnpResult.Success ||
 			_upnp.GetGateway()?.IsValidGateway() is not true)
 			throw new InvalidOperationException("No UPnP-enabled router found.");
 

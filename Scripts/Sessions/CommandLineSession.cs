@@ -7,6 +7,8 @@ using Godot;
 using Serilog;
 using static EnsembleRoot.Sessions.SessionManager;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Scripts.Sessions;
 
 /// <summary>
@@ -24,15 +26,23 @@ namespace EnsembleRoot.Scripts.Sessions;
 [Autoload(Order = AutoloadOrder.Late + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
 public partial class CommandLineSession : Node, IAutoload
 {
+	public const string JoinArg = "join";
+	public const string MaxClientsArg = "max-clients";
+	public const string NameArg = "name";
+	public const string PasswordArg = "password";
+	public const string PortArg = "port";
+	public const string ProfanityFilterArg = "profanity-filter";
+	public const string UpnpArg = "upnp";
+
 	private static readonly Dictionary<string, string> ArgAliases = new(StringComparer.OrdinalIgnoreCase)
 	{
-		["j"] = "join",
-		["mc"] = "max-clients",
-		["n"] = "name",
-		["p"] = "port",
-		["pf"] = "profanity-filter",
-		["pw"] = "password",
-		["u"] = "upnp"
+		["j"] = JoinArg,
+		["mc"] = MaxClientsArg,
+		["n"] = NameArg,
+		["p"] = PortArg,
+		["pf"] = ProfanityFilterArg,
+		["pw"] = PasswordArg,
+		["u"] = UpnpArg
 	};
 
 	public void Initialize()
@@ -51,13 +61,13 @@ public partial class CommandLineSession : Node, IAutoload
 		// A headless server quits when its session ends; a regular client opens the menu unless asked to host or join
 		if (Main.IsHeadlessServer)
 			GSessionManager.SessionFailed += OnSessionFailed;
-		else if (!args.ContainsKey("join") && !args.ContainsKey("port"))
+		else if (!args.ContainsKey(JoinArg) && !args.ContainsKey(PortArg))
 			return;
 
-		var password = args.GetValueOrDefault("password");
-		var displayName = args.GetValueOrDefault("name");
+		var password = args.GetValueOrDefault(PasswordArg);
+		var displayName = args.GetValueOrDefault(NameArg);
 
-		if (args.GetValueOrDefault("join") is { } join)
+		if (args.GetValueOrDefault(JoinArg) is { } join)
 		{
 			if (HostEndPoint.TryParse(join, out var endPoint))
 				GSessionManager.JoinMultiPlayer(new JoinConfig(endPoint.Host, endPoint.Port, password), displayName);
@@ -66,17 +76,21 @@ public partial class CommandLineSession : Node, IAutoload
 		}
 		else
 		{
-			ProfanityFilterManager.Override = GetBool(args, "profanity-filter");
+			ProfanityFilterManager.Override = GetBool(args, ProfanityFilterArg);
 
-			var maxClientCount = GetInt(args, "max-clients") is { } count and not Unlimited ? count : (int?)null;
+			var maxClientCount = GetInt(args, MaxClientsArg) is { } count and not Unlimited ? count : (int?)null;
 			var config = new HostConfig(
-				GetInt(args, "port") ?? DefaultPort, password, maxClientCount, Main.IsHeadlessServer,
-				GetFlag(args, "upnp"));
+				GetInt(args, PortArg) ?? DefaultPort, password, maxClientCount, Main.IsHeadlessServer,
+				GetFlag(args, UpnpArg));
 
 			// A dedicated host has no player, so no name
 			GSessionManager.HostMultiPlayer(config, Main.IsHeadlessServer ? null : displayName);
 		}
 	}
+
+	/// <summary>Formats a user arg as this class reads it, e.g., to start another instance.</summary>
+	public static string FormatArg(string name, string? value = null) =>
+		value is null ? $"--{name}" : $"--{name}={value}";
 
 	public override void _ExitTree() => GSessionManager.SessionFailed -= OnSessionFailed;
 

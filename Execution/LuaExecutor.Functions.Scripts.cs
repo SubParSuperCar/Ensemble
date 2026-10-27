@@ -6,15 +6,14 @@ using Serilog;
 
 namespace EnsembleRoot.Execution;
 
-// Script files live in user://scripts/: run_script("name") runs name.lua, and require("name") loads it as a module
+// Script files live in ScriptsDir: run_script("name") runs name.lua, and require("name") loads it as a module
 public static partial class LuaExecutor
 {
-	private const string ScriptsPath = "user://scripts";
 	private const string ScriptExtension = ".lua";
 
 	private static ValueTask<int> dmp_scripts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var directory = new DirectoryInfo(ProjectSettings.GlobalizePath(ScriptsPath));
+		var directory = new DirectoryInfo(ProjectSettings.GlobalizePath(ScriptsDir));
 		IEnumerable<FileInfo> files = directory.Exists
 			? directory.GetFiles($"*{ScriptExtension}").OrderBy(static file => file.Name, StringComparer.Ordinal)
 			: [];
@@ -34,12 +33,12 @@ public static partial class LuaExecutor
 	{
 		var name = context.GetArgument<string>(0);
 
-		if (GetUserFilePath(ScriptsPath, name, ScriptExtension) is not { } path)
+		if (GetUserFilePath(ScriptsDir, name, ScriptExtension) is not { } path)
 			return context.Return();
 
 		if (!File.Exists(path))
 		{
-			Log.Error("No script named {Name} (see dmp_scripts())", name);
+			Log.Error("No script named {Name} (see {Function}())", name, nameof(dmp_scripts));
 			return context.Return();
 		}
 

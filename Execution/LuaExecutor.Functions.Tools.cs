@@ -36,7 +36,7 @@ public static partial class LuaExecutor
 			return context.ReturnNothing();
 
 		if (GAssets.GetAsset(assetId) is null)
-			Log.Error("Asset with ID {AssetId} not found (see dmp_assets())", assetId);
+			Log.Error("Asset with ID {AssetId} not found (see {Function}())", assetId, nameof(dmp_assets));
 		else
 			tools.Construct.SetAsset(assetId);
 

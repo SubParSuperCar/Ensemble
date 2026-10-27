@@ -22,7 +22,7 @@ public static partial class LuaExecutor
 
 		var state = LuaState.Create();
 		state.OpenStandardLibraries();
-		state.ModuleLoader = new ScriptModuleLoader(ProjectSettings.GlobalizePath(ScriptsPath));
+		state.ModuleLoader = new ScriptModuleLoader(ProjectSettings.GlobalizePath(ScriptsDir));
 		InjectCustomFunctions(state.Environment);
 
 		using var budget = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

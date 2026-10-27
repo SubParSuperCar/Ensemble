@@ -20,6 +20,8 @@ public static class Constants
 	public const string HostCertificatePath = UserScheme + "host.crt";
 	public const string LogDir = UserScheme + "ensemble_logs/";
 	public const string ChatLogDir = UserScheme + "chat_logs/";
+	public const string CreationsDir = UserScheme + "creations/";
+	public const string ScriptsDir = UserScheme + "scripts/";
 
 	public const string AssetsDir = ResourceScheme + "assets/";
 	public const string BuildAssetsDir = ResourceScheme + "build_assets/";

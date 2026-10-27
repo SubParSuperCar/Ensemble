@@ -171,7 +171,7 @@ public sealed record DocFile(string Name, string Path)
 	public const string RepositoryRawUrl =
 		HttpsScheme + "raw.githubusercontent.com/" + GitHubRepoPath + "/refs/heads/main/";
 
-	public const string RepositoryBlobUrl = HttpsScheme + "github.com/" + GitHubRepoPath + "/blob/main/";
+	public const string RepositoryBlobUrl = GitHubRepoUrl + "/blob/main/";
 
 	public string Uri => RepositoryRawUrl + Path;
 }

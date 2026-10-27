@@ -149,8 +149,9 @@ exposes the local player's state (`LocalPlot`, `IsPlotOwner`, `IsLocalPlotSpawne
 Godot only needs the files that define its script classes, so only each Godot class's main file is visible to it:
 
 - Folders named `Impl/` hold partial classes and plain C# types, hidden from Godot by a `.gdignore` file in each (Godot
-  has no global ignore list, so every such folder carries its own). They keep their class's namespace; plain types in
-  their subfolders get sub-namespaces (`Scripts/Creations/Impl/Packets/` is `EnsembleRoot.Scripts.Creations.Packets`).
+  has no global ignore list, so every such folder carries its own). `Impl` never appears in a namespace: partials keep
+  their class's, and plain types take their folder's (`Scripts/Creations/Impl/Welds.cs` is in
+  `EnsembleRoot.Scripts.Creations`, and `Scripts/Creations/Impl/Packets/` is `EnsembleRoot.Scripts.Creations.Packets`).
 - Pure C# modules (`Core/`, `Common/`, `Saving/`, `Autoloading/`, `Execution/`, `Replication/`, `Globals/`, `Tests/`)
   are hidden whole.
 - Every visible script has a committed `.uid` sidecar, which scenes and resources reference.
@@ -316,7 +317,8 @@ theorem over a spatial hash of each plot's boxes, so previews slide out of colli
 `SessionManager` drives one `ISession` transport at a time: `EnetSession` (multiplayer over ENet, which also owns UPnP
 through the optional `IPortMappingSession` capability) or `OfflineSession` (single-player). Other transports can be
 plugged in through `SessionManager.StartSession(ISession)`. In single-player, the same path runs locally, with the
-player acting as the server.
+player acting as the server. Clients only ever talk to the host: Godot's server relay is off, so whatever other peers
+need (actions, characters, live creations) reaches them through the host's checks.
 
 - **Handshake.** Versions must match exactly. Password-protected hosts send a salt and a nonce, which clients answer
   with an HMAC-SHA256 keyed by the password's Argon2id hash, so the password never crosses the network and a sniffed

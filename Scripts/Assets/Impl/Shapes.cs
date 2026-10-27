@@ -1,6 +1,6 @@
 using Godot;
 
-namespace EnsembleRoot.Scripts.Assets.Impl;
+namespace EnsembleRoot.Scripts.Assets;
 
 public static class Shapes
 {

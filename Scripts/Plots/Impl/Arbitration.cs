@@ -1,4 +1,4 @@
-namespace EnsembleRoot.Scripts.Plots.Impl;
+namespace EnsembleRoot.Scripts.Plots;
 
 /// <summary>Groups plots whose creations are close, so each group's creations can share one simulator.</summary>
 public static class Arbitration

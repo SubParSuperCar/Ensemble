@@ -1,5 +1,5 @@
-using EnsembleRoot.Scripts.Creations.Impl;
-using EnsembleRoot.Scripts.Plots.Impl;
+using EnsembleRoot.Scripts.Creations;
+using EnsembleRoot.Scripts.Plots;
 using Godot;
 using Xunit;
 

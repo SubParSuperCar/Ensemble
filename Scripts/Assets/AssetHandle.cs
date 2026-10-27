@@ -1,5 +1,4 @@
 using EnsembleRoot.GdCore.Assets;
-using EnsembleRoot.Scripts.Assets.Impl;
 using EnsembleRoot.Scripts.Creations;
 using EnsembleRoot.Scripts.Plots;
 using Godot;

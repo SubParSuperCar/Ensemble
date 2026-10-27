@@ -1,7 +1,7 @@
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Common.Utils;
 
-namespace EnsembleRoot.Scripts.Sessions.Impl;
+namespace EnsembleRoot.Scripts.Sessions;
 
 // Passwords aren't remembered, since the user data is plain text
 public static class SessionPreferences

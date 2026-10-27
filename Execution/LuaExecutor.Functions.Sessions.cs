@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Net.NetworkInformation;
 using EnsembleRoot.Common.Networking;
-using EnsembleRoot.Scripts.Sessions.Impl;
+using EnsembleRoot.Scripts.Sessions;
 using EnsembleRoot.Sessions.Api;
 using Godot;
 using Lua;

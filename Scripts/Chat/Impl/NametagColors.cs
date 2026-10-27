@@ -1,7 +1,7 @@
 using System.Text;
 using Godot;
 
-namespace EnsembleRoot.Scripts.Chat.Impl;
+namespace EnsembleRoot.Scripts.Chat;
 
 /// <summary>Picks a display name's chat nametag color, like Roblox's legacy chat did.</summary>
 /// <remarks>Ported from Baja Builders' Luau, edited from https://devforum.roblox.com/t/957515.</remarks>

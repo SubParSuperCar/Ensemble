@@ -44,6 +44,7 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 	private readonly Dictionary<long, (byte[] Nonce, string? Address)> _pendingChallengesByPeerId = [];
 	private readonly byte[] _version = Encoding.UTF8.GetBytes(version);
 
+	private bool _hasAnswered;
 	private bool _hasSentPassword;
 	private bool _isServer;
 	private bool _isStarted;
@@ -56,6 +57,7 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 	{
 		_isServer = isServer;
 		_isStarted = true;
+		_hasAnswered = false;
 		_hasSentPassword = false;
 
 		if (isServer && _password is not null)
@@ -178,6 +180,11 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 			return;
 		}
 
+		// Only the first challenge is answered, so a hostile host can't queue Argon2id runs
+		if (_hasAnswered)
+			return;
+
+		_hasAnswered = true;
 		_ = AnswerAsync(peerId, data[1..(1 + SaltSize)], data[(1 + SaltSize)..headerSize]);
 	}
 

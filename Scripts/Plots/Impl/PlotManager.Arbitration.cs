@@ -1,6 +1,5 @@
 using System.Runtime.InteropServices;
 using EnsembleRoot.Scripts.Creations;
-using EnsembleRoot.Scripts.Plots.Impl;
 using Serilog;
 
 namespace EnsembleRoot.Scripts.Plots;

@@ -1,6 +1,6 @@
 <linker>
   <assembly fullname="EnsembleGame">
-    <type fullname="EnsembleRoot.Scripts.Logging.Impl.Hooks" preserve="all"/>
+    <type fullname="EnsembleRoot.Scripts.Logging.Hooks" preserve="all"/>
   </assembly>
 
   <assembly fullname="EnsembleEstragonia" preserve="all"/>

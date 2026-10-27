@@ -1,6 +1,6 @@
 using Serilog.Sinks.File.Header;
 
-namespace EnsembleRoot.Scripts.Logging.Impl;
+namespace EnsembleRoot.Scripts.Logging;
 
 public static class Hooks
 {

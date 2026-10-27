@@ -170,8 +170,10 @@ public partial class SessionManager : Node
 		session.Failed += OnSessionFailed;
 		AttachPortMapping(session);
 
-		// Decoded objects could carry scripts from any peer; custom transports must not turn this on
+		// Decoded objects could carry scripts from any peer, and the server relay would let clients reach each other
+		// past the host's checks; custom transports must not turn either on
 		SceneMultiplayer.AllowObjectDecoding = false;
+		SceneMultiplayer.ServerRelay = false;
 		session.StartSession();
 		stopwatch.Stop();
 

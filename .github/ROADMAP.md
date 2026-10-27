@@ -78,7 +78,7 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
 - (WIP) (S) Peer UI - ping column and host kick / IP ban context menu in the player list done (reason box TODO);
   server info panel next
 - [x] (S) DTLS - ENet traffic is encrypted with the host's self-signed certificate (created once, kept in `user://`);
-  clients don't verify it yet, so it stops eavesdropping and tampering, not impersonation
+  clients don't verify it yet, so it stops eavesdroppers, not a man in the middle
 - [ ] (S) Host certificate pinning - clients remember a host's certificate on first join and warn if it changes
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or `--join=HOST:P`)
 - [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
@@ -117,6 +117,11 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   times their bounds) share one simulator, their largest's, until they've been apart for 2 s (0.55.0)
 - [x] (M) Asset pieces and authored joints - `AssetPiece` children move on their own, linked by Godot joints authored
   in the asset's scene (the first: Suspension, with its coil)
+- [ ] (S) Suspension length constraints and units - its length properties use in-game units, the same as
+  ConstructTool's snapping (one grid unit, 0.5 m), not meters:
+    - [ ] Target length (`targetLength`) - valid from the current minimum length to 4, end to end
+    - [ ] Maximum length (`maxLength`) - valid from the current minimum length to 4, end to end, with `0` meaning
+      uncapped
 - [x] (S) Terrain collision everywhere - Terrain3D builds its whole collision up front, so bodies far from the local
   character (another peer's creation, or a dedicated host's) stay on the ground
 - (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass
@@ -172,6 +177,11 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build warnings
 - [x] (S) Dedicated 3D physics layers - World, Character, Static Instances, and Dynamic Instances
 - [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
+- [ ] (S) Save serialization improvements
+    - [ ] Leave null-valued properties (e.g., `Properties: null`) out of the JSON format, for slightly smaller files
+    - [ ] Decide whether the JSON should stay pretty-printed and indented (it is now)
+    - [ ] Review whether a magic value belongs at the start of the file (the envelope's `ENSV`, and the binary
+      payload's own `ENSB` inside it)
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 

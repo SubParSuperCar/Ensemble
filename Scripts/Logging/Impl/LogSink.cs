@@ -4,7 +4,7 @@ using Godot;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace EnsembleRoot.Scripts.Logging.Impl;
+namespace EnsembleRoot.Scripts.Logging;
 
 public sealed class LogSink : ILogEventSink
 {

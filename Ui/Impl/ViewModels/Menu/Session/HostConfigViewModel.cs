@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Text;
 using EnsembleRoot.Scripts.Profanity;
-using EnsembleRoot.Scripts.Sessions.Impl;
+using EnsembleRoot.Scripts.Sessions;
 using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Ui.Impl.Abstractions;
 using EnsembleRoot.Ui.Impl.Services;

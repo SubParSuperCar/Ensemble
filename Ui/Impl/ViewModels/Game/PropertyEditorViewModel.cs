@@ -38,6 +38,7 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 	// Where the Asset Selector opens, as their tools are rarely enabled together
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 21, 7, 11))
 	{
+		Title = "Prop. Editor",
 		Description = "Lets you view and edit the selected assets' properties.",
 		MinSize = new Size(320, 192)
 	};

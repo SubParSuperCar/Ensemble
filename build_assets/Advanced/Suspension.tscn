@@ -44,9 +44,9 @@ AssetName = &"Suspension"
 Description = &"A boingy sproingy."
 Properties = Dictionary[StringName, Variant]({
 &"damping": 50.0,
-&"maxLength": 2.0,
+&"maxLength": 0.0,
 &"stiffness": 2000.0,
-&"targetLength": 1.0
+&"targetLength": 2.0
 })
 MaxInstanceCount = 250
 

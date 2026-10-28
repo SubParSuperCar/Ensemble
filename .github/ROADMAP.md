@@ -117,10 +117,10 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   times their bounds) share one simulator, their largest's, until they've been apart for 2 s (0.55.0)
 - [x] (M) Asset pieces and authored joints - `AssetPiece` children move on their own, linked by Godot joints authored
   in the asset's scene (the first: Suspension, with its coil)
-- [ ] (S) Suspension length constraints and units - its length properties use in-game units, the same as
-  ConstructTool's snapping (one grid unit, 0.5 m), not meters:
-    - [ ] Target length (`targetLength`) - valid from the current minimum length to 4, end to end
-    - [ ] Maximum length (`maxLength`) - valid from the current minimum length to 4, end to end, with `0` meaning
+- [x] (S) Suspension length constraints and units - its length properties use in-game units, the same as
+  ConstructTool's snapping (one grid unit, 0.5 m), not meters (`AssetHandle.GetLengthProperty`):
+    - [x] Target length (`targetLength`) - valid from the current minimum length to 8 (4 m), end to end
+    - [x] Maximum length (`maxLength`) - valid from the current minimum length to 8, end to end, with `0` meaning
       uncapped
 - [x] (S) Terrain collision everywhere - Terrain3D builds its whole collision up front, so bodies far from the local
   character (another peer's creation, or a dedicated host's) stay on the ground

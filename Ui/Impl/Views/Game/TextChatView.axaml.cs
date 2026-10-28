@@ -7,6 +7,7 @@ using Avalonia.Media.Immutable;
 using Avalonia.Styling;
 using Avalonia.Threading;
 using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.Extensions;
 using EnsembleRoot.Ui.ViewModels;
 
@@ -14,15 +15,13 @@ namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewModel>
 {
-	// Starts stuck, so the history lands at the bottom however late layout settles
-	private bool _shouldScrollToBottom = true;
 	private TextChatViewModel? _viewModel;
 
 	public TextChatView()
 	{
 		InitializeComponent();
 
-		ChatScroll.ScrollChanged += OnChatScrollChanged;
+		StickyBottom.Apply(ChatScroll, ChatLog);
 		ActualThemeVariantChanged += OnActualThemeVariantChanged;
 	}
 
@@ -121,20 +120,5 @@ public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewMod
 
 		e.Handled = true;
 		TopLevel.GetTopLevel(this)?.FocusManager.Focus(null);
-	}
-
-	// Sticks to the bottom while messages arrive or the view resizes, until the user scrolls up
-	private void OnChatScrollChanged(object? sender, ScrollChangedEventArgs e)
-	{
-		if (e.ExtentDelta.Y > 0 || e.ViewportDelta.Y is not 0)
-		{
-			if (_shouldScrollToBottom)
-				ChatScroll.ScrollToEnd();
-
-			return;
-		}
-
-		var distanceToBottom = ChatScroll.Extent.Height - ChatScroll.Offset.Y - ChatScroll.Viewport.Height;
-		_shouldScrollToBottom = distanceToBottom <= ChatLog.FontSize;
 	}
 }

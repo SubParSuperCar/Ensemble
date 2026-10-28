@@ -32,11 +32,8 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 	private void OnItemsSizeChanged(object? sender, SizeChangedEventArgs e) =>
 		Items.Resources[NameMaxWidthKey] = e.NewSize.Width * NameWidthShare;
 
-	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e)
-	{
-		if (DataContext is PropertyEditorViewModel viewModel)
-			viewModel.FilterQuery = string.Empty;
-	}
+	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) =>
+		(DataContext as PropertyEditorViewModel)?.FilterQuery = string.Empty;
 
 	// Enter commits an edit by dropping focus, and Escape drops it after reverting the editor
 	private void OnItemsKeyDown(object? sender, KeyEventArgs e)

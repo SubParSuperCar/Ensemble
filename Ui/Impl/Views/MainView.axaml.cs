@@ -14,7 +14,9 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 {
 	private const string DimmedClass = "dimmed";
 
-	private readonly DispatcherTimer _hoverTimer = new() { Interval = TimeSpan.FromSeconds(1 / 8d) };
+	private static readonly TimeSpan HoverPollInterval = TimeSpan.FromSeconds(1 / 8d);
+
+	private readonly DispatcherTimer _hoverTimer = new() { Interval = HoverPollInterval };
 	private TopLevel? _topLevel;
 
 	public MainView()

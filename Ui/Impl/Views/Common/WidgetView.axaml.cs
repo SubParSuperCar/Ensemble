@@ -14,9 +14,6 @@ namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 {
-	private const string ShownClass = "shown";
-	private const string HiddenClass = "hidden";
-
 	private const double HiddenScale = 3 / 4d;
 	private const double HiddenTilt = -90 / 4d;
 	private const double TiltDepth = 1000d;
@@ -48,7 +45,7 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	protected override void OnLoaded(RoutedEventArgs e)
 	{
 		base.OnLoaded(e);
-		Frame.Classes.Add(ShownClass);
+		Frame.Classes.Add(App.ShownClass);
 	}
 
 	// Built in code, since transform strings can't express 3D rotations
@@ -79,7 +76,7 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 
 	private void UpdateTransform()
 	{
-		var isShown = Frame.Classes.Contains(ShownClass) && !Frame.Classes.Contains(HiddenClass);
+		var isShown = Frame.Classes.Contains(App.ShownClass) && !Frame.Classes.Contains(App.HiddenClass);
 
 		if (isShown == _isShown)
 			return;

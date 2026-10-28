@@ -25,8 +25,6 @@ public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewM
 	public LuaEditorView()
 	{
 		InitializeComponent();
-
-		Editor.TemplateApplied += OnEditorTemplateApplied;
 	}
 
 	protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)

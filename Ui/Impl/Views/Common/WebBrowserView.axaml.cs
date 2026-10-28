@@ -44,17 +44,17 @@ public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserVie
 
 	protected override void OnDataContextChanged(EventArgs e)
 	{
+		base.OnDataContextChanged(e);
+
 		_viewModel?.NavigationRequested -= OnNavigationRequested;
 		_viewModel = DataContext as WebBrowserViewModel;
 		_viewModel?.NavigationRequested += OnNavigationRequested;
-
-		base.OnDataContextChanged(e);
 	}
 
 	protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
 	{
-		InputSink.Sink.Release(this);
 		base.OnDetachedFromVisualTree(e);
+		InputSink.Sink.Release(this);
 	}
 
 	private void OnNavigationRequested(WebNavigation navigation) =>

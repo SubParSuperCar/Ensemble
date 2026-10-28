@@ -21,6 +21,9 @@ namespace EnsembleRoot.Ui;
 
 public sealed class App : Application
 {
+	public const string ShownClass = "shown";
+	public const string HiddenClass = "hidden";
+
 	private static readonly object FocusSinkToken = new();
 
 	private static bool IsInSession => SessionManager.Instance?.IsActive is true;

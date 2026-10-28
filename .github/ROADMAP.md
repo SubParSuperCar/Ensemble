@@ -81,6 +81,9 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
   clients don't verify it yet, so it stops eavesdroppers, not a man in the middle
 - [ ] (S) Host certificate pinning - clients remember a host's certificate on first join and warn if it changes
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or `--join=HOST:P`)
+- [ ] (M) Server-only builds - a dedicated-server export (Godot's `dedicated_server` preset strips textures, meshes,
+  and shaders) built without `Ui/` and its Avalonia, Skia, HarfBuzz, and WebView natives, behind a define like
+  `NATIVE_AOT`; NsDepCop already keeps `Ui` at the top, so only `Main.cs` and the Avalonia packages need conditions
 - [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
   shown under the player list
 - (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, buffered and interpolated 100 ms behind
@@ -122,6 +125,9 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
     - [x] Target length (`targetLength`) - valid from the current minimum length to 8 (4 m), end to end
     - [x] Maximum length (`maxLength`) - valid from the current minimum length to 8, end to end, with `0` meaning
       uncapped
+- [ ] (S) Jointed assemblies collide - Godot's `exclude_nodes_from_collision` (on by default) excludes whole bodies,
+  and an assembly is one body, so a Suspension's wheel side passes through its chassis side. The Suspension's
+  `MinGap` already keeps its plates apart, so its `Spring` can turn the flag off; asset authors set it per joint
 - [x] (S) Terrain collision everywhere - Terrain3D builds its whole collision up front, so bodies far from the local
   character (another peer's creation, or a dedicated host's) stay on the ground
 - (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass
@@ -161,6 +167,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (M) Developer console - Lua functions for sessions (`start_sp`, `host_mp`, `join_mp`, and `host_server` for a
   local headless server to join), the tools and their history, creations, plots, and moderation; `help()` with
   descriptions, readable tables in `print` and results, and `user://scripts/` for `run_script` and `require`
+- [ ] (M) Lua Editor completion - AvaloniaEdit's `CompletionWindow` fed by the console's `Functions` (names and help
+  text as signatures), Lua keywords, and globals; layout waits for the owner
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
 - [ ] (S) Main menu personality - community links (e.g., Discord) and randomized flavor text

@@ -7,8 +7,6 @@ using EnsembleRoot.Tooling.Tools;
 using Godot;
 using Serilog;
 
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Tooling;
 
 [GlobalClass]
@@ -103,7 +101,7 @@ public partial class ToolManager : Node, IAutoload
 			UndoRedo.Redo();
 	}
 
-	public TTool Get<TTool>() where TTool : ToolBase, new() =>
+	private TTool Get<TTool>() where TTool : ToolBase, new() =>
 		_tools.TryGetValue(typeof(TTool), out var tool) ? (TTool)tool : CreateTool<TTool>();
 
 	public bool IsEnabled<TTool>() where TTool : ToolBase =>
@@ -118,8 +116,6 @@ public partial class ToolManager : Node, IAutoload
 			Get<TTool>().Enable();
 	}
 
-	internal static void RequestDisable(ToolBase tool) => tool.DisableInternal();
-
 	internal void RequestEnable(ToolBase tool)
 	{
 		if (tool.IsEnabled || !CanEnableTools)
@@ -128,7 +124,7 @@ public partial class ToolManager : Node, IAutoload
 		if (UseMutex)
 			DisableAll(tool);
 
-		tool.EnableInternal();
+		tool.SetEnabled(true);
 	}
 
 	internal void OnToolIsEnabledChanged(ToolBase tool, bool isEnabled)
@@ -147,7 +143,7 @@ public partial class ToolManager : Node, IAutoload
 		var name = typeof(TTool).Name;
 		var tool = new TTool { Name = name };
 
-		tool.Initialize(new ToolControl(this, tool));
+		tool.Initialize(this);
 
 		_tools.Add(typeof(TTool), tool);
 		AddChild(tool);
@@ -190,10 +186,9 @@ public partial class ToolManager : Node, IAutoload
 
 	private void DisableAll(ToolBase? exception = null)
 	{
-		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
-		foreach (var tool in _tools.Values)
+		foreach (var (_, tool) in _tools)
 			if (!ReferenceEquals(tool, exception))
-				tool.DisableInternal();
+				tool.Disable();
 	}
 
 	// The tools affirm on submit, so the host's rejection gets its own sound

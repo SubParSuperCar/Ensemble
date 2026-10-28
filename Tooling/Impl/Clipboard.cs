@@ -24,16 +24,17 @@ public sealed class Clipboard<TKey, TValue>(
 		var snapshot = contents.ToArray();
 		var changes = new List<KeyValuePair<TKey, TValue?>>();
 
-		var keep = new HashSet<TKey>(_contents.Comparer);
-		foreach (var (key, value) in snapshot)
-			if (value is not null)
-				keep.Add(key);
+		var keep = snapshot
+			.Where(static pair => pair.Value is not null)
+			.Select(static pair => pair.Key)
+			.ToHashSet(_contents.Comparer);
 
-		foreach (var key in _contents.Keys.Where(k => !keep.Contains(k)).ToArray())
-		{
-			_contents.Remove(key);
-			changes.Add(new KeyValuePair<TKey, TValue?>(key, default));
-		}
+		foreach (var (key, _) in _contents)
+			if (!keep.Contains(key))
+			{
+				_contents.Remove(key);
+				changes.Add(new KeyValuePair<TKey, TValue?>(key, default));
+			}
 
 		foreach (var (key, value) in snapshot)
 			if (TryApply(key, value))

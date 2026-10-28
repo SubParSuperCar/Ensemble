@@ -4,7 +4,7 @@ namespace EnsembleRoot.Tooling.Tools;
 
 public abstract partial class ToolBase : Node
 {
-	private ToolControl _control = null!;
+	private ToolManager _manager = null!;
 
 	public bool IsEnabled { get; private set; }
 
@@ -12,40 +12,26 @@ public abstract partial class ToolBase : Node
 
 	public virtual bool UsesSelection => false;
 
-	protected MultiSelector Selector => _control.Selector;
-	protected UndoRedo UndoRedo => _control.UndoRedo;
+	protected MultiSelector Selector => _manager.Selector;
+	protected UndoRedo UndoRedo => _manager.UndoRedo;
 
-	public void Enable() => _control.RequestEnable();
-	public void Disable() => _control.RequestDisable();
+	public void Enable() => _manager.RequestEnable(this);
+	public void Disable() => SetEnabled(false);
 
-	internal void Initialize(ToolControl control)
+	internal void Initialize(ToolManager manager) => _manager = manager;
+
+	internal void SetEnabled(bool isEnabled)
 	{
-		if (_control is not null)
-			throw new InvalidOperationException("Tool has already been initialized.");
-
-		_control = control;
-	}
-
-	internal void EnableInternal()
-	{
-		if (IsEnabled)
+		if (IsEnabled == isEnabled)
 			return;
 
-		IsEnabled = true;
-		_control.NotifyIsEnabledChanged(true);
+		IsEnabled = isEnabled;
+		_manager.OnToolIsEnabledChanged(this, isEnabled);
 
-		OnEnable();
-	}
-
-	internal void DisableInternal()
-	{
-		if (!IsEnabled)
-			return;
-
-		IsEnabled = false;
-		_control.NotifyIsEnabledChanged(false);
-
-		OnDisable();
+		if (isEnabled)
+			OnEnable();
+		else
+			OnDisable();
 	}
 
 	protected virtual void OnEnable() { }

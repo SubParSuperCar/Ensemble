@@ -23,6 +23,8 @@ public partial class PlotManager : Node
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int DefaultMaxTotalInstanceCount { get; set; }
 
+	public PlotHandle? LocalHandle => LocalPlot is { } local ? GetHandleOrNull(local.Id) : null;
+
 	public override void _EnterTree()
 	{
 		GPlotManager = this;

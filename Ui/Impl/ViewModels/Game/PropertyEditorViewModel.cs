@@ -12,8 +12,6 @@ namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 {
-	public const int MaxTextLength = PropertyRules.MaxStringLength;
-
 	private readonly Dictionary<PropertyKey, PropertyItem> _itemsByKey = [];
 
 	public PropertyEditorViewModel()

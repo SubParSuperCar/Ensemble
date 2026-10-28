@@ -3,7 +3,7 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Networking;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 using Godot;
 using LiveMarkdown.Avalonia;
 using Markdig;
@@ -12,7 +12,7 @@ using Markdig.Syntax.Inlines;
 using Serilog;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class DocFileViewModel : ViewModelBase
 {

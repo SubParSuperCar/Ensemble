@@ -3,15 +3,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Sessions.Api;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Messages;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Messages;
+using EnsembleRoot.Ui.Services;
 using Godot;
 #if !ENSEMBLE_DEBUG
 using System.Diagnostics;
 #endif
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class StatViewModel : ViewModelBase
 {

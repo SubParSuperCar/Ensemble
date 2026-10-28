@@ -3,10 +3,10 @@ using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.ViewModels;
 
-namespace EnsembleRoot.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyEditorViewModel>
 {

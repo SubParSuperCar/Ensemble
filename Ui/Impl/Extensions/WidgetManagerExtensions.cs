@@ -1,8 +1,8 @@
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Services;
 using ServiceScan.SourceGenerator;
 
-namespace EnsembleRoot.Ui.Impl.Extensions;
+namespace EnsembleRoot.Ui.Extensions;
 
 public static partial class WidgetManagerExtensions
 {

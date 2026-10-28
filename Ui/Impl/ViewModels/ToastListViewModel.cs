@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using Avalonia.Threading;
 using EnsembleRoot.Common.Logging;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 using Serilog.Events;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed class ToastListViewModel : ViewModelBase
 {

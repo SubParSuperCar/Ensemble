@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels.Utils;
+namespace EnsembleRoot.Ui.ViewModels.Utils;
 
 internal static class QuotaFormat
 {

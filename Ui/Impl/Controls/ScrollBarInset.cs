@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 
-namespace EnsembleRoot.Ui.Impl.Controls;
+namespace EnsembleRoot.Ui.Controls;
 
 /// <summary>
 ///     Keeps overlays (e.g., buttons over scrollable content) clear of a scroll viewer's vertical scroll bar by adding

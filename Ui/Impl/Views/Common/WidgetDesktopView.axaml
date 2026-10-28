@@ -3,11 +3,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    xmlns:c="using:EnsembleRoot.Ui.Impl.Controls"
-    xmlns:s="using:EnsembleRoot.Ui.Impl.Services"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.ViewModels"
+    xmlns:c="using:EnsembleRoot.Ui.Controls"
+    xmlns:s="using:EnsembleRoot.Ui.Services"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-    x:Class="EnsembleRoot.Ui.Impl.Views.WidgetDesktopView"
+    x:Class="EnsembleRoot.Ui.Views.WidgetDesktopView"
     x:DataType="s:WidgetManagerService">
 
     <ItemsControl ItemsSource="{Binding Widgets}">

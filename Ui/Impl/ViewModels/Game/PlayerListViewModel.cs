@@ -5,10 +5,10 @@ using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.Sessions.Api;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 using Godot;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class PlayerListViewModel : ViewModelBase
 {

@@ -6,17 +6,17 @@ using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Input;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Attributes;
-using EnsembleRoot.Ui.Impl.Extensions;
-using EnsembleRoot.Ui.Impl.Messages;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Attributes;
+using EnsembleRoot.Ui.Extensions;
+using EnsembleRoot.Ui.Messages;
+using EnsembleRoot.Ui.Services;
 using Godot;
 using Iciclecreek.Terminal;
 using Serilog;
 using XTerm.Common;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class MainViewModel : ViewModelBase
 {

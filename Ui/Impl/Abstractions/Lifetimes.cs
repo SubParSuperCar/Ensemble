@@ -1,4 +1,4 @@
-namespace EnsembleRoot.Ui.Impl.Abstractions;
+namespace EnsembleRoot.Ui.Abstractions;
 
 public interface ITransientObject;
 

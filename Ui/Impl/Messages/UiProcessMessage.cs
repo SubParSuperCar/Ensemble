@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Messaging.Messages;
 
 // ReSharper disable NotAccessedPositionalProperty.Global
 
-namespace EnsembleRoot.Ui.Impl.Messages;
+namespace EnsembleRoot.Ui.Messages;
 
 public sealed class UiProcessMessage(UiProcessData data) : ValueChangedMessage<UiProcessData>(data);
 

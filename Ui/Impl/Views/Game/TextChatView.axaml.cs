@@ -6,11 +6,11 @@ using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Avalonia.Styling;
 using Avalonia.Threading;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Extensions;
-using EnsembleRoot.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Extensions;
+using EnsembleRoot.Ui.ViewModels;
 
-namespace EnsembleRoot.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewModel>
 {

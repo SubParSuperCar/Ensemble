@@ -4,11 +4,11 @@ using EnsembleRoot.Common.Text;
 using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Scripts.Sessions;
 using EnsembleRoot.Sessions.Api;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Services;
 using static EnsembleRoot.Sessions.SessionManager;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class HostConfigViewModel : ViewModelBase
 {

@@ -1,5 +1,5 @@
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 

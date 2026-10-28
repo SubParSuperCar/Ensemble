@@ -1,8 +1,8 @@
 using Avalonia.Controls;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.ViewModels;
 
-namespace EnsembleRoot.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class SessionModeSelectorView : UserControl, IViewFor<SessionModeSelectorViewModel>
 {

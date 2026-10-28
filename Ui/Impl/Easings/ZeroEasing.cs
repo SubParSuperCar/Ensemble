@@ -1,6 +1,6 @@
 using Avalonia.Animation.Easings;
 
-namespace EnsembleRoot.Ui.Impl.Easings;
+namespace EnsembleRoot.Ui.Easings;
 
 public sealed class ZeroEasing : Easing
 {

@@ -3,9 +3,9 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Logging;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class ToastViewModel : ViewModelBase
 {

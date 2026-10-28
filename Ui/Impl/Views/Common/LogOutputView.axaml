@@ -3,10 +3,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.ViewModels"
     xmlns:cm="clr-namespace:EnsembleRoot.Common"
     mc:Ignorable="d" d:DesignWidth="448" d:DesignHeight="256"
-    x:Class="EnsembleRoot.Ui.Impl.Views.LogOutputView"
+    x:Class="EnsembleRoot.Ui.Views.LogOutputView"
     x:DataType="vm:LogOutputViewModel">
 
     <UserControl.Styles>

@@ -1,6 +1,6 @@
 using MethodBoundaryAspect.Fody.Attributes;
 
-namespace EnsembleRoot.Ui.Impl.Attributes;
+namespace EnsembleRoot.Ui.Attributes;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 [Serializable]

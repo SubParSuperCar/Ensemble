@@ -1,4 +1,4 @@
-namespace EnsembleRoot.Ui.Impl.Abstractions;
+namespace EnsembleRoot.Ui.Abstractions;
 
 /// <remarks><see cref="Descriptor" /> is virtual, not abstract, so implementers stay registrable for DI.</remarks>
 public interface IWidget

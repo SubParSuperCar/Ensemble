@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Mvvm.ComponentModel;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Attributes;
-using EnsembleRoot.Ui.Impl.Extensions;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Attributes;
+using EnsembleRoot.Ui.Extensions;
 
-namespace EnsembleRoot.Ui.Impl.Services;
+namespace EnsembleRoot.Ui.Services;
 
 [INotifyPropertyChanged]
 public sealed partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase

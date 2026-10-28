@@ -24,7 +24,7 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	}
 
 	// Loaded once and shared, as menu pages are recreated on every navigation
-	public static Bitmap? Icon { get; } = LoadBitmapFromGodotImage(GameIconPath);
+	public static Bitmap? Icon { get; } = LoadBitmap(GameIconPath);
 
 	public static string GitHubPageLabel => $"Ensemble - GitHub Page\ngithub.com/{GitHubRepoPath}";
 
@@ -47,7 +47,7 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	private void OnSessionFailed(string reason) =>
 		Notice = $"Session ended: {TextElements.Truncate(reason, MaxReasonLength)}";
 
-	private static Bitmap? LoadBitmapFromGodotImage(string path)
+	private static Bitmap? LoadBitmap(string path)
 	{
 		using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);
 

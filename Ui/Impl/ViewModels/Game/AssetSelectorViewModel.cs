@@ -104,7 +104,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		};
 
 		_nodesByAssetId.Add(asset.Id, node);
-		Insert(GetOrCreateFolder(category, asset.Id == Construct.AssetId), node);
+		Insert(GetOrCreateFolder(category, false), node);
 
 		// Per-asset limits don't depend on a plot, unlike the total
 		UpdateAssetQuota(asset.Id);
@@ -173,26 +173,31 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 		SelectedItems.Clear();
 
-		if (_nodesByAssetId.TryGetValue(assetId, out var node))
-			SelectedItems.Add(node);
+		if (!_nodesByAssetId.TryGetValue(assetId, out var node))
+			return;
+
+		GetOrCreateFolder(GAssetManager.GetCategory(assetId), true);
+		SelectedItems.Add(node);
 	}
 
 	private void Filter()
 	{
+		var query = FilterQuery.Trim();
+
 		VisibleItems.Clear();
 
 		foreach (var item in _items)
-			if (FilterNode(item) is { } filtered)
+			if (FilterNode(item, query) is { } filtered)
 				VisibleItems.Add(filtered);
 	}
 
-	private INodeBase? FilterNode(INodeBase node)
+	private static INodeBase? FilterNode(INodeBase node, string query)
 	{
-		if (string.IsNullOrWhiteSpace(FilterQuery))
+		if (query.Length is 0)
 			return node;
 
 		if (node is AssetNode asset)
-			return Matches(asset) ? asset : null;
+			return Matches(asset, query) ? asset : null;
 
 		if (node is not FolderNode folder)
 			return null;
@@ -200,20 +205,15 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		var result = new FolderNode { Name = folder.Name, Path = folder.Path, IsExpanded = true };
 
 		foreach (var child in folder.Children)
-			if (FilterNode(child) is { } filteredChild)
+			if (FilterNode(child, query) is { } filteredChild)
 				result.Children.Add(filteredChild);
 
 		return result.Children.Count is 0 ? null : result;
 	}
 
-	private bool Matches(AssetNode asset)
-	{
-		var query = FilterQuery.Trim();
-
-		return
-			asset.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-			asset.Id.ToString(CultureInfo.InvariantCulture).Contains(query, StringComparison.Ordinal);
-	}
+	private static bool Matches(AssetNode asset, string query) =>
+		asset.Name.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+		asset.Id.ToString(CultureInfo.InvariantCulture).Contains(query, StringComparison.Ordinal);
 
 	private void OnSelectedItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
 	{
@@ -272,11 +272,10 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		if (!_nodesByAssetId.TryGetValue(assetId, out var node))
 			return;
 
-		var quota = _instances?.GetQuota(assetId);
-		var count = quota?[0] ?? 0;
-		var max = quota?[1] ?? GAssets.GetAsset(assetId)?.MaxInstanceCount ?? 0;
+		var (count, maxCount) =
+			_instances?.Source.GetQuota(assetId) ?? (0, GAssets.GetAsset(assetId)?.MaxInstanceCount ?? 0);
 
-		node.Quota = QuotaFormat.Fraction(count, max);
+		node.Quota = QuotaFormat.Fraction(count, maxCount);
 	}
 }
 

@@ -13,5 +13,5 @@ public static partial class StringExtensions
 		string.Join(' ',
 			WordBoundaryRegex.Split(identifier)
 				.Where(static word => word.Length > 0)
-				.Select(static word => string.Concat(char.ToUpperInvariant(word[0]).ToString(), word[1..])));
+				.Select(static word => char.ToUpperInvariant(word[0]) + word[1..]));
 }

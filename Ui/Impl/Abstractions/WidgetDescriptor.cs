@@ -1,14 +1,11 @@
 using Avalonia;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-
 namespace EnsembleRoot.Ui.Abstractions;
 
 /// <param name="InitialBounds">The bounds when first opened, relative to the widget area, from 0 to 1.</param>
 public sealed record WidgetDescriptor(Rect InitialBounds)
 {
-	public const int GridSize = 32;
+	private const int GridSize = 32;
 
 	public static WidgetDescriptor Default { get; } = new(Cells(8, 8, 16, 16));
 
@@ -18,6 +15,8 @@ public sealed record WidgetDescriptor(Rect InitialBounds)
 	public string? Description { get; init; }
 
 	public Size MinSize { get; init; } = new(192, 128);
+
+	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 	public bool IsResizable { get; init; } = true;
 
 	/// <summary>Converts cells of a <see cref="GridSize" />-square grid over the widget area to bounds.</summary>

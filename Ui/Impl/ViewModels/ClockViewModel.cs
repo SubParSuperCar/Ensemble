@@ -1,7 +1,6 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Ui.Abstractions;
-using EnsembleRoot.Ui.Messages;
 using EnsembleRoot.Ui.Services;
 
 namespace EnsembleRoot.Ui.ViewModels;
@@ -24,7 +23,7 @@ public sealed partial class ClockViewModel : ViewModelBase
 
 	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
 
-	private void OnUiProcess(UiProcessData data) => Refresh();
+	private void OnUiProcess(double delta) => Refresh();
 
 	// The session duration only exists during a session
 	private void Refresh()

@@ -2,7 +2,7 @@ using MethodBoundaryAspect.Fody.Attributes;
 
 namespace EnsembleRoot.Ui.Attributes;
 
-[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+[AttributeUsage(AttributeTargets.Property)]
 [Serializable]
 public sealed class DisposeOldObservableValueOnChangingAttribute : OnMethodBoundaryAspect
 {

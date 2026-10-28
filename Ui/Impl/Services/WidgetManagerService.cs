@@ -5,25 +5,20 @@ using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Extensions;
 using EnsembleRoot.Ui.ViewModels;
 
-// ReSharper disable MemberCanBePrivate.Global
-// ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedMethodReturnValue.Global
-
 namespace EnsembleRoot.Ui.Services;
 
 /// <summary>Opens, closes, and stacks widgets, at most one per view model type, for its scope's lifetime.</summary>
-public sealed class WidgetManagerService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
+public sealed class WidgetManagerService(IServiceProvider services) : DisposableObject, IScopedObject
 {
 	private const DynamicallyAccessedMemberTypes Constructors = DynamicallyAccessedMemberTypes.PublicConstructors;
 
 	private readonly Dictionary<Type, WidgetEntry> _entriesByType = [];
 	private readonly Dictionary<Type, WidgetViewModel> _widgetsByType = [];
+	private WidgetViewModel? _active;
 	private int _topZIndex;
 
 	public ObservableCollection<WidgetEntry> Entries { get; } = [];
 	public ObservableCollection<WidgetViewModel> Widgets { get; } = [];
-
-	public WidgetViewModel? Active { get; private set; }
 
 	public WidgetEntry Register<[DynamicallyAccessedMembers(Constructors)] TViewModel>()
 		where TViewModel : ViewModelBase, IWidget
@@ -40,25 +35,18 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		return entry;
 	}
 
-	public bool IsOpen<TViewModel>() where TViewModel : ViewModelBase, IWidget =>
-		_widgetsByType.ContainsKey(typeof(TViewModel));
-
-	public TViewModel Open<[DynamicallyAccessedMembers(Constructors)] TViewModel>()
+	public void Open<[DynamicallyAccessedMembers(Constructors)] TViewModel>()
 		where TViewModel : ViewModelBase, IWidget =>
-		(TViewModel)Open(Register<TViewModel>()).Content;
+		Open(Register<TViewModel>());
 
-	public bool Close<TViewModel>() where TViewModel : ViewModelBase, IWidget => Close(typeof(TViewModel));
+	public void Close<TViewModel>() where TViewModel : ViewModelBase, IWidget => Close(typeof(TViewModel));
 
-	public bool Toggle<[DynamicallyAccessedMembers(Constructors)] TViewModel>()
-		where TViewModel : ViewModelBase, IWidget =>
-		Toggle(Register<TViewModel>());
-
-	internal WidgetViewModel Open(WidgetEntry entry)
+	private void Open(WidgetEntry entry)
 	{
 		if (_widgetsByType.TryGetValue(entry.Type, out var open))
 		{
 			Activate(open);
-			return open;
+			return;
 		}
 
 		var widget = new WidgetViewModel(
@@ -69,7 +57,6 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		Activate(widget);
 
 		entry.IsOpen = true;
-		return widget;
 	}
 
 	internal bool Close(Type type, bool skipAnimations = false)
@@ -82,9 +69,9 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		widget.Entry.IsOpen = false;
 		widget.IsClosing = true;
 
-		if (ReferenceEquals(Active, widget))
+		if (ReferenceEquals(_active, widget))
 		{
-			Active = null;
+			_active = null;
 
 			if (_widgetsByType.Values.MaxBy(static other => other.ZIndex) is { } next)
 				Activate(next);
@@ -98,22 +85,19 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		return true;
 	}
 
-	internal bool Toggle(WidgetEntry entry)
+	internal void Toggle(WidgetEntry entry)
 	{
-		if (Close(entry.Type))
-			return false;
-
-		Open(entry);
-		return true;
+		if (!Close(entry.Type))
+			Open(entry);
 	}
 
 	internal void Activate(WidgetViewModel widget)
 	{
-		if (ReferenceEquals(Active, widget))
+		if (ReferenceEquals(_active, widget))
 			return;
 
-		Active?.IsActive = false;
-		Active = widget;
+		_active?.IsActive = false;
+		_active = widget;
 
 		widget.IsActive = true;
 		widget.ZIndex = ++_topZIndex;
@@ -121,7 +105,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 
 	protected override void OnDispose()
 	{
-		foreach (var type in _widgetsByType.Keys.ToArray())
+		foreach (var (type, _) in _widgetsByType)
 			Close(type, true);
 	}
 

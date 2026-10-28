@@ -7,7 +7,6 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Messages;
 using EnsembleRoot.Ui.Extensions;
-using EnsembleRoot.Ui.Messages;
 using EnsembleRoot.Ui.Services;
 using EnsembleRoot.Ui.ViewModels;
 using Estragonia;
@@ -30,6 +29,7 @@ public partial class Ui : Control
 
 	private static bool _isAntialiased = true;
 
+	private DispatcherService? _dispatcher;
 	private AvaloniaControl _host = null!;
 	private double _lastUiProcessTime;
 	private ulong _processStartTicks;
@@ -109,7 +109,7 @@ public partial class Ui : Control
 
 	public override void _Notification(int what)
 	{
-		WeakReferenceMessenger.Default.Send(new NotificationMessage(what));
+		_dispatcher?.OnNotification(what);
 
 		// Unsubscribes the view models and services from static and autoload events. Not in _ExitTree, since quitting
 		// frees the autoloads first.
@@ -121,6 +121,7 @@ public partial class Ui : Control
 
 		_viewModel = null;
 		_services = null;
+		_dispatcher = null;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -131,7 +132,7 @@ public partial class Ui : Control
 			_host.MakeInputLocal(press) is InputEventMouseButton local && !_host._HasPoint(local.Position))
 			_host.GetTopLevel().FocusManager.Focus(null);
 
-		WeakReferenceMessenger.Default.Send(new InputMessage(@event));
+		_dispatcher?.OnInput(@event);
 	}
 
 	/// <summary>
@@ -193,7 +194,7 @@ public partial class Ui : Control
 	private void OnHostProcessing(double delta)
 	{
 		_processStartTicks = Time.GetTicksUsec();
-		WeakReferenceMessenger.Default.Send(new UiProcessMessage(new UiProcessData(delta, GetProcessDeltaTime())));
+		_dispatcher?.OnUiProcess(delta);
 	}
 
 	private void OnHostProcessed(double delta) =>
@@ -215,6 +216,7 @@ public partial class Ui : Control
 			var collection = new ServiceCollection();
 			collection.AddServices();
 			var services = _services = collection.BuildServiceProvider();
+			_dispatcher = services.GetRequiredService<DispatcherService>();
 
 			var locator = services.GetRequiredService<ViewLocatorService>();
 			Application.Current!.DataTemplates.Add(locator);

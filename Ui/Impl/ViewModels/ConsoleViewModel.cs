@@ -14,11 +14,11 @@ public sealed partial class ConsoleViewModel : ViewModelBase
 	}
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial LogOutputViewModel? Output { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial LuaEditorViewModel? Editor { get; private set; }
 
 	protected override void OnDispose()

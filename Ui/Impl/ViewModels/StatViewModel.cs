@@ -4,7 +4,6 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Ui.Abstractions;
-using EnsembleRoot.Ui.Messages;
 using EnsembleRoot.Ui.Services;
 using Godot;
 #if !ENSEMBLE_DEBUG
@@ -45,7 +44,7 @@ public sealed partial class StatViewModel : ViewModelBase
 #endif
 	}
 
-	private void OnUiProcess(UiProcessData data)
+	private void OnUiProcess(double delta)
 	{
 		var now = GetNow();
 		_uiFrameTimes.Enqueue(now);
@@ -53,7 +52,7 @@ public sealed partial class StatViewModel : ViewModelBase
 		while (_uiFrameTimes.Count > 0 && now - _uiFrameTimes.Peek() > SampleWindow)
 			_uiFrameTimes.Dequeue();
 
-		_sinceLastRefresh += data.SinceLastUiProcess;
+		_sinceLastRefresh += delta;
 		if (_sinceLastRefresh < RefreshInterval)
 			return;
 

@@ -30,8 +30,6 @@ public sealed class MenuViewModel : ViewModelBase
 	protected override void OnDispose()
 	{
 		_dispatcher.Input -= OnInput;
-
-		Navigator.GoTo();
 		_scope.Dispose();
 	}
 

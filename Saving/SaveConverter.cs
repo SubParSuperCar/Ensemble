@@ -60,8 +60,10 @@ public static class SaveConverter
 			if (instance.Properties is not { } properties)
 				continue;
 
+			var current = created.Properties.All;
+
 			foreach (var (key, value) in properties)
-				if (created.Properties.All.TryGetValue(key, out var current) && IsApplicable(value, current))
+				if (current.TryGetValue(key, out var existing) && PropertyRules.Check(key, value, existing) is null)
 					created.Properties.Update(key, value);
 				else
 					skippedValues++;
@@ -69,14 +71,4 @@ public static class SaveConverter
 
 		return (skippedInstances, skippedValues);
 	}
-
-	// The rules replication enforces (Replication/Actions/Impl/PropertyRules.cs)
-	private static bool IsApplicable(CoreVariant value, CoreVariant current) =>
-		value.Type == current.Type &&
-		value.Type switch
-		{
-			CoreVariantType.Double => double.IsFinite((double)value),
-			CoreVariantType.String => ((string)value).Length <= MaxPropertyStringLength,
-			_ => true
-		};
 }

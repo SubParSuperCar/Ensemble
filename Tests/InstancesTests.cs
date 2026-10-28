@@ -54,6 +54,19 @@ public sealed class InstancesTests
 		Assert.False(plot.IsSpawned);
 	}
 
+	[Fact]
+	public void UpdateAll_WithAnInvalidValue_UpdatesNone()
+	{
+		var core = new Core();
+		core.Assets.Add(0, properties: Properties(("label", "a"), ("opacity", 1d)));
+
+		var properties = Add(core.Plots.Add(0).Instances).Properties;
+		var update = Properties(("label", "b"), ("opacity", double.NaN));
+
+		Assert.Throws<ArgumentException>(() => properties.UpdateAll(update));
+		Assert.Equal(new CoreVariant("a"), properties.All["label"]);
+	}
+
 	private static IInstances CreateInstances()
 	{
 		var core = new Core();
@@ -63,4 +76,7 @@ public sealed class InstancesTests
 	}
 
 	private static IInstance Add(IInstances instances) => instances.Add(0, Vector3.Zero, Quaternion.Identity);
+
+	private static Dictionary<string, CoreVariant> Properties(params (string Key, CoreVariant Value)[] values) =>
+		values.ToDictionary(static pair => pair.Key, static pair => pair.Value, StringComparer.Ordinal);
 }

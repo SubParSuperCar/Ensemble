@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
+using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Scripts.Assets.Materials;
 using Godot;
 using Godot.Collections;
@@ -126,6 +127,7 @@ public partial class AssetManager : Node
 		var asset = new AssetInfo(scene, category, description, handle.BoundaryAabb, handle.Density, pieces);
 
 		WarnAboutStructure(handle, path);
+		WarnAboutProperties(handle, path);
 
 		if (!_assetsById.TryAdd(id, asset))
 		{
@@ -176,6 +178,16 @@ public partial class AssetManager : Node
 				Log.Warning(
 					"Asset at {Path} has joint {Joint}, which is ignored: joints must be children of the handle",
 					path, handle.GetPathTo(node));
+	}
+
+	// Properties hold only CoreVariant's primitives, which saves and the network carry as they are
+	private static void WarnAboutProperties(AssetHandle handle, string path)
+	{
+		foreach (var (key, value) in handle.Properties)
+			if (!value.IsConvertible())
+				Log.Warning(
+					"Asset at {Path} has property {Key} of type {Type}, which properties can't hold: it reads as null",
+					path, key.ToString(), value.VariantType);
 	}
 
 	private sealed record AssetInfo(

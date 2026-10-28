@@ -35,8 +35,6 @@ public static class Constants
 
 	public const int RegexMatchTimeoutMs = 100;
 
-	public const int MaxPropertyStringLength = 256;
-
 	/// <summary>
 	///     The narrowest and widest gaps (about 1 and 2 mm) by which an asset's colliders may sit inside its cell, so
 	///     the faces they inset never weld. Binary, just under the millimeters assets are authored in.

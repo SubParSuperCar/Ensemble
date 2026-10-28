@@ -2,7 +2,8 @@ namespace EnsembleCoreRoot.Api.Assets;
 
 /// <summary>
 ///     The property values of an <see cref="IInstance" />, copied from its <see cref="IAsset" />'s defaults.
-///     Keys are case-insensitive; only existing keys can be updated.
+///     Keys are case-insensitive; only existing keys can be updated, with values that follow
+///     <see cref="PropertyRules" />.
 /// </summary>
 public interface IProperties
 {

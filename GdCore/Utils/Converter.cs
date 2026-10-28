@@ -25,15 +25,24 @@ public static class Converter
 			_ => default
 		};
 
-	public static CoreVariant FromGodot(this Variant variant) =>
-		variant.VariantType switch
-		{
-			Variant.Type.Bool => new CoreVariant(variant.AsBool()),
-			Variant.Type.Int => new CoreVariant(variant.AsInt64()),
-			Variant.Type.Float => new CoreVariant(variant.AsDouble()),
-			Variant.Type.String or Variant.Type.StringName => new CoreVariant(variant.AsString()),
-			_ => CoreVariant.Null
-		};
+	extension(Variant variant)
+	{
+		public CoreVariant FromGodot() =>
+			variant.VariantType switch
+			{
+				Variant.Type.Bool => new CoreVariant(variant.AsBool()),
+				Variant.Type.Int => new CoreVariant(variant.AsInt64()),
+				Variant.Type.Float => new CoreVariant(variant.AsDouble()),
+				Variant.Type.String or Variant.Type.StringName => new CoreVariant(variant.AsString()),
+				_ => CoreVariant.Null
+			};
+
+		/// <summary>
+		///     Whether <see cref="FromGodot(Variant)" /> keeps the value: nil or a type <see cref="CoreVariant" />
+		///     holds, where any other converts to Null.
+		/// </summary>
+		public bool IsConvertible() => variant.VariantType is Variant.Type.Nil || !variant.FromGodot().IsNull;
+	}
 
 	public static Dictionary ToGodotProperties(IReadOnlyDictionary<string, CoreVariant> properties)
 	{

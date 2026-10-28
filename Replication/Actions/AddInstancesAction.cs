@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Plots.Placement;
 using EnsembleRoot.Sessions.Actions;
@@ -48,8 +49,8 @@ public readonly record struct AddInstancesAction(IReadOnlyList<InstanceSpec> Ins
 			if (!spec.Position.IsFinite() || !spec.Rotation.IsNormalized())
 				return Reject("Transform invalid.");
 
-			if (PropertyRules.Validate(asset.Source.Properties, spec.Properties) is { IsValid: false } validation)
-				return validation;
+			if (GdProperties.Check(asset.Source.Properties, spec.Properties) is { } reason)
+				return Reject(reason);
 		}
 
 		// Others may build first; whatever still fits goes

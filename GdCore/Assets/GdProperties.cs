@@ -45,10 +45,10 @@ public partial class GdProperties : RefCounted
 		Source.UpdateAll(Converter.FromGodotProperties(properties));
 	}
 
-	/// <returns>Whether the property exists and the value keeps its type, and so was set.</returns>
+	/// <returns>Whether the property exists and the value is valid for it, and so was set.</returns>
 	public bool TryUpdate(string key, Variant value)
 	{
-		if (!Source.All.TryGetValue(key, out var current) || !IsSameType(value, current))
+		if (!Source.All.TryGetValue(key, out var current) || Check(key, value, current) is not null)
 			return false;
 
 		Source.Update(key, value.FromGodot());
@@ -57,14 +57,35 @@ public partial class GdProperties : RefCounted
 
 	public override string ToString() => Source.ToString()!;
 
-	// Unsupported Godot types convert to Null, so they would otherwise slip through as a type change
-	internal static bool IsSameType(Variant value, CoreVariant current) =>
-		value.FromGodot().Type == current.Type &&
-		(current.Type is not CoreVariantType.Null || value.VariantType is Variant.Type.Nil);
+	/// <summary>
+	///     Gets why <paramref name="properties" /> can't update properties holding the <paramref name="current" />
+	///     values, or null if they can.
+	/// </summary>
+	public static string? Check(IReadOnlyDictionary<string, CoreVariant> current, Dictionary properties)
+	{
+		foreach (var (key, value) in properties)
+		{
+			var name = key.VariantType is Variant.Type.String or Variant.Type.StringName ? key.AsString() : null;
+
+			if (name is null || !current.TryGetValue(name, out var existing))
+				return "Property not found.";
+
+			if (Check(name, value, existing) is { } reason)
+				return reason;
+		}
+
+		return null;
+	}
+
+	// Unsupported Godot types convert to Null, so they would otherwise pass for a Null property's value
+	private static string? Check(string key, Variant value, CoreVariant current) =>
+		value.IsConvertible()
+			? PropertyRules.Check(key, value.FromGodot(), current)
+			: $"Property {key} type not supported.";
 
 	private void Validate(string key, Variant value)
 	{
-		if (Source.All.TryGetValue(key, out var current) && !IsSameType(value, current))
-			throw new ArgumentException($"Property {key} must stay {current.Type}.", nameof(value));
+		if (Source.All.TryGetValue(key, out var current) && Check(key, value, current) is { } reason)
+			throw new ArgumentException(reason, nameof(value));
 	}
 }

@@ -1,4 +1,5 @@
 using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Plots;
 using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -7,8 +8,9 @@ namespace EnsembleRoot.BuildAssets.Advanced;
 
 /// <summary>
 ///     A spring between two plates, the top a piece of its own, whose stiffness, damping, rest length, and longest
-///     length come from the instance's properties, clamped so the plates stay apart and within reach. While live, the
-///     coil between the plates stretches with them.
+///     length come from the instance's properties, clamped so the plates stay apart and within reach. Lengths are
+///     end to end, in grid units, and a longest length of 0 leaves only the reach. While live, the coil between the
+///     plates stretches with them.
 /// </summary>
 public partial class Suspension : AssetHandle
 {
@@ -22,7 +24,7 @@ public partial class Suspension : AssetHandle
 
 	// The plates' closest approach, so they never strike each other, and the longest the suspension may get, end to end
 	private const float MinGap = 0.1f;
-	private const float MaxReach = 2f;
+	private const float MaxReach = 8 * PlotHandle.GridToWorldScale;
 
 	private static readonly StringName HelixLengthParameter = "helix_length";
 
@@ -65,8 +67,11 @@ public partial class Suspension : AssetHandle
 		var builtLength = BoundaryAabb.Size.Y;
 		var plates = builtLength - builtGap;
 		var minLength = plates + MinGap;
-		var maxLength = GetNumberProperty(MaxLengthKey, minLength, MaxReach);
-		var targetLength = GetNumberProperty(TargetLengthKey, minLength, maxLength);
+
+		var maxLength = GetNumberProperty(MaxLengthKey, float.MinValue, float.MaxValue) is 0
+			? MaxReach
+			: GetLengthProperty(MaxLengthKey, minLength, MaxReach);
+		var targetLength = GetLengthProperty(TargetLengthKey, minLength, maxLength);
 
 		var stiffness = GetNumberProperty(StiffnessKey, 0, MaxStiffness);
 		var damping = GetNumberProperty(DampingKey, 0, MaxDamping);

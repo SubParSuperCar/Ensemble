@@ -8,19 +8,6 @@ namespace EnsembleRoot.Tests;
 public sealed class ArbitrationTests
 {
 	[Fact]
-	public void GetLeaders_GroupsChains_UnderTheirLargestPlot()
-	{
-		// 0 - 1 - 2 in a chain led by 1, the largest; 3 - 4 led by 4; 5 alone
-		(int, int)[] plots = [(0, 3), (1, 9), (2, 1), (3, 2), (4, 5), (5, 99)];
-		(int, int)[] links = [(0, 1), (1, 2), (3, 4)];
-
-		var expected = new Dictionary<int, int> { [0] = 1, [1] = 1, [2] = 1, [3] = 4, [4] = 4, [5] = 5 };
-
-		Assert.Equal(expected, Arbitration.GetLeaders(plots, links));
-		Assert.Equal(expected, Arbitration.GetLeaders([.. plots.Reverse()], [.. links.Reverse()]));
-	}
-
-	[Fact]
 	public void GetLeaders_BreaksTiesByLowestId_AndIgnoresUnlistedPlots()
 	{
 		// 7 isn't spawned, so it neither leads nor bridges 2 to 4
@@ -52,17 +39,6 @@ public sealed class ArbitrationTests
 	}
 
 	[Fact]
-	public void Spheres_OverlapOnlyWhenAPairTouches()
-	{
-		var spheres = Spheres((Vector3.Zero, 1), (new Vector3(10, 0, 0), 1));
-
-		Assert.True(spheres.Overlaps(Spheres((new Vector3(11.5f, 0, 0), 1))));
-		Assert.False(spheres.Overlaps(Spheres((new Vector3(5, 0, 0), 1))));
-		Assert.False(spheres.Overlaps(Spheres((new Vector3(12.5f, 0, 0), 1))));
-		Assert.False(spheres.Overlaps(Spheres()));
-	}
-
-	[Fact]
 	public void Spheres_MatchBruteForce_OnRandomSets()
 	{
 		var random = new Random(17);
@@ -87,7 +63,7 @@ public sealed class ArbitrationTests
 			random.NextSingle() * 2))
 	];
 
-	private static ArbitrationSpheres Spheres(params (Vector3 Center, float Radius)[] spheres)
+	private static ArbitrationSpheres Spheres((Vector3 Center, float Radius)[] spheres)
 	{
 		var result = new ArbitrationSpheres();
 

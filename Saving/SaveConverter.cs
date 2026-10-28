@@ -4,8 +4,6 @@ namespace EnsembleRoot.Saving;
 
 public static class SaveConverter
 {
-	private const int MaxStringLength = 256;
-
 	public static CreationSaveData ToSaveData(IInstances instances, TimeProvider timeProvider)
 	{
 		var save = new CreationSaveData { UtcCreatedAt = timeProvider.GetUtcNow() };
@@ -78,7 +76,7 @@ public static class SaveConverter
 		value.Type switch
 		{
 			CoreVariantType.Double => double.IsFinite((double)value),
-			CoreVariantType.String => ((string)value).Length <= MaxStringLength,
+			CoreVariantType.String => ((string)value).Length <= MaxPropertyStringLength,
 			_ => true
 		};
 }

@@ -100,7 +100,7 @@ public partial class PlotHandle
 		SetSimulator(simulator);
 
 		foreach (var peerId in GSessionManager.Peers.Keys)
-			if (IsSyncedRemote(peerId))
+			if (GSessionManager.IsPeerSynced(peerId))
 				RpcId(peerId, MethodName.RpcSetSimulator, simulator, SimulationEpoch);
 	}
 

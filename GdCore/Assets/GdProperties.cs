@@ -58,7 +58,7 @@ public partial class GdProperties : RefCounted
 	public override string ToString() => Source.ToString()!;
 
 	// Unsupported Godot types convert to Null, so they would otherwise slip through as a type change
-	private static bool IsSameType(Variant value, CoreVariant current) =>
+	internal static bool IsSameType(Variant value, CoreVariant current) =>
 		value.FromGodot().Type == current.Type &&
 		(current.Type is not CoreVariantType.Null || value.VariantType is Variant.Type.Nil);
 

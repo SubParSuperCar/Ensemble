@@ -6,7 +6,7 @@ using Godot;
 
 namespace EnsembleRoot.Scripts.Plots.Placement;
 
-/// <summary>A uniform spatial hash of boxes, so placement only tests the obstacles near a box.</summary>
+/// <summary>A uniform spatial hash of boxes, so placement and welding only test the boxes near one.</summary>
 public sealed class ObbGrid
 {
 	private const float CellSize = 2f;
@@ -50,13 +50,6 @@ public sealed class ObbGrid
 					if (_cells.TryGetValue(cell, out var ids) && ids.Remove(id) && ids.Count is 0)
 						_cells.Remove(cell);
 				}
-	}
-
-	public void Clear()
-	{
-		_boxes.Clear();
-		_cells.Clear();
-		_ungridded.Clear();
 	}
 
 	public bool Overlaps(Obb box)

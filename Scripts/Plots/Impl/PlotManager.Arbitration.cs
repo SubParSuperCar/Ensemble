@@ -22,8 +22,9 @@ public partial class PlotManager
 	/// <summary>Ends a despawning plot's links at once, as its creation is gone.</summary>
 	internal void ForgetArbitration(PlotHandle plot)
 	{
-		foreach (var key in _links.Keys.Where(key => key.Item1 == plot.Id || key.Item2 == plot.Id).ToList())
-			_links.Remove(key);
+		foreach (var (key, _) in _links)
+			if (key.Item1 == plot.Id || key.Item2 == plot.Id)
+				_links.Remove(key);
 
 		_arbitrationTimesByPlotId.Remove(plot.Id);
 	}
@@ -107,7 +108,6 @@ public partial class PlotManager
 	private bool IsArbitrationHeld(int plotId) =>
 		_arbitrationTimesByPlotId.TryGetValue(plotId, out var time) && _arbitrationClock - time < ArbitrationHoldTime;
 
-	// Once the creations no longer overlap, the change time is when they parted
 	[StructLayout(LayoutKind.Auto)]
 	private readonly record struct PlotLink(bool IsOverlapping, double ChangeTime);
 }

@@ -42,10 +42,10 @@ public static class PlotPlacement
 
 	public static Aabb GetBounds(PlotHandle plot)
 	{
-		var min = plot.WorldToGrid(plot.BoundaryTransform.Origin) - plot.GridBoundarySize / 2;
+		var min = plot.OriginTransform.AffineInverse() * plot.BoundaryTransform.Origin - plot.BoundarySize / 2;
 		min.Y = MathF.Max(min.Y, 0);
 
-		return new Aabb(min * PlotHandle.GridToWorldScale, plot.GridBoundarySize * PlotHandle.GridToWorldScale);
+		return new Aabb(min, plot.BoundarySize);
 	}
 
 	private static bool IsWithin(Obb box, Aabb bounds)

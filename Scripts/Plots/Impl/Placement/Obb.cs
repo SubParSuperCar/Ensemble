@@ -104,7 +104,8 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 		if ((other.Center - Center).LengthSquared() >= reach * reach)
 			return false;
 
-		if (IsSeparatedOn(other, Vector3.Right, tolerance) || IsSeparatedOn(other, Vector3.Up, tolerance) ||
+		if (
+			IsSeparatedOn(other, Vector3.Right, tolerance) || IsSeparatedOn(other, Vector3.Up, tolerance) ||
 			IsSeparatedOn(other, Vector3.Back, tolerance))
 			return false;
 

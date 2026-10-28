@@ -59,7 +59,6 @@ public partial class ConstructTool : ToolBase
 	private bool CanPlace => _state is PlacementState.Valid;
 	private bool IsSnapping => SnappingIncrementLinear is > 0;
 
-	// ReSharper disable once EventNeverSubscribedTo.Global
 	public event Action<int>? AssetIdChanged;
 
 	public override void _UnhandledInput(InputEvent @event)

@@ -16,7 +16,7 @@ public static partial class LuaExecutor
 {
 	private static ValueTask<int> clr_log(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		// Deferred so the Lua executor return log message is cleared too
+		// Deferred, so the run's own result line is cleared too
 		Callable.From(VolatileLogHistorySink.Clear).CallDeferred();
 
 		return context.ReturnNothing();

@@ -71,7 +71,7 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	private void OnPropertiesChanged()
 	{
-		HashSet<PropertyKey> keys = [];
+		var keys = new HashSet<PropertyKey>();
 
 		foreach (var property in Property.Properties)
 		{

@@ -100,7 +100,6 @@ public static partial class LuaExecutor
 		return tools.IsEnabled<TTool>();
 	}
 
-	// Headless servers have no tools
 	private static ToolManager? GetToolManager(string function)
 	{
 		if (ToolManager.Instance is { } tools)

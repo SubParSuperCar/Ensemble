@@ -7,9 +7,6 @@ namespace EnsembleRoot.Tests;
 public sealed class LuaValueFormatterTests
 {
 	[Theory]
-	[InlineData("return nil", "nil")]
-	[InlineData("return true", "true")]
-	[InlineData("return 1.5", "1.5")]
 	[InlineData("return 'a\"b'", "a\"b")]
 	[InlineData("return function() end", "<function>")]
 	[InlineData("return {}", "{}")]

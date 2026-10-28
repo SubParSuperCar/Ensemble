@@ -82,7 +82,7 @@ internal static class PlotsSnapshot
 	{
 		if (!HasFields(dict, InstanceFields) || IsLimitReached(plot.Instances.Count, plot.Instances.MaxCount))
 		{
-			Log.Warning("Skipped malformed or excess instance in snapshot of plot with ID {PlotId}", plot.Id);
+			Log.Warning("Skipped malformed or excess instance in snapshot of plot {PlotId}", plot.Id);
 			return;
 		}
 
@@ -98,7 +98,7 @@ internal static class PlotsSnapshot
 		foreach (var (key, value) in values.AsGodotDictionary())
 			if (key.VariantType is not Variant.Type.String || !properties.TryUpdate(key.AsString(), value))
 				Log.Warning(
-					"Skipped malformed property {Key} in snapshot of plot with ID {PlotId}", key.ToString(), plot.Id);
+					"Skipped malformed property {Key} in snapshot of plot {PlotId}", key.ToString(), plot.Id);
 	}
 
 	private static bool TryGet(GdPlot plot, Dictionary dict, string key, Variant.Type type, out Variant value)
@@ -106,7 +106,7 @@ internal static class PlotsSnapshot
 		if (dict.TryGetValue(key, out value) && value.VariantType == type)
 			return true;
 
-		Log.Warning("Skipped malformed {Field} in snapshot of plot with ID {PlotId}", key, plot.Id);
+		Log.Warning("Skipped malformed {Field} in snapshot of plot {PlotId}", key, plot.Id);
 		return false;
 	}
 
@@ -118,7 +118,7 @@ internal static class PlotsSnapshot
 		}
 		catch (Exception exception)
 		{
-			Log.Warning(exception, "Failed to restore {Part} in snapshot of plot with ID {PlotId}", part, plot.Id);
+			Log.Warning(exception, "Failed to restore {Part} in snapshot of plot {PlotId}", part, plot.Id);
 		}
 	}
 

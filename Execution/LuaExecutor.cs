@@ -15,7 +15,7 @@ public static partial class LuaExecutor
 	// Per run, since several scripts can run at once
 	private static readonly AsyncLocal<CancellationTokenSource?> Budget = new();
 
-	public static async Task<LuaResult> ExecuteAsync(string source, CancellationToken cancellationToken = default)
+	public static async Task ExecuteAsync(string source, CancellationToken cancellationToken = default)
 	{
 		source = source.Trim();
 		Log.Information(">\n{Source}", source);
@@ -42,12 +42,12 @@ public static partial class LuaExecutor
 				"< Timed out after {ElapsedMs:F3} ms: blocked the main thread for {Seconds} s without yielding",
 				stopwatch.Elapsed.TotalMilliseconds, MaxBlockingTime.TotalSeconds);
 
-			return new LuaResult(LuaOutcome.TimedOut, []);
+			return;
 		}
 		catch (OperationCanceledException)
 		{
 			Log.Information("< Canceled after {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
-			return new LuaResult(LuaOutcome.Canceled, []);
+			return;
 		}
 		catch (Exception exception) when (
 			exception is LuaRuntimeException { InnerException: null } or LuaCompileException or LuaParseException)
@@ -57,12 +57,12 @@ public static partial class LuaExecutor
 				// ReSharper disable once ExceptionLoggedAsTextProblem
 				"< Failed after {ElapsedMs:F3} ms: {Error}", stopwatch.Elapsed.TotalMilliseconds, exception.Message);
 
-			return new LuaResult(LuaOutcome.Failed, []);
+			return;
 		}
 		catch (Exception exception)
 		{
 			Log.Error(exception, "< Failed after {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
-			return new LuaResult(LuaOutcome.Failed, []);
+			return;
 		}
 
 		stopwatch.Stop();
@@ -70,8 +70,6 @@ public static partial class LuaExecutor
 			"< [{Results}] ({ElapsedMs:F3} ms)",
 			string.Join(", ", results.Select(static result => LuaValueFormatter.Format(result, true))),
 			stopwatch.Elapsed.TotalMilliseconds);
-
-		return new LuaResult(LuaOutcome.Succeeded, results);
 	}
 
 	// Yielding doesn't block the main thread, so it pauses the budget
@@ -85,9 +83,7 @@ public static partial class LuaExecutor
 
 		try
 		{
-#pragma warning disable MA0166
-			await Task.Delay(delay, cancellationToken).ConfigureAwait(true);
-#pragma warning restore MA0166
+			await Task.Delay(delay, GTimeProvider, cancellationToken).ConfigureAwait(true);
 
 			// Godot runs queued continuations until none are left, so a script whose work outlasted its wait would
 			// resume within the same frame forever, hanging the game while its budget kept resetting

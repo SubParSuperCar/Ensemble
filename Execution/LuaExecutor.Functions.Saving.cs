@@ -1,9 +1,7 @@
 using System.Diagnostics;
-using System.Globalization;
 using System.Text.Json;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Common.Interop;
-using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Saving;
@@ -26,20 +24,19 @@ public static partial class LuaExecutor
 	private const string BinaryExtension = ".ensb";
 	private const string JsonExtension = ".json";
 	private const string BackupSuffix = ".bak";
-	private const int MaxFileNameLength = 64;
 	private const string DeletionTitle = "Permanently Delete Saved Creation";
+
+	private const string PlotIdKey = "plot_id";
+	private const string CompressionKey = "compression";
+	private const string LevelKey = "level";
+	private const string ChecksumKey = "checksum";
+
+	private static readonly string[] SaveKeys = [PlotIdKey, CompressionKey, LevelKey, PasswordKey, ChecksumKey];
 
 	private static ValueTask<int> dmp_saves(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var directory = new DirectoryInfo(ProjectSettings.GlobalizePath(CreationsDir));
-		IEnumerable<FileInfo> files =
-			directory.Exists ? directory.GetFiles().OrderBy(static file => file.Name, StringComparer.Ordinal) : [];
-
-		var lines = files.Select(static file => string.Create(
-			CultureInfo.InvariantCulture,
-			$"{file.Name} ({ByteFormat.Humanize((ulong)file.Length)}, {file.LastWriteTime:yyyy-MM-dd HH:mm:ss})"));
-
-		Log.Information("Saved creations in {Path}:\n{Files}", directory.FullName, string.Join('\n', lines));
+		var (path, files) = ListFiles(CreationsDir, "*");
+		Log.Information("Saved creations in {Path}:\n{Files}", path, files);
 
 		return context.ReturnNothing();
 	}
@@ -47,14 +44,8 @@ public static partial class LuaExecutor
 	private static async ValueTask<int> load_creation(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(load_creation)) is not var (plot, _))
+		if (GetEditablePlot(nameof(load_creation)) is not var (plot, _))
 			return context.Return();
-
-		if (plot.IsSpawned)
-		{
-			Log.Error("Plot {PlotId} is spawned; despawn it to load into it", plot.Id);
-			return context.Return();
-		}
 
 		var name = context.GetArgument<string>(0);
 		var data = await LoadCreationAsync(name, context.GetArgumentOrDefault<string?>(1), cancellationToken)
@@ -74,7 +65,8 @@ public static partial class LuaExecutor
 			if (tokenCost > 0)
 				await DelayAsync(SessionManager.GetRefillTime(tokenCost), cancellationToken).ConfigureAwait(true);
 
-			if (!GSessionManager.IsActive || LocalPlot is not { IsSpawned: false } current || current.Id != plot.Id)
+			// By identity, since a later session's plot with the same ID is another object
+			if (!ReferenceEquals(LocalPlot, plot) || plot.IsSpawned)
 			{
 				Log.Warning("Stopped loading {Name}: plot {PlotId} is no longer editable", name, plot.Id);
 				return context.Return();
@@ -101,23 +93,15 @@ public static partial class LuaExecutor
 	private static async ValueTask<int> loc_load_creation(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (!IsSinglePlayer(nameof(loc_load_creation)))
+		if (FindDirectPlot(context.GetArgument<int>(0), nameof(loc_load_creation)) is not { } plot)
 			return context.Return();
 
-		var plotId = context.GetArgument<int>(0);
 		var name = context.GetArgument<string>(1);
-
-		if (GPlots.GetPlot(plotId) is not { } plot)
-		{
-			Log.Error("Plot with ID {PlotId} not found", plotId);
-			return context.Return();
-		}
-
 		var data = await LoadCreationAsync(name, context.GetArgumentOrDefault<string?>(2), cancellationToken)
 			.ConfigureAwait(true);
 
 		// The session may have changed while loading
-		if (data is null || !ReferenceEquals(GPlots.GetPlot(plotId)?.Source, plot.Source))
+		if (data is null || !ReferenceEquals(GPlots.GetPlot(plot.Id), plot))
 			return context.Return();
 
 		var countBefore = plot.Instances.Count;
@@ -126,7 +110,7 @@ public static partial class LuaExecutor
 		Log.Information(
 			"Loaded {Name} into plot {PlotId}: added {Added} instance(s), skipped {SkippedInstances} instance(s) and " +
 			"{SkippedValues} property value(s)",
-			name, plotId, plot.Instances.Count - countBefore, skippedInstances, skippedValues);
+			name, plot.Id, plot.Instances.Count - countBefore, skippedInstances, skippedValues);
 
 		return context.Return();
 	}
@@ -135,7 +119,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var name = context.GetArgument<string>(0);
-		var table = context.IsArgumentOmitted(1) ? null : context.GetArgument<LuaTable>(1);
+		var table = context.GetArgumentOrDefault<LuaTable?>(1);
 
 		if (
 			GetCreationPath(name) is not { } path || !TryReadSaveOptions(table, out var plotId, out var options) ||
@@ -312,7 +296,7 @@ public static partial class LuaExecutor
 	// Drops what AddInstancesAction would reject a whole batch for (unknown assets, invalid values), like loc_ loads
 	private static (List<InstanceSpec> Specs, int SkippedInstances, int SkippedValues) ToSpecs(CreationSaveData data)
 	{
-		List<InstanceSpec> specs = [];
+		var specs = new List<InstanceSpec>();
 		var (skippedInstances, skippedValues) = (0, 0);
 
 		foreach (var instance in data.Instances)
@@ -351,32 +335,32 @@ public static partial class LuaExecutor
 		foreach (var (key, value) in table ?? [])
 		{
 			var text = value.Type is LuaValueType.String ? value.Read<string>() : null;
-			var number = value.Type is LuaValueType.Number ? ToInt(value) : null;
+			var number = ToInt(value);
 
 			switch (key.Type is LuaValueType.String ? key.Read<string>() : null)
 			{
-				case "plot_id" when number is { } id:
+				case PlotIdKey when number is { } id:
 					plotId = id;
 					break;
 
-				case "compression" when ToCompression(text) is { } compression:
+				case CompressionKey when ToCompression(text) is { } compression:
 					options = options with { Compression = compression };
 					break;
 
-				case "level" when number is { } level:
+				case LevelKey when number is { } level:
 					options = options with { CompressionLevel = level };
 					break;
 
-				case "password" when text is { Length: > 0 }:
+				case PasswordKey when text is { Length: > 0 }:
 					options = options with { Encryption = new SaveEncryption.Password(text) };
 					break;
 
-				case "checksum" when value.Type is LuaValueType.Boolean:
+				case ChecksumKey when value.Type is LuaValueType.Boolean:
 					options = options with { UseChecksum = value.Read<bool>() };
 					break;
 
 				default:
-					Log.Error("Invalid save option: {Key} = {Value}", key, value);
+					LogInvalidOption(key, value, SaveKeys);
 					return false;
 			}
 		}
@@ -385,24 +369,6 @@ public static partial class LuaExecutor
 	}
 
 	private static string? GetCreationPath(string name) => GetUserFilePath(CreationsDir, name, BinaryExtension);
-
-	// Plain names only, portable to every OS's file system
-	private static string? GetUserFilePath(string directory, string name, string defaultExtension)
-	{
-		if (
-			name is not { Length: > 0 and <= MaxFileNameLength } || name[0] is '.' || name[^1] is '.' or ' ' ||
-			!name.All(static c => char.IsAsciiLetterOrDigit(c) || c is ' ' or '-' or '_' or '.'))
-		{
-			Log.Error(
-				"Invalid name {Name}: use up to {Max} letters, digits, spaces, '-', '_', and '.'",
-				name, MaxFileNameLength);
-
-			return null;
-		}
-
-		var fileName = Path.HasExtension(name) ? name : name + defaultExtension;
-		return Path.Join(ProjectSettings.GlobalizePath(directory), fileName);
-	}
 
 	// TryParse also takes any number, defined or not
 	private static CompressionType? ToCompression(string? text) =>

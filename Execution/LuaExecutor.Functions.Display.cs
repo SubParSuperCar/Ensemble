@@ -5,8 +5,6 @@ using Godot;
 using Lua;
 using Serilog;
 
-// ReSharper disable SwitchStatementMissingSomeEnumCasesNoDefault
-
 namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
@@ -14,6 +12,7 @@ public static partial class LuaExecutor
 	private static ValueTask<int> cap_fps(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Engine.MaxFps = context.GetArgumentOrDefault<int>(0);
+		Log.Information("Set max FPS to {MaxFps}", Engine.MaxFps);
 
 		return context.ReturnNothing();
 	}
@@ -60,22 +59,14 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var argument = context.GetArgument<LuaValue>(0);
-		DisplayServer.VSyncMode? mode = null;
 
-		switch (argument.Type)
+		DisplayServer.VSyncMode? mode = argument.Type switch
 		{
-			case LuaValueType.String:
-				if (Enum.TryParse<DisplayServer.VSyncMode>(argument.Read<string>(), true, out var parsed))
-					mode = parsed;
-				break;
-
-			case LuaValueType.Number:
-				var number = argument.Read<double>();
-
-				if (double.IsInteger(number))
-					mode = (DisplayServer.VSyncMode)(long)number;
-				break;
-		}
+			LuaValueType.String when Enum.TryParse(argument.Read<string>(), true, out DisplayServer.VSyncMode parsed) =>
+				parsed,
+			LuaValueType.Number when ToInt(argument) is { } number => (DisplayServer.VSyncMode)number,
+			_ => null
+		};
 
 		if (mode is { } result && Enum.IsDefined(result))
 		{

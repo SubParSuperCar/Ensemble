@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Messages;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.World;
-using EnsembleRoot.Sessions.Api;
 using Godot;
 using Lua;
 using Serilog;
@@ -30,17 +29,10 @@ public static partial class LuaExecutor
 	private static ValueTask<int> loc_add_rand_insts(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (!IsSinglePlayer(nameof(loc_add_rand_insts)))
+		if (FindDirectPlot(context.GetArgument<int>(0), nameof(loc_add_rand_insts)) is not { } plot)
 			return context.ReturnNothing();
 
-		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgument<int>(1);
-
-		if (GPlots.GetPlot(plotId) is not { } plot)
-		{
-			Log.Error("Plot with ID {PlotId} not found", plotId);
-			return context.ReturnNothing();
-		}
 
 		if (!IsValidInstanceCount(plot, count))
 			return context.ReturnNothing();
@@ -50,8 +42,8 @@ public static partial class LuaExecutor
 
 		stopwatch.Stop();
 		Log.Information(
-			"Added {Count} instance(s) to plot with ID {PlotId} in {ElapsedMs:F3} ms",
-			count, plotId, stopwatch.Elapsed.TotalMilliseconds);
+			"Added {Count} instance(s) to plot {PlotId} in {ElapsedMs:F3} ms",
+			count, plot.Id, stopwatch.Elapsed.TotalMilliseconds);
 
 		return context.ReturnNothing();
 	}
@@ -59,16 +51,8 @@ public static partial class LuaExecutor
 	private static ValueTask<int> loc_clr_insts(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (!IsSinglePlayer(nameof(loc_clr_insts)))
+		if (FindDirectPlot(context.GetArgument<int>(0), nameof(loc_clr_insts)) is not { } plot)
 			return context.ReturnNothing();
-
-		var plotId = context.GetArgument<int>(0);
-
-		if (GPlots.GetPlot(plotId) is not { } plot)
-		{
-			Log.Error("Plot with ID {PlotId} not found", plotId);
-			return context.ReturnNothing();
-		}
 
 		var instances = plot.Instances;
 		var count = instances.Count;
@@ -78,31 +62,20 @@ public static partial class LuaExecutor
 
 		stopwatch.Stop();
 		Log.Information(
-			"Removed {Count} instance(s) from plot with ID {PlotId} in {ElapsedMs:F3} ms (deferred)",
-			count, plotId, stopwatch.Elapsed.TotalMilliseconds);
+			"Removed {Count} instance(s) from plot {PlotId} in {ElapsedMs:F3} ms (deferred)",
+			count, plot.Id, stopwatch.Elapsed.TotalMilliseconds);
 
 		return context.ReturnNothing();
 	}
 
-	/// <summary>
-	///     Adds random instances to a plot, measures the frame times for a while, then removes them again.
-	///     Returns the average and worst frame times in milliseconds.
-	/// </summary>
 	private static async ValueTask<int> loc_stress_test(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (!IsSinglePlayer(nameof(loc_stress_test)))
+		if (FindDirectPlot(context.GetArgument<int>(0), nameof(loc_stress_test)) is not { } plot)
 			return context.Return();
 
-		var plotId = context.GetArgument<int>(0);
 		var count = context.GetArgumentOrDefault(1, DefaultStressTestCount);
 		var seconds = context.GetArgumentOrDefault(2, DefaultStressTestSeconds);
-
-		if (GPlots.GetPlot(plotId) is not { } plot)
-		{
-			Log.Error("Plot with ID {PlotId} not found", plotId);
-			return context.Return();
-		}
 
 		if (!IsValidInstanceCount(plot, count))
 			return context.Return();
@@ -111,7 +84,7 @@ public static partial class LuaExecutor
 		var instanceIds = new List<int>();
 
 		Log.Information(
-			"Stress testing plot with ID {PlotId} with {Count} instance(s) for {Seconds} s...", plotId, count, seconds);
+			"Stress testing plot {PlotId} with {Count} instance(s) for {Seconds} s...", plot.Id, count, seconds);
 		var start = Stopwatch.GetTimestamp();
 
 		try
@@ -148,14 +121,13 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> perf_mod(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if ((Engine.GetMainLoop() as SceneTree)?.Root is { } root)
-		{
-			root.Msaa3D = Viewport.Msaa.Disabled;
-			root.ScreenSpaceAA = Viewport.ScreenSpaceAAEnum.Disabled;
-		}
+		var root = ((SceneTree)Engine.GetMainLoop()).Root;
+		root.Msaa3D = Viewport.Msaa.Disabled;
+		root.ScreenSpaceAA = Viewport.ScreenSpaceAAEnum.Disabled;
 
 		WeakReferenceMessenger.Default.Send(new DisableUiAntialiasingMessage());
 
+		// The world, with its plots and characters, exists only during a session
 		if (WorldManager.Instance?.World is { } world)
 		{
 			if (world.GetNodeOrNull<WorldEnvironment>(SkyPath) is { } sky)
@@ -166,15 +138,15 @@ public static partial class LuaExecutor
 
 			if (world.GetNodeOrNull<Node3D>(TerrainPath) is { } terrain)
 				terrain.Visible = false;
+
+			foreach (var plot in GPlots.GetAll())
+				if (GPlotManager.GetHandle(plot.Id).GetNodeOrNull<AreaLight3D>(NightLightPath) is { } nightLight)
+					nightLight.Visible = false;
+
+			foreach (var player in GPlayers.GetAll())
+				if (GPlayerManager.GetHandle(player.Id).GetNodeOrNull<SpotLight3D>(FlashlightPath) is { } flashlight)
+					flashlight.Visible = false;
 		}
-
-		foreach (var plot in GPlotManager.Handles.Values)
-			if (plot.GetNodeOrNull<AreaLight3D>(NightLightPath) is { } nightLight)
-				nightLight.Visible = false;
-
-		foreach (var player in GPlayerManager.Handles.Values)
-			if (player.GetNodeOrNull<SpotLight3D>(FlashlightPath) is { } flashlight)
-				flashlight.Visible = false;
 
 		Log.Information(
 			"Applied performance modifications (may need reapplying after a session starts; setting the time to " +
@@ -310,18 +282,9 @@ public static partial class LuaExecutor
 			return true;
 
 		Log.Error(
-			"Invalid instance count {Count} for plot with ID {PlotId} ({Current}/{Max})",
+			"Invalid instance count {Count} for plot {PlotId} ({Current}/{Max})",
 			count, plot.Id, instances.Count, instances.MaxCount);
 
-		return false;
-	}
-
-	private static bool IsSinglePlayer(string function)
-	{
-		if (GSessionManager.Mode is SessionMode.SinglePlayer)
-			return true;
-
-		Log.Error("{Function} is only available in Single-Player, since it edits plots directly", function);
 		return false;
 	}
 }

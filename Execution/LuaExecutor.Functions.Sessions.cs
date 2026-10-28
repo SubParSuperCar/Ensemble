@@ -37,7 +37,7 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> host_mp(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var table = context.IsArgumentOmitted(0) ? null : context.GetArgument<LuaTable>(0);
+		var table = context.GetArgumentOrDefault<LuaTable?>(0);
 
 		if (!TryReadSessionOptions(table, HostKeys, out var options) || GetDisplayName(options) is not { } name)
 			return context.ReturnNothing();
@@ -51,14 +51,10 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	/// <summary>
-	///     Starts a headless dedicated server on this machine and returns its process ID once it listens, so it can be
-	///     joined right away. Servers stop with <c>stop_servers()</c> or when the game quits.
-	/// </summary>
 	private static async ValueTask<int> host_server(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var table = context.IsArgumentOmitted(0) ? null : context.GetArgument<LuaTable>(0);
+		var table = context.GetArgumentOrDefault<LuaTable?>(0);
 
 		if (!TryReadSessionOptions(table, ServerKeys, out var options))
 			return context.Return();
@@ -109,7 +105,7 @@ public static partial class LuaExecutor
 	private static ValueTask<int> join_mp(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var address = context.GetArgument<string>(0);
-		var table = context.IsArgumentOmitted(1) ? null : context.GetArgument<LuaTable>(1);
+		var table = context.GetArgumentOrDefault<LuaTable?>(1);
 
 		if (!TryReadSessionOptions(table, JoinKeys, out var options) || GetDisplayName(options) is not { } name)
 			return context.ReturnNothing();
@@ -268,8 +264,8 @@ public static partial class LuaExecutor
 
 	private static void LogInvalidDisplayName(string name) =>
 		Log.Error(
-			"Invalid display name {Name}: use up to {Max} ASCII letters and digits, or none", name,
-			MaxDisplayNameLength);
+			"Invalid display name {Name}: use up to {Max} ASCII letters and digits, or none",
+			name, MaxDisplayNameLength);
 
 	private static bool TryReadSessionOptions(LuaTable? table, string[] keys, out SessionOptions options)
 	{
@@ -279,7 +275,7 @@ public static partial class LuaExecutor
 		{
 			var name = key.Type is LuaValueType.String ? key.Read<string>() : null;
 			var text = value.Type is LuaValueType.String ? value.Read<string>() : null;
-			var number = value.Type is LuaValueType.Number ? ToInt(value) : null;
+			var number = ToInt(value);
 			bool? flag = value.Type is LuaValueType.Boolean ? value.Read<bool>() : null;
 
 			SessionOptions? updated = name is not null && keys.Contains(name)
@@ -297,7 +293,7 @@ public static partial class LuaExecutor
 
 			if (updated is not { } valid)
 			{
-				Log.Error("Invalid option: {Key} = {Value} (takes {Keys})", key, value, string.Join(", ", keys));
+				LogInvalidOption(key, value, keys);
 				return false;
 			}
 

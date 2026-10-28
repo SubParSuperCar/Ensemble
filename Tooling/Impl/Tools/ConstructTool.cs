@@ -8,9 +8,6 @@ using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 using Serilog;
 
-// ReSharper disable EventNeverSubscribedTo.Global
-// ReSharper disable MemberCanBePrivate.Global
-
 namespace EnsembleRoot.Tooling.Tools;
 
 public enum RotationSpace : byte
@@ -43,8 +40,8 @@ public partial class ConstructTool : ToolBase
 
 	private AxialHighlight? _axialHighlight;
 	private Vector3 _gridPosition;
+	private bool _isActive;
 	private AssetHandle? _preview;
-	private Aabb _previewBounds;
 	private Quaternion _rotation = Quaternion.Identity;
 	private SolidHighlight? _solidHighlight;
 	private PlacementState? _state;
@@ -59,17 +56,15 @@ public partial class ConstructTool : ToolBase
 
 	public int AssetId { get; private set; }
 
-	public bool IsActive { get; private set; }
-
 	private bool CanPlace => _state is PlacementState.Valid;
 	private bool IsSnapping => SnappingIncrementLinear is > 0;
 
+	// ReSharper disable once EventNeverSubscribedTo.Global
 	public event Action<int>? AssetIdChanged;
-	public event Action<bool>? IsActiveChanged;
 
 	public override void _UnhandledInput(InputEvent @event)
 	{
-		if (!IsActive || InputSink.IsSunk)
+		if (!_isActive || InputSink.IsSunk)
 			return;
 
 		if (@event.IsActionPressed(RotateXAction))
@@ -101,7 +96,7 @@ public partial class ConstructTool : ToolBase
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (IsActive)
+		if (_isActive)
 			UpdatePlacement();
 	}
 
@@ -127,10 +122,10 @@ public partial class ConstructTool : ToolBase
 		AssetId = id;
 		AssetIdChanged?.Invoke(id);
 
-		var wasActive = IsActive;
+		var wasActive = _isActive;
 		UpdateActive();
 
-		if (wasActive && IsActive)
+		if (wasActive && _isActive)
 			RebuildPreview();
 	}
 
@@ -141,11 +136,10 @@ public partial class ConstructTool : ToolBase
 	{
 		var isActive = IsEnabled && GAssetManager.GetPackedOrNull(AssetId) is not null;
 
-		if (isActive == IsActive)
+		if (isActive == _isActive)
 			return;
 
-		IsActive = isActive;
-		IsActiveChanged?.Invoke(isActive);
+		_isActive = isActive;
 
 		if (isActive)
 			RebuildPreview();
@@ -155,18 +149,19 @@ public partial class ConstructTool : ToolBase
 
 	private void UpdatePlacement()
 	{
-		if (ToolCommon.LocalPlotHandle is not { } plot || ToolCommon.CastCursorRay(GetViewport()) is not { } hit)
+		if (GPlotManager.LocalHandle is not { } plot || ToolCommon.CastCursorRay(GetViewport()) is not { } hit)
 		{
 			HidePreview();
 			return;
 		}
 
-		var normal = (plot.OriginTransform.Basis.Inverse() * hit.Normal).Normalized();
+		var toPlot = plot.OriginTransform.AffineInverse();
+		var normal = (toPlot.Basis * hit.Normal).Normalized();
 
 		if (IsSnapping)
 			normal = ToGridAxis(normal);
 
-		var surface = plot.WorldToGrid(hit.Position) * PlotHandle.GridToWorldScale;
+		var surface = toPlot * hit.Position;
 		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
 		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
 		var anchor = cellSize is { } size ? GetGridAnchor(hit.Collider, normal, size) : Vector3.Zero;
@@ -175,7 +170,7 @@ public partial class ConstructTool : ToolBase
 			box.At(surface + normal * box.Radius(normal)), PlotPlacement.GetObstacles(plot),
 			PlotPlacement.GetBounds(plot).Position.Y, normal, cellSize, anchor);
 
-		var origin = box.Center - box.Basis * _previewBounds.GetCenter();
+		var origin = box.Center - box.Basis * GAssetManager.GetBoundary(AssetId).GetCenter();
 
 		if (cellSize is { } cell)
 			origin = PlacementSolver.SnapToLattice(origin, anchor, GetLatticeCell(cell));
@@ -269,9 +264,9 @@ public partial class ConstructTool : ToolBase
 		AddChild(_preview);
 		MakeTranslucent(_preview);
 
-		_previewBounds = _preview.BoundaryAabb;
-		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = _previewBounds };
-		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = _previewBounds, Tint = InvalidTint };
+		var bounds = GAssetManager.GetBoundary(AssetId);
+		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = bounds };
+		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = bounds, Tint = InvalidTint };
 
 		_preview.AddChild(_axialHighlight);
 		_preview.AddChild(_solidHighlight);
@@ -318,7 +313,6 @@ public partial class ConstructTool : ToolBase
 	{
 		_preview?.QueueFree();
 		_preview = null;
-		_previewBounds = default;
 		_axialHighlight = null;
 		_solidHighlight = null;
 		_state = null;

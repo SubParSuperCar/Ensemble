@@ -1,6 +1,5 @@
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Scripts.Assets;
-using EnsembleRoot.Scripts.Plots;
 using Godot;
 
 namespace EnsembleRoot.Tooling.Tools;
@@ -22,8 +21,6 @@ internal static class ToolCommon
 	private static readonly NodePath SoundManagerPath = "SoundManager";
 	private static readonly StringName PlayMethod = "play";
 
-	public static PlotHandle? LocalPlotHandle => LocalPlot?.Id is { } id ? GPlotManager.GetHandleOrNull(id) : null;
-
 	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode(SoundManagerPath);
 
 	public static TNode? FindInHierarchy<TNode>(Node? node) where TNode : Node
@@ -43,9 +40,9 @@ internal static class ToolCommon
 		(!Input.IsActionPressed(SelectionMarqueeAction) || !GToolManager.Marquee.CanSelect);
 
 	public static bool IsHandleLocal(AssetHandle handle) =>
-		LocalPlotHandle is { } plot && ReferenceEquals(FindInHierarchy<PlotHandle>(handle), plot);
+		GPlotManager.LocalHandle is { } plot && ReferenceEquals(handle.Plot, plot);
 
-	public static ToolRayHit? CastCursorRay(Viewport viewport, uint mask = SelectableLayers)
+	public static ToolRayHit? CastCursorRay(Viewport viewport)
 	{
 		if (viewport.GetCamera3D() is not { } camera)
 			return null;
@@ -55,7 +52,7 @@ internal static class ToolCommon
 		// As far as the camera draws, so anything shown can be targeted
 		var end = origin + camera.ProjectRayNormal(mouse) * camera.Far;
 
-		var query = PhysicsRayQueryParameters3D.Create(origin, end, mask);
+		var query = PhysicsRayQueryParameters3D.Create(origin, end, SelectableLayers);
 		var result = viewport.GetWorld3D().DirectSpaceState.IntersectRay(query);
 
 		return result.Count is 0
@@ -67,7 +64,9 @@ internal static class ToolCommon
 	/// <summary>Finds the local plot's instances whose boundary centers project within a viewport area.</summary>
 	public static List<int> FindInstancesInArea(Viewport viewport, Rect2 area)
 	{
-		if (viewport.GetCamera3D() is not { } camera || LocalPlot is not { } plot || LocalPlotHandle is not { } handle)
+		if (
+			viewport.GetCamera3D() is not { } camera || LocalPlot is not { } plot ||
+			GPlotManager.LocalHandle is not { } handle)
 			return [];
 
 		List<int> instanceIds = [];

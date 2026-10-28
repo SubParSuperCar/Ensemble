@@ -10,6 +10,14 @@ internal static class SaveCodec
 
 	public static void Write(ISaveSerializer serializer, Stream stream, CreationSaveData data, SaveOptions options)
 	{
+		// The envelope only carries compression, encryption, and checksums, so a plain save is its bare payload, and a
+		// plain JSON save is a JSON file
+		if (options is { Compression: CompressionType.None, Encryption: null, UseChecksum: false })
+		{
+			serializer.Serialize(stream, data);
+			return;
+		}
+
 		using var payload = new MemoryStream();
 		Compress(serializer, payload, data, options);
 		var bytes = payload.GetBuffer().AsSpan(0, (int)payload.Length);
@@ -40,9 +48,12 @@ internal static class SaveCodec
 	{
 		try
 		{
-			var header = SaveEnvelope.ReadHeader(stream);
-
+			var hasEnvelope = SaveEnvelope.TryReadHeader(stream, out var header);
 			using var payload = ReadToEnd(stream);
+
+			if (!hasEnvelope)
+				return serializer.Deserialize(payload);
+
 			var bytes = payload.GetBuffer().AsSpan(0, (int)payload.Length);
 
 			if (header.Encryption is not EncryptionType.None)

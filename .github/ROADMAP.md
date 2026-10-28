@@ -177,11 +177,12 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [x] (S) NsDepCop - namespace dependency rules between subsystems, enforced as build warnings
 - [x] (S) Dedicated 3D physics layers - World, Character, Static Instances, and Dynamic Instances
 - [ ] (S) Scripts/ directory reorg (consolidate single-file folders)
-- [ ] (S) Save serialization improvements
-    - [ ] Leave null-valued properties (e.g., `Properties: null`) out of the JSON format, for slightly smaller files
-    - [ ] Decide whether the JSON should stay pretty-printed and indented (it is now)
-    - [ ] Review whether a magic value belongs at the start of the file (the envelope's `ENSV`, and the binary
-      payload's own `ENSB` inside it)
+- [x] (S) Save serialization improvements
+    - [x] Leave null-valued properties (e.g., `Properties: null`) out of the JSON format, for slightly smaller files
+    - [x] The JSON stays indented, as the readable format beside the compact binary one, with each vector on one line
+      (2,000 instances: 453 KB to 277 KB)
+    - [x] Magic values: the envelope's `ENSV` stays, but a save without compression, encryption, or a checksum is its
+      bare payload, so a plain JSON save is a JSON file and a plain binary one starts with its own `ENSB`
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 

@@ -1,5 +1,6 @@
 using System.IO.Compression;
 using System.Numerics;
+using System.Text.Json;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Saving;
 using EnsembleRoot.Saving.SerDes;
@@ -30,6 +31,20 @@ public sealed class SaveTests : IDisposable
 		var original = CreateSaveData();
 
 		serializer.Save(_path, original, new SaveOptions { Compression = compression, UseChecksum = true });
+
+		AssertEquivalent(original, serializer.Load(_path));
+	}
+
+	[Fact]
+	public void SaveThenLoad_Plain_IsBareJson()
+	{
+		var serializer = new JsonSaveSerializer();
+		var original = CreateSaveData();
+
+		serializer.Save(_path, original);
+
+		using var document = JsonDocument.Parse(File.ReadAllBytes(_path));
+		Assert.False(document.RootElement.GetProperty("Instances")[0].TryGetProperty("Properties", out _));
 
 		AssertEquivalent(original, serializer.Load(_path));
 	}

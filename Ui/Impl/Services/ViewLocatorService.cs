@@ -4,7 +4,7 @@ using EnsembleRoot.Ui.Abstractions;
 
 namespace EnsembleRoot.Ui.Services;
 
-public sealed class ViewLocatorService(IServiceProvider services) : ISingletonObject, IServiceBase, IDataTemplate
+public sealed class ViewLocatorService(IServiceProvider services) : ISingletonObject, IDataTemplate
 {
 	public Control? Build(object? data)
 	{

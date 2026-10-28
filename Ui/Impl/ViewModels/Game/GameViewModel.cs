@@ -64,19 +64,19 @@ public sealed partial class GameViewModel : ViewModelBase
 	public WidgetDrawerViewModel WidgetDrawer { get; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial PlayerListViewModel? PlayerList { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial ToolBarViewModel? ToolBar { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial SpawnButtonViewModel? SpawnButton { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial MarqueeViewModel? Marquee { get; private set; }
 
 	protected override void OnDispose()

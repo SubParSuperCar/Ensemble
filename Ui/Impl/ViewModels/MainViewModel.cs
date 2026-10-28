@@ -9,7 +9,6 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Attributes;
 using EnsembleRoot.Ui.Extensions;
-using EnsembleRoot.Ui.Messages;
 using EnsembleRoot.Ui.Services;
 using Godot;
 using Iciclecreek.Terminal;
@@ -58,23 +57,23 @@ public sealed partial class MainViewModel : ViewModelBase
 	}
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial ViewModelBase? Main { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial StatViewModel? Stats { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial ClockViewModel? Clock { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial ToastListViewModel? Toasts { get; private set; }
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial ConsoleViewModel? Console { get; private set; }
 
 	[ObservableProperty] public partial bool IsConsoleVisible { get; set; }
@@ -96,7 +95,7 @@ public sealed partial class MainViewModel : ViewModelBase
 	}
 
 	// Forces Godot to keep drawing out of session, where there's no 3D scene that would keep the UI updating
-	private static void OnUiProcess(UiProcessData data) => RenderingServer.ForceDraw();
+	private static void OnUiProcess(double delta) => RenderingServer.ForceDraw();
 
 	private void OnSessionStarted()
 	{

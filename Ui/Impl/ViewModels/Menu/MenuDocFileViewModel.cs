@@ -19,7 +19,7 @@ public sealed partial class MenuDocFileViewModel : ViewModelBase
 	}
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial DocFileViewModel? Content { get; private set; }
 
 	protected override void OnDispose() => Content = null;

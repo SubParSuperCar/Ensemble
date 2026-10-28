@@ -18,12 +18,11 @@ public static class ColorExtensions
 
 	extension(Color source)
 	{
-		// ReSharper disable once MemberCanBePrivate.Global
-		public double RelativeLuminance =>
-			0.2126 * Linearize(source.R) + 0.7152 * Linearize(source.G) + 0.0722 * Linearize(source.B);
-
 		public Color ContrastingForeground =>
 			source.RelativeLuminance < WhiteBlackCrossoverLuminance ? Colors.White : Colors.Black;
+
+		private double RelativeLuminance =>
+			0.2126 * Linearize(source.R) + 0.7152 * Linearize(source.G) + 0.0722 * Linearize(source.B);
 
 		/// <summary>Keeps the hue, but makes the color stand out against the light or dark theme.</summary>
 		public Color ToReadable(bool isDark) =>

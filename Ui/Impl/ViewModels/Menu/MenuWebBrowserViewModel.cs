@@ -19,7 +19,7 @@ public sealed partial class MenuWebBrowserViewModel : ViewModelBase
 	}
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial WebBrowserViewModel? Content { get; private set; }
 
 	protected override void OnDispose() => Content = null;

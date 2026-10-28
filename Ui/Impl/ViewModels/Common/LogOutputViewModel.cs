@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Ui.Abstractions;
-using EnsembleRoot.Ui.Messages;
 using EnsembleRoot.Ui.Services;
 using Godot;
 using Serilog.Events;
@@ -52,7 +51,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 	private void OnLogHistoryUpdated() => Volatile.Write(ref _isHistoryDirty, 1);
 
 	// Coalesces bursts of log entries into at most one refresh per UI frame
-	private void OnUiProcess(UiProcessData data)
+	private void OnUiProcess(double delta)
 	{
 		if (Interlocked.Exchange(ref _isHistoryDirty, 0) is 1)
 			Dispatcher.UIThread.Post(UpdateOutput);

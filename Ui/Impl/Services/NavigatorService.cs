@@ -7,23 +7,17 @@ using EnsembleRoot.Ui.Extensions;
 namespace EnsembleRoot.Ui.Services;
 
 [INotifyPropertyChanged]
-public sealed partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase
+public sealed partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject
 {
 	private readonly Stack<Func<ViewModelBase>> _history = [];
 	private Func<ViewModelBase>? _createCurrent;
 	private bool _shouldExcludeFromHistory;
 
 	[ObservableProperty]
-	[property: DisposeOldObservableValueOnChanging]
+	[DisposeOldObservableValueOnChanging]
 	public partial ViewModelBase? Current { get; private set; }
 
 	public bool CanGoBack => _history.Count > 0;
-
-	public void GoTo()
-	{
-		_createCurrent = null;
-		Current = null;
-	}
 
 	public void GoTo<[DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TViewModel>(
 		bool shouldExcludeFromHistory = false) where TViewModel : ViewModelBase
@@ -46,6 +40,8 @@ public sealed partial class NavigatorService(IServiceProvider services) : Dispos
 		_shouldExcludeFromHistory = false;
 		Show(_history.Pop());
 	}
+
+	protected override void OnDispose() => Current = null;
 
 	private void Show(Func<ViewModelBase> create)
 	{

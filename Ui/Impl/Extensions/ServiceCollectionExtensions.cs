@@ -7,15 +7,11 @@ namespace EnsembleRoot.Ui.Extensions;
 public static partial class ServiceCollectionExtensions
 {
 	[GenerateServiceRegistrations(
-		AssignableTo = typeof(ITransientObject), Lifetime = ServiceLifetime.Transient,
-		AsSelf = true, AsImplementedInterfaces = true)]
+		AssignableTo = typeof(ITransientObject), Lifetime = ServiceLifetime.Transient, AsSelf = true)]
 	[GenerateServiceRegistrations(
-		AssignableTo = typeof(IScopedObject), Lifetime = ServiceLifetime.Scoped,
-		AsSelf = true, AsImplementedInterfaces = true)]
+		AssignableTo = typeof(IScopedObject), Lifetime = ServiceLifetime.Scoped, AsSelf = true)]
 	[GenerateServiceRegistrations(
-		AssignableTo = typeof(ISingletonObject), Lifetime = ServiceLifetime.Singleton,
-		AsSelf = true, AsImplementedInterfaces = true)]
+		AssignableTo = typeof(ISingletonObject), Lifetime = ServiceLifetime.Singleton, AsSelf = true)]
 	[GenerateServiceRegistrations(AssignableTo = typeof(IViewFor<>), Lifetime = ServiceLifetime.Transient)]
-	// ReSharper disable once UnusedMethodReturnValue.Global
-	public static partial IServiceCollection AddServices(this IServiceCollection services);
+	public static partial void AddServices(this IServiceCollection services);
 }

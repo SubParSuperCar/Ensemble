@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:EnsembleRoot.Ui.ViewModels"
+    xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
     mc:Ignorable="d" d:DesignWidth="384" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Views.AssetSelectorView"
     x:DataType="vm:AssetSelectorViewModel">
@@ -15,7 +15,6 @@
 
         <Grid ColumnDefinitions="*,Auto">
             <TextBox
-                Name="FilterBox"
                 Text="{Binding FilterQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                 PlaceholderText="Filter by Name or ID&#x2026;"
                 GotFocus="OnFilterBoxGotFocus"

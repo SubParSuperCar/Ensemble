@@ -15,6 +15,6 @@ public sealed partial class ToastView : UserControl, IViewFor<ToastViewModel>
 	protected override void OnLoaded(RoutedEventArgs e)
 	{
 		base.OnLoaded(e);
-		Frame.Classes.Add("shown");
+		Frame.Classes.Add(App.ShownClass);
 	}
 }

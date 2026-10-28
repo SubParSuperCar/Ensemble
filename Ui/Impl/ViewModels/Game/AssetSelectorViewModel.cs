@@ -29,8 +29,9 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 		Filter();
 
-		SelectInitialAsset();
+		OnAssetIdChanged(Construct.AssetId);
 		SelectedItems.CollectionChanged += OnSelectedItemsChanged;
+		Construct.AssetIdChanged += OnAssetIdChanged;
 
 		OnLocalPlotChanged(LocalPlot);
 		LocalPlotChanged += OnLocalPlotChanged;
@@ -63,6 +64,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 	protected override void OnDispose()
 	{
 		SelectedItems.CollectionChanged -= OnSelectedItemsChanged;
+		Construct.AssetIdChanged -= OnAssetIdChanged;
 		LocalPlotChanged -= OnLocalPlotChanged;
 
 		SetInstances(null);
@@ -163,9 +165,15 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 			ExpandedFolderPaths.Remove(folder.Path);
 	}
 
-	private void SelectInitialAsset()
+	// The asset also changes without the selector (e.g., from Lua)
+	private void OnAssetIdChanged(int assetId)
 	{
-		if (_nodesByAssetId.TryGetValue(Construct.AssetId, out var node))
+		if (SelectedItems.SingleOrDefault() is AssetNode selected && selected.Id == assetId)
+			return;
+
+		SelectedItems.Clear();
+
+		if (_nodesByAssetId.TryGetValue(assetId, out var node))
 			SelectedItems.Add(node);
 	}
 

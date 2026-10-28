@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Numerics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -59,13 +60,14 @@ file static class FloatArray
 			throw new JsonException($"Expected an array of {values.Length} numbers.");
 	}
 
+	// On one line, so an indented save shows each instance in a few; the writer still rejects non-finite values
 	public static void Write(Utf8JsonWriter writer, ReadOnlySpan<float> values)
 	{
-		writer.WriteStartArray();
+		var numbers = new string[values.Length];
 
-		foreach (var value in values)
-			writer.WriteNumberValue(value);
+		for (var i = 0; i < values.Length; i++)
+			numbers[i] = values[i].ToString(CultureInfo.InvariantCulture);
 
-		writer.WriteEndArray();
+		writer.WriteRawValue($"[{string.Join(", ", numbers)}]");
 	}
 }

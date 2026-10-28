@@ -33,7 +33,7 @@ internal readonly record struct KdfParameters(
 ///     Layout: magic, then version, compression, encryption, and flags bytes; the SHA-256 checksum if flagged; and, if
 ///     encrypted, the KDF block (function, memory KiB, iterations, parallelism, salt length) followed by the salt.
 ///     Integers are little-endian. The whole header is the AES-GCM associated data; the nonce and tag precede the
-///     ciphertext.
+///     ciphertext. A save without compression, encryption, or a checksum has no envelope, just its payload.
 /// </remarks>
 internal static class SaveEnvelope
 {
@@ -85,14 +85,25 @@ internal static class SaveEnvelope
 		return header;
 	}
 
-	public static Header ReadHeader(Stream stream)
+	/// <summary>Reads the header, or leaves the stream where it was for a save without one.</summary>
+	public static bool TryReadHeader(Stream stream, out Header header)
 	{
+		var start = stream.Position;
 		Span<byte> prefix = stackalloc byte[PrefixSize];
-		stream.ReadExactly(prefix);
 
-		if (!prefix[..4].SequenceEqual(Magic))
-			throw new InvalidDataException("Unrecognized save file.");
+		if (stream.ReadAtLeast(prefix, PrefixSize, false) < PrefixSize || !prefix[..4].SequenceEqual(Magic))
+		{
+			stream.Position = start;
+			header = default;
+			return false;
+		}
 
+		header = ReadHeader(stream, prefix);
+		return true;
+	}
+
+	private static Header ReadHeader(Stream stream, ReadOnlySpan<byte> prefix)
+	{
 		if (prefix[4] is not Version)
 			throw new InvalidDataException($"Unsupported save envelope version: {prefix[4]}.");
 

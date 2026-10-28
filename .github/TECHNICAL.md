@@ -590,11 +590,12 @@ yields, and `print` and returned values show what tables hold.
 ## Saving
 
 The save format is finished; the console saves and loads creations with it (see above), and a Saves UI comes later.
-Creations serialize to a compact binary format (or JSON), wrapped in an envelope with optional Zstandard or Brotli
-compression, an optional SHA-256 checksum, and optional AES-256-GCM encryption keyed with Argon2id. Readers reject
-corrupt data and bound the file size, the decompressed size, and every count and string, so a malicious file can't
-exhaust memory. Loading favors recovery: unknown assets, capped instances, and invalid property values are skipped and
-counted, never rejecting a whole save. Separate layout and content versions leave room to migrate old saves.
+Creations serialize to a compact binary format (or indented JSON), wrapped in an envelope when they use Zstandard or
+Brotli compression, a SHA-256 checksum, or AES-256-GCM encryption keyed with Argon2id; a save with none of these is its
+bare payload, so a plain JSON save is a JSON file. Readers reject corrupt data and bound the file size, the decompressed
+size, and every count and string, so a malicious file can't exhaust memory. Loading favors recovery: unknown assets,
+capped instances, and invalid property values are skipped and counted, never rejecting a whole save. Separate layout and
+content versions leave room to migrate old saves.
 
 ---
 

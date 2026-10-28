@@ -27,6 +27,7 @@ Layers, low to high, enforced by NsDepCop (`config.nsdepcop`):
 
 - **Foundation:** `Common`, `Saving`, `Autoloading`, plus `Core`, the pure C# domain project.
 - **`GdCore`** (Godot wrappers around Core) and **`Sessions`** (game-agnostic networking), independent of each other.
+  One exception, by the owner's choice: GdCore gives Core the game's clock, `GTimeProvider` from Globals.
 - **`Replication`** (network actions and snapshots) and **`Scripts`** (Godot node managers and handles). Scripts
   never uses Replication.
 - **Asset scripts** (`EnsembleRoot.BuildAssets`, beside their scenes in `build_assets/`) build on Scripts and below;

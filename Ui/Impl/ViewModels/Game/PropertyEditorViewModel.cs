@@ -12,7 +12,7 @@ namespace EnsembleRoot.Ui.Impl.ViewModels;
 
 public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 {
-	public const int MaxTextLength = PropertyRules.MaxStringLength;
+	public const int MaxTextLength = MaxPropertyStringLength;
 
 	private readonly Dictionary<PropertyKey, PropertyItem> _itemsByKey = [];
 

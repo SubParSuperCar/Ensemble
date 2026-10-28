@@ -30,10 +30,8 @@ public readonly record struct SetPlotSpawnedAction(bool IsSpawned) : INetworkAct
 		if (plot.IsSpawned == IsSpawned)
 			return Reject(IsSpawned ? "Plot already spawned." : "Plot not spawned.");
 
-		var isOwner = string.Equals(plot.Occupants.Owner?.Player.Id, source.PlayerId, StringComparison.Ordinal);
-
 		// The host has authority over every plot
-		return isOwner || source.IsHost ? Accept : Reject("Player not the owner.");
+		return source.IsHost || source.Owns(plot) ? Accept : Reject("Player not the owner.");
 	}
 
 	public void Apply(ActionSource source)

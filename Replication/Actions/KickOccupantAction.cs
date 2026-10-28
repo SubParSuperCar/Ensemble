@@ -31,7 +31,7 @@ public readonly record struct KickOccupantAction(string PlayerId) : INetworkActi
 		if (source.IsHost)
 			return Accept;
 
-		if (!string.Equals(plot.Occupants.Owner?.Player.Id, source.PlayerId, StringComparison.Ordinal))
+		if (!source.Owns(plot))
 			return Reject("Player not the owner.");
 
 		return GSessionManager.GetPeerByPlayerId(PlayerId) is { IsHost: true }

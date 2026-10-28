@@ -35,6 +35,8 @@ public static class Constants
 
 	public const int RegexMatchTimeoutMs = 100;
 
+	public const int MaxPropertyStringLength = 256;
+
 	/// <summary>
 	///     The narrowest and widest gaps (about 1 and 2 mm) by which an asset's colliders may sit inside its cell, so
 	///     the faces they inset never weld. Binary, just under the millimeters assets are authored in.
@@ -69,5 +71,12 @@ public static class Constants
 		public const uint Character = 1 << 1;
 		public const uint StaticInstances = 1 << 2;
 		public const uint DynamicInstances = 1 << 3;
+	}
+
+	/// <summary>One transfer channel per unreliable stream, since a channel drops what arrives out of order.</summary>
+	public static class NetworkChannels
+	{
+		public const int Characters = 1;
+		public const int Creations = 2;
 	}
 }

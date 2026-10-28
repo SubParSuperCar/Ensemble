@@ -9,5 +9,8 @@ internal static class ActionSourceExtensions
 	{
 		public GdOccupant? Occupant => GPlots.GetOccupant(source.PlayerId);
 		public GdPlot? Plot => source.Occupant?.Plot;
+
+		public bool Owns(GdPlot plot) =>
+			string.Equals(plot.Occupants.Owner?.Player.Id, source.PlayerId, StringComparison.Ordinal);
 	}
 }

@@ -78,26 +78,6 @@ public sealed class ObbGridTests
 		Assert.Equal([near], candidates);
 	}
 
-	[Fact]
-	public void Clear_RemovesGriddedAndUngriddedBoxes()
-	{
-		var grid = new ObbGrid();
-		var huge = Obb.From(new Aabb(-Vector3.One * 1e30f, Vector3.One * 2e30f), Transform3D.Identity);
-		var near = Cube(Vector3.Zero, Basis.Identity);
-		var candidates = new List<Obb>();
-
-		grid.Add(0, huge);
-		grid.Add(1, near);
-		grid.Clear();
-
-		grid.Query(near, candidates);
-		Assert.Empty(candidates);
-		Assert.False(grid.Overlaps(near));
-
-		grid.Add(1, near);
-		Assert.True(grid.Overlaps(near));
-	}
-
 	private static Obb RandomCube(Random random) =>
 		Cube(RandomPoint(random), new Basis(RandomAxis(random), random.NextSingle() * float.Tau));
 

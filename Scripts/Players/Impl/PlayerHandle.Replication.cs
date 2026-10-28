@@ -9,7 +9,6 @@ namespace EnsembleRoot.Scripts.Players;
 
 public partial class PlayerHandle
 {
-	private const int ReplicationChannel = 1;
 	private const int ReplicationRate = 20;
 
 	// Below these, a character counts as idle and only sends keepalives, once a second, which also recover from lost
@@ -125,7 +124,7 @@ public partial class PlayerHandle
 	[Rpc(
 		MultiplayerApi.RpcMode.AnyPeer,
 		TransferMode = MultiplayerPeer.TransferModeEnum.UnreliableOrdered,
-		TransferChannel = ReplicationChannel)]
+		TransferChannel = NetworkChannels.Characters)]
 	private void RpcReplicate(ushort sequence, Vector3 position, float yaw)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();

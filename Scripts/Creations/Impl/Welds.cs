@@ -1,3 +1,4 @@
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 
@@ -33,7 +34,7 @@ public static class Welds
 		{
 			var box = boxes[key];
 			var owner = parts[partsByBox[key]].Owner;
-			var root = Find(parents, partsByBox[key]);
+			var root = UnionFind.Find(parents, partsByBox[key]);
 
 			// Grown, so neighbors across a gap in the next cell are found
 			grid.Query(box with { Extents = box.Extents + Vector3.One * Epsilon }, candidates);
@@ -44,7 +45,7 @@ public static class Welds
 				if (other <= key || parts[partsByBox[other]].Owner == owner)
 					continue;
 
-				var otherRoot = Find(parents, partsByBox[other]);
+				var otherRoot = UnionFind.Find(parents, partsByBox[other]);
 
 				if (root != otherRoot && box.Abuts(boxes[other]))
 					parents[otherRoot] = root;
@@ -52,15 +53,7 @@ public static class Welds
 		}
 
 		// Grouping keeps the parts' order, within each group and across groups by their first part
-		var groups = Enumerable.Range(0, parts.Count).GroupBy(part => Find(parents, part));
+		var groups = Enumerable.Range(0, parts.Count).GroupBy(part => UnionFind.Find(parents, part));
 		return [.. groups.Select(static group => group.ToArray())];
-	}
-
-	private static int Find(int[] parents, int index)
-	{
-		while (parents[index] != index)
-			index = parents[index] = parents[parents[index]];
-
-		return index;
 	}
 }

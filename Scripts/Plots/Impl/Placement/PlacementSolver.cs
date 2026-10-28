@@ -22,8 +22,8 @@ namespace EnsembleRoot.Scripts.Plots.Placement;
 ///         </item>
 ///         <item>Raise: the box is lifted onto the plot floor if below it.</item>
 ///         <item>
-///             Origin (the caller): the asset's origin, worked back from the box, rounds onto the half-cell lattice when
-///             within <see cref="LatticeTolerance" /> of it, as does the anchor (see <see cref="SnapToLattice" />).
+///             Origin (the caller): <see cref="SnapToLattice" /> rounds the asset's origin, worked back from the
+///             box, and the anchor onto the half-cell lattice when within <see cref="LatticeTolerance" /> of it.
 ///         </item>
 ///     </list>
 ///     Snapping can land the box in another obstacle, so the steps repeat; a box still overlapping is left for
@@ -71,10 +71,10 @@ public sealed class PlacementSolver
 	}
 
 	/// <summary>
-	///     Rounds a point onto the lattice of half <paramref name="cellSize" /> steps from <paramref name="anchor" />, per
-	///     axis, where it lies within <see cref="LatticeTolerance" />. Snapping aligns colliders' boxes, so a collider
-	///     inset or offset by a hair (e.g., to keep a face from welding) would otherwise carry its asset's origin, and
-	///     with it the meshes, off the grid by as much.
+	///     Rounds a point onto the lattice of half <paramref name="cellSize" /> steps from <paramref name="anchor" />,
+	///     per axis, where it lies within <see cref="LatticeTolerance" />. Snapping aligns colliders' boxes, so a
+	///     collider inset or offset by a hair (e.g., to keep a face from welding) would otherwise carry its asset's
+	///     origin, and with it the meshes, off the grid by as much.
 	/// </summary>
 	public static Vector3 SnapToLattice(Vector3 point, Vector3 anchor, float cellSize)
 	{

@@ -85,6 +85,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
 node_a = NodePath("../Bottom")
 node_b = NodePath("../Top")
+exclude_nodes_from_collision = false
 linear_limit_y/upper_distance = 0.1
 linear_limit_y/lower_distance = -0.3
 linear_spring_y/enabled = true

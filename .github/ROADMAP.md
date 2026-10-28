@@ -125,9 +125,13 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
     - [x] Target length (`targetLength`) - valid from the current minimum length to 8 (4 m), end to end
     - [x] Maximum length (`maxLength`) - valid from the current minimum length to 8, end to end, with `0` meaning
       uncapped
-- [ ] (S) Jointed assemblies collide - Godot's `exclude_nodes_from_collision` (on by default) excludes whole bodies,
-  and an assembly is one body, so a Suspension's wheel side passes through its chassis side. The Suspension's
-  `MinGap` already keeps its plates apart, so its `Spring` can turn the flag off; asset authors set it per joint
+- [x] (S) Jointed assemblies collide - Godot's `exclude_nodes_from_collision` (on by default) excludes whole bodies,
+  and an assembly is one body, so a Suspension's wheel side passed through its chassis side. Its plates never touch,
+  so its `Spring` turns the flag off
+- [ ] (M) Per-piece joint exclusion - a joint's own two pieces skip each other while everything else on their
+  assemblies collides, for joints whose pieces touch as they move (a motor's head on its base). Godot only excludes
+  whole bodies; options are a hairline clearance between the pieces (no contact, so no scraping; untested) or
+  per-shape filtering (Jolt validates contacts with sub-shape IDs, which Godot doesn't expose)
 - [x] (S) Terrain collision everywhere - Terrain3D builds its whole collision up front, so bodies far from the local
   character (another peer's creation, or a dedicated host's) stay on the ground
 - (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass

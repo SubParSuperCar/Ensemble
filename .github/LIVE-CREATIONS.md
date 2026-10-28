@@ -150,6 +150,9 @@ much as Baja Builders did it (a model, two parts, and a constraint):
 - At spawn, each piece with colliders is reparented into its own group's assembly; the handle rides its first welded
   piece's (its own, unless it has no colliders), and pieces without colliders ride with it. The handle keeps
   references to its pieces, so components never walk the tree after reparenting.
+- Godot's `exclude_nodes_from_collision` works per body, and an assembly is one body: a joint that keeps it on stops
+  everything on its two assemblies from colliding, not just its pieces. A joint whose pieces never touch (the
+  Suspension's plates) turns it off; per-piece exclusion for pieces that touch is on the roadmap.
 - If a loop of welds puts both of a joint's pieces in one assembly, the joint would link a body to itself; it's
   skipped with a warning, as BB builds simply locked up.
 - `AssetManager` warns at startup about anything spawning would ignore: bodies other than `AssetPiece` children, joints
@@ -178,8 +181,9 @@ much as Baja Builders did it (a model, two parts, and a constraint):
 - `Spring`, a `Generic6DOFJoint3D` between them: its Y axis is a spring with travel limits, and every other axis is
   locked (a 6DOF axis's limits default to 0 to 0).
 - `Suspension.cs` sets the spring from the instance's properties when live, clamped: `stiffness` (0 to 100,000 N/m),
-  `damping` (0 to 10,000 N s/m), `targetLength` (its rest length, end to end), and `maxLength` (up to 2 m end to end);
-  the plates never come closer than 0.1 m.
+  `damping` (0 to 10,000 N s/m), `targetLength` (its rest length), and `maxLength` (0 for uncapped). Lengths are end to
+  end in grid units, up to 8 (4 m), read through `AssetHandle.GetLengthProperty`; the plates never come closer than
+  0.1 m, so its `Spring` lets its assemblies collide.
 - `Coil`, a cylinder bent into a helix by `shaders/helix.gdshader`, stands on the bottom plate and reaches `Coil End`,
   a marker on the top plate. Its color, turns, helix radius, and tube thickness are material parameters, and its length
   an instance parameter, so each coil stretches on its own with one shared material. While live, the script sets the

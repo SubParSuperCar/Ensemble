@@ -10,6 +10,9 @@ namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyEditorViewModel>
 {
+	private const string NameMaxWidthKey = "NameMaxWidth";
+	private const double NameWidthShare = 3 / 7d;
+
 	public PropertyEditorView()
 	{
 		InitializeComponent();
@@ -24,6 +27,10 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 		source.FindAncestorOfType<NumericUpDown>(true) is { } number
 			? BindingOperations.GetBindingExpressionBase(number, NumericUpDown.ValueProperty)
 			: BindingOperations.GetBindingExpressionBase(source, TextBox.TextProperty);
+
+	// Long names take up to a share of the list's width, and scroll while hovered past that
+	private void OnItemsSizeChanged(object? sender, SizeChangedEventArgs e) =>
+		Items.Resources[NameMaxWidthKey] = e.NewSize.Width * NameWidthShare;
 
 	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e)
 	{

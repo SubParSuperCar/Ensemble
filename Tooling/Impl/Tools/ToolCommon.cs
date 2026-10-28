@@ -69,7 +69,7 @@ internal static class ToolCommon
 			GPlotManager.LocalHandle is not { } handle)
 			return [];
 
-		List<int> instanceIds = [];
+		var instanceIds = new List<int>();
 
 		foreach (var instance in plot.Instances.Source.All)
 		{

@@ -12,7 +12,7 @@ namespace EnsembleRoot.Scripts.Plots;
 [GlobalClass]
 public partial class PlotManager : Node
 {
-	// The Godot dictionary is for GDScript and Lua; lookups use the C# one, which doesn't marshal
+	// The Godot dictionary is for GDScript; C# uses this one, which doesn't marshal
 	private readonly Dictionary<int, PlotHandle> _handlesById = [];
 
 	public Godot.Collections.Dictionary<int, PlotHandle> Handles { get; } = [];

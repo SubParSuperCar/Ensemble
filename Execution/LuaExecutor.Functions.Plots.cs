@@ -11,17 +11,18 @@ public static partial class LuaExecutor
 	private static ValueTask<int> dmp_creation(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (FindPlot(context.GetArgumentOrNull<int>(0), nameof(dmp_creation)) is not { Id: var id } ||
-			GPlotManager.GetHandleOrNull(id) is not { } handle)
+		if (FindPlot(context.GetArgumentOrNull<int>(0), nameof(dmp_creation)) is not { } plot)
 			return context.ReturnNothing();
 
+		var handle = GPlotManager.GetHandle(plot.Id);
+
 		if (handle.Creation is not { } creation)
-			Log.Information("Plot {PlotId}'s creation isn't spawned", id);
+			Log.Information("Plot {PlotId}'s creation isn't spawned", plot.Id);
 		else
 			Log.Information(
 				"Plot {PlotId}'s creation: {Count} assemblies, simulated by peer {PeerId} (epoch {Epoch}, " +
 				"arbitrated {IsArbitrated})\n{Assemblies}",
-				id, creation.Assemblies.Count, handle.SimulatorPeerId, handle.SimulationEpoch,
+				plot.Id, creation.Assemblies.Count, handle.SimulatorPeerId, handle.SimulationEpoch,
 				handle.ArbitratedSimulatorPeerId is not null, string.Join('\n', creation.Assemblies));
 
 		return context.ReturnNothing();
@@ -70,18 +71,18 @@ public static partial class LuaExecutor
 	private static ValueTask<int> set_plot_simulator(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var plotId = context.GetArgument<int>(0);
-		var peerId = context.IsArgumentOmitted(1) ? null : FindPeerId(context.GetArgument<LuaValue>(1));
+		var isReset = context.IsArgumentOmitted(1);
+		var peerId = isReset ? null : FindPeerId(context.GetArgument<LuaValue>(1));
 
-		if (!context.IsArgumentOmitted(1) && peerId is null)
+		if (
+			FindPlot(context.GetArgument<int>(0), nameof(set_plot_simulator)) is not { } plot ||
+			(!isReset && peerId is null))
 			return context.ReturnNothing();
 
-		if (GPlotManager.GetHandleOrNull(plotId) is not { } handle)
-			Log.Error("Plot with ID {PlotId} not found", plotId);
-		else if (!handle.SetSimulatorOverride(peerId))
-			Log.Error("Only the host can set simulators, and only to registered peers");
+		if (GPlotManager.GetHandle(plot.Id).SetSimulatorOverride(peerId))
+			Log.Information("Set plot {PlotId}'s simulator override to {PeerId}", plot.Id, peerId);
 		else
-			Log.Information("Set plot {PlotId}'s simulator override to {PeerId}", plotId, peerId);
+			Log.Error("Only the host can set simulators, and only to registered peers");
 
 		return context.ReturnNothing();
 	}
@@ -89,7 +90,9 @@ public static partial class LuaExecutor
 	private static ValueTask<int> set_plot_spawned(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(set_plot_spawned)) is not null)
+		if (LocalPlot is null)
+			Log.Error("{Function} needs a claimed plot", nameof(set_plot_spawned));
+		else
 			new SetPlotSpawnedAction(context.GetArgument<bool>(0)).Submit();
 
 		return context.ReturnNothing();

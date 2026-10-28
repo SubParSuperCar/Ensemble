@@ -42,7 +42,8 @@ public static partial class LuaExecutor
 	{
 		Log.Information("Restarting...");
 
-		OS.SetRestartOnExit(true, OS.GetCmdlineArgs());
+		// The engine's arguments leave out the game's own, which follow "--"
+		OS.SetRestartOnExit(true, [.. OS.GetCmdlineArgs(), "--", .. OS.GetCmdlineUserArgs()]);
 		GMain.Quit();
 
 		return context.ReturnNothing();

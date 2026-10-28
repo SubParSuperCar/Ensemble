@@ -32,8 +32,8 @@ internal static class InstanceEdits
 		public void SetProperties(
 			IEnumerable<(GdInstance Instance, IReadOnlyDictionary<string, CoreVariant> Properties)> edits)
 		{
-			List<InstanceSpec> before = [];
-			List<InstanceSpec> after = [];
+			var before = new List<InstanceSpec>();
+			var after = new List<InstanceSpec>();
 
 			foreach (var (instance, properties) in edits)
 			{
@@ -76,7 +76,7 @@ internal static class InstanceEdits
 
 	private static List<(InstanceReference Reference, InstanceSpec Spec)> Find(IEnumerable<InstanceSpec> specs)
 	{
-		List<(InstanceReference, InstanceSpec)> matches = [];
+		var matches = new List<(InstanceReference, InstanceSpec)>();
 
 		if (LocalPlot is not { } plot)
 			return matches;

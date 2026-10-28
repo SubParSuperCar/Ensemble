@@ -1,6 +1,9 @@
+using System.Globalization;
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.Plots;
+using EnsembleRoot.Sessions.Api;
 using Godot;
 using Lua;
 using Serilog;
@@ -9,9 +12,9 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
-	// Shown by help(); "?" marks optional parameters, "|" separates alternatives, "{...}" is a table of options, "loc_"
-	// marks functions that skip the network (Single-Player only), and a player is a peer ID, a player ID, or a unique
-	// display name
+	private const int MaxFileNameLength = 64;
+
+	// Shown by help(), whose header explains the parameter notation
 	private static readonly (LuaFunction Function, string Parameters, string Description)[] Functions =
 	[
 		(new LuaFunction(nameof(add_inst), add_inst), "asset_id, x?, y?, z?, rx?, ry?, rz?",
@@ -123,12 +126,13 @@ public static partial class LuaExecutor
 			env[function.Name] = function;
 	}
 
-	private static (GdPlot Plot, PlotHandle Handle)? GetLocalPlot(string function)
+	// Building actions need it, and the host explains a rejection only in its own debug log
+	private static (GdPlot Plot, PlotHandle Handle)? GetEditablePlot(string function)
 	{
-		if (LocalPlot is { } plot && GPlotManager.GetHandleOrNull(plot.Id) is { } handle)
+		if (LocalPlot is { IsSpawned: false } plot && GPlotManager.LocalHandle is { } handle)
 			return (plot, handle);
 
-		Log.Error("{Function} needs a plot; claim one first", function);
+		Log.Error("{Function} needs a claimed plot that isn't spawned", function);
 		return null;
 	}
 
@@ -147,6 +151,15 @@ public static partial class LuaExecutor
 			Log.Error("Plot with ID {PlotId} not found", id);
 
 		return plot;
+	}
+
+	private static GdPlot? FindDirectPlot(int plotId, string function)
+	{
+		if (GSessionManager.Mode is SessionMode.SinglePlayer)
+			return FindPlot(plotId, function);
+
+		Log.Error("{Function} is only available in Single-Player, since it edits plots directly", function);
+		return null;
 	}
 
 	/// <summary>Finds a player by peer ID (a number), player ID, or, if unique, display name.</summary>
@@ -181,7 +194,8 @@ public static partial class LuaExecutor
 	}
 
 	private static int? ToInt(LuaValue value) =>
-		value.Read<double>() is var number && double.IsInteger(number) && number is >= int.MinValue and <= int.MaxValue
+		value.Type is LuaValueType.Number && value.Read<double>() is var number && double.IsInteger(number) &&
+		number is >= int.MinValue and <= int.MaxValue
 			? (int)number
 			: null;
 
@@ -193,7 +207,7 @@ public static partial class LuaExecutor
 			return byId;
 
 		var named = players
-			.Where(other => string.Equals(other.Name, query, StringComparison.Ordinal))
+			.Where(player => string.Equals(player.Name, query, StringComparison.Ordinal))
 			.Take(2)
 			.ToArray();
 
@@ -202,6 +216,41 @@ public static partial class LuaExecutor
 
 		return named.Length is 1 ? named[0] : null;
 	}
+
+	// Plain names only, portable to every OS's file system
+	private static string? GetUserFilePath(string directory, string name, string defaultExtension)
+	{
+		if (
+			name is not { Length: > 0 and <= MaxFileNameLength } || name[0] is '.' || name[^1] is '.' or ' ' ||
+			!name.All(static c => char.IsAsciiLetterOrDigit(c) || c is ' ' or '-' or '_' or '.'))
+		{
+			Log.Error(
+				"Invalid name {Name}: use up to {Max} letters, digits, spaces, '-', '_', and '.'",
+				name, MaxFileNameLength);
+
+			return null;
+		}
+
+		var fileName = Path.HasExtension(name) ? name : name + defaultExtension;
+		return Path.Join(ProjectSettings.GlobalizePath(directory), fileName);
+	}
+
+	// A line per file, with its size and modification time
+	private static (string Path, string Files) ListFiles(string directory, string pattern)
+	{
+		var info = new DirectoryInfo(ProjectSettings.GlobalizePath(directory));
+		IEnumerable<FileInfo> files =
+			info.Exists ? info.GetFiles(pattern).OrderBy(static file => file.Name, StringComparer.Ordinal) : [];
+
+		var lines = files.Select(static file => string.Create(
+			CultureInfo.InvariantCulture,
+			$"{file.Name} ({ByteFormat.Humanize((ulong)file.Length)}, {file.LastWriteTime:yyyy-MM-dd HH:mm:ss})"));
+
+		return (info.FullName, string.Join('\n', lines));
+	}
+
+	private static void LogInvalidOption(LuaValue key, LuaValue value, string[] keys) =>
+		Log.Error("Invalid option: {Key} = {Value} (takes {Keys})", key, value, string.Join(", ", keys));
 
 	extension(LuaFunctionExecutionContext context)
 	{

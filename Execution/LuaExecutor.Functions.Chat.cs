@@ -5,12 +5,11 @@ using EnsembleRoot.Sessions.Actions;
 using Lua;
 using Serilog;
 
-// ReSharper disable InconsistentNaming
-
 namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
+	// ReSharper disable once InconsistentNaming
 	private static ValueTask<int> chat(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		SendChatMessageAction.Send(context.GetArgument<string>(0));

@@ -16,7 +16,7 @@ public static partial class LuaExecutor
 {
 	private static ValueTask<int> add_inst(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(add_inst)) is not var (_, handle))
+		if (GetEditablePlot(nameof(add_inst)) is not var (_, handle))
 			return context.ReturnNothing();
 
 		var assetId = context.GetArgument<int>(0);
@@ -46,7 +46,7 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> clr_insts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(clr_insts)) is not null)
+		if (GetEditablePlot(nameof(clr_insts)) is not null)
 			new ClearInstancesAction().Submit();
 
 		return context.ReturnNothing();
@@ -77,10 +77,10 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> rm_insts(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(rm_insts)) is not var (plot, _))
+		if (GetEditablePlot(nameof(rm_insts)) is not var (plot, _))
 			return context.ReturnNothing();
 
-		List<InstanceReference> references = [];
+		var references = new List<InstanceReference>();
 
 		for (var i = 0; i < context.ArgumentCount; i++)
 		{
@@ -101,7 +101,7 @@ public static partial class LuaExecutor
 	private static ValueTask<int> set_inst_prop(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetLocalPlot(nameof(set_inst_prop)) is not var (plot, _))
+		if (GetEditablePlot(nameof(set_inst_prop)) is not var (plot, _))
 			return context.ReturnNothing();
 
 		var id = context.GetArgument<int>(0);
@@ -121,17 +121,17 @@ public static partial class LuaExecutor
 
 		// Nil resets it to the asset's default
 		var value = context.IsArgumentOmitted(2)
-			? instance.Asset.Source.Properties[key].ToGodot()
-			: ToVariant(context.GetArgument<LuaValue>(2), current.Type);
+			? instance.Asset.Source.Properties[key]
+			: ToCoreVariant(context.GetArgument<LuaValue>(2), current.Type);
 
-		if (value.VariantType is Variant.Type.Nil)
+		if (PropertyRules.Check(key, value, current) is { } reason)
 		{
-			Log.Error("Property {Key} must stay {Type}", key, current.Type);
+			Log.Error("Cannot set instance {InstanceId}'s property: {Reason}", id, reason);
 			return context.ReturnNothing();
 		}
 
-		new SetPropertiesAction([new PropertyEdit(InstanceReference.From(instance), new Dictionary { [key] = value })])
-			.Submit();
+		var edit = new PropertyEdit(InstanceReference.From(instance), new Dictionary { [key] = value.ToGodot() });
+		new SetPropertiesAction([edit]).Submit();
 
 		return context.ReturnNothing();
 	}
@@ -145,15 +145,15 @@ public static partial class LuaExecutor
 		return (floor - (box.Center.Y - box.Envelope.Y)) / PlotHandle.GridToWorldScale;
 	}
 
-	// Lua numbers are doubles, so integer properties only take whole numbers; Nil means the types don't match
-	private static Variant ToVariant(LuaValue value, CoreVariantType type) =>
-		(type, value.Type) switch
+	// Lua numbers are doubles, so a whole number becomes an integer for an integer property
+	private static CoreVariant ToCoreVariant(LuaValue value, CoreVariantType type) =>
+		value.Type switch
 		{
-			(CoreVariantType.Boolean, LuaValueType.Boolean) => Variant.CreateFrom(value.Read<bool>()),
-			(CoreVariantType.Int64, LuaValueType.Number) when double.IsInteger(value.Read<double>()) =>
-				Variant.CreateFrom((long)value.Read<double>()),
-			(CoreVariantType.Double, LuaValueType.Number) => Variant.CreateFrom(value.Read<double>()),
-			(CoreVariantType.String, LuaValueType.String) => Variant.CreateFrom(value.Read<string>()),
-			_ => default
+			LuaValueType.Boolean => value.Read<bool>(),
+			LuaValueType.Number when type is CoreVariantType.Int64 && double.IsInteger(value.Read<double>()) =>
+				(long)value.Read<double>(),
+			LuaValueType.Number => value.Read<double>(),
+			LuaValueType.String => value.Read<string>(),
+			_ => CoreVariant.Null
 		};
 }

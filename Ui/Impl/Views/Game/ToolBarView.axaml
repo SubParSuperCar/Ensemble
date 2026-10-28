@@ -1,8 +1,8 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
-    x:Class="EnsembleRoot.Ui.Impl.Views.ToolBarView"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.ViewModels"
+    x:Class="EnsembleRoot.Ui.Views.ToolBarView"
     x:DataType="vm:ToolBarViewModel"
     Margin="0,4"
     FontSize="20" FontWeight="ExtraLight">

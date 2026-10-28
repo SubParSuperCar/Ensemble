@@ -1,8 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 
-namespace EnsembleRoot.Ui.Impl.Services;
+namespace EnsembleRoot.Ui.Services;
 
 public sealed class ViewLocatorService(IServiceProvider services) : ISingletonObject, IServiceBase, IDataTemplate
 {

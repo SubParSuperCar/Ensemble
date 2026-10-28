@@ -5,14 +5,14 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Scripts.Chat;
 using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Tooling.Tools;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Attributes;
-using EnsembleRoot.Ui.Impl.Extensions;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Attributes;
+using EnsembleRoot.Ui.Extensions;
+using EnsembleRoot.Ui.Services;
 using Godot;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class GameViewModel : ViewModelBase
 {

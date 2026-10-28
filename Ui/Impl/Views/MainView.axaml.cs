@@ -1,14 +1,14 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.ViewModels;
 using Godot;
 #if ENSEMBLE_DEBUG
 using Avalonia.Rendering;
 #endif
 
-namespace EnsembleRoot.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 {

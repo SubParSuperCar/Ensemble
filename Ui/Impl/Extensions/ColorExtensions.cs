@@ -1,6 +1,6 @@
 using Avalonia.Media;
 
-namespace EnsembleRoot.Ui.Impl.Extensions;
+namespace EnsembleRoot.Ui.Extensions;
 
 public static class ColorExtensions
 {

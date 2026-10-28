@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Attributes;
-using EnsembleRoot.Ui.Impl.Extensions;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Attributes;
+using EnsembleRoot.Ui.Extensions;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class ConsoleViewModel : ViewModelBase
 {

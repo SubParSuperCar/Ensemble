@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace EnsembleRoot.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class WidgetDesktopView : UserControl
 {

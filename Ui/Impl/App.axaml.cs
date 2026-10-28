@@ -12,12 +12,12 @@ using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Messages;
 using EnsembleRoot.Sessions;
-using EnsembleRoot.Ui.Impl.Extensions;
+using EnsembleRoot.Ui.Extensions;
 using Iciclecreek.Terminal;
 using LiveMarkdown.Avalonia;
 using Serilog;
 
-namespace EnsembleRoot.Ui.Impl;
+namespace EnsembleRoot.Ui;
 
 public sealed class App : Application
 {

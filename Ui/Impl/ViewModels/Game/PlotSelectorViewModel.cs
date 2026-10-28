@@ -6,10 +6,10 @@ using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Plots.Outlines;
 using EnsembleRoot.Sessions.Actions;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.ViewModels.Utils;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.ViewModels.Utils;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 {

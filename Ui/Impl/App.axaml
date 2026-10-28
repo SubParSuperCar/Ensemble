@@ -2,7 +2,7 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cm="clr-namespace:EnsembleRoot.Common"
-    x:Class="EnsembleRoot.Ui.Impl.App"
+    x:Class="EnsembleRoot.Ui.App"
     RequestedThemeVariant="Default">
 
     <Application.Resources>

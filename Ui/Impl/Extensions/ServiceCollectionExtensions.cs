@@ -1,8 +1,8 @@
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceScan.SourceGenerator;
 
-namespace EnsembleRoot.Ui.Impl.Extensions;
+namespace EnsembleRoot.Ui.Extensions;
 
 public static partial class ServiceCollectionExtensions
 {

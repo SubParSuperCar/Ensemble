@@ -1,4 +1,4 @@
-namespace EnsembleRoot.Ui.Impl.Abstractions;
+namespace EnsembleRoot.Ui.Abstractions;
 
 // ReSharper disable once UnusedTypeParameter
 public interface IViewFor<TViewModel> where TViewModel : ViewModelBase;

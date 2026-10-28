@@ -5,10 +5,10 @@ using CommunityToolkit.Mvvm.Input;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Tooling.Tools;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Extensions;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Extensions;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 {

@@ -1,9 +1,9 @@
 <UserControl
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.ViewModels"
     xmlns:cm="clr-namespace:EnsembleRoot.Common"
-    x:Class="EnsembleRoot.Ui.Impl.Views.MenuView"
+    x:Class="EnsembleRoot.Ui.Views.MenuView"
     x:DataType="vm:MenuViewModel">
 
     <UserControl.Styles>

@@ -1,9 +1,9 @@
 using CommunityToolkit.Mvvm.Messaging;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Messages;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Messages;
 using Godot;
 
-namespace EnsembleRoot.Ui.Impl.Services;
+namespace EnsembleRoot.Ui.Services;
 
 public sealed class DispatcherService : DisposableObject, ISingletonObject, IServiceBase
 {

@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 
-namespace EnsembleRoot.Ui.Impl.Controls;
+namespace EnsembleRoot.Ui.Controls;
 
 /// <summary>
 ///     Arranges children by bounds relative to its size, from 0 to 1, keeping each whole and at least its minimum size.

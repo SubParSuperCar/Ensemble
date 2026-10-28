@@ -1,15 +1,15 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Threading;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Extensions;
-using EnsembleRoot.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Extensions;
+using EnsembleRoot.Ui.ViewModels;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedMethodReturnValue.Global
 
-namespace EnsembleRoot.Ui.Impl.Services;
+namespace EnsembleRoot.Ui.Services;
 
 /// <summary>Opens, closes, and stacks widgets, at most one per view model type, for its scope's lifetime.</summary>
 public sealed class WidgetManagerService(IServiceProvider services) : DisposableObject, IScopedObject, IServiceBase

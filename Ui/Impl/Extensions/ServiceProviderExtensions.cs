@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace EnsembleRoot.Ui.Impl.Extensions;
+namespace EnsembleRoot.Ui.Extensions;
 
 public static class ServiceProviderExtensions
 {

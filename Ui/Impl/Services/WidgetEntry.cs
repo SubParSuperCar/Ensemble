@@ -2,10 +2,10 @@ using System.Globalization;
 using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Extensions;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Extensions;
 
-namespace EnsembleRoot.Ui.Impl.Services;
+namespace EnsembleRoot.Ui.Services;
 
 public sealed partial class WidgetEntry : ObservableObject
 {

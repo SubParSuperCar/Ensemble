@@ -9,10 +9,10 @@ using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Tooling.Tools;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.ViewModels.Utils;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.ViewModels.Utils;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 {

@@ -7,11 +7,11 @@ using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Sessions.Actions;
 using EnsembleRoot.Tooling.Tools;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 using Estragonia;
 using Serilog;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class ToolBarViewModel : ViewModelBase
 {

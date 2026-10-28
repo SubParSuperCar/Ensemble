@@ -2,9 +2,9 @@ using Avalonia;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Execution;
-using EnsembleRoot.Ui.Impl.Abstractions;
+using EnsembleRoot.Ui.Abstractions;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class LuaEditorViewModel : ViewModelBase, IWidget
 {

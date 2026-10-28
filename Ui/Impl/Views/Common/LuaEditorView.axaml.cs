@@ -4,13 +4,13 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Threading;
 using AvaloniaEdit.TextMate;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Controls;
-using EnsembleRoot.Ui.Impl.ViewModels;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Controls;
+using EnsembleRoot.Ui.ViewModels;
 using Serilog;
 using TextMateSharp.Grammars;
 
-namespace EnsembleRoot.Ui.Impl.Views;
+namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class LuaEditorView : UserControl, IViewFor<LuaEditorViewModel>
 {

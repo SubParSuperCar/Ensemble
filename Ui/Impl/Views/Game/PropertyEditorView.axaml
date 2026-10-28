@@ -3,9 +3,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:EnsembleRoot.Ui.Impl.ViewModels"
+    xmlns:vm="clr-namespace:EnsembleRoot.Ui.ViewModels"
     mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="192"
-    x:Class="EnsembleRoot.Ui.Impl.Views.PropertyEditorView"
+    x:Class="EnsembleRoot.Ui.Views.PropertyEditorView"
     x:DataType="vm:PropertyEditorViewModel">
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">

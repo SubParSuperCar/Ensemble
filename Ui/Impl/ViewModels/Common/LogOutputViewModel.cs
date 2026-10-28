@@ -2,14 +2,14 @@ using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Logging;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Messages;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Messages;
+using EnsembleRoot.Ui.Services;
 using Godot;
 using Serilog.Events;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 {

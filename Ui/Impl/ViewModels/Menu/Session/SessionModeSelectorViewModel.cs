@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.Input;
-using EnsembleRoot.Ui.Impl.Abstractions;
-using EnsembleRoot.Ui.Impl.Services;
+using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Services;
 
-namespace EnsembleRoot.Ui.Impl.ViewModels;
+namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class SessionModeSelectorViewModel(NavigatorService navigator) : ViewModelBase
 {

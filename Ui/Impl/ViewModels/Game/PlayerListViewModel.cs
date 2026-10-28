@@ -14,8 +14,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 {
 	private const int MaxPingMs = 999;
 
-	private readonly Dictionary<string, PlayerItem> _playersById = [];
-	private readonly Dictionary<string, Action> _unsubscribeByPlayerId = [];
+	private readonly Dictionary<string, (PlayerItem Item, Action? Unsubscribe)> _playersById = [];
 
 	public PlayerListViewModel()
 	{
@@ -46,8 +45,8 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 		GSessionManager.PortMappingChanged -= OnPortMappingChanged;
 
-		foreach (var unsubscribe in _unsubscribeByPlayerId.Values)
-			unsubscribe();
+		foreach (var (_, unsubscribe) in _playersById.Values)
+			unsubscribe?.Invoke();
 	}
 
 	[RelayCommand(CanExecute = nameof(CanCopyJoinCode))]
@@ -102,15 +101,13 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 		};
 
 		Players.Insert(Players.TakeWhile(other => ComparePlayers(other, player) < 0).Count(), player);
-		_playersById.Add(gdPlayer.Id, player);
+		_playersById.Add(gdPlayer.Id, (player, peer is null ? null : Unsubscribe));
 
 		if (peer is null)
 			return;
 
 		OnPingUpdated(peer.PingMs);
 		peer.PingUpdated += OnPingUpdated;
-
-		_unsubscribeByPlayerId.Add(gdPlayer.Id, Unsubscribe);
 
 		return;
 
@@ -127,11 +124,11 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 
 	private void OnPlayerRemoved(GdPlayer gdPlayer)
 	{
-		if (_playersById.Remove(gdPlayer.Id, out var player))
-			Players.Remove(player);
+		if (!_playersById.Remove(gdPlayer.Id, out var entry))
+			return;
 
-		if (_unsubscribeByPlayerId.Remove(gdPlayer.Id, out var unsubscribe))
-			unsubscribe();
+		Players.Remove(entry.Item);
+		entry.Unsubscribe?.Invoke();
 	}
 
 	private static int ComparePlayers(PlayerItem a, PlayerItem b)

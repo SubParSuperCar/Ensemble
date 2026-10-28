@@ -23,7 +23,7 @@ public sealed partial class StatViewModel : ViewModelBase
 
 	private readonly DispatcherService _dispatcher;
 	private readonly Queue<double> _uiFrameTimes = [];
-	private double _sinceLastRefresh;
+	private double _sinceRefresh;
 
 	public StatViewModel(DispatcherService dispatcher)
 	{
@@ -52,11 +52,11 @@ public sealed partial class StatViewModel : ViewModelBase
 		while (_uiFrameTimes.Count > 0 && now - _uiFrameTimes.Peek() > SampleWindow)
 			_uiFrameTimes.Dequeue();
 
-		_sinceLastRefresh += delta;
-		if (_sinceLastRefresh < RefreshInterval)
+		_sinceRefresh += delta;
+		if (_sinceRefresh < RefreshInterval)
 			return;
 
-		_sinceLastRefresh %= RefreshInterval;
+		_sinceRefresh %= RefreshInterval;
 		Refresh(now);
 	}
 

@@ -25,7 +25,6 @@ public sealed partial class ClockViewModel : ViewModelBase
 
 	private void OnUiProcess(double delta) => Refresh();
 
-	// The session duration only exists during a session
 	private void Refresh()
 	{
 		var time = string.Create(CultureInfo.CurrentCulture, $"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone}");

@@ -82,8 +82,9 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 			keys.Add(property.Key);
 		}
 
-		foreach (var key in _itemsByKey.Keys.Except(keys).ToArray())
-			_itemsByKey.Remove(key);
+		foreach (var (key, _) in _itemsByKey)
+			if (!keys.Contains(key))
+				_itemsByKey.Remove(key);
 
 		IsCopyEnabled = Property.Properties.Any(static property => !property.IsMixed);
 		UpdatePaste();

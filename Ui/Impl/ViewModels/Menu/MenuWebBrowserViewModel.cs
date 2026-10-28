@@ -7,23 +7,15 @@ using EnsembleRoot.Ui.Services;
 
 namespace EnsembleRoot.Ui.ViewModels;
 
-public sealed partial class MenuWebBrowserViewModel : ViewModelBase
+public sealed partial class MenuWebBrowserViewModel(IServiceProvider services, NavigatorService navigator)
+	: ViewModelBase
 {
-	private readonly NavigatorService _navigator;
-
-	public MenuWebBrowserViewModel(IServiceProvider services, NavigatorService navigator)
-	{
-		_navigator = navigator;
-
-		Content = services.Create<WebBrowserViewModel>();
-	}
-
 	[ObservableProperty]
 	[DisposeOldObservableValueOnChanging]
-	public partial WebBrowserViewModel? Content { get; private set; }
+	public partial WebBrowserViewModel? Content { get; private set; } = services.Create<WebBrowserViewModel>();
 
 	protected override void OnDispose() => Content = null;
 
 	[RelayCommand]
-	private void GoBack() => _navigator.GoBack();
+	private void GoBack() => navigator.GoBack();
 }

@@ -7,23 +7,14 @@ using EnsembleRoot.Ui.Services;
 
 namespace EnsembleRoot.Ui.ViewModels;
 
-public sealed partial class MenuDocFileViewModel : ViewModelBase
+public sealed partial class MenuDocFileViewModel(IServiceProvider services, NavigatorService navigator) : ViewModelBase
 {
-	private readonly NavigatorService _navigator;
-
-	public MenuDocFileViewModel(IServiceProvider services, NavigatorService navigator)
-	{
-		_navigator = navigator;
-
-		Content = services.Create<DocFileViewModel>();
-	}
-
 	[ObservableProperty]
 	[DisposeOldObservableValueOnChanging]
-	public partial DocFileViewModel? Content { get; private set; }
+	public partial DocFileViewModel? Content { get; private set; } = services.Create<DocFileViewModel>();
 
 	protected override void OnDispose() => Content = null;
 
 	[RelayCommand]
-	private void GoBack() => _navigator.GoBack();
+	private void GoBack() => navigator.GoBack();
 }

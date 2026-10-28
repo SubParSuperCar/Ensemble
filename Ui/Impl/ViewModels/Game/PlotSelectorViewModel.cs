@@ -13,8 +13,7 @@ namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 {
-	private readonly Dictionary<int, PlotItem> _plotsById = [];
-	private readonly Dictionary<int, Action> _unsubscribeByPlotId = [];
+	private readonly Dictionary<int, (PlotItem Item, Action Unsubscribe)> _plotsById = [];
 
 	public PlotSelectorViewModel()
 	{
@@ -50,7 +49,7 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		LocalPlotChanged -= OnLocalPlotChanged;
 		GSessionManager.ActionRejected -= OnActionRejected;
 
-		foreach (var unsubscribe in _unsubscribeByPlotId.Values)
+		foreach (var (_, unsubscribe) in _plotsById.Values)
 			unsubscribe();
 
 		SetHoveredPlot(null);
@@ -80,8 +79,7 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		occupants.OwnerChanged += OnOwnerChanged;
 
 		Plots.Insert(Plots.TakeWhile(other => other.Id < plot.Id).Count(), plot);
-		_plotsById.Add(gdPlot.Id, plot);
-		_unsubscribeByPlotId.Add(gdPlot.Id, Unsubscribe);
+		_plotsById.Add(gdPlot.Id, (plot, Unsubscribe));
 
 		return;
 
@@ -110,17 +108,15 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 
 	private void OnPlotRemoved(GdPlot gdPlot)
 	{
-		if (!_plotsById.Remove(gdPlot.Id, out var plot))
+		if (!_plotsById.Remove(gdPlot.Id, out var entry))
 			return;
 
-		Plots.Remove(plot);
-
-		if (_unsubscribeByPlotId.Remove(gdPlot.Id, out var unsubscribe))
-			unsubscribe();
+		Plots.Remove(entry.Item);
+		entry.Unsubscribe();
 	}
 
 	private void OnLocalPlotChanged(GdPlot? plot) =>
-		SelectedPlot = plot is null ? null : _plotsById.GetValueOrDefault(plot.Id);
+		SelectedPlot = plot is not null && _plotsById.TryGetValue(plot.Id, out var entry) ? entry.Item : null;
 
 	private void OnActionRejected(string actionId, string reason)
 	{

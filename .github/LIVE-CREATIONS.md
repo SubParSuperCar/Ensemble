@@ -161,10 +161,12 @@ much as Baja Builders did it (a model, two parts, and a constraint):
   namespace `EnsembleRoot.BuildAssets.Advanced`). NsDepCop lets nothing outside `EnsembleRoot.BuildAssets` reference an
   asset script, so the engine never depends on a concrete asset.
 - **Properties** are the asset's defaults (the handle's `Properties` export), copied into each instance and edited per
-  instance by actions (later, by the PropertyTool). Keys starting with `_` are the engine's (`_colorHex`,
-  `_materialId`); the others are the asset's own. `SetPropertiesAction` only checks that a key exists, keeps its type,
-  and is finite, so **each asset clamps what it reads** to what it supports (`AssetHandle.GetNumberProperty(key, min,
-  max)`): any stored value is safe, and the limits live with the code that knows them.
+  instance through actions (the PropertyTool's, or Lua's). Keys starting with `_` are the engine's (`_colorHex`,
+  `_materialId`); the others are the asset's own. Values are booleans, integers, floats, or strings (`CoreVariant`);
+  `AssetManager` warns about any other type, which reads as null. Core's `PropertyRules` only checks that a value keeps
+  its type, stays finite, and fits in 256 characters, so **each asset clamps what it reads** to what it supports
+  (`AssetHandle.GetNumberProperty(key, min, max)`): any stored value is safe, and the limits live with the code that
+  knows them.
 - Exported node references (`[Export] public Node3D CoilEnd`) are resolved when the scene is instantiated, so they stay
   valid however a live creation reparents the pieces; never look them up in the tree later.
 - A handle lives one of two lives, static (build mode) or live (`IsLive`), and previews are never initialized.

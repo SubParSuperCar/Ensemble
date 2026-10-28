@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;
@@ -42,8 +43,8 @@ public readonly record struct SetPropertiesAction(IReadOnlyList<PropertyEdit> Ed
 			if (edit.Instance.Resolve(plot) is not { } instance)
 				continue;
 
-			if (PropertyRules.Validate(instance.Properties.Source.All, edit.Properties) is { IsValid: false } rejection)
-				return rejection;
+			if (GdProperties.Check(instance.Properties.Source.All, edit.Properties) is { } reason)
+				return Reject(reason);
 
 			isAnyFound = true;
 		}

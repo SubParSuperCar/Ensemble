@@ -156,7 +156,7 @@ public partial class PropertyTool : ToolBase
 	// Each instance takes the values of the properties it has under the same names and types
 	private bool Apply(IReadOnlyDictionary<PropertyKey, CoreVariant> values)
 	{
-		List<(GdInstance, IReadOnlyDictionary<string, CoreVariant>)> edits = [];
+		var edits = new List<(GdInstance, IReadOnlyDictionary<string, CoreVariant>)>();
 
 		foreach (var instance in GetSelected())
 		{

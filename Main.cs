@@ -256,7 +256,7 @@ public partial class Main : Node
 
 	private void LoadAutoloads()
 	{
-		var start = Stopwatch.GetTimestamp();
+		var stopwatch = Stopwatch.StartNew();
 		var definitions = AutoloadRegistry.GetAll()
 			.Where(static definition => (definition.Attribute.Scope & RuntimeScope) is not AutoloadScope.None)
 			.OrderBy(static definition => definition.Attribute.Order);
@@ -268,9 +268,8 @@ public partial class Main : Node
 			if (LoadAutoload(definition))
 				loadedCount++;
 
-		Log.Debug(
-			"Loaded {Count} autoload(s) in {ElapsedMs:F3} ms",
-			loadedCount, Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+		stopwatch.Stop();
+		Log.Debug("Loaded {Count} autoload(s) in {ElapsedMs:F3} ms", loadedCount, stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private bool LoadAutoload(AutoloadDefinition definition)
@@ -285,7 +284,7 @@ public partial class Main : Node
 
 		try
 		{
-			var start = Stopwatch.GetTimestamp();
+			var stopwatch = Stopwatch.StartNew();
 			instance = definition.Factory();
 
 			instance.Name = fullName[(fullName.IndexOf('.', StringComparison.Ordinal) + 1)..].Replace('.', '-');
@@ -297,8 +296,8 @@ public partial class Main : Node
 			if (instance is IAutoload autoload)
 				autoload.Initialize();
 
-			Log.Debug(
-				"Loaded {Type} in {ElapsedMs:F3} ms", fullName, Stopwatch.GetElapsedTime(start).TotalMilliseconds);
+			stopwatch.Stop();
+			Log.Debug("Loaded {Type} in {ElapsedMs:F3} ms", fullName, stopwatch.Elapsed.TotalMilliseconds);
 
 			return true;
 		}

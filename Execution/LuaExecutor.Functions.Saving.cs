@@ -165,6 +165,7 @@ public static partial class LuaExecutor
 			ResumeBudget();
 		}
 
+		stopwatch.Stop();
 		Log.Information(
 			"Saved {Count} instance(s) from plot {PlotId} to {Path} in {ElapsedMs:F3} ms",
 			data.Instances.Count, plot.Id, path, stopwatch.Elapsed.TotalMilliseconds);

@@ -40,7 +40,7 @@ public partial class PlotHandle
 
 	private void Spawn()
 	{
-		var timestamp = Stopwatch.GetTimestamp();
+		var stopwatch = Stopwatch.StartNew();
 
 		SetStaticInstancesEnabled(false);
 		SimulationEpoch++;
@@ -52,9 +52,10 @@ public partial class PlotHandle
 		MoveLocalCharacterClear();
 		_sinceSimulatorHeard = 0;
 
+		stopwatch.Stop();
 		Log.Debug(
 			"Spawned plot {PlotId} as {AssemblyCount} assemblies in {ElapsedMs:F3} ms", Id, Creation.Assemblies.Count,
-			Stopwatch.GetElapsedTime(timestamp).TotalMilliseconds);
+			stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private void Despawn()

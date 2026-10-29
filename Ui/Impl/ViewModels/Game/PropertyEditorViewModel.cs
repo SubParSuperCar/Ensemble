@@ -203,7 +203,7 @@ public sealed partial class IntegerPropertyItem(PropertyKey key) : PropertyItem(
 	partial void OnValueChanged(decimal? value)
 	{
 		if (value is { } changed)
-			Commit(decimal.ToInt64(decimal.Round(changed)));
+			Commit(decimal.ToInt64(decimal.Round(changed, MidpointRounding.ToEven)));
 	}
 }
 

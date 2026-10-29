@@ -10,7 +10,7 @@ uniform float ant_speed = 0.125;
 
 uniform bool pulsing;
 uniform float pulse_minimum = 0.5;
-uniform float pulse_period = 1.0;
+uniform float pulse_period = 0.5;
 
 varying vec3 local_position;
 

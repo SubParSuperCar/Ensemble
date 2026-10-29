@@ -19,8 +19,8 @@ The tool suite, in rough intended order of implementation.
       instances; double-click to confirm; disables DestructTool after use
     - [x] (M) Multi-selection - `Shift`-click to toggle, click a selected instance to delete them all, bulk
       `RemoveInstancesAction` (up to 256, token cost scales with count)
-    - [x] (S) Marching ants - selected instances' highlights dash their edges (0.05 m dashes marching at 0.1 m/s toward
-      each axis's positive end), while the hovered one stays solid
+    - [x] (S) Marching ants - selected instances' highlights dash their edges (1/12 m dashes marching at 1/8 m/s toward
+      each axis's positive end), while the hovered one's edges pulse between half and full opacity once a second
 - ConstructTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
     - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation, snap
@@ -36,8 +36,15 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) "Show Internal" option - also lists `_`-prefixed properties (e.g., `_colorHex` as "Color Hex"), to test
       painting and materials before the PaintTool exists; only the tool filters them (`PropertyTool.IsInternalShown`),
       since the actions already accept them
+    - [ ] (M) Property limits (deferred) - per-asset ranges (min, max, maybe a step) for numeric properties, authored in
+      the inspector like other asset settings, so a new `AssetHandle` needs no code for basic limits. The Property
+      Editor reads them for its ranges (and sliders where both ends are set), and the asset's getters clamp to them;
+      Core never enforces them. Dependent limits (e.g., Suspension's `targetLength` within its minimum and `maxLength`)
+      stay in code
 - [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
+    - [ ] (S) Paintable alpha - an opt-in `Paintable` setting under which `_colorHex` is `RRGGBBAA` instead of `RRGGBB`,
+      so only assets meant to be see-through pay for transparent rendering
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics

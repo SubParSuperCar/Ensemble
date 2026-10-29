@@ -7,12 +7,14 @@ using Serilog;
 namespace EnsembleRoot.Tooling.Tools;
 
 /// <summary>
-///     Highlights the local plot's hovered instance, and the selected ones with marching ants, while attached to a
-///     selection.
+///     Highlights the local plot's hovered instance with a pulse, and the selected ones with marching ants, while
+///     attached to a selection.
 /// </summary>
 public partial class SelectionHighlights : Node
 {
-	private readonly SolidHighlight _hoverHighlight = new() { Name = "Hover Highlight", Visible = false };
+	private readonly SolidHighlight _hoverHighlight = new()
+		{ Name = "Hover Highlight", Pulsing = true, Visible = false };
+
 	private readonly Dictionary<int, SolidHighlight> _selectionHighlights = [];
 
 	private AssetHandle? _hovered;

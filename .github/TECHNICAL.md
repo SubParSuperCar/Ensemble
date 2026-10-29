@@ -461,9 +461,10 @@ graph LR
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
 - Highlights (`Scripts/Adornments/`) are box meshes with an edge shader, in two flavors: `AxialHighlight` (per-axis
-  colors) and `SolidHighlight` (one tint). Either can dash its edges into marching ants, which selections use while
-  the hovered instance stays solid. They opt out of physics interpolation, as they are placed between physics ticks.
-  The local plot's outline rises from its grid in the active tool's color, fading in and out as it moves.
+  colors) and `SolidHighlight` (one tint). Either can dash its edges into marching ants, which selections use, or
+  pulse their opacity, which the hovered instance does. They opt out of physics interpolation, as they are placed
+  between physics ticks. The local plot's outline rises from its grid in the active tool's color, fading in and out as
+  it moves.
 
 ---
 

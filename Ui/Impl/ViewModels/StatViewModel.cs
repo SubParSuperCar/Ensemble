@@ -6,7 +6,7 @@ using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Services;
 using Godot;
-#if !ENSEMBLE_DEBUG
+#if !DEBUG
 using System.Diagnostics;
 #endif
 
@@ -17,7 +17,7 @@ public sealed partial class StatViewModel : ViewModelBase
 	private const double RefreshInterval = 1 / 3d;
 	private const double SampleWindow = 1d;
 
-#if !ENSEMBLE_DEBUG
+#if !DEBUG
 	private readonly Process _process = Process.GetCurrentProcess();
 #endif
 
@@ -39,7 +39,7 @@ public sealed partial class StatViewModel : ViewModelBase
 	{
 		_dispatcher.UiProcess -= OnUiProcess;
 
-#if !ENSEMBLE_DEBUG
+#if !DEBUG
 		_process.Dispose();
 #endif
 	}
@@ -69,7 +69,7 @@ public sealed partial class StatViewModel : ViewModelBase
 		var uiFps = sampleDuration > 0 ? (_uiFrameTimes.Count - 1) / sampleDuration : 0d;
 		var uiFrameTimeMs = uiFps > 0 ? TimeSpan.MillisecondsPerSecond / uiFps : double.PositiveInfinity;
 
-#if ENSEMBLE_DEBUG
+#if DEBUG
 		var dram = ByteFormat.Humanize(OS.GetStaticMemoryUsage());
 #else
 		_process.Refresh();

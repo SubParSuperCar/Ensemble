@@ -1,4 +1,4 @@
-#if !(NATIVE_AOT && OS_LINUX)
+#if !(NATIVE_AOT && GODOT_LINUXBSD)
 using System.Reflection;
 using System.Runtime.InteropServices;
 using HarfBuzzSharp;

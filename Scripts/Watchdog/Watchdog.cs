@@ -19,7 +19,7 @@ public partial class Watchdog : Node, IAutoload
 	// Four times the longest the game blocks its main thread on purpose (a Lua script's 5 s budget)
 	private const int TimeoutMissCount = 20;
 
-#if ENSEMBLE_DEBUG
+#if DEBUG
 	private static readonly StringName HangAction = "debug_hang";
 #endif
 
@@ -49,7 +49,7 @@ public partial class Watchdog : Node, IAutoload
 		_pollThread?.Join(PollInterval);
 	}
 
-#if ENSEMBLE_DEBUG
+#if DEBUG
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
 		if (!Input.IsActionJustPressedByEvent(HangAction, @event))

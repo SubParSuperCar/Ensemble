@@ -8,7 +8,9 @@ while IFS= read -r line; do
 		*EnsembleGame.so+0x*)
 			offset="${line##*EnsembleGame.so+}"
 			offset="${offset%%[!0-9a-fx]*}"
-			printf '%s  %s\n' "${line}" "$(addr2line -fC -e "${dbg}" "$(printf '0x%x' $((offset - 1)))" | paste -sd ' ')"
+			# Frame addresses are return addresses, which point just past their calls
+			printf '%s  %s\n' "${line}" \
+				"$(addr2line -fC -e "${dbg}" "$(printf '0x%x' $((offset - 1)))" | paste -sd ' ')"
 			;;
 		*)
 			printf '%s\n' "${line}"

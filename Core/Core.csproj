@@ -3,7 +3,6 @@
   <PropertyGroup>
     <AssemblyName>EnsembleCore</AssemblyName>
     <AssemblyTitle>Core</AssemblyTitle>
-    <OutputType>Library</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <LangVersion>14</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>

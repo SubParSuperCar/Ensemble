@@ -5,7 +5,7 @@ using Avalonia.Rendering.Composition;
 using Estragonia;
 using Fonts.Avalonia.JetBrainsMono;
 using Godot;
-#if !(NATIVE_AOT && OS_LINUX)
+#if !(NATIVE_AOT && GODOT_LINUXBSD)
 using EnsembleRoot.Common.Interop;
 #endif
 
@@ -28,7 +28,7 @@ public partial class AvaloniaLoader : Node
 
 		try
 		{
-#if !(NATIVE_AOT && OS_LINUX)
+#if !(NATIVE_AOT && GODOT_LINUXBSD)
 			HarfBuzzIsolation.Apply();
 #endif
 

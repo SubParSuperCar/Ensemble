@@ -77,6 +77,42 @@ columns. Builds must have 0 warnings, and InspectCode should be clean on touched
 Deliberate oddities exist (e.g., `ConstructTool.RotateX` rotates around `Vector3.Up`); if something looks wrong but
 is long-standing, ask before "fixing" it.
 
+## Settled Conventions
+
+Decided during the 2026-10 refinement campaign; they apply everywhere.
+
+- **Competing forms:** count them codebase-wide and take the majority unless this file decides. Settled: a `foreach`
+  whose body is one `if` has no braces; a wrapped condition opens with `if (` alone on its line; a one-statement
+  constructor keeps its block body; locals are `var x = new List<T>();` (collection expressions are for fields,
+  properties, and target-typed returns); rounding names its `MidpointRounding`; a logged timing is
+  `Stopwatch.StartNew()`, then `Stop()` before the log; removing from a dictionary while scanning it is in place,
+  unless the loop raises events whose handlers may change it.
+- **Design:** an abstraction with one implementation goes, as does a wrapper that only forwards to its owner. Unused
+  isn't dead: keep members that complete an API (`IsOpen` beside `Open`, a `bool` saying whether a call acted).
+  Parallel collections keyed by one ID become one collection of records; a helper duplicated across modules moves to
+  `Common/Utils`, its callers keeping their own policies. A method that changes state through an existing setter
+  reuses it.
+- **Visibility:** private state is a field; plumbing an owner drives is `internal`; `public` is for asset scripts and
+  GDScript.
+- **Guards:** one per invariant, where the value is stored; drop guards an upstream invariant already guarantees, but
+  keep every guard against a hostile peer. A fallback that hides a failure logs it. An action that passes `Validate`
+  never throws in `Apply`. Parsers throw `InvalidDataException` for bad data.
+- **Values:** a value a project setting owns is read from `ProjectSettings`; shared numbered resources
+  (`PhysicsLayers`, `NetworkChannels`) live in `Constants`; asset length properties are in grid units, read through
+  `AssetHandle.GetLengthProperty`.
+- **Time:** a per-frame sampler has a `const double XInterval` in seconds and a `_sinceX` accumulator; timers and waits
+  take a `TimeSpan` where the API has an overload, and `Task.Delay` passes `GTimeProvider`.
+- **Godot:** lifecycle overrides live in the class's main file; `IsHost` means a peer hosts, `IsServer` that this
+  machine does; native yes / no dialogs go through `Common/Interop/YesNoDialog`; relaunching passes
+  `[.. OS.GetCmdlineArgs(), "--", .. OS.GetCmdlineUserArgs()]`.
+- **Logging and Lua:** a plot is `plot {PlotId}`, and `with ID {Id}` is only for registry lookups. A Lua function's
+  documentation is its `Functions` entry, not an XML doc.
+- **Ui:** Godot reaches view models through `DispatcherService`; `WeakReferenceMessenger` is only for the layers below
+  Ui; DI registers `AsSelf`; AXAML imports with `using:`; designer sizes are never added for uniformity.
+- **Build:** the SDK's symbols (`DEBUG`, `GODOT_LINUXBSD` / `GODOT_MACOS` / `GODOT_WINDOWS`), custom ones only for
+  `EXPORT` and `NATIVE_AOT`; what a running build is comes from `BuildInfo`. XML files indent 2 spaces with `"/>`;
+  scripts use tabs and `#!/bin/sh`; CI names each tool by its full path.
+
 ## Working Agreements
 
 - **Docs move with the code:** `.github/README.md` (players), `.github/TECHNICAL.md` (developers),

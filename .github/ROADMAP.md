@@ -197,6 +197,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
       bare payload, so a plain JSON save is a JSON file and a plain binary one starts with its own `ENSB`
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
+- [ ] (S) Fold bin.yml's repeated steps (checkout, Godot version, build ID, .NET and Godot setup, smoke tests) into
+  YAML anchors, which GitHub Actions accepts; needs a test run on a branch, since CI can't run locally
 
 ## Later / big
 

@@ -37,7 +37,7 @@ The tool suite, in rough intended order of implementation.
 - [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
-- [x] (M) Shared ToolCommon - TriggerAction, RayLength, collision masks, etc.
+- [x] (M) Shared ToolCommon - TriggerAction, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
 - [x] (M) Marquee Selector - Ctrl+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
 - [x] (S) Plot outlines - the local plot's boundary rises from its grid in the active tool's color (white while hovered
@@ -110,7 +110,7 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
 
 - [x] (M) Prerequisites - physics layers, a game-wide `Epsilon` (1/2048 m), multi-collider assets, the abut test, and
   weld groups (0.52.0)
-- [x] (L) Single-player spawning - assemblies, members, mass, and a kill height (0.52.0); spawning moves the local
+- [x] (L) Single-player spawning - assemblies, pieces, mass, and a kill height (0.52.0); spawning moves the local
   character out of the creation, and characters press their weight on what they stand on
 - [x] (L) Multiplayer with the host simulating - bit-packed state, proxies, epochs, keepalives, and late joins (0.53.0)
 - [x] (L) Owner authority - plot owners simulate, with host-decided hand-offs, overrides, timeouts, relay limits, and

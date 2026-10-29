@@ -173,9 +173,9 @@ sequenceDiagram
     participant M as Main
     participant R as AutoloadRegistry
     G->>AL: load (Godot autoload)
-    AL->>AL: configure Avalonia, show the loading screen
+    AL->>AL: configure Avalonia
     G->>M: _Ready() in main.tscn
-    M->>M: LoadDeferredAsync(): wait for the UI to draw
+    M->>M: LoadDeferredAsync(): wait for the loading screen to draw
     M->>R: GetAll()
     R-->>M: definitions (source-generated)
     loop each definition by Order, matching Scope
@@ -477,8 +477,8 @@ where the difference is small.
   color, and shading, so painted geometry still batches). Per-vertex surfaces receive no light from area lights (the
   plots' night lights), nor spot or omni light shadows; directional shadows are still sampled per pixel.
 - **Unshaded overlays.** Characters, highlights, and the plot grid are unshaded.
-- **Shadows.** The sun uses soft shadow filter quality 3, a shadow blur of 0.75, and a 64 m shadow distance, which
-  keeps thin shapes (like the suspension's coil) crisp.
+- **Shadows.** The sun uses soft shadow filter quality 3 and a 64 m shadow distance, which keeps thin shapes (like the
+  suspension's coil) crisp.
 - **`perf_mod()`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing (including
   terminal windows opened afterward), glow, Sky3D, the terrain, and the plots' night lights and characters'
   flashlights.
@@ -606,9 +606,9 @@ content versions leave room to migrate old saves.
   layout at first launch.
 - **A JIT build** bundles Windows and Linux in one download, with every assembly as a separate file, for testing.
 - **CI** (GitHub Actions): `bin.yml` builds every tag (or on demand), runs the tests in the JIT build's configuration
-  (without blocking the release), smoke-tests the Linux package by booting a headless server, and publishes a release
-  with checksums; `src.yml` publishes source archives, and `cloc.yml` tracks
-  lines of code. Dependabot keeps packages and actions current.
+  (without blocking the release), smoke-tests every package by booting a headless server, and publishes a release with
+  checksums; `src.yml` publishes source archives, and `cloc.yml` tracks lines of code. Dependabot keeps packages and
+  actions current.
 - **Updates:** the game checks GitHub for newer releases on startup and offers each one once.
 
 ---

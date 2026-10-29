@@ -1,5 +1,7 @@
 using Godot;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Scripts.Adornments;
 
 public abstract partial class HighlightBase : MeshInstance3D
@@ -11,6 +13,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private static readonly StringName MarchingAntsParameter = "marching_ants";
 	private static readonly StringName AntSpacingParameter = "ant_spacing";
 	private static readonly StringName AntSpeedParameter = "ant_speed";
+	private static readonly StringName PulsingParameter = "pulsing";
+	private static readonly StringName PulseMinimumParameter = "pulse_minimum";
+	private static readonly StringName PulsePeriodParameter = "pulse_period";
 
 	private readonly BoxMesh _box = new();
 
@@ -82,7 +87,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 			field = value;
 			UpdateAntSpacing();
 		}
-	} = 0.05f;
+	} = 1 / 12f;
 
 	[Export(PropertyHint.Range, "0,0,or_less,or_greater,hide_slider,suffix:m/s")]
 	public float AntSpeed
@@ -93,7 +98,41 @@ public abstract partial class HighlightBase : MeshInstance3D
 			field = value;
 			UpdateAntSpeed();
 		}
-	} = 0.1f;
+	} = 1 / 8f;
+
+	/// <summary>Whether the edges' opacity swings between <see cref="PulseMinimum" /> and full.</summary>
+	[Export]
+	public bool Pulsing
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdatePulsing();
+		}
+	}
+
+	[Export(PropertyHint.Range, "0,1")]
+	public float PulseMinimum
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdatePulseMinimum();
+		}
+	} = 1 / 2f;
+
+	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:s")]
+	public float PulsePeriod
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdatePulsePeriod();
+		}
+	} = 1f;
 
 	protected abstract Shader Shader { get; }
 
@@ -115,6 +154,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 		UpdateMarchingAnts();
 		UpdateAntSpacing();
 		UpdateAntSpeed();
+		UpdatePulsing();
+		UpdatePulseMinimum();
+		UpdatePulsePeriod();
 	}
 
 	private void UpdateMesh()
@@ -134,4 +176,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private void UpdateMarchingAnts() => Material.SetShaderParameter(MarchingAntsParameter, MarchingAnts);
 	private void UpdateAntSpacing() => Material.SetShaderParameter(AntSpacingParameter, AntSpacing);
 	private void UpdateAntSpeed() => Material.SetShaderParameter(AntSpeedParameter, AntSpeed);
+	private void UpdatePulsing() => Material.SetShaderParameter(PulsingParameter, Pulsing);
+	private void UpdatePulseMinimum() => Material.SetShaderParameter(PulseMinimumParameter, PulseMinimum);
+	private void UpdatePulsePeriod() => Material.SetShaderParameter(PulsePeriodParameter, PulsePeriod);
 }

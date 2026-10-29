@@ -15,7 +15,7 @@ void fragment()
 	float along = dot(edge_axis, local_position);
 	float position = along / dot(edge_axis, box_size) + 0.5;
 	vec3 edge_color = mix(vec3(1.0), edge_axis, sqrt(position));
-	float line = dot(edge_axis, lines) * ants(along);
+	float line = dot(edge_axis, lines) * ants(along) * pulse();
 
 	ALBEDO = mix(face_axis, edge_color, line);
 	ALPHA = (FRONT_FACING ? mix(face_alpha, 1.0, line) : line) * opacity;

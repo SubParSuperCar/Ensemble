@@ -5,8 +5,12 @@ uniform float face_alpha = 0.125;
 uniform float opacity = 1.0;
 
 uniform bool marching_ants;
-uniform float ant_spacing = 0.05;
-uniform float ant_speed = 0.1;
+uniform float ant_spacing = 0.083333;
+uniform float ant_speed = 0.125;
+
+uniform bool pulsing;
+uniform float pulse_minimum = 0.5;
+uniform float pulse_period = 1.0;
 
 varying vec3 local_position;
 
@@ -47,4 +51,10 @@ float ants(float along)
 	float aa = fwidth(wave);
 
 	return marching_ants ? smoothstep(0.25 - aa, 0.25 + aa, wave) : 1.0;
+}
+
+// The edges' opacity, swinging from 1 to pulse_minimum and back once per pulse_period in seconds
+float pulse()
+{
+	return pulsing ? mix(pulse_minimum, 1.0, 0.5 + 0.5 * cos(TIME * TAU / pulse_period)) : 1.0;
 }

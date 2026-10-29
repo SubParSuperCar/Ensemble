@@ -9,9 +9,6 @@
     <RootNamespace>EnsembleRoot.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
     <IsPublishable>false</IsPublishable>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <NoWarn>$(NoWarn);CA1707</NoWarn>
   </PropertyGroup>
 

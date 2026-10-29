@@ -5,8 +5,11 @@ charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 
+[*.cmd]
+end_of_line = crlf
+
 # XML-like, excluding Avalonia XAML
-[*.{slnx,csproj,props,xml}]
+[*.{csproj,nsdepcop,props,slnx,xml}]
 indent_size = 2
 ij_xml_space_inside_empty_tag = false
 
@@ -14,7 +17,7 @@ ij_xml_space_inside_empty_tag = false
 resharper_xml_space_before_self_closing = false
 
 # Source code
-[*.{cs,gd,gdshader,gdshaderinc}]
+[*.{cmd,cs,gd,gdshader,gdshaderinc,sh}]
 indent_style = tab
 indent_size = 4
 max_line_length = 120

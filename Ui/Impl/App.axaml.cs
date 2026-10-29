@@ -54,7 +54,7 @@ public sealed class App : Application
 
 		base.OnFrameworkInitializationCompleted();
 
-#if ENSEMBLE_DEBUG
+#if DEBUG
 		try
 		{
 			// F12 opens the Avalonia developer tools

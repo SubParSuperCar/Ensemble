@@ -67,28 +67,8 @@ public partial class DiagnosticLogger : Node, IAutoload
 		Add(entries, "OS Arch.", RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant());
 		Add(entries, ".NET", RuntimeInformation.FrameworkDescription);
 
-		Add(entries, "Build Config.",
-#if DEBUG
-			"DEBUG"
-#elif ENSEMBLE_DEBUG
-			"EXPORT DEBUG"
-#elif RELEASE
-			"RELEASE"
-#elif ENSEMBLE_RELEASE
-			"EXPORT RELEASE"
-#else
-			"Unknown"
-#endif
-		);
-
-		Add(entries, "Build Comp.",
-#if NATIVE_AOT
-			"Native Ahead-Of-Time (AOT)"
-#else
-			"Just-In-Time (JIT)"
-#endif
-		);
-
+		Add(entries, "Build Config.", BuildInfo.Configuration);
+		Add(entries, "Build Comp.", BuildInfo.IsNativeAot ? "Native Ahead-Of-Time (AOT)" : "Just-In-Time (JIT)");
 		Add(entries, "Build Version", GameVersion);
 		Add(entries, "Build Commit", GameCommit);
 		Add(entries, "Build Time", BuildInfo.BuildTime);

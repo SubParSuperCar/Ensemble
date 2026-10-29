@@ -64,7 +64,8 @@ jobs:
           unzip -q templates.tpz -d "${HOME}/tpl"
           mkdir -p "${HOME}/.local/share/godot/export_templates"
           mv "${HOME}/tpl/templates" "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono"
-          bin="${HOME}/godot/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64"
+          name="Godot_v${GODOT_VERSION}-stable_mono_linux"
+          bin="${HOME}/godot/${name}_x86_64/${name}.x86_64"
           chmod +x "${bin}"
           echo "GODOT=${bin}" >> "${GITHUB_ENV}"
 
@@ -103,7 +104,8 @@ jobs:
         run: |
           set -euo pipefail
           cd out
-          timeout 120 ./Ensemble.x86_64 --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
+          timeout 120 ./Ensemble.x86_64 \
+            --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
           grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
 
       - name: Upload
@@ -259,16 +261,17 @@ jobs:
           }
           foreach ($file in $files.GetEnumerator()) {
             $expected = (($sums | Where-Object { $_.EndsWith("  $($file.Value)") }) -split ' ')[0]
-            if ((Get-FileHash $file.Key -Algorithm SHA512).Hash -ne $expected) { throw "Checksum mismatch: $($file.Value)" }
+            if ((Get-FileHash $file.Key -Algorithm SHA512).Hash -ne $expected) {
+              throw "Checksum mismatch: $($file.Value)"
+            }
           }
           Expand-Archive godot.zip -DestinationPath C:\godot -Force
           Expand-Archive templates.tpz -DestinationPath C:\tpl -Force
           $dest = "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
           New-Item -ItemType Directory -Force $dest | Out-Null
           Move-Item C:\tpl\templates\* $dest -Force
-          $exe = (Get-ChildItem C:\godot -Recurse -Filter *_win64.console.exe | Select-Object -First 1) ??
-                 (Get-ChildItem C:\godot -Recurse -Filter *_win64.exe | Select-Object -First 1)
-          "GODOT=$($exe.FullName)" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+          $name = "Godot_v$env:GODOT_VERSION-stable_mono_win64"
+          "GODOT=C:\godot\$name\${name}_console.exe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Neuter Terrain3D editor plugin
         run: Move-Item addons\terrain_3d\plugin.cfg addons\terrain_3d\plugin.cfg.off
@@ -307,7 +310,8 @@ jobs:
 
       - name: Smoke test
         run: |
-          $process = Start-Process out\Ensemble.console.exe -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
+          $process = Start-Process out\Ensemble.console.exe `
+            -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
             -RedirectStandardOutput smoke.log -RedirectStandardError smoke.err.log -NoNewWindow -PassThru
           $null = $process.Handle
           $exited = $process.WaitForExit(120000)
@@ -374,7 +378,8 @@ jobs:
           unzip -q templates.tpz -d "${HOME}/tpl"
           mkdir -p "${HOME}/.local/share/godot/export_templates"
           mv "${HOME}/tpl/templates" "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono"
-          bin="${HOME}/godot/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64/Godot_v${GODOT_VERSION}-stable_mono_linux.x86_64"
+          name="Godot_v${GODOT_VERSION}-stable_mono_linux"
+          bin="${HOME}/godot/${name}_x86_64/${name}.x86_64"
           chmod +x "${bin}"
           echo "GODOT=${bin}" >> "${GITHUB_ENV}"
 
@@ -401,7 +406,7 @@ jobs:
           test -s out/data_EnsembleGame_windows_x86_64/EnsembleGame.dll
           chmod +x out/Ensemble.x86_64 out/Ensemble.sh
 
-      # ExportDebug, so export-only code (e.g., the UpdateChecker autoload) is tested too; failures don't block a release
+      # ExportDebug, so export-only code (e.g., UpdateChecker) is tested too; failures don't block a release
       - name: Test
         continue-on-error: true
         run: dotnet test --project Tests/Tests.csproj -c ExportDebug
@@ -416,7 +421,8 @@ jobs:
         run: |
           set -euo pipefail
           cd out
-          timeout 120 ./Ensemble.x86_64 --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
+          timeout 120 ./Ensemble.x86_64 \
+            --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
           grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
 
       - name: Upload
@@ -447,7 +453,8 @@ jobs:
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
           7z x -ojit (Get-ChildItem *-jit.zip).FullName > $null
-          $process = Start-Process jit\Ensemble.console.exe -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
+          $process = Start-Process jit\Ensemble.console.exe `
+            -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
             -RedirectStandardOutput smoke.log -RedirectStandardError smoke.err.log -NoNewWindow -PassThru
           $null = $process.Handle
           $exited = $process.WaitForExit(120000)

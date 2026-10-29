@@ -14,6 +14,7 @@
     <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))=./</PathMap>
 
     <LaunchScriptExt>sh</LaunchScriptExt>
+    <LaunchScriptExt Condition="$([MSBuild]::IsOSPlatform('Windows'))">cmd</LaunchScriptExt>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
@@ -27,19 +28,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
     <!-- Keeps Release output in Debug for Godot's editor workflow -->
     <OutputPath>$(GodotProjectDir).godot/mono/temp/bin/Debug/</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ExportRelease'">
-    <DefineConstants>$(DefineConstants);ENSEMBLE_RELEASE</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'ExportDebug'">
-    <DefineConstants>$(DefineConstants);ENSEMBLE_DEBUG</DefineConstants>
-  </PropertyGroup>
-
+  <!-- Godot.NET.Sdk already defines DEBUG for Debug and ExportDebug, and GODOT_<PLATFORM> for the target platform -->
   <PropertyGroup Condition="'$(Configuration)' == 'ExportDebug' Or '$(Configuration)' == 'ExportRelease'">
     <DefineConstants>$(DefineConstants);EXPORT</DefineConstants>
   </PropertyGroup>
@@ -52,27 +45,6 @@
     <!-- Only affects NativeAOT; Avalonia and Lua are hot managed code, and the size cost is small next to the engine -->
     <OptimizationPreference>Speed</OptimizationPreference>
   </PropertyGroup>
-
-  <Choose>
-    <When Condition="'$(OS)' == 'Windows_NT'">
-      <PropertyGroup>
-        <DefineConstants>$(DefineConstants);OS_WINDOWS</DefineConstants>
-        <LaunchScriptExt>cmd</LaunchScriptExt>
-      </PropertyGroup>
-    </When>
-
-    <When Condition="Exists('/System/Library/CoreServices')">
-      <PropertyGroup>
-        <DefineConstants>$(DefineConstants);OS_MAC</DefineConstants>
-      </PropertyGroup>
-    </When>
-
-    <Otherwise>
-      <PropertyGroup>
-        <DefineConstants>$(DefineConstants);OS_LINUX</DefineConstants>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
 
   <ItemGroup>
     <TrimmerRootAssembly Include="$(TargetName)"/>
@@ -170,7 +142,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Common/Text/ProfanityList.json.gz" LogicalName="EnsembleRoot.Common.Text.ProfanityList.json.gz"/>
+    <EmbeddedResource
+      Include="Common/Text/ProfanityList.json.gz"
+      LogicalName="EnsembleRoot.Common.Text.ProfanityList.json.gz"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -178,11 +152,6 @@
     <Compile Remove="Core/**"/>
     <Compile Remove="Estragonia/**"/>
     <Compile Remove="Tests/**"/>
-
-    <EmbeddedResource Remove="AutoloadGenerator/**"/>
-    <EmbeddedResource Remove="Core/**"/>
-    <EmbeddedResource Remove="Estragonia/**"/>
-    <EmbeddedResource Remove="Tests/**"/>
   </ItemGroup>
 
   <!-- Regenerated only when the build's inputs change, so up-to-date builds don't recompile for a new time -->
@@ -199,6 +168,7 @@
       <BuildInfoLines Include="public static class BuildInfo"/>
       <BuildInfoLines Include="{"/>
       <BuildInfoLines Include="&#9;public const string BuildTime = &quot;$(BuildTime)&quot;%3B"/>
+      <BuildInfoLines Include="&#9;public const string Configuration = &quot;$(Configuration)&quot;%3B"/>
       <BuildInfoLines Include="&#9;public static bool IsNativeAot => !System.Runtime.CompilerServices.RuntimeFeature.IsDynamicCodeSupported%3B"/>
       <BuildInfoLines Include="}"/>
     </ItemGroup>

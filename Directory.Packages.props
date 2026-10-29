@@ -41,9 +41,9 @@
     <PackageVersion Include="LiveMarkdown.Avalonia.Mermaid" Version="$(LiveMarkdownVersion)"/>
     <PackageVersion Include="LiveMarkdown.Avalonia.Svg.Skia" Version="$(LiveMarkdownVersion)"/>
     <PackageVersion Include="LuaCSharp" Version="0.5.8"/>
+    <PackageVersion Include="MethodBoundaryAspect.Fody" Version="3.6.0"/>
     <!-- An analyzer only, so it floats to the latest 3.x without touching the game's binaries -->
     <PackageVersion Include="Meziantou.Analyzer" Version="3.*"/>
-    <PackageVersion Include="MethodBoundaryAspect.Fody" Version="3.6.0"/>
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0"/>
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)"/>

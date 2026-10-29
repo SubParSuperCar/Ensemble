@@ -1,6 +1,6 @@
 using Godot;
 using Serilog;
-#if ENSEMBLE_DEBUG
+#if DEBUG
 using EnsembleRoot.Sessions.Api;
 #endif
 
@@ -11,7 +11,7 @@ public partial class WorldHandle : Node3D
 {
 	public override void _Ready()
 	{
-#if ENSEMBLE_DEBUG
+#if DEBUG
 		if (GSessionManager.Mode is SessionMode.SinglePlayer)
 			AddTestData();
 #endif
@@ -44,7 +44,7 @@ public partial class WorldHandle : Node3D
 		}
 	}
 
-#if ENSEMBLE_DEBUG
+#if DEBUG
 	private const int TestPlotId = 2;
 
 	private static readonly Vector3 HalfCell = Vector3.One / 2f;

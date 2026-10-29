@@ -1,6 +1,6 @@
 #!/bin/sh
-# Converts the chat profanity list between its committed form (GZip) and plain JSON.
-# Usage: profanity-list.sh decode > list.json | profanity-list.sh encode < list.json
+# Converts the chat profanity list between its committed form (GZip) and plain JSON:
+# profanity-list.sh decode > list.json, then profanity-list.sh encode < list.json
 set -eu
 
 compressed="$(dirname "$0")/../../Common/Text/ProfanityList.json.gz"

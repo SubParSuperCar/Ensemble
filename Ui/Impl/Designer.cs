@@ -1,4 +1,4 @@
-#if ENSEMBLE_DEBUG && !EXPORT
+#if DEBUG && !EXPORT
 using Avalonia;
 
 namespace EnsembleRoot.Ui;

@@ -4,7 +4,7 @@ using Avalonia.Threading;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.ViewModels;
 using Godot;
-#if ENSEMBLE_DEBUG
+#if DEBUG
 using Avalonia.Rendering;
 #endif
 
@@ -26,13 +26,8 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 		_hoverTimer.Tick += OnHoverTimerTick;
 
 		Watermark.Text =
-			$"\"Ensemble\" (v{GameVersion}) (" +
-#if NATIVE_AOT
-			"AOT"
-#else
-			"JIT"
-#endif
-			+ $")\nBuilt: {BuildInfo.BuildTime}\n" +
+			$"\"Ensemble\" (v{GameVersion}) ({(BuildInfo.IsNativeAot ? "AOT" : "JIT")})\n" +
+			$"Built: {BuildInfo.BuildTime}\n" +
 			"By: @SubParSuperCar & Contributors\n" +
 			$"At: {GitHubRepoUrl[HttpsScheme.Length..]}";
 	}
@@ -44,7 +39,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 		_topLevel = TopLevel.GetTopLevel(this);
 		_hoverTimer.Start();
 
-#if ENSEMBLE_DEBUG
+#if DEBUG
 		_topLevel?.RendererDiagnostics.DebugOverlays =
 			RendererDebugOverlays.Fps |
 			RendererDebugOverlays.RenderTimeGraph |

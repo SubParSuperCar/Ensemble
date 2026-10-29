@@ -50,12 +50,12 @@ jobs:
           tag="src-${GITHUB_SHA::12}"
 
           # The same commit can be pushed again, e.g., on a new branch
-          if gh release view "$tag" > /dev/null 2>&1; then
-            echo "Release $tag already exists"
+          if gh release view "${tag}" > /dev/null 2>&1; then
+            echo "Release ${tag} already exists"
             exit 0
           fi
 
-          gh release create "$tag" \
+          gh release create "${tag}" \
             --target "${GITHUB_SHA}" \
             --prerelease \
             --generate-notes \

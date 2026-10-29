@@ -8,6 +8,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private static readonly StringName EdgeThicknessParameter = "edge_thickness";
 	private static readonly StringName FaceAlphaParameter = "face_alpha";
 	private static readonly StringName OpacityParameter = "opacity";
+	private static readonly StringName MarchingAntsParameter = "marching_ants";
+	private static readonly StringName AntSpacingParameter = "ant_spacing";
+	private static readonly StringName AntSpeedParameter = "ant_speed";
 
 	private readonly BoxMesh _box = new();
 
@@ -57,6 +60,41 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1f;
 
+	/// <summary>Whether the edges are dashed, with the dashes marching toward each axis's positive end.</summary>
+	[Export]
+	public bool MarchingAnts
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdateMarchingAnts();
+		}
+	}
+
+	/// <summary>The length of each dash, and of each gap between them.</summary>
+	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:m")]
+	public float AntSpacing
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdateAntSpacing();
+		}
+	} = 0.05f;
+
+	[Export(PropertyHint.Range, "0,0,or_less,or_greater,hide_slider,suffix:m/s")]
+	public float AntSpeed
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdateAntSpeed();
+		}
+	} = 0.1f;
+
 	protected abstract Shader Shader { get; }
 
 	public override void _Ready()
@@ -74,6 +112,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 		UpdateEdgeThickness();
 		UpdateFaceAlpha();
 		UpdateOpacity();
+		UpdateMarchingAnts();
+		UpdateAntSpacing();
+		UpdateAntSpeed();
 	}
 
 	private void UpdateMesh()
@@ -90,4 +131,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private void UpdateEdgeThickness() => Material.SetShaderParameter(EdgeThicknessParameter, EdgeThickness);
 	private void UpdateFaceAlpha() => Material.SetShaderParameter(FaceAlphaParameter, FaceAlpha);
 	private void UpdateOpacity() => Material.SetShaderParameter(OpacityParameter, Opacity);
+	private void UpdateMarchingAnts() => Material.SetShaderParameter(MarchingAntsParameter, MarchingAnts);
+	private void UpdateAntSpacing() => Material.SetShaderParameter(AntSpacingParameter, AntSpacing);
+	private void UpdateAntSpeed() => Material.SetShaderParameter(AntSpeedParameter, AntSpeed);
 }

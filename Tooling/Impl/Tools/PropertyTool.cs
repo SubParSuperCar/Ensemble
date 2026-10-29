@@ -19,8 +19,9 @@ public readonly record struct PropertyKey(string Name, CoreVariantType Type)
 public readonly record struct EditableProperty(PropertyKey Key, CoreVariant Value, bool IsMixed);
 
 /// <summary>
-///     Edits the selected instances' properties, except the engine's own (prefixed with an underscore). The instances
-///     that share a property (by name and type) show one value: theirs if they agree, a neutral one otherwise.
+///     Edits the selected instances' properties, except the engine's own (prefixed with an underscore) unless
+///     <see cref="IsInternalShown" />. The instances that share a property (by name and type) show one value: theirs if
+///     they agree, a neutral one otherwise.
 /// </summary>
 public partial class PropertyTool : ToolBase
 {
@@ -41,6 +42,19 @@ public partial class PropertyTool : ToolBase
 	public Clipboard<PropertyKey, CoreVariant> Clipboard { get; } = new();
 
 	public IReadOnlyList<EditableProperty> Properties { get; private set; } = [];
+
+	/// <summary>Whether the engine's own properties are edited too, as they are what tools like painting drive.</summary>
+	public bool IsInternalShown
+	{
+		get;
+		set
+		{
+			field = value;
+
+			if (IsEnabled)
+				_isStale = true;
+		}
+	}
 
 	public event Action? PropertiesChanged;
 
@@ -115,7 +129,8 @@ public partial class PropertyTool : ToolBase
 		PropertiesChanged?.Invoke();
 	}
 
-	private static bool IsEditable(string name, CoreVariant value) => !name.StartsWith('_') && !value.IsNull;
+	private bool IsEditable(string name, CoreVariant value) =>
+		(IsInternalShown || !name.StartsWith('_')) && !value.IsNull;
 
 	// A value the instances disagree on turns null
 	private static CoreVariant Agree(CoreVariant left, CoreVariant right) => left == right ? left : CoreVariant.Null;

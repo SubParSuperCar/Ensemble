@@ -13,6 +13,7 @@ concurrency:
   group: bin-${{ github.ref }}
   cancel-in-progress: true
 
+# A step shared between jobs is a YAML anchor (&name) where it first appears and an alias (*name) after
 jobs:
   linux:
     name: Linux (x86_64)
@@ -20,13 +21,15 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Checkout
+      - &checkout
+        name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
       # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
-      - name: Read Godot version
+      - &godot-version
+        name: Read Godot version
         shell: bash
         run: |
           set -euo pipefail
@@ -34,22 +37,28 @@ jobs:
           [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
           echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
 
-      - name: Identify build
+      - &build-id
+        name: Identify build
+        shell: bash
         run: |
           set -euo pipefail
           id="${GITHUB_REF_NAME}"
           [ "${GITHUB_REF_TYPE}" = tag ] || id="$(git rev-parse --short HEAD)"
           echo "ID=${id}" >> "${GITHUB_ENV}"
 
-      - name: Set up .NET
+      - &dotnet
+        name: Set up .NET
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           global-json-file: global.json
 
-      - name: Set up Godot
+      - name: Install NativeAOT toolchain
+        run: sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
+
+      - &godot-linux
+        name: Set up Godot
         run: |
           set -euo pipefail
-          sudo apt-get update && sudo apt-get install -y clang zlib1g-dev
           base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
           curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
           curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
@@ -69,10 +78,14 @@ jobs:
           chmod +x "${bin}"
           echo "GODOT=${bin}" >> "${GITHUB_ENV}"
 
-      - name: Neuter Terrain3D editor plugin
+      - &terrain3d
+        name: Neuter Terrain3D editor plugin
+        shell: bash
         run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
 
-      - name: Disable threaded import
+      - &threaded-import
+        name: Disable threaded import
+        shell: bash
         run: printf '\n[editor]\n\nimport/use_multiple_threads=false\n' >> project.godot
 
       - name: Export
@@ -100,7 +113,8 @@ jobs:
           rm -f ./*.pdb ./*.dbg ./*.xml symbolize.sh
           zip -6 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
 
-      - name: Smoke test
+      - &smoke-linux
+        name: Smoke test
         run: |
           set -euo pipefail
           cd out
@@ -121,31 +135,13 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
+      - *checkout
 
-      # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
-      - name: Read Godot version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(sed -n 's|.*Sdk="Godot.NET.Sdk/\([^"]*\)".*|\1|p' EnsembleGame.csproj)"
-          [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
-          echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
+      - *godot-version
 
-      - name: Identify build
-        run: |
-          set -euo pipefail
-          id="${GITHUB_REF_NAME}"
-          [ "${GITHUB_REF_TYPE}" = tag ] || id="$(git rev-parse --short HEAD)"
-          echo "ID=${id}" >> "${GITHUB_ENV}"
+      - *build-id
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with:
-          global-json-file: global.json
+      - *dotnet
 
       - name: Set up Godot
         run: |
@@ -169,11 +165,9 @@ jobs:
           chmod +x "${bin}"
           echo "GODOT=${bin}" >> "${GITHUB_ENV}"
 
-      - name: Neuter Terrain3D editor plugin
-        run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
+      - *terrain3d
 
-      - name: Disable threaded import
-        run: printf '\n[editor]\n\nimport/use_multiple_threads=false\n' >> project.godot
+      - *threaded-import
 
       - name: Export
         timeout-minutes: 45
@@ -224,29 +218,13 @@ jobs:
         shell: pwsh
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
+      - *checkout
 
-      # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
-      - name: Read Godot version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(sed -n 's|.*Sdk="Godot.NET.Sdk/\([^"]*\)".*|\1|p' EnsembleGame.csproj)"
-          [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
-          echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
+      - *godot-version
 
-      - name: Identify build
-        run: |
-          $id = if ($env:GITHUB_REF_TYPE -eq 'tag') { $env:GITHUB_REF_NAME } else { git rev-parse --short HEAD }
-          "ID=$id" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
+      - *build-id
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with:
-          global-json-file: global.json
+      - *dotnet
 
       - name: Set up Godot
         run: |
@@ -273,11 +251,9 @@ jobs:
           $name = "Godot_v$env:GODOT_VERSION-stable_mono_win64"
           "GODOT=C:\godot\$name\${name}_console.exe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
-      - name: Neuter Terrain3D editor plugin
-        run: Move-Item addons\terrain_3d\plugin.cfg addons\terrain_3d\plugin.cfg.off
+      - *terrain3d
 
-      - name: Disable threaded import
-        run: Add-Content project.godot "`n[editor]`n`nimport/use_multiple_threads=false`n"
+      - *threaded-import
 
       - name: Export
         timeout-minutes: 45
@@ -308,7 +284,8 @@ jobs:
           Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
           7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
 
-      - name: Smoke test
+      - &smoke-windows
+        name: Smoke test
         run: |
           $process = Start-Process out\Ensemble.console.exe `
             -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
@@ -335,59 +312,19 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
+      - *checkout
 
-      # The Godot editor keeps the SDK line in step with itself, so it's the one place the version is written
-      - name: Read Godot version
-        shell: bash
-        run: |
-          set -euo pipefail
-          version="$(sed -n 's|.*Sdk="Godot.NET.Sdk/\([^"]*\)".*|\1|p' EnsembleGame.csproj)"
-          [ -n "${version}" ] || { echo "No Godot.NET.Sdk version in EnsembleGame.csproj" >&2; exit 1; }
-          echo "GODOT_VERSION=${version}" >> "${GITHUB_ENV}"
+      - *godot-version
 
-      - name: Identify build
-        run: |
-          set -euo pipefail
-          id="${GITHUB_REF_NAME}"
-          [ "${GITHUB_REF_TYPE}" = tag ] || id="$(git rev-parse --short HEAD)"
-          echo "ID=${id}" >> "${GITHUB_ENV}"
+      - *build-id
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
-        with:
-          global-json-file: global.json
+      - *dotnet
 
-      - name: Set up Godot
-        run: |
-          set -euo pipefail
-          base="https://github.com/godotengine/godot-builds/releases/download/${GODOT_VERSION}-stable"
-          curl -fsSL -o godot.zip "${base}/Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
-          curl -fsSL -o templates.tpz "${base}/Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
-          curl -fsSL -o SHA512-SUMS.txt "${base}/SHA512-SUMS.txt"
-          verify() {
-            [ "$(grep " ${2}\$" SHA512-SUMS.txt | cut -d' ' -f1)" = "$(shasum -a 512 "${1}" | cut -d' ' -f1)" ] ||
-              { echo "Checksum mismatch: ${2}" >&2; exit 1; }
-          }
-          verify godot.zip "Godot_v${GODOT_VERSION}-stable_mono_linux_x86_64.zip"
-          verify templates.tpz "Godot_v${GODOT_VERSION}-stable_mono_export_templates.tpz"
-          unzip -q godot.zip -d "${HOME}/godot"
-          unzip -q templates.tpz -d "${HOME}/tpl"
-          mkdir -p "${HOME}/.local/share/godot/export_templates"
-          mv "${HOME}/tpl/templates" "${HOME}/.local/share/godot/export_templates/${GODOT_VERSION}.stable.mono"
-          name="Godot_v${GODOT_VERSION}-stable_mono_linux"
-          bin="${HOME}/godot/${name}_x86_64/${name}.x86_64"
-          chmod +x "${bin}"
-          echo "GODOT=${bin}" >> "${GITHUB_ENV}"
+      - *godot-linux
 
-      - name: Neuter Terrain3D editor plugin
-        run: mv addons/terrain_3d/plugin.cfg addons/terrain_3d/plugin.cfg.off
+      - *terrain3d
 
-      - name: Disable threaded import
-        run: printf '\n[editor]\n\nimport/use_multiple_threads=false\n' >> project.godot
+      - *threaded-import
 
       - name: Export
         timeout-minutes: 45
@@ -417,13 +354,7 @@ jobs:
           cd out
           zip -6 -ry "../Ensemble-${ID}-jit.zip" .
 
-      - name: Smoke test (Linux)
-        run: |
-          set -euo pipefail
-          cd out
-          timeout 120 ./Ensemble.x86_64 \
-            --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
-          grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
+      - *smoke-linux
 
       - name: Upload
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -449,21 +380,10 @@ jobs:
           pattern: Ensemble-*-jit
           merge-multiple: true
 
-      - name: Smoke test
-        run: |
-          $PSNativeCommandUseErrorActionPreference = $false
-          7z x -ojit (Get-ChildItem *-jit.zip).FullName > $null
-          $process = Start-Process jit\Ensemble.console.exe `
-            -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
-            -RedirectStandardOutput smoke.log -RedirectStandardError smoke.err.log -NoNewWindow -PassThru
-          $null = $process.Handle
-          $exited = $process.WaitForExit(120000)
-          Get-Process Ensemble* -ErrorAction SilentlyContinue | Stop-Process -Force
-          $found = Select-String -Path smoke.log -Pattern 'Instantiated and added "?WorldHandle' -Quiet
-          if (-not $exited -or $process.ExitCode -ne 0 -or -not $found) {
-            Get-Content smoke.log, smoke.err.log -Tail 50
-            throw "Smoke test failed (Exited=$exited, ExitCode=$($process.ExitCode))"
-          }
+      - name: Extract
+        run: 7z x -oout (Get-ChildItem *-jit.zip).FullName > $null
+
+      - *smoke-windows
 
   publish:
     name: Publish

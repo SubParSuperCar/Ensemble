@@ -31,6 +31,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 	[ObservableProperty] public partial bool IsCopyEnabled { get; private set; }
 	[ObservableProperty] public partial bool IsPasteEnabled { get; private set; }
 
+	[ObservableProperty] public partial bool IsInternalShown { get; set; } = Property.IsInternalShown;
+
 	public ObservableCollection<PropertyItem> VisibleItems { get; } = [];
 
 	// Where the Asset Selector opens, as their tools are rarely enabled together
@@ -51,6 +53,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	// ReSharper disable once UnusedParameterInPartialMethod
 	partial void OnFilterQueryChanged(string value) => Filter();
+
+	partial void OnIsInternalShownChanged(bool value) => Property.IsInternalShown = value;
 
 	[RelayCommand]
 	private static void Copy() => Property.Copy();

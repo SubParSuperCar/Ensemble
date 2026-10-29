@@ -19,6 +19,8 @@ The tool suite, in rough intended order of implementation.
       instances; double-click to confirm; disables DestructTool after use
     - [x] (M) Multi-selection - `Shift`-click to toggle, click a selected instance to delete them all, bulk
       `RemoveInstancesAction` (up to 256, token cost scales with count)
+    - [x] (S) Marching ants - selected instances' highlights dash their edges (0.05 m dashes marching at 0.1 m/s toward
+      each axis's positive end), while the hovered one stays solid
 - ConstructTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
     - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation, snap
@@ -31,8 +33,8 @@ The tool suite, in rough intended order of implementation.
       mixed) where they differ, and separate entries for same-named properties of different types
     - [x] (M) Property Editor UI - a filterable, alphabetical list with an editor per type, mixed markers, and copy /
       paste buttons, open while the tool is enabled
-    - [ ] (S) "Show Internal" checkbox - also lists `_`-prefixed properties (e.g., `_colorHex`, `_materialId`), to test
-      painting and materials before the PaintTool exists; only the editor filters them (`PropertyTool.IsEditable`),
+    - [x] (S) "Show Internal" option - also lists `_`-prefixed properties (e.g., `_colorHex` as "Color Hex"), to test
+      painting and materials before the PaintTool exists; only the tool filters them (`PropertyTool.IsInternalShown`),
       since the actions already accept them
 - [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
@@ -197,8 +199,9 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
       bare payload, so a plain JSON save is a JSON file and a plain binary one starts with its own `ENSB`
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
-- [ ] (S) Fold bin.yml's repeated steps (checkout, Godot version, build ID, .NET and Godot setup, smoke tests) into
-  YAML anchors, which GitHub Actions accepts; needs a test run on a branch, since CI can't run locally
+- (WIP) (S) Fold bin.yml's repeated steps (checkout, Godot version, build ID, .NET and Godot setup, smoke tests) into
+  YAML anchors, which GitHub Actions accepts - folded (shared steps run in bash on Windows too); needs a test run on a
+  branch, since CI can't run locally
 
 ## Later / big
 

@@ -5,6 +5,8 @@ using EnsembleRoot.Sessions.Auth;
 using EnsembleRoot.Sessions.Nat;
 using Godot;
 
+#pragma warning disable CA1001
+
 namespace EnsembleRoot.Sessions.Transports;
 
 /// <summary>

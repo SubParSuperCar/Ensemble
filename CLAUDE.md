@@ -97,8 +97,8 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 - **Guards:** one per invariant, where the value is stored; drop guards an upstream invariant already guarantees, but
   keep every guard against a hostile peer. A fallback that hides a failure logs it. An action that passes `Validate`
   never throws in `Apply`. Parsers throw `InvalidDataException` for bad data.
-- **Values:** a value a project setting owns is read from `ProjectSettings`; shared numbered resources
-  (`PhysicsLayers`, `NetworkChannels`) live in `Constants`; asset length properties are in grid units, read through
+- **Values:** a value a project setting owns is read from `ProjectSettings`; shared numbered resources (`PhysicsLayers`,
+  `NetworkChannels`) live in `Constants`; asset length properties are in grid units, read through
   `AssetHandle.GetLengthProperty`.
 - **Time:** a per-frame sampler has a `const double XInterval` in seconds and a `_sinceX` accumulator; timers and waits
   take a `TimeSpan` where the API has an overload, and `Task.Delay` passes `GTimeProvider`.

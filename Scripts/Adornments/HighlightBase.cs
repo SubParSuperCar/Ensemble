@@ -132,7 +132,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 			field = value;
 			UpdatePulsePeriod();
 		}
-	} = 1f;
+	} = 1 / 2f;
 
 	protected abstract Shader Shader { get; }
 

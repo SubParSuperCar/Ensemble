@@ -12,7 +12,7 @@
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
         <Grid RowDefinitions="Auto,*" RowSpacing="2">
-            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="2">
+            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="2">
                 <TextBox
                     Text="{Binding FilterQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     PlaceholderText="Filter Properties&#x2026;"
@@ -32,6 +32,17 @@
                     Command="{Binding PasteCommand}"
                     ToolTip.Tip="Pastes the copied properties onto the selected assets that have them. (Bound to Ctrl+V)"
                     IsEnabled="{Binding IsPasteEnabled}" />
+
+                <DropDownButton Grid.Column="3" ToolTip.Tip="Property Editor options.">
+                    <DropDownButton.Flyout>
+                        <Flyout Placement="BottomEdgeAlignedRight" VerticalOffset="2">
+                            <CheckBox
+                                Content="Show Internal"
+                                IsChecked="{Binding IsInternalShown}"
+                                ToolTip.Tip="Also lists the engine's own properties, such as an asset's color and material." />
+                        </Flyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
             </Grid>
 
             <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">

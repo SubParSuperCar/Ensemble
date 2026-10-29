@@ -6,7 +6,10 @@ using Serilog;
 
 namespace EnsembleRoot.Tooling.Tools;
 
-/// <summary>Highlights the local plot's hovered instance and the selected ones while attached to a selection.</summary>
+/// <summary>
+///     Highlights the local plot's hovered instance, and the selected ones with marching ants, while attached to a
+///     selection.
+/// </summary>
 public partial class SelectionHighlights : Node
 {
 	private readonly SolidHighlight _hoverHighlight = new() { Name = "Hover Highlight", Visible = false };
@@ -110,7 +113,7 @@ public partial class SelectionHighlights : Node
 				continue;
 
 			var name = string.Create(CultureInfo.InvariantCulture, $"Selection Highlight {id}");
-			var highlight = new SolidHighlight { Name = name, Tint = Tint };
+			var highlight = new SolidHighlight { Name = name, Tint = Tint, MarchingAnts = true };
 
 			AddChild(highlight);
 

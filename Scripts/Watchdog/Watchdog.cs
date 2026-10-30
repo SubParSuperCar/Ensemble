@@ -87,12 +87,10 @@ public partial class Watchdog : Node, IAutoload
 			var missCount = 0;
 
 			while (!_cts.Token.WaitHandle.WaitOne(PollInterval))
-			{
 				if (Interlocked.Exchange(ref _heartbeatFlag, 0) is 1 || Suspension.IsSet || Debugger.IsAttached)
 					missCount = 0;
 				else
 					OnMissed(++missCount);
-			}
 		}
 		catch (Exception exception)
 		{

@@ -79,7 +79,6 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 		var hasRight = rightItems.MoveNext();
 
 		for (var i = 0; i < merged.Length; i++)
-		{
 			if (hasLeft && (!hasRight || leftItems.Current.Sequence < rightItems.Current.Sequence))
 			{
 				merged[i] = leftItems.Current.Entry;
@@ -90,7 +89,6 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 				merged[i] = rightItems.Current.Entry;
 				hasRight = rightItems.MoveNext();
 			}
-		}
 
 		return merged;
 	}

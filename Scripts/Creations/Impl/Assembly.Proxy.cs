@@ -173,7 +173,7 @@ public partial class Assembly
 
 	private void PushProxyState(in ProxyState state)
 	{
-		if (_proxyStateCount == ProxyBufferSize)
+		if (_proxyStateCount is ProxyBufferSize)
 			Array.Copy(_proxyStates, 1, _proxyStates, 0, --_proxyStateCount);
 
 		_proxyStates[_proxyStateCount++] = state;

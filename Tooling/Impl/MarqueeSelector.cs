@@ -39,9 +39,7 @@ public partial class MarqueeSelector : Node
 			Stop();
 		}
 		else if (@event.IsActionReleased(ToolCommon.TriggerAction))
-		{
 			Finish();
-		}
 	}
 
 	public override void _UnhandledInput(InputEvent @event)

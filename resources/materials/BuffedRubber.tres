@@ -20,6 +20,7 @@ as_normal_map = true
 [sub_resource type="ORMMaterial3D" id="ORMMaterial3D_523sa"]
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture2D_2w886")
+uv1_triplanar = true
 
 [resource]
 script = ExtResource("1_5qb6j")

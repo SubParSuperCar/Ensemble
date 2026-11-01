@@ -73,7 +73,8 @@
                 Content="Leave"
                 Command="{Binding LeaveCommand}"
                 ToolTip.Tip="Requests to leave the current plot.&#x0a;If you own the plot and another player occupies it,&#x0a;ownership may be reassigned to the second-oldest occupant."
-                HorizontalAlignment="Center" />
+                HorizontalAlignment="Center"
+                MinWidth="80" />
         </Grid>
     </Border>
 

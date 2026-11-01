@@ -29,6 +29,9 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
     - [ ] (S) Fade the placement preview in and out as it appears and disappears
+    - [ ] (S) Press feedback - the Asset Selector's X / Y / Z buttons (and the Property Editor's Copy / Paste) briefly
+      swap their foreground and background when used, by click or keybind, so each press is visible; the tools need
+      to raise events for keybind uses
 - PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
     - [x] (M) Selection and merged properties - one value where the selected instances agree, a neutral one (marked
       mixed) where they differ, and separate entries for same-named properties of different types
@@ -37,6 +40,8 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) "Show Internal" option - also lists `_`-prefixed properties (e.g., `_colorHex` as "Color Hex"), to test
       painting and materials before the PaintTool exists; only the tool filters them (`PropertyTool.IsInternalShown`),
       since the actions already accept them
+    - [ ] (S) Reset buttons - each Property Editor row can reset its property to the asset's default (as Lua's
+      `set_inst_prop` does with `nil`), for the whole selection; the layout waits for the owner
     - [ ] (M) Property limits (deferred) - per-asset ranges (min, max, maybe a step) for numeric properties, authored in
       the inspector like other asset settings, so a new `AssetHandle` needs no code for basic limits. The Property
       Editor reads them for its ranges (and sliders where both ends are set), and the asset's getters clamp to them;

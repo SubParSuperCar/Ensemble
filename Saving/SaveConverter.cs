@@ -20,7 +20,7 @@ public static class SaveConverter
 				if (value == defaults[key])
 					continue;
 
-				properties ??= new Dictionary<string, CoreVariant>(StringComparer.OrdinalIgnoreCase);
+				properties ??= new Dictionary<string, CoreVariant>(IProperties.KeyComparer);
 				properties.Add(key, value);
 			}
 

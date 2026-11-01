@@ -23,6 +23,7 @@
             </ScrollViewer>
 
             <TextBlock
+                Grid.Row="0"
                 Text="Break the ice!"
                 HorizontalAlignment="Center" VerticalAlignment="Center"
                 FontStyle="Italic"

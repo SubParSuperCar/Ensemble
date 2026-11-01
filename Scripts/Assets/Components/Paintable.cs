@@ -1,3 +1,4 @@
+using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets.Materials;
 using Godot;
@@ -56,8 +57,8 @@ public partial class Paintable : AssetComponent
 	private void OnPropertyChanged(string key, Variant value)
 	{
 		if (
-			string.Equals(key, ColorKey, StringComparison.OrdinalIgnoreCase) ||
-			string.Equals(key, MaterialBank.PropertyKey, StringComparison.OrdinalIgnoreCase))
+			IProperties.KeyComparer.Equals(key, ColorKey) ||
+			IProperties.KeyComparer.Equals(key, MaterialBank.PropertyKey))
 			Apply();
 	}
 

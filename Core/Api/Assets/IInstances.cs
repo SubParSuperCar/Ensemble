@@ -9,6 +9,12 @@ namespace EnsembleCoreRoot.Api.Assets;
 /// </summary>
 public interface IInstances
 {
+	/// <summary>
+	///     The most instances any plot holds, whatever its <see cref="MaxCount" />. IDs are taken lowest-free and stay
+	///     below it, which bounds the memory a plot's IDs can claim (e.g., from a snapshot); saves hold no more.
+	/// </summary>
+	const int MaxPossibleCount = 1 << 20;
+
 	IEnumerable<IInstance> All { get; }
 
 	int Count { get; }

@@ -5,6 +5,8 @@
     <Product>Ensemble</Product>
     <Description>Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.</Description>
     <Copyright>Copyright (c) 2026-$([System.DateTime]::Now.ToString('yyyy')) $(Authors)</Copyright>
+    <!-- The game's version, which project.godot owns (application/config/version) -->
+    <Version>$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)project.godot')), '(?&lt;=config/version=")[^"]+').Value)</Version>
   </PropertyGroup>
 
   <!-- Estragonia is vendored and has its own Directory.Build.props, so it skips this file and these analyzers -->

@@ -65,7 +65,7 @@
                     <!-- Each property type gets its own editor -->
                     <ItemsControl.DataTemplates>
                         <DataTemplate DataType="vm:TogglePropertyItem">
-                            <CheckBox IsChecked="{Binding Value}" />
+                            <CheckBox IsChecked="{Binding Value}" VerticalAlignment="Center" />
                         </DataTemplate>
 
                         <DataTemplate DataType="vm:IntegerPropertyItem">
@@ -77,7 +77,7 @@
                                 FormatString="0" ParsingNumberStyle="Integer" />
                         </DataTemplate>
 
-                        <DataTemplate DataType="vm:NumberPropertyItem">
+                        <DataTemplate DataType="vm:DecimalPropertyItem">
                             <NumericUpDown
                                 Value="{Binding Value, UpdateSourceTrigger=LostFocus}"
                                 PlaceholderText="{Binding Placeholder}"
@@ -95,7 +95,12 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate DataType="vm:PropertyItem">
+                            <!-- One shared row height, so every type's row is as tall as the tallest editor's -->
                             <Grid Background="{DynamicResource TranslucentBackgroundBrush}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" SharedSizeGroup="Row" />
+                                </Grid.RowDefinitions>
+
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" SharedSizeGroup="Name" />
                                     <ColumnDefinition Width="*" />

@@ -7,7 +7,7 @@ namespace EnsembleCoreRoot.Assets;
 internal sealed class Properties(IReadOnlyDictionary<string, CoreVariant>? values = null) : IProperties
 {
 	private readonly Dictionary<string, CoreVariant> _valuesByKey =
-		new(values ?? FrozenDictionary<string, CoreVariant>.Empty, StringComparer.OrdinalIgnoreCase);
+		new(values ?? FrozenDictionary<string, CoreVariant>.Empty, IProperties.KeyComparer);
 
 	public IReadOnlyDictionary<string, CoreVariant> All => _valuesByKey;
 

@@ -7,8 +7,6 @@ namespace EnsembleRoot.Saving.SerDes;
 /// <summary>The limits and rules every save format shares, so a save loads the same whatever its format.</summary>
 internal static class SaveValidation
 {
-	public const int MaxInstanceCount = 1 << 20;
-
 	// The binary format writes the count plus one as a ushort, with 0 meaning none and the maximum reserved
 	public const int MaxPropertyCount = ushort.MaxValue - 2;
 	public const int MaxTotalPropertyCount = 1 << 20;
@@ -35,7 +33,7 @@ internal static class SaveValidation
 	public static void Validate(CreationSaveData data)
 	{
 		// STJ doesn't enforce nullable annotations, and an omitted rotation reads as zero
-		if (data.Instances is not { Count: <= MaxInstanceCount } instances)
+		if (data.Instances is not { Count: <= IInstances.MaxPossibleCount } instances)
 			throw new InvalidDataException("Invalid instance count.");
 
 		var totalPropertyCount = 0;
@@ -54,7 +52,7 @@ internal static class SaveValidation
 			if (properties.Count > MaxPropertyCount || totalPropertyCount > MaxTotalPropertyCount)
 				throw new InvalidDataException("Invalid property count.");
 
-			var keys = new HashSet<string>(properties.Count, StringComparer.OrdinalIgnoreCase);
+			var keys = new HashSet<string>(properties.Count, IProperties.KeyComparer);
 
 			foreach (var (key, value) in properties)
 				if (Encoding.UTF8.GetByteCount(key) > MaxKeyByteCount || !keys.Add(key) || !IsValid(value))

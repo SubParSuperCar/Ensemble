@@ -316,7 +316,7 @@ plugin) and `/Estragonia/`, are distributed under their respective licenses and 
 or copyright holders' terms. The chat's profanity filter uses David Sojevic's
 [profanity-list](https://github.com/dsojevic/profanity-list) (MIT; see `/Common/Text/ProfanityList.LICENSE.txt`), with
 `allow_partial` set on entries that misfire inside ordinary words. It's stored compressed, so its terms aren't readable
-in the source; see `/.github/scripts/profanity-list.sh`. Menu icons are from Microsoft's
+in the source; see `/.github/scripts/profanity-list.sh`. UI icons are from Microsoft's
 [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) (MIT; see `/Ui/Impl/Icons.LICENSE.txt`).
 Chat nametag colors use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
 

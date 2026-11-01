@@ -26,12 +26,12 @@
             <Setter Property="TextElement.Foreground" Value="{DynamicResource HighlightForegroundBrush}" />
         </Style>
 
-        <Style Selector="Button#MaximizeButton">
-            <Setter Property="Content" Value="&#x25A1;" />
+        <Style Selector="PathIcon#MaximizeIcon">
+            <Setter Property="Data" Value="{StaticResource MaximizeIcon}" />
         </Style>
 
-        <Style Selector="Panel#Frame.maximized Button#MaximizeButton">
-            <Setter Property="Content" Value="&#x25A3;" />
+        <Style Selector="Panel#Frame.maximized PathIcon#MaximizeIcon">
+            <Setter Property="Data" Value="{StaticResource RestoreIcon}" />
         </Style>
 
         <Style Selector="Button#CloseButton">
@@ -41,6 +41,11 @@
         <!-- Alone, it rounds both of the header's top corners -->
         <Style Selector="Panel#Frame:not(.resizable) Button#CloseButton">
             <Setter Property="CornerRadius" Value="4.5,4.5,0,0" />
+        </Style>
+
+        <Style Selector="Grid#Header PathIcon">
+            <Setter Property="Width" Value="12" />
+            <Setter Property="Height" Value="12" />
         </Style>
 
         <Style Selector="Grid#Header Button">
@@ -84,15 +89,19 @@
                         Command="{Binding ToggleMaximizedCommand}"
                         ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
                         CornerRadius="4.5,0,0,0"
-                        IsVisible="{Binding Descriptor.IsResizable}" />
+                        IsVisible="{Binding Descriptor.IsResizable}">
+
+                        <PathIcon Name="MaximizeIcon" />
+                    </Button>
 
                     <Button
                         Name="CloseButton"
-                        Content="X"
                         Command="{Binding CloseCommand}"
                         ToolTip.Tip="Closes this widget."
-                        Background="{StaticResource DangerBrush}" Foreground="White"
-                        FontWeight="Bold" />
+                        Background="{StaticResource DangerBrush}" Foreground="White">
+
+                        <PathIcon Data="{StaticResource CloseIcon}" />
+                    </Button>
                 </StackPanel>
             </Grid>
 

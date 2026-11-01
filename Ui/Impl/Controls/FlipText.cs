@@ -5,7 +5,7 @@ using Avalonia.Layout;
 
 namespace EnsembleRoot.Ui.Controls;
 
-/// <summary>A line of text whose characters flip over as they change, like a flip clock's.</summary>
+/// <summary>A line of text whose characters flip over and fade as they change, like a flip clock's.</summary>
 /// <remarks>Meant for monospace fonts, so a flipping character doesn't shift the rest.</remarks>
 public sealed class FlipText : Control
 {
@@ -13,7 +13,14 @@ public sealed class FlipText : Control
 		AvaloniaProperty.Register<FlipText, string?>(nameof(Text));
 
 	private readonly StackPanel _cells = new() { Orientation = Orientation.Horizontal };
-	private readonly Rotate3DTransition _flip = new(AnimationDuration, PageSlide.SlideAxis.Vertical);
+
+	private readonly CompositePageTransition _flip = new()
+	{
+		PageTransitions =
+		{
+			new CrossFade(AnimationDuration), new Rotate3DTransition(AnimationDuration, PageSlide.SlideAxis.Vertical)
+		}
+	};
 
 	public FlipText()
 	{

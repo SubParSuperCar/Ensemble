@@ -7,8 +7,8 @@ using Serilog;
 namespace EnsembleRoot.Tooling.Tools;
 
 /// <summary>
-///     Highlights the local plot's hovered instance with a pulse, and the selected ones with marching ants, while
-///     attached to a selection.
+///     Highlights the local plot's hovered instance with a pulse, and the selected ones with marching ants (so a
+///     hovered selected one gets both), while attached to a selection.
 /// </summary>
 public partial class SelectionHighlights : Node
 {
@@ -18,6 +18,7 @@ public partial class SelectionHighlights : Node
 	private readonly Dictionary<int, SolidHighlight> _selectionHighlights = [];
 
 	private AssetHandle? _hovered;
+	private SolidHighlight? _pulsingSelection;
 	private MultiSelector? _selector;
 
 	public Color Tint { get; init; } = Colors.White;
@@ -94,10 +95,20 @@ public partial class SelectionHighlights : Node
 		UpdateHoverHighlight();
 	}
 
-	// Selected instances keep their own highlights
+	// A selected instance pulses its own highlight instead
 	private void UpdateHoverHighlight()
 	{
-		if (_hovered is not { } handle || !IsLive(handle) || _selector?.Contains(handle.InstanceId) is true)
+		var handle = _hovered is { } hovered && IsLive(hovered) ? hovered : null;
+		var selection = handle is null ? null : _selectionHighlights.GetValueOrDefault(handle.InstanceId);
+
+		if (!ReferenceEquals(_pulsingSelection, selection))
+		{
+			_pulsingSelection?.Pulsing = false;
+			_pulsingSelection = selection;
+			_pulsingSelection?.Pulsing = true;
+		}
+
+		if (handle is null || selection is not null)
 		{
 			_hoverHighlight.Visible = false;
 			return;

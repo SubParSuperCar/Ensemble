@@ -48,7 +48,7 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0"/>
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="$(MicrosoftExtensionsVersion)"/>
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="$(MicrosoftExtensionsVersion)"/>
-    <PackageVersion Include="NsDepCop" Version="3.2.0"/>
+    <PackageVersion Include="NsDepCop" Version="3.3.0"/>
     <PackageVersion Include="Optris.LoadingIndicators.Avalonia" Version="12.0.4"/>
     <PackageVersion Include="Serilog" Version="4.4.0"/>
     <PackageVersion Include="Serilog.Expressions" Version="5.0.0"/>

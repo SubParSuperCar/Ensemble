@@ -1,16 +1,12 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using EnsembleCoreRoot.Api.Assets;
 
 namespace EnsembleCoreRoot.Utils;
 
 internal sealed class HoleyArray<TValue> where TValue : class
 {
-	// "Hole punch" is a legacy name for growing '_items' with nulls ("holes") to place an item past its end. The bound
-	// is the save format's instance limit: indices are taken lowest-free, so they stay below the count of items, which
-	// no savable plot exceeds.
-	private const int MaxHolePunchIndex = 1 << 20;
-
 	private readonly List<TValue?> _items = [];
 	private int _nextFreeIndex;
 
@@ -89,7 +85,7 @@ internal sealed class HoleyArray<TValue> where TValue : class
 
 	private void Place(TValue item, int index)
 	{
-		ArgumentOutOfRangeException.ThrowIfGreaterThan(index, MaxHolePunchIndex);
+		ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(index, IInstances.MaxPossibleCount);
 
 		if (index >= _items.Count)
 			CollectionsMarshal.SetCount(_items, index + 1);

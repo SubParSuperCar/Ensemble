@@ -9,10 +9,9 @@ namespace EnsembleRoot.Tooling.Tools;
 /// <summary>How the PropertyTool tells properties apart: by name, ignoring case as instances do, and type.</summary>
 public readonly record struct PropertyKey(string Name, CoreVariantType Type)
 {
-	public bool Equals(PropertyKey other) =>
-		Type == other.Type && string.Equals(Name, other.Name, StringComparison.OrdinalIgnoreCase);
+	public bool Equals(PropertyKey other) => Type == other.Type && IProperties.KeyComparer.Equals(Name, other.Name);
 
-	public override int GetHashCode() => HashCode.Combine(StringComparer.OrdinalIgnoreCase.GetHashCode(Name), Type);
+	public override int GetHashCode() => HashCode.Combine(IProperties.KeyComparer.GetHashCode(Name), Type);
 }
 
 /// <param name="IsMixed">Whether the instances differ, so <paramref name="Value" /> is the type's neutral one.</param>
@@ -175,7 +174,7 @@ public partial class PropertyTool : ToolBase
 
 		foreach (var instance in GetSelected())
 		{
-			var changes = new Dictionary<string, CoreVariant>(StringComparer.OrdinalIgnoreCase);
+			var changes = new Dictionary<string, CoreVariant>(IProperties.KeyComparer);
 
 			foreach (var (name, current) in instance.Properties.Source.All)
 				if (

@@ -24,9 +24,9 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 	public void Serialize(Stream stream, CreationSaveData data)
 	{
-		if (data.Instances.Count > MaxInstanceCount)
+		if (data.Instances.Count > IInstances.MaxPossibleCount)
 			throw new InvalidOperationException(string.Create(
-				CultureInfo.InvariantCulture, $"Saves support at most {MaxInstanceCount} instances."));
+				CultureInfo.InvariantCulture, $"Saves support at most {IInstances.MaxPossibleCount} instances."));
 
 		using var writer = new BinaryWriter(stream, Encoding.UTF8, true);
 
@@ -59,7 +59,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			throw new InvalidDataException("Invalid creation time.");
 
 		var instanceCount = reader.ReadInt32();
-		if (instanceCount-- <= 0 || instanceCount > MaxInstanceCount)
+		if (instanceCount-- <= 0 || instanceCount > IInstances.MaxPossibleCount)
 			throw new InvalidDataException("Invalid instance count.");
 
 		var save = new CreationSaveData
@@ -148,7 +148,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 			return null;
 
 		var properties = new Dictionary<string, CoreVariant>(
-			Math.Min((int)propertyCount, MaxPreallocatedCount), StringComparer.OrdinalIgnoreCase);
+			Math.Min((int)propertyCount, MaxPreallocatedCount), IProperties.KeyComparer);
 
 		for (var i = 0; i < propertyCount; i++)
 		{

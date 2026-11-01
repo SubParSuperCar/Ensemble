@@ -479,6 +479,8 @@ where the difference is small.
   color, and shading, so painted geometry still batches). Per-vertex surfaces receive no light from area lights (the
   plots' night lights), nor spot or omni light shadows; directional shadows are still sampled per pixel.
 - **Unshaded overlays.** Characters, highlights, and the plot grid are unshaded.
+- **VSync.** Exports use Adaptive (capped at the refresh rate, tearing only below it, to spare laptops' batteries and
+  fans); runs from the editor use Mailbox (uncapped without tearing), so performance regressions show.
 - **Shadows.** The sun uses soft shadow filter quality 3 and a 64 m shadow distance, which keeps thin shapes (like the
   suspension's coil) crisp.
 - **`perf_mod(render_scale?)`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing

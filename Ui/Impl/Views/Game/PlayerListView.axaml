@@ -75,12 +75,22 @@
                                             <MenuItem
                                                 Header="Kick"
                                                 Command="{Binding KickCommand}"
-                                                ToolTip.Tip="Disconnects this player from the session." />
+                                                ToolTip.Tip="Disconnects this player from the session.">
+
+                                                <MenuItem.Icon>
+                                                    <PathIcon Data="{StaticResource KickIcon}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
 
                                             <MenuItem
                                                 Header="IP Ban"
                                                 Command="{Binding BanCommand}"
-                                                ToolTip.Tip="Disconnects this player and blocks their IP address, and so their whole network, for the rest of the session." />
+                                                ToolTip.Tip="Disconnects this player and blocks their IP address, and so their whole network, for the rest of the session.">
+
+                                                <MenuItem.Icon>
+                                                    <PathIcon Data="{StaticResource BanIcon}" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
                                         </ContextMenu>
                                     </Template>
                                 </Setter>

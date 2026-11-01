@@ -67,7 +67,7 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		{
 			CoreVariantType.Boolean => new TogglePropertyItem(key),
 			CoreVariantType.Int64 => new IntegerPropertyItem(key),
-			CoreVariantType.Double => new NumberPropertyItem(key),
+			CoreVariantType.Double => new DecimalPropertyItem(key),
 			_ => new TextPropertyItem(key)
 		};
 
@@ -211,14 +211,14 @@ public sealed partial class IntegerPropertyItem(PropertyKey key) : PropertyItem(
 	}
 }
 
-public sealed partial class NumberPropertyItem(PropertyKey key) : PropertyItem(key)
+public sealed partial class DecimalPropertyItem(PropertyKey key) : PropertyItem(key)
 {
 	// Decimals span less than doubles, and assets clamp what they read anyway
 	private const double Limit = 1e28;
 
 	[ObservableProperty] public partial decimal? Value { get; set; }
 
-	protected override string TypeName => "Number";
+	protected override string TypeName => "Decimal";
 
 	protected override void Load(CoreVariant value) =>
 		Value = value.IsNull ? null : (decimal)Math.Clamp((double)value, -Limit, Limit);

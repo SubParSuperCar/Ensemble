@@ -8,10 +8,16 @@ public static partial class StringExtensions
 	[GeneratedRegex("(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|[\\s_-]+", RegexOptions.None, RegexMatchTimeoutMs)]
 	private static partial Regex WordBoundaryRegex { get; }
 
-	/// <summary>Turns an identifier into capitalized words, e.g., <c>targetLength</c> into "Target Length".</summary>
+	/// <summary>
+	///     Turns an identifier into capitalized words, e.g., <c>targetLength</c> into "Target Length", and
+	///     <c>_materialId</c> into "Material ID".
+	/// </summary>
 	public static string ToDisplayName(this string identifier) =>
 		string.Join(' ',
 			WordBoundaryRegex.Split(identifier)
 				.Where(static word => word.Length > 0)
-				.Select(static word => char.ToUpperInvariant(word[0]) + word[1..]));
+				.Select(static word =>
+					word.Equals("id", StringComparison.OrdinalIgnoreCase)
+						? "ID"
+						: char.ToUpperInvariant(word[0]) + word[1..]));
 }

@@ -56,7 +56,8 @@ window/size/mode=2
 window/size/sharp_corners=true
 window/stretch/aspect="expand"
 window/stretch/scale_mode="integer"
-window/vsync/vsync_mode=3
+window/vsync/vsync_mode=2
+window/vsync/vsync_mode.editor=3
 window/size/mode.editor=0
 
 [dotnet]

@@ -474,6 +474,8 @@ work proportional to what moves and thinks, not to what exists.
 | 0.55.0  | Arbitration; traffic in the stats overlay; despawning wakes its neighbors                      |
 | 0.56.0  | Asset pieces and authored joints, the Suspension and its coil, asset scripts with clamped      |
 |         | properties, and `LiveCreation` split out of `PlotHandle`                                       |
+| 0.57.x  | Suspension lengths in grid units, end to end; a jointed asset's two sides collide; joints      |
+|         | straighten before their bodies sleep (Baumgarte factor 0.5)                                    |
 | Next    | Simulation ticks and force accumulators, seats, input masks, driven joints (Motor, Servo,      |
 |         | Piston), then Airfoil and other forces                                                         |
 

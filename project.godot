@@ -273,6 +273,7 @@ common/physics_ticks_per_second=100
 jolt_physics_3d/limits/temporary_memory_buffer_size=48
 jolt_physics_3d/limits/max_bodies=16384
 jolt_physics_3d/limits/max_contact_constraints=32768
+jolt_physics_3d/simulation/baumgarte_stabilization_factor=0.5
 3d/default_gravity=9.80665
 common/physics_interpolation=true
 

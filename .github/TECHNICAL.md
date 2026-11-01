@@ -489,7 +489,9 @@ where the difference is small.
   `render_scale` (e.g., `0.5`) if given.
 - **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World,
   2 Character, 3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics
-  ticks (highlights, the placement preview, other players' characters) opt out of interpolation.
+  ticks (highlights, the placement preview, other players' characters) opt out of interpolation. Its Baumgarte factor
+  (how much of a constraint's error each step corrects) is 0.5, up from 0.2: with 0.2, a hard knock left jointed
+  pieces (e.g., a stack of suspensions) bent, as Jolt put them to sleep before their joints had pulled them straight.
 - **Terrain collision** is built for the whole terrain up front (Terrain3D's full mode), so bodies far from the local
   character, such as a creation another peer simulates or one a dedicated host takes over, stay on the ground.
 

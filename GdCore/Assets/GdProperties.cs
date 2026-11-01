@@ -12,6 +12,8 @@ public partial class GdProperties : RefCounted
 	[Signal]
 	public delegate void ChangedEventHandler(string key, Variant value);
 
+	public const int MaxStringLength = 256;
+
 	private static readonly ConditionalWeakTable<IProperties, GdProperties> Wrappers = [];
 
 	/// <inheritdoc cref="IProperties" />
@@ -77,11 +79,27 @@ public partial class GdProperties : RefCounted
 		return null;
 	}
 
+	/// <summary>
+	///     Gets why <paramref name="value" /> can't replace <paramref name="current" />, or null if it can. On top of
+	///     Core's rule that a property keeps its type, a double stays finite and a string within
+	///     <see cref="MaxStringLength" />.
+	/// </summary>
+	public static string? Check(string key, CoreVariant value, CoreVariant current)
+	{
+		if (value.Type != current.Type)
+			return $"Property {key} must stay {current.Type}.";
+
+		return value.Type switch
+		{
+			CoreVariantType.Double when !double.IsFinite((double)value) => $"Property {key} not finite.",
+			CoreVariantType.String when ((string)value).Length > MaxStringLength => $"Property {key} too long.",
+			_ => null
+		};
+	}
+
 	// Unsupported Godot types convert to Null, so they would otherwise pass for a Null property's value
 	private static string? Check(string key, Variant value, CoreVariant current) =>
-		value.IsConvertible()
-			? PropertyRules.Check(key, value.FromGodot(), current)
-			: $"Property {key} type not supported.";
+		value.IsConvertible() ? Check(key, value.FromGodot(), current) : $"Property {key} type not supported.";
 
 	private void Validate(string key, Variant value)
 	{

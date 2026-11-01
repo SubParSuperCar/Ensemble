@@ -10,8 +10,6 @@ namespace EnsembleRoot.Scripts.Plots;
 [GlobalClass]
 public partial class PlotHandle : Node3D
 {
-	public const float GridToWorldScale = 0.5f;
-
 	private Transform3D? _originTransform;
 	private PlotOutline? _outline;
 	private GdPlot _plot = null!;
@@ -62,7 +60,7 @@ public partial class PlotHandle : Node3D
 	public Transform3D GridToWorld(Vector3 gridPosition, Quaternion rotation) =>
 		OriginTransform * new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale);
 
-	public void SetOutline(Color? color)
+	public void SetOutline(Color? color, bool hasMarchingAnts)
 	{
 		if (color is not { } tint)
 		{
@@ -74,12 +72,17 @@ public partial class PlotHandle : Node3D
 
 		if (!IsInstanceValid(_outline) || _outline.IsQueuedForDeletion())
 		{
-			_outline = new PlotOutline { Name = "Outline", Bounds = PlotPlacement.GetBounds(this) };
+			_outline = new PlotOutline
+			{
+				Name = "Outline",
+				Bounds = PlotPlacement.GetBounds(this),
+				Transform = GlobalTransform.AffineInverse() * OriginTransform
+			};
+
 			AddChild(_outline);
-			_outline.GlobalTransform = OriginTransform;
 		}
 
-		_outline.Raise(tint);
+		_outline.Raise(tint, hasMarchingAnts);
 	}
 
 	private Transform3D CalculateOriginTransform()

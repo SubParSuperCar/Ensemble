@@ -61,7 +61,7 @@ public sealed class InstancesTests
 		core.Assets.Add(0, properties: Properties(("label", "a"), ("opacity", 1d)));
 
 		var properties = Add(core.Plots.Add(0).Instances).Properties;
-		var update = Properties(("label", "b"), ("opacity", double.NaN));
+		var update = Properties(("label", "b"), ("opacity", "opaque"));
 
 		Assert.Throws<ArgumentException>(() => properties.UpdateAll(update));
 		Assert.Equal(new CoreVariant("a"), properties.All["label"]);

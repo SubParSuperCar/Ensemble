@@ -15,7 +15,6 @@ public static partial class LuaExecutor
 	private const string TerrainPath = "Terrain";
 	private const string TimeOfDayPath = "Sky/TimeOfDay";
 	private const string NightLightPath = "Night Light";
-	private const string FlashlightPath = "Character/Flashlight";
 	private const string TemporalStaticPath = "Temporal Static";
 
 	private const int DefaultStressTestCount = 1000;
@@ -85,19 +84,20 @@ public static partial class LuaExecutor
 
 		Log.Information(
 			"Stress testing plot {PlotId} with {Count} instance(s) for {Seconds} s...", plot.Id, count, seconds);
-		var start = Stopwatch.GetTimestamp();
+
+		var stopwatch = Stopwatch.StartNew();
 
 		try
 		{
 			AddRandomInstances(plot, count, instanceIds);
-			var addMs = Stopwatch.GetElapsedTime(start).TotalMilliseconds;
+			var addMs = stopwatch.Elapsed.TotalMilliseconds;
 
-			for (var last = Stopwatch.GetTimestamp(); Stopwatch.GetElapsedTime(start).TotalSeconds < seconds;)
+			for (var last = stopwatch.Elapsed; stopwatch.Elapsed.TotalSeconds < seconds;)
 			{
 				await DelayAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(true);
 
-				var now = Stopwatch.GetTimestamp();
-				frameTimesMs.Add(Stopwatch.GetElapsedTime(last, now).TotalMilliseconds);
+				var now = stopwatch.Elapsed;
+				frameTimesMs.Add((now - last).TotalMilliseconds);
 				last = now;
 			}
 
@@ -121,9 +121,22 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> perf_mod(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
+		var renderScale = context.GetArgumentOrDefault(0, 1f);
+
+		if (renderScale is not (> 0 and <= 1))
+		{
+			Log.Error("Invalid render scale: {Scale} (takes more than 0, up to 1)", renderScale);
+			return context.ReturnNothing();
+		}
+
 		var root = ((SceneTree)Engine.GetMainLoop()).Root;
 		root.Msaa3D = Viewport.Msaa.Disabled;
 		root.ScreenSpaceAA = Viewport.ScreenSpaceAAEnum.Disabled;
+		root.Scaling3DScale = renderScale;
+
+		// Spot and omni lights (e.g., flashlights) cast no shadows without an atlas; unshaded skips lighting entirely
+		root.PositionalShadowAtlasSize = 0;
+		root.DebugDraw = Viewport.DebugDrawEnum.Unshaded;
 
 		WeakReferenceMessenger.Default.Send(new DisableUiAntialiasingMessage());
 
@@ -142,10 +155,6 @@ public static partial class LuaExecutor
 			foreach (var plot in GPlots.GetAll())
 				if (GPlotManager.GetHandle(plot.Id).GetNodeOrNull<AreaLight3D>(NightLightPath) is { } nightLight)
 					nightLight.Visible = false;
-
-			foreach (var player in GPlayers.GetAll())
-				if (GPlayerManager.GetHandle(player.Id).GetNodeOrNull<SpotLight3D>(FlashlightPath) is { } flashlight)
-					flashlight.Visible = false;
 		}
 
 		Log.Information(

@@ -19,18 +19,20 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 	{
 		foreach (var plot in GPlots.GetAll())
 			OnPlotAdded(plot);
+
 		GPlots.Added += OnPlotAdded;
 		GPlots.Removed += OnPlotRemoved;
 
 		OnLocalPlotChanged(LocalPlot);
 		LocalPlotChanged += OnLocalPlotChanged;
+
 		GSessionManager.ActionRejected += OnActionRejected;
 	}
 
 	public ObservableCollection<PlotItem> Plots { get; } = [];
 
 	[ObservableProperty]
-	[NotifyCanExecuteChangedFor(nameof(SetPlotToNullCommand))]
+	[NotifyCanExecuteChangedFor(nameof(LeaveCommand))]
 	public partial PlotItem? SelectedPlot { get; set; }
 
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(4, 10, 5, 8))
@@ -61,10 +63,10 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 			new SetPlotAction(value?.Id).Submit();
 	}
 
-	[RelayCommand(CanExecute = nameof(CanSetPlotToNull))]
-	private void SetPlotToNull() => SelectedPlot = null;
+	[RelayCommand(CanExecute = nameof(CanLeave))]
+	private void Leave() => SelectedPlot = null;
 
-	private bool CanSetPlotToNull() => SelectedPlot is not null;
+	private bool CanLeave() => SelectedPlot is not null;
 
 	private void OnPlotAdded(GdPlot gdPlot)
 	{

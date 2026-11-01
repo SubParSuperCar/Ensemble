@@ -5,7 +5,6 @@ using EnsembleRoot.Common.Utils;
 using Godot;
 using Serilog;
 using Environment = System.Environment;
-using FileAccess = System.IO.FileAccess;
 
 namespace EnsembleRoot.Scripts.Hashing;
 
@@ -13,8 +12,6 @@ namespace EnsembleRoot.Scripts.Hashing;
 [Autoload(Order = AutoloadOrder.Standard + 2, FailurePolicy = AutoloadFailurePolicy.AskUser)]
 public partial class ExeHasher : Node, IAutoload
 {
-	private const int BufferSize = 1 << 12;
-
 	private readonly CancellationTokenSource _cts = new();
 
 	public void Initialize() => _ = HashProcessExecutableAsync();
@@ -40,8 +37,7 @@ public partial class ExeHasher : Node, IAutoload
 			Log.Debug("Hashing process executable...");
 			var stopwatch = Stopwatch.StartNew();
 
-			var stream = new FileStream(
-				exePath, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize, FileOptions.Asynchronous);
+			var stream = new FileStream(exePath, new FileStreamOptions { Options = FileOptions.Asynchronous });
 
 			await using (stream.ConfigureAwait(false))
 			{

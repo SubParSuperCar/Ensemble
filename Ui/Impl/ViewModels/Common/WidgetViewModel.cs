@@ -80,6 +80,9 @@ public sealed partial class WidgetViewModel : ViewModelBase
 	[RelayCommand]
 	private void ToggleMaximized()
 	{
+		if (!Descriptor.IsResizable)
+			return;
+
 		if (IsMaximized)
 		{
 			Bounds = RestoredBounds;

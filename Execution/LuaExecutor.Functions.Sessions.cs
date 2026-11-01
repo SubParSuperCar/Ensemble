@@ -68,7 +68,7 @@ public static partial class LuaExecutor
 		}
 
 		var process = StartServer(port, options);
-		var start = Stopwatch.GetTimestamp();
+		var stopwatch = Stopwatch.StartNew();
 
 		Log.Information("Starting a headless server on port {Port} (PID {ProcessId})...", port, process.Id);
 
@@ -86,7 +86,7 @@ public static partial class LuaExecutor
 				return context.Return();
 			}
 
-			if (Stopwatch.GetElapsedTime(start) > ServerStartTimeout)
+			if (stopwatch.Elapsed > ServerStartTimeout)
 			{
 				Log.Error("The server didn't listen within {Seconds} s", ServerStartTimeout.TotalSeconds);
 				return context.Return(process.Id);

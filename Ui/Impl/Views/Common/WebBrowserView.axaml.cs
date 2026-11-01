@@ -39,6 +39,7 @@ public sealed partial class WebBrowserView : UserControl, IViewFor<WebBrowserVie
 		// Never attached, it never starts an adapter, which leaves the explanation beneath it showing
 		Log.Information(
 			"Web view unsupported: needs Linux and {Library} with {Export}", WpeLibraryName, WpeLegacyBackendExport);
+
 		((Panel)WebView.Parent!).Children.Remove(WebView);
 	}
 

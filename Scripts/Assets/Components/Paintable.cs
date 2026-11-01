@@ -32,6 +32,7 @@ public partial class Paintable : AssetComponent
 				.Except(Excluded)
 				.Select(static geometry => (geometry, GetShading(geometry)))
 		];
+
 		_properties = Handle.Instance.Properties;
 
 		Apply();

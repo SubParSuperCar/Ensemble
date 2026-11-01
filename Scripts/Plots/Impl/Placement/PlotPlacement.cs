@@ -36,7 +36,7 @@ public static class PlotPlacement
 	public static Obb GetBox(int assetId, Vector3 gridPosition, Quaternion rotation) =>
 		Obb.From(
 			GAssetManager.GetBoundary(assetId),
-			new Transform3D(new Basis(rotation), gridPosition * PlotHandle.GridToWorldScale));
+			new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale));
 
 	public static ObbGrid GetObstacles(PlotHandle plot) => plot.InstanceBoxes;
 
@@ -46,6 +46,15 @@ public static class PlotPlacement
 		min.Y = MathF.Max(min.Y, 0);
 
 		return new Aabb(min, plot.BoundarySize);
+	}
+
+	/// <summary>Gets the grid height at which an asset rests on the plot's floor.</summary>
+	public static float GetRestingHeight(PlotHandle plot, int assetId, Quaternion rotation)
+	{
+		var box = GetBox(assetId, Vector3.Zero, rotation);
+		var floor = GetBounds(plot).Position.Y;
+
+		return (floor - (box.Center.Y - box.Envelope.Y)) / GridToWorldScale;
 	}
 
 	private static bool IsWithin(Obb box, Aabb bounds)

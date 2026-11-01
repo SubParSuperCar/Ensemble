@@ -25,7 +25,6 @@ internal sealed class Assets : IAssets
 			throw new InvalidOperationException("Assets registry is locked.");
 
 		ArgumentOutOfRangeException.ThrowIfNegative(id);
-
 		ThrowIfInvalidMaxCount(maxInstanceCount);
 
 		if (_assetsById.ContainsKey(id))

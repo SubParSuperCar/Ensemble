@@ -59,9 +59,7 @@ internal sealed class Occupants : IOccupants
 	internal void Remove(Occupant occupant, bool shouldResolveOwnerIfRelinquishing = false, bool isExchanging = false)
 	{
 		if (ReferenceEquals(occupant, Owner))
-			SetOwner(shouldResolveOwnerIfRelinquishing && _occupantsByPlayerId.Count > 1
-				? _occupantsByPlayerId.Values.First(other => !ReferenceEquals(other, occupant)).Player.Id
-				: null);
+			SetOwner(shouldResolveOwnerIfRelinquishing ? GetNextOwnerId(occupant) : null);
 
 		_occupantsByPlayerId.Remove(occupant.Player.Id);
 
@@ -70,4 +68,7 @@ internal sealed class Occupants : IOccupants
 
 		Removed?.Invoke(occupant);
 	}
+
+	private Guid? GetNextOwnerId(Occupant owner) =>
+		_occupantsByPlayerId.Values.FirstOrDefault(other => !ReferenceEquals(other, owner))?.Player.Id;
 }

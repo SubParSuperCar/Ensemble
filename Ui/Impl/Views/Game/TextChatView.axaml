@@ -22,6 +22,12 @@
                 <SelectableTextBlock Name="ChatLog" FontSize="12" TextWrapping="Wrap" />
             </ScrollViewer>
 
+            <TextBlock
+                Text="Break the ice!"
+                HorizontalAlignment="Center" VerticalAlignment="Center"
+                FontStyle="Italic"
+                IsVisible="{Binding !Lines.Count}" />
+
             <Grid Grid.Row="1" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="2">
                 <TextBox
                     Name="MessageBox"

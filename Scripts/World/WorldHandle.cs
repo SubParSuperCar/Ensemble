@@ -1,6 +1,7 @@
 using Godot;
 using Serilog;
 #if DEBUG
+using EnsembleRoot.Scripts.Plots.Placement;
 using EnsembleRoot.Sessions.Api;
 #endif
 
@@ -49,19 +50,23 @@ public partial class WorldHandle : Node3D
 
 	private static readonly Vector3 HalfCell = Vector3.One / 2f;
 
-	// Places every asset in a ring on a test plot (radius = asset count, snapped to cell centers) and adds fake players
+	// Places every asset in a ring on a test plot (radius = asset count, snapped to cell centers), resting on the
+	// floor, and adds fake players
 	private static void AddTestData()
 	{
+		var plot = GPlotManager.GetHandle(TestPlotId);
 		var instances = GPlots.GetPlot(TestPlotId)!.Instances;
 		var assets = GAssets.GetAll();
 		var count = assets.Count;
 
 		for (var i = 0; i < count; i++)
 		{
+			var id = assets[i].Id;
 			var angle = i * float.Tau / count;
-			var position = new Vector3(MathF.Cos(angle) * count, 0.5f, MathF.Sin(angle) * count);
+			var cell = (new Vector3(MathF.Cos(angle), 0, MathF.Sin(angle)) * count - HalfCell).Round() + HalfCell;
+			var height = PlotPlacement.GetRestingHeight(plot, id, Quaternion.Identity);
 
-			instances.Add(assets[i].Id, (position - HalfCell).Round() + HalfCell, Quaternion.Identity);
+			instances.Add(id, cell with { Y = height }, Quaternion.Identity);
 		}
 
 		GPlayers.Add(string.Empty, "Foo - Larpje139 (Test)");

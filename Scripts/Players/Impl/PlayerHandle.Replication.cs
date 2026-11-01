@@ -38,9 +38,11 @@ public partial class PlayerHandle
 
 	private double _clock;
 	private long _lastRelayTimestamp;
+	private bool _lastReplicatedIsFlashlightOn;
 	private Vector3 _lastReplicatedPosition;
 	private ushort _lastReplicatedSequence;
 	private float _lastReplicatedYaw;
+	private bool _shownIsFlashlightOn;
 	private Vector3 _shownPosition;
 	private float _shownYaw;
 	private int _stateCount;
@@ -59,8 +61,8 @@ public partial class PlayerHandle
 			return;
 
 		// Held until live states arrive, which start the timeline
-		Show(position, yaw, true);
-		_states[0] = new CharacterState(double.NegativeInfinity, position, yaw);
+		Show(position, yaw, false, true);
+		_states[0] = new CharacterState(double.NegativeInfinity, position, yaw, false);
 		_stateCount = 1;
 	}
 
@@ -74,10 +76,12 @@ public partial class PlayerHandle
 		var sequence = (ushort)(frame / ReplicationTicks);
 		var position = Body.GlobalPosition;
 		var yaw = Body.GlobalRotation.Y;
+		var isFlashlightOn = _flashlight.Visible;
 
 		var isIdle =
 			position.DistanceTo(_lastReplicatedPosition) < MinReplicatedDistance &&
-			MathF.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw;
+			MathF.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw &&
+			isFlashlightOn == _lastReplicatedIsFlashlightOn;
 
 		if (isIdle && (ushort)(sequence - _lastReplicatedSequence) < IdleReplicationStates)
 			return;
@@ -85,11 +89,12 @@ public partial class PlayerHandle
 		_lastReplicatedSequence = sequence;
 		_lastReplicatedPosition = position;
 		_lastReplicatedYaw = yaw;
+		_lastReplicatedIsFlashlightOn = isFlashlightOn;
 
 		if (GSessionManager.IsServer)
-			Relay(sequence, position, yaw, GSessionManager.LocalPeerId);
+			Relay(sequence, position, yaw, isFlashlightOn, GSessionManager.LocalPeerId);
 		else
-			RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcReplicate, sequence, position, yaw);
+			RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcReplicate, sequence, position, yaw, isFlashlightOn);
 	}
 
 	// Between the buffered states around the moment shown, held at the latest one when the next is late
@@ -109,7 +114,7 @@ public partial class PlayerHandle
 		if (index < 0 || index == _stateCount - 1)
 		{
 			ref readonly var held = ref _states[Math.Max(index, 0)];
-			Show(held.Position, held.Yaw, false);
+			Show(held.Position, held.Yaw, held.IsFlashlightOn, false);
 
 			return;
 		}
@@ -118,20 +123,20 @@ public partial class PlayerHandle
 		ref readonly var to = ref _states[index + 1];
 		var t = (float)((time - from.Time) / (to.Time - from.Time));
 
-		Show(from.Position.Lerp(to.Position, t), Mathf.LerpAngle(from.Yaw, to.Yaw, t), false);
+		Show(from.Position.Lerp(to.Position, t), Mathf.LerpAngle(from.Yaw, to.Yaw, t), from.IsFlashlightOn, false);
 	}
 
 	[Rpc(
 		MultiplayerApi.RpcMode.AnyPeer,
 		TransferMode = MultiplayerPeer.TransferModeEnum.UnreliableOrdered,
 		TransferChannel = NetworkChannels.Characters)]
-	private void RpcReplicate(ushort sequence, Vector3 position, float yaw)
+	private void RpcReplicate(ushort sequence, Vector3 position, float yaw, bool isFlashlightOn)
 	{
 		var senderId = Multiplayer.GetRemoteSenderId();
-		NetworkConditions.Receive(this, () => ReceiveReplicated(senderId, sequence, position, yaw));
+		NetworkConditions.Receive(this, () => ReceiveReplicated(senderId, sequence, position, yaw, isFlashlightOn));
 	}
 
-	private void ReceiveReplicated(int senderId, ushort sequence, Vector3 position, float yaw)
+	private void ReceiveReplicated(int senderId, ushort sequence, Vector3 position, float yaw, bool isFlashlightOn)
 	{
 		if (!IsValidState(position, yaw))
 			return;
@@ -144,12 +149,12 @@ public partial class PlayerHandle
 				return;
 
 			_lastRelayTimestamp = Stopwatch.GetTimestamp();
-			Relay(sequence, position, yaw, senderId);
+			Relay(sequence, position, yaw, isFlashlightOn, senderId);
 		}
 		else if (senderId != MultiplayerPeer.TargetPeerServer)
 			return;
 
-		AddState(_timeline.GetTime(sequence, _clock), position, yaw);
+		AddState(new CharacterState(_timeline.GetTime(sequence, _clock), position, yaw, isFlashlightOn));
 	}
 
 	// Also false for NaN
@@ -161,10 +166,12 @@ public partial class PlayerHandle
 		};
 
 	// The first state is jumped to, rather than interpolated toward from the spawn location
-	private void AddState(double time, Vector3 position, float yaw)
+	private void AddState(CharacterState state)
 	{
+		var time = state.Time;
+
 		if (_stateCount is 0)
-			Show(position, yaw, true);
+			Show(state.Position, state.Yaw, state.IsFlashlightOn, true);
 		else
 		{
 			var latest = _states[_stateCount - 1];
@@ -184,7 +191,7 @@ public partial class PlayerHandle
 			}
 		}
 
-		PushState(new CharacterState(time, position, yaw));
+		PushState(state);
 	}
 
 	private void PushState(CharacterState state)
@@ -196,8 +203,14 @@ public partial class PlayerHandle
 	}
 
 	// Remembers what it last showed, so a character standing still costs no interop
-	private void Show(Vector3 position, float yaw, bool isJump)
+	private void Show(Vector3 position, float yaw, bool isFlashlightOn, bool isJump)
 	{
+		if (isFlashlightOn != _shownIsFlashlightOn)
+		{
+			_flashlight.Visible = isFlashlightOn;
+			_shownIsFlashlightOn = isFlashlightOn;
+		}
+
 		// ReSharper disable once CompareOfFloatsByEqualityOperator
 		if (!isJump && position == _shownPosition && yaw == _shownYaw)
 			return;
@@ -213,13 +226,13 @@ public partial class PlayerHandle
 		_shownYaw = yaw;
 	}
 
-	private void Relay(ushort sequence, Vector3 position, float yaw, int sourcePeerId)
+	private void Relay(ushort sequence, Vector3 position, float yaw, bool isFlashlightOn, int sourcePeerId)
 	{
 		foreach (var peerId in GSessionManager.Peers.Keys)
 			if (peerId != sourcePeerId && GSessionManager.IsPeerSynced(peerId))
-				RpcId(peerId, MethodName.RpcReplicate, sequence, position, yaw);
+				RpcId(peerId, MethodName.RpcReplicate, sequence, position, yaw, isFlashlightOn);
 	}
 
 	[StructLayout(LayoutKind.Auto)]
-	private readonly record struct CharacterState(double Time, Vector3 Position, float Yaw);
+	private readonly record struct CharacterState(double Time, Vector3 Position, float Yaw, bool IsFlashlightOn);
 }

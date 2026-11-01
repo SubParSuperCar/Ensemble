@@ -32,7 +32,7 @@ public sealed class SaveConverterTests
 				Create(0, new Dictionary<string, CoreVariant>(StringComparer.Ordinal)
 				{
 					["opacity"] = double.NaN,
-					["label"] = new string('x', 257),
+					["label"] = new string('x', 64 * 1024 + 1),
 					["unknown"] = 1,
 					["OPACITY"] = 0.5
 				})

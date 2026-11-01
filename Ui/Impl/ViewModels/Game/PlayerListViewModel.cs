@@ -20,6 +20,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 	{
 		foreach (var player in GPlayers.GetAll())
 			OnPlayerAdded(player);
+
 		GPlayers.Added += OnPlayerAdded;
 		GPlayers.Removed += OnPlayerRemoved;
 
@@ -146,6 +147,7 @@ public sealed partial class PlayerItem : ObservableObject
 {
 	public required string Name { get; init; }
 	public required string Id { get; init; }
+
 	public int PeerId { get; init; }
 	public bool IsLocal { get; init; }
 	public bool CanKick { get; init; }

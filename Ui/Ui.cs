@@ -59,6 +59,7 @@ public partial class Ui : Control
 				FocusMode = FocusModeEnum.All,
 				MouseForcePassScrollEvents = false
 			};
+
 			_host.SetAnchorsAndOffsetsPreset(LayoutPreset.FullRect);
 			_host.Processing += OnHostProcessing;
 			_host.Processed += OnHostProcessed;
@@ -75,6 +76,7 @@ public partial class Ui : Control
 
 			WeakReferenceMessenger.Default.Register<Ui, SetUiRenderScaleMessage>(
 				this, static (ui, message) => ui._host.RenderScaling = message.Value);
+
 			WeakReferenceMessenger.Default.Register<Ui, DisableUiAntialiasingMessage>(
 				this, static (ui, _) => ui.DisableAntialiasing());
 
@@ -215,6 +217,7 @@ public partial class Ui : Control
 		{
 			var collection = new ServiceCollection();
 			collection.AddServices();
+
 			var services = _services = collection.BuildServiceProvider();
 			_dispatcher = services.GetRequiredService<DispatcherService>();
 

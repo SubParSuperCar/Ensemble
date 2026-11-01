@@ -52,7 +52,6 @@ public partial class AssetManager : Node
 	public Aabb GetBoundary(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Boundary ?? default;
 	public string GetCategory(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Category ?? string.Empty;
 	public string? GetDescription(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Description;
-
 	public int GetPieceCount(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Pieces.Length ?? 0;
 
 	/// <summary>Gets a piece's collider bounds, in its handle's space.</summary>

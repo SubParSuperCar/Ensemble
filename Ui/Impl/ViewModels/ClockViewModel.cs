@@ -19,7 +19,9 @@ public sealed partial class ClockViewModel : ViewModelBase
 		dispatcher.UiProcess += OnUiProcess;
 	}
 
-	[ObservableProperty] public partial string Text { get; private set; } = string.Empty;
+	[ObservableProperty] public partial string Date { get; private set; } = string.Empty;
+	[ObservableProperty] public partial string Time { get; private set; } = string.Empty;
+	[ObservableProperty] public partial string Details { get; private set; } = string.Empty;
 
 	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
 
@@ -27,17 +29,20 @@ public sealed partial class ClockViewModel : ViewModelBase
 
 	private void Refresh()
 	{
-		var time = string.Create(CultureInfo.CurrentCulture, $"{GTimeProvider.GetLocalNow():F} - {LocalTimeZone}");
+		var now = GTimeProvider.GetLocalNow();
+
+		Date = string.Create(CultureInfo.CurrentCulture, $"{now:D} ");
+		Time = string.Create(CultureInfo.CurrentCulture, $"{now:T}");
 
 		if (!GSessionManager.IsActive)
 		{
-			Text = time;
+			Details = $" - {LocalTimeZone}";
 			return;
 		}
 
 		var duration = (GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt)
 			.ToString(@"d\:hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
-		Text = $"{time} - {duration}";
+		Details = $" - {LocalTimeZone} - {duration}";
 	}
 }

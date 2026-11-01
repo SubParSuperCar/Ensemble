@@ -15,9 +15,11 @@ public partial class PlayerHandle : Node3D
 	private const double ResetHoldDuration = 1d;
 
 	private static readonly StringName ResetAction = "character_reset";
+	private static readonly StringName FlashlightAction = "character_flashlight_toggle";
 
 	private Aabb? _bodyBounds;
 	private CharacterController? _controller;
+	private SpotLight3D _flashlight = null!;
 	private GdOccupant _occupant = null!;
 	private GdPlayer _player = null!;
 	private GdPlot? _plot;
@@ -43,6 +45,7 @@ public partial class PlayerHandle : Node3D
 		_player = GPlayers.GetPlayer(Id)!;
 
 		_occupant = GPlots.GetOccupant(Id)!;
+
 		OnPlotChanged(_occupant.Plot);
 		_occupant.PlotChanged += OnPlotChanged;
 	}
@@ -54,6 +57,8 @@ public partial class PlayerHandle : Node3D
 
 		var nametag = Body.GetNode<Label3D>("Nametag");
 		nametag.Text = $"\"{_player.Name}\"\n({Id})\n\u2193";
+
+		_flashlight = Body.GetNode<SpotLight3D>("Flashlight");
 
 		if (!string.Equals(Id, GPlayers.Local?.Id, StringComparison.Ordinal))
 		{
@@ -89,9 +94,15 @@ public partial class PlayerHandle : Node3D
 	public override void _Process(double delta)
 	{
 		if (_controller is null)
+		{
 			Interpolate(delta);
-		else
-			UpdateReset(delta);
+			return;
+		}
+
+		UpdateReset(delta);
+
+		if (!InputSink.IsSunk && Input.IsActionJustPressed(FlashlightAction))
+			_flashlight.Visible = !_flashlight.Visible;
 	}
 
 	public override void _PhysicsProcess(double delta)

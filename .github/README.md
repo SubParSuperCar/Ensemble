@@ -198,6 +198,7 @@ with `set_profanity_filter_on(false)`.
 | Undo / redo (tools)                   | `Ctrl+Z` / `Ctrl+X`                                        |
 | Rotate placement (X / Y / Z)          | `R` / `T` / `Y`                                            |
 | Reset character position              | Hold `H` for 1 second                                      |
+| Toggle flashlight                     | `F`                                                        |
 | Player list                           | `Tab`                                                      |
 | Chat (with the widget open)           | `/` to type, `Enter` to send, `Esc` to stop typing         |
 | Console / system terminal             | `` ` `` or `F9` / `F8`                                     |

@@ -1,5 +1,4 @@
 using EnsembleRoot.Scripts.Assets;
-using EnsembleRoot.Scripts.Plots;
 using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -24,7 +23,7 @@ public partial class Suspension : AssetHandle
 
 	// The plates' closest approach, so they never strike each other, and the longest the suspension may get, end to end
 	private const float MinGap = 0.1f;
-	private const float MaxReach = 8 * PlotHandle.GridToWorldScale;
+	private const float MaxReach = 8 * GridToWorldScale;
 
 	private static readonly StringName HelixLengthParameter = "helix_length";
 
@@ -71,6 +70,7 @@ public partial class Suspension : AssetHandle
 		var maxLength = GetNumberProperty(MaxLengthKey, float.MinValue, float.MaxValue) is 0
 			? MaxReach
 			: GetLengthProperty(MaxLengthKey, minLength, MaxReach);
+
 		var targetLength = GetLengthProperty(TargetLengthKey, minLength, maxLength);
 
 		var stiffness = GetNumberProperty(StiffnessKey, 0, MaxStiffness);

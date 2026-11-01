@@ -63,8 +63,10 @@ columns. Builds must have 0 warnings, and InspectCode should be clean on touched
 - **Terse and canonical.** Expression bodies, one-line private helpers, pattern matching, object initializers; the
   idiomatic, least-surprising form; clean literal values. No informal abbreviations in names (the Lua API's short
   names are the exception); "ID" in prose, `Id` in identifiers.
-- **Statement grouping.** Blank lines separate logical groups; related statements clump. Subscribe after syncing the
-  current state (`OnX(current); X += OnX;`), unsubscribe in `OnDispose` / `_ExitTree`, mirroring setup.
+- **Statement grouping.** Blank lines separate logical groups; related statements clump. A statement wrapped over
+  several lines ends its group (`Stop()` and its wrapped log are one clump), and a comment starts one. Each
+  sync-and-subscribe pair (`OnX(current); X += OnX;`) is its own group; unsubscribe in `OnDispose` / `_ExitTree`,
+  mirroring setup.
 - **Literals.** `float` as `1f` / `0.5f`, `double` as `1d` / `0.5`; explicit forms in declarations. Prefer base-2
   fractions where they explain themselves (`3 / 16d`); hoist config-like values to named constants.
 - **ASCII only**, everywhere (non-ASCII only through escapes); `-` for dashes in prose.
@@ -84,9 +86,10 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 - **Competing forms:** count them codebase-wide and take the majority unless this file decides. Settled: a `foreach`
   whose body is one `if` has no braces; a wrapped condition opens with `if (` alone on its line; a one-statement
   constructor keeps its block body; locals are `var x = new List<T>();` (collection expressions are for fields,
-  properties, and target-typed returns); rounding names its `MidpointRounding`; a logged timing is
-  `Stopwatch.StartNew()`, then `Stop()` before the log; removing from a dictionary while scanning it is in place,
-  unless the loop raises events whose handlers may change it.
+  properties, and target-typed returns); rounding names its `MidpointRounding`; a measured duration is
+  `Stopwatch.StartNew()`, with `Stop()` before it's logged (`Stopwatch.GetTimestamp()` is for instants kept in fields);
+  removing from a dictionary while scanning it is in place, unless the loop raises events whose handlers may change
+  it; a lone extension method takes `this`, and extension blocks are for properties or several members.
 - **Design:** an abstraction with one implementation goes, as does a wrapper that only forwards to its owner. Unused
   isn't dead: keep members that complete an API (`IsOpen` beside `Open`, a `bool` saying whether a call acted).
   Parallel collections keyed by one ID become one collection of records; a helper duplicated across modules moves to
@@ -98,10 +101,12 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
   keep every guard against a hostile peer. A fallback that hides a failure logs it. An action that passes `Validate`
   never throws in `Apply`. Parsers throw `InvalidDataException` for bad data.
 - **Values:** a value a project setting owns is read from `ProjectSettings`; shared numbered resources (`PhysicsLayers`,
-  `NetworkChannels`) live in `Constants`; asset length properties are in grid units, read through
-  `AssetHandle.GetLengthProperty`.
-- **Time:** a per-frame sampler has a `const double XInterval` in seconds and a `_sinceX` accumulator; timers and waits
-  take a `TimeSpan` where the API has an overload, and `Task.Delay` passes `GTimeProvider`.
+  `NetworkChannels`) live in `Constants`; asset length properties are in grid units (`Constants.GridToWorldScale`),
+  read through `AssetHandle.GetLengthProperty`. Core enforces only that a property keeps its type; the game's value
+  rules (finite doubles, `GdProperties.MaxStringLength`) are `GdProperties.Check`.
+- **Time:** a `double` duration without a unit suffix is in seconds, and other units are named (`TimeoutMs`); a
+  per-frame sampler has a `const double XInterval` and a `_sinceX` accumulator; timers and waits take a `TimeSpan`
+  where the API has an overload, and `Task.Delay` passes `GTimeProvider`.
 - **Godot:** lifecycle overrides live in the class's main file; `IsHost` means a peer hosts, `IsServer` that this
   machine does; native yes / no dialogs go through `Common/Interop/YesNoDialog`; relaunching passes
   `[.. OS.GetCmdlineArgs(), "--", .. OS.GetCmdlineUserArgs()]`.

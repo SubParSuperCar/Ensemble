@@ -25,25 +25,25 @@
                     Background="{DynamicResource TranslucentBackgroundBrush}" />
             </Border>
 
-            <Grid Grid.Row="2">
-                <v:WidgetDesktopView DataContext="{Binding Widgets}" />
+            <v:WidgetDesktopView Grid.Row="2" DataContext="{Binding Widgets}" />
 
-                <TransitioningContentControl
-                    Content="{Binding PlayerList}"
-                    HorizontalAlignment="Right" VerticalAlignment="Top"
-                    MinWidth="288" MaxWidth="512" MaxHeight="384"
-                    ClipToBounds="False">
+            <!-- Flush below the top bar, without the widgets' gap -->
+            <TransitioningContentControl
+                Grid.Row="1" Grid.RowSpan="2"
+                Content="{Binding PlayerList}"
+                HorizontalAlignment="Right" VerticalAlignment="Top"
+                MinWidth="288" MaxWidth="512" MaxHeight="384"
+                ClipToBounds="False">
 
-                    <TransitioningContentControl.PageTransition>
-                        <CompositePageTransition>
-                            <CrossFade Duration="{x:Static cm:Constants.AnimationDuration}" />
-                            <Rotate3DTransition
-                                Orientation="Vertical"
-                                Duration="{x:Static cm:Constants.AnimationDuration}" />
-                        </CompositePageTransition>
-                    </TransitioningContentControl.PageTransition>
-                </TransitioningContentControl>
-            </Grid>
+                <TransitioningContentControl.PageTransition>
+                    <CompositePageTransition>
+                        <CrossFade Duration="{x:Static cm:Constants.AnimationDuration}" />
+                        <Rotate3DTransition
+                            Orientation="Vertical"
+                            Duration="{x:Static cm:Constants.AnimationDuration}" />
+                    </CompositePageTransition>
+                </TransitioningContentControl.PageTransition>
+            </TransitioningContentControl>
 
             <TransitioningContentControl
                 Grid.Row="3"

@@ -41,8 +41,8 @@ internal sealed class Properties(IReadOnlyDictionary<string, CoreVariant>? value
 		if (!_valuesByKey.TryGetValue(key, out var current))
 			throw new KeyNotFoundException($"Property with key {key} not found.");
 
-		if (PropertyRules.Check(key, value, current) is { } reason)
-			throw new ArgumentException(reason, nameof(value));
+		if (value.Type != current.Type)
+			throw new ArgumentException($"Property {key} must stay {current.Type}.", nameof(value));
 	}
 
 	internal static string Format(IEnumerable<KeyValuePair<string, CoreVariant>> values) =>

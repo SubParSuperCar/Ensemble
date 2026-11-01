@@ -34,6 +34,15 @@
             <Setter Property="Content" Value="&#x25A3;" />
         </Style>
 
+        <Style Selector="Button#CloseButton">
+            <Setter Property="CornerRadius" Value="0,4.5,0,0" />
+        </Style>
+
+        <!-- Alone, it rounds both of the header's top corners -->
+        <Style Selector="Panel#Frame:not(.resizable) Button#CloseButton">
+            <Setter Property="CornerRadius" Value="4.5,4.5,0,0" />
+        </Style>
+
         <Style Selector="Grid#Header Button">
             <Setter Property="Padding" Value="8,0" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -48,12 +57,13 @@
         Classes="fade"
         Classes.active="{Binding IsActive}"
         Classes.hidden="{Binding IsClosing}"
-        Classes.maximized="{Binding IsMaximized}">
+        Classes.maximized="{Binding IsMaximized}"
+        Classes.resizable="{Binding Descriptor.IsResizable}">
 
         <Grid RowDefinitions="24,*" Margin="1.5">
             <Grid
                 Name="Header"
-                ColumnDefinitions="*,Auto,Auto"
+                ColumnDefinitions="*,Auto"
                 PointerPressed="OnHeaderPointerPressed"
                 PointerMoved="OnDragPointerMoved"
                 PointerReleased="OnDragPointerReleased"
@@ -68,21 +78,22 @@
                     Margin="8,0"
                     TextTrimming="CharacterEllipsis" />
 
-                <Button
-                    Name="MaximizeButton"
-                    Grid.Column="1"
-                    Command="{Binding ToggleMaximizedCommand}"
-                    ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
-                    CornerRadius="4.5,0,0,0" />
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button
+                        Name="MaximizeButton"
+                        Command="{Binding ToggleMaximizedCommand}"
+                        ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
+                        CornerRadius="4.5,0,0,0"
+                        IsVisible="{Binding Descriptor.IsResizable}" />
 
-                <Button
-                    Grid.Column="2"
-                    Content="X"
-                    Command="{Binding CloseCommand}"
-                    ToolTip.Tip="Closes this widget."
-                    Background="{StaticResource DangerBrush}" Foreground="White"
-                    CornerRadius="0,4.5,0,0"
-                    FontWeight="Bold" />
+                    <Button
+                        Name="CloseButton"
+                        Content="X"
+                        Command="{Binding CloseCommand}"
+                        ToolTip.Tip="Closes this widget."
+                        Background="{StaticResource DangerBrush}" Foreground="White"
+                        FontWeight="Bold" />
+                </StackPanel>
             </Grid>
 
             <ContentControl Grid.Row="1" Content="{Binding Content}" />

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
-using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Common.Interop;
+using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Saving;
@@ -312,7 +312,7 @@ public static partial class LuaExecutor
 			var properties = new Dictionary();
 
 			foreach (var (key, value) in instance.Properties ?? [])
-				if (current.TryGetValue(key, out var existing) && PropertyRules.Check(key, value, existing) is null)
+				if (current.TryGetValue(key, out var existing) && GdProperties.Check(key, value, existing) is null)
 					properties[key] = value.ToGodot();
 				else
 					skippedValues++;

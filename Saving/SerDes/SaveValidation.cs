@@ -62,7 +62,7 @@ internal static class SaveValidation
 		}
 	}
 
-	private static bool IsValid(CoreVariant value) =>
+	public static bool IsValid(CoreVariant value) =>
 		value.Type switch
 		{
 			CoreVariantType.Double => double.IsFinite((double)value),

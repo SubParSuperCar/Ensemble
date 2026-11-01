@@ -4,15 +4,23 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
+    xmlns:c="using:EnsembleRoot.Ui.Controls"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Views.ClockView"
     x:DataType="vm:ClockViewModel">
 
-    <TextBlock
-        Text="{Binding Text}"
+    <!-- Only the time flips, as the session duration changes every frame -->
+    <Border
         ToolTip.Tip="The local time, time zone, and session duration (in a session)."
         Background="{DynamicResource TranslucentBackgroundBrush}"
         HorizontalAlignment="Center" VerticalAlignment="Center"
-        Padding="2" />
+        Padding="2">
+
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Date}" />
+            <c:FlipText Text="{Binding Time}" />
+            <TextBlock Text="{Binding Details}" />
+        </StackPanel>
+    </Border>
 
 </UserControl>

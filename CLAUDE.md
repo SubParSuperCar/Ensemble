@@ -122,6 +122,11 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 
 - **Docs move with the code:** `.github/README.md` (players), `.github/TECHNICAL.md` (developers),
   `.github/ROADMAP.md` (plans). Markdown wraps at 120 columns and links with `./` paths.
+- **Docs describe, code specifies.** Docs explain behavior and design, never the code's exact values (rates,
+  durations, sizes, limits): the code owns those, and a copy in prose only goes stale. Name a value only when the
+  reader needs it to use the game (the README's controls) or it is the design itself. Existing over-specific passages
+  get trimmed when touched, not added to. Plans never promise versions: future work is "Stage 1", "Stage 2", or
+  "next"; versions belong only in history.
 - **Verify, don't assume.** Build, run the tests, and when behavior changes, run the game (headless probes or a nested
   KWin session) and read the logs for errors, not just for the expected lines.
 - **Commits:** local commits after a finished piece of work are welcome (`git commit -s`, with the co-author

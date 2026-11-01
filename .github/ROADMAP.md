@@ -49,8 +49,8 @@ The tool suite, in rough intended order of implementation.
 - [x] (M) Shared ToolCommon - TriggerAction, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
 - [x] (M) Marquee Selector - Ctrl+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
-- [x] (S) Plot outlines - the local plot's boundary rises from its grid in the active tool's color (white while hovered
-  in the Plot Selector), fading in and out as it rises and sinks
+- [x] (S) Plot outlines - the local plot's boundary rises from its grid in the active tool's color (white, with
+  marching ants, while hovered in the Plot Selector), fading in and out as it rises and sinks
 - [ ] (S) Fade the delete tool's selection highlight boxes in and out, as the plot outlines do
 - [x] (S) Scripted building - Lua `add_inst`, `rm_insts`, `set_inst_prop`, and `dmp_insts` work on the local plot
   through the same actions (and validation) as the tools, so they also work in multiplayer
@@ -95,8 +95,8 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
   `NATIVE_AOT`; NsDepCop already keeps `Ui` at the top, so only `Main.cs` and the Avalonia packages need conditions
 - [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
   shown under the player list
-- (WIP) (M) Character replication - position / yaw at 20 Hz, server-relayed, buffered and interpolated 100 ms behind
-  on the sender's timeline, like creations (no animation state yet)
+- (WIP) (M) Character replication - position / yaw and the flashlight (`F`, off by default) at 20 Hz, server-relayed,
+  buffered and interpolated 100 ms behind on the sender's timeline, like creations (no animation state yet)
 - [x] (S) Character reset - hold H for 1 s, or `tp_char()` / `tp_char(x, y, z)` / `tp_char(player)` in Lua
 - [x] (L) Instance replication - placements, deletions, and property edits sync as validated actions, with the host
   as the authority and late joiners restored from snapshots
@@ -206,9 +206,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
       bare payload, so a plain JSON save is a JSON file and a plain binary one starts with its own `ENSB`
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
-- (WIP) (S) Fold bin.yml's repeated steps (checkout, Godot version, build ID, .NET and Godot setup, smoke tests) into
-  YAML anchors, which GitHub Actions accepts - folded (shared steps run in bash on Windows too); needs a test run on a
-  branch, since CI can't run locally
+- [x] (S) Fold bin.yml's repeated steps (checkout, Godot version, build ID, .NET and Godot setup, smoke tests) into
+  YAML anchors, which GitHub Actions accepts (shared steps run in bash on Windows too)
 
 ## Later / big
 

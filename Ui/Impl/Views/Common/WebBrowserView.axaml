@@ -10,11 +10,17 @@
     x:DataType="vm:WebBrowserViewModel">
 
     <Grid>
-        <TextBlock
-            Text="The web view is not rendering.&#x0a;It currently needs Linux and WPE WebKit 2.52 or older."
-            HorizontalAlignment="Center" VerticalAlignment="Center"
-            FontSize="32" FontWeight="SemiBold"
-            TextAlignment="Center" />
+        <!-- White in both themes, so the stroke keeps it readable over whatever shows through -->
+        <Border Effect="{DynamicResource StrokeEffect}">
+            <Border Effect="{DynamicResource StrokeEffect}">
+                <TextBlock
+                    Text="The web view is not rendering.&#x0a;It currently needs Linux and WPE WebKit 2.52 or older."
+                    Foreground="White"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    FontSize="32" FontWeight="SemiBold"
+                    TextAlignment="Center" />
+            </Border>
+        </Border>
 
         <NativeWebView
             Name="WebView"

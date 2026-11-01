@@ -52,6 +52,7 @@ public sealed partial class GameViewModel : ViewModelBase
 
 		OnIsLocalPlotSpawnedChanged(IsLocalPlotSpawned);
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
+
 		OnIsPlotOwnerChanged(IsPlotOwner);
 		IsPlotOwnerChanged += OnIsPlotOwnerChanged;
 

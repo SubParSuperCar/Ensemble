@@ -62,8 +62,8 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(log_lan_ip4_addr), log_lan_ip4_addr), "", "Logs this machine's LAN IPv4 address"),
 		(new LuaFunction(nameof(log_wan_ip4_addr), log_wan_ip4_addr), "",
 			"Logs this network's public IPv4 address (asks api.ipify.org)"),
-		(new LuaFunction(nameof(perf_mod), perf_mod), "",
-			"Turns off costly effects (antialiasing, sky, glow, terrain, lights)"),
+		(new LuaFunction(nameof(perf_mod), perf_mod), "render_scale?",
+			"Turns off costly effects (antialiasing, sky, terrain, lights, shading), optionally rendering 3D smaller"),
 		(new LuaFunction(nameof(print), print), "...", "Logs its arguments, showing tables' contents"),
 		(new LuaFunction(nameof(quit), quit), "force?", "Quits the game (force skips the shutdown sequence)"),
 		(new LuaFunction(nameof(redo), redo), "", "Redoes the last undone tool edit"),
@@ -185,12 +185,11 @@ public static partial class LuaExecutor
 		if (query.Type is not LuaValueType.Number)
 			return FindPlayer(query) is { } player ? GSessionManager.GetPeerByPlayerId(player.Id)?.Id : null;
 
-		var peerId = ToInt(query);
+		if (ToInt(query) is { } peerId)
+			return peerId;
 
-		if (peerId is null)
-			Log.Error("Invalid peer ID: {PeerId}", query);
-
-		return peerId;
+		Log.Error("Invalid peer ID: {PeerId}", query);
+		return null;
 	}
 
 	private static int? ToInt(LuaValue value) =>

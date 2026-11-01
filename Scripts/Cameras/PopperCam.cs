@@ -101,14 +101,17 @@ public partial class PopperCam : SpringArm3D
 					break;
 
 				case InputEventMouseButton { Pressed: true } button:
+					// Precise scrolling (e.g., trackpads) sends many events with fractions of a notch; 0 is unsupported
+					var notches = button.Factor > 0 ? button.Factor : 1;
+
 					switch (button.ButtonIndex)
 					{
 						case MouseButton.WheelUp:
-							ApplyDollyDelta(-DollyStep);
+							ApplyDollyDelta(-DollyStep * notches);
 							break;
 
 						case MouseButton.WheelDown:
-							ApplyDollyDelta(DollyStep);
+							ApplyDollyDelta(DollyStep * notches);
 							break;
 					}
 

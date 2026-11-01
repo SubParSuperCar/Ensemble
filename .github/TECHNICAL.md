@@ -481,9 +481,10 @@ where the difference is small.
 - **Unshaded overlays.** Characters, highlights, and the plot grid are unshaded.
 - **Shadows.** The sun uses soft shadow filter quality 3 and a 64 m shadow distance, which keeps thin shapes (like the
   suspension's coil) crisp.
-- **`perf_mod()`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing (including
-  terminal windows opened afterward), glow, Sky3D, the terrain, and the plots' night lights and characters'
-  flashlights.
+- **`perf_mod(render_scale?)`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing
+  (including terminal windows opened afterward), glow, Sky3D, the terrain, the plots' night lights, spot and omni
+  light shadows (an empty shadow atlas), and lighting itself (the unshaded debug draw), and renders 3D at
+  `render_scale` (e.g., `0.5`) if given.
 - **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World,
   2 Character, 3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics
   ticks (highlights, the placement preview, other players' characters) opt out of interpolation.

@@ -72,6 +72,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		Add(entries, "Build Version", GameVersion);
 		Add(entries, "Build Commit", GameCommit);
 		Add(entries, "Build Time", BuildInfo.BuildTime);
+		Add(entries, "Run Context", Main.IsHeadlessServer ? "Headless Server" : "Regular Client");
 
 		if (OperatingSystem.IsLinux())
 		{

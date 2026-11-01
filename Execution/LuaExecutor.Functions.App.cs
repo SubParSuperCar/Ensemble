@@ -94,9 +94,9 @@ public static partial class LuaExecutor
 			return context.Return();
 		}
 
-		var start = Stopwatch.GetTimestamp();
+		var stopwatch = Stopwatch.StartNew();
 		await DelayAsync(TimeSpan.FromSeconds(seconds), cancellationToken).ConfigureAwait(true);
 
-		return context.Return(Stopwatch.GetElapsedTime(start).TotalSeconds);
+		return context.Return(stopwatch.Elapsed.TotalSeconds);
 	}
 }

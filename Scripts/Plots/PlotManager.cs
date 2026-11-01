@@ -91,6 +91,6 @@ public partial class PlotManager : Node
 	private void UpdateOutlines()
 	{
 		foreach (var (id, handle) in _handlesById)
-			handle.SetOutline(PlotOutlines.GetColor(id));
+			handle.SetOutline(PlotOutlines.GetColor(id), PlotOutlines.IsHovered(id));
 	}
 }

@@ -49,6 +49,7 @@ internal static class ToolCommon
 
 		var mouse = Pointer.GetPosition(viewport);
 		var origin = camera.ProjectRayOrigin(mouse);
+
 		// As far as the camera draws, so anything shown can be targeted
 		var end = origin + camera.ProjectRayNormal(mouse) * camera.Far;
 

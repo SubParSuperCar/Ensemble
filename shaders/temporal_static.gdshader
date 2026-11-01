@@ -44,6 +44,7 @@ void fragment()
 
 	float highlight = smoothstep(
 		highlight_threshold - highlight_softness, highlight_threshold + highlight_softness, bright_sharp);
+
 	float highlight_soft = smoothstep(highlight_threshold * 0.75, highlight_threshold + 0.15, bright_soft);
 
 	float activity = max(highlight, highlight_soft * 0.65);

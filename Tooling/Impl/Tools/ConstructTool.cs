@@ -3,7 +3,6 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
-using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 using Serilog;
@@ -162,7 +161,7 @@ public partial class ConstructTool : ToolBase
 
 		var surface = toPlot * hit.Position;
 		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
-		var cellSize = IsSnapping ? SnappingIncrementLinear * PlotHandle.GridToWorldScale : null;
+		var cellSize = IsSnapping ? SnappingIncrementLinear * GridToWorldScale : null;
 		var anchor = cellSize is { } size ? GetGridAnchor(hit.Collider, normal, size) : Vector3.Zero;
 
 		box = _solver.Settle(
@@ -174,7 +173,7 @@ public partial class ConstructTool : ToolBase
 		if (cellSize is { } cell)
 			origin = PlacementSolver.SnapToLattice(origin, anchor, GetLatticeCell(cell));
 
-		_gridPosition = origin / PlotHandle.GridToWorldScale;
+		_gridPosition = origin / GridToWorldScale;
 		_state = PlotPlacement.Evaluate(plot, AssetId, _gridPosition, _rotation);
 
 		if (_state is PlacementState.OutOfBounds)
@@ -244,7 +243,7 @@ public partial class ConstructTool : ToolBase
 	}
 
 	// The finer of the snapping cell and the plot's, which assets are built on
-	private static float GetLatticeCell(float cellSize) => MathF.Min(cellSize, PlotHandle.GridToWorldScale);
+	private static float GetLatticeCell(float cellSize) => MathF.Min(cellSize, GridToWorldScale);
 
 	private void RebuildPreview()
 	{

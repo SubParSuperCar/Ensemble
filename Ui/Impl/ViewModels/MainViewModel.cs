@@ -52,6 +52,7 @@ public sealed partial class MainViewModel : ViewModelBase
 			OnSessionStarted();
 		else
 			OnSessionStopped();
+
 		GSessionManager.SessionStarted += OnSessionStarted;
 		GSessionManager.SessionStopped += OnSessionStopped;
 	}
@@ -178,6 +179,7 @@ public sealed partial class MainViewModel : ViewModelBase
 			CursorBlink = true,
 			CursorBlinkRate = TerminalCursorBlinkRateMs
 		};
+
 		Ui.ApplyAntialiasing(terminal);
 
 		_terminals.Add(terminal);

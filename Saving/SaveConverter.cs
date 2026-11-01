@@ -1,4 +1,5 @@
 using EnsembleCoreRoot.Api.Assets;
+using EnsembleRoot.Saving.SerDes;
 
 namespace EnsembleRoot.Saving;
 
@@ -63,7 +64,10 @@ public static class SaveConverter
 			var current = created.Properties.All;
 
 			foreach (var (key, value) in properties)
-				if (current.TryGetValue(key, out var existing) && PropertyRules.Check(key, value, existing) is null)
+				if (
+					current.TryGetValue(key, out var existing) &&
+					value.Type == existing.Type &&
+					SaveValidation.IsValid(value))
 					created.Properties.Update(key, value);
 				else
 					skippedValues++;

@@ -76,6 +76,7 @@ public partial class Logger : Node, IAutoload
 			builder.ClearProviders();
 			builder.AddSerilog(Log.Logger);
 		});
+
 		Factory = _factory;
 
 		if (failure is null)

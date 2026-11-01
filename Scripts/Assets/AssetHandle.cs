@@ -189,8 +189,7 @@ public partial class AssetHandle : StaticBody3D
 	///     grid units, the ones ConstructTool snaps to, so players set them in the units they build with.
 	/// </summary>
 	protected float GetLengthProperty(string key, float min, float max) =>
-		PlotHandle.GridToWorldScale *
-		GetNumberProperty(key, min / PlotHandle.GridToWorldScale, max / PlotHandle.GridToWorldScale);
+		GridToWorldScale * GetNumberProperty(key, min / GridToWorldScale, max / GridToWorldScale);
 
 	// Before anything moves the pieces; the joints are unlinked until live, so no build or preview links bodies
 	private void CollectPieces()

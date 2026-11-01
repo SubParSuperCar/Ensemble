@@ -1,7 +1,7 @@
 using EnsembleCoreRoot.Api.Assets;
+using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
-using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Plots.Placement;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
@@ -31,7 +31,7 @@ public static partial class LuaExecutor
 
 		var position = new Vector3(
 			context.GetArgumentOrDefault(1, 0f),
-			context.GetArgumentOrDefault(2, GetRestingHeight(handle, assetId, rotation)),
+			context.GetArgumentOrDefault(2, PlotPlacement.GetRestingHeight(handle, assetId, rotation)),
 			context.GetArgumentOrDefault(3, 0f));
 
 		if (PlotPlacement.Evaluate(handle, assetId, position, rotation) is var state and not PlacementState.Valid)
@@ -124,7 +124,7 @@ public static partial class LuaExecutor
 			? instance.Asset.Source.Properties[key]
 			: ToCoreVariant(context.GetArgument<LuaValue>(2), current.Type);
 
-		if (PropertyRules.Check(key, value, current) is { } reason)
+		if (GdProperties.Check(key, value, current) is { } reason)
 		{
 			Log.Error("Cannot set instance {InstanceId}'s property: {Reason}", id, reason);
 			return context.ReturnNothing();
@@ -134,15 +134,6 @@ public static partial class LuaExecutor
 		new SetPropertiesAction([edit]).Submit();
 
 		return context.ReturnNothing();
-	}
-
-	// The grid height at which an asset rests on the plot's floor
-	private static float GetRestingHeight(PlotHandle plot, int assetId, Quaternion rotation)
-	{
-		var box = PlotPlacement.GetBox(assetId, Vector3.Zero, rotation);
-		var floor = PlotPlacement.GetBounds(plot).Position.Y;
-
-		return (floor - (box.Center.Y - box.Envelope.Y)) / PlotHandle.GridToWorldScale;
 	}
 
 	// Lua numbers are doubles, so a whole number becomes an integer for an integer property

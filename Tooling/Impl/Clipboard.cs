@@ -9,7 +9,7 @@ public sealed class Clipboard<TKey, TValue>(
 	private readonly Dictionary<TKey, TValue> _contents = new(keyComparer);
 	private readonly IEqualityComparer<TValue> _valueComparer = valueComparer ?? EqualityComparer<TValue>.Default;
 
-	public IReadOnlyDictionary<TKey, TValue> Contents => _contents.AsReadOnly();
+	public IReadOnlyDictionary<TKey, TValue> Contents => _contents;
 
 	public event Action<TKey, TValue?>? ContentChanged;
 

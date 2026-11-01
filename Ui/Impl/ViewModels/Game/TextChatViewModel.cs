@@ -28,10 +28,12 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 		foreach (var message in GChatManager.Messages)
 			OnMessageAdded(message);
+
 		GChatManager.MessageAdded += OnMessageAdded;
 
 		GProfanityFilterManager.EnabledChanged += OnProfanityFilterEnabledChanged;
 		GSessionManager.ActionRejected += OnActionRejected;
+
 		dispatcher.Input += OnInput;
 	}
 
@@ -62,6 +64,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 		GProfanityFilterManager.EnabledChanged -= OnProfanityFilterEnabledChanged;
 		GSessionManager.ActionRejected -= OnActionRejected;
+
 		_dispatcher.Input -= OnInput;
 	}
 

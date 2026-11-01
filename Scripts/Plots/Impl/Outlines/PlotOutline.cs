@@ -9,7 +9,11 @@ namespace EnsembleRoot.Scripts.Plots.Outlines;
 /// </summary>
 public partial class PlotOutline : Node3D
 {
-	private readonly SolidHighlight _highlight = new() { Name = "Highlight", EdgeThickness = 1 / 16f, FaceAlpha = 0f };
+	// Plots dwarf instances, so their ants are 16 times as long and fast as a selection's
+	private readonly SolidHighlight _highlight = new()
+	{
+		Name = "Highlight", EdgeThickness = 1 / 16f, FaceAlpha = 0f, AntSpacing = 4 / 3f, AntSpeed = 2f
+	};
 
 	private bool? _isRaising;
 	private float _progress;
@@ -19,16 +23,14 @@ public partial class PlotOutline : Node3D
 
 	public override void _Ready()
 	{
-		// Placed by a global transform right after entering the tree
-		PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
-
 		AddChild(_highlight);
 		SetProgress(0f);
 	}
 
-	public void Raise(Color color)
+	public void Raise(Color color, bool hasMarchingAnts)
 	{
 		_highlight.Tint = color;
+		_highlight.MarchingAnts = hasMarchingAnts;
 		AnimateTo(true);
 	}
 

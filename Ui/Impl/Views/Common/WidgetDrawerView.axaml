@@ -19,12 +19,14 @@
         </Style>
     </UserControl.Styles>
 
-    <Grid ColumnDefinitions="Auto,Auto">
+    <!-- Slides left by the menu's width while collapsed, which leaves the handle at the edge -->
+    <Grid Name="Drawer" ColumnDefinitions="Auto,Auto">
         <Border
+            Name="Menu"
+            SizeChanged="OnMenuSizeChanged"
             Background="{DynamicResource TranslucentBackgroundBrush}"
             CornerRadius="0,6,6,0"
-            Padding="4"
-            IsVisible="{Binding IsExpanded}">
+            Padding="4">
 
             <Grid RowDefinitions="Auto,*" RowSpacing="4">
                 <TextBlock Text="Widgets" ToolTip.Tip="Opens and closes widgets." />
@@ -58,6 +60,7 @@
             Grid.Column="1"
             Classes="plain"
             IsChecked="{Binding IsExpanded}"
+            IsCheckedChanged="OnHandleIsCheckedChanged"
             ToolTip.Tip="Shows or hides the widget menu."
             VerticalAlignment="Center"
             Padding="4,16" />

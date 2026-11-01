@@ -174,6 +174,7 @@ public partial class SessionManager : Node
 		// past the host's checks; custom transports must not turn either on
 		SceneMultiplayer.AllowObjectDecoding = false;
 		SceneMultiplayer.ServerRelay = false;
+
 		session.StartSession();
 		stopwatch.Stop();
 

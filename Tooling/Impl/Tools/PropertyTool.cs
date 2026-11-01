@@ -43,7 +43,7 @@ public partial class PropertyTool : ToolBase
 
 	public IReadOnlyList<EditableProperty> Properties { get; private set; } = [];
 
-	/// <summary>Whether the engine's own properties are edited too, as they are what tools like painting drive.</summary>
+	/// <summary>Whether the engine's own properties are edited too, which tools like painting drive.</summary>
 	public bool IsInternalShown
 	{
 		get;

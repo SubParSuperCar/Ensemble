@@ -92,11 +92,9 @@ internal sealed class GodotVkSkiaGpu : IGodotSkiaGpu
 			utf8Name[bytesWritten] = 0;
 
 			fixed (byte* utf8NamePtr = utf8Name)
-			{
 				return device != IntPtr.Zero
 					? vkGetDeviceProcAddr(new VkDevice(device), utf8NamePtr)
 					: vkGetInstanceProcAddr(new VkInstance(instance), utf8NamePtr);
-			}
 		}
 	}
 

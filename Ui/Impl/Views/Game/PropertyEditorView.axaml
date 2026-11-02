@@ -77,6 +77,17 @@
                                 FormatString="0" ParsingNumberStyle="Integer" />
                         </DataTemplate>
 
+                        <!-- Never focused, so the key being bound can't also click it -->
+                        <DataTemplate DataType="vm:KeyPropertyItem">
+                            <Button
+                                Content="{Binding Text}"
+                                Command="{Binding ToggleListeningCommand}"
+                                ToolTip.Tip="Click, then press the key to bind. Escape or another click cancels."
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"
+                                Focusable="False" />
+                        </DataTemplate>
+
                         <DataTemplate DataType="vm:DecimalPropertyItem">
                             <NumericUpDown
                                 Value="{Binding Value, UpdateSourceTrigger=LostFocus}"

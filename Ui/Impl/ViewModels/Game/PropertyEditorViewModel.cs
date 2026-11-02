@@ -3,19 +3,30 @@ using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleCoreRoot.Api.Assets;
+using EnsembleRoot.Common.Input;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Extensions;
+using EnsembleRoot.Ui.Services;
+using Godot;
 
 namespace EnsembleRoot.Ui.ViewModels;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 {
+	private readonly DispatcherService _dispatcher;
 	private readonly Dictionary<PropertyKey, PropertyItem> _itemsByKey = [];
 
-	public PropertyEditorViewModel()
+	private KeyPropertyItem? _listeningItem;
+
+	public PropertyEditorViewModel(DispatcherService dispatcher)
 	{
+		_dispatcher = dispatcher;
+
+		dispatcher.Input += OnInput;
+
 		OnPropertiesChanged();
 		Property.PropertiesChanged += OnPropertiesChanged;
 		Property.Clipboard.ContentChanged += OnClipboardContentChanged;
@@ -45,6 +56,9 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	protected override void OnDispose()
 	{
+		StopListening();
+		_dispatcher.Input -= OnInput;
+
 		Property.PropertiesChanged -= OnPropertiesChanged;
 		Property.Clipboard.ContentChanged -= OnClipboardContentChanged;
 
@@ -62,10 +76,11 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 	[RelayCommand]
 	private static void Paste() => Property.Paste();
 
-	private static PropertyItem CreateItem(PropertyKey key) =>
+	private PropertyItem CreateItem(PropertyKey key) =>
 		key.Type switch
 		{
 			CoreVariantType.Boolean => new TogglePropertyItem(key),
+			CoreVariantType.Int64 when InputState.IsBinding(key.Name) => new KeyPropertyItem(key, ToggleListening),
 			CoreVariantType.Int64 => new IntegerPropertyItem(key),
 			CoreVariantType.Double => new DecimalPropertyItem(key),
 			_ => new TextPropertyItem(key)
@@ -84,9 +99,14 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 			keys.Add(property.Key);
 		}
 
-		foreach (var (key, _) in _itemsByKey)
+		foreach (var (key, item) in _itemsByKey)
 			if (!keys.Contains(key))
+			{
 				_itemsByKey.Remove(key);
+
+				if (item == _listeningItem)
+					StopListening();
+			}
 
 		IsCopyEnabled = Property.Properties.Any(static property => !property.IsMixed);
 		UpdatePaste();
@@ -126,6 +146,45 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		return _itemsByKey.Count is 0
 			? "The selected assets have no editable properties."
 			: "No properties match the filter.";
+	}
+
+	private void ToggleListening(KeyPropertyItem item)
+	{
+		var isStarting = item != _listeningItem;
+
+		StopListening();
+
+		if (!isStarting)
+			return;
+
+		_listeningItem = item;
+		item.IsListening = true;
+		InputSink.Sink.Acquire(this);
+	}
+
+	// The sink outlasts the key press, so the key doesn't also reach whatever the game binds it to
+	private void StopListening()
+	{
+		if (_listeningItem is not { } item)
+			return;
+
+		_listeningItem = null;
+		item.IsListening = false;
+		Callable.From(() => InputSink.Sink.Release(this)).CallDeferred();
+	}
+
+	private void OnInput(InputEvent @event)
+	{
+		if (_listeningItem is not { } item || @event is not InputEventKey { Pressed: true, Echo: false } press)
+			return;
+
+		if (press.Keycode is Key.Escape)
+			StopListening();
+		else if (InputState.IsBindable(press.Keycode))
+		{
+			item.Bind(press.Keycode);
+			StopListening();
+		}
 	}
 
 	private void UpdatePaste() =>
@@ -209,6 +268,34 @@ public sealed partial class IntegerPropertyItem(PropertyKey key) : PropertyItem(
 		if (value is { } changed)
 			Commit(decimal.ToInt64(decimal.Round(changed, MidpointRounding.ToEven)));
 	}
+}
+
+public sealed partial class KeyPropertyItem(PropertyKey key, Action<KeyPropertyItem> toggleListening)
+	: PropertyItem(key)
+{
+	private Key? _value;
+
+	[ObservableProperty]
+	[NotifyPropertyChangedFor(nameof(Text))]
+	public partial bool IsListening { get; set; }
+
+	public string Text =>
+		IsListening ? "Press a Key\u2026" :
+		_value is not { } value ? "<Mixed>" :
+		InputState.IsBindable(value) ? OS.GetKeycodeString(value) : "<None>";
+
+	protected override string TypeName => "Key";
+
+	internal void Bind(Key key) => Commit((long)key);
+
+	protected override void Load(CoreVariant value)
+	{
+		_value = value.IsNull ? null : (Key)(long)value;
+		OnPropertyChanged(nameof(Text));
+	}
+
+	[RelayCommand]
+	private void ToggleListening() => toggleListening(this);
 }
 
 public sealed partial class DecimalPropertyItem(PropertyKey key) : PropertyItem(key)

@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_handle"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_paint"]
+[ext_resource type="Script" path="res://Scripts/Assets/Components/Seat.cs" id="3_seat"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_cushion"]
+size = Vector3(0.5, 0.25, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_back"]
+size = Vector3(0.5, 0.75, 0.125)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_touch"]
+size = Vector3(0.625, 0.875, 0.625)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_seat"]
+shading_mode = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_cushion"]
+material = SubResource("StandardMaterial3D_seat")
+size = Vector3(0.5, 0.25, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_back"]
+material = SubResource("StandardMaterial3D_seat")
+size = Vector3(0.5, 0.75, 0.125)
+
+[node name="Seat" type="StaticBody3D"]
+script = ExtResource("1_handle")
+AssetId = 14
+AssetName = &"Seat"
+Description = &"Touch it to sit. With controls, its occupant drives the plot's creation."
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "A04030",
+&"_materialId": -1,
+&"hasControls": true
+})
+MaxInstanceCount = 32
+
+[node name="Cushion Collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
+shape = SubResource("BoxShape3D_cushion")
+
+[node name="Cushion Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
+mesh = SubResource("BoxMesh_cushion")
+
+[node name="Back Collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, -0.1875)
+shape = SubResource("BoxShape3D_back")
+
+[node name="Back Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, -0.1875)
+mesh = SubResource("BoxMesh_back")
+
+[node name="Sit Area" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.625, 0.0625)
+
+[node name="Touch" type="CollisionShape3D" parent="Sit Area"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1875, -0.0625)
+shape = SubResource("BoxShape3D_touch")
+
+[node name="Paintable" type="Node" parent="."]
+script = ExtResource("2_paint")
+
+[node name="Seat" type="Node" parent="." node_paths=PackedStringArray("Area")]
+script = ExtResource("3_seat")
+Area = NodePath("../Sit Area")

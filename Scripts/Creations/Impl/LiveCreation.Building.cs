@@ -54,6 +54,7 @@ public partial class LiveCreation
 			handle.Initialize(Plot, instance);
 			AddTicked(handle);
 			AddSeat(instance.Id, handle.GetComponent<Seat>());
+			AddBoundKeys(instance);
 		}
 
 		// Streamed states carry 16-bit IDs, which only creations far beyond any plot's quota exceed

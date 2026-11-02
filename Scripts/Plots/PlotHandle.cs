@@ -52,7 +52,11 @@ public partial class PlotHandle : Node3D
 		ExitInstances();
 	}
 
-	public override void _PhysicsProcess(double delta) => WatchSimulator(delta);
+	public override void _PhysicsProcess(double delta)
+	{
+		WatchSimulator(delta);
+		UpdateInput(delta);
+	}
 
 	public Vector3 WorldToGrid(Vector3 worldPosition) =>
 		OriginTransform.AffineInverse() * worldPosition / GridToWorldScale;

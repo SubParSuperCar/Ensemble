@@ -1,34 +1,34 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://c4cakr7djbv45"]
 
 [ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_handle"]
 [ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_paint"]
 [ext_resource type="Script" uid="uid://dq6tdrantlmc4" path="res://Scripts/Assets/Components/Seat.cs" id="3_seat"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cushion"]
-size = Vector3(0.5, 0.25, 0.5)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_back"]
-size = Vector3(0.5, 0.75, 0.125)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_touch"]
-size = Vector3(0.625, 0.875, 0.625)
+size = Vector3(0.5, 0.2, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_seat"]
 shading_mode = 2
 
 [sub_resource type="BoxMesh" id="BoxMesh_cushion"]
 material = SubResource("StandardMaterial3D_seat")
-size = Vector3(0.5, 0.25, 0.5)
+size = Vector3(0.5, 0.2, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_back"]
+size = Vector3(0.5, 0.8, 0.1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_back"]
 material = SubResource("StandardMaterial3D_seat")
-size = Vector3(0.5, 0.75, 0.125)
+size = Vector3(0.5, 0.8, 0.1)
 
-[node name="Seat" type="StaticBody3D"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_touch"]
+size = Vector3(0.6, 0.8, 0.5)
+
+[node name="Seat" type="StaticBody3D" unique_id=1022029290]
 script = ExtResource("1_handle")
 AssetId = 14
 AssetName = &"Seat"
-Description = &"Touch it to sit. With controls, its occupant drives the plot's creation."
+Description = &"Touch it to sit. With controls, its occupant drives the plot\'s creation."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "A04030",
 &"_materialId": -1,
@@ -36,32 +36,31 @@ Properties = Dictionary[StringName, Variant]({
 })
 MaxInstanceCount = 32
 
-[node name="Cushion Collider" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
+[node name="Cushion Collider" type="CollisionShape3D" parent="." unique_id=483904584]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 shape = SubResource("BoxShape3D_cushion")
 
-[node name="Cushion Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.125, 0)
+[node name="Cushion Mesh" type="MeshInstance3D" parent="." unique_id=944428852]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
 mesh = SubResource("BoxMesh_cushion")
 
-[node name="Back Collider" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, -0.1875)
+[node name="Back Collider" type="CollisionShape3D" parent="." unique_id=643087035]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.2)
 shape = SubResource("BoxShape3D_back")
 
-[node name="Back Mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.375, -0.1875)
+[node name="Back Mesh" type="MeshInstance3D" parent="." unique_id=1749384292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.2)
 mesh = SubResource("BoxMesh_back")
 
-[node name="Sit Area" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.625, 0.0625)
+[node name="Sit Area" type="Area3D" parent="." unique_id=1650976914]
+transform = Transform3D(1, 0, 0, 0, 0.9969173, 0.0784591, 0, -0.0784591, 0.9969173, 0, 0.4, 0.125)
 
-[node name="Touch" type="CollisionShape3D" parent="Sit Area"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1875, -0.0625)
+[node name="Touch" type="CollisionShape3D" parent="Sit Area" unique_id=683124591]
 shape = SubResource("BoxShape3D_touch")
 
-[node name="Paintable" type="Node" parent="."]
+[node name="Paintable" type="Node" parent="." unique_id=1337784734]
 script = ExtResource("2_paint")
 
-[node name="Seat" type="Node" parent="." node_paths=PackedStringArray("Area")]
+[node name="Seat" type="Node" parent="." unique_id=611041674 node_paths=PackedStringArray("Area")]
 script = ExtResource("3_seat")
 Area = NodePath("../Sit Area")

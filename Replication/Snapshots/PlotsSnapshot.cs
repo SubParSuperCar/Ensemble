@@ -29,10 +29,11 @@ internal static class PlotsSnapshot
 			dict["instances"] = Variant.From(plot.Instances.GetAllDicts());
 
 			// Every plot's epoch, spawned or not, or this peer's would drift from the others' at the next spawn
-			var (epoch, simulator, creation) = GPlotManager.GetHandle(plot.Id).CaptureCreation();
+			var (epoch, simulator, creation, seats) = GPlotManager.GetHandle(plot.Id).CaptureCreation();
 			dict["epoch"] = epoch;
 			dict["simulator"] = simulator;
 			dict["creation"] = creation;
+			dict["seats"] = seats;
 
 			payload.Add(dict);
 		}
@@ -70,11 +71,14 @@ internal static class PlotsSnapshot
 			if (
 				TryGet(plot, dict, "epoch", Variant.Type.Int, out var epoch) &&
 				TryGet(plot, dict, "simulator", Variant.Type.Int, out var simulator) &&
-				TryGet(plot, dict, "creation", Variant.Type.PackedByteArray, out var creation))
+				TryGet(plot, dict, "creation", Variant.Type.PackedByteArray, out var creation) &&
+				TryGet(plot, dict, "seats", Variant.Type.Dictionary, out var seats))
 				Try(
 					plot, "creation",
 					() => GPlotManager.GetHandleOrNull(plot.Id)
-						?.RestoreCreation((ushort)epoch.AsInt32(), simulator.AsInt32(), creation.AsByteArray()));
+						?.RestoreCreation(
+							(ushort)epoch.AsInt32(), simulator.AsInt32(), creation.AsByteArray(),
+							seats.AsGodotDictionary()));
 		}
 	}
 

@@ -62,6 +62,7 @@ public partial class PlotHandle
 	{
 		if (Creation is { } creation)
 		{
+			creation.VacateSeats();
 			creation.WakeNeighbors();
 			creation.QueueFree();
 			Creation = null;

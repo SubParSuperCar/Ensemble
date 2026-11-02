@@ -39,6 +39,9 @@ public partial class CharacterController : CharacterBody3D
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:kg")]
 	public float Mass { get; set; } = 70f;
 
+	/// <summary>Whether a seat is moving the character, so its input and gravity don't.</summary>
+	internal bool IsSeated { get; set; }
+
 	[Export] public Camera3D Camera { get; set; } = null!;
 	[Export] public Node3D Terrain { get; set; } = null!; // Terrain3D, which has no C# bindings
 
@@ -57,6 +60,9 @@ public partial class CharacterController : CharacterBody3D
 	public override void _PhysicsProcess(double delta)
 	{
 		Visible = Camera.GlobalPosition.DistanceTo(GlobalPosition) > FirstPersonInvisibleProximityThreshold;
+
+		if (IsSeated)
+			return;
 
 		var velocity = Velocity;
 

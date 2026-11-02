@@ -80,6 +80,7 @@ public partial class LiveCreation : Node3D
 			if (assembly is { IsKilled: false, GlobalPosition.Y: < KillHeight })
 			{
 				assembly.Kill();
+				VacateSeats(assembly);
 				Log.Debug("Killed fallen assembly {AssemblyId} of plot {PlotId}", assembly.Id, Plot.Id);
 			}
 	}

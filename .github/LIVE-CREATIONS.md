@@ -422,7 +422,7 @@ Measured in a prototype with the game's physics settings; each point is what an 
 - **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, consumed only when no seated asset
   binds Space; otherwise the action's own key.
 
-## 9. Seats and characters (planned)
+## 9. Seats and characters
 
 - A `Seat` component makes any asset a seat, so seats can come in many styles. It exports an `Area3D` whose origin is
   the sit point and whose shape detects touches; the area sees only characters, and watches only while live. One Seat
@@ -438,12 +438,13 @@ Measured in a prototype with the game's physics settings; each point is what an 
   Each frame, the character's `PlayerHandle` copies the sit point's interpolated transform, the same one that seat is
   drawn with. Every peer does this against its own copy of the creation, so a rider can't lag behind their seat. Being
   parented instead would free the character with the seat's piece.
-- **Leaving:** the body re-enters the space where it fits, found by the engine rather than spatial code of our own: its
-  shape is cast down from above the seat, against whatever is really there, and it lands on top. Then it regains
-  control.
+- **Leaving:** the body re-enters the space where it fits, found by the engine rather than spatial code of our own: it
+  tests a move from above the seat's assembly down to the seat, against whatever is really there, and lands on the first
+  thing it meets, so under a roof it stands on the roof. Then it regains control.
 - **Anything that moves or removes a seated character leaves the seat first:** teleports (H reset, `tp_char`,
-  despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed, the occupant leaving or
-  being kicked from the plot. `PlayerHandle.Teleport` calls `LeaveSeat()` before the hop, so every caller gets it.
+  despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed (which also respawns the
+  rider, who would otherwise keep falling), the occupant leaving or being kicked from the plot, or leaving the session.
+  `PlayerHandle.Teleport` leaves the seat before the hop, so every caller gets it.
 - **Replication:** the sit action names the seat (plot ID, instance ID), and a seated character sends no positions,
   so nothing extra crosses the network while riding. A joining peer gets the seated characters with the plot's
   snapshot, after its creation exists.

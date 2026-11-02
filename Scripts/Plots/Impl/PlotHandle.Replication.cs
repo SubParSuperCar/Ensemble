@@ -1,6 +1,7 @@
 using EnsembleRoot.Sessions;
 using EnsembleRoot.Sessions.Api;
 using Godot;
+using Godot.Collections;
 
 namespace EnsembleRoot.Scripts.Plots;
 
@@ -12,17 +13,19 @@ public partial class PlotHandle
 	///     The simulation epoch, the simulator, and every assembly's latest state (none unless spawned), for a joining
 	///     peer.
 	/// </summary>
-	internal (ushort Epoch, int SimulatorPeerId, byte[] States) CaptureCreation() =>
-		(SimulationEpoch, SimulatorPeerId, Creation?.CaptureStates() ?? []);
+	internal (ushort Epoch, int SimulatorPeerId, byte[] States, Dictionary Seats) CaptureCreation() =>
+		(SimulationEpoch, SimulatorPeerId, Creation?.CaptureStates() ?? [], Creation?.CaptureSeats() ?? []);
 
 	/// <summary>Adopts a joining snapshot's simulation state, once the snapshot has spawned the plot.</summary>
-	internal void RestoreCreation(ushort epoch, int simulatorPeerId, byte[] states)
+	internal void RestoreCreation(ushort epoch, int simulatorPeerId, byte[] states, Dictionary seats)
 	{
 		SimulationEpoch = epoch;
 		SetSimulator(simulatorPeerId);
 
 		if (!IsSimulatedLocally)
 			Creation?.RestoreStates(states);
+
+		Creation?.RestoreSeats(seats);
 	}
 
 	/// <summary>Sends a packet of the creation's states on, from its simulator.</summary>

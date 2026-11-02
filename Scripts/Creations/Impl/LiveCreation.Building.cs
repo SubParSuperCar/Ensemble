@@ -47,7 +47,12 @@ public partial class LiveCreation
 		}
 
 		foreach (var instance in instances)
-			handles[instance.Id].Initialize(Plot, instance);
+		{
+			var handle = handles[instance.Id];
+
+			handle.Initialize(Plot, instance);
+			AddTicked(handle);
+		}
 
 		// Streamed states carry 16-bit IDs, which only creations far beyond any plot's quota exceed
 		if (PlotHandle.IsStreaming && _assemblies.Count > AssemblyState.MaxId + 1)
@@ -72,6 +77,16 @@ public partial class LiveCreation
 		var bounds = GAssetManager.GetColliderBounds(part.Instance.Asset.Id, part.Piece);
 
 		return [.. bounds.Select(aabb => Obb.From(aabb, transform))];
+	}
+
+	private void AddTicked(AssetHandle handle)
+	{
+		if (handle is ISimulationTicked ticked)
+			_ticked.Add((handle, ticked));
+
+		// ReSharper disable once SuspiciousTypeConversion.Global
+		foreach (var component in handle.Components.OfType<ISimulationTicked>())
+			_ticked.Add((handle, component));
 	}
 
 	private void AddAssembly(int id, WeldPart[] parts, Dictionary<int, AssetHandle> handles)

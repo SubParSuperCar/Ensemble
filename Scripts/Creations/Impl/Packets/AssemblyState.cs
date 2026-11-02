@@ -13,7 +13,10 @@ public readonly record struct AssemblyState(
 	Vector3 LinearVelocity,
 	Vector3 AngularVelocity)
 {
-	public const int Bits = IdBits + 3 * PositionBits + RotationIndexBits + 3 * RotationBits + 6 * VelocityBits;
+	public const int Bits =
+		IdBits + 3 * PositionBits + RotationIndexBits + 3 * RotationBits + 3 * LinearVelocityBits +
+		3 * AngularVelocityBits;
+
 	public const int MaxId = (1 << IdBits) - 1;
 
 	private const int IdBits = 16;
@@ -28,8 +31,10 @@ public readonly record struct AssemblyState(
 	private const float RotationRange = (1 << RotationBits) - 1;
 	private const float Sqrt2 = 1.41421356f;
 
-	// 1/32 m/s and rad/s steps within +-256
-	private const int VelocityBits = 14;
+	// 1/32 m/s steps within +-512, past Jolt's own speed limit, and 1/32 rad/s steps within +-256, the project's limit
+	// on spin
+	private const int LinearVelocityBits = 15;
+	private const int AngularVelocityBits = 14;
 	private const float VelocityScale = 32f;
 
 	public void Write(BitWriter writer)
@@ -37,14 +42,15 @@ public readonly record struct AssemblyState(
 		writer.Write((ulong)Id, IdBits);
 		WriteVector(writer, Position, PositionScale, PositionBits);
 		WriteRotation(writer, Rotation);
-		WriteVector(writer, LinearVelocity, VelocityScale, VelocityBits);
-		WriteVector(writer, AngularVelocity, VelocityScale, VelocityBits);
+		WriteVector(writer, LinearVelocity, VelocityScale, LinearVelocityBits);
+		WriteVector(writer, AngularVelocity, VelocityScale, AngularVelocityBits);
 	}
 
 	public static AssemblyState Read(ref BitReader reader) =>
 		new(
 			(int)reader.Read(IdBits), ReadVector(ref reader, PositionScale, PositionBits), ReadRotation(ref reader),
-			ReadVector(ref reader, VelocityScale, VelocityBits), ReadVector(ref reader, VelocityScale, VelocityBits));
+			ReadVector(ref reader, VelocityScale, LinearVelocityBits),
+			ReadVector(ref reader, VelocityScale, AngularVelocityBits));
 
 	private static void WriteVector(BitWriter writer, Vector3 vector, float scale, int bits)
 	{

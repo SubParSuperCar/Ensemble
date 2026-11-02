@@ -23,8 +23,8 @@ public partial class Seat : AssetComponent
 
 	public PlayerHandle? Occupant { get; internal set; }
 
-	public static event Action<Seat>? SitRequested;
-	public static event Action? LeaveRequested;
+	internal static event Action<Seat>? SitRequested;
+	internal static event Action? LeaveRequested;
 
 	// Build mode's and previews' seats never watch, and a live one starts in OnInitialized
 	public override void _Ready()

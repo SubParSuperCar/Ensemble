@@ -415,7 +415,8 @@ Measured in a prototype with the game's physics settings; each point is what an 
   can't stick. It's a custom RPC, not an action: it changes too often for the action rate limiter, and needs no
   validation beyond "the sender is the plot's current controller", which the host checks. Every peer derives the
   controller alike from the plot's occupants and seats, so it needs no replication, and a simulator with no controller
-  zeroes the input itself, so a departing controller can't leave a key held.
+  zeroes the input itself, as it does when a controller's updates stop arriving, so nobody can leave a key held. Only
+  the keys the creation binds are sampled and sent.
 - **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
   spin), not the plot owner as such. Controlling never moves the simulation to the controller (D14). An asset whose
   look depends on input replicates that state itself (e.g., a glass that turns from water to wine sends a bool to the
@@ -443,7 +444,8 @@ Measured in a prototype with the game's physics settings; each point is what an 
 - **Leaving:** the body re-enters the space where it fits, found by the engine rather than spatial code of our own: it
   tests a move from above the seat's assembly down to the seat, against whatever is really there, and lands on the first
   thing it meets, so under a roof it stands on the roof. Then it regains control.
-- **Anything that moves or removes a seated character leaves the seat first:** teleports (H reset, `tp_char`,
+- **Anything that moves or removes a seated character leaves the seat first,** and a teleport waits for the host to free
+  the seat, so peers always agree on who sits where: teleports (H reset, `tp_char`,
   despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed (which also respawns the
   rider, who would otherwise keep falling), the occupant leaving or being kicked from the plot, or leaving the session.
   `PlayerHandle.Teleport` leaves the seat before the hop, so every caller gets it.

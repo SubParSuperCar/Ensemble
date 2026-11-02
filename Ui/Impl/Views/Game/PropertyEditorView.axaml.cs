@@ -35,6 +35,9 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) =>
 		(DataContext as PropertyEditorViewModel)?.FilterQuery = string.Empty;
 
+	private void OnKeyButtonClick(object? sender, RoutedEventArgs e) =>
+		TopLevel.GetTopLevel(this)?.FocusManager.Focus(null);
+
 	// Enter commits an edit by dropping focus, and Escape drops it after reverting the editor
 	private void OnItemsKeyDown(object? sender, KeyEventArgs e)
 	{

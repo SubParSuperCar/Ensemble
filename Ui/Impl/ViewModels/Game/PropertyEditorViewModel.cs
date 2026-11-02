@@ -19,6 +19,7 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 	private readonly DispatcherService _dispatcher;
 	private readonly Dictionary<PropertyKey, PropertyItem> _itemsByKey = [];
 
+	private Key? _heldKey;
 	private KeyPropertyItem? _listeningItem;
 
 	public PropertyEditorViewModel(DispatcherService dispatcher)
@@ -56,6 +57,7 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	protected override void OnDispose()
 	{
+		_heldKey = null;
 		StopListening();
 		_dispatcher.Input -= OnInput;
 
@@ -162,27 +164,41 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		InputSink.Sink.Acquire(this);
 	}
 
-	// The sink outlasts the key press, so the key doesn't also reach whatever the game binds it to
 	private void StopListening()
 	{
-		if (_listeningItem is not { } item)
-			return;
-
+		_listeningItem?.IsListening = false;
 		_listeningItem = null;
-		item.IsListening = false;
-		Callable.From(() => InputSink.Sink.Release(this)).CallDeferred();
+
+		ReleaseSink();
+	}
+
+	// The sink outlasts the key press until the key comes back up, so it doesn't also reach whatever the game binds it to
+	private void ReleaseSink()
+	{
+		if (_listeningItem is null && _heldKey is null)
+			InputSink.Sink.Release(this);
 	}
 
 	private void OnInput(InputEvent @event)
 	{
-		if (_listeningItem is not { } item || @event is not InputEventKey { Pressed: true, Echo: false } press)
+		if (@event is not InputEventKey { Echo: false } key)
 			return;
 
-		if (press.Keycode is Key.Escape)
-			StopListening();
-		else if (InputState.IsBindable(press.Keycode))
+		if (!key.Pressed)
 		{
-			item.Bind(press.Keycode);
+			if (key.Keycode != _heldKey)
+				return;
+
+			_heldKey = null;
+			ReleaseSink();
+		}
+		else if (_listeningItem is { } item && (key.Keycode is Key.Escape || InputState.IsBindable(key.Keycode)))
+		{
+			_heldKey = key.Keycode;
+
+			if (key.Keycode is not Key.Escape)
+				item.Bind(key.Keycode);
+
 			StopListening();
 		}
 	}

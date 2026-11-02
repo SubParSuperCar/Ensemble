@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_handle"]
 [ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_paint"]
-[ext_resource type="Script" path="res://Scripts/Assets/Components/Seat.cs" id="3_seat"]
+[ext_resource type="Script" uid="uid://dq6tdrantlmc4" path="res://Scripts/Assets/Components/Seat.cs" id="3_seat"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cushion"]
 size = Vector3(0.5, 0.25, 0.5)

@@ -25,8 +25,8 @@ public partial class LiveCreation
 		}
 	}
 
-	/// <summary>Whether any of the creation's assets binds a key.</summary>
-	internal bool IsKeyBound(Key key) => _boundKeys.Contains(key);
+	/// <summary>The keys the creation's assets bind, the only ones worth sampling or sending.</summary>
+	internal IReadOnlySet<Key> BoundKeys => _boundKeys;
 
 	internal Seat? GetSeat(int instanceId) => _seatsByInstanceId.GetValueOrDefault(instanceId);
 
@@ -74,6 +74,6 @@ public partial class LiveCreation
 		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		foreach (var seat in _seatsByInstanceId.Values)
 			if (seat.Handle.Assembly == assembly)
-				seat.Occupant?.VacateFallenSeat();
+				seat.Occupant?.LeaveFallenSeat();
 	}
 }

@@ -71,15 +71,18 @@ internal static class PlotsSnapshot
 			if (
 				TryGet(plot, dict, "epoch", Variant.Type.Int, out var epoch) &&
 				TryGet(plot, dict, "simulator", Variant.Type.Int, out var simulator) &&
-				TryGet(plot, dict, "creation", Variant.Type.PackedByteArray, out var creation) &&
-				TryGet(plot, dict, "seats", Variant.Type.Dictionary, out var seats))
+				TryGet(plot, dict, "creation", Variant.Type.PackedByteArray, out var creation))
 				Try(
 					plot, "creation",
 					() => GPlotManager.GetHandleOrNull(plot.Id)
-						?.RestoreCreation(
-							(ushort)epoch.AsInt32(), simulator.AsInt32(), creation.AsByteArray(),
-							seats.AsGodotDictionary()));
+						?.RestoreCreation((ushort)epoch.AsInt32(), simulator.AsInt32(), creation.AsByteArray()));
 		}
+
+		foreach (var dict in payload.Select(static entry => entry.AsGodotDictionary()))
+			if (
+				dict.TryGetValue("id", out var id) && id.VariantType is Variant.Type.Int &&
+				dict.TryGetValue("seats", out var seats) && seats.VariantType is Variant.Type.Dictionary)
+				GPlotManager.GetHandleOrNull(id.AsInt32())?.RestoreSeats(seats.AsGodotDictionary());
 	}
 
 	private static void RestoreInstance(GdPlot plot, Dictionary dict)

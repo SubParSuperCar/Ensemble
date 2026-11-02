@@ -77,11 +77,12 @@
                                 FormatString="0" ParsingNumberStyle="Integer" />
                         </DataTemplate>
 
-                        <!-- Never focused, so the key being bound can't also click it -->
+                        <!-- Never focused, and it drops focus elsewhere, so the key being bound goes nowhere else -->
                         <DataTemplate DataType="vm:KeyPropertyItem">
                             <Button
                                 Content="{Binding Text}"
                                 Command="{Binding ToggleListeningCommand}"
+                                Click="OnKeyButtonClick"
                                 ToolTip.Tip="Click, then press the key to bind. Escape or another click cancels."
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"

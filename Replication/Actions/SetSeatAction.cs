@@ -27,8 +27,9 @@ public readonly record struct SetSeatAction(int? PlotId, int InstanceId) : INetw
 		if (GPlayerManager.GetHandleOrNull(source.PlayerId) is not { } player)
 			return Reject("Player not found.");
 
+		// Leaving twice is harmless, as anything may stand a rider up while this is on its way
 		if (PlotId is null)
-			return player.Seat is null ? Reject("Player not seated.") : Accept;
+			return Accept;
 
 		if (player.Seat is not null)
 			return Reject("Player already seated.");

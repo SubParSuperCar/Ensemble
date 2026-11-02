@@ -79,5 +79,6 @@ public static class Constants
 	{
 		public const int Characters = 1;
 		public const int Creations = 2;
+		public const int Input = 3;
 	}
 }

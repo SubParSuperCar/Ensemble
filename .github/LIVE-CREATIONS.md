@@ -26,7 +26,7 @@ lists them, resolved or open. Plans are a guide, not a contract: they bend when 
 | Piece            | An asset's own colliders (piece 0) or an `AssetPiece` child, riding its group's assembly   |
 | Mechanism        | (Later) Assemblies linked by joints; one plot's always share its simulator                 |
 | Owner            | The peer that simulates a mechanism; the plot's owner by default (network ownership)       |
-| Controller       | (Later) The occupant whose keys drive a spawned plot; never made its simulator for driving |
+| Controller       | The occupant whose keys drive a spawned plot; never made its simulator for driving         |
 | Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
 | Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
 | Anchor           | (Later) An asset that freezes its assembly while any anchor holds it                       |
@@ -397,7 +397,7 @@ Measured in a prototype with the game's physics settings; each point is what an 
   each other, so it favors high torque limits and short wheelbases.
 - **Rigid cars flip on sharp bumps,** and bouncy wheels flip sooner, so real driving needs suspension.
 
-## 8. Input (planned)
+## 8. Input
 
 - **Controller:** each spawned plot has at most one, chosen by occupant order among the plot's occupants sitting in
   control seats, not by who sat down first. The owner is always the oldest occupant, so a seated owner always has
@@ -411,16 +411,18 @@ Measured in a prototype with the game's physics settings; each point is what an 
   and packets, shown by name in the UI (harder to hand-edit in JSON saves, an acceptable cost). Assets read
   `tick.Input.IsPressed(Key.Q)`.
 - **Flow:** the controller samples its mask each physics tick (empty while the UI sinks input) and sends it to the
-  host whenever it changes, plus a few times a second while any key is held, so a lost packet heals itself and a key
+  host whenever it changes, plus a few times a second regardless, so a lost press or release heals itself and a key
   can't stick. It's a custom RPC, not an action: it changes too often for the action rate limiter, and needs no
-  validation beyond "the sender is the plot's current controller", which the host checks.
+  validation beyond "the sender is the plot's current controller", which the host checks. Every peer derives the
+  controller alike from the plot's occupants and seats, so it needs no replication, and a simulator with no controller
+  zeroes the input itself, so a departing controller can't leave a key held.
 - **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
   spin), not the plot owner as such. Controlling never moves the simulation to the controller (D14). An asset whose
   look depends on input replicates that state itself (e.g., a glass that turns from water to wine sends a bool to the
   other peers), and visuals that follow physics (a spinning rotor) need nothing extra, since the proxies already move.
 - While seated, the controller's character doesn't walk; the camera keeps mouse look and follows the seat.
-- **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, consumed only when no seated asset
-  binds Space; otherwise the action's own key.
+- **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, unless the creation binds Space for
+  its controller, who can still leave by resetting.
 
 ## 9. Seats and characters
 
@@ -515,8 +517,9 @@ work proportional to what moves and thinks, not to what exists.
 |         | properties, and `LiveCreation` split out of `PlotHandle`                                       |
 | 0.57.x  | Suspension lengths in grid units, end to end; a jointed asset's two sides collide; joints      |
 |         | straighten before their bodies sleep (Baumgarte factor 0.5)                                    |
-| Next    | The Motor, seats, input masks, the Servo and Piston, then force accumulators, Airfoil, and     |
-|         | other forces                                                                                   |
+| 0.58.0  | Simulation ticks, the Motor, seats, input from a plot's controller, and key pickers in the     |
+|         | Property Editor                                                                                |
+| Next    | The Servo and Piston, then force accumulators, Airfoil, and other forces                       |
 
 ## 13. Decisions
 

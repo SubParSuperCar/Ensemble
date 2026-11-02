@@ -31,7 +31,6 @@ public partial class LiveCreation : Node3D
 	public IReadOnlyList<Assembly> Assemblies => _assemblies;
 
 	/// <summary>The keys driving the creation, which its simulator's assets tick with.</summary>
-	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 	internal InputState Input { get; set; }
 
 	public override void _PhysicsProcess(double delta)
@@ -52,6 +51,9 @@ public partial class LiveCreation : Node3D
 		foreach (var assembly in _assemblies)
 			if (!assembly.IsKilled)
 				assembly.HandOff(isSimulated, _clock);
+
+		// The controller's next update reaches whoever simulates now
+		Input = default;
 
 		ResetStream();
 	}

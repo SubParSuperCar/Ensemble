@@ -19,7 +19,7 @@ public partial class Seat : AssetComponent
 	public Area3D Area { get; set; } = null!;
 
 	/// <summary>Whether a plot's occupant sitting here can control its creation.</summary>
-	public bool HasControls => Handle.Instance.Properties.GetValue(HasControlsKey).AsBool();
+	public bool HasControls { get; private set; }
 
 	public PlayerHandle? Occupant { get; internal set; }
 
@@ -41,6 +41,8 @@ public partial class Seat : AssetComponent
 	{
 		if (!Handle.IsLive)
 			return;
+
+		HasControls = Handle.Instance.Properties.GetValue(HasControlsKey).AsBool();
 
 		Area.CollisionLayer = 0;
 		Area.CollisionMask = PhysicsLayers.Character;

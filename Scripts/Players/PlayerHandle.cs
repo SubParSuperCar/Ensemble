@@ -91,7 +91,7 @@ public partial class PlayerHandle : Node3D
 		_occupant.PlotChanged -= OnPlotChanged;
 		_plot?.IsSpawnedChanged -= OnIsPlotSpawnedChanged;
 
-		Vacate();
+		Seat?.Occupant = null;
 	}
 
 	public override void _Process(double delta)

@@ -1,11 +1,32 @@
+using EnsembleCoreRoot.Api.Assets;
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets.Components;
+using Godot;
 using Godot.Collections;
 
 namespace EnsembleRoot.Scripts.Creations;
 
 public partial class LiveCreation
 {
+	private readonly HashSet<Key> _boundKeys = [];
 	private readonly System.Collections.Generic.Dictionary<int, Seat> _seatsByInstanceId = [];
+
+	/// <summary>Whether someone sits in a seat with controls, the first thing a controller needs.</summary>
+	internal bool IsControlSeatTaken
+	{
+		get
+		{
+			foreach (var seat in _seatsByInstanceId.Values)
+				if (seat is { HasControls: true, Occupant: not null })
+					return true;
+
+			return false;
+		}
+	}
+
+	/// <summary>Whether any of the creation's assets binds a key.</summary>
+	internal bool IsKeyBound(Key key) => _boundKeys.Contains(key);
 
 	internal Seat? GetSeat(int instanceId) => _seatsByInstanceId.GetValueOrDefault(instanceId);
 
@@ -39,6 +60,13 @@ public partial class LiveCreation
 	{
 		if (seat is not null)
 			_seatsByInstanceId[instanceId] = seat;
+	}
+
+	private void AddBoundKeys(GdInstance instance)
+	{
+		foreach (var (name, value) in instance.Properties.Source.All)
+			if (value.Type is CoreVariantType.Int64 && InputState.IsBinding(name))
+				_boundKeys.Add((Key)(long)value);
 	}
 
 	private void VacateSeats(Assembly assembly)

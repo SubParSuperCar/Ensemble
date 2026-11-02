@@ -90,7 +90,11 @@ public partial class PlayerHandle
 
 	private void UpdateSeatLeave()
 	{
-		if (Seat is not null && !InputSink.IsSunk && Input.IsActionJustPressed(SeatLeaveAction))
+		if (Seat is not { Handle.Plot: var plot } || InputSink.IsSunk || !Input.IsActionJustPressed(SeatLeaveAction))
+			return;
+
+		// Space drives whatever binds it, while its controller sits; a reset still leaves the seat
+		if (plot.GetController() != this || plot.Creation?.IsKeyBound(Key.Space) is not true)
 			Seat.RequestLeave();
 	}
 

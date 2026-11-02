@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Input;
 using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Sessions.Transports;
 using Godot;
@@ -113,7 +114,9 @@ public partial class SessionManager : Node
 
 	public override void _UnhandledKeyInput(InputEvent @event)
 	{
-		if (!Input.IsActionJustPressedByEvent(RestartAction, @event) || Mode is SessionMode.MultiPlayer)
+		if (
+			!Input.IsActionJustPressedByEvent(RestartAction, @event) || InputSink.IsSunk ||
+			Mode is SessionMode.MultiPlayer)
 			return;
 
 		Log.Information("Restarting session as single-player (debug action)...");

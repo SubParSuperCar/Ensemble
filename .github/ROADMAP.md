@@ -146,13 +146,15 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
 - [ ] (M) Per-piece joint exclusion - a joint's own two pieces skip each other while everything else on their
   assemblies collides, for joints whose pieces touch as they move (a motor's head on its base). Godot only excludes
   whole bodies; options are a hairline clearance between the pieces (no contact, so no scraping; untested) or
-  per-shape filtering (Jolt validates contacts with sub-shape IDs, which Godot doesn't expose)
+  per-shape filtering (Jolt validates contacts with sub-shape IDs, which Godot doesn't expose). A prototype favors the
+  clearance for motors (see [**driven joints**](./LIVE-CREATIONS.md#driven-joints))
 - [x] (S) Terrain collision everywhere - Terrain3D builds its whole collision up front, so bodies far from the local
   character (another peer's creation, or a dedicated host's) stay on the ground
 - (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass
   `AssetHandle`) initialize once their whole creation exists; `Paintable` and the `MaterialBank` are done. Next: a
   batched simulation tick for many scripted blocks, then seats, input, and driven joints (motors, servos, pistons)
-- [ ] (L) Input management - player-bound inputs driving assets (e.g., motors)
+- [ ] (L) Drivable creations - in order: simulation ticks, the Motor, seats, input, a first skid-steered drive, key
+  pickers in the Property Editor, the Servo, then a car with steering and suspension
 - [ ] (M) Bandwidth - a per-client budget that favors near and fast bodies over far ones
 - [ ] (M) Characters riding moving creations (platform velocity)
 - [ ] (M) Anchors - an asset that freezes its assembly while it holds it

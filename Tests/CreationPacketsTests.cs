@@ -53,7 +53,7 @@ public sealed class CreationPacketsTests
 
 			states.Add(new AssemblyState(
 				random.Next(0, 1 << 16), new Vector3(Next(random, 16000), Next(random, 16000), Next(random, 16000)),
-				i % 2 is 0 ? rotation : -rotation, new Vector3(Next(random, 255), Next(random, 255), Next(random, 255)),
+				i % 2 is 0 ? rotation : -rotation, new Vector3(Next(random, 511), Next(random, 511), Next(random, 511)),
 				new Vector3(Next(random, 255), Next(random, 255), Next(random, 255))));
 		}
 
@@ -81,7 +81,7 @@ public sealed class CreationPacketsTests
 		var clamped = AssemblyState.Read(ref reader);
 
 		Assert.True(clamped.Position.X is > 16383 and < 16384);
-		Assert.True(clamped.LinearVelocity.X is < -255 and > -256);
+		Assert.True(clamped.LinearVelocity.X is < -511 and > -512);
 	}
 
 	[Fact]

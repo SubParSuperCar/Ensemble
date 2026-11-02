@@ -1,3 +1,5 @@
+using EnsembleRoot.Common.Input;
+using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Plots;
 using Godot;
 using Serilog;
@@ -16,6 +18,7 @@ public partial class LiveCreation : Node3D
 	private const double KillCheckInterval = 1d;
 
 	private readonly List<Assembly> _assemblies = [];
+	private readonly List<(AssetHandle Handle, ISimulationTicked Ticked)> _ticked = [];
 
 	private double _sinceKillCheck;
 
@@ -27,8 +30,13 @@ public partial class LiveCreation : Node3D
 	/// <summary>The assemblies, each at the index that is its ID.</summary>
 	public IReadOnlyList<Assembly> Assemblies => _assemblies;
 
+	/// <summary>The keys driving the creation, which its simulator's assets tick with.</summary>
+	// ReSharper disable once UnusedAutoPropertyAccessor.Global
+	internal InputState Input { get; set; }
+
 	public override void _PhysicsProcess(double delta)
 	{
+		Tick(delta);
 		UpdateStream(delta);
 		KillFallenAssemblies(delta);
 	}
@@ -46,6 +54,18 @@ public partial class LiveCreation : Node3D
 				assembly.HandOff(isSimulated, _clock);
 
 		ResetStream();
+	}
+
+	private void Tick(double delta)
+	{
+		if (!Plot.IsSimulatedLocally)
+			return;
+
+		var tick = new SimulationTick(Input, delta);
+
+		foreach (var (handle, ticked) in _ticked)
+			if (handle.Assembly is { IsKilled: false })
+				ticked.Tick(tick);
 	}
 
 	private void KillFallenAssemblies(double delta)

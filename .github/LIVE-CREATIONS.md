@@ -62,7 +62,7 @@ graph TD
    simulator (step 6), else the plot's owner, else itself, and it broadcasts each change with an epoch number. A
    change hands the creation off: the new simulator unfreezes its proxies where they last were, and the old one
    freezes its bodies into proxies.
-4. **Streaming.** The simulator sends its moving assemblies 20 times a second, bit-packed (about 25 bytes each),
+4. **Streaming.** The simulator sends its moving assemblies 20 times a second, bit-packed (about 26 bytes each),
    through the host, which checks and rate limits every packet before relaying it. Sleeping assemblies are resent
    about once a second, in case their final update was lost.
 5. **Proxies.** Each peer replays the received states 100 ms in the past, along curves through the positions and
@@ -240,7 +240,7 @@ much as Baja Builders did it (a model, two parts, and a constraint):
 - **Simulator stops sending:** simulators send at least a header-only heartbeat a second, and the host takes over a
   creation it heard nothing about for 3 s, as an override (so a flaky connection can't flip it back and forth).
 - **Owner lags or cheats:** sessions are invite-only, so checks stay light: the codec only carries finite, bounded
-  values (+-16 km, +-256 m/s); the host decodes every packet before relaying it (plot, epoch, at most one packet's
+  values (+-16 km, +-512 m/s); the host decodes every packet before relaying it (plot, epoch, at most one packet's
   states) and rate limits relays to 1.5 times what the creation's size lets a simulator send.
 - **Despawn mid-hand-off:** every peer frees the creation, and pending packets for it are dropped (no such creation).
 - **Late joiners:** `PlotsSnapshot` carries each plot's epoch, simulator, and the latest state of every assembly,
@@ -312,17 +312,17 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 | Assembly ID      | The group's index in weld order                                   | 16   |
 | Position         | Fixed point relative to the plot origin: 1/512 m steps, +-16384 m | 72   |
 | Rotation         | Smallest three: 2-bit index, 3 x 10 bits                          | 32   |
-| Linear velocity  | 1/32 m/s steps, +-256 m/s (the host's speed cap)                  | 42   |
-| Angular velocity | 1/32 rad/s steps, +-256 rad/s (a fast wheel spins past 100 rad/s) | 42   |
+| Linear velocity  | 1/32 m/s steps, +-512 m/s (past Jolt's own limit)                 | 45   |
+| Angular velocity | 1/32 rad/s steps, +-256 rad/s (the project's limit on spin)       | 42   |
 
-## 6. Asset logic at runtime (planned)
+## 6. Asset logic at runtime
 
 ### Ticks
 
 - Opt-in interfaces, not base classes, so a wing component can sit on any asset:
-    - `ISimulationTicked.SimulationTick(in SimulationTick tick)` - physics logic (motors, forces, aerodynamics). Runs
-      only on the peer simulating the asset's mechanism, at 100 Hz, from one loop per plot in instance-ID order. Not
-      simulating means not ticked, so assets never check ownership themselves.
+    - `ISimulationTicked.Tick(in SimulationTick tick)` - physics logic (motors, forces, aerodynamics). Runs only on
+      the peer simulating the asset's creation, once per physics tick, from one loop per creation in instance-ID order.
+      Not simulating means not ticked, so assets never check ownership themselves.
     - Plain Godot `_Process` for visuals on every peer (lights, effects). Normal Godot callbacks stay available, but
       heavy per-tick work belongs in the simulation tick.
 - The tick argument carries the infrastructure, so an asset implements one method and writes no plumbing. It starts
@@ -331,7 +331,7 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
 - `LiveCreation` collects the ticked handles and components once at spawn, so 1000 motors cost one engine callback plus
   1000 C# calls per tick.
 
-### State and forces
+### State and forces (planned)
 
 - `SimulationTick` exposes the assembly's state, read once per tick per assembly: transform, linear and angular
   velocity, center of mass.
@@ -380,11 +380,12 @@ Measured in a prototype with the game's physics settings; each point is what an 
 - **The keys (D11):** forward and reverse each drive the motor. Neither pressed, or both, is idle, so opposing keys
   are never undefined.
 - **Idle (D10):** a motor coasts, its joint free, unless a property holds it at zero speed as a brake.
-- **Torque falloff:** an optional property makes torque fall in a straight line from full at a standstill to none at
-  full speed, as in a real electric motor. Writing motor parameters every tick costs next to nothing, and changing them
-  wakes a sleeping creation, so scripts never wake bodies themselves.
-- **Speed limit:** Jolt caps every body's angular velocity with a project setting, which must stay above the fastest
-  motor.
+- **Torque falloff:** torque is constant by default, as Ensemble isn't after realism. An optional property makes it fall
+  in a straight line from full at a standstill to none at full speed, as in a real electric motor.
+- **Writing to joints:** changing a motor's parameters wakes a sleeping creation, so scripts never wake bodies, but must
+  write only changes for an idle creation to fall asleep.
+- **Speed limits:** Jolt caps every body's spin with a project setting, set to the most the stream carries, which still
+  stays under half a turn per tick. Proxies replay even the fastest motor at its true speed.
 - **Servos:** Godot's hinge reports no angle, so the script finds it from the two assemblies' transforms. Too high a
   proportional gain makes the arm chatter, since the motor answers a tick late. Keys steer toward the limits; with
   neither pressed the servo returns to center (a property can make it hold instead), and with both it stays put (D11).
@@ -437,7 +438,8 @@ Measured in a prototype with the game's physics settings; each point is what an 
   Each frame, the character's `PlayerHandle` copies the sit point's interpolated transform, the same one that seat is
   drawn with. Every peer does this against its own copy of the creation, so a rider can't lag behind their seat. Being
   parented instead would free the character with the seat's piece.
-- **Leaving:** the body re-enters the space beside the seat (pushed clear of the creation like at spawn), and regains
+- **Leaving:** the body re-enters the space where it fits, found by the engine rather than spatial code of our own: its
+  shape is cast down from above the seat, against whatever is really there, and it lands on top. Then it regains
   control.
 - **Anything that moves or removes a seated character leaves the seat first:** teleports (H reset, `tp_char`,
   despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed, the occupant leaving or
@@ -512,8 +514,8 @@ work proportional to what moves and thinks, not to what exists.
 |         | properties, and `LiveCreation` split out of `PlotHandle`                                       |
 | 0.57.x  | Suspension lengths in grid units, end to end; a jointed asset's two sides collide; joints      |
 |         | straighten before their bodies sleep (Baumgarte factor 0.5)                                    |
-| Next    | Simulation ticks and force accumulators, seats, input masks, driven joints (Motor, Servo,      |
-|         | Piston), then Airfoil and other forces                                                         |
+| Next    | The Motor, seats, input masks, the Servo and Piston, then force accumulators, Airfoil, and     |
+|         | other forces                                                                                   |
 
 ## 13. Decisions
 

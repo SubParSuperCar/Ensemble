@@ -26,6 +26,7 @@ lists them, resolved or open. Plans are a guide, not a contract: they bend when 
 | Piece            | An asset's own colliders (piece 0) or an `AssetPiece` child, riding its group's assembly   |
 | Mechanism        | (Later) Assemblies linked by joints; one plot's always share its simulator                 |
 | Owner            | The peer that simulates a mechanism; the plot's owner by default (network ownership)       |
+| Controller       | (Later) The occupant whose keys drive a spawned plot; never made its simulator for driving |
 | Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
 | Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
 | Anchor           | (Later) An asset that freezes its assembly while any anchor holds it                       |
@@ -324,8 +325,9 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
       simulating means not ticked, so assets never check ownership themselves.
     - Plain Godot `_Process` for visuals on every peer (lights, effects). Normal Godot callbacks stay available, but
       heavy per-tick work belongs in the simulation tick.
-- The tick argument carries the infrastructure (body state, force accumulator, input, delta), so an asset implements
-  one method and writes no plumbing.
+- The tick argument carries the infrastructure, so an asset implements one method and writes no plumbing. It starts
+  with input and delta; body state and the force accumulator join it with the first asset that needs them, since
+  joint motors use neither.
 - `LiveCreation` collects the ticked handles and components once at spawn, so 1000 motors cost one engine callback plus
   1000 C# calls per tick.
 
@@ -358,7 +360,7 @@ and may come earlier. Some glitching may be accepted at first.
 | Asset      | Joint                                      | Driven by                                             |
 |------------|--------------------------------------------|-------------------------------------------------------|
 | Hinge      | `HingeJoint3D`, free                       | -                                                     |
-| Motor      | `HingeJoint3D` with its motor              | Input sets the target velocity; max torque from props |
+| Motor      | `HingeJoint3D`, free until driven          | Input sets the target velocity; torque from props     |
 | Servo      | `HingeJoint3D` with its motor and limits   | A P-controller in the simulation tick toward a target |
 | Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target             |
 | Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)        |
@@ -367,6 +369,32 @@ and may come earlier. Some glitching may be accepted at first.
   density (125 kg/m3).
 - Joint stability suffers at large mass ratios (a 15 kg wheel on a 3 t car is 200:1). Mitigations: material densities
   for wheels, more Jolt solver iterations, and testing early.
+
+### Driven joints
+
+Measured in a prototype with the game's physics settings; each point is what an asset script must account for:
+
+- **Motors** read as metric: speed in RPM and torque in newton-meters, with a negative speed reversing them. The script
+  converts both, as Godot's `motor/max_impulse` is an impulse per physics tick (torque times the tick's length) and a
+  positive target velocity spins `node_b` backward about the joint's Z axis.
+- **The keys (D11):** forward and reverse each drive the motor. Neither pressed, or both, is idle, so opposing keys
+  are never undefined.
+- **Idle (D10):** a motor coasts, its joint free, unless a property holds it at zero speed as a brake.
+- **Torque falloff:** an optional property makes torque fall in a straight line from full at a standstill to none at
+  full speed, as in a real electric motor. Writing motor parameters every tick costs next to nothing, and changing them
+  wakes a sleeping creation, so scripts never wake bodies themselves.
+- **Speed limit:** Jolt caps every body's angular velocity with a project setting, which must stay above the fastest
+  motor.
+- **Servos:** Godot's hinge reports no angle, so the script finds it from the two assemblies' transforms. Too high a
+  proportional gain makes the arm chatter, since the motor answers a tick late. Keys steer toward the limits; with
+  neither pressed the servo returns to center (a property can make it hold instead), and with both it stays put (D11).
+- **Pieces keep a clearance (D16):** a motor's head and base stay collidable, with a little more than Jolt's contact
+  margin between them, so everything else on their assemblies still collides. The clearance held through a heavy impact
+  with no contact between them. A head can be small or light, but not massless: a lone massless assembly stays frozen,
+  and light heads held up as well as heavy ones.
+- **Skid steering** needs torque beyond what the wheels' grip resists sideways, or the two sides just stall against
+  each other, so it favors high torque limits and short wheelbases.
+- **Rigid cars flip on sharp bumps,** and bouncy wheels flip sooner, so real driving needs suspension.
 
 ## 8. Input (planned)
 
@@ -378,7 +406,7 @@ and may come earlier. Some glitching may be accepted at first.
   the whole state, so presses and releases are found by comparing with the previous mask: no start / stop bits or
   toggles, and a lost packet can't invert a key.
 - **Bindings live on assets,** as editable properties suffixed `Key` (e.g., a motor's `forwardKey`, `reverseKey`), so
-  the future PropertyTool knows to show them as key pickers. Values are Godot `Key` codes as integers: compact in saves
+  the Property Editor knows to show them as key pickers. Values are Godot `Key` codes as integers: compact in saves
   and packets, shown by name in the UI (harder to hand-edit in JSON saves, an acceptable cost). Assets read
   `tick.Input.IsPressed(Key.Q)`.
 - **Flow:** the controller samples its mask each physics tick (empty while the UI sinks input) and sends it to the
@@ -386,29 +414,37 @@ and may come earlier. Some glitching may be accepted at first.
   can't stick. It's a custom RPC, not an action: it changes too often for the action rate limiter, and needs no
   validation beyond "the sender is the plot's current controller", which the host checks.
 - **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
-  spin), not the plot owner as such. An asset whose look depends on input replicates that state itself (e.g., a glass
-  that turns from water to wine sends a bool to the other peers), and visuals that follow physics (a spinning rotor)
-  need nothing extra, since the proxies already move.
+  spin), not the plot owner as such. Controlling never moves the simulation to the controller (D14). An asset whose
+  look depends on input replicates that state itself (e.g., a glass that turns from water to wine sends a bool to the
+  other peers), and visuals that follow physics (a spinning rotor) need nothing extra, since the proxies already move.
 - While seated, the controller's character doesn't walk; the camera keeps mouse look and follows the seat.
 - **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, consumed only when no seated asset
   binds Space; otherwise the action's own key.
 
 ## 9. Seats and characters (planned)
 
-- A `Seat` component makes any asset a seat; its `HasControls` export makes it a control seat (the Chair and Control
-  Chair assets).
+- A `Seat` component makes any asset a seat, so seats can come in many styles. It exports an `Area3D` whose origin is
+  the sit point and whose shape detects touches; the area sees only characters, and watches only while live. One Seat
+  asset covers chairs and control chairs, with a `hasControls` property (D15).
 - **Sitting (D3):** on touch, as with Roblox's seats in BB, with a short cooldown after leaving so you don't sit right
   back down. **Anyone may sit in any seat (D4),** but only the plot's occupants can control (section 8).
-- **While seated,** the character's body leaves the physics space (the same hop as teleports), is parented to the
-  seat's piece at its sit point, and its controller stops moving it. A seated character adds no weight, so a creation
-  behaves the same with or without riders.
+- **Sitting and leaving are actions (D12),** like every change a player asks for, so they're validated, rate limited,
+  and ordered against despawning. Scripts can't reach Replication, so a local character's touch raises an event on
+  `Seat`, which the action's own registration in Replication subscribes to.
+- **While seated,** the character's body leaves the physics space (the same hop as teleports), and its controller stops
+  moving it. A seated character adds no weight, so a creation behaves the same with or without riders.
+- **Characters follow seats (D13):** the seat knows its occupant and where to sit, and the character knows its seat.
+  Each frame, the character's `PlayerHandle` copies the sit point's interpolated transform, the same one that seat is
+  drawn with. Every peer does this against its own copy of the creation, so a rider can't lag behind their seat. Being
+  parented instead would free the character with the seat's piece.
 - **Leaving:** the body re-enters the space beside the seat (pushed clear of the creation like at spawn), and regains
   control.
 - **Anything that moves or removes a seated character leaves the seat first:** teleports (H reset, `tp_char`,
   despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed, the occupant leaving or
   being kicked from the plot. `PlayerHandle.Teleport` calls `LeaveSeat()` before the hop, so every caller gets it.
-- **Replication:** a seated character replicates its seat (plot ID, instance ID) instead of its position; every peer
-  places it on its own copy of the seat, so it rides proxies smoothly.
+- **Replication:** the sit action names the seat (plot ID, instance ID), and a seated character sends no positions,
+  so nothing extra crosses the network while riding. A joining peer gets the seated characters with the plot's
+  snapshot, after its creation exists.
 
 ### Characters versus creations (research)
 
@@ -481,14 +517,21 @@ work proportional to what moves and thinks, not to what exists.
 
 ## 13. Decisions
 
-| #  | Decision                         | Resolution                                                        |
-|----|----------------------------------|-------------------------------------------------------------------|
-| D1 | Asset scene naming               | PascalCase scenes; `X.cs` beside `X.tscn`, nested in Rider        |
-| D2 | Leaving a seat                   | `character_seat_leave` (Space), unless a seated asset binds Space |
-| D3 | How to sit                       | On touch (BB parity), with a cooldown after leaving               |
-| D4 | Who may sit                      | Anyone in any seat; only plot occupants control                   |
-| D5 | Texture bank or material bank    | Material bank: look plus physics                                  |
-| D6 | Material ID 0                    | Debug checkerboard; plain assets default to -1                    |
-| D7 | Multiplayer or asset logic first | Multiplayer first                                                 |
-| D8 | Who receives input               | The simulator only; assets replicate input-driven looks           |
-| D9 | Who simulates an arbitrated pair | The simulator of the creation with the most assemblies            |
+| #   | Decision                            | Resolution                                                        |
+|-----|-------------------------------------|-------------------------------------------------------------------|
+| D1  | Asset scene naming                  | PascalCase scenes; `X.cs` beside `X.tscn`, nested in Rider        |
+| D2  | Leaving a seat                      | `character_seat_leave` (Space), unless a seated asset binds Space |
+| D3  | How to sit                          | On touch (BB parity), with a cooldown after leaving               |
+| D4  | Who may sit                         | Anyone in any seat; only plot occupants control                   |
+| D5  | Texture bank or material bank       | Material bank: look plus physics                                  |
+| D6  | Material ID 0                       | Debug checkerboard; plain assets default to -1                    |
+| D7  | Multiplayer or asset logic first    | Multiplayer first                                                 |
+| D8  | Who receives input                  | The simulator only; assets replicate input-driven looks           |
+| D9  | Who simulates an arbitrated pair    | The simulator of the creation with the most assemblies            |
+| D10 | What an idle motor does             | Coasts, with an optional brake property                           |
+| D11 | Opposing keys                       | Cancel: a motor idles, a servo stays put                          |
+| D12 | How seats change hands              | Actions, as for any change a player asks for                      |
+| D13 | How riders move                     | Characters follow their seat each frame, unparented               |
+| D14 | Does controlling move the simulator | No; the plot's owner usually simulates, whoever controls          |
+| D15 | Chairs and control chairs           | One Seat asset with a `hasControls` property                      |
+| D16 | A motor's head against its base     | A clearance, leaving both assemblies collidable                   |

@@ -8,8 +8,9 @@ namespace EnsembleRoot.BuildAssets.Advanced;
 
 /// <summary>
 ///     Spins its head against its base while its keys are held, at a speed and torque from the instance's properties;
-///     a negative speed reverses it. With neither key held, or both, it idles: free to coast, unless it brakes. Its
-///     torque is constant, or falls off in a straight line to nothing at full speed, like an electric motor's.
+///     a negative speed reverses it. With neither key held, or both, it idles: free to coast, unless it brakes. If it
+///     toggles, a key press starts it instead, until the other key reverses it or the same key stops it. Its torque is
+///     constant, or falls off in a straight line to nothing at full speed, like an electric motor's.
 /// </summary>
 public partial class Motor : AssetHandle, ISimulationTicked
 {
@@ -19,6 +20,7 @@ public partial class Motor : AssetHandle, ISimulationTicked
 	private const string TorqueKey = "torque";
 	private const string BrakesWhenIdleKey = "brakesWhenIdle";
 	private const string TorqueFalloffKey = "torqueFalloff";
+	private const string TogglesKey = "toggles";
 
 	// Revolutions per minute and newton-meters
 	private const float MaxSpeed = 1000f;
@@ -32,8 +34,11 @@ public partial class Motor : AssetHandle, ISimulationTicked
 	private Key _forwardKey;
 	private bool _hasTorqueFalloff;
 	private float _impulse;
+	private bool _isForwardHeld;
+	private bool _isReverseHeld;
 	private Key _reverseKey;
 	private float _speed;
+	private bool _toggles;
 	private float _torque;
 
 	/// <summary>Links the base, as node A, to the head, as node B, about its Z axis.</summary>
@@ -45,7 +50,12 @@ public partial class Motor : AssetHandle, ISimulationTicked
 
 	public void Tick(in SimulationTick tick)
 	{
-		var direction = (tick.Input.IsPressed(_forwardKey) ? 1 : 0) - (tick.Input.IsPressed(_reverseKey) ? 1 : 0);
+		var isForward = tick.Input.IsPressed(_forwardKey);
+		var isReverse = tick.Input.IsPressed(_reverseKey);
+		var direction = _toggles ? GetToggledDirection(isForward, isReverse) : GetSign(isForward, isReverse);
+
+		_isForwardHeld = isForward;
+		_isReverseHeld = isReverse;
 
 		// Writing to a joint wakes its bodies, so only changes are written, and an idle creation can fall asleep
 		if (direction != _direction)
@@ -70,8 +80,19 @@ public partial class Motor : AssetHandle, ISimulationTicked
 
 		_brakesWhenIdle = Instance.Properties.GetValue(BrakesWhenIdleKey).AsBool();
 		_hasTorqueFalloff = Instance.Properties.GetValue(TorqueFalloffKey).AsBool() && _speed is not 0;
+		_toggles = Instance.Properties.GetValue(TogglesKey).AsBool();
 
 		ApplyDirection();
+	}
+
+	private static int GetSign(bool isForward, bool isReverse) => (isForward ? 1 : 0) - (isReverse ? 1 : 0);
+
+	// Only new presses count, and pressing both at once changes nothing, as holding both does otherwise
+	private int GetToggledDirection(bool isForward, bool isReverse)
+	{
+		var pressed = GetSign(isForward && !_isForwardHeld, isReverse && !_isReverseHeld);
+
+		return pressed is 0 ? _direction : pressed == _direction ? 0 : pressed;
 	}
 
 	// A positive target velocity spins node B backward about the joint's Z axis

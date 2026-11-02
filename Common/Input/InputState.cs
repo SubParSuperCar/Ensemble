@@ -29,16 +29,16 @@ public readonly record struct InputState(ulong Mask)
 
 	public static bool IsBindable(Key key) => BitsByKey.ContainsKey(key);
 
-	/// <summary>The bindable keys pressed right now; none while the UI sinks input.</summary>
-	public static InputState Sample()
+	/// <summary>Which of some keys are pressed right now; none while the UI sinks input.</summary>
+	public static InputState Sample(IEnumerable<Key> keys)
 	{
 		if (InputSink.IsSunk)
 			return default;
 
 		var mask = 0ul;
 
-		foreach (var (key, bit) in BitsByKey)
-			if (Godot.Input.IsKeyPressed(key))
+		foreach (var key in keys)
+			if (BitsByKey.TryGetValue(key, out var bit) && Godot.Input.IsKeyPressed(key))
 				mask |= 1ul << bit;
 
 		return new InputState(mask);

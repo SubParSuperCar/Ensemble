@@ -12,18 +12,22 @@ public partial class PlotHandle
 	// So a lost update heals, whether it was a press or a release
 	private const double InputResendInterval = 1 / 4d;
 
+	// A simulator lets go of the keys after this many missed updates, should a controller hang while still connected
+	private const double InputTimeout = 4 * InputResendInterval;
+
 	// Bounds what the host relays for a flooding controller, past any key press a player could make
 	private const double MinInputRelayInterval = 1 / 120d;
 
 	private long _lastInputRelayTimestamp;
 	private InputState _sentInput;
+	private double _sinceInputHeard;
 	private double _sinceInputSent;
 
 	/// <summary>
 	///     The plot's occupant whose keys drive its creation: the oldest one sitting in one of its seats with controls.
 	///     Every peer derives it alike from who occupies the plot and who sits where.
 	/// </summary>
-	public PlayerHandle? GetController()
+	internal PlayerHandle? GetController()
 	{
 		if (Creation is not { IsControlSeatTaken: true })
 			return null;
@@ -51,11 +55,18 @@ public partial class PlotHandle
 		}
 
 		if (controller != GPlayerManager.LocalHandle)
+		{
+			_sinceInputHeard += delta;
+
+			if (_sinceInputHeard >= InputTimeout)
+				creation.Input = default;
+
 			return;
+		}
 
 		_sinceInputSent += delta;
 
-		var input = InputState.Sample();
+		var input = InputState.Sample(creation.BoundKeys);
 
 		if (input == _sentInput && _sinceInputSent < InputResendInterval)
 			return;
@@ -70,7 +81,10 @@ public partial class PlotHandle
 	private void RouteInput(LiveCreation creation, InputState input)
 	{
 		if (IsSimulatedLocally)
+		{
 			creation.Input = input;
+			_sinceInputHeard = 0;
+		}
 		else if (GSessionManager.IsServer)
 			RpcId(SimulatorPeerId, MethodName.RpcReceiveInput, (long)input.Mask);
 		else
@@ -96,7 +110,7 @@ public partial class PlotHandle
 		if (!GSessionManager.IsServer)
 		{
 			if (senderId == HostPeerId && IsSimulatedLocally)
-				creation.Input = input;
+				RouteInput(creation, input);
 
 			return;
 		}

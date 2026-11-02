@@ -17,16 +17,19 @@ public partial class PlotHandle
 		(SimulationEpoch, SimulatorPeerId, Creation?.CaptureStates() ?? [], Creation?.CaptureSeats() ?? []);
 
 	/// <summary>Adopts a joining snapshot's simulation state, once the snapshot has spawned the plot.</summary>
-	internal void RestoreCreation(ushort epoch, int simulatorPeerId, byte[] states, Dictionary seats)
+	internal void RestoreCreation(ushort epoch, int simulatorPeerId, byte[] states)
 	{
 		SimulationEpoch = epoch;
 		SetSimulator(simulatorPeerId);
 
 		if (!IsSimulatedLocally)
 			Creation?.RestoreStates(states);
-
-		Creation?.RestoreSeats(seats);
 	}
+
+	/// <summary>
+	///     Seats a joining snapshot's riders, once every plot has its occupants, as changing plots leaves seats.
+	/// </summary>
+	internal void RestoreSeats(Dictionary seats) => Creation?.RestoreSeats(seats);
 
 	/// <summary>Sends a packet of the creation's states on, from its simulator.</summary>
 	internal void SendCreation(byte[] data) => Send(data, GSessionManager.LocalPeerId);

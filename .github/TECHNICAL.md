@@ -363,6 +363,7 @@ sequenceDiagram
 |----------------------------|--------------------------------------------------|
 | `SetPlotAction`            | Claims or releases a plot for the sender         |
 | `SetPlotSpawnedAction`     | Spawns or despawns a plot (owner or host)        |
+| `SetSeatAction`            | Sits a player in a seat, or stands them up       |
 | `AddInstancesAction`       | Places up to 256 instances with their properties |
 | `RemoveInstancesAction`    | Deletes up to 256 instances                      |
 | `SetPropertiesAction`      | Changes the properties of up to 256 instances    |

@@ -125,10 +125,12 @@ public partial class PlayerHandle : Node3D
 
 	public void Teleport(Vector3 position)
 	{
+		// Only the host can free the seat, so the character moves once it has
 		if (Seat is not null)
 		{
+			_teleportAfterSeat = position;
 			Seat.RequestLeave();
-			Vacate();
+			return;
 		}
 
 		_standUp = null;

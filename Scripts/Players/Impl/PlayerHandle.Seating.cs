@@ -15,6 +15,7 @@ public partial class PlayerHandle
 
 	private long _leftSeatTimestamp;
 	private (Vector3 Above, Vector3 Seat)? _standUp;
+	private Vector3? _teleportAfterSeat;
 
 	/// <summary>The seat the character sits in, which every peer follows on its own copy of the creation.</summary>
 	public Seat? Seat { get; private set; }
@@ -24,7 +25,7 @@ public partial class PlayerHandle
 	/// <summary>
 	///     Sits the character down, out of the physics space, so it can't disturb the creation or weigh on it.
 	/// </summary>
-	public void Sit(Seat seat)
+	internal void Sit(Seat seat)
 	{
 		Vacate();
 
@@ -33,6 +34,7 @@ public partial class PlayerHandle
 
 		_stateCount = 0;
 		_standUp = null;
+		_teleportAfterSeat = null;
 
 		PhysicsServer3D.BodySetSpace(Body.GetRid(), default);
 		Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
@@ -48,7 +50,7 @@ public partial class PlayerHandle
 	///     Takes the character out of its seat, if any. The local character stands up on its next physics tick; another
 	///     peer's stays out of the space until its next state arrives, as it's still where the seat is.
 	/// </summary>
-	public void Vacate()
+	internal void Vacate()
 	{
 		if (Seat is not { } seat)
 			return;
@@ -69,15 +71,23 @@ public partial class PlayerHandle
 		_controller.IsSeated = false;
 		Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Inherit;
 
+		if (_teleportAfterSeat is { } destination)
+		{
+			_teleportAfterSeat = null;
+			Teleport(destination);
+			return;
+		}
+
 		var position = Body.GlobalPosition;
 		_standUp = (GetAbove(position, seat), position);
 	}
 
-	/// <summary>Takes the character out of a seat that fell out of the world, which would leave it falling too.</summary>
-	internal void VacateFallenSeat()
+	/// <summary>
+	///     Respawns the local character out of a seat that fell out of the world, which would leave it falling too.
+	///     Other peers' riders are their own peers' to move, as each peer's copy of the seat falls at its own moment.
+	/// </summary>
+	internal void LeaveFallenSeat()
 	{
-		Vacate();
-
 		if (_controller is not null)
 			Respawn();
 	}
@@ -94,7 +104,7 @@ public partial class PlayerHandle
 			return;
 
 		// Space drives whatever binds it, while its controller sits; a reset still leaves the seat
-		if (plot.GetController() != this || plot.Creation?.IsKeyBound(Key.Space) is not true)
+		if (plot.GetController() != this || plot.Creation?.BoundKeys.Contains(Key.Space) is not true)
 			Seat.RequestLeave();
 	}
 

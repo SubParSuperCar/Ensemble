@@ -1,6 +1,8 @@
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Plots;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace EnsembleRoot.Tooling;
 
 /// <summary>
@@ -35,7 +37,6 @@ public sealed class MultiSelector : IDisposable
 	// ReSharper disable once UnusedMember.Global
 	public void Add(IEnumerable<int> instanceIds) => Select([.. instanceIds.Distinct().Where(IsSelectable)]);
 
-	// ReSharper disable once MemberCanBePrivate.Global
 	public void Remove(IEnumerable<int> instanceIds) => Deselect([.. instanceIds.Distinct().Where(Contains)]);
 	public void Clear() => Deselect([.. _instanceIds]);
 

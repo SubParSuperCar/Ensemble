@@ -156,6 +156,8 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
 - (WIP) (L) Drivable creations - simulation ticks, the Motor, seats, input from a plot's controller, and key pickers in
   the Property Editor are done (0.58.0), so skid-steered cars drive. Next: the Servo, then a car with steering and
   suspension
+- [ ] (S) Seated input - a seated player's flashlight replicates, and game keys (`Q` / `E` camera yaw, `F`, `H`) stop
+  firing when the creation binds them
 - [ ] (M) Bandwidth - a per-client budget that favors near and fast bodies over far ones
 - [ ] (M) Characters riding moving creations (platform velocity)
 - [ ] (M) Anchors - an asset that freezes its assembly while it holds it

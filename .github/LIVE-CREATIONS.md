@@ -367,8 +367,9 @@ and may come earlier. Some glitching may be accepted at first.
 
 - Strengths are asset properties (non-underscore, so the future PropertyTool edits them), scaled for the default
   density (125 kg/m3).
-- Joint stability suffers at large mass ratios (a 15 kg wheel on a 3 t car is 200:1). Mitigations: material densities
-  for wheels, more Jolt solver iterations, and testing early.
+- Joint stability suffers at large mass ratios, worst when a light link joins heavy bodies (a wheel on a motor on a
+  suspension). Jolt's velocity steps stiffen every joint at no measurable cost, and light wheels keep the ratios low;
+  lowering every density instead makes joints worse, as their torques and springs stay as strong.
 
 ### Driven joints
 
@@ -380,6 +381,8 @@ Measured in a prototype with the game's physics settings; each point is what an 
 - **The keys (D11):** forward and reverse each drive the motor. Neither pressed, or both, is idle, so opposing keys
   are never undefined.
 - **Idle (D10):** a motor coasts, its joint free, unless a property holds it at zero speed as a brake.
+- **Toggling:** a property makes a key press latch the motor on, until the other key reverses it or the same key stops
+  it. Like all live state, the latch stays on the peer that simulates, so a hand-off stops the motor.
 - **Torque falloff:** torque is constant by default, as Ensemble isn't after realism. An optional property makes it fall
   in a straight line from full at a standstill to none at full speed, as in a real electric motor.
 - **Writing to joints:** changing a motor's parameters wakes a sleeping creation, so scripts never wake bodies, but must

@@ -25,6 +25,7 @@ uv1_triplanar = true
 [resource]
 script = ExtResource("1_5qb6j")
 Look = SubResource("ORMMaterial3D_523sa")
-Friction = 0.75
+Density = 31.25
+Friction = 1.0
 Bounce = 0.5
 metadata/_custom_type_script = "uid://ctgp55iclfbsa"

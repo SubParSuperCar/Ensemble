@@ -31,12 +31,13 @@ Base = NodePath("Base")
 Head = NodePath("Head")
 AssetId = 13
 AssetName = &"Motor"
-Description = &"Spins whatever is welded to its head while you hold its keys."
+Description = &"Spins whatever is welded to its head, while its keys are held or toggled on."
 Properties = Dictionary[StringName, Variant]({
 &"brakesWhenIdle": false,
 &"forwardKey": 87,
 &"reverseKey": 83,
 &"speed": 200.0,
+&"toggles": false,
 &"torque": 5000.0,
 &"torqueFalloff": false
 })

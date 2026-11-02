@@ -1,6 +1,7 @@
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Scripts.Assets.Components;
 using EnsembleRoot.Scripts.Cameras;
 using Godot;
 using Serilog;
@@ -89,10 +90,14 @@ public partial class PlayerHandle : Node3D
 	{
 		_occupant.PlotChanged -= OnPlotChanged;
 		_plot?.IsSpawnedChanged -= OnIsPlotSpawnedChanged;
+
+		Vacate();
 	}
 
 	public override void _Process(double delta)
 	{
+		FollowSeat();
+
 		if (_controller is null)
 		{
 			Interpolate(delta);
@@ -100,6 +105,7 @@ public partial class PlayerHandle : Node3D
 		}
 
 		UpdateReset(delta);
+		UpdateSeatLeave();
 
 		if (!InputSink.IsSunk && Input.IsActionJustPressed(FlashlightAction))
 			_flashlight.Visible = !_flashlight.Visible;
@@ -107,12 +113,26 @@ public partial class PlayerHandle : Node3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (_controller is not null)
+		if (_standUp is var (above, seat))
+		{
+			_standUp = null;
+			StandUp(above, seat);
+		}
+
+		if (_controller is not null && Seat is null)
 			Replicate();
 	}
 
 	public void Teleport(Vector3 position)
 	{
+		if (Seat is not null)
+		{
+			Seat.RequestLeave();
+			Vacate();
+		}
+
+		_standUp = null;
+
 		Body.Velocity = Vector3.Zero;
 		Jump(position);
 
@@ -126,12 +146,11 @@ public partial class PlayerHandle : Node3D
 	private void Jump(Vector3 position)
 	{
 		var rid = Body.GetRid();
-		var space = PhysicsServer3D.BodyGetSpace(rid);
 
 		PhysicsServer3D.BodySetSpace(rid, default);
 		Body.GlobalPosition = position;
 		Body.ForceUpdateTransform();
-		PhysicsServer3D.BodySetSpace(rid, space);
+		PhysicsServer3D.BodySetSpace(rid, GetWorld3D().Space);
 		Body.ResetPhysicsInterpolation();
 	}
 
@@ -153,6 +172,8 @@ public partial class PlayerHandle : Node3D
 
 	private void OnPlotChanged(GdPlot? plot)
 	{
+		Vacate();
+
 		_plot?.IsSpawnedChanged -= OnIsPlotSpawnedChanged;
 		_plot = plot;
 		_plot?.IsSpawnedChanged += OnIsPlotSpawnedChanged;

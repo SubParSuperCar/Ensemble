@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Assets.Components;
 using EnsembleRoot.Scripts.Assets.Materials;
 using EnsembleRoot.Scripts.Creations.Packets;
 using EnsembleRoot.Scripts.Plots;
@@ -52,6 +53,7 @@ public partial class LiveCreation
 
 			handle.Initialize(Plot, instance);
 			AddTicked(handle);
+			AddSeat(instance.Id, handle.GetComponent<Seat>());
 		}
 
 		// Streamed states carry 16-bit IDs, which only creations far beyond any plot's quota exceed

@@ -152,10 +152,10 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   character (another peer's creation, or a dedicated host's) stay on the ground
 - (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass
   `AssetHandle`) initialize once their whole creation exists, and tick in one batch on the creation's simulator;
-  `Paintable` and the `MaterialBank` are done. Next: seats, input, and driven joints (motors, servos, pistons)
-- (WIP) (L) Drivable creations - simulation ticks and the Motor's script are done. Next, in order: the Motor's scene,
-  seats, input, a first skid-steered drive, key pickers in the Property Editor, the Servo, then a car with steering and
-  suspension
+  `Paintable` and the `MaterialBank` are done. Next: input and driven joints (motors, servos, pistons)
+- (WIP) (L) Drivable creations - simulation ticks, the Motor's script, and the `Seat` component are done. Next, in
+  order: the Motor's and Seat's scenes, input, a first skid-steered drive, key pickers in the Property Editor, the
+  Servo, then a car with steering and suspension
 - [ ] (M) Bandwidth - a per-client budget that favors near and fast bodies over far ones
 - [ ] (M) Characters riding moving creations (platform velocity)
 - [ ] (M) Anchors - an asset that freezes its assembly while it holds it

@@ -57,7 +57,7 @@ public partial class PlayerHandle
 	/// <summary>Places another's character from a snapshot, unless an update already did.</summary>
 	public void RestoreReplicatedState(Vector3 position, float yaw)
 	{
-		if (_controller is not null || _stateCount > 0 || !IsValidState(position, yaw))
+		if (_controller is not null || Seat is not null || _stateCount > 0 || !IsValidState(position, yaw))
 			return;
 
 		// Held until live states arrive, which start the timeline
@@ -154,7 +154,9 @@ public partial class PlayerHandle
 		else if (senderId != MultiplayerPeer.TargetPeerServer)
 			return;
 
-		AddState(new CharacterState(_timeline.GetTime(sequence, _clock), position, yaw, isFlashlightOn));
+		// It follows its seat instead; a state sent just before sitting is simply late
+		if (Seat is null)
+			AddState(new CharacterState(_timeline.GetTime(sequence, _clock), position, yaw, isFlashlightOn));
 	}
 
 	// Also false for NaN

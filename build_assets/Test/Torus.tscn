@@ -27,6 +27,7 @@ script = ExtResource("1_wpl7w")
 AssetId = 6
 AssetName = &"Torus (TEST!)"
 Properties = Dictionary[StringName, Variant]({
+&"_testInternalWithLongName": &"Wholesale Piecemeal - Syntropic Studios",
 &"aNormalStringLOL": &"Lorem ipsum dolor sit amet.",
 &"damping": 50.0,
 &"doesNullWork": null,

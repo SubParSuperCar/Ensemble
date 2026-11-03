@@ -357,13 +357,13 @@ and may come earlier. Some glitching may be accepted at first.
 - Joint mapping in Godot with Jolt (the 6DOF spring, limits, and equilibrium point were verified in a prototype: a
   spring sags exactly m g / k, and a limit left at 0 to 0 locks its axis):
 
-| Asset      | Joint                                      | Driven by                                             |
-|------------|--------------------------------------------|-------------------------------------------------------|
-| Free Hinge | `HingeJoint3D`, free                       | -                                                     |
-| Motor      | `HingeJoint3D`, free until driven          | Input sets the target velocity; torque from props     |
-| Servo      | `HingeJoint3D` with its motor and limits   | A P-controller toward its limit, or back to center    |
-| Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target             |
-| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)        |
+| Asset      | Joint                                      | Driven by                                          |
+|------------|--------------------------------------------|----------------------------------------------------|
+| Free Hinge | `HingeJoint3D`, free                       | -                                                  |
+| Motor      | `HingeJoint3D`, free until driven          | Input sets the target velocity; torque from props  |
+| Servo      | `HingeJoint3D` with its motor and limits   | A P-controller toward its limit, or back to center |
+| Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target          |
+| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)     |
 
 - Strengths are asset properties (non-underscore, so the future PropertyTool edits them), scaled for the default
   density (125 kg/m3).

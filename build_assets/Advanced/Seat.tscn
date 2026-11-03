@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://dq6tdrantlmc4" path="res://Scripts/Assets/Components/Seat.cs" id="3_seat"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_cushion"]
-size = Vector3(0.5, 0.2, 0.5)
+size = Vector3(0.5, 0.2, 0.498)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_seat"]
 shading_mode = 2
@@ -37,7 +37,7 @@ Properties = Dictionary[StringName, Variant]({
 MaxInstanceCount = 50
 
 [node name="Cushion Collider" type="CollisionShape3D" parent="." unique_id=483904584]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -0.001)
 shape = SubResource("BoxShape3D_cushion")
 
 [node name="Cushion Mesh" type="MeshInstance3D" parent="." unique_id=944428852]

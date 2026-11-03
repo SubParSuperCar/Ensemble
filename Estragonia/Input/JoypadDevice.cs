@@ -38,7 +38,7 @@ internal sealed class JoypadDevice(int id) : IJoypadDevice
 
 		var element = GetTargetElement(rawArgs);
 		var args = new JoypadButtonEventArgs(routedEvent, element, this, rawArgs.Button);
-		element.RaiseEvent(args);
+		element?.RaiseEvent(args);
 		rawArgs.Handled = args.Handled;
 	}
 
@@ -52,13 +52,17 @@ internal sealed class JoypadDevice(int id) : IJoypadDevice
 			rawArgs.Axis,
 			rawArgs.AxisValue
 		);
-		element.RaiseEvent(args);
+		element?.RaiseEvent(args);
 		rawArgs.Handled = args.Handled;
 	}
+
+	// TODO:
+	// `ProcessAxisEvent` has thrown: Unable to cast object of type 'PresentationSource' to type 'IInputElement'
+	// ReSharper was right. This needs an actual fix, possibly a guard. Nullability is a Band-Aid fix.
 
 	// Every Avalonia IInputRoot is a TopLevel, and therefore an InputElement, but ReSharper can't see
 	// that through the referenced assembly
 	// ReSharper disable once SuspiciousTypeConversion.Global
-	private static IInputElement GetTargetElement(RawInputEventArgs rawArgs) =>
-		rawArgs.Root.FocusManager?.GetFocusedElement() ?? (IInputElement)rawArgs.Root;
+	private static IInputElement? GetTargetElement(RawInputEventArgs rawArgs) =>
+		rawArgs.Root.FocusManager?.GetFocusedElement() ?? rawArgs.Root as IInputElement;
 }

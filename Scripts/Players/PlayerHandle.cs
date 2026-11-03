@@ -53,6 +53,9 @@ public partial class PlayerHandle : Node3D
 
 	public override void _Ready()
 	{
+		// After a seat's creation moves it, and the camera after the character, so they all interpolate together
+		ProcessPhysicsPriority = 1;
+
 		Body = GetNode<CharacterBody3D>("Character");
 		Body.GlobalPosition = SpawnLocation;
 
@@ -75,6 +78,7 @@ public partial class PlayerHandle : Node3D
 		Body = _controller = (CharacterController)InstanceFromId(instanceId)!;
 
 		var camera = CameraScene.Instantiate<PopperCam>();
+		camera.ProcessPhysicsPriority = ProcessPhysicsPriority + 1;
 		AddChild(camera);
 		camera.Focus = _controller;
 
@@ -96,8 +100,6 @@ public partial class PlayerHandle : Node3D
 
 	public override void _Process(double delta)
 	{
-		FollowSeat();
-
 		if (_controller is null)
 		{
 			Interpolate(delta);
@@ -119,7 +121,9 @@ public partial class PlayerHandle : Node3D
 			StandUp(above, seat);
 		}
 
-		if (_controller is not null && Seat is null)
+		if (Seat is not null)
+			FollowSeat();
+		else if (_controller is not null)
 			Replicate();
 	}
 

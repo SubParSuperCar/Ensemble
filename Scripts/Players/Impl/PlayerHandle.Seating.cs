@@ -37,8 +37,13 @@ public partial class PlayerHandle
 		_teleportAfterSeat = null;
 
 		PhysicsServer3D.BodySetSpace(Body.GetRid(), default);
-		Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 		Body.Velocity = Vector3.Zero;
+
+		// Moved on physics ticks while seated, as the seat is, even on peers that otherwise move it every frame
+		FollowSeat();
+		Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Inherit;
+		Body.ResetPhysicsInterpolation();
+
 		_controller?.IsSeated = true;
 
 		Log.Debug(
@@ -66,10 +71,12 @@ public partial class PlayerHandle
 			_player.Name, seat.Handle.InstanceId, seat.Handle.Plot.Id);
 
 		if (_controller is null)
+		{
+			Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 			return;
+		}
 
 		_controller.IsSeated = false;
-		Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Inherit;
 
 		if (_teleportAfterSeat is { } destination)
 		{
@@ -92,11 +99,7 @@ public partial class PlayerHandle
 			Respawn();
 	}
 
-	private void FollowSeat()
-	{
-		if (Seat is { } seat)
-			Body.GlobalTransform = seat.Area.GetGlobalTransformInterpolated();
-	}
+	private void FollowSeat() => Body.GlobalTransform = Seat!.Area.GlobalTransform;
 
 	private void UpdateSeatLeave()
 	{

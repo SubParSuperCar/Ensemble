@@ -13,10 +13,12 @@ namespace EnsembleRoot.Scripts.DiscordRichPresence;
 ///     addresses, ports, or player counts.
 /// </remarks>
 [GlobalClass]
+#if EXPORT // Only real builds show on Discord, so development runs never pass for playing the game
 [Autoload(
 	Scope = AutoloadScope.RegularClient,
 	Order = AutoloadOrder.Standard + 3,
 	FailurePolicy = AutoloadFailurePolicy.LogAndContinue)]
+#endif
 public partial class DiscordRpc : Node, IAutoload
 {
 	private const string AppId = "1534319171079504002";

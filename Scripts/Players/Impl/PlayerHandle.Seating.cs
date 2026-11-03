@@ -10,6 +10,8 @@ public partial class PlayerHandle
 {
 	private static readonly StringName SeatLeaveAction = "character_seat_leave";
 
+	private static readonly Dictionary<StringName, Key[]> KeysByAction = [];
+
 	// So leaving a seat doesn't sit right back down
 	private static readonly TimeSpan SitCooldown = TimeSpan.FromSeconds(1);
 
@@ -21,6 +23,25 @@ public partial class PlayerHandle
 	public Seat? Seat { get; private set; }
 
 	public bool CanSit => Seat is null && Stopwatch.GetElapsedTime(_leftSeatTimestamp) >= SitCooldown;
+
+	/// <summary>
+	///     Whether the creation this character controls binds a key of an action, which then drives the creation instead
+	///     of doing what it does in the game.
+	/// </summary>
+	public bool IsActionTaken(StringName action)
+	{
+		if (
+			Seat is not { Handle.Plot: var plot } || plot.GetController() != this ||
+			plot.Creation is not { BoundKeys: var boundKeys })
+			return false;
+
+		// ReSharper disable once LoopCanBeConvertedToQuery
+		foreach (var key in GetActionKeys(action))
+			if (boundKeys.Contains(key))
+				return true;
+
+		return false;
+	}
 
 	/// <summary>
 	///     Sits the character down, out of the physics space, so it can't disturb the creation or weigh on it.
@@ -102,12 +123,28 @@ public partial class PlayerHandle
 
 	private void UpdateSeatLeave()
 	{
-		if (Seat is not { Handle.Plot: var plot } || InputSink.IsSunk || !Input.IsActionJustPressed(SeatLeaveAction))
+		if (Seat is null || !IsActionJustPressed(SeatLeaveAction))
 			return;
 
-		// Space drives whatever binds it, while its controller sits; a reset still leaves the seat
-		if (plot.GetController() != this || plot.Creation?.BoundKeys.Contains(Key.Space) is not true)
-			Seat.RequestLeave();
+		Seat.RequestLeave();
+	}
+
+	private bool IsActionJustPressed(StringName action) =>
+		!InputSink.IsSunk && Input.IsActionJustPressed(action) && !IsActionTaken(action);
+
+	private static Key[] GetActionKeys(StringName action)
+	{
+		if (!KeysByAction.TryGetValue(action, out var keys))
+			KeysByAction.Add(
+				action,
+				keys =
+				[
+					.. InputMap.ActionGetEvents(action)
+						.OfType<InputEventKey>()
+						.Select(static key => key.Keycode is Key.None ? key.PhysicalKeycode : key.Keycode)
+				]);
+
+		return keys;
 	}
 
 	// Clear of the seat's whole assembly, so the cast down starts in the open

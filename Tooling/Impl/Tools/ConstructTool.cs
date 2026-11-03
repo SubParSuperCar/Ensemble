@@ -62,6 +62,9 @@ public partial class ConstructTool : ToolBase
 
 	public event Action<int>? AssetIdChanged;
 
+	/// <summary>Raised by every rotation, by button, key, or script, with the axis whose name it was asked by.</summary>
+	public event Action<Vector3.Axis>? Rotated;
+
 	public override void _UnhandledInput(InputEvent @event)
 	{
 		if (!_isActive || InputSink.IsSunk)
@@ -100,9 +103,9 @@ public partial class ConstructTool : ToolBase
 			UpdatePlacement();
 	}
 
-	public void RotateX() => Rotate(Vector3.Up);
-	public void RotateY() => Rotate(Vector3.Right);
-	public void RotateZ() => Rotate(Vector3.Back);
+	public void RotateX() => Rotate(Vector3.Up, Vector3.Axis.X);
+	public void RotateY() => Rotate(Vector3.Right, Vector3.Axis.Y);
+	public void RotateZ() => Rotate(Vector3.Back, Vector3.Axis.Z);
 
 	public void ResetRotation() => SetRotation(Quaternion.Identity);
 
@@ -319,9 +322,9 @@ public partial class ConstructTool : ToolBase
 			.TweenProperty(_solidHighlight, nameof(SolidHighlight.Tint), InvalidTint, FlashDuration)
 			.From(Colors.White);
 
-	private void Rotate(Vector3 axis)
+	private void Rotate(Vector3 direction, Vector3.Axis axis)
 	{
-		var increment = new Quaternion(axis, SnappingIncrementAngularRadians);
+		var increment = new Quaternion(direction, SnappingIncrementAngularRadians);
 
 		SetRotation(RotationSpace switch
 		{
@@ -329,5 +332,7 @@ public partial class ConstructTool : ToolBase
 			RotationSpace.Local => _rotation * increment,
 			_ => throw new UnreachableException()
 		});
+
+		Rotated?.Invoke(axis);
 	}
 }

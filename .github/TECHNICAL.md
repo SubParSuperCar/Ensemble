@@ -194,7 +194,7 @@ sequenceDiagram
 | `Standard`     | `ChatManager`            | all    | Chat history, logs, and read-aloud               |
 | `Standard + 1` | `ProfanityFilterManager` | all    | The host's profanity filter for chat and names   |
 | `Standard + 2` | `ExeHasher`              | all    | Logs the executable's path, size, and hash       |
-| `Standard + 3` | `DiscordRpc`             | client | Discord Rich Presence                            |
+| `Standard + 3` | `DiscordRpc`             | client | Discord Rich Presence (exports only)             |
 | `Standard + 4` | `DiagnosticLogger`       | all    | Logs a system report in the background           |
 | `Late`         | `WorldManager`           | all    | Instantiates the world scene for each session    |
 | `Late + 1`     | `UpdateChecker`          | client | Checks GitHub for newer releases                 |

@@ -78,10 +78,13 @@ public partial class PlayerHandle
 		var yaw = Body.GlobalRotation.Y;
 		var isFlashlightOn = _flashlight.Visible;
 
-		var isIdle =
-			position.DistanceTo(_lastReplicatedPosition) < MinReplicatedDistance &&
-			MathF.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw &&
-			isFlashlightOn == _lastReplicatedIsFlashlightOn;
+		// A seated character's pose is its seat's, which every peer follows itself, so only its flashlight is news
+		var isStill =
+			Seat is not null ||
+			(position.DistanceTo(_lastReplicatedPosition) < MinReplicatedDistance &&
+				MathF.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw);
+
+		var isIdle = isStill && isFlashlightOn == _lastReplicatedIsFlashlightOn;
 
 		if (isIdle && (ushort)(sequence - _lastReplicatedSequence) < IdleReplicationStates)
 			return;
@@ -154,9 +157,11 @@ public partial class PlayerHandle
 		else if (senderId != MultiplayerPeer.TargetPeerServer)
 			return;
 
-		// It follows its seat instead; a state sent just before sitting is simply late
+		// It follows its seat instead, so only the flashlight is taken; a state sent just before sitting is simply late
 		if (Seat is null)
 			AddState(new CharacterState(_timeline.GetTime(sequence, _clock), position, yaw, isFlashlightOn));
+		else
+			ShowFlashlight(isFlashlightOn);
 	}
 
 	// Also false for NaN
@@ -204,14 +209,19 @@ public partial class PlayerHandle
 		_states[_stateCount++] = state;
 	}
 
+	private void ShowFlashlight(bool isOn)
+	{
+		if (isOn == _shownIsFlashlightOn)
+			return;
+
+		_flashlight.Visible = isOn;
+		_shownIsFlashlightOn = isOn;
+	}
+
 	// Remembers what it last showed, so a character standing still costs no interop
 	private void Show(Vector3 position, float yaw, bool isFlashlightOn, bool isJump)
 	{
-		if (isFlashlightOn != _shownIsFlashlightOn)
-		{
-			_flashlight.Visible = isFlashlightOn;
-			_shownIsFlashlightOn = isFlashlightOn;
-		}
+		ShowFlashlight(isFlashlightOn);
 
 		// ReSharper disable once CompareOfFloatsByEqualityOperator
 		if (!isJump && position == _shownPosition && yaw == _shownYaw)

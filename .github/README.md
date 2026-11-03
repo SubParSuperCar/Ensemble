@@ -208,7 +208,8 @@ with `set_profanity_filter_on(false)`.
 | Back (menus)                          | `Backspace`                                                |
 | Start (or restart) single-player game | `Esc` (outside multiplayer; restarting discards the build) |
 
-The camera also zooms with `-` `=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run
+While you control a creation, any key it binds drives it instead of doing what's above. The camera also zooms with `-`
+`=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run
 `dmp_inp_map()` in the console for the full input map, and `help()` for every console function (or `help("creation")`
 for those whose names match). To keep a build, run `save_creation("castle")`; `load_creation("castle")` adds it to your
 plot again, even in another session. Saving over it keeps the previous version as `castle.bak.ensb`;

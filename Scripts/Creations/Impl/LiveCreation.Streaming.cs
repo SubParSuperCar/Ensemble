@@ -31,6 +31,9 @@ public partial class LiveCreation
 	// Proxies show the creation this far in the past, so a late state still arrives before it's needed
 	private const double InterpolationDelay = 2d / StreamRate;
 
+	// How much of the way toward what a stream's gaps call for each received stream moves the replay's delay
+	private const double ReplayDelayRate = 1 / 8d;
+
 	// Whole physics ticks, so each sequence number stands for an exact moment on the simulator
 	private static readonly int StreamTicks = Math.Max(1, Engine.PhysicsTicksPerSecond / StreamRate);
 	private static readonly double StreamInterval = StreamTicks / (double)Engine.PhysicsTicksPerSecond;
@@ -47,8 +50,10 @@ public partial class LiveCreation
 	private double _clock;
 	private double _keepaliveCredit;
 	private int _keepaliveIndex;
+	private ushort _receivedSequence;
 	private long _relayRefillTimestamp;
 	private double _relayTokens;
+	private double _replayDelay = InterpolationDelay;
 	private int _sinceStream;
 	private ushort _streamSequence;
 	private int _streamsSinceSent;
@@ -84,14 +89,19 @@ public partial class LiveCreation
 	///     Takes a packet from the simulator, unless it's malformed, from another epoch, or (when relaying) beyond the
 	///     rate the creation's size allows, so a bad one goes no further.
 	/// </summary>
-	internal bool TryReceive(byte[] data, bool isRelaying)
+	internal bool TryReceive(byte[] data, bool isRelaying, out ushort sequence)
 	{
+		sequence = 0;
+
 		if (
 			data.Length > MaxPacketBytes || !TryRead(data, out var header) ||
 			(isRelaying && !TryTakeRelayTokens(_receivedStates.Count + 1)))
 			return false;
 
-		Apply(header.Sequence);
+		sequence = header.Sequence;
+		UpdateReplayDelay(sequence);
+		Apply(sequence);
+
 		return true;
 	}
 
@@ -106,12 +116,13 @@ public partial class LiveCreation
 			Stream();
 		else
 			foreach (var assembly in _assemblies)
-				assembly.UpdateProxy(_clock - InterpolationDelay);
+				assembly.UpdateProxy(_clock - _replayDelay);
 	}
 
 	private void ResetStream()
 	{
 		_awakeIds.Clear();
+		_replayDelay = InterpolationDelay;
 		_sinceStream = 0;
 		_timeline.Reset();
 
@@ -142,7 +153,7 @@ public partial class LiveCreation
 		{
 			var end = Math.Min(start + MaxStatesPerPacket, states.Length);
 
-			Plot.SendCreation(CreationPackets.Write(_writer, header, states[start..end]));
+			Plot.SendCreation(CreationPackets.Write(_writer, header, states[start..end]), _streamSequence);
 			start = end;
 		} while (start < states.Length);
 	}
@@ -232,6 +243,17 @@ public partial class LiveCreation
 
 		_relayTokens -= cost;
 		return true;
+	}
+
+	// The host may relay only some streams, which the replay then needs to stay behind in proportion. Longer gaps are
+	// creations at rest, and a lost packet only nudges this
+	private void UpdateReplayDelay(ushort sequence)
+	{
+		var gap = (short)(sequence - _receivedSequence);
+		_receivedSequence = sequence;
+
+		if (gap is > 0 and <= RelayBudget.MaxDivisor)
+			_replayDelay += (gap * InterpolationDelay - _replayDelay) * ReplayDelayRate;
 	}
 
 	private void Apply(ushort sequence)

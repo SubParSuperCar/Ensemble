@@ -27,6 +27,17 @@ public sealed class ArbitrationSpheres
 		_spheres.Add((center, radius));
 	}
 
+	/// <summary>How far a point is from the nearest sphere, or infinity if there are none.</summary>
+	public float GetDistanceTo(Vector3 point)
+	{
+		var nearest = float.PositiveInfinity;
+
+		foreach (var (center, radius) in _spheres)
+			nearest = MathF.Min(nearest, MathF.Max(center.DistanceTo(point) - radius, 0));
+
+		return nearest;
+	}
+
 	public bool Overlaps(ArbitrationSpheres other)
 	{
 		if (_spheres.Count is 0 || other._spheres.Count is 0 || !_bounds.Intersects(other._bounds))

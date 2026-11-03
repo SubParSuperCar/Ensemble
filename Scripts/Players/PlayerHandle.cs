@@ -85,6 +85,7 @@ public partial class PlayerHandle : Node3D
 		camera.ProcessPhysicsPriority = ProcessPhysicsPriority + 1;
 		AddChild(camera);
 		camera.Focus = _controller;
+		camera.Player = this;
 
 		_controller.Camera = camera.GetNode<Camera3D>("Camera");
 		_controller.Terrain = TerrainNode;
@@ -113,7 +114,7 @@ public partial class PlayerHandle : Node3D
 		UpdateReset(delta);
 		UpdateSeatLeave();
 
-		if (!InputSink.IsSunk && Input.IsActionJustPressed(FlashlightAction))
+		if (IsActionJustPressed(FlashlightAction))
 			_flashlight.Visible = !_flashlight.Visible;
 	}
 
@@ -125,17 +126,15 @@ public partial class PlayerHandle : Node3D
 			StandUp(above, seat);
 		}
 
-		if (Seat is null)
+		if (Seat is not null)
 		{
-			if (_controller is not null)
-				Replicate();
-
-			return;
+			var previous = Body.GlobalPosition;
+			FollowSeat();
+			_seatVelocity = (Body.GlobalPosition - previous) / (float)delta;
 		}
 
-		var previous = Body.GlobalPosition;
-		FollowSeat();
-		_seatVelocity = (Body.GlobalPosition - previous) / (float)delta;
+		if (_controller is not null)
+			Replicate();
 	}
 
 	public void Teleport(Vector3 position)
@@ -176,7 +175,7 @@ public partial class PlayerHandle : Node3D
 
 	private void UpdateReset(double delta)
 	{
-		if (InputSink.IsSunk || !Input.IsActionPressed(ResetAction))
+		if (InputSink.IsSunk || !Input.IsActionPressed(ResetAction) || IsActionTaken(ResetAction))
 		{
 			_resetHeldFor = 0;
 			return;

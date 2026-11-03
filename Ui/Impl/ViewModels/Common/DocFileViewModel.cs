@@ -1,5 +1,6 @@
 using System.Collections.Frozen;
 using System.Diagnostics;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Networking;
@@ -10,6 +11,7 @@ using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using Serilog;
+using CodeInline = Markdig.Syntax.Inlines.CodeInline;
 using Dispatcher = Avalonia.Threading.Dispatcher;
 
 namespace EnsembleRoot.Ui.ViewModels;
@@ -24,9 +26,15 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	// Whoever swaps a source out of this field owns and disposes it
 	private CancellationTokenSource? _cts;
 
+	// GitHub's anchor for each heading, in document order
+	private List<string> _headingAnchors = [];
+
 	// LiveMarkdown makes each image a link to itself, which wins over a link around it, so linked images map to their
 	// link's target
 	private IReadOnlyDictionary<string, string> _linkTargetsByImageUrl = FrozenDictionary<string, string>.Empty;
+
+	// Where a link to another document points in it, until it loads
+	private string? _pendingAnchor;
 
 	public DocFileViewModel()
 	{
@@ -48,9 +56,19 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }
 	[ObservableProperty] public partial MarkdownDocumentUpdate? Document { get; private set; }
 
+	// Hidden while a file loads, which the view fades
+	[ObservableProperty] public partial double ContentOpacity { get; private set; }
+
+	/// <summary>Occurs when a heading (by its index in the document) should scroll into view, or the top for null.</summary>
+	public event Action<int?>? ScrollRequested;
+
 	protected override void OnDispose() => CancelAndDispose(Interlocked.Exchange(ref _cts, null));
 
-	partial void OnSelectedFileChanged(DocFile value) => _ = LoadAsync(value);
+	partial void OnSelectedFileChanged(DocFile value)
+	{
+		ContentOpacity = 0;
+		_ = LoadAsync(value);
+	}
 
 	private async Task LoadAsync(DocFile file)
 	{
@@ -66,7 +84,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 		{
 			var (markdown, source) = await ReadAsync(file, token).ConfigureAwait(false);
 
-			var (document, linkTargetsByImageUrl) = await Task
+			var (document, linkTargetsByImageUrl, headingAnchors) = await Task
 				.Run(() => ResolveUrls(Markdown.Parse(markdown, MarkdownUpdateProducer.DefaultPipeline), file), token)
 				.ConfigureAwait(false);
 
@@ -77,7 +95,11 @@ public sealed partial class DocFileViewModel : ViewModelBase
 					return;
 
 				_linkTargetsByImageUrl = linkTargetsByImageUrl;
+				_headingAnchors = headingAnchors;
 				Document = new MarkdownDocumentUpdate.Full(document);
+				ContentOpacity = 1;
+
+				ScrollToAnchor(Interlocked.Exchange(ref _pendingAnchor, null));
 
 				stopwatch.Stop();
 				Log.Debug(
@@ -105,9 +127,74 @@ public sealed partial class DocFileViewModel : ViewModelBase
 			? new Uri(target, UriKind.RelativeOrAbsolute)
 			: e.HRef;
 
+		if (href is not { IsAbsoluteUri: true } || TryOpenLocally(href))
+			return;
+
 		// Other schemes (e.g., file:) could run programs
-		if (href is { IsAbsoluteUri: true, Scheme: "https" or "http" or "mailto" })
+		if (href.Scheme is "https" or "http" or "mailto")
 			OS.ShellOpen(href.AbsoluteUri);
+	}
+
+	// Links within the repository's documents stay in this viewer; ResolveUrls made them all absolute
+	private bool TryOpenLocally(Uri href)
+	{
+		var url = href.GetLeftPart(UriPartial.Path);
+
+		if (!url.StartsWith(DocFile.RepositoryBlobUrl, StringComparison.Ordinal))
+			return false;
+
+		var path = Uri.UnescapeDataString(url[DocFile.RepositoryBlobUrl.Length..]);
+
+		if (Files.FirstOrDefault(file => string.Equals(file.Path, path, StringComparison.Ordinal)) is not { } target)
+			return false;
+
+		var anchor = Uri.UnescapeDataString(href.Fragment.TrimStart('#'));
+
+		if (target == SelectedFile)
+			ScrollToAnchor(anchor);
+		else
+		{
+			_pendingAnchor = anchor;
+			SelectedFile = target;
+		}
+
+		return true;
+	}
+
+	private void ScrollToAnchor(string? anchor)
+	{
+		var index = string.IsNullOrEmpty(anchor) ? -1 : _headingAnchors.IndexOf(anchor);
+		ScrollRequested?.Invoke(index < 0 ? null : index);
+	}
+
+	// GitHub's rule: lower case, without punctuation, with hyphens for spaces, and numbered when repeated
+	private static List<string> GetHeadingAnchors(MarkdownDocument document)
+	{
+		var counts = new Dictionary<string, int>(StringComparer.Ordinal);
+		var anchors = new List<string>();
+
+		foreach (var heading in document.Descendants<HeadingBlock>())
+		{
+			var text = string.Concat(
+				heading.Inline?.Descendants<LeafInline>().Select(static inline => inline switch
+				{
+					LiteralInline literal => literal.Content.ToString(),
+					CodeInline code => code.Content,
+					_ => string.Empty
+				}) ?? []);
+
+			var slug = string.Concat(
+				text.ToLowerInvariant()
+					.Where(static c => char.IsLetterOrDigit(c) || c is ' ' or '-' or '_')
+					.Select(static c => c is ' ' ? '-' : c));
+
+			var count = counts.GetValueOrDefault(slug);
+
+			counts[slug] = count + 1;
+			anchors.Add(count is 0 ? slug : string.Create(CultureInfo.InvariantCulture, $"{slug}-{count}"));
+		}
+
+		return anchors;
 	}
 
 	/// <summary>
@@ -115,8 +202,10 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	///     links at their pages. LiveMarkdown would otherwise resolve them as local file paths. Also maps each linked
 	///     image's URL to its link's target.
 	/// </summary>
-	private static (MarkdownDocument Document, IReadOnlyDictionary<string, string> LinkTargetsByImageUrl) ResolveUrls(
-		MarkdownDocument document, DocFile file)
+	private static (
+		MarkdownDocument Document,
+		IReadOnlyDictionary<string, string> LinkTargetsByImageUrl,
+		List<string> HeadingAnchors) ResolveUrls(MarkdownDocument document, DocFile file)
 	{
 		foreach (var link in document.Descendants<LinkInline>())
 		{
@@ -138,7 +227,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 			if (link is { IsImage: true, Url: { } url, Parent: LinkInline { IsImage: false, Url: { } target } })
 				linkTargetsByImageUrl[url] = target;
 
-		return (document, linkTargetsByImageUrl);
+		return (document, linkTargetsByImageUrl, GetHeadingAnchors(document));
 	}
 
 	// Prefers a local copy, falling back to the repository on GitHub

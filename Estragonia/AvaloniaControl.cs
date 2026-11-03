@@ -199,6 +199,8 @@ public class AvaloniaControl : GdControl
 		if (!GodotPlatform.TryBeginProcess(delta, out var processDelta))
 			return;
 
+		GodotTopLevelImpl.FlushPendingDrags();
+
 		Processing?.Invoke(processDelta);
 		GodotPlatform.TriggerRenderTick();
 

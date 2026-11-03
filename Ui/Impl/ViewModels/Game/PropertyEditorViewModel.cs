@@ -258,17 +258,14 @@ public abstract partial class PropertyItem(PropertyKey key) : ObservableObject
 
 public sealed partial class TogglePropertyItem(PropertyKey key) : PropertyItem(key)
 {
-	[ObservableProperty] public partial bool? Value { get; set; }
+	[ObservableProperty] public partial bool Value { get; set; }
 
 	protected override string TypeName => "Toggle";
 
-	protected override void Load(CoreVariant value) => Value = value.IsNull ? null : (bool)value;
+	// Mixed shows as off, with the row's warning, so one click sets every selected asset on
+	protected override void Load(CoreVariant value) => Value = !value.IsNull && (bool)value;
 
-	partial void OnValueChanged(bool? value)
-	{
-		if (value is { } changed)
-			Commit(changed);
-	}
+	partial void OnValueChanged(bool value) => Commit(value);
 }
 
 public sealed partial class IntegerPropertyItem(PropertyKey key) : PropertyItem(key)

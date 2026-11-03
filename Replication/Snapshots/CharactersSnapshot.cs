@@ -27,13 +27,14 @@ internal static class CharactersSnapshot
 	{
 		foreach (var entry in payload)
 		{
+			// Merged, this pattern wraps in a way that dotnet format and CleanupCode indent differently
 			if (
+				// ReSharper disable once MergeIntoPattern
 				entry.VariantType is not Variant.Type.Array ||
-				entry.AsGodotArray() is not
-				[
-					{ VariantType: Variant.Type.String } playerId, { VariantType: Variant.Type.Vector3 } position,
-					{ VariantType: Variant.Type.Float } yaw
-				])
+				entry.AsGodotArray() is not [var playerId, var position, var yaw] ||
+				playerId.VariantType is not Variant.Type.String ||
+				position.VariantType is not Variant.Type.Vector3 ||
+				yaw.VariantType is not Variant.Type.Float)
 			{
 				Log.Warning("Skipped malformed character in snapshot");
 				continue;

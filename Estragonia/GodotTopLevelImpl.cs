@@ -28,7 +28,10 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	private readonly TouchDevice _touchDevice = new();
 	private GdCursorShape _cursorShape;
 	private bool _isDisposed;
+	private static readonly HashSet<GodotTopLevelImpl> Dragging = [];
+
 	private int _lastMouseDeviceId = GodotDevices.EmulatedDeviceId;
+	private (InputEventMouseMotion Event, ulong Timestamp)? _pendingDrag;
 	private PixelSize _renderSize;
 
 	private IGodotSkiaSurface? _surface;
@@ -203,6 +206,38 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	{
 		_lastMouseDeviceId = inputEvent.Device;
 
+		// A drag measures each move from where layout last put what it drags, so moves between layouts would each add
+		// the distance already applied, and it would outrun the pointer. Only the latest counts, at the next process.
+		if (inputEvent.ButtonMask is not 0)
+		{
+			_pendingDrag = (inputEvent, timestamp);
+			Dragging.Add(this);
+			return true;
+		}
+
+		return SendMouseMotion(inputEvent, timestamp);
+	}
+
+	/// <summary>Sends every top level's latest drag move, ahead of the layout it's waiting for.</summary>
+	public static void FlushPendingDrags()
+	{
+		foreach (var impl in Dragging)
+			impl.FlushPendingDrag();
+
+		Dragging.Clear();
+	}
+
+	private void FlushPendingDrag()
+	{
+		if (_pendingDrag is not var (inputEvent, timestamp))
+			return;
+
+		_pendingDrag = null;
+		SendMouseMotion(inputEvent, timestamp);
+	}
+
+	private bool SendMouseMotion(InputEventMouseMotion inputEvent, ulong timestamp)
+	{
 		if (InputRoot is null || Input is not { } input)
 			return false;
 
@@ -222,6 +257,8 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	public bool OnMouseButton(InputEventMouseButton inputEvent, ulong timestamp)
 	{
+		FlushPendingDrag();
+
 		_lastMouseDeviceId = inputEvent.Device;
 
 		if (InputRoot is null || Input is not { } input)
@@ -239,10 +276,11 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			(GdMouseButton.Xbutton1, false) => CreateButtonArgs(RawPointerEventType.XButton1Up),
 			(GdMouseButton.Xbutton2, true) => CreateButtonArgs(RawPointerEventType.XButton2Down),
 			(GdMouseButton.Xbutton2, false) => CreateButtonArgs(RawPointerEventType.XButton2Up),
-			(GdMouseButton.WheelUp, _) => CreateWheelArgs(new Vector(0.0, inputEvent.Factor)),
-			(GdMouseButton.WheelDown, _) => CreateWheelArgs(new Vector(0.0, -inputEvent.Factor)),
-			(GdMouseButton.WheelLeft, _) => CreateWheelArgs(new Vector(inputEvent.Factor, 0.0)),
-			(GdMouseButton.WheelRight, _) => CreateWheelArgs(new Vector(-inputEvent.Factor, 0.0)),
+			// Godot sends each wheel step as a press and a release
+			(GdMouseButton.WheelUp, true) => CreateWheelArgs(new Vector(0.0, inputEvent.Factor)),
+			(GdMouseButton.WheelDown, true) => CreateWheelArgs(new Vector(0.0, -inputEvent.Factor)),
+			(GdMouseButton.WheelLeft, true) => CreateWheelArgs(new Vector(inputEvent.Factor, 0.0)),
+			(GdMouseButton.WheelRight, true) => CreateWheelArgs(new Vector(-inputEvent.Factor, 0.0)),
 			_ => null
 		};
 

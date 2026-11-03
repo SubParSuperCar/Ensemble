@@ -94,13 +94,22 @@
             <Setter Property="Padding" Value="0" />
         </Style>
 
-        <!-- Typing passes through values that don't parse yet, and the box just keeps its last good one until they do -->
+        <!-- An empty box is a binding's error, with nothing to say: it just keeps its last good value (see NumberBoxes) -->
         <Style Selector="NumericUpDown /template/ DataValidationErrors">
             <Setter Property="ErrorTemplate">
                 <DataTemplate>
                     <Panel />
                 </DataTemplate>
             </Setter>
+        </Style>
+
+        <Style Selector="NumericUpDown.invalid /template/ TextBox#PART_TextBox">
+            <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
+        </Style>
+
+        <!-- As wide as it's tall, so a row's height decides the size of its icon buttons -->
+        <Style Selector="Button.square">
+            <Setter Property="Width" Value="{Binding $self.Bounds.Height}" />
         </Style>
 
         <!-- SimpleTheme sizes icons 20 square but clips a menu's to 16 -->

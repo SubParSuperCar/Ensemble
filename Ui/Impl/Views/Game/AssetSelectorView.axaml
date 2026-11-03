@@ -122,7 +122,7 @@
                             Content="Y"
                             Command="{Binding RotateYCommand}"
                             ToolTip.Tip="Rotates around the Y axis. (World X / Right)"
-                            Background="#00BC00" Foreground="Black"
+                            Background="#00C000" Foreground="Black"
                             HorizontalContentAlignment="Center"
                             Padding="8,0"
                             FontSize="24" FontWeight="Bold" />
@@ -132,7 +132,7 @@
                             Content="Z"
                             Command="{Binding RotateZCommand}"
                             ToolTip.Tip="Rotates around the Z axis. (World Z / Back)"
-                            Background="#6389FF" Foreground="White"
+                            Background="#0080FF" Foreground="White"
                             HorizontalContentAlignment="Center"
                             Padding="8,0"
                             FontSize="24" FontWeight="Bold" />

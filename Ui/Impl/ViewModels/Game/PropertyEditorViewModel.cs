@@ -243,6 +243,10 @@ public abstract partial class PropertyItem(PropertyKey key) : ObservableObject
 	[NotifyPropertyChangedFor(nameof(Placeholder))]
 	public partial bool IsMixed { get; private set; }
 
+	/// <summary>Whether the selection's one default for this property differs from what any of them has.</summary>
+	[ObservableProperty]
+	public partial bool CanReset { get; private set; }
+
 	protected abstract string TypeName { get; }
 
 	// Mixed values show blank (null), as nothing is shared to show
@@ -251,6 +255,7 @@ public abstract partial class PropertyItem(PropertyKey key) : ObservableObject
 		_isSyncing = true;
 
 		IsMixed = property.IsMixed;
+		CanReset = property.CanReset;
 		Load(property.IsMixed ? CoreVariant.Null : property.Value);
 
 		_isSyncing = false;

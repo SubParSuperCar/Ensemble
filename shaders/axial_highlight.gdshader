@@ -4,9 +4,9 @@ render_mode unshaded, cull_disabled, blend_mix, depth_draw_never, depth_test_dis
 
 #include "res://shaders/highlight.gdshaderinc"
 
-// About equally bright to the eye, as pure green reads far brighter than pure red, and pure blue far darker; the Asset
-// Selector's rotation buttons share these colors
-const mat3 AXIS_COLORS = mat3(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.5, 0.0), vec3(0.125, 0.25, 1.0));
+// #FF0000, #00C000, and #0080FF, as the Asset Selector's rotation buttons, in the linear space ALBEDO takes. Pure green
+// reads far brighter than pure red, and pure blue far darker
+const mat3 AXIS_COLORS = mat3(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.527, 0.0), vec3(0.0, 0.216, 1.0));
 
 void fragment()
 {

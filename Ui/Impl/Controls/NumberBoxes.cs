@@ -26,14 +26,15 @@ public static class NumberBoxes
 	private static bool IsValid(NumericUpDown box) =>
 		string.IsNullOrEmpty(box.Text) ||
 		(decimal.TryParse(box.Text, box.ParsingNumberStyle, box.NumberFormat, out var value) &&
-			value >= box.Minimum && value <= box.Maximum);
+		 value >= box.Minimum && value <= box.Maximum);
 
 	private static void OnTextChanged(NumericUpDown box, AvaloniaPropertyChangedEventArgs e) =>
 		box.Classes.Set(InvalidClass, !IsValid(box));
 
 	private static void OnKeyDown(TopLevel topLevel, KeyEventArgs e)
 	{
-		if (e.Key is Key.Enter or Key.Escape && e.Source is Control source && source.FindAncestorOfType<NumericUpDown>(true) is not null)
+		if (e.Key is Key.Enter or Key.Escape && e.Source is Control source &&
+			source.FindAncestorOfType<NumericUpDown>(true) is not null)
 			topLevel.FocusManager.Focus(null);
 	}
 }

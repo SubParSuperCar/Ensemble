@@ -25,7 +25,7 @@ The tool suite, in rough intended order of implementation.
 - ConstructTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
     - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation, snap
-      along the surface with edges aligned to the targeted instance, and never clip
+      their edges to the plot's grid, and never clip
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
     - [ ] (S) Fade the placement preview in and out as it appears and disappears

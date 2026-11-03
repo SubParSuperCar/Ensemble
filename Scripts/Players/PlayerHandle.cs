@@ -25,6 +25,7 @@ public partial class PlayerHandle : Node3D
 	private GdPlayer _player = null!;
 	private GdPlot? _plot;
 	private double _resetHeldFor;
+	private Vector3 _seatVelocity;
 
 	[Export] public Script CharacterControllerScript { get; set; } = null!;
 
@@ -38,6 +39,9 @@ public partial class PlayerHandle : Node3D
 	public CharacterBody3D Body { get; private set; } = null!;
 
 	public Aabb BodyBounds => _bodyBounds ??= CalculateBodyBounds();
+
+	/// <summary>The character's velocity, whether its own or, while seated, the seat's on this peer's copy of it.</summary>
+	public Vector3 Velocity => Seat is null ? Body.GetRealVelocity() : _seatVelocity;
 
 	private Vector3 SpawnOffset => new(0, -BodyBounds.Position.Y, 0);
 
@@ -121,10 +125,17 @@ public partial class PlayerHandle : Node3D
 			StandUp(above, seat);
 		}
 
-		if (Seat is not null)
-			FollowSeat();
-		else if (_controller is not null)
-			Replicate();
+		if (Seat is null)
+		{
+			if (_controller is not null)
+				Replicate();
+
+			return;
+		}
+
+		var previous = Body.GlobalPosition;
+		FollowSeat();
+		_seatVelocity = (Body.GlobalPosition - previous) / (float)delta;
 	}
 
 	public void Teleport(Vector3 position)
@@ -158,6 +169,9 @@ public partial class PlayerHandle : Node3D
 		Body.ForceUpdateTransform();
 		PhysicsServer3D.BodySetSpace(rid, GetWorld3D().Space);
 		Body.ResetPhysicsInterpolation();
+
+		// Moving in no space is an error, so the character waits for this to walk again
+		_controller?.IsSeated = false;
 	}
 
 	private void UpdateReset(double delta)

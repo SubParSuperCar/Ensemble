@@ -114,12 +114,16 @@ public sealed partial class StatViewModel : ViewModelBase
 				$"{ByteFormat.Humanize((ulong)GSessionManager.ReceivedBytesPerSecond)}/s in, " +
 				$"{ByteFormat.Humanize((ulong)GSessionManager.SentBytesPerSecond)}/s out"));
 
-		if (GPlayers.Local is null || GPlayerManager.LocalHandle is not { Body: var character })
+		if (GPlayers.Local is null || GPlayerManager.LocalHandle is not { } character)
 			return;
 
-		stats.Add(("Char. Pos.", character.GlobalPosition.Round()));
+		var position = character.Body.GlobalPosition;
+
+		stats.Add(("Char. Pos.",
+			string.Create(CultureInfo.InvariantCulture, $"({position.X:0.0}, {position.Y:0.0}, {position.Z:0.0})")));
+
 		stats.Add(("Char. Speed",
-			string.Create(CultureInfo.InvariantCulture, $"{character.GetRealVelocity().Length():0.###} m/s")));
+			string.Create(CultureInfo.InvariantCulture, $"{character.Velocity.Length():0.###} m/s")));
 	}
 
 	private static double GetNow() => Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;

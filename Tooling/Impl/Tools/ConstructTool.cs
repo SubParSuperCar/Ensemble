@@ -21,6 +21,7 @@ public partial class ConstructTool : ToolBase
 	private const float LinearSmoothingRate = 40f;
 	private const float AngularSmoothingRate = 36f;
 
+	private const float AxisTieTolerance = 1 / 1024f;
 	private const float PreviewOpacity = 3 / 4f;
 	private const double FlashDuration = 1 / 8d;
 
@@ -148,7 +149,7 @@ public partial class ConstructTool : ToolBase
 
 	private void UpdatePlacement()
 	{
-		if (GPlotManager.LocalHandle is not { } plot || ToolCommon.CastCursorRay(GetViewport()) is not { } hit)
+		if (ToolCommon.LocalHandle is not { } plot || ToolCommon.CastCursorRay(GetViewport()) is not { } hit)
 		{
 			HidePreview();
 			return;
@@ -163,16 +164,15 @@ public partial class ConstructTool : ToolBase
 		var surface = toPlot * hit.Position;
 		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
 		var cellSize = IsSnapping ? SnappingIncrementLinear * GridToWorldScale : null;
-		var anchor = cellSize is { } size ? GetGridAnchor(hit.Collider, normal, size) : Vector3.Zero;
 
 		box = _solver.Settle(
-			box.At(surface + normal * box.Radius(normal)), PlotPlacement.GetObstacles(plot),
-			PlotPlacement.GetBounds(plot).Position.Y, normal, cellSize, anchor);
+			box.At(surface + normal * box.Radius(normal)), plot.InstanceBoxes, PlotPlacement.GetBounds(plot).Position.Y,
+			normal, cellSize);
 
 		var origin = box.Center - box.Basis * GAssetManager.GetBoundary(AssetId).GetCenter();
 
 		if (cellSize is { } cell)
-			origin = PlacementSolver.SnapToLattice(origin, anchor, GetLatticeCell(cell));
+			origin = PlacementSolver.SnapToLattice(origin, MathF.Min(cell, GridToWorldScale));
 
 		_gridPosition = origin / GridToWorldScale;
 		_state = PlotPlacement.Evaluate(plot, AssetId, _gridPosition, _rotation);
@@ -217,34 +217,18 @@ public partial class ConstructTool : ToolBase
 			Log.Debug("Cannot place asset {AssetId}: {State}", AssetId, state);
 	}
 
+	// A surface at exactly 45 degrees, like the Wedge's slope, is a top, wherever float noise leaves its normal
 	private static Vector3 ToGridAxis(Vector3 normal)
 	{
-		var axis = (int)normal.Abs().MaxAxisIndex();
+		var abs = normal.Abs();
+		var axis = abs.Y + AxisTieTolerance >= MathF.Max(abs.X, abs.Z) ? Vector3.Axis.Y :
+			abs.X >= abs.Z ? Vector3.Axis.X : Vector3.Axis.Z;
+
 		var gridAxis = Vector3.Zero;
-		gridAxis[axis] = MathF.Sign(normal[axis]);
+		gridAxis[(int)axis] = MathF.Sign(normal[(int)axis]);
 
 		return gridAxis;
 	}
-
-	// The touched face anchors the normal axis, so contact stays flush with off-grid assets
-	private static Vector3 GetGridAnchor(Node3D collider, Vector3 normal, float cellSize)
-	{
-		if (ToolCommon.FindInHierarchy<AssetHandle>(collider) is not { } target || !ToolCommon.IsHandleLocal(target))
-			return Vector3.Zero;
-
-		var box = Obb.From(GAssetManager.GetBoundary(target.AssetId), target.Transform);
-		var anchor = box.Center;
-		var envelope = box.Envelope;
-
-		for (var axis = 0; axis < 3; axis++)
-			anchor[axis] += (normal[axis] > 0 ? 1 : -1) * PlacementSolver.GetSnapExtent(envelope[axis], cellSize);
-
-		// The face is the collider's, so it's rounded onto the target's own lattice, as the target was placed
-		return PlacementSolver.SnapToLattice(anchor, target.Transform.Origin, GetLatticeCell(cellSize));
-	}
-
-	// The finer of the snapping cell and the plot's, which assets are built on
-	private static float GetLatticeCell(float cellSize) => MathF.Min(cellSize, GridToWorldScale);
 
 	private void RebuildPreview()
 	{

@@ -99,7 +99,7 @@ public partial class PlotHandle
 		if (!InstanceBoxes.Overlaps(box))
 			return;
 
-		var cleared = LiftClear(_solver.Settle(box, InstanceBoxes, float.NegativeInfinity, Vector3.Up, null, default));
+		var cleared = LiftClear(_solver.Settle(box, InstanceBoxes, float.NegativeInfinity, Vector3.Up, null));
 		player.Teleport(body.GlobalPosition + origin.Basis * (cleared.Center - box.Center));
 	}
 

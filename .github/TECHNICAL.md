@@ -309,7 +309,11 @@ asset itself, not its inset colliders, onto the grid.
 
 Placement is validated by shared rules (`PlotPlacement`: bounds, overlaps, and quotas) that run on the client for
 previews and on the host for authority. Overlaps are resolved with oriented bounding boxes and the separating axis
-theorem over a spatial hash of each plot's boxes, so previews slide out of collisions and snap flush against neighbors.
+theorem over a spatial hash of each plot's boxes, so previews slide out of collisions without clipping. Snapping is one
+rule: per axis, whichever edge of the box lands nearer a line of the plot's grid wins, rounding away from the surface it
+touches. A box spanning whole cells therefore stays on the grid against any face, even one off the grid, leaving a gap
+rather than following it, while thin boxes sit flush wherever their far edge finds a line. A finer increment reaches the
+rest, and a zero increment turns snapping off, which rests the box flush against whatever it touches.
 
 ---
 

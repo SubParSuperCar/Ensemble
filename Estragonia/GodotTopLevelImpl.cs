@@ -23,12 +23,12 @@ namespace Estragonia;
 /// <summary>Implementation of Avalonia <see cref="ITopLevelImpl" /> that renders to a Godot texture.</summary>
 internal sealed class GodotTopLevelImpl : ITopLevelImpl
 {
+	private static readonly HashSet<GodotTopLevelImpl> Dragging = [];
 	private readonly IClipboard _clipboard;
 	private readonly IGodotPlatformGraphics _platformGraphics;
 	private readonly TouchDevice _touchDevice = new();
 	private GdCursorShape _cursorShape;
 	private bool _isDisposed;
-	private static readonly HashSet<GodotTopLevelImpl> Dragging = [];
 
 	private int _lastMouseDeviceId = GodotDevices.EmulatedDeviceId;
 	private (InputEventMouseMotion Event, ulong Timestamp)? _pendingDrag;
@@ -208,14 +208,12 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 		// A drag measures each move from where layout last put what it drags, so moves between layouts would each add
 		// the distance already applied, and it would outrun the pointer. Only the latest counts, at the next process.
-		if (inputEvent.ButtonMask is not 0)
-		{
-			_pendingDrag = (inputEvent, timestamp);
-			Dragging.Add(this);
-			return true;
-		}
+		if (inputEvent.ButtonMask is 0)
+			return SendMouseMotion(inputEvent, timestamp);
 
-		return SendMouseMotion(inputEvent, timestamp);
+		_pendingDrag = (inputEvent, timestamp);
+		Dragging.Add(this);
+		return true;
 	}
 
 	/// <summary>Sends every top level's latest drag move, ahead of the layout it's waiting for.</summary>

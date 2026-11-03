@@ -56,19 +56,12 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }
 	[ObservableProperty] public partial MarkdownDocumentUpdate? Document { get; private set; }
 
-	// Hidden while a file loads, which the view fades
-	[ObservableProperty] public partial double ContentOpacity { get; private set; }
-
 	/// <summary>Occurs when a heading (by its index in the document) should scroll into view, or the top for null.</summary>
 	public event Action<int?>? ScrollRequested;
 
 	protected override void OnDispose() => CancelAndDispose(Interlocked.Exchange(ref _cts, null));
 
-	partial void OnSelectedFileChanged(DocFile value)
-	{
-		ContentOpacity = 0;
-		_ = LoadAsync(value);
-	}
+	partial void OnSelectedFileChanged(DocFile value) => _ = LoadAsync(value);
 
 	private async Task LoadAsync(DocFile file)
 	{
@@ -97,7 +90,6 @@ public sealed partial class DocFileViewModel : ViewModelBase
 				_linkTargetsByImageUrl = linkTargetsByImageUrl;
 				_headingAnchors = headingAnchors;
 				Document = new MarkdownDocumentUpdate.Full(document);
-				ContentOpacity = 1;
 
 				ScrollToAnchor(Interlocked.Exchange(ref _pendingAnchor, null));
 

@@ -16,7 +16,7 @@
 [ext_resource type="Script" uid="uid://blhq1e3hqp2sl" path="res://Scripts/Players/PlayerManager.cs" id="13_xo05s"]
 [ext_resource type="Script" uid="uid://biyfk56yseq2l" path="res://Scripts/Assets/AssetManager.cs" id="14_dss4m"]
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://scenes/player.tscn" id="14_lakw3"]
-[ext_resource type="ArrayMesh" uid="uid://brgrd3hjktrcx" path="res://assets/meshes/plots_base.obj" id="14_ts3gi"]
+[ext_resource type="ArrayMesh" uid="uid://brgrd3hjktrcx" path="res://assets/meshes/plots_floor.obj" id="14_ts3gi"]
 [ext_resource type="Script" uid="uid://deifgknfa4son" path="res://Scripts/Plots/PlotManager.cs" id="15_7t5mc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rysoc"]
@@ -262,14 +262,14 @@ metadata/_edit_lock_ = true
 
 [node name="Map" type="Node3D" parent="." unique_id=125306369]
 
-[node name="Plots Base" type="StaticBody3D" parent="Map" unique_id=523232624]
+[node name="Plots Floor" type="StaticBody3D" parent="Map" unique_id=523232624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
-[node name="Collider" type="CollisionShape3D" parent="Map/Plots Base" unique_id=1339389220]
+[node name="Collider" type="CollisionShape3D" parent="Map/Plots Floor" unique_id=1339389220]
 shape = SubResource("ConvexPolygonShape3D_i6g32")
 metadata/_edit_lock_ = true
 
-[node name="Mesh" type="MeshInstance3D" parent="Map/Plots Base" unique_id=1689705007]
+[node name="Mesh" type="MeshInstance3D" parent="Map/Plots Floor" unique_id=1689705007]
 cast_shadow = 0
 mesh = ExtResource("14_ts3gi")
 surface_material_override/0 = SubResource("StandardMaterial3D_0tnpc")

@@ -46,12 +46,12 @@ shape = SubResource("BoxShape3D_f03gw")
 [node name="Dynamic" type="Node3D" parent="Instances" unique_id=658314032]
 top_level = true
 
-[node name="Base" type="StaticBody3D" parent="." unique_id=1335038975]
+[node name="Floor" type="StaticBody3D" parent="." unique_id=1335038975]
 
-[node name="Collider" type="CollisionShape3D" parent="Base" unique_id=1890228800]
+[node name="Collider" type="CollisionShape3D" parent="Floor" unique_id=1890228800]
 shape = SubResource("BoxShape3D_sbat0")
 
-[node name="Mesh" type="MeshInstance3D" parent="Base" unique_id=890436308]
+[node name="Mesh" type="MeshInstance3D" parent="Floor" unique_id=890436308]
 material_overlay = SubResource("StandardMaterial3D_syd1t")
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_f03gw")

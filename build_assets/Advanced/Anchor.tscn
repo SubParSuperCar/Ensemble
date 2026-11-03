@@ -24,7 +24,7 @@ Properties = Dictionary[StringName, Variant]({
 &"isAnchored": true,
 &"toggleKey": 66
 })
-MaxInstanceCount = 32
+MaxInstanceCount = 50
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=1372952938]
 shape = SubResource("BoxShape3D_anchor")

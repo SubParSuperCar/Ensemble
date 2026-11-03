@@ -8,8 +8,8 @@
     x:Class="EnsembleRoot.Ui.Views.ToastListView"
     x:DataType="vm:ToastListViewModel">
 
-    <ScrollViewer MaxHeight="256" HorizontalScrollBarVisibility="Disabled">
-        <ItemsControl ItemsSource="{Binding Toasts}">
+    <ScrollViewer Name="ToastScroll" MaxHeight="256" HorizontalScrollBarVisibility="Disabled">
+        <ItemsControl Name="Toasts" ItemsSource="{Binding Toasts}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Spacing="4" />

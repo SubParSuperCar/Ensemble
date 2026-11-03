@@ -3,6 +3,7 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Assets.Components;
 using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 using Serilog;
@@ -260,6 +261,10 @@ public partial class ConstructTool : ToolBase
 		_preview.Visible = false;
 
 		AddChild(_preview);
+
+		foreach (var paintable in _preview.GetChildren().OfType<Paintable>())
+			paintable.PaintDefaults(_preview);
+
 		MakeTranslucent(_preview);
 
 		var bounds = GAssetManager.GetBoundary(AssetId);
@@ -282,6 +287,9 @@ public partial class ConstructTool : ToolBase
 			for (var surface = 0; surface < mesh.GetSurfaceOverrideMaterialCount(); surface++)
 				if (MakeTranslucent(mesh.GetActiveMaterial(surface)) is { } material)
 					mesh.SetSurfaceOverrideMaterial(surface, material);
+
+			// It would outrank the translucent copies of itself
+			mesh.MaterialOverride = null;
 		}
 	}
 

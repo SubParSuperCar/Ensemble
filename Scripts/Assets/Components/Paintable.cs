@@ -24,15 +24,23 @@ public partial class Paintable : AssetComponent
 
 	public override void _ExitTree() => _properties?.Changed -= OnPropertyChanged;
 
+	/// <summary>Paints a handle that has no instance (a preview) as its asset's default properties would.</summary>
+	public void PaintDefaults(AssetHandle handle)
+	{
+		CollectGeometries(handle);
+
+		handle.Properties.TryGetValue(ColorKey, out var hex);
+
+		Paint(
+			hex.AsString(),
+			handle.Properties.TryGetValue(MaterialBank.PropertyKey, out var material)
+				? MaterialBank.Get(material.AsInt32())
+				: null);
+	}
+
 	protected override void OnInitialized()
 	{
-		_geometries =
-		[
-			.. Handle.Pieces.Prepend<Node>(Handle)
-				.SelectMany(GetGeometries)
-				.Except(Excluded)
-				.Select(static geometry => (geometry, GetShading(geometry)))
-		];
+		CollectGeometries(Handle);
 
 		_properties = Handle.Instance.Properties;
 
@@ -62,11 +70,20 @@ public partial class Paintable : AssetComponent
 			Apply();
 	}
 
-	private void Apply()
+	private void CollectGeometries(AssetHandle handle) =>
+		_geometries =
+		[
+			.. handle.Pieces.Prepend<Node>(handle)
+				.SelectMany(GetGeometries)
+				.Except(Excluded)
+				.Select(static geometry => (geometry, GetShading(geometry)))
+		];
+
+	private void Apply() => Paint(_properties!.GetValue(ColorKey).AsString(), MaterialBank.Get(_properties));
+
+	private void Paint(string hex, AssetMaterial? material)
 	{
-		var hex = _properties!.GetValue(ColorKey).AsString();
 		var color = Color.HtmlIsValid(hex) ? Color.FromHtml(hex) : Colors.White;
-		var material = MaterialBank.Get(_properties);
 
 		foreach (var (geometry, shading) in _geometries)
 			geometry.MaterialOverride = Paints.Get(material, color, shading);

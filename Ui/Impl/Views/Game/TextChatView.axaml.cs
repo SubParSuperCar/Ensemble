@@ -15,6 +15,8 @@ namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewModel>
 {
+	private const double ScrollBarGap = 2d;
+
 	private TextChatViewModel? _viewModel;
 
 	public TextChatView()
@@ -22,6 +24,7 @@ public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewMod
 		InitializeComponent();
 
 		StickyBottom.Apply(ChatScroll, ChatLog);
+		ScrollBarInset.ApplyGap(ChatScroll, ChatLog, ScrollBarGap);
 		ActualThemeVariantChanged += OnActualThemeVariantChanged;
 	}
 

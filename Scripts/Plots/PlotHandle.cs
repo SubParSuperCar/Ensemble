@@ -91,11 +91,12 @@ public partial class PlotHandle : Node3D
 
 	private Transform3D CalculateOriginTransform()
 	{
-		var baseCollider = GetNode<CollisionShape3D>("Base/Collider");
+		var floorCollider = GetNode<CollisionShape3D>("Floor/Collider");
 
-		var aabb = baseCollider.Shape.GetDebugMesh().GetAabb();
-		var position = baseCollider.GlobalTransform * aabb.GetCenter();
+		// The floor's surface, so that what rests on the origin's plane really touches what stands on it
+		var aabb = floorCollider.Shape.GetDebugMesh().GetAabb();
+		var position = floorCollider.GlobalTransform * (aabb.GetCenter() + Vector3.Up * aabb.Size.Y / 2);
 
-		return new Transform3D(baseCollider.GlobalBasis, position);
+		return new Transform3D(floorCollider.GlobalBasis, position);
 	}
 }

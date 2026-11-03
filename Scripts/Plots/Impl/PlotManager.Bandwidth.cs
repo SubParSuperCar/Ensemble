@@ -40,7 +40,7 @@ public partial class PlotManager
 		_relayOrder.Clear();
 
 		foreach (var (handle, rate) in _streamingHandles)
-			if (handle.Creation is { } creation)
+			if (handle.Creation is { } creation && handle.SimulatorPeerId != peerId)
 				_relayOrder.Add((handle, rate, creation.GetDistanceTo(position)));
 			else
 				handle.SetRelayDivisor(peerId, 1);

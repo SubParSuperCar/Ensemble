@@ -19,9 +19,8 @@ The tool suite, in rough intended order of implementation.
       instances; double-click to confirm; disables DestructTool after use
     - [x] (M) Multi-selection - `Shift`-click to toggle, click a selected instance to delete them all, bulk
       `RemoveInstancesAction` (up to 256, token cost scales with count)
-    - [x] (S) Marching ants - selected instances' highlights dash their edges (1/12 m dashes marching at 1/8 m/s toward
-      each axis's positive end), while the hovered one's edges pulse between half and full opacity once a second (a
-      hovered selected one does both)
+    - [x] (S) Marching ants - selected instances' highlights dash their edges, marching toward each axis's positive end,
+      while the hovered one's edges pulse (a hovered selected one does both)
 - ConstructTool (Place) - place the selected asset (WIP)
     - [x] (M) Raycast placement, face/grid snapping, rotation, ghost preview
     - [x] (M) OBB SAT-based intersection resolution - previews push out of overlaps by the minimum translation, snap

@@ -24,13 +24,13 @@ lists them, resolved or open. Plans are a guide, not a contract: they bend when 
 | Group            | The pieces connected by welds (one union-find component), even a single piece              |
 | Assembly         | The `RigidBody3D` built for one group; its ID is the group's index in weld order           |
 | Piece            | An asset's own colliders (piece 0) or an `AssetPiece` child, riding its group's assembly   |
-| Mechanism        | (Later) Assemblies linked by joints; one plot's always share its simulator                 |
+| Mechanism        | Assemblies linked by joints; one plot's always share its simulator                         |
 | Owner            | The peer that simulates a mechanism; the plot's owner by default (network ownership)       |
 | Controller       | The occupant whose keys drive a spawned plot; never made its simulator for driving         |
 | Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
 | Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
 | Anchor           | An asset that freezes its assembly while any anchor on it holds it                         |
-| Passenger        | (Later, name TBD) A character seated in a creation                                         |
+| Rider            | A character seated in a creation                                                           |
 
 ## 1. How it works today
 
@@ -295,10 +295,11 @@ host gives both to one simulator until they separate, and their collisions becom
 - Sleeping assemblies send nothing beyond the keepalive round-robin (section 4).
 - **Budget per stream:** past a fixed number of states per plot per stream, awake assemblies take turns, each sent less
   often, and bodies that just fell asleep go first.
-- **Budget per peer:** the host shares a relay budget per peer among the creations streaming to it, nearest first (`RelayBudget`):
-  each takes its full rate if that fits, or else only every second or fourth stream. Nothing thins until the budget
-  runs out, and a far creation never stops altogether. A stream's packets go together or not at all. A proxy's replay
-  stays further behind the rarer its streams arrive, so a thinned creation still moves smoothly, only later.
+- **Budget per peer:** the host shares a relay budget per peer among the creations streaming to it, nearest first
+  (`RelayBudget`): each takes its full rate if that fits, or else only every second or fourth stream. Nothing thins
+  until the budget runs out, and a far creation never stops altogether. A stream's packets go together or not at all.
+  A proxy's replay stays further behind the rarer its streams arrive, so a thinned creation still moves smoothly, only
+  later.
 - **Proxies replay behind:** each state is stamped with the simulator's moment (sequence numbers advance every
   stream tick, a whole number of physics ticks) on a local timeline that follows the earliest arrivals. Proxies follow
   a Hermite curve through the buffered positions and velocities (straight across impacts, so nothing dips into what
@@ -465,8 +466,8 @@ Measured in a prototype with the game's physics settings; each point is what an 
   rider, who would otherwise keep falling), the occupant leaving or being kicked from the plot, or leaving the session.
   `PlayerHandle.Teleport` leaves the seat before the hop, so every caller gets it.
 - **Replication:** the sit action names the seat (plot ID, instance ID), and a seated character's states only matter
-  for its flashlight, so it sends one only when that changes or as a keepalive. A joining peer gets the seated characters with the plot's
-  snapshot, after its creation exists.
+  for its flashlight, so it sends one only when that changes or as a keepalive. A joining peer gets the seated
+  characters with the plot's snapshot, after its creation exists.
 
 ### Characters versus creations (research)
 

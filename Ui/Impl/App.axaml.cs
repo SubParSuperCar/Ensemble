@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Messages;
 using EnsembleRoot.Sessions;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.Extensions;
 using Iciclecreek.Terminal;
 using LiveMarkdown.Avalonia;
@@ -28,7 +29,11 @@ public sealed class App : Application
 
 	private static bool IsInSession => SessionManager.Instance?.IsActive is true;
 
-	public override void Initialize() => AvaloniaXamlLoader.Load(this);
+	public override void Initialize()
+	{
+		NumberBoxes.Register();
+		AvaloniaXamlLoader.Load(this);
+	}
 
 	public override void OnFrameworkInitializationCompleted()
 	{

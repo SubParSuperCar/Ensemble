@@ -462,8 +462,8 @@ graph LR
   `Ctrl`-dragging (Baja Builders parity).
 - `PropertyTool` edits the selection's properties, except the engine's underscore-prefixed ones unless the editor's
   Show Internal option is on. Instances sharing a property (by name and type) show one value, or a neutral one where
-  they differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection, and each row can reset
-  its property to the asset's default.
+  they differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection, and a row can reset
+  its property when the assets agree on one default and some instance differs from it.
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).

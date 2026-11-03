@@ -29,7 +29,7 @@ AssetId = 6
 AssetName = &"Torus (TEST!)"
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "8000FF80",
-&"_materialId": -1,
+&"_materialId": 0,
 &"_testInternalWithLongName": &"Wholesale Piecemeal - Syntropic Studios",
 &"aNormalStringLOL": &"Lorem ipsum dolor sit amet.",
 &"damping": 50.0,

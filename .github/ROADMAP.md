@@ -38,8 +38,9 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) "Show Internal" option - also lists `_`-prefixed properties (e.g., `_colorHex` as "Color Hex"), to test
       painting and materials before the PaintTool exists; only the tool filters them (`PropertyTool.IsInternalShown`),
       since the actions already accept them
-    - [x] (S) Reset buttons - each Property Editor row can reset its property to the asset's default (as Lua's
-      `set_inst_prop` does with `nil`), for the whole selection
+    - [x] (S) Reset buttons - a Property Editor row can reset its property to the asset's default (as Lua's
+      `set_inst_prop` does with `nil`), for the whole selection, when its assets agree on one default and some instance
+      differs from it
     - [ ] (M) Property limits (deferred) - per-asset ranges (min, max, maybe a step) for numeric properties, authored in
       the inspector like other asset settings, so a new `AssetHandle` needs no code for basic limits. The Property
       Editor reads them for its ranges (and sliders where both ends are set), and the asset's getters clamp to them;

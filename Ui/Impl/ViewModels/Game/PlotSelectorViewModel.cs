@@ -41,6 +41,8 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 		MinSize = new Size(256, 192)
 	};
 
+	public static double LeaveButtonWidth { get; } = Descriptor.MinSize.Width / 3;
+
 	public static void SetHoveredPlot(PlotItem? plot) => PlotOutlines.HoveredPlotId = plot?.Id;
 
 	protected override void OnDispose()

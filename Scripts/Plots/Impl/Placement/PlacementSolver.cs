@@ -2,7 +2,7 @@ using Godot;
 
 namespace EnsembleRoot.Scripts.Plots.Placement;
 
-/// <summary>Moves a box resting against a surface to the nearest free spot, grid-aligned while snapping.</summary>
+/// <summary>Moves a box resting against a surface to the nearest free spot, on the plot's grid while snapping.</summary>
 /// <remarks>
 ///     The placement pipeline, in the plot's local space:
 ///     <list type="number">
@@ -16,18 +16,19 @@ namespace EnsembleRoot.Scripts.Plots.Placement;
 ///             normal (see <see cref="Obb.GetMinimumTranslation" />).
 ///         </item>
 ///         <item>
-///             Snap: per axis, whichever box edge lands nearer a grid line wins, so thin boxes can share a cell. Edges
-///             round away from the obstacles Resolve pushed out of. Spans within <see cref="SnapTolerance" /> of whole
-///             cells snap as exactly whole, centering their slack. The grid is anchored to the hovered asset, if any.
+///             Snap: per axis, whichever box edge lands nearer a line of the plot's grid wins, so thin boxes can share
+///             a cell, and a box spanning whole cells is on the grid whatever it touches. Edges round away from the
+///             surface and from the obstacles Resolve pushed out of. Spans within <see cref="SnapTolerance" /> of
+///             whole cells snap as exactly whole, centering their slack.
 ///         </item>
 ///         <item>Raise: the box is lifted onto the plot floor if below it.</item>
 ///         <item>
-///             Origin (the caller): <see cref="SnapToLattice" /> rounds the asset's origin, worked back from the
-///             box, and the anchor onto the half-cell lattice when within <see cref="LatticeTolerance" /> of it.
+///             Origin (the caller): <see cref="SnapToLattice" /> rounds the asset's origin, worked back from the box,
+///             onto the half-cell lattice when within <see cref="LatticeTolerance" /> of it.
 ///         </item>
 ///     </list>
 ///     Snapping can land the box in another obstacle, so the steps repeat; a box still overlapping is left for
-///     validation to reject.
+///     validation to reject. The result depends only on the hit, the box, the plot's boxes, and the cell size.
 /// </remarks>
 public sealed class PlacementSolver
 {
@@ -46,12 +47,12 @@ public sealed class PlacementSolver
 	private readonly List<Obb> _candidates = [];
 
 	// A null cell size skips snapping
-	public Obb Settle(Obb box, ObbGrid obstacles, float floor, Vector3 normal, float? cellSize, Vector3 anchor)
+	public Obb Settle(Obb box, ObbGrid obstacles, float floor, Vector3 normal, float? cellSize)
 	{
 		for (var pass = 0; pass < MaxSettlePasses; pass++)
 		{
 			var resolved = Resolve(box, obstacles, normal);
-			resolved = Snap(resolved, cellSize, anchor, resolved.Center - box.Center);
+			resolved = Snap(resolved, cellSize, normal, resolved.Center - box.Center);
 
 			box = RaiseTo(resolved, floor);
 
@@ -62,31 +63,22 @@ public sealed class PlacementSolver
 		return box;
 	}
 
-	public static float GetSnapExtent(float extent, float cellSize)
-	{
-		var cells = 2 * extent / cellSize;
-		var whole = MathF.Round(cells, MidpointRounding.AwayFromZero);
-
-		return whole > 0 && MathF.Abs(cells - whole) <= SnapTolerance ? whole * cellSize / 2 : extent;
-	}
-
 	/// <summary>
-	///     Rounds a point onto the lattice of half <paramref name="cellSize" /> steps from <paramref name="anchor" />,
-	///     per axis, where it lies within <see cref="LatticeTolerance" />. Snapping aligns colliders' boxes, so a
-	///     collider inset or offset by a hair (e.g., to keep a face from welding) would otherwise carry its asset's
-	///     origin, and with it the meshes, off the grid by as much.
+	///     Rounds a point onto the plot's lattice of half <paramref name="cellSize" /> steps, per axis, where it lies
+	///     within <see cref="LatticeTolerance" />. Snapping aligns colliders' boxes, so a collider inset or offset by a
+	///     hair (e.g., to keep a face from welding) would otherwise carry its asset's origin, and with it the meshes, off
+	///     the grid by as much.
 	/// </summary>
-	public static Vector3 SnapToLattice(Vector3 point, Vector3 anchor, float cellSize)
+	public static Vector3 SnapToLattice(Vector3 point, float cellSize)
 	{
 		var step = cellSize / 2;
 
 		for (var axis = 0; axis < 3; axis++)
 		{
-			var offset = point[axis] - anchor[axis];
-			var nearest = MathF.Round(offset / step, MidpointRounding.AwayFromZero) * step;
+			var nearest = MathF.Round(point[axis] / step, MidpointRounding.AwayFromZero) * step;
 
-			if (MathF.Abs(offset - nearest) <= LatticeTolerance)
-				point[axis] = anchor[axis] + nearest;
+			if (MathF.Abs(point[axis] - nearest) <= LatticeTolerance)
+				point[axis] = nearest;
 		}
 
 		return point;
@@ -121,8 +113,8 @@ public sealed class PlacementSolver
 		return box;
 	}
 
-	// Aligns whichever edge keeps the box nearest on every axis, never rounding back against a push
-	private static Obb Snap(Obb box, float? cellSize, Vector3 anchor, Vector3 push)
+	// Aligns whichever edge keeps the box nearest on every axis, never rounding into the surface or back against a push
+	private static Obb Snap(Obb box, float? cellSize, Vector3 normal, Vector3 push)
 	{
 		if (cellSize is not { } size)
 			return box;
@@ -132,10 +124,11 @@ public sealed class PlacementSolver
 
 		for (var axis = 0; axis < 3; axis++)
 		{
-			var direction = Mathf.IsZeroApprox(push[axis]) ? 0 : MathF.Sign(push[axis]);
+			var direction = MathF.Sign(Mathf.IsZeroApprox(push[axis]) ? normal[axis] : push[axis]);
 			var extent = GetSnapExtent(envelope[axis], size);
-			var low = SnapEdge(center[axis] - extent, anchor[axis], size, direction) + extent;
-			var high = SnapEdge(center[axis] + extent, anchor[axis], size, direction) - extent;
+			var tolerance = Epsilon + MathF.Abs(extent - envelope[axis]);
+			var low = SnapEdge(center[axis] - extent, size, direction, tolerance) + extent;
+			var high = SnapEdge(center[axis] + extent, size, direction, tolerance) - extent;
 
 			center[axis] = MathF.Abs(low - center[axis]) <= MathF.Abs(high - center[axis]) ? low : high;
 		}
@@ -143,18 +136,24 @@ public sealed class PlacementSolver
 		return box.At(center);
 	}
 
-	private static float SnapEdge(float edge, float anchor, float cellSize, int direction)
+	private static float GetSnapExtent(float extent, float cellSize)
 	{
-		var cells = (edge - anchor) / cellSize;
+		var cells = 2 * extent / cellSize;
+		var whole = MathF.Round(cells, MidpointRounding.AwayFromZero);
+
+		return whole > 0 && MathF.Abs(cells - whole) <= SnapTolerance ? whole * cellSize / 2 : extent;
+	}
+
+	// An edge within the tolerance of a line is on it, as rounding past that line would leave a whole cell's gap
+	private static float SnapEdge(float edge, float cellSize, int direction, float tolerance)
+	{
+		var cells = edge / cellSize;
 		var nearest = MathF.Round(cells, MidpointRounding.AwayFromZero);
 
-		var snapped = Mathf.IsEqualApprox(cells, nearest) || direction is 0
-			? nearest
-			: direction > 0
-				? MathF.Ceiling(cells)
-				: MathF.Floor(cells);
+		if (direction is 0 || MathF.Abs(edge - nearest * cellSize) <= tolerance)
+			return nearest * cellSize;
 
-		return anchor + snapped * cellSize;
+		return (direction > 0 ? MathF.Ceiling(cells) : MathF.Floor(cells)) * cellSize;
 	}
 
 	private static Obb RaiseTo(Obb box, float floor)

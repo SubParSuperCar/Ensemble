@@ -32,6 +32,7 @@ public partial class PlayerHandle
 		Seat = seat;
 		seat.Occupant = this;
 
+		_seatVelocity = Vector3.Zero;
 		_stateCount = 0;
 		_standUp = null;
 		_teleportAfterSeat = null;
@@ -75,8 +76,6 @@ public partial class PlayerHandle
 			Body.PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 			return;
 		}
-
-		_controller.IsSeated = false;
 
 		if (_teleportAfterSeat is { } destination)
 		{

@@ -21,7 +21,7 @@ public static class PlotPlacement
 		if (!IsWithin(box, GetBounds(plot)))
 			return PlacementState.OutOfBounds;
 
-		if (GetObstacles(plot).Overlaps(box))
+		if (plot.InstanceBoxes.Overlaps(box))
 			return PlacementState.Overlapping;
 
 		var instances = GPlots.GetPlot(plot.Id)!.Instances.Source;
@@ -37,8 +37,6 @@ public static class PlotPlacement
 		Obb.From(
 			GAssetManager.GetBoundary(assetId),
 			new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale));
-
-	public static ObbGrid GetObstacles(PlotHandle plot) => plot.InstanceBoxes;
 
 	public static Aabb GetBounds(PlotHandle plot)
 	{

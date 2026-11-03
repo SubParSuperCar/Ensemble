@@ -1,5 +1,6 @@
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Scripts.Assets;
+using EnsembleRoot.Scripts.Plots;
 using Godot;
 
 namespace EnsembleRoot.Tooling.Tools;
@@ -21,6 +22,9 @@ internal static class ToolCommon
 	private static readonly NodePath SoundManagerPath = "SoundManager";
 	private static readonly StringName PlayMethod = "play";
 
+	// Checks the local plot first, as a session's end frees the world before the tools hear of it
+	public static PlotHandle? LocalHandle => LocalPlot is { } plot ? GPlotManager.GetHandleOrNull(plot.Id) : null;
+
 	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode(SoundManagerPath);
 
 	public static TNode? FindInHierarchy<TNode>(Node? node) where TNode : Node
@@ -40,7 +44,7 @@ internal static class ToolCommon
 		(!Input.IsActionPressed(SelectionMarqueeAction) || !GToolManager.Marquee.CanSelect);
 
 	public static bool IsHandleLocal(AssetHandle handle) =>
-		GPlotManager.LocalHandle is { } plot && ReferenceEquals(handle.Plot, plot);
+		LocalHandle is { } plot && ReferenceEquals(handle.Plot, plot);
 
 	public static ToolRayHit? CastCursorRay(Viewport viewport)
 	{
@@ -65,9 +69,7 @@ internal static class ToolCommon
 	/// <summary>Finds the local plot's instances whose boundary centers project within a viewport area.</summary>
 	public static List<int> FindInstancesInArea(Viewport viewport, Rect2 area)
 	{
-		if (
-			viewport.GetCamera3D() is not { } camera || LocalPlot is not { } plot ||
-			GPlotManager.LocalHandle is not { } handle)
+		if (viewport.GetCamera3D() is not { } camera || LocalPlot is not { } plot || LocalHandle is not { } handle)
 			return [];
 
 		var instanceIds = new List<int>();

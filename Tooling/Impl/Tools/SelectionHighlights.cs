@@ -122,7 +122,7 @@ public partial class SelectionHighlights : Node
 	{
 		foreach (var id in instanceIds)
 		{
-			if (GPlotManager.LocalHandle?.GetInstanceHandle(id) is not { } handle)
+			if (ToolCommon.LocalHandle?.GetInstanceHandle(id) is not { } handle)
 				continue;
 
 			var name = string.Create(CultureInfo.InvariantCulture, $"Selection Highlight {id}");

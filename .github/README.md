@@ -46,7 +46,7 @@ Everyone gets a plot, and everything you place on it is shared live with everyon
 single-player, or host a session and invite your friends. If you played Baja Builders, you'll feel at home: the ideas
 are the same, without Roblox's limits.
 
-- **Build** with blocks, wedges, cylinders, cones, spheres, and more. Pieces snap neatly to the grid and to each other,
+- **Build** with blocks, wedges, cylinders, cones, spheres, and more. Pieces snap neatly to the grid, or as finely as you like,
   rotate on any axis, and never clip into one another.
 - **Bring it to life** by spawning your plot: touching pieces weld together, each piece weighs what its material does,
   and the whole creation tips, falls, and rolls for real, in multiplayer too, with moving parts like springy

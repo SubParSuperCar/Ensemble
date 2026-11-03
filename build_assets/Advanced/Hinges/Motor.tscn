@@ -33,7 +33,7 @@ AssetId = 13
 AssetName = &"Motor"
 Description = &"Spins whatever is welded to its head, while its keys are held or toggled on."
 Properties = Dictionary[StringName, Variant]({
-&"brakesWhenIdle": false,
+&"brakesWhenIdle": true,
 &"forwardKey": 87,
 &"reverseKey": 83,
 &"speed": 200.0,

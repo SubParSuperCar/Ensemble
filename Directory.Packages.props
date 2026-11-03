@@ -8,7 +8,7 @@
 
   <!-- Families released together; the Godot.NET.Sdk version in EnsembleGame.csproj is kept by the Godot editor -->
   <PropertyGroup>
-    <AvaloniaVersion>12.1.4</AvaloniaVersion>
+    <AvaloniaVersion>12.1.5</AvaloniaVersion>
     <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
     <GodotSharpVersion>4.7.2</GodotSharpVersion>
     <LiveMarkdownVersion>2.5.1</LiveMarkdownVersion>

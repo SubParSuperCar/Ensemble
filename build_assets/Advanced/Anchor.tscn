@@ -1,6 +1,6 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://dia3j4b141tgq"]
 
-[ext_resource type="Script" path="res://build_assets/Advanced/Anchor.cs" id="1_anchor"]
+[ext_resource type="Script" uid="uid://bfk1m506xqcxf" path="res://build_assets/Advanced/Anchor.cs" id="1_anchor"]
 [ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_paint"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_anchor"]
@@ -13,11 +13,11 @@ shading_mode = 2
 material = SubResource("StandardMaterial3D_anchor")
 size = Vector3(0.5, 0.5, 0.5)
 
-[node name="Anchor" type="StaticBody3D"]
+[node name="Anchor" type="StaticBody3D" unique_id=1049759682]
 script = ExtResource("1_anchor")
 AssetId = 17
 AssetName = &"Anchor"
-Description = &"Freezes everything welded to it in place, while it's anchored."
+Description = &"Freezes everything welded to it in place, while it\'s anchored."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "808080",
 &"_materialId": -1,
@@ -26,11 +26,11 @@ Properties = Dictionary[StringName, Variant]({
 })
 MaxInstanceCount = 32
 
-[node name="Collider" type="CollisionShape3D" parent="."]
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=1372952938]
 shape = SubResource("BoxShape3D_anchor")
 
-[node name="Mesh" type="MeshInstance3D" parent="."]
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=736963371]
 mesh = SubResource("BoxMesh_anchor")
 
-[node name="Paintable" type="Node" parent="."]
+[node name="Paintable" type="Node" parent="." unique_id=1224380187]
 script = ExtResource("2_paint")

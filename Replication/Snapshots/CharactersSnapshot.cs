@@ -29,8 +29,8 @@ internal static class CharactersSnapshot
 		{
 			// Merged, this pattern wraps in a way that dotnet format and CleanupCode indent differently
 			if (
-				// ReSharper disable once MergeIntoPattern
 				entry.VariantType is not Variant.Type.Array ||
+				// ReSharper disable once MergeIntoNegatedPattern
 				entry.AsGodotArray() is not [var playerId, var position, var yaw] ||
 				playerId.VariantType is not Variant.Type.String ||
 				position.VariantType is not Variant.Type.Vector3 ||

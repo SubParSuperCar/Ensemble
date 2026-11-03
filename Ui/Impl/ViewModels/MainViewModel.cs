@@ -101,6 +101,7 @@ public sealed partial class MainViewModel : ViewModelBase
 	private void OnSessionStarted()
 	{
 		_dispatcher.UiProcess -= OnUiProcess;
+		OS.LowProcessorUsageMode = false;
 		Log.Debug("Stopped forced render drawing");
 
 		Main = _services.Create<GameViewModel>();
@@ -109,6 +110,9 @@ public sealed partial class MainViewModel : ViewModelBase
 	private void OnSessionStopped()
 	{
 		_dispatcher.UiProcess += OnUiProcess;
+
+		// Menus only change when the UI does, and the main loop would otherwise spin as fast as it can between
+		OS.LowProcessorUsageMode = true;
 		Log.Debug("Started forced render drawing");
 
 		Main = _services.Create<MenuViewModel>();

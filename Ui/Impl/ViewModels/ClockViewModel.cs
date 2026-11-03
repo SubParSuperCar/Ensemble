@@ -11,6 +11,8 @@ public sealed partial class ClockViewModel : ViewModelBase
 
 	private readonly DispatcherService _dispatcher;
 
+	private long _shownSecond;
+
 	public ClockViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
@@ -25,11 +27,18 @@ public sealed partial class ClockViewModel : ViewModelBase
 
 	protected override void OnDispose() => _dispatcher.UiProcess -= OnUiProcess;
 
-	private void OnUiProcess(double delta) => Refresh();
+	// Out of a session, nothing shown changes between seconds
+	private void OnUiProcess(double delta)
+	{
+		if (GSessionManager.IsActive || GTimeProvider.GetLocalNow().ToUnixTimeSeconds() != _shownSecond)
+			Refresh();
+	}
 
 	private void Refresh()
 	{
 		var now = GTimeProvider.GetLocalNow();
+
+		_shownSecond = now.ToUnixTimeSeconds();
 
 		Date = string.Create(CultureInfo.CurrentCulture, $"{now:D} ");
 		Time = string.Create(CultureInfo.CurrentCulture, $"{now:T}");

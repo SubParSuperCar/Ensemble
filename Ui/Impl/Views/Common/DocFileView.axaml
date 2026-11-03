@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
     xmlns:md="using:LiveMarkdown.Avalonia"
+    xmlns:cm="using:EnsembleRoot.Common"
     mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
     x:Class="EnsembleRoot.Ui.Views.DocFileView"
     x:DataType="vm:DocFileViewModel">
@@ -27,8 +28,19 @@
                 </TabStrip>
             </ScrollViewer>
 
-            <ScrollViewer Grid.Row="1" VerticalAlignment="Center">
-                <md:MarkdownRenderer DocumentUpdate="{Binding Document}" LinkCommand="{Binding OpenLinkCommand}" />
+            <ScrollViewer Name="ContentScroll" Grid.Row="1" VerticalAlignment="Center">
+                <md:MarkdownRenderer
+                    Name="Renderer"
+                    DocumentUpdate="{Binding Document}"
+                    LinkCommand="{Binding OpenLinkCommand}"
+                    Opacity="{Binding ContentOpacity}">
+
+                    <md:MarkdownRenderer.Transitions>
+                        <Transitions>
+                            <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
+                        </Transitions>
+                    </md:MarkdownRenderer.Transitions>
+                </md:MarkdownRenderer>
             </ScrollViewer>
         </Grid>
     </Grid>

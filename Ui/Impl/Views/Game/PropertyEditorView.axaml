@@ -45,7 +45,7 @@
                 </DropDownButton>
             </Grid>
 
-            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
+            <ScrollViewer Name="ItemsScroll" Grid.Row="1" HorizontalScrollBarVisibility="Disabled">
                 <ItemsControl
                     Name="Items"
                     ItemsSource="{Binding VisibleItems}"
@@ -65,7 +65,14 @@
                     <!-- Each property type gets its own editor -->
                     <ItemsControl.DataTemplates>
                         <DataTemplate DataType="vm:TogglePropertyItem">
-                            <CheckBox IsChecked="{Binding Value}" VerticalAlignment="Center" />
+                            <!-- Filled with empty content, so the whole row is a target rather than only the box -->
+                            <CheckBox
+                                IsChecked="{Binding Value}"
+                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+
+                                <Border Background="Transparent" />
+                            </CheckBox>
                         </DataTemplate>
 
                         <DataTemplate DataType="vm:IntegerPropertyItem">

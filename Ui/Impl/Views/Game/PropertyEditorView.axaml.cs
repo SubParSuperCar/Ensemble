@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.ViewModels;
 
 namespace EnsembleRoot.Ui.Views;
@@ -12,10 +13,13 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 {
 	private const string NameMaxWidthKey = "NameMaxWidth";
 	private const double NameWidthShare = 3 / 7d;
+	private const double ScrollBarGap = 2d;
 
 	public PropertyEditorView()
 	{
 		InitializeComponent();
+
+		ScrollBarInset.ApplyGap(ItemsScroll, Items, ScrollBarGap);
 
 		// Handled ones too, as number boxes handle Enter and spins themselves
 		Items.AddHandler(KeyDownEvent, OnItemsKeyDown, RoutingStrategies.Bubble, true);

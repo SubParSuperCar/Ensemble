@@ -48,25 +48,39 @@ public partial class WorldHandle : Node3D
 #if DEBUG
 	private const int TestPlotId = 2;
 
-	private static readonly Vector3 HalfCell = Vector3.One / 2f;
+	// Grid units left clear between test assets
+	private const float TestAssetGap = 2f;
 
-	// Places every asset in a ring on a test plot (radius = asset count, snapped to cell centers), resting on the
-	// floor, and adds fake players
+	// Places every asset on a test plot, in rows from one corner so any number of them fit, each resting on the floor
+	// clear of its neighbors, and adds fake players
 	private static void AddTestData()
 	{
 		var plot = GPlotManager.GetHandle(TestPlotId);
 		var instances = GPlots.GetPlot(TestPlotId)!.Instances;
-		var assets = GAssets.GetAll();
-		var count = assets.Count;
+		var halfSize = plot.GridBoundarySize / 2;
 
-		for (var i = 0; i < count; i++)
+		var x = -halfSize.X;
+		var z = -halfSize.Z;
+		var rowDepth = 0f;
+
+		foreach (var asset in GAssets.GetAll())
 		{
-			var id = assets[i].Id;
-			var angle = i * float.Tau / count;
-			var cell = (new Vector3(MathF.Cos(angle), 0, MathF.Sin(angle)) * count - HalfCell).Round() + HalfCell;
-			var height = PlotPlacement.GetRestingHeight(plot, id, Quaternion.Identity);
+			var bounds = GAssetManager.GetBoundary(asset.Id);
+			var position = bounds.Position / GridToWorldScale;
+			var size = bounds.Size / GridToWorldScale;
 
-			instances.Add(id, cell with { Y = height }, Quaternion.Identity);
+			if (x + size.X > halfSize.X)
+			{
+				x = -halfSize.X;
+				z += rowDepth + TestAssetGap;
+				rowDepth = 0;
+			}
+
+			var height = PlotPlacement.GetRestingHeight(plot, asset.Id, Quaternion.Identity);
+			instances.Add(asset.Id, new Vector3(x - position.X, height, z - position.Z), Quaternion.Identity);
+
+			x += size.X + TestAssetGap;
+			rowDepth = MathF.Max(rowDepth, size.Z);
 		}
 
 		GPlayers.Add(string.Empty, "Foo - Larpje139 (Test)");

@@ -5,8 +5,8 @@ using Avalonia.Controls.Primitives;
 namespace EnsembleRoot.Ui.Controls;
 
 /// <summary>
-///     Keeps overlays (e.g., buttons over scrollable content) clear of a scroll viewer's vertical scroll bar by adding
-///     its width to their right margins while it's visible.
+///     Keeps things clear of a scroll viewer's vertical scroll bar while it's visible: overlays (e.g., buttons over
+///     scrollable content), by adding its width to their right margins, or the content, by a gap beside it.
 /// </summary>
 /// <remarks>
 ///     Measures the scroll bar itself, since logical scrollers (e.g., AvaloniaEdit's) report viewports narrower than
@@ -21,6 +21,26 @@ public static class ScrollBarInset
 	{
 		var margins = Array.ConvertAll(overlays, static overlay => overlay.Margin);
 
+		Watch(scrollViewer, scrollBar =>
+		{
+			var inset = scrollBar.IsVisible ? scrollBar.Bounds.Width : 0;
+
+			foreach (var (overlay, margin) in overlays.Zip(margins))
+				overlay.Margin = new Thickness(margin.Left, margin.Top, margin.Right + inset, margin.Bottom);
+		});
+	}
+
+	/// <remarks>Call before <paramref name="scrollViewer" />'s template is applied, e.g., in a constructor.</remarks>
+	public static void ApplyGap(ScrollViewer scrollViewer, Control content, double gap)
+	{
+		var margin = content.Margin;
+
+		Watch(scrollViewer, scrollBar =>
+			content.Margin = new Thickness(
+				margin.Left, margin.Top, margin.Right + (scrollBar.IsVisible ? gap : 0), margin.Bottom));
+	}
+
+	private static void Watch(ScrollViewer scrollViewer, Action<ScrollBar> update) =>
 		scrollViewer.TemplateApplied += (_, e) =>
 		{
 			if (e.NameScope.Find<ScrollBar>(VerticalScrollBarName) is not { } scrollBar)
@@ -29,20 +49,9 @@ public static class ScrollBarInset
 			scrollBar.PropertyChanged += (_, change) =>
 			{
 				if (change.Property == Visual.BoundsProperty || change.Property == Visual.IsVisibleProperty)
-					Update(scrollBar);
+					update(scrollBar);
 			};
 
-			Update(scrollBar);
+			update(scrollBar);
 		};
-
-		return;
-
-		void Update(ScrollBar scrollBar)
-		{
-			var inset = scrollBar.IsVisible ? scrollBar.Bounds.Width : 0;
-
-			foreach (var (overlay, margin) in overlays.Zip(margins))
-				overlay.Margin = new Thickness(margin.Left, margin.Top, margin.Right + inset, margin.Bottom);
-		}
-	}
 }

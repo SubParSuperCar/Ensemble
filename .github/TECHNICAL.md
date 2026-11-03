@@ -227,7 +227,7 @@ Main                                main.tscn, Main.cs
          |     |- Boundary          the plot's bounds
          |     |- Instances/Static  build mode: one AssetHandle per instance
          |     |- Instances/Dynamic live mode: the LiveCreation while spawned
-         |     |- Base              the plot's grid floor
+         |     |- Floor             the plot's grid floor, whose surface is its origin
          |     '- Night Light       AreaLight3D
          |- Sky                     Sky3D: sun, moon, and the day-night cycle
          |- Terrain                 Terrain3D
@@ -462,7 +462,8 @@ graph LR
   `Ctrl`-dragging (Baja Builders parity).
 - `PropertyTool` edits the selection's properties, except the engine's underscore-prefixed ones unless the editor's
   Show Internal option is on. Instances sharing a property (by name and type) show one value, or a neutral one where
-  they differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection.
+  they differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection, and each row can reset
+  its property to the asset's default.
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).

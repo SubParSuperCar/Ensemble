@@ -29,7 +29,7 @@ lists them, resolved or open. Plans are a guide, not a contract: they bend when 
 | Controller       | The occupant whose keys drive a spawned plot; never made its simulator for driving         |
 | Proxy            | An assembly on a peer that doesn't simulate it: frozen, kinematic, moved by received state |
 | Hand-off         | Ownership moving to another peer, which resumes simulating from the last received state    |
-| Anchor           | (Later) An asset that freezes its assembly while any anchor holds it                       |
+| Anchor           | An asset that freezes its assembly while any anchor on it holds it                         |
 | Passenger        | (Later, name TBD) A character seated in a creation                                         |
 
 ## 1. How it works today
@@ -359,9 +359,9 @@ and may come earlier. Some glitching may be accepted at first.
 
 | Asset      | Joint                                      | Driven by                                             |
 |------------|--------------------------------------------|-------------------------------------------------------|
-| Hinge      | `HingeJoint3D`, free                       | -                                                     |
+| Free Hinge | `HingeJoint3D`, free                       | -                                                     |
 | Motor      | `HingeJoint3D`, free until driven          | Input sets the target velocity; torque from props     |
-| Servo      | `HingeJoint3D` with its motor and limits   | A P-controller in the simulation tick toward a target |
+| Servo      | `HingeJoint3D` with its motor and limits   | A P-controller toward its limit, or back to center    |
 | Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target             |
 | Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)        |
 
@@ -390,8 +390,12 @@ Measured in a prototype with the game's physics settings; each point is what an 
 - **Speed limits:** Jolt caps every body's spin with a project setting, set to the most the stream carries, which still
   stays under half a turn per tick. Proxies replay even the fastest motor at its true speed.
 - **Servos:** Godot's hinge reports no angle, so the script finds it from the two assemblies' transforms. Too high a
-  proportional gain makes the arm chatter, since the motor answers a tick late. Keys steer toward the limits; with
-  neither pressed the servo returns to center (a property can make it hold instead), and with both it stays put (D11).
+  proportional gain makes the arm chatter, since the motor answers a tick late. A key aims at the limit that way, its
+  speed capping how fast it turns; with neither pressed the servo returns to center (a property can make it hold
+  instead), and with both it stays put (D11). The widest limit lets it turn a full circle.
+- **Anchors** hold their assembly frozen with an `OwnershipFlag`, so several on one assembly don't undo each other. A
+  frozen assembly counts as at rest, so it streams only keepalives. Like a toggled motor's latch, an anchor's switched
+  state stays on the peer that simulates, so a hand-off returns it to its property's value.
 - **Pieces keep a clearance (D16):** a motor's head and base stay collidable, with a little more than Jolt's contact
   margin between them, so everything else on their assemblies still collides. The clearance held through a heavy impact
   with no contact between them. A head can be small or light, but not massless: a lone massless assembly stays frozen,
@@ -441,9 +445,10 @@ Measured in a prototype with the game's physics settings; each point is what an 
 - **While seated,** the character's body leaves the physics space (the same hop as teleports), and its controller stops
   moving it. A seated character adds no weight, so a creation behaves the same with or without riders.
 - **Characters follow seats (D13):** the seat knows its occupant and where to sit, and the character knows its seat.
-  Each frame, the character's `PlayerHandle` copies the sit point's interpolated transform, the same one that seat is
-  drawn with. Every peer does this against its own copy of the creation, so a rider can't lag behind their seat. Being
-  parented instead would free the character with the seat's piece.
+  On each physics tick, after the creation moves, the character's `PlayerHandle` copies the sit point's transform, and
+  the camera follows it. They all interpolate between the same two ticks as the seat, and every peer does this against
+  its own copy of the creation, so a rider can't lag behind their seat. Being parented instead would free the character
+  with the seat's piece.
 - **Leaving:** the body re-enters the space where it fits, found by the engine rather than spatial code of our own: it
   tests a move from above the seat's assembly down to the seat, against whatever is really there, and lands on the first
   thing it meets, so under a roof it stands on the roof. Then it regains control.
@@ -524,7 +529,8 @@ work proportional to what moves and thinks, not to what exists.
 |         | straighten before their bodies sleep (Baumgarte factor 0.5)                                    |
 | 0.58.0  | Simulation ticks, the Motor, seats, input from a plot's controller, and key pickers in the     |
 |         | Property Editor                                                                                |
-| Next    | The Servo and Piston, then force accumulators, Airfoil, and other forces                       |
+| 0.59.x  | The Servo, Free Hinge, and Anchor; riders and coils interpolate with what carries them         |
+| Next    | The Piston, then force accumulators, Airfoil, and other forces                                 |
 
 ## 13. Decisions
 

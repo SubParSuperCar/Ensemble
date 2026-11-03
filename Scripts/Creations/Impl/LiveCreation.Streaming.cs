@@ -61,7 +61,7 @@ public partial class LiveCreation
 		// Killed assemblies are included, so the joiner's copies fall out of the world and die too
 		var states = _assemblies
 			.Where(static assembly => assembly.Id <= AssemblyState.MaxId)
-			.Select(assembly => GetState(assembly, toLocal, !assembly.Sleeping))
+			.Select(assembly => GetState(assembly, toLocal, !assembly.IsAtRest))
 			.ToArray();
 
 		var header = new CreationPacketHeader(Plot.Id, Plot.SimulationEpoch, _streamSequence);
@@ -161,7 +161,7 @@ public partial class LiveCreation
 			if (assembly is not { IsKilled: false, Id: <= AssemblyState.MaxId })
 				continue;
 
-			if (!assembly.Sleeping)
+			if (!assembly.IsAtRest)
 			{
 				_awakeAssemblies.Add(assembly);
 				_awakeIds.Add(assembly.Id);
@@ -193,7 +193,7 @@ public partial class LiveCreation
 			var assembly = _assemblies[_keepaliveIndex];
 
 			if (
-				assembly is { IsKilled: false, Sleeping: true, Id: <= AssemblyState.MaxId } &&
+				assembly is { IsKilled: false, IsAtRest: true, Id: <= AssemblyState.MaxId } &&
 				!_awakeIds.Contains(assembly.Id))
 				_streamedStates.Add(GetState(assembly, toLocal, false));
 		}

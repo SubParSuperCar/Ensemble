@@ -7,6 +7,11 @@ namespace EnsembleRoot.Scripts.Plots;
 
 public partial class PlotHandle
 {
+	// Only peers whose budget doesn't reach this creation's full rate have an entry; see PlotManager.UpdateRelayBudgets
+	private readonly System.Collections.Generic.Dictionary<int, int> _relayDivisorsByPeerId = [];
+
+	private long _relayedBytes;
+
 	internal static bool IsStreaming => GSessionManager is { Mode: SessionMode.MultiPlayer, IsActive: true };
 
 	/// <summary>
@@ -32,10 +37,30 @@ public partial class PlotHandle
 	internal void RestoreSeats(Dictionary seats) => Creation?.RestoreSeats(seats);
 
 	/// <summary>Sends a packet of the creation's states on, from its simulator.</summary>
-	internal void SendCreation(byte[] data) => Send(data, GSessionManager.LocalPeerId);
+	internal void SendCreation(byte[] data, ushort sequence) => Send(data, sequence, GSessionManager.LocalPeerId);
 
-	// The host relays to every other synced peer; anyone else sends to the host
-	private void Send(byte[] data, int sourcePeerId)
+	/// <summary>The bytes per second the creation's stream has run at, for the host, since this was last asked.</summary>
+	internal double TakeRelayRate(double elapsed)
+	{
+		var rate = _relayedBytes / elapsed;
+		_relayedBytes = 0;
+
+		return rate;
+	}
+
+	/// <summary>Has the host relay only every <paramref name="divisor" />th stream of the creation to a peer.</summary>
+	internal void SetRelayDivisor(int peerId, int divisor)
+	{
+		if (divisor > 1)
+			_relayDivisorsByPeerId[peerId] = divisor;
+		else
+			_relayDivisorsByPeerId.Remove(peerId);
+	}
+
+	// The host relays to every other synced peer, as often as its budget allows; anyone else sends to the host. A
+	// stream's packets share a sequence, so a peer gets them all or none, and divisors are powers of two, so the
+	// sequence's wrap keeps the rhythm
+	private void Send(byte[] data, ushort sequence, int sourcePeerId)
 	{
 		if (!GSessionManager.IsServer)
 		{
@@ -43,8 +68,12 @@ public partial class PlotHandle
 			return;
 		}
 
+		_relayedBytes += data.Length;
+
 		foreach (var peerId in GSessionManager.Peers.Keys)
-			if (peerId != sourcePeerId && GSessionManager.IsPeerSynced(peerId))
+			if (
+				peerId != sourcePeerId && GSessionManager.IsPeerSynced(peerId) &&
+				sequence % _relayDivisorsByPeerId.GetValueOrDefault(peerId, 1) is 0)
 				RpcId(peerId, MethodName.RpcReceiveCreation, data);
 	}
 
@@ -67,10 +96,10 @@ public partial class PlotHandle
 		if (senderId != (isServer ? SimulatorPeerId : HostPeerId) || IsSimulatedLocally || Creation is not { } creation)
 			return;
 
-		if (!creation.TryReceive(data, isServer) || !isServer)
+		if (!creation.TryReceive(data, isServer, out var sequence) || !isServer)
 			return;
 
 		_sinceSimulatorHeard = 0;
-		Send(data, senderId);
+		Send(data, sequence, senderId);
 	}
 }

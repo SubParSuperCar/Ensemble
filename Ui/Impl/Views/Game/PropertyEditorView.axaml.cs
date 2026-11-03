@@ -15,15 +15,42 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 	private const double NameWidthShare = 3 / 7d;
 	private const double ScrollBarGap = 2d;
 
+	private readonly PressFlash _copyFlash;
+	private readonly PressFlash _pasteFlash;
+
+	private PropertyEditorViewModel? _viewModel;
+
 	public PropertyEditorView()
 	{
 		InitializeComponent();
+
+		_copyFlash = new PressFlash(CopyButton);
+		_pasteFlash = new PressFlash(PasteButton);
 
 		ScrollBarInset.ApplyGap(ItemsScroll, Items, ScrollBarGap);
 
 		// Handled ones too, as number boxes handle Enter and spins themselves
 		Items.AddHandler(KeyDownEvent, OnItemsKeyDown, RoutingStrategies.Bubble, true);
 		Items.AddHandler(Spinner.SpinEvent, OnItemsSpin, RoutingStrategies.Bubble, true);
+	}
+
+	protected override void OnDataContextChanged(EventArgs e)
+	{
+		base.OnDataContextChanged(e);
+
+		if (_viewModel is not null)
+		{
+			_viewModel.Copied -= _copyFlash.Flash;
+			_viewModel.Pasted -= _pasteFlash.Flash;
+		}
+
+		_viewModel = DataContext as PropertyEditorViewModel;
+
+		if (_viewModel is null)
+			return;
+
+		_viewModel.Copied += _copyFlash.Flash;
+		_viewModel.Pasted += _pasteFlash.Flash;
 	}
 
 	// The editor's bound value, which an editor's own edits update only when committed

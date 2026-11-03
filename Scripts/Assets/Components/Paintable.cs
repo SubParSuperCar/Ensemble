@@ -22,6 +22,10 @@ public partial class Paintable : AssetComponent
 
 	[Export] public Array<GeometryInstance3D> Excluded { get; set; } = [];
 
+	/// <summary>Whether the color is <c>RRGGBBAA</c>, so only assets meant to be see-through render as transparent.</summary>
+	[Export]
+	public bool HasAlpha { get; set; }
+
 	public override void _ExitTree() => _properties?.Changed -= OnPropertyChanged;
 
 	/// <summary>Paints a handle that has no instance (a preview) as its asset's default properties would.</summary>
@@ -84,6 +88,9 @@ public partial class Paintable : AssetComponent
 	private void Paint(string hex, AssetMaterial? material)
 	{
 		var color = Color.HtmlIsValid(hex) ? Color.FromHtml(hex) : Colors.White;
+
+		if (!HasAlpha)
+			color.A = 1;
 
 		foreach (var (geometry, shading) in _geometries)
 			geometry.MaterialOverride = Paints.Get(material, color, shading);

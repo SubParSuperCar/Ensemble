@@ -62,10 +62,10 @@ graph TD
    simulator (step 6), else the plot's owner, else itself, and it broadcasts each change with an epoch number. A
    change hands the creation off: the new simulator unfreezes its proxies where they last were, and the old one
    freezes its bodies into proxies.
-4. **Streaming.** The simulator sends its moving assemblies 20 times a second, bit-packed (about 26 bytes each),
-   through the host, which checks and rate limits every packet before relaying it. Sleeping assemblies are resent
-   about once a second, in case their final update was lost.
-5. **Proxies.** Each peer replays the received states 100 ms in the past, along curves through the positions and
+4. **Streaming.** The simulator sends its moving assemblies many times a second, bit-packed, through the host, which
+   checks and rate limits every packet before relaying it, thinning out far creations for a peer when they don't all
+   fit its budget. Sleeping assemblies are resent now and then, in case their final update was lost.
+5. **Proxies.** Each peer replays the received states slightly in the past, along curves through the positions and
    velocities, so late or lost packets don't show.
 6. **Arbitration.** When creations of different plots come close, the host hands them all to one simulator (that of
    the creation with the most assemblies), so their collisions are real physics on one machine, until they've been
@@ -84,8 +84,8 @@ proxies start in place.
 | `Scripts/Plots/PlotHandle.cs`       | A plot, with `Impl/PlotHandle.*.cs`: the static mirror (`Instances`), spawning |
 |                                     | (`Spawning`), who simulates (`Simulation`, `Arbitration`), and packets and     |
 |                                     | late joins (`Replication`)                                                     |
-| `Scripts/Plots/PlotManager.cs`      | All plots, and the host's arbitration between them                             |
-|                                     | (`Impl/PlotManager.Arbitration.cs`)                                            |
+| `Scripts/Plots/PlotManager.cs`      | All plots, the host's arbitration between them                                 |
+|                                     | (`Impl/PlotManager.Arbitration.cs`), and its relay budgets (`Bandwidth`)       |
 | `Scripts/Plots/Impl/Placement/`     | Oriented boxes (`Obb`), their grid, and the placement rules and solver         |
 | `Scripts/Creations/LiveCreation.cs` | A spawned creation, with `Impl/LiveCreation.*.cs`: building (`Building`),      |
 |                                     | streaming and proxies (`Streaming`), and arbitration spheres and waking        |
@@ -195,7 +195,8 @@ much as Baja Builders did it (a model, two parts, and a constraint):
 - A `MaterialBank` node under Main with a static `Instance` (no `Globals` accessor), exporting an array of
   `AssetMaterial` resources edited in the inspector. An asset's `_materialId` indexes it; `-1` (matching `Sentinels`)
   means none, the plain color. Painted materials are shared per material and color (`Paints`), so painted geometry
-  still batches.
+  still batches. An asset opts in to see-through paint with `Paintable.HasAlpha`, which reads `_colorHex` as `RRGGBBAA`,
+  so nothing else pays for transparent rendering.
 - **(D5)** An `AssetMaterial` holds the look (`Look`, any `BaseMaterial3D` template, its albedo tinted by the
   instance's color) and the physics (`Density`, `Friction`, `Bounce`), so `Paintable` and the mass calculation read the
   same entry: rocks sink, wood floats, rubber grips, and ice slips. An instance without a material uses its asset's
@@ -244,7 +245,7 @@ much as Baja Builders did it (a model, two parts, and a constraint):
   states) and rate limits relays to 1.5 times what the creation's size lets a simulator send.
 - **Despawn mid-hand-off:** every peer frees the creation, and pending packets for it are dropped (no such creation).
 - **Late joiners:** `PlotsSnapshot` carries each plot's epoch, simulator, and the latest state of every assembly,
-  moving or asleep, so proxies start exactly in place (later: seated characters and controller input).
+  moving or asleep, so proxies start exactly in place, and who sits where (the controller follows from that).
 - **Lost packets for sleeping bodies:** a body's last update before sleeping may be lost, so sleeping assemblies get a
   slow round-robin keepalive, each about once a second but at most 40 a second per plot, healing stale proxies
   without scaling bandwidth with creation size (a flat 40 a second made a one-body creation resend itself 40 times).
@@ -292,9 +293,13 @@ host gives both to one simulator until they separate, and their collisions becom
 - An assembly's origin is its center of mass, so its position and velocities describe the point it rotates about (with
   the plot's origin, proxies extrapolating a rolling ball swung it meters off course).
 - Sleeping assemblies send nothing beyond the keepalive round-robin (section 4).
-- **Budget:** at most 256 states per plot per stream (about 130 KB/s per receiver); past it, awake assemblies take
-  turns, each sent less often, and bodies that just fell asleep go first.
-- **Proxies replay 100 ms behind:** each state is stamped with the simulator's moment (sequence numbers advance every
+- **Budget per stream:** past a fixed number of states per plot per stream, awake assemblies take turns, each sent less
+  often, and bodies that just fell asleep go first.
+- **Budget per peer:** the host shares a relay budget per peer among the creations streaming to it, nearest first (`RelayBudget`):
+  each takes its full rate if that fits, or else only every second or fourth stream. Nothing thins until the budget
+  runs out, and a far creation never stops altogether. A stream's packets go together or not at all. A proxy's replay
+  stays further behind the rarer its streams arrive, so a thinned creation still moves smoothly, only later.
+- **Proxies replay behind:** each state is stamped with the simulator's moment (sequence numbers advance every
   stream tick, a whole number of physics ticks) on a local timeline that follows the earliest arrivals. Proxies follow
   a Hermite curve through the buffered positions and velocities (straight across impacts, so nothing dips into what
   it hit), spin rotations by their angular velocities, extrapolate at most 1/10 s when a state is late, and snap when
@@ -303,7 +308,7 @@ host gives both to one simulator until they separate, and their collisions becom
   live state, creations and characters, to try poor connections without outside players.
 - Input masks: unreliable full masks on change plus a few repeats a second while held, controller -> host ->
   simulator.
-- Seats: reliable sit / leave messages; seated characters stop sending positions.
+- Seats: reliable sit / leave messages; seated characters only send their flashlight.
 
 Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):
 
@@ -429,8 +434,10 @@ Measured in a prototype with the game's physics settings; each point is what an 
   look depends on input replicates that state itself (e.g., a glass that turns from water to wine sends a bool to the
   other peers), and visuals that follow physics (a spinning rotor) need nothing extra, since the proxies already move.
 - While seated, the controller's character doesn't walk; the camera keeps mouse look and follows the seat.
+- **Bound keys come first:** while a player controls a creation, a key it binds stops doing what it does in the game
+  (camera yaw, the flashlight, a reset), rather than doing both.
 - **Leaving a seat (D2):** the `character_seat_leave` action, defaulting to Space, unless the creation binds Space for
-  its controller, who can still leave by resetting.
+  its controller, who can still leave by resetting, unless it binds that too.
 
 ## 9. Seats and characters
 
@@ -457,8 +464,8 @@ Measured in a prototype with the game's physics settings; each point is what an 
   despawn's return to the plot, spawn clearing), despawning, the seat's assembly being killed (which also respawns the
   rider, who would otherwise keep falling), the occupant leaving or being kicked from the plot, or leaving the session.
   `PlayerHandle.Teleport` leaves the seat before the hop, so every caller gets it.
-- **Replication:** the sit action names the seat (plot ID, instance ID), and a seated character sends no positions,
-  so nothing extra crosses the network while riding. A joining peer gets the seated characters with the plot's
+- **Replication:** the sit action names the seat (plot ID, instance ID), and a seated character's states only matter
+  for its flashlight, so it sends one only when that changes or as a keepalive. A joining peer gets the seated characters with the plot's
   snapshot, after its creation exists.
 
 ### Characters versus creations (research)
@@ -529,7 +536,7 @@ work proportional to what moves and thinks, not to what exists.
 |         | straighten before their bodies sleep (Baumgarte factor 0.5)                                    |
 | 0.58.0  | Simulation ticks, the Motor, seats, input from a plot's controller, and key pickers in the     |
 |         | Property Editor                                                                                |
-| 0.59.x  | The Servo, Free Hinge, and Anchor; riders and coils interpolate with what carries them         |
+| 0.58.1  | The Servo, Free Hinge, and Anchor; riders and coils interpolate with what carries them         |
 | Next    | The Piston, then force accumulators, Airfoil, and other forces                                 |
 
 ## 13. Decisions

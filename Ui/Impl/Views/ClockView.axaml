@@ -9,12 +9,12 @@
     x:Class="EnsembleRoot.Ui.Views.ClockView"
     x:DataType="vm:ClockViewModel">
 
-    <!-- Only the time flips, as the session duration changes every frame -->
+    <!-- Only the time flips, as the session duration changes every frame. Presses go through to what's underneath -->
     <Border
-        ToolTip.Tip="The local time, time zone, and session duration (in a session)."
         Background="{DynamicResource TranslucentBackgroundBrush}"
         HorizontalAlignment="Center" VerticalAlignment="Center"
-        Padding="2">
+        Padding="2"
+        IsHitTestVisible="False">
 
         <StackPanel Orientation="Horizontal">
             <TextBlock Text="{Binding Date}" />

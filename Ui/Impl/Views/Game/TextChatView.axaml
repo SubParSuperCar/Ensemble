@@ -47,10 +47,7 @@
                         <StackPanel Orientation="Horizontal" Spacing="6">
                             <TextBlock Text="Send" />
 
-                            <Path
-                                VerticalAlignment="Center"
-                                Data="M 0,0 L 16,6 L 0,12 L 4,6 Z"
-                                Fill="{Binding $parent[Button].Foreground}" />
+                            <PathIcon Data="{StaticResource SendIcon}" Width="16" Height="16" />
                         </StackPanel>
                     </Button>
                 </Border>

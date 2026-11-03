@@ -31,6 +31,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		OnPropertiesChanged();
 		Property.PropertiesChanged += OnPropertiesChanged;
 		Property.Clipboard.ContentChanged += OnClipboardContentChanged;
+		Property.Copied += OnCopied;
+		Property.Pasted += OnPasted;
 
 		GSessionManager.ActionRejected += OnActionRejected;
 	}
@@ -55,6 +57,12 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		MinSize = new Size(320, 192)
 	};
 
+	/// <summary>Raised by every copy, so the view can show it, whatever asked for it.</summary>
+	public event Action? Copied;
+
+	/// <summary>Raised by every paste, so the view can show it, whatever asked for it.</summary>
+	public event Action? Pasted;
+
 	protected override void OnDispose()
 	{
 		_heldKey = null;
@@ -63,6 +71,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 		Property.PropertiesChanged -= OnPropertiesChanged;
 		Property.Clipboard.ContentChanged -= OnClipboardContentChanged;
+		Property.Copied -= OnCopied;
+		Property.Pasted -= OnPasted;
 
 		GSessionManager.ActionRejected -= OnActionRejected;
 	}
@@ -208,6 +218,9 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	private void OnClipboardContentChanged(PropertyKey _, CoreVariant __) => UpdatePaste();
 
+	private void OnCopied() => Copied?.Invoke();
+	private void OnPasted() => Pasted?.Invoke();
+
 	// The editors already show the rejected values, so they're set back
 	private void OnActionRejected(string actionId, string reason)
 	{
@@ -242,6 +255,9 @@ public abstract partial class PropertyItem(PropertyKey key) : ObservableObject
 
 		_isSyncing = false;
 	}
+
+	[RelayCommand]
+	private void Reset() => GToolManager.Property.ResetProperty(Key);
 
 	internal bool Matches(string query) =>
 		DisplayName.Contains(query, StringComparison.OrdinalIgnoreCase) ||

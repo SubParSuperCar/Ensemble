@@ -29,9 +29,8 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
     - [ ] (S) Fade the placement preview in and out as it appears and disappears
-    - [ ] (S) Press feedback - the Asset Selector's X / Y / Z buttons (and the Property Editor's Copy / Paste) briefly
-      swap their foreground and background when used, by click or keybind, so each press is visible; the tools need
-      to raise events for keybind uses
+    - [x] (S) Press feedback - the Asset Selector's X / Y / Z buttons (and the Property Editor's Copy / Paste) briefly
+      swap their foreground and background when used, by click or keybind, so each press is visible
 - PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
     - [x] (M) Selection and merged properties - one value where the selected instances agree, a neutral one (marked
       mixed) where they differ, and separate entries for same-named properties of different types
@@ -40,8 +39,8 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) "Show Internal" option - also lists `_`-prefixed properties (e.g., `_colorHex` as "Color Hex"), to test
       painting and materials before the PaintTool exists; only the tool filters them (`PropertyTool.IsInternalShown`),
       since the actions already accept them
-    - [ ] (S) Reset buttons - each Property Editor row can reset its property to the asset's default (as Lua's
-      `set_inst_prop` does with `nil`), for the whole selection; the layout waits for the owner
+    - [x] (S) Reset buttons - each Property Editor row can reset its property to the asset's default (as Lua's
+      `set_inst_prop` does with `nil`), for the whole selection
     - [ ] (M) Property limits (deferred) - per-asset ranges (min, max, maybe a step) for numeric properties, authored in
       the inspector like other asset settings, so a new `AssetHandle` needs no code for basic limits. The Property
       Editor reads them for its ranges (and sliders where both ends are set), and the asset's getters clamp to them;
@@ -49,8 +48,8 @@ The tool suite, in rough intended order of implementation.
       stay in code
 - [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
-    - [ ] (S) Paintable alpha - an opt-in `Paintable` setting under which `_colorHex` is `RRGGBBAA` instead of `RRGGBB`,
-      so only assets meant to be see-through pay for transparent rendering
+    - [x] (S) Paintable alpha - an opt-in `Paintable` setting under which `_colorHex` is `RRGGBBAA` instead of `RRGGBB`,
+      so only assets meant to be see-through pay for transparent rendering (the Torus is the first)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
 - [x] (M) Shared ToolCommon - TriggerAction, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
@@ -155,9 +154,10 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   `Paintable` and the `MaterialBank` are done. Next: pistons
 - (WIP) (L) Drivable creations - simulation ticks, the Motor, seats, input from a plot's controller, key pickers in the
   Property Editor, the Servo, and the Free Hinge are done, so steered cars drive. Next: the Piston, and a build guide
-- [ ] (S) Seated input - a seated player's flashlight replicates, and game keys (`Q` / `E` camera yaw, `F`, `H`) stop
-  firing when the creation binds them
-- [ ] (M) Bandwidth - a per-client budget that favors near and fast bodies over far ones
+- [x] (S) Seated input - a seated player's flashlight replicates, and game keys (`Q` / `E` camera yaw, `F`, `H`) stop
+  firing when the creation they control binds them
+- [x] (M) Bandwidth - the host shares a budget per peer among the creations streaming to it, nearest first, thinning
+  out far ones only when they don't all fit
 - [ ] (M) Characters riding moving creations (platform velocity)
 - [x] (M) Anchors - an asset that freezes its assembly while it holds it, switched by a key
 - [ ] (M) Flip button - lets a seated simulator right the assembly their seat is on, beside the Spawn / Despawn button
@@ -167,7 +167,6 @@ Known hard parts:
 - Collisions between creations with different simulators: arbitration hands close ones to one simulator, but fast ones
   may meet before the hand-off arrives (one-sided pushes until then)
 - Joint stability across large mass ratios
-- Bandwidth spikes when many loose bodies move at once
 - Characters standing on someone else's moving creation
 
 ## Gameplay / content

@@ -12,7 +12,7 @@ public static class Paints
 
 	/// <summary>
 	///     Paints with <paramref name="material" />'s look, or else a plain material in <paramref name="shading" /> (a
-	///     look brings its own).
+	///     look brings its own), transparent only if <paramref name="color" /> is.
 	/// </summary>
 	public static BaseMaterial3D Get(AssetMaterial? material, Color color, BaseMaterial3D.ShadingModeEnum shading)
 	{
@@ -26,11 +26,14 @@ public static class Paints
 
 	private static BaseMaterial3D Create(AssetMaterial? material, Color color, BaseMaterial3D.ShadingModeEnum shading)
 	{
-		if (material?.Look is not { } look)
-			return new StandardMaterial3D { AlbedoColor = color, ShadingMode = shading };
+		var paint = material?.Look is { } look
+			? (BaseMaterial3D)look.Duplicate()
+			: new StandardMaterial3D { ShadingMode = shading };
 
-		var paint = (BaseMaterial3D)look.Duplicate();
 		paint.AlbedoColor *= color;
+
+		if (color.A < 1)
+			paint.Transparency = BaseMaterial3D.TransparencyEnum.Alpha;
 
 		return paint;
 	}

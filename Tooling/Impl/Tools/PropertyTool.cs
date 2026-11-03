@@ -57,6 +57,12 @@ public partial class PropertyTool : ToolBase
 
 	public event Action? PropertiesChanged;
 
+	/// <summary>Raised by every copy, by button, key, or script.</summary>
+	public event Action? Copied;
+
+	/// <summary>Raised by every paste, by button, key, or script.</summary>
+	public event Action? Pasted;
+
 	public override void _Ready() => AddChild(_highlights);
 
 	public override void _UnhandledInput(InputEvent @event)
@@ -85,8 +91,11 @@ public partial class PropertyTool : ToolBase
 	}
 
 	/// <summary>Sets a property on each selected instance that has it under the same name and type.</summary>
-	public void SetProperty(string name, CoreVariant value) =>
-		Apply(new Dictionary<PropertyKey, CoreVariant> { [new PropertyKey(name, value.Type)] = value });
+	public void SetProperty(string name, CoreVariant value)
+	{
+		var edited = new PropertyKey(name, value.Type);
+		Edit((_, key) => key == edited ? value : CoreVariant.Null);
+	}
 
 	/// <summary>Copies the properties the selected instances agree on, so pasting never spreads a mixed one.</summary>
 	public void Copy()
@@ -100,10 +109,24 @@ public partial class PropertyTool : ToolBase
 
 		ToolCommon.PlaySound(properties.Count > 0 ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
 		Log.Verbose("Copied {Count} property value(s)", properties.Count);
+
+		Copied?.Invoke();
 	}
 
-	public void Paste() =>
-		ToolCommon.PlaySound(Apply(Clipboard.Contents) ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
+	public void Paste()
+	{
+		var contents = Clipboard.Contents;
+		PlayEditSound(Edit((_, key) => contents.GetValueOrDefault(key)));
+
+		Pasted?.Invoke();
+	}
+
+	/// <summary>Sets a property on each selected instance that has it back to that instance's asset's default.</summary>
+	public void ResetProperty(PropertyKey key) =>
+		PlayEditSound(Edit((instance, candidate) =>
+			candidate == key && instance.Asset.Source.Properties.TryGetValue(key.Name, out var value)
+				? value
+				: CoreVariant.Null));
 
 	protected override void OnEnable()
 	{
@@ -127,6 +150,9 @@ public partial class PropertyTool : ToolBase
 
 		PropertiesChanged?.Invoke();
 	}
+
+	private static void PlayEditSound(bool isEdited) =>
+		ToolCommon.PlaySound(isEdited ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
 
 	private bool IsEditable(string name, CoreVariant value) =>
 		(IsInternalShown || !name.StartsWith('_')) && !value.IsNull;
@@ -167,8 +193,8 @@ public partial class PropertyTool : ToolBase
 		return [.. merged.Select(static pair => ToProperty(pair.Key, pair.Value))];
 	}
 
-	// Each instance takes the values of the properties it has under the same names and types
-	private bool Apply(IReadOnlyDictionary<PropertyKey, CoreVariant> values)
+	// Each instance takes the values asked for its properties, where they have a value of the property's type
+	private bool Edit(Func<GdInstance, PropertyKey, CoreVariant> getValue)
 	{
 		var edits = new List<(GdInstance, IReadOnlyDictionary<string, CoreVariant>)>();
 
@@ -177,11 +203,15 @@ public partial class PropertyTool : ToolBase
 			var changes = new Dictionary<string, CoreVariant>(IProperties.KeyComparer);
 
 			foreach (var (name, current) in instance.Properties.Source.All)
-				if (
-					IsEditable(name, current) &&
-					values.TryGetValue(new PropertyKey(name, current.Type), out var value) &&
-					value != current)
+			{
+				if (!IsEditable(name, current))
+					continue;
+
+				var value = getValue(instance, new PropertyKey(name, current.Type));
+
+				if (value.Type == current.Type && value != current)
 					changes[name] = value;
+			}
 
 			if (changes.Count > 0)
 				edits.Add((instance, changes));

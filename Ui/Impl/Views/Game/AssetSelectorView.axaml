@@ -108,6 +108,7 @@
                     <!-- Equal cells, as the letters' widths differ -->
                     <UniformGrid Rows="1" ColumnSpacing="2">
                         <Button
+                            Name="RotateXButton"
                             Content="X"
                             Command="{Binding RotateXCommand}"
                             ToolTip.Tip="Rotates around the X axis. (World Y / Up)"
@@ -117,19 +118,21 @@
                             FontSize="24" FontWeight="Bold" />
 
                         <Button
+                            Name="RotateYButton"
                             Content="Y"
                             Command="{Binding RotateYCommand}"
                             ToolTip.Tip="Rotates around the Y axis. (World X / Right)"
-                            Background="#00FF00" Foreground="Black"
+                            Background="#00BC00" Foreground="Black"
                             HorizontalContentAlignment="Center"
                             Padding="8,0"
                             FontSize="24" FontWeight="Bold" />
 
                         <Button
+                            Name="RotateZButton"
                             Content="Z"
                             Command="{Binding RotateZCommand}"
                             ToolTip.Tip="Rotates around the Z axis. (World Z / Back)"
-                            Background="#0000FF" Foreground="White"
+                            Background="#6389FF" Foreground="White"
                             HorizontalContentAlignment="Center"
                             Padding="8,0"
                             FontSize="24" FontWeight="Bold" />

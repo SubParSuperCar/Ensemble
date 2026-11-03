@@ -11,11 +11,19 @@
 
     <UserControl.Styles>
         <Style Selector="ToggleButton#Handle">
-            <Setter Property="Content" Value="&gt;" />
+            <Setter Property="Content">
+                <Template>
+                    <PathIcon Data="{StaticResource ChevronRightIcon}" Width="16" Height="16" />
+                </Template>
+            </Setter>
         </Style>
 
         <Style Selector="ToggleButton#Handle:checked">
-            <Setter Property="Content" Value="&lt;" />
+            <Setter Property="Content">
+                <Template>
+                    <PathIcon Data="{StaticResource ChevronLeftIcon}" Width="16" Height="16" />
+                </Template>
+            </Setter>
         </Style>
     </UserControl.Styles>
 
@@ -29,7 +37,7 @@
             Padding="4">
 
             <Grid RowDefinitions="Auto,*" RowSpacing="4">
-                <TextBlock Text="Widgets" ToolTip.Tip="Opens and closes widgets." />
+                <TextBlock Text="Widgets" ToolTip.Tip="Opens and closes widgets." HorizontalAlignment="Center" />
 
                 <ScrollViewer Grid.Row="1" MaxHeight="256">
                     <ItemsControl ItemsSource="{Binding Entries}">

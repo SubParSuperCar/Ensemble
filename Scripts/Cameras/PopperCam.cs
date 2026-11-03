@@ -1,5 +1,6 @@
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Utils;
+using EnsembleRoot.Scripts.Players;
 using Godot;
 using Serilog;
 using MouseButton = Godot.MouseButton;
@@ -49,6 +50,9 @@ public partial class PopperCam : SpringArm3D
 
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
 	public float DollySmoothingRate { get; set; } = 32f;
+
+	/// <summary>The player this camera follows, whose creation may take its keys while seated.</summary>
+	internal PlayerHandle? Player { get; set; }
 
 	public override void _Ready()
 	{
@@ -123,11 +127,11 @@ public partial class PopperCam : SpringArm3D
 	{
 		if (!InputSink.IsSunk)
 		{
-			var yawInput = Input.GetAxis(YawLeftAction, YawRightAction);
+			var yawInput = GetAxis(YawLeftAction, YawRightAction);
 			if (yawInput is not 0)
 				_yaw -= yawInput * YawRate * (float)delta;
 
-			var dollyInput = Input.GetAxis(DollyInAction, DollyOutAction);
+			var dollyInput = GetAxis(DollyInAction, DollyOutAction);
 			if (dollyInput is not 0)
 				ApplyDollyDelta(dollyInput * DollyRate * (float)delta);
 		}
@@ -138,6 +142,11 @@ public partial class PopperCam : SpringArm3D
 		GlobalPosition = Focus?.GlobalPosition ?? Vector3.Zero;
 		Rotation = Rotation with { X = _pitch, Y = _yaw };
 	}
+
+	private float GetAxis(StringName negative, StringName positive) => GetStrength(positive) - GetStrength(negative);
+
+	private float GetStrength(StringName action) =>
+		Player?.IsActionTaken(action) is true ? 0 : Input.GetActionStrength(action);
 
 	private void ApplyDollyDelta(float delta)
 	{

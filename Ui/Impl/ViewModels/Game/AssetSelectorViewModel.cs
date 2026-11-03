@@ -3,7 +3,6 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
 using Avalonia;
-using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Assets;
@@ -11,6 +10,8 @@ using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.ViewModels.Utils;
+using Godot;
+using Dispatcher = Avalonia.Threading.Dispatcher;
 
 namespace EnsembleRoot.Ui.ViewModels;
 
@@ -32,6 +33,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		OnAssetIdChanged(Construct.AssetId);
 		SelectedItems.CollectionChanged += OnSelectedItemsChanged;
 		Construct.AssetIdChanged += OnAssetIdChanged;
+		Construct.Rotated += OnRotated;
 
 		OnLocalPlotChanged(LocalPlot);
 		LocalPlotChanged += OnLocalPlotChanged;
@@ -61,14 +63,20 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		MinSize = new Size(384, 256)
 	};
 
+	/// <summary>Raised by every rotation, so the view can show it, whatever asked for it.</summary>
+	public event Action<Vector3.Axis>? Rotated;
+
 	protected override void OnDispose()
 	{
 		SelectedItems.CollectionChanged -= OnSelectedItemsChanged;
 		Construct.AssetIdChanged -= OnAssetIdChanged;
+		Construct.Rotated -= OnRotated;
 		LocalPlotChanged -= OnLocalPlotChanged;
 
 		SetInstances(null);
 	}
+
+	private void OnRotated(Vector3.Axis axis) => Rotated?.Invoke(axis);
 
 	partial void OnLinearSnappingIncrementChanging(float value) =>
 		Construct.SnappingIncrementLinear = value is 0f ? null : value;

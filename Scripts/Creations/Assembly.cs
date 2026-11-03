@@ -1,4 +1,5 @@
 using System.Globalization;
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Assets.Materials;
 using Godot;
@@ -12,6 +13,7 @@ namespace EnsembleRoot.Scripts.Creations;
 /// </summary>
 public partial class Assembly : RigidBody3D
 {
+	private readonly OwnershipFlag _holds = new();
 	private readonly List<CollisionObject3D> _pieces = [];
 
 	private float _bounce = float.PositiveInfinity;
@@ -28,6 +30,9 @@ public partial class Assembly : RigidBody3D
 
 	public bool IsKilled { get; private set; }
 
+	/// <summary>Whether it isn't moving on its own: asleep, or frozen, which never counts as asleep.</summary>
+	internal bool IsAtRest => Sleeping || Freeze;
+
 	/// <summary>
 	///     Whether this peer simulates the body; otherwise it's a proxy, frozen as kinematic and moved by received
 	///     state, so characters still collide with and stand on it. A massless body stays frozen either way.
@@ -39,11 +44,22 @@ public partial class Assembly : RigidBody3D
 		{
 			field = value;
 			FreezeMode = value ? FreezeModeEnum.Static : FreezeModeEnum.Kinematic;
-			Freeze = !value || _mass <= 0;
+			UpdateFreeze();
 
 			if (!value)
 				ProxyTransform = GlobalTransform;
 		}
+	}
+
+	/// <summary>Freezes the body in place while any holder holds it, so that several can without undoing each other.</summary>
+	public void SetHeld(object holder, bool isHeld)
+	{
+		if (isHeld)
+			_holds.Acquire(holder);
+		else
+			_holds.Release(holder);
+
+		UpdateFreeze();
 	}
 
 	/// <summary>
@@ -137,6 +153,8 @@ public partial class Assembly : RigidBody3D
 		ProcessMode = ProcessModeEnum.Disabled;
 		Visible = false;
 	}
+
+	private void UpdateFreeze() => Freeze = !IsSimulated || _mass <= 0 || _holds.IsSet;
 
 	public override string ToString() =>
 		string.Create(

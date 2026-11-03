@@ -55,15 +55,15 @@ are the same, without Roblox's limits.
   join with a single code. Sessions can have passwords and player limits, and run on dedicated servers.
 - **Chat** with Roblox-style colored nametags, an optional profanity filter (hosts choose), and an optional "read aloud"
   mode that speaks new messages.
-- **Drive** what you build: bind motors to keys, touch a seat to sit, and the plot's first occupant in a seat with
-  controls takes the wheel.
+- **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a
+  seat with controls takes the wheel. Anchors hold what you've built in place.
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.
 - **Tinker** with a built-in Lua console (which also saves and loads creations for now), and even a web browser and
   system terminal inside the game.
 
-More moving parts (hinges, servos, and pistons), a Saves menu, a real map, and more building tools are on the way; see
+More moving parts (like pistons), a Saves menu, a real map, and more building tools are on the way; see
 the [**roadmap**](./ROADMAP.md).
 
 ---

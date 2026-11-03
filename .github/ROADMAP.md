@@ -152,15 +152,15 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   character (another peer's creation, or a dedicated host's) stay on the ground
 - (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass
   `AssetHandle`) initialize once their whole creation exists, and tick in one batch on the creation's simulator;
-  `Paintable` and the `MaterialBank` are done. Next: driven joints beyond the Motor (servos, pistons)
-- (WIP) (L) Drivable creations - simulation ticks, the Motor, seats, input from a plot's controller, and key pickers in
-  the Property Editor are done (0.58.0), so skid-steered cars drive. Next: the Servo, then a car with steering and
-  suspension
+  `Paintable` and the `MaterialBank` are done. Next: pistons
+- (WIP) (L) Drivable creations - simulation ticks, the Motor, seats, input from a plot's controller, key pickers in the
+  Property Editor, the Servo, and the Free Hinge are done, so steered cars drive. Next: the Piston, and a build guide
 - [ ] (S) Seated input - a seated player's flashlight replicates, and game keys (`Q` / `E` camera yaw, `F`, `H`) stop
   firing when the creation binds them
 - [ ] (M) Bandwidth - a per-client budget that favors near and fast bodies over far ones
 - [ ] (M) Characters riding moving creations (platform velocity)
-- [ ] (M) Anchors - an asset that freezes its assembly while it holds it
+- [x] (M) Anchors - an asset that freezes its assembly while it holds it, switched by a key
+- [ ] (M) Flip button - lets a seated simulator right the assembly their seat is on, beside the Spawn / Despawn button
 
 Known hard parts:
 

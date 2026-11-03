@@ -263,7 +263,7 @@ public partial class ConstructTool : ToolBase
 		MakeTranslucent(_preview);
 
 		var bounds = GAssetManager.GetBoundary(AssetId);
-		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = bounds };
+		_axialHighlight = new AxialHighlight { Name = "Valid Highlight", Aabb = bounds, OriginEdgesOnly = true };
 		_solidHighlight = new SolidHighlight { Name = "Invalid Highlight", Aabb = bounds, Tint = InvalidTint };
 
 		_preview.AddChild(_axialHighlight);

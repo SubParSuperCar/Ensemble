@@ -12,8 +12,7 @@ namespace EnsembleRoot.Tooling.Tools;
 /// </summary>
 public partial class SelectionHighlights : Node
 {
-	private readonly SolidHighlight _hoverHighlight = new()
-		{ Name = "Hover Highlight", Pulsing = true, Visible = false };
+	private readonly SolidHighlight _hoverHighlight = new() { Name = "Hover Highlight", Visible = false };
 
 	private readonly Dictionary<int, SolidHighlight> _selectionHighlights = [];
 
@@ -28,6 +27,7 @@ public partial class SelectionHighlights : Node
 	public override void _Ready()
 	{
 		_hoverHighlight.Tint = Tint;
+		_hoverHighlight.Pulsing = true;
 		AddChild(_hoverHighlight);
 	}
 

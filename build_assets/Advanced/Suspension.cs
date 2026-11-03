@@ -25,9 +25,13 @@ public partial class Suspension : AssetHandle
 	private const float MinGap = 0.1f;
 	private const float MaxReach = 8 * GridToWorldScale;
 
+	// How far the helix shader sinks the coil's ends past the plates' faces
+	private const float CoilSink = 1 / 20f;
+
 	private static readonly StringName HelixLengthParameter = "helix_length";
 
 	private float _coilLength;
+	private Vector3 _coilOrigin;
 
 	[Export] public Generic6DofJoint3D Spring { get; set; } = null!;
 
@@ -40,12 +44,21 @@ public partial class Suspension : AssetHandle
 	public Node3D CoilEnd { get; set; } = null!;
 
 	// Built and previewed suspensions show the coil as authored
-	public override void _Ready() => SetProcess(IsLive);
-
-	public override void _Process(double delta)
+	public override void _Ready()
 	{
-		// Interpolated, as the plates are drawn
-		var length = MeasureCoil(Coil.GetGlobalTransformInterpolated(), CoilEnd.GetGlobalTransformInterpolated());
+		SetPhysicsProcess(IsLive);
+		_coilOrigin = Coil.Position;
+	}
+
+	// On physics ticks, in the bottom plate's space, so the coil interpolates along with the plates it spans
+	public override void _PhysicsProcess(double delta)
+	{
+		var bottom = Coil.GetParentNode3D().GlobalTransform;
+		var span = bottom.AffineInverse() * CoilEnd.GlobalPosition - _coilOrigin;
+
+		Coil.Transform = new Transform3D(new Basis(new Quaternion(Vector3.Up, span.Normalized())), _coilOrigin);
+
+		var length = span.Length();
 
 		// ReSharper disable once CompareOfFloatsByEqualityOperator
 		if (length == _coilLength)
@@ -53,6 +66,7 @@ public partial class Suspension : AssetHandle
 
 		_coilLength = length;
 		Coil.SetInstanceShaderParameter(HelixLengthParameter, length);
+		Coil.CustomAabb = Coil.CustomAabb with { Size = Coil.CustomAabb.Size with { Y = length + 2 * CoilSink } };
 	}
 
 	// The joint measures the top plate's travel from where it was built, so it takes each length less the built one

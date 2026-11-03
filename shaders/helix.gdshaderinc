@@ -29,9 +29,10 @@ void vertex()
 	float spin = turns * TAU;
 	float angle = along * spin;
 
-	// The tube's ends touch the planes it spans rather than sinking into them
-	float rise = max(helix_length - 2.0 * tube_radius, 0.0);
-	vec3 center = vec3(helix_radius * cos(angle), tube_radius + along * rise, helix_radius * sin(angle));
+	// The tube's ends sink past the planes it spans, which hide its open ends
+	float sink = 2.0 * tube_radius;
+	float rise = helix_length + 2.0 * sink;
+	vec3 center = vec3(helix_radius * cos(angle), along * rise - sink, helix_radius * sin(angle));
 
 	// A frame that follows the tube, so its section stays round however steep the helix
 	vec3 tangent = normalize(vec3(-helix_radius * spin * sin(angle), rise, helix_radius * spin * cos(angle)));

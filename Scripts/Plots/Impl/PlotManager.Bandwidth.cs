@@ -7,8 +7,8 @@ public partial class PlotManager
 	// Bytes per second per peer: one creation at its full stream budget, and half of another
 	private const double RelayBudgetPerPeer = 192 * 1024d;
 	private const double RelayBudgetInterval = 1d;
-	private readonly List<(PlotHandle Handle, double Rate, float Distance)> _relayOrder = [];
 
+	private readonly List<(PlotHandle Handle, double Rate, float Distance)> _relayOrder = [];
 	private readonly List<(PlotHandle Handle, double Rate)> _streamingHandles = [];
 
 	private double _sinceRelayBudget;

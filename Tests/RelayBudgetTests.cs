@@ -43,7 +43,8 @@ public sealed class RelayBudgetTests
 	public void IsRelayed_EveryPhase_GetsItsTurn(int phase)
 	{
 		var isRelayed = Enumerable.Range(0, 1 << 12).Any(sequence =>
-			sequence % RelayBudget.MaxDivisor == phase && RelayBudget.IsRelayed((ushort)sequence, RelayBudget.MaxDivisor));
+			sequence % RelayBudget.MaxDivisor == phase &&
+			RelayBudget.IsRelayed((ushort)sequence, RelayBudget.MaxDivisor));
 
 		Assert.True(isRelayed);
 	}

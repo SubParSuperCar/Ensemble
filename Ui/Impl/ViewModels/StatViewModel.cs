@@ -17,6 +17,9 @@ public sealed partial class StatViewModel : ViewModelBase
 	private const double RefreshInterval = 1 / 3d;
 	private const double SampleWindow = 1d;
 
+	private const double MpsToMph = 2.236936292d;
+	private const double MpsToKph = 3.6d;
+
 #if !DEBUG
 	private readonly Process _process = Process.GetCurrentProcess();
 #endif
@@ -122,8 +125,11 @@ public sealed partial class StatViewModel : ViewModelBase
 		stats.Add(("Char. Pos.",
 			string.Create(CultureInfo.InvariantCulture, $"({position.X:0.0}, {position.Y:0.0}, {position.Z:0.0})")));
 
+		var speed = character.Velocity.Length();
+
 		stats.Add(("Char. Speed",
-			string.Create(CultureInfo.InvariantCulture, $"{character.Velocity.Length():0.###} m/s")));
+			string.Create(CultureInfo.InvariantCulture,
+				$"{speed:F2} m/s, {speed * MpsToMph:F1} mi/h, {speed * MpsToKph:F1} km/h")));
 	}
 
 	private static double GetNow() => Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;

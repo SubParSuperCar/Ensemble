@@ -16,9 +16,8 @@ public readonly record struct InputState(ulong Mask)
 		.. Enumerable.Range(0, 26).Select(static letter => Key.A + letter),
 		.. Enumerable.Range(0, 10).Select(static digit => Key.Key0 + digit),
 		Key.Up, Key.Down, Key.Left, Key.Right, Key.Space, Key.Shift, Key.Ctrl, Key.Alt, Key.Tab, Key.Enter,
-		Key.Backspace,
-		Key.Comma, Key.Period, Key.Slash, Key.Semicolon, Key.Apostrophe, Key.Bracketleft, Key.Bracketright, Key.Minus,
-		Key.Equal, Key.Backslash, Key.Quoteleft
+		Key.Backspace, Key.Comma, Key.Period, Key.Slash, Key.Semicolon, Key.Apostrophe, Key.Bracketleft,
+		Key.Bracketright, Key.Minus, Key.Equal, Key.Backslash, Key.Quoteleft
 	];
 
 	private static readonly FrozenDictionary<Key, int> BitsByKey =

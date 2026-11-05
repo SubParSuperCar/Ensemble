@@ -86,7 +86,6 @@ public partial class Suspension : AssetHandle
 			: GetLengthProperty(MaxLengthKey, minLength, MaxReach);
 
 		var targetLength = GetLengthProperty(TargetLengthKey, minLength, maxLength);
-
 		var stiffness = GetNumberProperty(StiffnessKey, 0, MaxStiffness);
 		var damping = GetNumberProperty(DampingKey, 0, MaxDamping);
 

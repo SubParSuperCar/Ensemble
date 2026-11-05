@@ -61,7 +61,6 @@ public partial class ConstructTool : ToolBase
 	private bool IsSnapping => SnappingIncrementLinear is > 0;
 
 	public event Action<int>? AssetIdChanged;
-
 	public event Action<Vector3.Axis>? Rotated;
 
 	public override void _UnhandledInput(InputEvent @event)

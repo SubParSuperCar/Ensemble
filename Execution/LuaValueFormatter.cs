@@ -76,7 +76,7 @@ public static class LuaValueFormatter
 			return;
 		}
 
-		if (depth == MaxDepth)
+		if (depth is MaxDepth)
 		{
 			builder.Append("{...}");
 			return;
@@ -92,7 +92,7 @@ public static class LuaValueFormatter
 			if (count > 0)
 				builder.Append(", ");
 
-			if (count++ == MaxEntryCount)
+			if (count++ is MaxEntryCount)
 			{
 				builder.Append("...");
 				break;

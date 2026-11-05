@@ -9,7 +9,6 @@ public partial class PlotManager
 	// Plots stay linked this long after their creations part, and arbitration moves a plot at most this often, so
 	// creations jostling at the edge don't flap between simulators
 	private const double ArbitrationHoldTime = 2d;
-
 	private const double ArbitrationReviewInterval = 1 / 8d;
 
 	private readonly Dictionary<int, double> _arbitrationTimesByPlotId = [];

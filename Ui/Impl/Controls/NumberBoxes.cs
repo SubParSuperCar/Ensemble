@@ -29,8 +29,12 @@ public static class NumberBoxes
 
 	private static void OnKeyDown(TopLevel topLevel, KeyEventArgs e)
 	{
-		if (e.Key is Key.Enter or Key.Escape && e.Source is Control source &&
-			source.FindAncestorOfType<NumericUpDown>(true) is not null)
-			topLevel.FocusManager.Focus(null);
+		if (e.Key is not (Key.Enter or Key.Escape) || e.Source is not Control source ||
+			source.FindAncestorOfType<NumericUpDown>(true) is null)
+			return;
+
+		// Handled, or dropping focus would let the same key through to the game, where Escape can restart the session
+		e.Handled = true;
+		topLevel.FocusManager.Focus(null);
 	}
 }

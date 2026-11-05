@@ -37,6 +37,8 @@ public readonly record struct AssemblyState(
 	private const int AngularVelocityBits = 14;
 	private const float VelocityScale = 32f;
 
+	public bool IsMoving => LinearVelocity != Vector3.Zero || AngularVelocity != Vector3.Zero;
+
 	public void Write(BitWriter writer)
 	{
 		writer.Write((ulong)Id, IdBits);

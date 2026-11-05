@@ -62,8 +62,7 @@ public partial class PlotHandle
 			_relayDivisorsByPeerId.Remove(peerId);
 	}
 
-	// A stream's packets share a sequence, so a peer gets them all or none, and divisors are powers of two, so the
-	// sequence's wrap keeps the rhythm
+	// A stream's packets share a sequence, so a peer gets them all or none
 	private void Send(byte[] data, ushort sequence, int sourcePeerId)
 	{
 		if (!GSessionManager.IsServer)
@@ -77,7 +76,7 @@ public partial class PlotHandle
 		foreach (var peerId in GSessionManager.Peers.Keys)
 			if (
 				peerId != sourcePeerId && GSessionManager.IsPeerSynced(peerId) &&
-				sequence % _relayDivisorsByPeerId.GetValueOrDefault(peerId, 1) is 0)
+				RelayBudget.IsRelayed(sequence, _relayDivisorsByPeerId.GetValueOrDefault(peerId, 1)))
 				RpcId(peerId, MethodName.RpcReceiveCreation, data);
 	}
 

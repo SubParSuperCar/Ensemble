@@ -33,4 +33,23 @@ public sealed class RelayBudgetTests
 		Assert.Equal(RelayBudget.MaxDivisor, RelayBudget.Take(ref remaining, 60));
 		Assert.Equal(0d, remaining);
 	}
+
+	// A small creation's keepalives can fall on one phase of its streams, so every phase must get its turn
+	[Theory]
+	[InlineData(0)]
+	[InlineData(1)]
+	[InlineData(2)]
+	[InlineData(3)]
+	public void IsRelayed_EveryPhase_GetsItsTurn(int phase)
+	{
+		var isRelayed = Enumerable.Range(0, 1 << 12).Any(sequence =>
+			sequence % RelayBudget.MaxDivisor == phase && RelayBudget.IsRelayed((ushort)sequence, RelayBudget.MaxDivisor));
+
+		Assert.True(isRelayed);
+	}
+
+	[Fact]
+	public void IsRelayed_FullRate_RelaysEverything() =>
+		Assert.All(Enumerable.Range(0, 1 << 10),
+			static sequence => Assert.True(RelayBudget.IsRelayed((ushort)sequence, 1)));
 }

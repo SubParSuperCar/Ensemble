@@ -21,6 +21,7 @@ public partial class LiveCreation : Node3D
 	private readonly List<(AssetHandle Handle, ISimulationTicked Ticked)> _ticked = [];
 
 	private bool _isAwaitingInput;
+	private bool _isResuming;
 	private InputState _previousInput;
 	private double _sinceKillCheck;
 
@@ -68,6 +69,7 @@ public partial class LiveCreation : Node3D
 		// The controller's next update reaches whoever simulates now
 		Input = default;
 		_isAwaitingInput = true;
+		_isResuming = true;
 
 		ForgetSentAssetStates();
 		ResetStream();
@@ -78,13 +80,14 @@ public partial class LiveCreation : Node3D
 		if (!Plot.IsSimulatedLocally)
 			return;
 
-		var tick = new SimulationTick(Input, _previousInput, delta);
+		var tick = new SimulationTick(Input, _previousInput, delta, _isResuming);
 
 		foreach (var (handle, ticked) in _ticked)
 			if (handle.Assembly is { IsKilled: false })
 				ticked.Tick(tick);
 
 		_previousInput = Input;
+		_isResuming = false;
 	}
 
 	private void KillFallenAssemblies(double delta)

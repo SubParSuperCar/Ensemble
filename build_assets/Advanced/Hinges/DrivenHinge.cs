@@ -72,7 +72,7 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked, IRep
 		Direction = _toggles ? GetToggledDirection(tick) : GetSign(isForward, isReverse);
 		IsOpposed = !_toggles && isForward && isReverse;
 
-		Drive(Direction != _drivenDirection, tick.Delta);
+		Drive(Direction != _drivenDirection, tick);
 		_drivenDirection = Direction;
 	}
 
@@ -89,7 +89,7 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked, IRep
 		Torque = GetNumberProperty(TorqueKey, 0, MaxTorque);
 	}
 
-	protected abstract void Drive(bool isDirectionChanged, double delta);
+	protected abstract void Drive(bool isDirectionChanged, in SimulationTick tick);
 
 	// A positive target velocity spins node B backward about the joint's Z axis. Writing to a joint wakes its bodies, so
 	// only changes are written, and an idle creation can fall asleep

@@ -120,6 +120,7 @@ public partial class PlotHandle
 	{
 		SimulatorPeerId = peerId;
 		_sinceSimulatorHeard = 0;
+		_sinceInputHeard = 0;
 
 		if (Creation is null)
 			return;

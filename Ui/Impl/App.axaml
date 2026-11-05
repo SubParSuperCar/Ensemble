@@ -94,7 +94,7 @@
             <Setter Property="Padding" Value="0" />
         </Style>
 
-        <!-- An empty box is a binding's error, with nothing to say: it just keeps its last good value (see NumberBoxes) -->
+        <!-- An empty box is only a binding's error, as it keeps its last good value; NumberBoxes shows the real ones -->
         <Style Selector="NumericUpDown /template/ DataValidationErrors">
             <Setter Property="ErrorTemplate">
                 <DataTemplate>
@@ -105,11 +105,6 @@
 
         <Style Selector="NumericUpDown.invalid /template/ TextBox#PART_TextBox">
             <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
-        </Style>
-
-        <!-- As wide as it's tall, so a row's height decides the size of its icon buttons -->
-        <Style Selector="Button.square">
-            <Setter Property="Width" Value="{Binding $self.Bounds.Height}" />
         </Style>
 
         <!-- SimpleTheme sizes icons 20 square but clips a menu's to 16 -->

@@ -9,11 +9,12 @@
     x:DataType="vm:MenuHomeViewModel"
     FontSize="24" FontWeight="ExtraLight">
 
-    <Grid RowDefinitions="*,*,*,*,*">
+    <!-- Sized by their content, so the spaces between them are what shrinks, down to their margins -->
+    <Grid RowDefinitions="2*,Auto,*,Auto,*,Auto,2*">
         <StackPanel
             Grid.Row="1"
             Spacing="8"
-            HorizontalAlignment="Center" VerticalAlignment="Center">
+            HorizontalAlignment="Center">
 
             <Border
                 Width="256" Height="256"
@@ -43,9 +44,10 @@
         </StackPanel>
 
         <Border
-            Grid.Row="2"
+            Grid.Row="3"
             BorderBrush="{StaticResource DangerBrush}" BorderThickness="{StaticResource BorderThickness}"
-            HorizontalAlignment="Center" VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Margin="0,8,0,0"
             IsVisible="{Binding Notice, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
 
             <TextBlock
@@ -58,9 +60,10 @@
         </Border>
 
         <StackPanel
-            Grid.Row="3"
+            Grid.Row="5"
             Spacing="8"
-            HorizontalAlignment="Center" VerticalAlignment="Center">
+            HorizontalAlignment="Center"
+            Margin="0,8,0,0">
 
             <Border Classes="primary">
                 <Button

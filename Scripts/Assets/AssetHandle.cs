@@ -191,7 +191,6 @@ public partial class AssetHandle : StaticBody3D
 	protected float GetLengthProperty(string key, float min, float max) =>
 		GridToWorldScale * GetNumberProperty(key, min / GridToWorldScale, max / GridToWorldScale);
 
-	/// <summary>Reads a key binding property, which holds a Godot key code.</summary>
 	protected Key GetKeyProperty(string key) => (Key)Instance.Properties.GetValue(key).AsInt64();
 
 	// Before anything moves the pieces; the joints are unlinked until live, so no build or preview links bodies

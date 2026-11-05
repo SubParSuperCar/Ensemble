@@ -51,8 +51,7 @@ public partial class WorldHandle : Node3D
 	// Grid units left clear between test assets
 	private const float TestAssetGap = 2f;
 
-	// Places every asset on a test plot, in rows from one corner so any number of them fit, each resting on the floor
-	// clear of its neighbors, and adds fake players
+	// In rows from one corner, so any number of them fit
 	private static void AddTestData()
 	{
 		var plot = GPlotManager.GetHandle(TestPlotId);

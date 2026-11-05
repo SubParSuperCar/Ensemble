@@ -6,19 +6,16 @@ using Godot;
 namespace EnsembleRoot.Scripts.Assets.Components;
 
 /// <summary>
-///     Makes an asset a seat: while live, a character touching <see cref="Area" /> sits at its origin, following it out
-///     of the physics space. Sitting and leaving are actions, which Replication submits for these events.
+///     While live, a character touching <see cref="Area" /> sits at its origin. Sitting and leaving are actions, which
+///     Replication submits for these events.
 /// </summary>
 [GlobalClass]
 public partial class Seat : AssetComponent
 {
 	private const string HasControlsKey = "hasControls";
 
-	/// <summary>Detects touches with its shape, and is where a seated character's origin goes.</summary>
-	[Export]
-	public Area3D Area { get; set; } = null!;
+	[Export] public Area3D Area { get; set; } = null!;
 
-	/// <summary>Whether a plot's occupant sitting here can control its creation.</summary>
 	public bool HasControls { get; private set; }
 
 	public PlayerHandle? Occupant { get; internal set; }

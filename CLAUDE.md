@@ -41,6 +41,9 @@ Rules that carry the design:
   API doesn't change without the owner's approval. Geometry lives in Scripts (managers, `AssetHandle`, placement).
 - **The host is the authority.** Every world change is a validated `INetworkAction`; never trust IDs from payloads.
   The host is never restricted except to protect game integrity.
+- **Networking has four channels:** actions, streams, asset states, and host broadcasts (see
+  [TECHNICAL.md](.github/TECHNICAL.md#channels)). Every `AnyPeer` RPC checks its sender, then its shape, then its rate,
+  before it acts or relays.
 - **Godot sees only what it must.** Only a Godot class's main file is Godot-visible; partials and plain C# types go
   in a `.gdignore`d `Impl/` folder beside it. `Impl` never appears in a namespace: partials keep their class's, and
   plain types take their folder's (`Scripts/Plots/Impl/Placement/` is `EnsembleRoot.Scripts.Plots.Placement`).
@@ -57,7 +60,9 @@ columns. Builds must have 0 warnings, and InspectCode should be clean on touched
 - **Comments are rare.** A comment earns its place with a non-obvious *why*: an engine quirk, a threading or
   performance reason, a format or protocol invariant, a unit. Never restate the code or a name. XML docs only on major
   or ambiguous APIs. Single-sentence `//` comments have no trailing period. The owner's `// TODO:`s are backlog: keep
-  them.
+  them. Before adding one, ask what a reader would get wrong without it; if nothing, leave it out.
+- **Components mind their own business.** A component's code and comments don't mention what calls it or shows it
+  (buttons, scripts, views), unless that relationship is itself the point.
 - **Tests are reserved for make-or-break behavior:** file formats and round trips, determinism, tricky math, parsing,
   and fixed regressions. Not for trivia, and not padded.
 - **Terse and canonical.** Expression bodies, one-line private helpers, pattern matching, object initializers; the

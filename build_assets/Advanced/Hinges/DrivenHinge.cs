@@ -12,7 +12,7 @@ namespace EnsembleRoot.BuildAssets.Advanced.Hinges;
 ///     If it toggles, a key press starts it instead of holding the key, until the other key reverses it or the same key
 ///     stops it.
 /// </summary>
-public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked
+public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked, IReplicatedState
 {
 	private const string ForwardBinding = "forwardKey";
 	private const string ReverseBinding = "reverseKey";
@@ -24,13 +24,12 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked
 	private const float MaxSpeed = 1000f;
 	private const float MaxTorque = 20_000f;
 
+	private int _drivenDirection;
 	private Key _forwardKey;
 
 	// Nothing written yet, as a joint's own defaults aren't what the first write may want
 	private float _impulse = float.NaN;
 
-	private bool _isForwardHeld;
-	private bool _isReverseHeld;
 	private Key _reverseKey;
 	private bool _toggles;
 	private float _velocity = float.NaN;
@@ -54,21 +53,27 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked
 	/// <summary>Newton-meters.</summary>
 	protected float Torque { get; private set; }
 
+	// Only a toggle's latch outlasts the keys that set it
+	public int State
+	{
+		get => _toggles ? Direction : 0;
+		set
+		{
+			if (_toggles)
+				Direction = Math.Sign(value);
+		}
+	}
+
 	public void Tick(in SimulationTick tick)
 	{
 		var isForward = tick.Input.IsPressed(_forwardKey);
 		var isReverse = tick.Input.IsPressed(_reverseKey);
 
-		var direction = _toggles ? GetToggledDirection(isForward, isReverse) : GetSign(isForward, isReverse);
-		var isDirectionChanged = direction != Direction;
-
-		Direction = direction;
+		Direction = _toggles ? GetToggledDirection(tick) : GetSign(isForward, isReverse);
 		IsOpposed = !_toggles && isForward && isReverse;
 
-		_isForwardHeld = isForward;
-		_isReverseHeld = isReverse;
-
-		Drive(isDirectionChanged, tick.Delta);
+		Drive(Direction != _drivenDirection, tick.Delta);
+		_drivenDirection = Direction;
 	}
 
 	protected override void OnInitialized()
@@ -113,9 +118,9 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked
 	private static int GetSign(bool isForward, bool isReverse) => (isForward ? 1 : 0) - (isReverse ? 1 : 0);
 
 	// Only new presses count, and pressing both at once changes nothing, as holding both does otherwise
-	private int GetToggledDirection(bool isForward, bool isReverse)
+	private int GetToggledDirection(in SimulationTick tick)
 	{
-		var pressed = GetSign(isForward && !_isForwardHeld, isReverse && !_isReverseHeld);
+		var pressed = GetSign(tick.IsJustPressed(_forwardKey), tick.IsJustPressed(_reverseKey));
 
 		return pressed is 0 ? Direction : pressed == Direction ? 0 : pressed;
 	}

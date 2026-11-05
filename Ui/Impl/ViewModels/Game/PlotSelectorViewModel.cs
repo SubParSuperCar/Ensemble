@@ -35,8 +35,6 @@ public sealed partial class PlotSelectorViewModel : ViewModelBase, IWidget
 	[NotifyCanExecuteChangedFor(nameof(LeaveCommand))]
 	public partial PlotItem? SelectedPlot { get; set; }
 
-	public static double LeaveButtonWidth => Descriptor.MinSize.Width / 3;
-
 	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(4, 10, 5, 8))
 	{
 		Description = "Lets you select which plot you'd like to occupy, if any.",

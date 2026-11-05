@@ -1,5 +1,5 @@
-using System.Diagnostics;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Scripts.Creations;
 using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Sessions;
@@ -16,9 +16,10 @@ public partial class PlotHandle
 	private const double InputTimeout = 4 * InputResendInterval;
 
 	// Bounds what the host relays for a flooding controller, past any key press a player could make
-	private const double MinInputRelayInterval = 1 / 120d;
+	private const double InputRelaysPerSecond = 120d;
 
-	private long _lastInputRelayTimestamp;
+	private readonly TokenGate _inputRelayGate = new(InputRelaysPerSecond, GTimeProvider);
+
 	private InputState _sentInput;
 	private double _sinceInputHeard;
 	private double _sinceInputSent;
@@ -118,10 +119,9 @@ public partial class PlotHandle
 		if (
 			GetController() is not { } controller ||
 			GSessionManager.GetPeerByPlayerId(controller.Id)?.Id != senderId ||
-			Stopwatch.GetElapsedTime(_lastInputRelayTimestamp).TotalSeconds < MinInputRelayInterval)
+			!GSessionManager.IsPeerSynced(senderId) || !_inputRelayGate.TryTake())
 			return;
 
-		_lastInputRelayTimestamp = Stopwatch.GetTimestamp();
 		RouteInput(creation, input);
 	}
 }

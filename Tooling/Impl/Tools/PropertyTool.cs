@@ -15,7 +15,7 @@ public readonly record struct PropertyKey(string Name, CoreVariantType Type)
 }
 
 /// <param name="IsMixed">Whether the instances differ, so <paramref name="Value" /> is the type's neutral one.</param>
-/// <param name="CanReset">Whether their assets agree on one default, which some instance doesn't have now.</param>
+/// <param name="CanReset">Whether their assets agree on one default, which some instance lacks.</param>
 public readonly record struct EditableProperty(PropertyKey Key, CoreVariant Value, bool IsMixed, bool CanReset);
 
 /// <summary>
@@ -43,7 +43,6 @@ public partial class PropertyTool : ToolBase
 
 	public IReadOnlyList<EditableProperty> Properties { get; private set; } = [];
 
-	/// <summary>Whether the engine's own properties are edited too, which tools like painting drive.</summary>
 	public bool IsInternalShown
 	{
 		get;
@@ -58,10 +57,8 @@ public partial class PropertyTool : ToolBase
 
 	public event Action? PropertiesChanged;
 
-	/// <summary>Raised by every copy, by button, key, or script.</summary>
 	public event Action? Copied;
 
-	/// <summary>Raised by every paste, by button, key, or script.</summary>
 	public event Action? Pasted;
 
 	public override void _Ready() => AddChild(_highlights);
@@ -122,7 +119,6 @@ public partial class PropertyTool : ToolBase
 		Pasted?.Invoke();
 	}
 
-	/// <summary>Sets a property on each selected instance that has it back to that instance's asset's default.</summary>
 	public void ResetProperty(PropertyKey key) =>
 		PlayEditSound(Edit((instance, candidate) => candidate == key ? GetDefault(instance, key) : CoreVariant.Null));
 
@@ -158,8 +154,9 @@ public partial class PropertyTool : ToolBase
 	// A value the instances disagree on turns null
 	private static CoreVariant Agree(CoreVariant left, CoreVariant right) => left == right ? left : CoreVariant.Null;
 
-	private static EditableProperty ToProperty(PropertyKey key, CoreVariant value, CoreVariant fallback) =>
-		new(key, value.IsNull ? GetNeutral(key.Type) : value, value.IsNull, !fallback.IsNull && value != fallback);
+	private static EditableProperty ToProperty(PropertyKey key, CoreVariant value, CoreVariant assetDefault) =>
+		new(key, value.IsNull ? GetNeutral(key.Type) : value, value.IsNull,
+			!assetDefault.IsNull && value != assetDefault);
 
 	private static CoreVariant GetDefault(GdInstance instance, PropertyKey key) =>
 		instance.Asset.Source.Properties.TryGetValue(key.Name, out var value) && value.Type == key.Type
@@ -190,17 +187,16 @@ public partial class PropertyTool : ToolBase
 					continue;
 
 				var key = new PropertyKey(name, value.Type);
-				var fallback = GetDefault(instance, key);
+				var assetDefault = GetDefault(instance, key);
 
 				merged[key] = merged.TryGetValue(key, out var agreed)
-					? (Agree(agreed.Value, value), Agree(agreed.Default, fallback))
-					: (value, fallback);
+					? (Agree(agreed.Value, value), Agree(agreed.Default, assetDefault))
+					: (value, assetDefault);
 			}
 
 		return [.. merged.Select(static pair => ToProperty(pair.Key, pair.Value.Value, pair.Value.Default))];
 	}
 
-	// Each instance takes the values asked for its properties, where they have a value of the property's type
 	private bool Edit(Func<GdInstance, PropertyKey, CoreVariant> getValue)
 	{
 		var edits = new List<(GdInstance, IReadOnlyDictionary<string, CoreVariant>)>();

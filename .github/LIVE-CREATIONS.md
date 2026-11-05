@@ -245,7 +245,8 @@ much as Baja Builders did it (a model, two parts, and a constraint):
   states) and rate limits relays to 1.5 times what the creation's size lets a simulator send.
 - **Despawn mid-hand-off:** every peer frees the creation, and pending packets for it are dropped (no such creation).
 - **Late joiners:** `PlotsSnapshot` carries each plot's epoch, simulator, and the latest state of every assembly,
-  moving or asleep, so proxies start exactly in place, and who sits where (the controller follows from that).
+  moving or asleep, so proxies start exactly in place, along with asset states and who sits where (the controller
+  follows from that).
 - **Lost packets for sleeping bodies:** a body's last update before sleeping may be lost, so sleeping assemblies get a
   slow round-robin keepalive, each about once a second but at most 40 a second per plot, healing stale proxies
   without scaling bandwidth with creation size (a flat 40 a second made a one-body creation resend itself 40 times).
@@ -388,7 +389,7 @@ Measured in a prototype with the game's physics settings; each point is what an 
   are never undefined.
 - **Idle (D10):** a motor coasts, its joint free, unless a property holds it at zero speed as a brake.
 - **Toggling:** a property makes a key press latch the motor on, until the other key reverses it or the same key stops
-  it. Like all live state, the latch stays on the peer that simulates, so a hand-off stops the motor.
+  it. The latch is an asset state, so it survives a hand-off.
 - **Torque falloff:** torque is constant by default, as Ensemble isn't after realism. An optional property makes it fall
   in a straight line from full at a standstill to none at full speed, as in a real electric motor.
 - **Writing to joints:** changing a motor's parameters wakes a sleeping creation, so scripts never wake bodies, but must
@@ -400,8 +401,7 @@ Measured in a prototype with the game's physics settings; each point is what an 
   speed capping how fast it turns; with neither pressed the servo returns to center (a property can make it hold
   instead), and with both it stays put (D11). The widest limit lets it turn a full circle.
 - **Anchors** hold their assembly frozen with an `OwnershipFlag`, so several on one assembly don't undo each other. A
-  frozen assembly counts as at rest, so it streams only keepalives. Like a toggled motor's latch, an anchor's switched
-  state stays on the peer that simulates, so a hand-off returns it to its property's value.
+  frozen assembly counts as at rest, so it streams only keepalives. Whether it's switched on is an asset state.
 - **Pieces keep a clearance (D16):** a motor's head and base stay collidable, with a little more than Jolt's contact
   margin between them, so everything else on their assemblies still collides. The clearance held through a heavy impact
   with no contact between them. A head can be small or light, but not massless: a lone massless assembly stays frozen,
@@ -431,9 +431,12 @@ Measured in a prototype with the game's physics settings; each point is what an 
   zeroes the input itself, as it does when a controller's updates stop arriving, so nobody can leave a key held. Only
   the keys the creation binds are sampled and sent.
 - **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
-  spin), not the plot owner as such. Controlling never moves the simulation to the controller (D14). An asset whose
-  look depends on input replicates that state itself (e.g., a glass that turns from water to wine sends a bool to the
-  other peers), and visuals that follow physics (a spinning rotor) need nothing extra, since the proxies already move.
+  spin), not the plot owner as such. Controlling never moves the simulation to the controller (D14). What an asset
+  decides from input and must outlast its simulator or show on other peers (an anchor, a motor's latch, a glass that
+  turns from water to wine) is an asset state, and visuals that follow physics (a spinning rotor) need nothing extra,
+  since the proxies already move.
+- **A new simulator** takes the keys already held as held, so a hand-off can't read them as fresh presses, and sends
+  every asset state once, which also corrects any change the host refused from the old simulator mid-hand-off.
 - While seated, the controller's character doesn't walk; the camera keeps mouse look and follows the seat.
 - **Bound keys come first:** while a player controls a creation, a key it binds stops doing what it does in the game
   (camera yaw, the flashlight, a reset), rather than doing both.

@@ -380,6 +380,25 @@ sequenceDiagram
 Snapshots (`Replication/Snapshots/`): `PlotsSnapshot`, `CharactersSnapshot`, `ChatSnapshot`, and
 `ProfanityFilterSnapshot`.
 
+### Channels
+
+Everything sent over the network is one of four kinds, chosen by what the message is:
+
+| Kind            | For                                               | Delivery   | Sent by       | Limited by        |
+|-----------------|---------------------------------------------------|------------|---------------|-------------------|
+| Actions         | What a player asks for, which the host may refuse | Reliable   | Anyone        | Bucket, queued    |
+| Streams         | What the newest value replaces, such as positions | Unreliable | One sender    | `TokenGate`, drop |
+| Asset states    | What a simulator decides and peers must remember  | Reliable   | The simulator | `TokenGate`, drop |
+| Host broadcasts | What only the host decides, such as simulators    | By need    | The host      | Godot's authority |
+
+- **Choosing one:** if the host might say no, it's an action. If a later value makes an earlier one worthless, it's a
+  stream, which would flood the action limiter and gain nothing from a queue. If a peer that already has the authority
+  needs the others to remember what it decided, it's an asset state (`IReplicatedState`).
+- **Every `AnyPeer` RPC** checks its sender first, then its shape, then its rate, and only then acts or relays. A stream
+  or asset state has one rightful sender per instance, so its gate is that sender's, and a sender must be synced, so a
+  kicked peer that ignores its notice stops counting at once. `RpcChannelTests` lists them all, so a new one is a
+  deliberate choice.
+
 ---
 
 ## Live Creations

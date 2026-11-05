@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Scripts.Creations.Packets;
@@ -31,7 +30,7 @@ public partial class LiveCreation
 	// Proxies show the creation this far in the past, so a late state still arrives before it's needed
 	private const double InterpolationDelay = 2d / StreamRate;
 
-	// How much of the way toward what a stream's gaps call for each received stream moves the replay's delay
+	// Of the way to its target, per received stream
 	private const double ReplayDelayRate = 1 / 8d;
 
 	// Whole physics ticks, so each sequence number stands for an exact moment on the simulator
@@ -51,8 +50,7 @@ public partial class LiveCreation
 	private double _keepaliveCredit;
 	private int _keepaliveIndex;
 	private ushort _receivedSequence;
-	private long _relayRefillTimestamp;
-	private double _relayTokens;
+	private TokenGate _relayGate = null!;
 	private double _replayDelay = InterpolationDelay;
 	private int _sinceStream;
 	private ushort _streamSequence;
@@ -95,7 +93,7 @@ public partial class LiveCreation
 
 		if (
 			data.Length > MaxPacketBytes || !TryRead(data, out var header) ||
-			(isRelaying && !TryTakeRelayTokens(_receivedStates.Count + 1)))
+			(isRelaying && !_relayGate.TryTake(_receivedStates.Count + 1)))
 			return false;
 
 		sequence = header.Sequence;
@@ -138,6 +136,7 @@ public partial class LiveCreation
 		_sinceStream = 0;
 		_streamSequence++;
 
+		SendAssetStates();
 		GatherStreamedStates();
 
 		if (_streamedStates.Count is 0 && ++_streamsSinceSent < HeartbeatStreams)
@@ -225,24 +224,13 @@ public partial class LiveCreation
 		CreationPackets.TryRead(data, out header, _receivedStates) &&
 		header.PlotId == Plot.Id && header.Epoch == Plot.SimulationEpoch;
 
-	// Refilled with time, at what the creation's size allows the simulator to send, plus the allowance
-	private bool TryTakeRelayTokens(int cost)
+	// What the creation's size lets a simulator send, plus the allowance
+	private double GetRelayRate()
 	{
 		var statesPerStream = Math.Min(_assemblies.Count, MaxStatesPerStream) + KeepalivesPerStream;
 		var packetsPerStream = statesPerStream / MaxStatesPerPacket + 1;
-		var perSecond = (statesPerStream + packetsPerStream) * StreamRate * RelayAllowance;
 
-		var now = Stopwatch.GetTimestamp();
-		var elapsed = Stopwatch.GetElapsedTime(_relayRefillTimestamp, now).TotalSeconds;
-
-		_relayRefillTimestamp = now;
-		_relayTokens = Math.Min(perSecond / 2, _relayTokens + elapsed * perSecond);
-
-		if (_relayTokens < cost)
-			return false;
-
-		_relayTokens -= cost;
-		return true;
+		return (statesPerStream + packetsPerStream) * StreamRate * RelayAllowance;
 	}
 
 	// The host may relay only some streams, which the replay then needs to stay behind in proportion. Longer gaps are

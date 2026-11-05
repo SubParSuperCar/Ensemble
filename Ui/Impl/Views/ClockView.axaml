@@ -9,7 +9,7 @@
     x:Class="EnsembleRoot.Ui.Views.ClockView"
     x:DataType="vm:ClockViewModel">
 
-    <!-- Only the time flips, as the session duration changes every frame. Presses go through to what's underneath -->
+    <!-- Only the time flips, as the session duration changes every frame -->
     <Border
         Background="{DynamicResource TranslucentBackgroundBrush}"
         HorizontalAlignment="Center" VerticalAlignment="Center"

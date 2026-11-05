@@ -46,7 +46,6 @@ public static class PlotPlacement
 		return new Aabb(min, plot.BoundarySize);
 	}
 
-	/// <summary>Gets the grid height at which an asset rests on the plot's floor.</summary>
 	public static float GetRestingHeight(PlotHandle plot, int assetId, Quaternion rotation)
 	{
 		var box = GetBox(assetId, Vector3.Zero, rotation);

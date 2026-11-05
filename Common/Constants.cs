@@ -35,7 +35,7 @@ public static class Constants
 
 	public const int RegexMatchTimeoutMs = 100;
 
-	/// <summary>Meters per grid unit: the unit building snaps to, and asset length properties are in.</summary>
+	/// <summary>Meters per grid unit.</summary>
 	public const float GridToWorldScale = 0.5f;
 
 	/// <summary>

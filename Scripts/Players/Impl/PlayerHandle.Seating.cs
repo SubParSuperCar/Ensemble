@@ -19,15 +19,11 @@ public partial class PlayerHandle
 	private (Vector3 Above, Vector3 Seat)? _standUp;
 	private Vector3? _teleportAfterSeat;
 
-	/// <summary>The seat the character sits in, which every peer follows on its own copy of the creation.</summary>
 	public Seat? Seat { get; private set; }
 
 	public bool CanSit => Seat is null && Stopwatch.GetElapsedTime(_leftSeatTimestamp) >= SitCooldown;
 
-	/// <summary>
-	///     Whether the creation this character controls binds a key of an action, which then drives the creation instead
-	///     of doing what it does in the game.
-	/// </summary>
+	/// <summary>Whether the creation this character controls binds a key of the action, which then drives it instead.</summary>
 	public bool IsActionTaken(StringName action)
 	{
 		if (
@@ -43,9 +39,6 @@ public partial class PlayerHandle
 		return false;
 	}
 
-	/// <summary>
-	///     Sits the character down, out of the physics space, so it can't disturb the creation or weigh on it.
-	/// </summary>
 	internal void Sit(Seat seat)
 	{
 		Vacate();
@@ -58,6 +51,7 @@ public partial class PlayerHandle
 		_standUp = null;
 		_teleportAfterSeat = null;
 
+		// Out of the physics space, so it can't disturb the creation or weigh on it
 		PhysicsServer3D.BodySetSpace(Body.GetRid(), default);
 		Body.Velocity = Vector3.Zero;
 
@@ -109,10 +103,7 @@ public partial class PlayerHandle
 		_standUp = (GetAbove(position, seat), position);
 	}
 
-	/// <summary>
-	///     Respawns the local character out of a seat that fell out of the world, which would leave it falling too.
-	///     Other peers' riders are their own peers' to move, as each peer's copy of the seat falls at its own moment.
-	/// </summary>
+	// Other peers' riders are their own peers' to move, as each peer's copy of the seat falls at its own moment
 	internal void LeaveFallenSeat()
 	{
 		if (_controller is not null)

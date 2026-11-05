@@ -55,8 +55,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 		_topLevel = null;
 	}
 
-	// Dims the watermark while hovered, so it's less in the way. Polls Godot's cursor, since the watermark ignores hit
-	// tests, so it gets no pointer events.
+	// Its text always stays opaque. Polls Godot's cursor, as what ignores hit tests gets no pointer events
 	private void OnHoverTimerTick(object? sender, EventArgs e)
 	{
 		if (_topLevel is null || Engine.GetMainLoop() is not SceneTree tree)
@@ -66,6 +65,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 		var origin = Watermark.TranslatePoint(default, _topLevel) ?? default;
 		var bounds = new Rect(origin, Watermark.Bounds.Size);
 
-		Watermark.Classes.Set(DimmedClass, bounds.Contains(new Point(cursor.X, cursor.Y) / _topLevel.RenderScaling));
+		WatermarkBackground.Classes.Set(DimmedClass,
+			bounds.Contains(new Point(cursor.X, cursor.Y) / _topLevel.RenderScaling));
 	}
 }

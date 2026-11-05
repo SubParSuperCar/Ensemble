@@ -27,7 +27,6 @@ public sealed class ArbitrationSpheres
 		_spheres.Add((center, radius));
 	}
 
-	/// <summary>How far a point is from the nearest sphere, or infinity if there are none.</summary>
 	public float GetDistanceTo(Vector3 point)
 	{
 		var nearest = float.PositiveInfinity;

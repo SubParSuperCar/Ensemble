@@ -30,7 +30,7 @@ public partial class Assembly : RigidBody3D
 
 	public bool IsKilled { get; private set; }
 
-	/// <summary>Whether it isn't moving on its own: asleep, or frozen, which never counts as asleep.</summary>
+	// Frozen bodies never count as asleep
 	internal bool IsAtRest => Sleeping || Freeze;
 
 	/// <summary>
@@ -51,7 +51,6 @@ public partial class Assembly : RigidBody3D
 		}
 	}
 
-	/// <summary>Freezes the body in place while any holder holds it, so that several can without undoing each other.</summary>
 	public void SetHeld(object holder, bool isHeld)
 	{
 		if (isHeld)

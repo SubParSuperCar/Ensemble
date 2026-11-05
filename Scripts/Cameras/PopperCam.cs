@@ -51,7 +51,6 @@ public partial class PopperCam : SpringArm3D
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider")]
 	public float DollySmoothingRate { get; set; } = 32f;
 
-	/// <summary>The player this camera follows, whose creation may take its keys while seated.</summary>
 	internal PlayerHandle? Player { get; set; }
 
 	public override void _Ready()

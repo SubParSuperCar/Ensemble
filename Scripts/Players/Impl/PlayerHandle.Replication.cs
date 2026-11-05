@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Sessions;
@@ -23,7 +22,7 @@ public partial class PlayerHandle
 	private const float SnapDistance = 8f;
 
 	// Bounds what the host relays, since every update goes out to all other peers
-	private const double MinRelayInterval = 1d / ReplicationRate / 2;
+	private const double RelaysPerSecond = 2d * ReplicationRate;
 
 	// Where a float's resolution coarsens to MinReplicatedDistance, so any farther and the smallest replicated move
 	// can't be told apart
@@ -33,11 +32,11 @@ public partial class PlayerHandle
 	private static readonly ulong ReplicationTicks = (ulong)Math.Max(1, Engine.PhysicsTicksPerSecond / ReplicationRate);
 	private static readonly double ReplicationInterval = ReplicationTicks / (double)Engine.PhysicsTicksPerSecond;
 
+	private readonly TokenGate _relayGate = new(RelaysPerSecond, GTimeProvider);
 	private readonly CharacterState[] _states = new CharacterState[StateBufferSize];
 	private readonly StreamTimeline _timeline = new(ReplicationInterval);
 
 	private double _clock;
-	private long _lastRelayTimestamp;
 	private bool _lastReplicatedIsFlashlightOn;
 	private Vector3 _lastReplicatedPosition;
 	private ushort _lastReplicatedSequence;
@@ -82,7 +81,7 @@ public partial class PlayerHandle
 		var isStill =
 			Seat is not null ||
 			(position.DistanceTo(_lastReplicatedPosition) < MinReplicatedDistance &&
-				MathF.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw);
+			 MathF.Abs(Mathf.AngleDifference(_lastReplicatedYaw, yaw)) < MinReplicatedYaw);
 
 		var isIdle = isStill && isFlashlightOn == _lastReplicatedIsFlashlightOn;
 
@@ -147,11 +146,10 @@ public partial class PlayerHandle
 		if (GSessionManager.IsServer)
 		{
 			if (
-				GSessionManager.GetPeerByPlayerId(Id)?.Id != senderId ||
-				Stopwatch.GetElapsedTime(_lastRelayTimestamp).TotalSeconds < MinRelayInterval)
+				GSessionManager.GetPeerByPlayerId(Id)?.Id != senderId || !GSessionManager.IsPeerSynced(senderId) ||
+				!_relayGate.TryTake())
 				return;
 
-			_lastRelayTimestamp = Stopwatch.GetTimestamp();
 			Relay(sequence, position, yaw, isFlashlightOn, senderId);
 		}
 		else if (senderId != MultiplayerPeer.TargetPeerServer)

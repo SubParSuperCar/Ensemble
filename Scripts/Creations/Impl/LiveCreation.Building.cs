@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Runtime.InteropServices;
+using EnsembleRoot.Common.Networking;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Assets.Components;
@@ -53,9 +54,12 @@ public partial class LiveCreation
 
 			handle.Initialize(Plot, instance);
 			AddTicked(handle);
+			AddReplicatedStates(handle);
 			AddSeat(instance.Id, handle.GetComponent<Seat>());
 			AddBoundKeys(instance);
 		}
+
+		_relayGate = new TokenGate(GetRelayRate(), GTimeProvider);
 
 		// Streamed states carry 16-bit IDs, which only creations far beyond any plot's quota exceed
 		if (PlotHandle.IsStreaming && _assemblies.Count > AssemblyState.MaxId + 1)

@@ -40,7 +40,6 @@ public partial class PlayerHandle : Node3D
 
 	public Aabb BodyBounds => _bodyBounds ??= CalculateBodyBounds();
 
-	/// <summary>The character's velocity, whether its own or, while seated, the seat's on this peer's copy of it.</summary>
 	public Vector3 Velocity => Seat is null ? Body.GetRealVelocity() : _seatVelocity;
 
 	private Vector3 SpawnOffset => new(0, -BodyBounds.Position.Y, 0);

@@ -11,7 +11,7 @@
     x:DataType="vm:MainViewModel">
 
     <UserControl.Styles>
-        <Style Selector="TextBlock#Watermark">
+        <Style Selector="Border#WatermarkBackground">
             <Setter Property="Transitions">
                 <Transitions>
                     <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
@@ -19,7 +19,7 @@
             </Setter>
         </Style>
 
-        <Style Selector="TextBlock#Watermark.dimmed">
+        <Style Selector="Border#WatermarkBackground.dimmed">
             <Setter Property="Opacity" Value="0.5" />
         </Style>
     </UserControl.Styles>
@@ -88,14 +88,16 @@
                 Background="{DynamicResource TranslucentBackgroundBrush}" />
         </StackPanel>
 
-        <TextBlock
-            Name="Watermark"
-            Background="Black" Foreground="Red"
-            HorizontalAlignment="Right" VerticalAlignment="Bottom"
-            Padding="2"
-            FontSize="11.5"
-            TextOptions.TextRenderingMode="Alias"
-            IsHitTestVisible="False" />
+        <Panel HorizontalAlignment="Right" VerticalAlignment="Bottom" IsHitTestVisible="False">
+            <Border Name="WatermarkBackground" Background="Black" />
+
+            <TextBlock
+                Name="Watermark"
+                Foreground="Red"
+                Padding="2"
+                FontSize="11.5"
+                TextOptions.TextRenderingMode="Alias" />
+        </Panel>
     </Grid>
 
 </UserControl>

@@ -63,7 +63,6 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		MinSize = new Size(384, 256)
 	};
 
-	/// <summary>Raised by every rotation, so the view can show it, whatever asked for it.</summary>
 	public event Action<Vector3.Axis>? Rotated;
 
 	protected override void OnDispose()

@@ -12,7 +12,6 @@ public partial class LiveCreation
 	private readonly HashSet<Key> _boundKeys = [];
 	private readonly System.Collections.Generic.Dictionary<int, Seat> _seatsByInstanceId = [];
 
-	/// <summary>Whether someone sits in a seat with controls, the first thing a controller needs.</summary>
 	internal bool IsControlSeatTaken
 	{
 		get
@@ -25,12 +24,11 @@ public partial class LiveCreation
 		}
 	}
 
-	/// <summary>The keys the creation's assets bind, the only ones worth sampling or sending.</summary>
 	internal IReadOnlySet<Key> BoundKeys => _boundKeys;
 
 	internal Seat? GetSeat(int instanceId) => _seatsByInstanceId.GetValueOrDefault(instanceId);
 
-	/// <summary>Who sits where, as player IDs by instance ID, for a joining peer.</summary>
+	/// <summary>Player IDs by instance ID.</summary>
 	internal Dictionary CaptureSeats()
 	{
 		var seats = new Dictionary();
@@ -49,7 +47,6 @@ public partial class LiveCreation
 				GPlayerManager.GetHandleOrNull(playerId.AsString())?.Sit(seat);
 	}
 
-	/// <summary>Stands every occupant up, as the creation is about to be freed.</summary>
 	internal void VacateSeats()
 	{
 		foreach (var seat in _seatsByInstanceId.Values)

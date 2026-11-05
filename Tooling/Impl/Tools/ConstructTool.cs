@@ -62,7 +62,6 @@ public partial class ConstructTool : ToolBase
 
 	public event Action<int>? AssetIdChanged;
 
-	/// <summary>Raised by every rotation, by button, key, or script, with the axis whose name it was asked by.</summary>
 	public event Action<Vector3.Axis>? Rotated;
 
 	public override void _UnhandledInput(InputEvent @event)

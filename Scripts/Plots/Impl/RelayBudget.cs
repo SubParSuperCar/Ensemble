@@ -8,7 +8,6 @@ public static class RelayBudget
 {
 	public const int MaxDivisor = 4;
 
-	/// <summary>Takes a creation's share out of what remains, and gets how many of its streams make one relayed.</summary>
 	public static int Take(ref double remaining, double bytesPerSecond)
 	{
 		var divisor = 1;

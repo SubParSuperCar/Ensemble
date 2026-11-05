@@ -5,7 +5,7 @@ using Avalonia.Threading;
 
 namespace EnsembleRoot.Ui.Controls;
 
-/// <summary>Briefly swaps a button's foreground and background, so each use shows, by click or keybind alike.</summary>
+/// <summary>Briefly swaps a button's foreground and background.</summary>
 public sealed class PressFlash
 {
 	private static readonly TimeSpan Duration = TimeSpan.FromSeconds(1 / 8d);
@@ -27,7 +27,7 @@ public sealed class PressFlash
 		_timer.Stop();
 		_timer.Start();
 
-		// Already swapped, which a second swap would undo
+		// A second swap would undo the first
 		if (_background is not null)
 			return;
 

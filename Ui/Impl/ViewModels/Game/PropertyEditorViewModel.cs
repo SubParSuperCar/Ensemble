@@ -57,10 +57,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		MinSize = new Size(320, 192)
 	};
 
-	/// <summary>Raised by every copy, so the view can show it, whatever asked for it.</summary>
 	public event Action? Copied;
 
-	/// <summary>Raised by every paste, so the view can show it, whatever asked for it.</summary>
 	public event Action? Pasted;
 
 	protected override void OnDispose()
@@ -243,9 +241,7 @@ public abstract partial class PropertyItem(PropertyKey key) : ObservableObject
 	[NotifyPropertyChangedFor(nameof(Placeholder))]
 	public partial bool IsMixed { get; private set; }
 
-	/// <summary>Whether the selection's one default for this property differs from what any of them has.</summary>
-	[ObservableProperty]
-	public partial bool CanReset { get; private set; }
+	[ObservableProperty] public partial bool CanReset { get; private set; }
 
 	protected abstract string TypeName { get; }
 

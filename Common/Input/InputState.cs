@@ -24,12 +24,10 @@ public readonly record struct InputState(ulong Mask)
 	private static readonly FrozenDictionary<Key, int> BitsByKey =
 		Keys.Index().ToFrozenDictionary(static pair => pair.Item, static pair => pair.Index);
 
-	/// <summary>Whether a property's name marks it as a key binding, holding a Godot key code.</summary>
 	public static bool IsBinding(string propertyName) => propertyName.EndsWith(BindingSuffix, StringComparison.Ordinal);
 
 	public static bool IsBindable(Key key) => BitsByKey.ContainsKey(key);
 
-	/// <summary>Which of some keys are pressed right now; none while the UI sinks input.</summary>
 	public static InputState Sample(IEnumerable<Key> keys)
 	{
 		if (InputSink.IsSunk)
@@ -44,6 +42,5 @@ public readonly record struct InputState(ulong Mask)
 		return new InputState(mask);
 	}
 
-	/// <summary>Whether a key is pressed; keys outside the bindable table never are.</summary>
 	public bool IsPressed(Key key) => BitsByKey.TryGetValue(key, out var bit) && ((Mask >> bit) & 1) is not 0;
 }

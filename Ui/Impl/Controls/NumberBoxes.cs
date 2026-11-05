@@ -6,10 +6,7 @@ using Avalonia.VisualTree;
 
 namespace EnsembleRoot.Ui.Controls;
 
-/// <summary>
-///     What every number box does alike: text it can't take shows as invalid until it's fixed or focus leaves, and Enter
-///     or Escape drops focus, giving the keyboard back to the game.
-/// </summary>
+/// <summary>Every number box's text shows when it can't be taken, and Enter or Escape drops its focus.</summary>
 public static class NumberBoxes
 {
 	private const string InvalidClass = "invalid";
@@ -22,7 +19,6 @@ public static class NumberBoxes
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDown, RoutingStrategies.Bubble, true);
 	}
 
-	// An empty box is valid, as "no value"
 	private static bool IsValid(NumericUpDown box) =>
 		string.IsNullOrEmpty(box.Text) ||
 		(decimal.TryParse(box.Text, box.ParsingNumberStyle, box.NumberFormat, out var value) &&

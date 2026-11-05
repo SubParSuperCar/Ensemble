@@ -1,8 +1,11 @@
 using System.Runtime.InteropServices;
 using EnsembleRoot.Common.Input;
+using Godot;
 
 namespace EnsembleRoot.Scripts.Creations;
 
-/// <summary>What an asset's logic works from during one physics tick of its creation.</summary>
 [StructLayout(LayoutKind.Auto)]
-public readonly record struct SimulationTick(InputState Input, double Delta);
+public readonly record struct SimulationTick(InputState Input, InputState PreviousInput, double Delta)
+{
+	public bool IsJustPressed(Key key) => Input.IsPressed(key) && !PreviousInput.IsPressed(key);
+}

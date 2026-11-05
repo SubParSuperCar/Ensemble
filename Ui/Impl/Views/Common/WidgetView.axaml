@@ -49,9 +49,8 @@
         </Style>
 
         <Style Selector="Grid#Header Button">
-            <Setter Property="Padding" Value="0" />
+            <Setter Property="Padding" Value="8,0" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="Cursor" Value="Arrow" />
         </Style>
@@ -87,7 +86,6 @@
                 <StackPanel Grid.Column="1" Orientation="Horizontal">
                     <Button
                         Name="MaximizeButton"
-                        Classes="square"
                         Command="{Binding ToggleMaximizedCommand}"
                         ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
                         CornerRadius="4.5,0,0,0"
@@ -98,7 +96,6 @@
 
                     <Button
                         Name="CloseButton"
-                        Classes="square"
                         Command="{Binding CloseCommand}"
                         ToolTip.Tip="Closes this widget."
                         Background="{StaticResource DangerBrush}" Foreground="White">

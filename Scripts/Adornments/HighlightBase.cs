@@ -75,7 +75,6 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1f;
 
-	/// <summary>Whether only the three edges from the box's lowest corner show, rather than all twelve.</summary>
 	[Export]
 	public bool OriginEdgesOnly
 	{
@@ -87,7 +86,6 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	}
 
-	/// <summary>Whether the edges are dashed, with the dashes marching toward each axis's positive end.</summary>
 	[Export]
 	public bool MarchingAnts
 	{
@@ -122,7 +120,6 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1 / 8f;
 
-	/// <summary>Whether the edges' opacity swings between <see cref="PulseMinimum" /> and full.</summary>
 	[Export]
 	public bool Pulsing
 	{

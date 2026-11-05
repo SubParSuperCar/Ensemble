@@ -134,15 +134,13 @@
                                     MaxWidth="{DynamicResource NameMaxWidth}"
                                     Margin="4,0,2,0" />
 
-                                <!-- Hidden ones take no room, nor spacing, leaving it all to the editor -->
                                 <DockPanel Grid.Column="1" HorizontalSpacing="2">
                                     <Button
-                                        Classes="square"
                                         DockPanel.Dock="Right"
                                         Command="{Binding ResetCommand}"
                                         ToolTip.Tip="Resets this property to its default on the selected assets."
                                         VerticalAlignment="Stretch"
-                                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                        VerticalContentAlignment="Center"
                                         Padding="2,0"
                                         Focusable="False"
                                         IsVisible="{Binding CanReset}">
@@ -157,6 +155,7 @@
                                         Background="Transparent"
                                         VerticalAlignment="Center"
                                         Width="16" Height="16"
+                                        Margin="2,0"
                                         IsVisible="{Binding IsMixed}" />
 
                                     <ContentControl Content="{Binding}" />

@@ -20,6 +20,8 @@ public partial class LiveCreation : Node3D
 	private readonly List<Assembly> _assemblies = [];
 	private readonly List<(AssetHandle Handle, ISimulationTicked Ticked)> _ticked = [];
 
+	private bool _isAwaitingInput;
+	private InputState _previousInput;
 	private double _sinceKillCheck;
 
 	public PlotHandle Plot { get; init; } = null!;
@@ -30,8 +32,19 @@ public partial class LiveCreation : Node3D
 	/// <summary>The assemblies, each at the index that is its ID.</summary>
 	public IReadOnlyList<Assembly> Assemblies => _assemblies;
 
-	/// <summary>The keys driving the creation, which its simulator's assets tick with.</summary>
-	internal InputState Input { get; set; }
+	internal InputState Input
+	{
+		get;
+		set
+		{
+			// Keys already held when a simulator takes over aren't new presses
+			if (_isAwaitingInput)
+				_previousInput = value;
+
+			_isAwaitingInput = false;
+			field = value;
+		}
+	}
 
 	public override void _PhysicsProcess(double delta)
 	{
@@ -54,7 +67,9 @@ public partial class LiveCreation : Node3D
 
 		// The controller's next update reaches whoever simulates now
 		Input = default;
+		_isAwaitingInput = true;
 
+		ForgetSentAssetStates();
 		ResetStream();
 	}
 
@@ -63,11 +78,13 @@ public partial class LiveCreation : Node3D
 		if (!Plot.IsSimulatedLocally)
 			return;
 
-		var tick = new SimulationTick(Input, delta);
+		var tick = new SimulationTick(Input, _previousInput, delta);
 
 		foreach (var (handle, ticked) in _ticked)
 			if (handle.Assembly is { IsKilled: false })
 				ticked.Tick(tick);
+
+		_previousInput = Input;
 	}
 
 	private void KillFallenAssemblies(double delta)

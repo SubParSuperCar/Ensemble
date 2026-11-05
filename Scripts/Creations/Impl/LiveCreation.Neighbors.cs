@@ -13,9 +13,6 @@ public partial class LiveCreation
 	/// <summary>The spheres arbitration compares with other creations', as of the last update.</summary>
 	internal ArbitrationSpheres ArbitrationSpheres { get; } = new();
 
-	/// <summary>How far a point is from the nearest assembly, as of the last sphere update.</summary>
-	internal float GetDistanceTo(Vector3 point) => ArbitrationSpheres.GetDistanceTo(point);
-
 	/// <summary>Places a sphere around each assembly where it is; proxies are placed without asking Godot.</summary>
 	internal void UpdateArbitrationSpheres()
 	{

@@ -39,7 +39,6 @@ public partial class CharacterController : CharacterBody3D
 	[Export(PropertyHint.Range, "0,0,or_greater,hide_slider,suffix:kg")]
 	public float Mass { get; set; } = 70f;
 
-	/// <summary>Whether a seat is moving the character, so its input and gravity don't.</summary>
 	internal bool IsSeated { get; set; }
 
 	[Export] public Camera3D Camera { get; set; } = null!;

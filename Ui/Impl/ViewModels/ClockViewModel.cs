@@ -46,16 +46,14 @@ public sealed partial class ClockViewModel : ViewModelBase
 
 		Date = string.Create(CultureInfo.CurrentCulture, $"{now:D} ");
 		Time = string.Create(CultureInfo.CurrentCulture, $"{now:T}");
+		Details = $" - {LocalTimeZone}";
 
 		if (!GSessionManager.IsActive)
-		{
-			Details = $" - {LocalTimeZone}";
 			return;
-		}
 
 		var duration = (GTimeProvider.GetUtcNow() - GSessionManager.UtcStartedAt)
 			.ToString(@"d\:hh\:mm\:ss\.fff", CultureInfo.InvariantCulture);
 
-		Details = $" - {LocalTimeZone} - {duration}";
+		Details += $" - {duration}";
 	}
 }

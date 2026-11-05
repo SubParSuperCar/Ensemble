@@ -30,8 +30,8 @@ csharp_new_line_before_members_in_object_initializers = false
 csharp_prefer_braces = false
 csharp_preserve_single_line_blocks = true
 csharp_style_expression_bodied_methods = true:suggestion
-
 csharp_keep_existing_expr_member_arrangement = false
+
 resharper_braces_for_dowhile = not_required
 resharper_braces_for_fixed = not_required
 resharper_braces_for_for = not_required
@@ -41,6 +41,7 @@ resharper_braces_for_lock = not_required
 resharper_braces_for_using = not_required
 resharper_braces_for_while = not_required
 resharper_braces_redundant = true
+
 resharper_csharp_alignment_tab_fill_style = optimal_fill
 resharper_csharp_indent_nested_for_stmt = true
 resharper_csharp_indent_nested_foreach_stmt = true

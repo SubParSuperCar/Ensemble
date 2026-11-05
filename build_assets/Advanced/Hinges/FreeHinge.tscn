@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://df6a4m2i61bg5" path="res://Scripts/Assets/AssetPiece.cs" id="2_opxt8"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1dwf4"]
-size = Vector3(0.5, 0.1, 0.5)
+size = Vector3(0.5, 0.05, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1dwf4"]
 shading_mode = 2
@@ -14,8 +14,9 @@ albedo_color = Color(0.5, 0.5, 0.5, 1)
 material = SubResource("StandardMaterial3D_1dwf4")
 size = Vector3(0.5, 0.1, 0.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_opxt8"]
-size = Vector3(0.25, 0.35, 0.25)
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_m2lm1"]
+height = 0.4
+radius = 0.225
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_opxt8"]
 shading_mode = 2
@@ -36,7 +37,7 @@ script = ExtResource("2_opxt8")
 metadata/_custom_type_script = "uid://df6a4m2i61bg5"
 
 [node name="Base Collider" type="CollisionShape3D" parent="Base" unique_id=1656690483]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.225, 0)
 shape = SubResource("BoxShape3D_1dwf4")
 
 [node name="Base Mesh" type="MeshInstance3D" parent="Base" unique_id=1034940233]
@@ -48,15 +49,15 @@ script = ExtResource("2_opxt8")
 metadata/_custom_type_script = "uid://df6a4m2i61bg5"
 
 [node name="Head Collider" type="CollisionShape3D" parent="Head" unique_id=998558163]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.075, 0)
-shape = SubResource("BoxShape3D_opxt8")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+shape = SubResource("CylinderShape3D_m2lm1")
 
 [node name="Head Mesh" type="MeshInstance3D" parent="Head" unique_id=93143403]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 mesh = SubResource("BoxMesh_opxt8")
 
 [node name="Hinge" type="HingeJoint3D" parent="." unique_id=1370426511]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -0.15, 0)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -0.175, 0)
 node_a = NodePath("../Base")
 node_b = NodePath("../Head")
 exclude_nodes_from_collision = false

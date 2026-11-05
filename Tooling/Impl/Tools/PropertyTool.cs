@@ -58,7 +58,6 @@ public partial class PropertyTool : ToolBase
 	public event Action? PropertiesChanged;
 
 	public event Action? Copied;
-
 	public event Action? Pasted;
 
 	public override void _Ready() => AddChild(_highlights);

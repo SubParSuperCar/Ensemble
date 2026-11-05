@@ -1,3 +1,4 @@
+using EnsembleRoot.Scripts.Creations;
 using Godot;
 
 namespace EnsembleRoot.BuildAssets.Advanced.Hinges;
@@ -27,12 +28,12 @@ public partial class Motor : DrivenHinge
 		ApplyDirection();
 	}
 
-	protected override void Drive(bool isDirectionChanged, double delta)
+	protected override void Drive(bool isDirectionChanged, in SimulationTick tick)
 	{
 		if (isDirectionChanged)
 			ApplyDirection();
 
-		SetTorque(GetTorque(), delta);
+		SetTorque(GetTorque(), tick.Delta);
 	}
 
 	private void ApplyDirection()

@@ -179,7 +179,8 @@ public abstract partial class HighlightBase : MeshInstance3D
 		UpdatePulsePeriod();
 	}
 
-	public override void _ExitTree() => UpdatePulseClock();
+	// Still inside the tree at this point
+	public override void _ExitTree() => UpdatePulseClock(false);
 
 	public override void _Process(double delta) =>
 		Material.SetShaderParameter(
@@ -220,9 +221,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private void UpdatePulsePeriod() => Material.SetShaderParameter(PulsePeriodParameter, PulsePeriod);
 
 	// One pulse handing over to another in the same frame (e.g., hovering from one selection to another) keeps the beat
-	private void UpdatePulseClock()
+	private void UpdatePulseClock(bool isStaying = true)
 	{
-		var isPulsing = Pulsing && IsInsideTree() && !IsQueuedForDeletion() && IsVisibleInTree();
+		var isPulsing = isStaying && Pulsing && IsInsideTree() && !IsQueuedForDeletion() && IsVisibleInTree();
 
 		SetProcess(isPulsing);
 

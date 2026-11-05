@@ -1,3 +1,4 @@
+using EnsembleRoot.Scripts.Creations;
 using Godot;
 
 namespace EnsembleRoot.BuildAssets.Advanced.Hinges;
@@ -56,12 +57,13 @@ public partial class Servo : DrivenHinge
 		Hinge.SetParam(HingeJoint3D.Param.LimitLower, -_maxAngle - LimitMargin);
 	}
 
-	protected override void Drive(bool isDirectionChanged, double delta)
+	protected override void Drive(bool isDirectionChanged, in SimulationTick tick)
 	{
 		var angle = GetAngle();
 		var isHolding = IsOpposed || (Direction is 0 && !_returnsToCenter);
 
-		if (isHolding && !_isHolding)
+		// What it held before another peer simulated it may have moved since
+		if (isHolding && (!_isHolding || tick.IsResuming))
 			_target = angle;
 
 		_isHolding = isHolding;
@@ -73,7 +75,7 @@ public partial class Servo : DrivenHinge
 		var speed = MathF.Abs(Speed);
 
 		SetVelocity(MathF.Abs(error) < SettledAngle ? 0 : Math.Clamp(error * Gain, -speed, speed));
-		SetTorque(Torque, delta);
+		SetTorque(Torque, tick.Delta);
 	}
 
 	// How far the head has turned about the hinge since it was built

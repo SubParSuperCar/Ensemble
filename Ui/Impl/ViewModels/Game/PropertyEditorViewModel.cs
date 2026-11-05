@@ -189,26 +189,24 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	private void OnInput(InputEvent @event)
 	{
-		if (@event is not InputEventKey { Echo: false } key)
-			return;
-
-		if (!key.Pressed)
+		// Polled, as a key released while the window is unfocused sends no event, which would leave the sink held
+		if (_heldKey is { } held && !Input.IsKeyPressed(held))
 		{
-			if (key.Keycode != _heldKey)
-				return;
-
 			_heldKey = null;
 			ReleaseSink();
 		}
-		else if (_listeningItem is { } item && (key.Keycode is Key.Escape || InputState.IsBindable(key.Keycode)))
-		{
-			_heldKey = key.Keycode;
 
-			if (key.Keycode is not Key.Escape)
-				item.Bind(key.Keycode);
+		if (
+			@event is not InputEventKey { Echo: false, Pressed: true } key || _listeningItem is not { } item ||
+			(key.Keycode is not Key.Escape && !InputState.IsBindable(key.Keycode)))
+			return;
 
-			StopListening();
-		}
+		_heldKey = key.Keycode;
+
+		if (key.Keycode is not Key.Escape)
+			item.Bind(key.Keycode);
+
+		StopListening();
 	}
 
 	private void UpdatePaste() =>

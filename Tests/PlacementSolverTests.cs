@@ -86,6 +86,40 @@ public sealed class PlacementSolverTests
 		Assert.Equal(first.Center, second.Center);
 	}
 
+	// One rule, whatever is around: a free whole-cell box is on the grid, above the floor, and out of every obstacle
+	[Theory]
+	[InlineData(1f)]
+	[InlineData(0.5f)]
+	public void Settle_RandomObstacles_LeavesWholeCellBoxOnGrid(float cellSize)
+	{
+		var random = new Random(cellSize.GetHashCode());
+		var normals = new[] { Vector3.Up, Vector3.Down, Vector3.Left, Vector3.Right, Vector3.Forward, Vector3.Back };
+		var extent = cellSize / 2;
+		var cell = new Aabb(-Vector3.One * extent, Vector3.One * cellSize);
+
+		for (var run = 0; run < 2000; run++)
+		{
+			var obstacles = new ObbGrid();
+
+			for (var id = random.Next(8); id > 0; id--)
+				obstacles.Add(id,
+					new Obb(RandomVector(random, 3f), Basis.Identity,
+						RandomVector(random, 1f).Abs() + Vector3.One / 16));
+
+			var start = Obb.From(cell,
+				new Transform3D(Basis.Identity, RandomVector(random, 3f) with { Y = random.NextSingle() * 3 }));
+			var box = _solver.Settle(start, obstacles, 0f, normals[random.Next(normals.Length)], cellSize);
+
+			if (obstacles.Overlaps(box))
+				continue;
+
+			Assert.True(box.Center.Y - extent >= -1e-3f);
+
+			for (var axis = 0; axis < 3; axis++)
+				Assert.Equal(0f, MathF.Abs(MathF.IEEERemainder(box.Center[axis] - extent, cellSize)), 1e-3f);
+		}
+	}
+
 	// The Wedge's collider: a hair smaller than its cell, and offset within it, so only some faces weld
 	[Theory]
 	[InlineData(0f)]
@@ -108,6 +142,11 @@ public sealed class PlacementSolverTests
 		var point = new Vector3(0.26f, 0.3f, -0.02f);
 		Assert.Equal(point, PlacementSolver.SnapToLattice(point, 0.5f));
 	}
+
+	private static Vector3 RandomVector(Random random, float range) =>
+		new(
+			(random.NextSingle() * 2 - 1) * range, (random.NextSingle() * 2 - 1) * range,
+			(random.NextSingle() * 2 - 1) * range);
 
 	private static Obb Cube(Vector3 center) => Obb.From(UnitCube, new Transform3D(Basis.Identity, center));
 

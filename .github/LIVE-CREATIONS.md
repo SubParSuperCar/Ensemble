@@ -541,6 +541,7 @@ work proportional to what moves and thinks, not to what exists.
 | 0.58.0  | Simulation ticks, the Motor, seats, input from a plot's controller, and key pickers in the     |
 |         | Property Editor                                                                                |
 | 0.58.1  | The Servo, Free Hinge, and Anchor; riders and coils interpolate with what carries them         |
+| 0.58.2  | Relay budgets per peer, asset states that survive hand-offs, and seated input                  |
 | Next    | The Piston, then force accumulators, Airfoil, and other forces                                 |
 
 ## 13. Decisions

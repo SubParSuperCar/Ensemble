@@ -195,9 +195,11 @@ public class AvaloniaControl : GdControl
 			OnFocusEntered();
 	}
 
+	// A hidden control's UI waits until it's shown, as nothing would show its work; native windows tick the shared
+	// clock and dispatcher themselves
 	public override void _Process(double delta)
 	{
-		if (!GodotPlatform.TryBeginProcess(delta, out var processDelta))
+		if (!IsVisibleInTree() || !GodotPlatform.TryBeginProcess(delta, out var processDelta))
 			return;
 
 		GodotTopLevelImpl.FlushPendingDrags();
@@ -211,6 +213,7 @@ public class AvaloniaControl : GdControl
 		AvDispatcher.UIThread.RunJobs();
 
 		RenderAvalonia();
+
 		Processed?.Invoke(processDelta);
 	}
 

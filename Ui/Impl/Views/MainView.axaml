@@ -22,28 +22,6 @@
         <Style Selector="Border#WatermarkBackground.dimmed">
             <Setter Property="Opacity" Value="0.5" />
         </Style>
-
-        <Style Selector="TextBlock#PhotoModeHint">
-            <Setter Property="Opacity" Value="0" />
-        </Style>
-
-        <Style Selector="TextBlock#PhotoModeHint.shown">
-            <Style.Animations>
-                <Animation Duration="0:0:3" FillMode="Forward">
-                    <KeyFrame Cue="0%">
-                        <Setter Property="Opacity" Value="1" />
-                    </KeyFrame>
-
-                    <KeyFrame Cue="75%">
-                        <Setter Property="Opacity" Value="1" />
-                    </KeyFrame>
-
-                    <KeyFrame Cue="100%">
-                        <Setter Property="Opacity" Value="0" />
-                    </KeyFrame>
-                </Animation>
-            </Style.Animations>
-        </Style>
     </UserControl.Styles>
 
     <Grid>
@@ -131,8 +109,8 @@
         </Grid>
 
         <TextBlock
-            Name="PhotoModeHint"
-            Classes.shown="{Binding IsPhotoMode}"
+            Classes="fade"
+            Classes.shown="{Binding IsPhotoModeHintShown}"
             Text="Photo mode: press F1 to show the UI."
             Background="{DynamicResource TranslucentBackgroundBrush}"
             HorizontalAlignment="Center" VerticalAlignment="Top"

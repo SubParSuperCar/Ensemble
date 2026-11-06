@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
@@ -118,6 +119,7 @@ public partial class Ui : Control
 		if (what != NotificationWMCloseRequest)
 			return;
 
+		_viewModel?.PropertyChanged -= OnViewModelPropertyChanged;
 		_viewModel?.Dispose();
 		_services?.Dispose();
 
@@ -202,6 +204,12 @@ public partial class Ui : Control
 	private void OnHostProcessed(double delta) =>
 		_lastUiProcessTime = (Time.GetTicksUsec() - _processStartTicks) / (double)TimeSpan.MicrosecondsPerSecond;
 
+	private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName is nameof(MainViewModel.IsRendered))
+			_host.Visible = _viewModel!.IsRendered;
+	}
+
 	private void OnAutoloadsReady()
 	{
 		Main.AutoloadsReady -= OnAutoloadsReady;
@@ -226,12 +234,14 @@ public partial class Ui : Control
 
 			Performance.AddCustomMonitor(
 				ProcessTimeMonitor,
-				Callable.From(() => _lastUiProcessTime),
+				// A hidden host does no work at all
+				Callable.From(() => _host.Visible ? _lastUiProcessTime : 0),
 				[],
 				Performance.MonitorType.Time);
 
 			var viewModel = _viewModel = services.Create<MainViewModel>();
 			_host.Control = locator.Build(viewModel);
+			viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
 			stopwatch.Stop();
 			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);

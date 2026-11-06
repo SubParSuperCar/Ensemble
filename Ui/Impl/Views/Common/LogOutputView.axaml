@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
+    xmlns:c="using:EnsembleRoot.Ui.Controls"
     xmlns:cm="using:EnsembleRoot.Common"
     mc:Ignorable="d" d:DesignWidth="448" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Views.LogOutputView"
@@ -27,11 +28,16 @@
                 </Animation>
             </Style.Animations>
         </Style>
+
+        <!-- This view's gaps are 4 px, not the app's usual 2 -->
+        <Style Selector="ComboBox /template/ Popup#PART_Popup">
+            <Setter Property="VerticalOffset" Value="4" />
+        </Style>
     </UserControl.Styles>
 
     <Grid>
         <ScrollViewer Name="OutputScroll" HorizontalScrollBarVisibility="Disabled">
-            <SelectableTextBlock
+            <c:WholeSelectableTextBlock
                 Name="Output"
                 Text="{Binding Output}"
                 Background="Black" Foreground="White"

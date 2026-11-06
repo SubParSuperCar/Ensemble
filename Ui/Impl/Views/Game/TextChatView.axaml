@@ -4,6 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
+    xmlns:c="using:EnsembleRoot.Ui.Controls"
     xmlns:t="using:EnsembleRoot.Common.Text"
     mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Views.TextChatView"
@@ -19,7 +20,7 @@
         <Grid RowDefinitions="*,Auto" RowSpacing="2">
             <ScrollViewer Name="ChatScroll" HorizontalScrollBarVisibility="Disabled">
                 <!-- Filled in code-behind, since inlines can't be bound -->
-                <SelectableTextBlock Name="ChatLog" FontSize="12" TextWrapping="Wrap" />
+                <c:WholeSelectableTextBlock Name="ChatLog" FontSize="12" TextWrapping="Wrap" />
             </ScrollViewer>
 
             <TextBlock

@@ -55,7 +55,7 @@
                         <PageSlide
                             Orientation="Vertical"
                             Duration="{x:Static cm:Constants.AnimationDuration}"
-                            SlideInEasing="CubicEaseOut">
+                            SlideInEasing="{StaticResource EaseOut}">
 
                             <PageSlide.SlideOutEasing>
                                 <e:ZeroEasing />
@@ -64,7 +64,7 @@
 
                         <CrossFade
                             Duration="{x:Static cm:Constants.AnimationDuration}"
-                            FadeInEasing="CubicEaseOut" />
+                            FadeInEasing="{StaticResource EaseOut}" />
                     </CompositePageTransition>
                 </TransitioningContentControl.PageTransition>
             </TransitioningContentControl>

@@ -45,7 +45,7 @@ public partial class PlotHandle
 		SetStaticInstancesEnabled(false);
 		SimulationEpoch++;
 
-		Creation = new LiveCreation { Name = "Creation", Plot = this, Origin = _staticInstances.GlobalTransform };
+		Creation = new LiveCreation { Name = "Creation", Plot = this, Origin = OriginTransform };
 		_dynamicInstances.AddChild(Creation);
 		Creation.Build(_plot.Instances.GetAll());
 
@@ -93,7 +93,7 @@ public partial class PlotHandle
 			return;
 
 		var body = player.Body;
-		var origin = _staticInstances.GlobalTransform;
+		var origin = OriginTransform;
 		var box = Obb.From(player.BodyBounds, origin.AffineInverse() * body.GlobalTransform);
 
 		if (!InstanceBoxes.Overlaps(box))

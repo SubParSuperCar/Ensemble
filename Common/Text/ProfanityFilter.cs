@@ -12,7 +12,8 @@ namespace EnsembleRoot.Common.Text;
 ///     and through common substitutions (e.g., "4" for "a"). Entries also match inside words, masking the whole word,
 ///     unless they set <c>allow_partial</c> to false. The bundled copy sets it on the entries whose partial matches hit
 ///     ordinary words (e.g., "class" or "grape"); those only match as words, optionally inflected. Each entry's
-///     exceptions (e.g., "sp*" for "sparse") are honored.
+///     exceptions (e.g., "sp*" for "sparse") are honored, and each entry's severity is weighed against
+///     <see cref="MinSeverity" />.
 ///     <para>
 ///         The list is embedded GZip-compressed, so its terms can't be read or searched in the source. Convert it
 ///         with .github/scripts/profanity-list.sh.
@@ -56,6 +57,13 @@ public static class ProfanityFilter
 
 	private static int _hasLoggedLoadFailure;
 
+	/// <summary>
+	///     The least severe entries masked, on the list's scale from 1 (mild, so every entry) to 4 (severe entries
+	///     only).
+	/// </summary>
+	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global, MemberCanBePrivate.Global
+	public static int MinSeverity { get; set; } = 1;
+
 	/// <summary>Loads the list on the thread pool, so the first <see cref="Censor" /> call doesn't stall.</summary>
 	public static void Preload() =>
 		_ = Task.Run(static () =>
@@ -93,10 +101,11 @@ public static class ProfanityFilter
 		}
 
 		char[]? censored = null;
+		var minSeverity = MinSeverity;
 
 		try
 		{
-			foreach (var entry in entries)
+			foreach (var entry in entries.Where(entry => entry.Severity >= minSeverity))
 				for (var match = entry.Pattern.Match(text); match.Success; match = match.NextMatch())
 				{
 					var core = match.Groups[CoreGroup];
@@ -162,7 +171,7 @@ public static class ProfanityFilter
 
 		return new Entry(
 			new Regex(allowsPartial ? core : WordStart + core + Inflection + WordEnd, PatternOptions, MatchTimeout),
-			allowsPartial, exceptions);
+			element.GetProperty("severity").GetInt32(), allowsPartial, exceptions);
 	}
 
 	// In the list's syntax, "*" repeats the previous character, and spaces, hyphens, and dots separate words
@@ -190,7 +199,11 @@ public static class ProfanityFilter
 		return pattern.ToString();
 	}
 
-	private sealed record Entry(Regex Pattern, bool AllowsPartial, (string Prefix, string Suffix)[] Exceptions)
+	private sealed record Entry(
+		Regex Pattern,
+		int Severity,
+		bool AllowsPartial,
+		(string Prefix, string Suffix)[] Exceptions)
 	{
 		public bool IsException(string text, int index, int length) =>
 			Exceptions.Any(exception =>

@@ -137,7 +137,7 @@
                     <CheckBox
                         Content="Restore"
                         IsChecked="{Binding IsRestoreOnDespawnEnabled}"
-                        ToolTip.Tip="Toggles whether the tools that spawning your plot disabled are enabled again when it despawns." />
+                        ToolTip.Tip="Toggles whether the tools that spawning your plot disabled&#x0a;are enabled again when it despawns." />
                 </StackPanel>
             </Grid>
         </Border>

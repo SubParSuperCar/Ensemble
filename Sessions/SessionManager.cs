@@ -295,7 +295,7 @@ public partial class SessionManager : Node
 		ScheduleForSession(RegistrationTimeout, () =>
 		{
 			if (!IsActive)
-				OnSessionFailed("Registration timed out.");
+				OnSessionFailed("The host connected you, but didn't register you in time.");
 		});
 	}
 

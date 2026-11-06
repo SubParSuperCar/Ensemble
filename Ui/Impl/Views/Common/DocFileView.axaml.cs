@@ -23,6 +23,7 @@ public sealed partial class DocFileView : UserControl, IViewFor<DocFileViewModel
 		InitializeComponent();
 
 		ScrollBarInset.ApplyGap(ContentScroll, Renderer, ScrollBarGap);
+		HorizontalWheel.Apply(TabScroll);
 	}
 
 	protected override void OnDataContextChanged(EventArgs e)

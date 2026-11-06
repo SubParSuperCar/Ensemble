@@ -8,6 +8,8 @@ namespace EnsembleRoot.Scripts.Plots;
 
 public partial class PlotHandle
 {
+	private const string StaticInstancesPath = "Instances/Static";
+
 	private readonly Dictionary<int, AssetHandle> _handlesByInstanceId = [];
 
 	private Node3D _staticInstances = null!;
@@ -19,7 +21,7 @@ public partial class PlotHandle
 
 	private void ReadyInstances()
 	{
-		_staticInstances = GetNode<Node3D>("Instances/Static");
+		_staticInstances = GetNode<Node3D>(StaticInstancesPath);
 
 		var instances = _plot.Instances.GetAll();
 

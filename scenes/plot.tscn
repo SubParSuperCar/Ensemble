@@ -49,6 +49,7 @@ top_level = true
 [node name="Floor" type="StaticBody3D" parent="." unique_id=1335038975]
 
 [node name="Collider" type="CollisionShape3D" parent="Floor" unique_id=1890228800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0005, 0)
 shape = SubResource("BoxShape3D_sbat0")
 
 [node name="Mesh" type="MeshInstance3D" parent="Floor" unique_id=890436308]

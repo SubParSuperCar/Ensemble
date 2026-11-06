@@ -24,7 +24,7 @@
                     Grid.Column="1"
                     Content="Copy"
                     Command="{Binding CopyCommand}"
-                    ToolTip.Tip="Copies the properties the selected assets agree on. (Bound to Ctrl+C)"
+                    ToolTip.Tip="Copies the properties the selected assets agree on.&#x0a;(Bound to Ctrl+C)"
                     IsEnabled="{Binding IsCopyEnabled}" />
 
                 <Button
@@ -32,7 +32,7 @@
                     Grid.Column="2"
                     Content="Paste"
                     Command="{Binding PasteCommand}"
-                    ToolTip.Tip="Pastes the copied properties onto the selected assets that have them. (Bound to Ctrl+V)"
+                    ToolTip.Tip="Pastes the copied properties onto the selected assets that have them.&#x0a;(Bound to Ctrl+V)"
                     IsEnabled="{Binding IsPasteEnabled}" />
 
                 <DropDownButton Grid.Column="3" ToolTip.Tip="Property Editor options.">

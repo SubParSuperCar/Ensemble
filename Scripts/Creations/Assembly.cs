@@ -30,8 +30,8 @@ public partial class Assembly : RigidBody3D
 
 	public bool IsKilled { get; private set; }
 
-	// Frozen bodies never count as asleep
-	internal bool IsAtRest => Sleeping || Freeze;
+	// Frozen bodies never count as asleep, and killed ones never move again
+	internal bool IsAtRest => IsKilled || Sleeping || Freeze;
 
 	/// <summary>
 	///     Whether this peer simulates the body; otherwise it's a proxy, frozen as kinematic and moved by received

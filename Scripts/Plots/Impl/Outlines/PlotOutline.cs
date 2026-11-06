@@ -1,3 +1,4 @@
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Adornments;
 using Godot;
 
@@ -40,7 +41,6 @@ public partial class PlotOutline : Node3D
 			_tween!.TweenCallback(Callable.From(QueueFree));
 	}
 
-	// One easing both ways, so turning around midway carries on from where the outline is
 	private bool AnimateTo(bool isRaising)
 	{
 		if (_isRaising == isRaising)
@@ -52,18 +52,20 @@ public partial class PlotOutline : Node3D
 		var target = isRaising ? 1f : 0f;
 		var duration = AnimationDuration.TotalSeconds * MathF.Abs(target - _progress);
 
-		_tween = CreateTween().SetTrans(Tween.TransitionType.Quad).SetEase(Tween.EaseType.InOut);
+		_tween = CreateTween();
 		_tween.TweenMethod(Callable.From<float>(SetProgress), _progress, target, duration);
 
 		return true;
 	}
 
+	// Linear progress, eased here, so a turnaround carries on from where the outline is
 	private void SetProgress(float progress)
 	{
 		_progress = progress;
+		var eased = (float)Ease.InOut(progress);
 
-		_highlight.Aabb = Bounds with { Size = Bounds.Size with { Y = Bounds.Size.Y * progress } };
-		_highlight.Opacity = progress;
+		_highlight.Aabb = Bounds with { Size = Bounds.Size with { Y = Bounds.Size.Y * eased } };
+		_highlight.Opacity = eased;
 		_highlight.Visible = progress > 0;
 	}
 }

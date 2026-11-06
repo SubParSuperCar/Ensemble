@@ -52,6 +52,8 @@ public sealed class ObbGrid
 				}
 	}
 
+	public bool TryGet(int id, out Obb box) => _boxes.TryGetValue(id, out box);
+
 	public bool Overlaps(Obb box)
 	{
 		Query(box, _candidates);

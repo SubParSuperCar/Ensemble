@@ -9,6 +9,12 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
+	private static readonly Viewport.DebugDrawEnum[] DrawModes =
+	[
+		Viewport.DebugDrawEnum.Disabled, Viewport.DebugDrawEnum.Unshaded, Viewport.DebugDrawEnum.Lighting,
+		Viewport.DebugDrawEnum.Overdraw, Viewport.DebugDrawEnum.Wireframe
+	];
+
 	private static ValueTask<int> cap_fps(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Engine.MaxFps = context.GetArgumentOrDefault<int>(0);
@@ -17,13 +23,34 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
+	private static ValueTask<int> dmp_draw_modes(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		// Godot's other modes need Forward+ or only show their own effects, so they'd draw nothing here
+		Log.Information("Available draw modes:\n{Modes}", FormatEnum(DrawModes));
+		return context.ReturnNothing();
+	}
+
 	private static ValueTask<int> dmp_vsync_modes(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var modes = Enum.GetValues<DisplayServer.VSyncMode>()
-			.Select(static mode => string.Create(CultureInfo.InvariantCulture, $"{(int)mode}. {mode}"));
+		Log.Information("Available VSync modes:\n{Modes}", FormatEnum(Enum.GetValues<DisplayServer.VSyncMode>()));
+		return context.ReturnNothing();
+	}
 
-		Log.Information("Available VSync modes:\n{Modes}", string.Join('\n', modes));
+	private static ValueTask<int> set_draw_mode(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var argument = context.GetArgumentOrDefault<LuaValue>(0);
+		var mode = argument.Type is LuaValueType.Nil ? Viewport.DebugDrawEnum.Disabled : ToEnum(argument, DrawModes);
+
+		if (mode is { } result)
+		{
+			((SceneTree)Engine.GetMainLoop()).Root.DebugDraw = result;
+			Log.Information("Set draw mode to {Mode}", result);
+		}
+		else
+			Log.Error("Invalid draw mode: {Mode} (see {Function}())", argument, nameof(dmp_draw_modes));
 
 		return context.ReturnNothing();
 	}
@@ -60,15 +87,7 @@ public static partial class LuaExecutor
 	{
 		var argument = context.GetArgument<LuaValue>(0);
 
-		DisplayServer.VSyncMode? mode = argument.Type switch
-		{
-			LuaValueType.String when Enum.TryParse(argument.Read<string>(), true, out DisplayServer.VSyncMode parsed) =>
-				parsed,
-			LuaValueType.Number when ToInt(argument) is { } number => (DisplayServer.VSyncMode)number,
-			_ => null
-		};
-
-		if (mode is { } result && Enum.IsDefined(result))
+		if (ToEnum(argument, Enum.GetValues<DisplayServer.VSyncMode>()) is { } result)
 		{
 			DisplayServer.WindowSetVsyncMode(result);
 			Log.Information("Set VSync mode to {Mode}", result);
@@ -78,4 +97,25 @@ public static partial class LuaExecutor
 
 		return context.ReturnNothing();
 	}
+
+	// By name, ignoring case, or by number
+	private static TEnum? ToEnum<TEnum>(LuaValue value, TEnum[] values) where TEnum : struct, Enum
+	{
+		var name = value.Type is LuaValueType.String ? value.Read<string>() : null;
+		var number = ToInt(value);
+
+		foreach (var candidate in values)
+			if (
+				string.Equals(candidate.ToString(), name, StringComparison.OrdinalIgnoreCase) ||
+				Convert.ToInt64(candidate, CultureInfo.InvariantCulture) == number)
+				return candidate;
+
+		return null;
+	}
+
+	private static string FormatEnum<TEnum>(TEnum[] values) where TEnum : struct, Enum =>
+		string.Join(
+			'\n',
+			values.Select(static value => string.Create(
+				CultureInfo.InvariantCulture, $"{Convert.ToInt64(value, CultureInfo.InvariantCulture)}. {value}")));
 }

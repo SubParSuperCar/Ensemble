@@ -15,7 +15,7 @@ namespace EnsembleRoot.Scripts.Creations;
 public partial class LiveCreation : Node3D
 {
 	private const float KillHeight = -1024f;
-	private const double KillCheckInterval = 1d;
+	private const double KillCheckInterval = 1 / 4d;
 
 	private readonly List<Assembly> _assemblies = [];
 	private readonly List<(AssetHandle Handle, ISimulationTicked Ticked)> _ticked = [];
@@ -99,11 +99,25 @@ public partial class LiveCreation : Node3D
 		_sinceKillCheck = 0;
 
 		foreach (var assembly in _assemblies)
-			if (assembly is { IsKilled: false, GlobalPosition.Y: < KillHeight })
-			{
-				assembly.Kill();
-				VacateSeats(assembly);
-				Log.Debug("Killed fallen assembly {AssemblyId} of plot {PlotId}", assembly.Id, Plot.Id);
-			}
+			if (
+				assembly is { IsKilled: false, GlobalTransform: var transform } &&
+				(transform.Origin.Y < KillHeight || !transform.IsFinite()))
+				Kill(assembly);
+	}
+
+	// A blown-up body is put below the kill height first, so the state it's kept alive with takes its proxies along
+	private void Kill(Assembly assembly)
+	{
+		var isBlownUp = !assembly.GlobalTransform.IsFinite();
+
+		if (isBlownUp)
+			assembly.GlobalTransform = new Transform3D(Basis.Identity, Origin.Origin with { Y = 2 * KillHeight });
+
+		assembly.Kill();
+		VacateSeats(assembly);
+
+		Log.Debug(
+			"Killed {Reason} assembly {AssemblyId} of plot {PlotId}", isBlownUp ? "blown-up" : "fallen", assembly.Id,
+			Plot.Id);
 	}
 }

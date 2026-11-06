@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -27,6 +29,9 @@ public sealed class App : Application
 
 	private static readonly object FocusSinkToken = new();
 
+	private static readonly FuncDataTemplate<string> ToolTipTextTemplate =
+		new(static (text, _) => new WholeTextBlock { Text = text, TextWrapping = TextWrapping.Wrap });
+
 	private static bool IsInSession => SessionManager.Instance?.IsActive is true;
 
 	public override void Initialize()
@@ -44,6 +49,7 @@ public sealed class App : Application
 		InputElement.KeyDownEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.KeyUpEvent.AddClassHandler<TopLevel>(OnKeyDownOrUp, RoutingStrategies.Tunnel);
 		InputElement.PointerPressedEvent.AddClassHandler<TopLevel>(OnPointerPressed, RoutingStrategies.Tunnel);
+		TemplatedControl.TemplateAppliedEvent.AddClassHandler<ToolTip>(OnToolTipTemplateApplied);
 
 		var focusObserver = new AnonymousObserver<(object, RoutedEventArgs)>(OnFocusChanged);
 		InputElement.GotFocusEvent.Raised.Subscribe(focusObserver);
@@ -104,6 +110,13 @@ public sealed class App : Application
 				return;
 
 		topLevel.FocusManager.Focus(null);
+	}
+
+	// Only text looks up data templates; a content template would also apply to controls, rebinding them
+	private static void OnToolTipTemplateApplied(ToolTip toolTip, TemplateAppliedEventArgs args)
+	{
+		if (!toolTip.DataTemplates.Contains(ToolTipTextTemplate))
+			toolTip.DataTemplates.Add(ToolTipTextTemplate);
 	}
 
 	private static bool IsNavigationKey(Key key) =>

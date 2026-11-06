@@ -20,7 +20,13 @@ public partial class WorldHandle : Node3D
 		GSessionManager.SnapshotsFinished += OnSnapshotsFinished;
 	}
 
-	public override void _ExitTree() => GSessionManager.SnapshotsFinished -= OnSnapshotsFinished;
+	public override void _ExitTree()
+	{
+		GSessionManager.SnapshotsFinished -= OnSnapshotsFinished;
+
+		// A slowed world's speed ends with it
+		Engine.TimeScale = 1;
+	}
 
 	// Clients only have the real state once their snapshots are restored
 	private static void OnSnapshotsFinished()

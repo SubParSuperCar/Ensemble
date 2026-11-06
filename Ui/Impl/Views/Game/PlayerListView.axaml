@@ -34,7 +34,7 @@
                     <TextBlock
                         Grid.Column="1"
                         Text="Ping&#x0a;&#x2193; "
-                        ToolTip.Tip="The player's EWMA-smoothed round-trip time to the host, in milliseconds (capped at 999)."
+                        ToolTip.Tip="The player's EWMA-smoothed round-trip time to the host,&#x0a;in milliseconds (capped at 999)."
                         Margin="16,0,0,0"
                         TextAlignment="Right"
                         IsVisible="{Binding IsMultiPlayer}" />
@@ -85,7 +85,7 @@
                                             <MenuItem
                                                 Header="IP Ban"
                                                 Command="{Binding BanCommand}"
-                                                ToolTip.Tip="Disconnects this player and blocks their IP address, and so their whole network, for the rest of the session.">
+                                                ToolTip.Tip="Disconnects this player and blocks their IP address,&#x0a;and so their whole network, for the rest of the session.">
 
                                                 <MenuItem.Icon>
                                                     <PathIcon Data="{StaticResource BanIcon}" />

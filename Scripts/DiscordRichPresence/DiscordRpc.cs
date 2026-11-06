@@ -2,6 +2,7 @@ using DiscordRPC;
 using DiscordRPC.Logging;
 using DiscordRPC.Message;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Sessions.Api;
 using Godot;
 using Serilog;
@@ -24,6 +25,9 @@ public partial class DiscordRpc : Node, IAutoload
 	private const string AppId = "1534319171079504002";
 	private const int MaxConnectionAttemptCount = 8;
 
+	private const string Section = "discord";
+	private const string IsEnabledKey = "rich_presence_enabled";
+
 	private static readonly TimeSpan FirstRetryDelay = TimeSpan.FromSeconds(2.5);
 	private static readonly TimeSpan MaxRetryDelay = TimeSpan.FromMinutes(2);
 
@@ -35,19 +39,34 @@ public partial class DiscordRpc : Node, IAutoload
 
 	private DiscordRpcClient? _client;
 	private int _connectionAttemptCount;
+	private bool _isEnabled;
 	private int _isReconnectingFlag;
 	private RichPresence _presence = new();
+
+	private static DiscordRpc? Instance { get; set; }
+
+	/// <summary>Whether the activity shows on Discord, remembered across launches, and applied at once.</summary>
+	public static bool IsEnabled
+	{
+		get => UserData.GetValue(Section, IsEnabledKey, true).AsBool();
+		set
+		{
+			UserData.SetValue(Section, IsEnabledKey, value);
+			Instance?.SetEnabled(value);
+		}
+	}
 
 	public void Initialize()
 	{
 		Log.Debug("Discord RPC app ID: {AppId}", AppId);
+		Instance = this;
 
 		UpdatePresence();
 		GSessionManager.SessionStarted += UpdatePresence;
 		GSessionManager.SessionStopped += UpdatePresence;
 		GSessionManager.SessionFailed += OnSessionFailed;
 
-		Connect();
+		SetEnabled(IsEnabled);
 	}
 
 	public override void _ExitTree()
@@ -58,6 +77,9 @@ public partial class DiscordRpc : Node, IAutoload
 
 		_cts.Cancel();
 		DisposeClient();
+
+		if (ReferenceEquals(Instance, this))
+			Instance = null;
 	}
 
 	private static TimeSpan GetRetryDelay(int attemptCount) =>
@@ -72,14 +94,30 @@ public partial class DiscordRpc : Node, IAutoload
 			_ => "Playing Multi-Player"
 		};
 
+	private void SetEnabled(bool isEnabled)
+	{
+		lock (_lock)
+			_isEnabled = isEnabled;
+
+		if (!isEnabled)
+		{
+			DisposeClient();
+			return;
+		}
+
+		Volatile.Write(ref _connectionAttemptCount, 0);
+		Connect();
+	}
+
 	private void Connect()
 	{
 		bool isInitialized;
 
 		lock (_lock)
 		{
-			// Checked under the lock, so a client created during shutdown is never left undisposed
-			if (_cts.IsCancellationRequested)
+			// Checked under the lock, so a client created during shutdown or after disabling is never left undisposed,
+			// and a reconnect racing a re-enable makes one client
+			if (_cts.IsCancellationRequested || !_isEnabled || _client is not null)
 				return;
 
 			var client = new DiscordRpcClient(AppId) { Logger = new ConsoleLogger(LogLevel.Error, true) };

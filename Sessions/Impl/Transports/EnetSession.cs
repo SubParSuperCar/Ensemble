@@ -1,5 +1,7 @@
+using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
+using EnsembleRoot.Common.Networking;
 using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Sessions.Auth;
 using EnsembleRoot.Sessions.Nat;
@@ -26,6 +28,7 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 	private readonly HandshakeAuthenticator _authenticator = new(multiplayer, version, config.Password);
 	private readonly CancellationTokenSource _resolveCts = new();
 
+	private bool _isConnected;
 	private ENetMultiplayerPeer? _peer;
 	private UpnpPortMapping? _portMapping;
 
@@ -128,7 +131,13 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 		if (result is not Error.Ok)
 		{
 			peer.Dispose();
-			Failed?.Invoke($"Failed to start session: {result}.");
+
+			Failed?.Invoke(
+				config is HostConfig host
+					? string.Create(
+						CultureInfo.InvariantCulture,
+						$"Couldn't host on port {host.Port} ({result}); another program may be using it.")
+					: $"Couldn't start connecting to {address} ({result}).");
 
 			return;
 		}
@@ -214,8 +223,25 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 			? peer.GetPeer(peerId)
 			: null;
 
-	private void OnConnectedToServer() => Started?.Invoke();
-	private void OnConnectionFailed() => Failed?.Invoke("Connection failed.");
-	private void OnServerDisconnected() => Failed?.Invoke("Disconnected from server.");
+	private void OnConnectedToServer()
+	{
+		_isConnected = true;
+		Started?.Invoke();
+	}
+
+	// ENet gives no reason, as a host that's offline, full, or behind a closed port simply never answers
+	private void OnConnectionFailed()
+	{
+		var join = (JoinConfig)config;
+
+		Failed?.Invoke(
+			$"Couldn't reach {new HostEndPoint(join.Address, join.Port)}. The host may be offline or full, the " +
+			"address or port wrong, or the port closed.");
+	}
+
+	private void OnServerDisconnected() =>
+		Failed?.Invoke(
+			_isConnected ? "Lost the connection to the host." : "The host closed the connection during the handshake.");
+
 	private void OnFailed(string reason) => Failed?.Invoke(reason);
 }

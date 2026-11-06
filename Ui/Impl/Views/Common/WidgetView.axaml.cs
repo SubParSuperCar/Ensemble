@@ -8,6 +8,7 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Controls;
+using EnsembleRoot.Ui.Easings;
 using EnsembleRoot.Ui.ViewModels;
 
 namespace EnsembleRoot.Ui.Views;
@@ -19,7 +20,7 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private const double TiltDepth = 1000d;
 
 	// Asymmetric by design
-	private static readonly Easing ShownEasing = new QuadraticEaseOut();
+	private static readonly Easing ShownEasing = new EaseOutEasing();
 	private static readonly Easing HiddenEasing = new LinearEasing();
 
 	private readonly ScaleTransform _scale = new(HiddenScale, HiddenScale);

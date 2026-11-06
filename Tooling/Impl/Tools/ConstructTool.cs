@@ -4,6 +4,7 @@ using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Adornments;
 using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Assets.Components;
+using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Plots.Placement;
 using Godot;
 using Serilog;
@@ -167,8 +168,8 @@ public partial class ConstructTool : ToolBase
 		var cellSize = IsSnapping ? SnappingIncrementLinear * GridToWorldScale : null;
 
 		box = _solver.Settle(
-			box.At(surface + normal * box.Radius(normal)), plot.InstanceBoxes, PlotPlacement.GetBounds(plot).Position.Y,
-			normal, cellSize);
+			PlacementSolver.Contact(box, surface, normal, GetHitBox(plot, hit.Collider)), plot.InstanceBoxes,
+			PlotPlacement.GetBounds(plot).Position.Y, normal, cellSize);
 
 		var origin = box.Center - box.Basis * GAssetManager.GetBoundary(AssetId).GetCenter();
 
@@ -217,6 +218,12 @@ public partial class ConstructTool : ToolBase
 		if (_state is { } state)
 			Log.Debug("Cannot place asset {AssetId}: {State}", AssetId, state);
 	}
+
+	private static Obb? GetHitBox(PlotHandle plot, Node3D collider) =>
+		ToolCommon.FindInHierarchy<AssetHandle>(collider) is { } handle && ToolCommon.IsHandleLocal(handle) &&
+		plot.InstanceBoxes.TryGet(handle.InstanceId, out var box)
+			? box
+			: null;
 
 	// A surface at exactly 45 degrees, like the Wedge's slope, is a top, wherever float noise leaves its normal
 	private static Vector3 ToGridAxis(Vector3 normal)

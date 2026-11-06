@@ -37,13 +37,13 @@ the conventions the codebase follows. For a map of the code, see [**TECHNICAL.md
    names. The directory is created by the first build.
 
    To try multiplayer locally, the **Host + Client (Side by Side)** run configuration builds once, then hosts a session
-   in one window and joins it from another, each filling half of a 2560-pixel-wide screen (adjust the size at the top
-   of `Properties/side-by-side.sh`, or `.cmd` on Windows).
+   in one window and joins it from another, each filling half of a 2560-pixel-wide screen (adjust the size at the top of
+   `Properties/side-by-side.sh`, or `.cmd` on Windows).
 
 ## Building and Testing
 
-- **Build:** `dotnet build Ensemble.slnx` builds every project. The game's `Release` and `ExportRelease`
-  configurations enable NativeAOT, whose analyzers flag trimming problems, so also check
+- **Build:** `dotnet build Ensemble.slnx` builds every project. The game's `Release` and `ExportRelease` configurations
+  enable NativeAOT, whose analyzers flag trimming problems, so also check
   `dotnet build EnsembleGame.csproj -c ExportRelease` before submitting.
 - **Test:** `dotnet test --solution Ensemble.slnx` runs the xUnit v3 tests. The repository uses
   Microsoft.Testing.Platform, so a bare `dotnet test <path>` doesn't work.
@@ -57,9 +57,9 @@ the conventions the codebase follows. For a map of the code, see [**TECHNICAL.md
 - **Match the existing style.** Run Rider's **Code Cleanup** on changed files (formatting is defined by the repository's
   `.editorconfig`), keep lines within 120 columns, and use ASCII only (escape other characters, e.g., `\u2026`).
   Comments are kept to a minimum: explain why, not what.
-- **Respect the module boundaries.** Layering is enforced at build time by NsDepCop (`config.nsdepcop`); see
-  [**Module Layering**](/.github/TECHNICAL.md#module-layering). `Core` stays plain C# with no Godot dependencies, and
-  only `Ui` may use Avalonia.
+- **Respect the module boundaries.** Layering is enforced at build time by NsDepCop (`config.nsdepcop`); see [**Module
+  Layering**](/.github/TECHNICAL.md#module-layering). `Core` stays plain C# with no Godot dependencies, and only `Ui`
+  may use Avalonia.
 - **Keep Godot's view tidy.** Only the main file of a Godot class (a `Node`, `Resource`, or `RefCounted` script) belongs
   where Godot can see it, with its committed `.uid` file. Partial classes and plain C# types go in the nearest `Impl/`
   folder, which a `.gdignore` file hides from Godot; see [**What Godot Sees**](/.github/TECHNICAL.md#what-godot-sees).

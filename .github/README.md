@@ -55,16 +55,16 @@ are the same, without Roblox's limits.
   join with a single code. Sessions can have passwords and player limits, and run on dedicated servers.
 - **Chat** with Roblox-style colored nametags, an optional profanity filter (hosts choose), and an optional "read aloud"
   mode that speaks new messages.
-- **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a
-  seat with controls takes the wheel. Anchors hold what you've built in place.
+- **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a seat
+  with controls takes the wheel. Anchors hold what you've built in place.
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.
 - **Tinker** with a built-in Lua console (which also saves and loads creations for now), and even a web browser and
   system terminal inside the game.
 
-More moving parts (like pistons), a Saves menu, a real map, and more building tools are on the way; see
-the [**roadmap**](./ROADMAP.md).
+More moving parts (like pistons), a Saves menu, a real map, and more building tools are on the way; see the
+[**roadmap**](./ROADMAP.md).
 
 ---
 
@@ -76,32 +76,31 @@ the [**roadmap**](./ROADMAP.md).
 > [!NOTE]
 > Some of these screenshots may be out of date or not fully representative of the current state of the gameplay.
 
-Two Ensemble clients connected to a headless host with widgets and a Bash pseudo-terminal window opened:
-![Ensemble's Widgets & Multiplayer](https://github.com/user-attachments/assets/a317a9a8-99a5-4e05-b29c-49bc69074b48)
+Two Ensemble clients connected to a headless host with widgets and a Bash pseudo-terminal window opened: ![Ensemble's
+Widgets & Multiplayer](https://github.com/user-attachments/assets/a317a9a8-99a5-4e05-b29c-49bc69074b48)
 
-Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets:
-![Ensemble's Construct Tool, Assets, & Widgets](./screenshots/construct-tool.webp)
+Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets: ![Ensemble's Construct Tool,
+Assets, & Widgets](./screenshots/construct-tool.webp)
 
-Ensemble's main menu:
-![Ensemble's Main Menu UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
+Ensemble's main menu: ![Ensemble's Main Menu
+UI](https://github.com/user-attachments/assets/acb0bc12-b5f9-4b9c-b6e2-a318836f7a6a)
 
-Ensemble's document file viewer showing Ensemble's `README.md` file:
-![Ensemble's Document File Viewer UI](https://github.com/user-attachments/assets/bd3e6834-2556-43ea-937a-2819d2b32651)
+Ensemble's document file viewer showing Ensemble's `README.md` file: ![Ensemble's Document File Viewer
+UI](https://github.com/user-attachments/assets/bd3e6834-2556-43ea-937a-2819d2b32651)
 
-Ensemble's web browser displaying Ensemble's official GitHub repository page:
-![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
+Ensemble's web browser displaying Ensemble's official GitHub repository page: ![Ensemble's Web Browser
+UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
 
 Ensemble's blocks during the day with the light-mode UI enabled using the `set_ui_dark_theme_on` Lua function:
 ![Ensemble's Blocks During the Day](./screenshots/light-theme-day.webp)
 
-Ensemble's console, with the output log on the left and the code editor on the right:
-![Ensemble's Console UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
+Ensemble's console, with the output log on the left and the code editor on the right: ![Ensemble's Console
+UI](https://github.com/user-attachments/assets/45a1dace-7458-4105-8464-c4705b634d48)
 
-Ensemble's blocks at night, generated using the `loc_add_rand_insts` Lua function:
-![Ensemble's Blocks at Night](./screenshots/random-blocks-night.webp)
+Ensemble's blocks at night, generated using the `loc_add_rand_insts` Lua function: ![Ensemble's Blocks at
+Night](./screenshots/random-blocks-night.webp)
 
-Ensemble's test map:
-![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
+Ensemble's test map: ![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
 
 </details>
 
@@ -205,16 +204,16 @@ with `set_profanity_filter_on(false)`.
 | Player list                           | `Tab`                                                      |
 | Chat (with the widget open)           | `/` to type, `Enter` to send, `Esc` to stop typing         |
 | Console / system terminal             | `` ` `` or `F9` / `F8`                                     |
+| Hide or show the UI (photo mode)      | `F1`                                                       |
 | Back (menus)                          | `Backspace`                                                |
 | Start (or restart) single-player game | `Esc` (outside multiplayer; restarting discards the build) |
 
 While you control a creation, any key it binds drives it instead of doing what's above. The camera also zooms with `-`
-`=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run
-`dmp_inp_map()` in the console for the full input map, and `help()` for every console function (or `help("creation")`
-for those whose names match). To keep a build, run `save_creation("castle")`; `load_creation("castle")` adds it to your
-plot again, even in another session. Saving over it keeps the previous version as `castle.bak.ensb`;
-`rm_creation("castle")` moves it to your Recycle Bin (or Trash), and `rm_creation("castle", true)` deletes it for good
-once you confirm.
+`=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run `dmp_inp_map()` in the console for the full
+input map, and `help()` for every console function (or `help("creation")` for those whose names match). To keep a build,
+run `save_creation("castle")`; `load_creation("castle")` adds it to your plot again, even in another session. Saving
+over it keeps the previous version as `castle.bak.ensb`; `rm_creation("castle")` moves it to your Recycle Bin (or
+Trash), and `rm_creation("castle", true)` deletes it for good once you confirm.
 
 </details>
 
@@ -236,8 +235,8 @@ UI](https://avaloniaui.net) overlay on top of it (via a heavily modified fork of
 [Estragonia](https://github.com/MrJul/Estragonia); see [**Credits**](#credits)). Both use Vulkan directly on Windows and
 Linux. On macOS, both default to Apple's native Metal API. For troubleshooting, setting Godot's
 `rendering/rendering_device/driver.macos` project setting to `vulkan` renders the 3D scene through
-[MoltenVK](https://github.com/KhronosGroup/MoltenVK) instead, but without the Avalonia UI, since SkiaSharp's macOS
-build has no Vulkan support.
+[MoltenVK](https://github.com/KhronosGroup/MoltenVK) instead, but without the Avalonia UI, since SkiaSharp's macOS build
+has no Vulkan support.
 
 Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple Silicon.
 
@@ -320,9 +319,9 @@ plugin) and `/Estragonia/`, are distributed under their respective licenses and 
 or copyright holders' terms. The chat's profanity filter uses David Sojevic's
 [profanity-list](https://github.com/dsojevic/profanity-list) (MIT; see `/Common/Text/ProfanityList.LICENSE.txt`), with
 `allow_partial` set on entries that misfire inside ordinary words. It's stored compressed, so its terms aren't readable
-in the source; see `/.github/scripts/profanity-list.sh`. UI icons are from Microsoft's
-[Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons) (MIT; see `/Ui/Impl/Icons.LICENSE.txt`).
-Chat nametag colors use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
+in the source; see `/.github/scripts/profanity-list.sh`. UI icons are from Microsoft's [Fluent UI System
+Icons](https://github.com/microsoft/fluentui-system-icons) (MIT; see `/Ui/Impl/Icons.LICENSE.txt`). Chat nametag colors
+use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
 
 ---
 

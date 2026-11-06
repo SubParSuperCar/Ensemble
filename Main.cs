@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using EnsembleRoot.Autoloading;
+using EnsembleRoot.Common.Audio;
 using EnsembleRoot.Common.Interop;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Watchdog;
@@ -45,6 +46,7 @@ public partial class Main : Node
 	public override void _Ready()
 	{
 		Console.WriteLine($"Starting {nameof(Main)}... (IsHeadlessServer={IsHeadlessServer})");
+		Volume.Restore();
 
 		if (IsHeadlessServer)
 			Load();

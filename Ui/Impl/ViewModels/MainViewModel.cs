@@ -26,6 +26,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
 	private static readonly StringName ToggleConsoleAction = "ui_console_toggle";
 	private static readonly StringName OpenTerminalAction = "ui_terminal_open";
+	private static readonly StringName TogglePhotoModeAction = "ui_photo_mode_toggle";
 
 	private readonly DispatcherService _dispatcher;
 	private readonly IServiceProvider _services;
@@ -78,6 +79,7 @@ public sealed partial class MainViewModel : ViewModelBase
 	public partial ConsoleViewModel? Console { get; private set; }
 
 	[ObservableProperty] public partial bool IsConsoleVisible { get; set; }
+	[ObservableProperty] public partial bool IsPhotoMode { get; private set; }
 
 	protected override void OnDispose()
 	{
@@ -109,6 +111,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
 	private void OnSessionStopped()
 	{
+		IsPhotoMode = false;
 		_dispatcher.UiProcess += OnUiProcess;
 
 		// Menus only change when the UI does, and the main loop would otherwise spin as fast as it can between
@@ -127,6 +130,9 @@ public sealed partial class MainViewModel : ViewModelBase
 			IsConsoleVisible = !IsConsoleVisible;
 		else if (Input.IsActionJustPressedByEvent(OpenTerminalAction, @event))
 			OpenTerminal();
+		// Only a session has a world to show without the UI
+		else if (Input.IsActionJustPressedByEvent(TogglePhotoModeAction, @event) && GSessionManager.IsActive)
+			IsPhotoMode = !IsPhotoMode;
 	}
 
 	private void OnNotification(int what)

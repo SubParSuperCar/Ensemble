@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using EnsembleRoot.Common.Audio;
 using EnsembleRoot.Common.Time;
+using EnsembleRoot.Scripts.DiscordRichPresence;
 using Godot;
 using Lua;
 using Serilog;
@@ -20,6 +21,31 @@ public static partial class LuaExecutor
 
 	// Task.Delay's limit
 	private static readonly double MaxWaitSeconds = TimeSpan.FromMilliseconds(uint.MaxValue - 1).TotalSeconds;
+
+	private static ValueTask<int> set_discord_on(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		DiscordRpc.IsEnabled = context.GetArgument<bool>(0);
+		Log.Information("Set Discord Rich Presence to {IsOn}", DiscordRpc.IsEnabled);
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_vol(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var volume = context.GetArgumentOrDefault(0, 1f);
+
+		if (volume is not (>= 0 and <= 1))
+		{
+			Log.Error("Invalid volume: {Volume} (takes 0 to 1)", volume);
+			return context.ReturnNothing();
+		}
+
+		Volume.Master = volume;
+		Log.Information("Set volume to {Volume:P0}", Volume.Master);
+
+		return context.ReturnNothing();
+	}
 
 	private static async ValueTask<int> quit(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{

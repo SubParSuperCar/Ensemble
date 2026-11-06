@@ -313,7 +313,7 @@ really resonated with me, and "baja" can be interpreted as "below" or "low" in S
 
 ## Credits
 
-All `OBJ` files under `/assets/meshes/`, except for `plots_floor.obj`, were created by **"Shrimp Fried Koishi."** Other
+All `OBJ` files under `/assets/meshes/`, except for `plots_base.obj`, were created by **"Shrimp Fried Koishi."** Other
 third-party resources, including NuGet packages and files under `/addons/` (Terrain3D, Sky3D, Resonate, and the Rider
 plugin) and `/Estragonia/`, are distributed under their respective licenses and are subject to their respective authors'
 or copyright holders' terms. The chat's profanity filter uses David Sojevic's

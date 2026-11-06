@@ -96,7 +96,8 @@
 
         <!-- The flyouts' gap from what opens them, which SimpleTheme's drop-down lists lack -->
         <Style Selector="ComboBox /template/ Popup#PART_Popup">
-            <Setter Property="VerticalOffset" Value="2" />
+            <Setter Property="Placement" Value="Top" />
+            <Setter Property="VerticalOffset" Value="-2" />
         </Style>
 
         <!-- SimpleTheme insets its text box by a margin as well as this padding, which made it taller than a text box -->

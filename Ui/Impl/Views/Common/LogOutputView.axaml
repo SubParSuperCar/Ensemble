@@ -31,7 +31,7 @@
 
         <!-- This view's gaps are 4 px, not the app's usual 2 -->
         <Style Selector="ComboBox /template/ Popup#PART_Popup">
-            <Setter Property="VerticalOffset" Value="4" />
+            <Setter Property="VerticalOffset" Value="-4" />
         </Style>
     </UserControl.Styles>
 

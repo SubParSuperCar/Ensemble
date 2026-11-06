@@ -25,4 +25,4 @@ These are distributed under their own licenses, not the ones above:
 | profanity-list | `/Common/Text/` (compressed) | [**MIT**](./Common/Text/ProfanityList.LICENSE.txt) |
 
 NuGet packages are distributed under their respective licenses. The `OBJ` meshes under `/assets/meshes/`, except
-`plots_floor.obj`, were created by "Shrimp Fried Koishi"; see the README's [**Credits**](./.github/README.md#credits).
+`plots_base.obj`, were created by "Shrimp Fried Koishi"; see the README's [**Credits**](./.github/README.md#credits).

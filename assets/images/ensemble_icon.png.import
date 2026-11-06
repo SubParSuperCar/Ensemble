@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://wm30e5juwv1l"
-path="res://.godot/imported/ensemble_icon_square_colored.png-f6c7968af24a62c43783f4fb24251abb.ctex"
+path="res://.godot/imported/ensemble_icon.png-0f106db841b9ef02ce35f2dbc840ac97.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/images/ensemble_icon_square_colored.png"
-dest_files=["res://.godot/imported/ensemble_icon_square_colored.png-f6c7968af24a62c43783f4fb24251abb.ctex"]
+source_file="res://assets/images/ensemble_icon.png"
+dest_files=["res://.godot/imported/ensemble_icon.png-0f106db841b9ef02ce35f2dbc840ac97.ctex"]
 
 [params]
 

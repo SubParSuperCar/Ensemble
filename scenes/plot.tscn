@@ -34,7 +34,7 @@ no_depth_test = true
 shading_mode = 0
 albedo_color = Color(0.2509804, 0.627451, 1, 1)
 albedo_texture = ExtResource("3_410i3")
-texture_filter = 0
+texture_filter = 2
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_cyvgl"]
 material = SubResource("StandardMaterial3D_cyvgl")

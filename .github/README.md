@@ -8,7 +8,7 @@ A free, open-source, multiplayer sandbox building game: claim a plot, grab some 
 friends. Made with Godot 4, C#, .NET, and Avalonia 12, it is created and maintained by
 [**SubParSuperCar**](https://github.com/SubParSuperCar).
 
-<img align="left" width="256" src="../assets/images/ensemble_icon_square_colored.png" title="Ensemble's Icon (Made with Inkscape)" alt="Ensemble's Icon">
+<img align="left" width="256" src="../assets/images/ensemble_icon.png" title="Ensemble's Icon (Made with Inkscape)" alt="Ensemble's Icon">
 
 > *"Nothing is Arbitrary; Everything is Relative."*<br>
 > <small>&mdash; *Ensemble's motto*</small>

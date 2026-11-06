@@ -16,8 +16,8 @@
 [ext_resource type="Script" uid="uid://blhq1e3hqp2sl" path="res://Scripts/Players/PlayerManager.cs" id="13_xo05s"]
 [ext_resource type="Script" uid="uid://biyfk56yseq2l" path="res://Scripts/Assets/AssetManager.cs" id="14_dss4m"]
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://scenes/player.tscn" id="14_lakw3"]
-[ext_resource type="ArrayMesh" uid="uid://brgrd3hjktrcx" path="res://assets/meshes/plots_floor.obj" id="14_ts3gi"]
 [ext_resource type="Script" uid="uid://deifgknfa4son" path="res://Scripts/Plots/PlotManager.cs" id="15_7t5mc"]
+[ext_resource type="ArrayMesh" uid="uid://brgrd3hjktrcx" path="res://assets/meshes/plots_base.obj" id="18_lakw3"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rysoc"]
 shader = ExtResource("2_xo05s")
@@ -72,8 +72,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.00025455843, 0.00025455843)
-shader_parameter/cirrus_position2 = Vector2(0.00025455843, 0.00025455843)
+shader_parameter/cirrus_position1 = Vector2(0.0058548437, 0.0058548437)
+shader_parameter/cirrus_position2 = Vector2(0.0058548437, 0.0058548437)
 shader_parameter/cirrus_texture = ExtResource("3_dss4m")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.6
@@ -83,7 +83,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.0012727921, 0.0012727921)
+shader_parameter/cumulus_position = Vector2(0.029274397, 0.029274397)
 shader_parameter/cumulus_texture = ExtResource("4_7t5mc")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -156,9 +156,20 @@ show_checkered = true
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
 points = PackedVector3Array(-80, -1, -20, -80, -1, 20, -76, 0, -16, 80, -1, -20, -76, 0, 16, 80, -1, 20, 76, 0, -16, 76, 0, 16)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0tnpc"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7t5mc"]
 shading_mode = 2
-albedo_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lakw3"]
+size = Vector3(30, 0.001, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pm21f"]
+shading_mode = 2
+albedo_color = Color(0.25, 0.25, 0.25, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_lakw3"]
+material = SubResource("StandardMaterial3D_pm21f")
+size = Vector2(30, 40)
 
 [node name="World" type="Node3D" unique_id=1840370715]
 script = ExtResource("1_o8fc1")
@@ -262,15 +273,26 @@ metadata/_edit_lock_ = true
 
 [node name="Map" type="Node3D" parent="." unique_id=125306369]
 
-[node name="Plots Floor" type="StaticBody3D" parent="Map" unique_id=523232624]
+[node name="Plots Base" type="StaticBody3D" parent="Map" unique_id=523232624]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
-[node name="Collider" type="CollisionShape3D" parent="Map/Plots Floor" unique_id=1339389220]
+[node name="Collider" type="CollisionShape3D" parent="Map/Plots Base" unique_id=1339389220]
 shape = SubResource("ConvexPolygonShape3D_i6g32")
 metadata/_edit_lock_ = true
 
-[node name="Mesh" type="MeshInstance3D" parent="Map/Plots Floor" unique_id=1689705007]
+[node name="Mesh" type="MeshInstance3D" parent="Map/Plots Base" unique_id=1689705007]
 cast_shadow = 0
-mesh = ExtResource("14_ts3gi")
-surface_material_override/0 = SubResource("StandardMaterial3D_0tnpc")
+mesh = ExtResource("18_lakw3")
+surface_material_override/0 = SubResource("StandardMaterial3D_7t5mc")
+metadata/_edit_lock_ = true
+
+[node name="Tunnel Bridge" type="StaticBody3D" parent="Map" unique_id=1376357948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 132, 0, -171.5)
+
+[node name="Collider" type="CollisionShape3D" parent="Map/Tunnel Bridge" unique_id=1418037035]
+shape = SubResource("BoxShape3D_lakw3")
+
+[node name="Mesh" type="MeshInstance3D" parent="Map/Tunnel Bridge" unique_id=35618328]
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_lakw3")
 metadata/_edit_lock_ = true

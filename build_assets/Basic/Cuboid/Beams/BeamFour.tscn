@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c31rh3yruuct6"]
 
-[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_3p2gs"]
-[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_msvos"]
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_wprhi"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_coq5w"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
 size = Vector3(2, 0.5, 0.5)
@@ -14,7 +14,7 @@ material = SubResource("StandardMaterial3D_nieao")
 size = Vector3(2, 0.5, 0.5)
 
 [node name="Beam 4" type="StaticBody3D" unique_id=726135581]
-script = ExtResource("1_3p2gs")
+script = ExtResource("1_wprhi")
 AssetId = 9
 AssetName = &"Beam x4"
 Description = &"Four cubes long, in one piece."
@@ -33,5 +33,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.75, 0, 0)
 mesh = SubResource("BoxMesh_8kdi2")
 
 [node name="Paintable" type="Node" parent="." unique_id=107636412]
-script = ExtResource("2_msvos")
+script = ExtResource("2_coq5w")
 metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

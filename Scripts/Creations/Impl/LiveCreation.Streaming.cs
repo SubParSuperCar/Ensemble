@@ -157,8 +157,8 @@ public partial class LiveCreation
 		} while (start < states.Length);
 	}
 
-	// Awake assemblies are sent every time (in turns past the budget); one falling asleep is sent once more, at
-	// rest and first, as proxies keep that state, then only as a keepalive
+	// Awake assemblies are sent every time (in turns past the budget); one falling asleep or killed is sent once
+	// more, at rest and first, as proxies keep that state, then only as a keepalive
 	private void GatherStreamedStates()
 	{
 		var toLocal = Origin.AffineInverse();
@@ -167,18 +167,13 @@ public partial class LiveCreation
 		_restingAssemblies.Clear();
 
 		foreach (var assembly in _assemblies)
-		{
-			if (assembly is not { IsKilled: false, Id: <= AssemblyState.MaxId })
-				continue;
-
-			if (!assembly.IsAtRest)
+			if (assembly is { Id: <= AssemblyState.MaxId, IsAtRest: false })
 			{
 				_awakeAssemblies.Add(assembly);
 				_awakeIds.Add(assembly.Id);
 			}
 			else if (_awakeIds.Contains(assembly.Id))
 				_restingAssemblies.Add(assembly);
-		}
 
 		for (var i = 0; i < _restingAssemblies.Count && i < MaxStatesPerStream; i++)
 		{
@@ -202,16 +197,23 @@ public partial class LiveCreation
 			_keepaliveIndex = (_keepaliveIndex + 1) % _assemblies.Count;
 			var assembly = _assemblies[_keepaliveIndex];
 
-			if (
-				assembly is { IsKilled: false, IsAtRest: true, Id: <= AssemblyState.MaxId } &&
-				!_awakeIds.Contains(assembly.Id))
+			if (assembly is { IsAtRest: true, Id: <= AssemblyState.MaxId } && !_awakeIds.Contains(assembly.Id))
 				_streamedStates.Add(GetState(assembly, toLocal, false));
 		}
 	}
 
-	private static AssemblyState GetState(Assembly assembly, Transform3D toLocal, bool isAwake)
+	// A body whose simulation blew up is killed, never sent
+	private AssemblyState GetState(Assembly assembly, Transform3D toLocal, bool isAwake)
 	{
-		var transform = toLocal * assembly.GlobalTransform;
+		var global = assembly.GlobalTransform;
+
+		if (!global.IsFinite())
+		{
+			Kill(assembly);
+			(global, isAwake) = (assembly.GlobalTransform, false);
+		}
+
+		var transform = toLocal * global;
 		var linearVelocity = isAwake ? toLocal.Basis * assembly.LinearVelocity : Vector3.Zero;
 		var angularVelocity = isAwake ? toLocal.Basis * assembly.AngularVelocity : Vector3.Zero;
 

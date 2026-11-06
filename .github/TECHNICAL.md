@@ -5,8 +5,8 @@ How Ensemble is built: its stack, architecture, subsystems, and repository layou
 spawned creations in depth, see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 
 > [!NOTE]
-> Ensemble moves fast, and this document may trail the code. Where they disagree, the code is right, and the
-> document is due a fix.
+> Ensemble moves fast, and this document may trail the code. Where they disagree, the code is right, and the document is
+> due a fix.
 
 ## Contents
 
@@ -141,8 +141,8 @@ graph TD
 
 Each accessor throws a descriptive error, rather than returning null, when its target doesn't exist yet. `GContext`
 exposes the local player's state (`LocalPlot`, `IsPlotOwner`, `IsLocalPlotSpawned`, each with a change event), and
-`Constants` (in `Common/`, so the foundation can use it; e.g., `AnimationDuration`, `GameVersion`, `PhysicsLayers`)
-and Core's `Sentinels` (`Unlimited = -1`, `None = -1`, `Default = 0`) are imported the same way.
+`Constants` (in `Common/`, so the foundation can use it; e.g., `AnimationDuration`, `GameVersion`, `PhysicsLayers`) and
+Core's `Sentinels` (`Unlimited = -1`, `None = -1`, `Default = 0`) are imported the same way.
 
 ### What Godot Sees
 
@@ -297,15 +297,14 @@ classDiagram
     PlotHandle ..> IInstances : mirrors
 ```
 
-Assets are scenes in `build_assets/`, registered by `AssetManager` on load: each is an `AssetHandle` (a
-`StaticBody3D`) with an `AssetId`, a name, default properties, and an instance limit. Its direct colliders are piece 0;
-`AssetPiece` children are further pieces that can move on their own. Reusable behaviors are `AssetComponent` nodes
-dropped under the handle (such as `Paintable`, which applies the instance's `_colorHex` and `_materialId`), and unique
-behaviors subclass `AssetHandle` (such as `Suspension`, or `Motor` and `Servo` through `DrivenHinge`). Saves store each
-instance's `AssetId`, so shipped IDs never change. A collider may sit 1 to 2 mm inside its asset's cell
-(`MinColliderInset` to `MaxColliderInset`) to keep a face
-from welding: `Epsilon`, the distance within which faces touch, is half the narrowest inset, and placement snaps the
-asset itself, not its inset colliders, onto the grid.
+Assets are scenes in `build_assets/`, registered by `AssetManager` on load: each is an `AssetHandle` (a `StaticBody3D`)
+with an `AssetId`, a name, default properties, and an instance limit. Its direct colliders are piece 0; `AssetPiece`
+children are further pieces that can move on their own. Reusable behaviors are `AssetComponent` nodes dropped under the
+handle (such as `Paintable`, which applies the instance's `_colorHex` and `_materialId`), and unique behaviors subclass
+`AssetHandle` (such as `Suspension`, or `Motor` and `Servo` through `DrivenHinge`). Saves store each instance's
+`AssetId`, so shipped IDs never change. A collider may sit 1 to 2 mm inside its asset's cell (`MinColliderInset` to
+`MaxColliderInset`) to keep a face from welding: `Epsilon`, the distance within which faces touch, is half the narrowest
+inset, and placement snaps the asset itself, not its inset colliders, onto the grid.
 
 Placement is validated by shared rules (`PlotPlacement`: bounds, overlaps, and quotas) that run on the client for
 previews and on the host for authority. Overlaps are resolved with oriented bounding boxes and the separating axis
@@ -329,16 +328,16 @@ need (actions, characters, live creations) reaches them through the host's check
   with an HMAC-SHA256 keyed by the password's Argon2id hash, so the password never crosses the network and a sniffed
   exchange costs an attacker one Argon2id run per guess. ENet traffic is DTLS-encrypted with the host's self-signed
   certificate, which clients don't verify yet.
-- **Identity.** The host assigns every player a GUID and validates display names (alphanumeric, at most 24
-  characters), replacing inappropriate ones with the default name when its profanity filter is on.
-- **Actions.** Every world change (and chat message) is a `readonly record struct` implementing
-  `INetworkAction<TSelf>` with `ToPayload` / `FromPayload`, `Validate`, an optional host-only `Rewrite`, and `Apply`.
-  Actions register themselves through module initializers and are sent with `action.Submit()`.
-- **Rate limiting.** Each peer has a token bucket of 100 tokens that refills in 5 seconds, and each action costs
-  tokens, so costs read as percentages. Requests beyond it queue for up to another bucket's worth, and are then
-  rejected with a reason.
-- **Late joiners** receive snapshots (plots, instances, and live creations; characters; chat history; the filter
-  state) before any further action reaches them, so nothing arrives out of order.
+- **Identity.** The host assigns every player a GUID and validates display names (alphanumeric, at most 24 characters),
+  replacing inappropriate ones with the default name when its profanity filter is on.
+- **Actions.** Every world change (and chat message) is a `readonly record struct` implementing `INetworkAction<TSelf>`
+  with `ToPayload` / `FromPayload`, `Validate`, an optional host-only `Rewrite`, and `Apply`. Actions register
+  themselves through module initializers and are sent with `action.Submit()`.
+- **Rate limiting.** Each peer has a token bucket of 100 tokens that refills in 5 seconds, and each action costs tokens,
+  so costs read as percentages. Requests beyond it queue for up to another bucket's worth, and are then rejected with a
+  reason.
+- **Late joiners** receive snapshots (plots, instances, and live creations; characters; chat history; the filter state)
+  before any further action reaches them, so nothing arrives out of order.
 - **Characters** replicate at 20 Hz while moving and once a second while idle, relayed by the host. Each state carries
   the sender's physics-tick sequence, which `StreamTimeline` (shared with live creations) maps to local time, and other
   peers show characters 100 ms in the past, between the buffered states around that moment.
@@ -406,10 +405,10 @@ Everything sent over the network is one of four kinds, chosen by what the messag
 Spawning (`SetPlotSpawnedAction`) builds the same physics on every peer from the plot's instances, so it sends no
 geometry. `PlotHandle` creates a `LiveCreation`, which lives until the plot despawns: it groups touching pieces with
 `Welds.Group` (the `Obb.Abuts` face test, then union-find), and builds one `Assembly` (a `RigidBody3D`) per group,
-carrying its pieces' collision shapes and mass, with its origin on its center of mass. The pieces' own bodies ride
-along outside the physics space, joints authored between an asset's pieces link their assemblies, and the handles and
-their components are initialized once the whole creation exists. The static instances stay in sync with Core, only
-hidden and disabled while spawned, so despawning is instant.
+carrying its pieces' collision shapes and mass, with its origin on its center of mass. The pieces' own bodies ride along
+outside the physics space, joints authored between an asset's pieces link their assemblies, and the handles and their
+components are initialized once the whole creation exists. The static instances stay in sync with Core, only hidden and
+disabled while spawned, so despawning is instant.
 
 ```mermaid
 graph LR
@@ -442,8 +441,8 @@ sequenceDiagram
     end
 ```
 
-Each state packs an assembly's ID, position, rotation, and velocities into 204 bits (`AssemblyState`,
-`CreationPackets`, `BitWriter`). Sleeping assemblies are sent once at rest and then only as slow keepalives.
+Each state packs an assembly's ID, position, rotation, and velocities into 204 bits (`AssemblyState`, `CreationPackets`,
+`BitWriter`). Sleeping assemblies are sent once at rest and then only as slow keepalives.
 [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) walks through all of it, with a map of the code, and holds the design for
 what comes next (asset logic, mechanisms, input, and seats).
 
@@ -473,24 +472,23 @@ graph LR
 - `ToolManager` creates tools lazily and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while
   the local plot is editable (not spawned), and optionally come back after a despawn (`RestoreOnDespawn`).
 - `ConstructTool` shows a translucent preview with an axial highlight, snaps edges (not centers) to the plot grid,
-  resolves overlaps with oriented bounding boxes, and supports `RotateX/Y/Z()` and `ResetRotation()` in global or
-  local space. A shader material fades only if its `translucent_shader` metadata names a translucent variant of its
-  shader with an `opacity` uniform (such as the coil's), so opaque instances never pay for transparency.
+  resolves overlaps with oriented bounding boxes, and supports `RotateX/Y/Z()` and `ResetRotation()` in global or local
+  space. A shader material fades only if its `translucent_shader` metadata names a translucent variant of its shader
+  with an `opacity` uniform (such as the coil's), so opaque instances never pay for transparency.
 - `MultiSelector` holds a selection shared across tools: `Shift`-clicking toggles an instance, clicking a selected
   instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` box-selects by
   `Ctrl`-dragging (Baja Builders parity).
-- `PropertyTool` edits the selection's properties, except the engine's underscore-prefixed ones unless the editor's
-  Show Internal option is on. Instances sharing a property (by name and type) show one value, or a neutral one where
-  they differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection, and a row can reset
-  its property when the assets agree on one default and some instance differs from it.
+- `PropertyTool` edits the selection's properties, except the engine's underscore-prefixed ones unless the editor's Show
+  Internal option is on. Instances sharing a property (by name and type) show one value, or a neutral one where they
+  differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection, and a row can reset its
+  property when the assets agree on one default and some instance differs from it.
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
 - Highlights (`Scripts/Adornments/`) are box meshes with an edge shader, in two flavors: `AxialHighlight` (per-axis
-  colors) and `SolidHighlight` (one tint). Either can dash its edges into marching ants, which selections use, or
-  pulse their opacity, which the hovered instance does. They opt out of physics interpolation, as they are placed
-  between physics ticks. The local plot's outline rises from its grid in the active tool's color, fading in and out as
-  it moves.
+  colors) and `SolidHighlight` (one tint). Either can dash its edges into marching ants, which selections use, or pulse
+  their opacity, which the hovered instance does. They opt out of physics interpolation, as they are placed between
+  physics ticks. The local plot's outline rises from its grid in the active tool's color, fading in and out as it moves.
 
 ---
 
@@ -501,23 +499,23 @@ where the difference is small.
 
 - **Mobile renderer.** Godot's Mobile rendering method, with 4x MSAA and SMAA, and physical light units.
 - **Per-vertex shading.** Asset meshes and the map base use per-vertex shading, which is much cheaper with many
-  instances. `Paintable` keeps each asset's authored shading when it paints it (one shared material per material,
-  color, and shading, so painted geometry still batches). Per-vertex surfaces receive no light from area lights (the
-  plots' night lights), nor spot or omni light shadows; directional shadows are still sampled per pixel.
+  instances. `Paintable` keeps each asset's authored shading when it paints it (one shared material per material, color,
+  and shading, so painted geometry still batches). Per-vertex surfaces receive no light from area lights (the plots'
+  night lights), nor spot or omni light shadows; directional shadows are still sampled per pixel.
 - **Unshaded overlays.** Characters, highlights, and the plot grid are unshaded.
 - **VSync.** Exports use Adaptive (capped at the refresh rate, tearing only below it, to spare laptops' batteries and
   fans); runs from the editor use Mailbox (uncapped without tearing), so performance regressions show.
 - **Shadows.** The sun uses soft shadow filter quality 3 and a 64 m shadow distance, which keeps thin shapes (like the
   suspension's coil) crisp.
 - **`perf_mod(render_scale?)`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing
-  (including terminal windows opened afterward), glow, Sky3D, the terrain, the plots' night lights, spot and omni
-  light shadows (an empty shadow atlas), and lighting itself (the unshaded debug draw), and renders 3D at
-  `render_scale` (e.g., `0.5`) if given.
-- **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World,
-  2 Character, 3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics
-  ticks (highlights, the placement preview, other players' characters) opt out of interpolation. Its Baumgarte factor
-  (how much of a constraint's error each step corrects) is 0.5, up from 0.2: with 0.2, a hard knock left jointed
-  pieces (e.g., a stack of suspensions) bent, as Jolt put them to sleep before their joints had pulled them straight.
+  (including terminal windows opened afterward), glow, Sky3D, the terrain, the plots' night lights, spot and omni light
+  shadows (an empty shadow atlas), and lighting itself (the unshaded debug draw), and renders 3D at `render_scale`
+  (e.g., `0.5`) if given.
+- **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World, 2 Character,
+  3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics ticks
+  (highlights, the placement preview, other players' characters) opt out of interpolation. Its Baumgarte factor (how
+  much of a constraint's error each step corrects) is 0.5, up from 0.2: with 0.2, a hard knock left jointed pieces
+  (e.g., a stack of suspensions) bent, as Jolt put them to sleep before their joints had pulled them straight.
 - **Terrain collision** is built for the whole terrain up front (Terrain3D's full mode), so bodies far from the local
   character, such as a creation another peer simulates or one a dedicated host takes over, stay on the ground.
 
@@ -534,8 +532,8 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
   `IScopedObject`, `ISingletonObject`); views bind to view models through `IViewFor<TViewModel>` and
   `ViewLocatorService`.
 - **Navigation.** `NavigatorService` handles menu navigation (`GoTo<TViewModel>()`, `GoBack()`).
-- **Widgets.** In-game windows (Plot Selector, Asset Selector, Property Editor, Text Chat, Web Browser, Lua Editor,
-  Log Output) are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed by
+- **Widgets.** In-game windows (Plot Selector, Asset Selector, Property Editor, Text Chat, Web Browser, Lua Editor, Log
+  Output) are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed by
   `WidgetManagerService`; they drag, resize, maximize, and reopen where they were.
 - **Theming** follows the OS's light or dark mode and accent color, adjusting colors in the Oklab color space to keep
   text readable.
@@ -549,8 +547,8 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
 ## Chat and Moderation
 
 - Chat messages are sanitized (whitespace collapsed, control characters removed, at most 256 characters) and checked
-  identically on every peer. Chat lines and read-aloud speech shorten long sender names (default names end in a
-  random suffix); everything else keeps the whole name.
+  identically on every peer. Chat lines and read-aloud speech shorten long sender names (default names end in a random
+  suffix); everything else keeps the whole name.
 - The host's profanity filter matches a compressed word list case-insensitively and through common substitutions (like
   "4" for "a"), while avoiding false positives inside ordinary words. Fully masked messages become `<Redacted>`.
 - The host can kick peers and ban IP addresses (from the player list or the console). A ban lasts until the session
@@ -569,11 +567,12 @@ yields, and `print` and returned values show what tables hold.
 
 | Group       | Functions                                                                                          |
 |-------------|----------------------------------------------------------------------------------------------------|
-| App         | `quit`, `restart`, `set_clock_offset`, `tts`, `wait`                                               |
+| App         | `quit`, `restart`, `set_clock_offset`, `set_discord_on`, `set_vol`, `tts`, `wait`                  |
 | Building    | `add_inst`, `clr_insts`, `dmp_assets`, `dmp_insts`, `rm_insts`, `set_inst_prop`                    |
 | Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`                |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`                         |
-| Display     | `cap_fps`, `dmp_vsync_modes`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`             |
+| Display     | `cap_fps`, `dmp_draw_modes`, `dmp_vsync_modes`, `set_draw_mode`, `set_ui_dark_theme_on`,           |
+|             | `set_ui_scale`, `set_vsync_mode`                                                                   |
 | Moderation  | `ban_addr`, `ban_peer`, `dmp_bans`, `kick_peer`, `unban_addr`, `unban_all`                         |
 | Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                                 |
 | Plots       | `dmp_creation`, `dmp_plots`, `kick_occupant`, `set_plot`, `set_plot_simulator`, `set_plot_spawned` |
@@ -582,7 +581,7 @@ yields, and `print` and returned values show what tables hold.
 | Sessions    | `host_mp`, `host_server`, `join_mp`, `start_sp`, `stop_servers`, `stop_session`                    |
 | Tools       | `redo`, `set_construct_asset`, `set_construct_rot`, `set_tool_on`, `undo`                          |
 | World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,              |
-|             | `set_static_shader_on`, `tp_char`                                                                  |
+|             | `set_static_shader_on`, `set_time_scale`, `tp_char`                                                |
 
 - **Conventions:** functions log their results (`dmp_` ones dump state for reading) and return nothing unless noted,
   e.g., `wait` returns the seconds waited, `host_server` its process ID, and `run_script` whatever the script returns. A
@@ -599,20 +598,21 @@ yields, and `print` and returned values show what tables hold.
 - **Scripts:** files in `user://scripts/` run with `run_script("name")` (in the calling script's environment) and load
   as modules with `require("name")`, so setups and helpers can be kept and shared. Each console run still starts a fresh
   Lua state, so globals don't carry over between runs.
-- **Creations:** `save_creation("name", { plot_id = 1, compression = "zstandard", level = 19, password = "secret",
-  checksum = true })` saves a plot (every option is optional) to `user://creations/`, as JSON if the name ends in
-  `.json` and binary (`.ensb`) otherwise. `load_creation("name", "password")` adds a save to the local plot through
-  `AddInstancesAction` batches, paced under the rate limit on clients, so placement rules apply and others see it;
-  `loc_load_creation(plot_id, "name")` adds it directly. Loads skip unknown assets and invalid values, and add to what
-  is already there (`clr_insts()` first to replace it). Overwriting a save first copies the old file to a backup
-  (`castle.ensb` to `castle.bak.ensb`, one generation), and `rm_creation("name")` moves a save to the OS's trash
-  (Recycle Bin, Trash), while `rm_creation("name", true)` deletes it for good after a native Yes / No dialog (No by
-  default where the OS supports it; shown off the main thread, so the game keeps running). Permanent deletion doesn't
-  overwrite the file first: SSDs and copy-on-write file systems (btrfs, APFS, ZFS) write overwrites elsewhere, snapshots
-  keep old blocks, and atomic saves never wrote over earlier versions, so a shred would promise what it can't keep.
-  Password-protected saves are the real protection, since every leftover copy stays encrypted.
-- **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for
-  warnings.
+- **Creations:**
+  `save_creation("name", { plot_id = 1, compression = "zstandard", level = 19, password = "secret", checksum = true })`
+  saves a plot (every option is optional) to `user://creations/`, as JSON if the name ends in `.json` and binary
+  (`.ensb`) otherwise; `CreationSaves` (in `Scripts`) owns the files, so the console only parses and reports.
+  `load_creation("name", "password")` adds a save to the local plot through `AddInstancesAction` batches, paced under
+  the rate limit on clients, so placement rules apply and others see it; `loc_load_creation(plot_id, "name")` adds it
+  directly. Loads skip unknown assets and invalid values, and add to what is already there (`clr_insts()` first to
+  replace it). Overwriting a save first copies the old file to a backup (`castle.ensb` to `castle.bak.ensb`, one
+  generation), and `rm_creation("name")` moves a save to the OS's trash (Recycle Bin, Trash), while
+  `rm_creation("name", true)` deletes it for good after a native Yes / No dialog (No by default where the OS supports
+  it; shown off the main thread, so the game keeps running). Permanent deletion doesn't overwrite the file first: SSDs
+  and copy-on-write file systems (btrfs, APFS, ZFS) write overwrites elsewhere, snapshots keep old blocks, and atomic
+  saves never wrote over earlier versions, so a shred would promise what it can't keep. Password-protected saves are the
+  real protection, since every leftover copy stays encrypted.
+- **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for warnings.
 - **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging
   silently.
 - **Startup report:** the OS, hardware, build, and commit are logged at startup, so bug reports carry their context.

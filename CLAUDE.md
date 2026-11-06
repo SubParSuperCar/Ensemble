@@ -5,8 +5,8 @@ together. Godot 4.7 + C# 14 / .NET 10, with an Avalonia 12 UI hosted in Godot th
 It's the spiritual successor to the owner's Roblox game Baja Builders (BB), and inherits its ideas: grid placement with
 SAT overlap checks, plot ownership with co-op occupants, host authority, and widget-based UI.
 
-Solo project by elio ("Noodle", they/them). They review every diff, design new UI layouts themselves, and decide on
-big features through collaborative planning first.
+Solo project by elio ("Noodle", they/them). They review every diff, design new UI layouts themselves, and decide on big
+features through collaborative planning first.
 
 ## The Vision
 
@@ -17,8 +17,8 @@ everywhere. When adding to it, match what's there; when something's off, fix it 
 - **The ideal design over the patch.** If a fix needs special cases, question the model first. Restructure when the
   model is wrong; don't speculate or abstract ahead of need.
 - **Simple for asset authors.** Like BB: an asset is a model, a few parts, and authored Godot joints, not code.
-- **Performance is a feature.** Measure render and physics changes; deliberate trade-offs (per-vertex shading) are
-  not bugs.
+- **Performance is a feature.** Measure render and physics changes; deliberate trade-offs (per-vertex shading) are not
+  bugs.
 - **Purity over ceremony.** Sparse comments, few but meaningful tests, no defensive boilerplate.
 
 ## Architecture
@@ -28,8 +28,8 @@ Layers, low to high, enforced by NsDepCop (`config.nsdepcop`):
 - **Foundation:** `Common`, `Saving`, `Autoloading`, plus `Core`, the pure C# domain project.
 - **`GdCore`** (Godot wrappers around Core) and **`Sessions`** (game-agnostic networking), independent of each other.
   One exception, by the owner's choice: GdCore gives Core the game's clock, `GTimeProvider` from Globals.
-- **`Replication`** (network actions and snapshots) and **`Scripts`** (Godot node managers and handles). Scripts
-  never uses Replication.
+- **`Replication`** (network actions and snapshots) and **`Scripts`** (Godot node managers and handles). Scripts never
+  uses Replication.
 - **Asset scripts** (`EnsembleRoot.BuildAssets`, beside their scenes in `build_assets/`) build on Scripts and below;
   nothing depends on a concrete asset.
 - **`Tooling`**, then **`Globals`**, **`Execution`** (the Lua console), and `Main.cs`.
@@ -37,37 +37,37 @@ Layers, low to high, enforced by NsDepCop (`config.nsdepcop`):
 
 Rules that carry the design:
 
-- **Core is absolute.** Simple data and operations only: no geometry, placement, or tool concepts, ever. Its public
-  API doesn't change without the owner's approval. Geometry lives in Scripts (managers, `AssetHandle`, placement).
-- **The host is the authority.** Every world change is a validated `INetworkAction`; never trust IDs from payloads.
-  The host is never restricted except to protect game integrity.
+- **Core is absolute.** Simple data and operations only: no geometry, placement, or tool concepts, ever. Its public API
+  doesn't change without the owner's approval. Geometry lives in Scripts (managers, `AssetHandle`, placement).
+- **The host is the authority.** Every world change is a validated `INetworkAction`; never trust IDs from payloads. The
+  host is never restricted except to protect game integrity.
 - **Networking has four channels:** actions, streams, asset states, and host broadcasts (see
   [TECHNICAL.md](.github/TECHNICAL.md#channels)). Every `AnyPeer` RPC checks its sender, then its shape, then its rate,
   before it acts or relays.
-- **Godot sees only what it must.** Only a Godot class's main file is Godot-visible; partials and plain C# types go
-  in a `.gdignore`d `Impl/` folder beside it. `Impl` never appears in a namespace: partials keep their class's, and
-  plain types take their folder's (`Scripts/Plots/Impl/Placement/` is `EnsembleRoot.Scripts.Plots.Placement`).
+- **Godot sees only what it must.** Only a Godot class's main file is Godot-visible; partials and plain C# types go in a
+  `.gdignore`d `Impl/` folder beside it. `Impl` never appears in a namespace: partials keep their class's, and plain
+  types take their folder's (`Scripts/Plots/Impl/Placement/` is `EnsembleRoot.Scripts.Plots.Placement`).
 - **One source of truth.** Paths and shared values live in `Common/Constants.cs`; a name has one owner (e.g.,
   `CommandLineSession` owns its flag names); identifiers inside strings use `nameof`.
-- **Godot types at Godot boundaries.** GDScript-facing APIs use Godot types; internals use C# collections and .NET
-  math (`MathF`, `float.Lerp`) over `Mathf` where equivalent.
+- **Godot types at Godot boundaries.** GDScript-facing APIs use Godot types; internals use C# collections and .NET math
+  (`MathF`, `float.Lerp`) over `Mathf` where equivalent.
 
 ## Code Style
 
 The formatter of record is Rider's CleanupCode ("Built-in: Full Cleanup") with the repo's `.editorconfig`: tabs, 120
 columns. Builds must have 0 warnings, and InspectCode should be clean on touched files.
 
-- **Comments are rare.** A comment earns its place with a non-obvious *why*: an engine quirk, a threading or
-  performance reason, a format or protocol invariant, a unit. Never restate the code or a name. XML docs only on major
-  or ambiguous APIs. Single-sentence `//` comments have no trailing period. The owner's `// TODO:`s are backlog: keep
-  them. Before adding one, ask what a reader would get wrong without it; if nothing, leave it out.
+- **Comments are rare.** A comment earns its place with a non-obvious *why*: an engine quirk, a threading or performance
+  reason, a format or protocol invariant, a unit. Never restate the code or a name. XML docs only on major or ambiguous
+  APIs. Single-sentence `//` comments have no trailing period. The owner's `// TODO:`s are backlog: keep them. Before
+  adding one, ask what a reader would get wrong without it; if nothing, leave it out.
 - **Components mind their own business.** A component's code and comments don't mention what calls it or shows it
   (buttons, scripts, views), unless that relationship is itself the point.
 - **Tests are reserved for make-or-break behavior:** file formats and round trips, determinism, tricky math, parsing,
   and fixed regressions. Not for trivia, and not padded.
 - **Terse and canonical.** Expression bodies, one-line private helpers, pattern matching, object initializers; the
-  idiomatic, least-surprising form; clean literal values. No informal abbreviations in names (the Lua API's short
-  names are the exception); "ID" in prose, `Id` in identifiers.
+  idiomatic, least-surprising form; clean literal values. No informal abbreviations in names (the Lua API's short names
+  are the exception); "ID" in prose, `Id` in identifiers.
 - **Statement grouping.** Blank lines separate logical groups; related statements clump. A statement wrapped over
   several lines ends its group (`Stop()` and its wrapped log are one clump), and a comment starts one. Each
   sync-and-subscribe pair (`OnX(current); X += OnX;`) is its own group; unsubscribe in `OnDispose` / `_ExitTree`,
@@ -81,8 +81,8 @@ columns. Builds must have 0 warnings, and InspectCode should be clean on touched
 - **XAML:** one attribute per line from about three attributes on, in the house order (name, layout, content, events,
   tooltip, colors, alignment, size, margin, padding, fonts, visibility).
 
-Deliberate oddities exist (e.g., `ConstructTool.RotateX` rotates around `Vector3.Up`); if something looks wrong but
-is long-standing, ask before "fixing" it.
+Deliberate oddities exist (e.g., `ConstructTool.RotateX` rotates around `Vector3.Up`); if something looks wrong but is
+long-standing, ask before "fixing" it.
 
 ## Settled Conventions
 
@@ -93,25 +93,25 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
   constructor keeps its block body; locals are `var x = new List<T>();` (collection expressions are for fields,
   properties, and target-typed returns); rounding names its `MidpointRounding`; a measured duration is
   `Stopwatch.StartNew()`, with `Stop()` before it's logged (`Stopwatch.GetTimestamp()` is for instants kept in fields);
-  removing from a dictionary while scanning it is in place, unless the loop raises events whose handlers may change
-  it; a lone extension method takes `this`, and extension blocks are for properties or several members.
+  removing from a dictionary while scanning it is in place, unless the loop raises events whose handlers may change it;
+  a lone extension method takes `this`, and extension blocks are for properties or several members.
 - **Design:** an abstraction with one implementation goes, as does a wrapper that only forwards to its owner. Unused
-  isn't dead: keep members that complete an API (`IsOpen` beside `Open`, a `bool` saying whether a call acted).
-  Parallel collections keyed by one ID become one collection of records; a helper duplicated across modules moves to
-  `Common/Utils`, its callers keeping their own policies. A method that changes state through an existing setter
-  reuses it.
+  isn't dead: keep members that complete an API (`IsOpen` beside `Open`, a `bool` saying whether a call acted). Parallel
+  collections keyed by one ID become one collection of records; a helper duplicated across modules moves to
+  `Common/Utils`, its callers keeping their own policies. A method that changes state through an existing setter reuses
+  it.
 - **Visibility:** private state is a field; plumbing an owner drives is `internal`; `public` is for asset scripts and
   GDScript.
 - **Guards:** one per invariant, where the value is stored; drop guards an upstream invariant already guarantees, but
   keep every guard against a hostile peer. A fallback that hides a failure logs it. An action that passes `Validate`
   never throws in `Apply`. Parsers throw `InvalidDataException` for bad data.
 - **Values:** a value a project setting owns is read from `ProjectSettings`; shared numbered resources (`PhysicsLayers`,
-  `NetworkChannels`) live in `Constants`; asset length properties are in grid units (`Constants.GridToWorldScale`),
-  read through `AssetHandle.GetLengthProperty`. Core enforces only that a property keeps its type; the game's value
-  rules (finite doubles, `GdProperties.MaxStringLength`) are `GdProperties.Check`.
+  `NetworkChannels`) live in `Constants`; asset length properties are in grid units (`Constants.GridToWorldScale`), read
+  through `AssetHandle.GetLengthProperty`. Core enforces only that a property keeps its type; the game's value rules
+  (finite doubles, `GdProperties.MaxStringLength`) are `GdProperties.Check`.
 - **Time:** a `double` duration without a unit suffix is in seconds, and other units are named (`TimeoutMs`); a
-  per-frame sampler has a `const double XInterval` and a `_sinceX` accumulator; timers and waits take a `TimeSpan`
-  where the API has an overload, and `Task.Delay` passes `GTimeProvider`.
+  per-frame sampler has a `const double XInterval` and a `_sinceX` accumulator; timers and waits take a `TimeSpan` where
+  the API has an overload, and `Task.Delay` passes `GTimeProvider`.
 - **Godot:** lifecycle overrides live in the class's main file; `IsHost` means a peer hosts, `IsServer` that this
   machine does; native yes / no dialogs go through `Common/Interop/YesNoDialog`; relaunching passes
   `[.. OS.GetCmdlineArgs(), "--", .. OS.GetCmdlineUserArgs()]`.
@@ -125,17 +125,17 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 
 ## Working Agreements
 
-- **Docs move with the code:** `.github/README.md` (players), `.github/TECHNICAL.md` (developers),
-  `.github/ROADMAP.md` (plans). Markdown wraps at 120 columns and links with `./` paths.
-- **Docs describe, code specifies.** Docs explain behavior and design, never the code's exact values (rates,
-  durations, sizes, limits): the code owns those, and a copy in prose only goes stale. Name a value only when the
-  reader needs it to use the game (the README's controls) or it is the design itself. Existing over-specific passages
-  get trimmed when touched, not added to. Plans never promise versions: future work is "Stage 1", "Stage 2", or
-  "next"; versions belong only in history.
+- **Docs move with the code:** `.github/README.md` (players), `.github/TECHNICAL.md` (developers), `.github/ROADMAP.md`
+  (plans). Markdown wraps at 120 columns and links with `./` paths.
+- **Docs describe, code specifies.** Docs explain behavior and design, never the code's exact values (rates, durations,
+  sizes, limits): the code owns those, and a copy in prose only goes stale. Name a value only when the reader needs it
+  to use the game (the README's controls) or it is the design itself. Existing over-specific passages get trimmed when
+  touched, not added to. Plans never promise versions: future work is "Stage 1", "Stage 2", or "next"; versions belong
+  only in history.
 - **Verify, don't assume.** Build, run the tests, and when behavior changes, run the game (headless probes or a nested
   KWin session) and read the logs for errors, not just for the expected lines.
-- **Commits:** local commits after a finished piece of work are welcome (`git commit -s`, with the co-author
-  trailer); pushing is always the owner's call. The owner does bulk renames and moves in Rider.
+- **Commits:** local commits after a finished piece of work are welcome (`git commit -s`, with the co-author trailer);
+  pushing is always the owner's call. The owner does bulk renames and moves in Rider.
 - **System changes:** least invasive first; explain anything needing `sudo`, its risks, and how to undo it.
 - **New UI surfaces** wait for the owner's layout; build and verify the backend first.
 
@@ -143,5 +143,5 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 
 - Build: `dotnet build Ensemble.slnx`. NativeAOT release settings: `dotnet build EnsembleGame.csproj -c ExportRelease`.
 - Test: `dotnet test --solution Ensemble.slnx` (xUnit v3 on Microsoft.Testing.Platform).
-- Inspect and clean up: JetBrains' CLI tools (`jb inspectcode`, `jb cleanupcode`); run CleanupCode in a copy of the
-  repo and apply its diff, never on Estragonia, addons, or Godot resource files.
+- Inspect and clean up: JetBrains' CLI tools (`jb inspectcode`, `jb cleanupcode`); run CleanupCode in a copy of the repo
+  and apply its diff, never on Estragonia, addons, or Godot resource files.

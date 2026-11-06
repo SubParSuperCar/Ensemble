@@ -23,6 +23,7 @@ namespace Estragonia;
 public class AvaloniaControl : GdControl
 {
 	private GdWindow? _connectedWindow;
+	private bool _isResizePending;
 	private GodotTopLevel? _topLevel;
 
 	/// <summary>Gets or sets the underlying Avalonia control that will be rendered.</summary>
@@ -200,6 +201,7 @@ public class AvaloniaControl : GdControl
 			return;
 
 		GodotTopLevelImpl.FlushPendingDrags();
+		ApplyPendingResize();
 
 		Processing?.Invoke(processDelta);
 		GodotPlatform.TriggerRenderTick();
@@ -218,13 +220,20 @@ public class AvaloniaControl : GdControl
 
 	private void OnAvaloniaCursorChanged(CursorShape cursor) => MouseDefaultCursorShape = cursor;
 
-	private void OnResized()
+	// A window drag resizes many times a frame, and each new size rebuilds the shared surface and lays the UI out, so
+	// sizes apply once a frame, right before it renders
+	private void OnResized() => _isResizePending = true;
+
+	private void ApplyPendingResize()
 	{
-		if (_topLevel is null)
+		if (!_isResizePending || _topLevel is null)
 			return;
 
+		_isResizePending = false;
 		_topLevel.Impl.SetRenderSize(GetFrameSize(), RenderScaling);
-		RenderAvalonia();
+
+		// The surface may be new, and the last draw holds the old one
+		QueueRedraw();
 	}
 
 	private void OnFocusEntered()

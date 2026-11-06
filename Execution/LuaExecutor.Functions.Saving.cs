@@ -1,11 +1,10 @@
 using System.Diagnostics;
-using System.Text.Json;
 using EnsembleRoot.Common.Interop;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Saving;
-using EnsembleRoot.Saving.SerDes;
+using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Sessions;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
@@ -18,12 +17,8 @@ using TinyDialogsNet;
 
 namespace EnsembleRoot.Execution;
 
-// Creations are files in CreationsDir: JSON when named *.json, binary otherwise (.ensb if no extension is given)
 public static partial class LuaExecutor
 {
-	private const string BinaryExtension = ".ensb";
-	private const string JsonExtension = ".json";
-	private const string BackupSuffix = ".bak";
 	private const string DeletionTitle = "Permanently Delete Saved Creation";
 
 	private const string PlotIdKey = "plot_id";
@@ -132,30 +127,16 @@ public static partial class LuaExecutor
 			return context.Return();
 		}
 
-		var data = SaveConverter.ToSaveData(plot.Instances.Source, GTimeProvider);
-		var serializer = GetSerializer(path);
-		var backupPath = File.Exists(path) ? GetBackupPath(path) : null;
 		var stopwatch = Stopwatch.StartNew();
+		(int Count, string? BackupPath) saved;
 
-		// Password key derivation and compression take a while, so they run off the main thread
 		PauseBudget();
 
 		try
 		{
-			await Task.Run(
-				() =>
-				{
-					Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-
-					// A copy, so a failed save still leaves the original in place
-					if (backupPath is not null)
-						File.Copy(path, backupPath, true);
-
-					serializer.Save(path, data, options);
-				},
-				cancellationToken).ConfigureAwait(true);
+			saved = await CreationSaves.SaveAsync(plot, path, options, cancellationToken).ConfigureAwait(true);
 		}
-		catch (Exception exception) when (IsSaveError(exception))
+		catch (Exception exception) when (CreationSaves.IsSaveError(exception))
 		{
 			Log.Error("Failed to save {Name}: {Error}", name, exception.Message);
 			return context.Return();
@@ -168,9 +149,9 @@ public static partial class LuaExecutor
 		stopwatch.Stop();
 		Log.Information(
 			"Saved {Count} instance(s) from plot {PlotId} to {Path} in {ElapsedMs:F3} ms",
-			data.Instances.Count, plot.Id, path, stopwatch.Elapsed.TotalMilliseconds);
+			saved.Count, plot.Id, path, stopwatch.Elapsed.TotalMilliseconds);
 
-		if (backupPath is not null)
+		if (saved.BackupPath is { } backupPath)
 			Log.Warning("Overwrote {Name}; the previous version is now {Backup}", name, Path.GetFileName(backupPath));
 
 		return context.Return();
@@ -191,7 +172,7 @@ public static partial class LuaExecutor
 			return context.Return();
 		}
 
-		var backupPath = GetBackupPath(path);
+		var backupPath = CreationSaves.GetBackupPath(path);
 		var hasBackup = File.Exists(backupPath);
 
 		var isRemoved = isPermanent
@@ -227,7 +208,7 @@ public static partial class LuaExecutor
 		var question = $"Permanently delete the saved creation {fileName}?\n\nThis cannot be undone";
 
 		var prompt = hasBackup
-			? $"{question}, though its backup {Path.GetFileName(GetBackupPath(path))} stays."
+			? $"{question}, though its backup {Path.GetFileName(CreationSaves.GetBackupPath(path))} stays."
 			: $"{question}.";
 
 		bool isConfirmed;
@@ -274,16 +255,13 @@ public static partial class LuaExecutor
 			return null;
 		}
 
-		var serializer = GetSerializer(path);
-		var options = new LoadOptions { Password = password };
-
 		PauseBudget();
 
 		try
 		{
-			return await Task.Run(() => serializer.Load(path, options), cancellationToken).ConfigureAwait(true);
+			return await CreationSaves.LoadAsync(path, password, cancellationToken).ConfigureAwait(true);
 		}
-		catch (Exception exception) when (IsSaveError(exception))
+		catch (Exception exception) when (CreationSaves.IsSaveError(exception))
 		{
 			Log.Error("Failed to load {Name}: {Error}", name, exception.Message);
 			return null;
@@ -369,7 +347,8 @@ public static partial class LuaExecutor
 		return true;
 	}
 
-	private static string? GetCreationPath(string name) => GetUserFilePath(CreationsDir, name, BinaryExtension);
+	private static string? GetCreationPath(string name) =>
+		GetUserFilePath(CreationsDir, name, CreationSaves.BinaryExtension);
 
 	// TryParse also takes any number, defined or not
 	private static CompressionType? ToCompression(string? text) =>
@@ -408,18 +387,4 @@ public static partial class LuaExecutor
 			return false;
 		}
 	}
-
-	// castle.ensb -> castle.bak.ensb, so the backup keeps its format's extension and loads like any save
-	private static string GetBackupPath(string path) =>
-		Path.ChangeExtension(path, null) + BackupSuffix + Path.GetExtension(path);
-
-	private static ISaveSerializer GetSerializer(string path) =>
-		string.Equals(Path.GetExtension(path), JsonExtension, StringComparison.OrdinalIgnoreCase)
-			? new JsonSaveSerializer()
-			: new BinarySaveSerializer();
-
-	// What a bad file, password, or option causes, as opposed to bugs
-	private static bool IsSaveError(Exception exception) =>
-		exception is IOException or UnauthorizedAccessException or InvalidDataException or JsonException
-			or ArgumentException;
 }

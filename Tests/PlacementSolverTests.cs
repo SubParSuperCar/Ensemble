@@ -62,6 +62,20 @@ public sealed class PlacementSolverTests
 		Assert.Equal(1.5f, box.Center.Y);
 	}
 
+	// A hinge hung upside down: its base's underside shows around its head, inside its box
+	[Fact]
+	public void Contact_InsideHitBox_LeavesAlongNormal()
+	{
+		var hinge = Cube(new Vector3(0.5f, 2.5f, 0.5f));
+		var obstacles = new ObbGrid();
+		obstacles.Add(0, hinge);
+
+		var box = PlacementSolver.Contact(Cube(Vector3.Zero), new Vector3(0.95f, 2.9f, 0.95f), Vector3.Down, hinge);
+		box = _solver.Settle(box, obstacles, 0f, Vector3.Down, 1f);
+
+		Assert.Equal(new Vector3(0.5f, 1.5f, 0.5f), box.Center);
+	}
+
 	// A half slab's far edge finds the grid, so it can sit flush on another half slab and complete the cell
 	[Fact]
 	public void Settle_ThinBoxAgainstOffGridFace_SnapsNearerEdge()

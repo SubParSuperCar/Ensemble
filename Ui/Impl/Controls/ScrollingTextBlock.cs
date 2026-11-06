@@ -7,7 +7,7 @@ namespace EnsembleRoot.Ui.Controls;
 
 /// <summary>
 ///     A line of text, trimmed with an ellipsis where it doesn't fit, that scrolls back and forth while hovered to
-///     show the rest.
+///     show the rest, fading at each edge the text runs past.
 /// </summary>
 public sealed class ScrollingTextBlock : Control
 {
@@ -15,10 +15,24 @@ public sealed class ScrollingTextBlock : Control
 	private const double ScrollSpeed = 48d;
 	private const double ScrollPause = 1d;
 
+	// In pixels, eased in over as much travel, so an edge's fade never pops on or off
+	private const double FadeWidth = 8d;
+
 	public static readonly StyledProperty<string?> TextProperty =
 		AvaloniaProperty.Register<ScrollingTextBlock, string?>(nameof(Text));
 
-	private readonly TextBlock _text = new() { TextTrimming = TextTrimming.CharacterEllipsis };
+	private readonly LinearGradientBrush _fade = new()
+	{
+		StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+		EndPoint = new RelativePoint(1, 0, RelativeUnit.Relative),
+		GradientStops =
+		{
+			new GradientStop(Colors.Black, 0), new GradientStop(Colors.Black, 0), new GradientStop(Colors.Black, 1),
+			new GradientStop(Colors.Black, 1)
+		}
+	};
+
+	private readonly WholeTextBlock _text = new() { TextTrimming = TextTrimming.CharacterEllipsis };
 	private bool _isFramePending;
 	private bool _isScrolling;
 	private double _offset;
@@ -40,25 +54,20 @@ public sealed class ScrollingTextBlock : Control
 		set => SetValue(TextProperty, value);
 	}
 
-	// Avalonia trims a line whose glyphs overhang its width, which a text block's desired size leaves out
-	private double WholeWidth =>
-		Math.Ceiling(
-			_text.DesiredSize.Width +
-			Math.Max(_text.TextLayout.OverhangLeading, 0) +
-			Math.Max(_text.TextLayout.OverhangTrailing, 0));
-
-	private double Overflow => Math.Max(WholeWidth - Bounds.Width, 0);
+	private double Overflow => Math.Max(_text.DesiredSize.Width - Bounds.Width, 0);
 
 	protected override Size MeasureOverride(Size availableSize)
 	{
 		_text.Measure(availableSize.WithWidth(double.PositiveInfinity));
-		return new Size(Math.Min(WholeWidth, availableSize.Width), _text.DesiredSize.Height);
+		return new Size(Math.Min(_text.DesiredSize.Width, availableSize.Width), _text.DesiredSize.Height);
 	}
 
 	// Whole while it fits or scrolls, and trimmed otherwise
 	protected override Size ArrangeOverride(Size finalSize)
 	{
-		var width = _isScrolling || WholeWidth <= finalSize.Width ? WholeWidth : finalSize.Width;
+		var width = _isScrolling || _text.DesiredSize.Width <= finalSize.Width
+			? _text.DesiredSize.Width
+			: finalSize.Width;
 		_text.Arrange(new Rect(-_offset, 0, width, finalSize.Height));
 
 		return finalSize;
@@ -122,9 +131,27 @@ public sealed class ScrollingTextBlock : Control
 		var progress = Math.Clamp((elapsed % pass - ScrollPause) / travel, 0, 1);
 
 		_offset = overflow * (elapsed < pass ? progress : 1 - progress);
+		UpdateFade(overflow);
 		InvalidateArrange();
 		RequestFrame();
 	}
+
+	private void UpdateFade(double overflow)
+	{
+		var inset = Math.Min(FadeWidth / Bounds.Width, 1 / 2d);
+
+		_fade.GradientStops[0].Color = GetEdgeColor(_offset);
+		_fade.GradientStops[1].Offset = inset;
+		_fade.GradientStops[2].Offset = 1 - inset;
+		_fade.GradientStops[3].Color = GetEdgeColor(overflow - _offset);
+
+		OpacityMask = _fade;
+	}
+
+	private static Color GetEdgeColor(double hiddenWidth) =>
+		Color.FromArgb(
+			(byte)Math.Round(byte.MaxValue * (1 - Math.Min(hiddenWidth / FadeWidth, 1)), MidpointRounding.ToEven), 0, 0,
+			0);
 
 	private void StopScrolling()
 	{
@@ -133,6 +160,7 @@ public sealed class ScrollingTextBlock : Control
 
 		_isScrolling = false;
 		_offset = 0;
+		OpacityMask = null;
 		InvalidateArrange();
 	}
 }

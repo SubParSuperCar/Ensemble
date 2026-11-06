@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Messages;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Scripts.World;
+using EnsembleRoot.Sessions.Api;
 using Godot;
 using Lua;
 using Serilog;
@@ -16,6 +17,9 @@ public static partial class LuaExecutor
 	private const string TimeOfDayPath = "Sky/TimeOfDay";
 	private const string NightLightPath = "Night Light";
 	private const string TemporalStaticPath = "Temporal Static";
+
+	// Slower, and a physics tick would come too seldom to show motion
+	private const double MinTimeScale = 1 / 64d;
 
 	private const int DefaultStressTestCount = 1000;
 	private const double DefaultStressTestSeconds = 5d;
@@ -160,6 +164,30 @@ public static partial class LuaExecutor
 		Log.Information(
 			"Applied performance modifications (may need reapplying after a session starts; setting the time to " +
 			"midnight is recommended)");
+
+		return context.ReturnNothing();
+	}
+
+	// Peers keep their own time, so a host slowed alone would fall behind its own creations' streams
+	private static ValueTask<int> set_time_scale(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var scale = context.GetArgumentOrDefault(0, 1d);
+
+		if (WorldManager.Instance?.World is null || GSessionManager.Mode is not SessionMode.SinglePlayer)
+		{
+			Log.Error("{Function} needs a single-player session", nameof(set_time_scale));
+			return context.ReturnNothing();
+		}
+
+		if (scale is not (>= MinTimeScale and <= 1))
+		{
+			Log.Error("Invalid time scale: {Scale} (takes {Min} to 1)", scale, MinTimeScale);
+			return context.ReturnNothing();
+		}
+
+		Engine.TimeScale = scale;
+		Log.Information("Set time scale to {Scale}", scale);
 
 		return context.ReturnNothing();
 	}

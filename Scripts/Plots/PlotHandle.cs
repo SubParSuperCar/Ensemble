@@ -23,7 +23,8 @@ public partial class PlotHandle : Node3D
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int MaxTotalInstanceCount { get; set; }
 
-	public Transform3D OriginTransform => _originTransform ??= CalculateOriginTransform();
+	// The static instances' space, on whose plane the floor's surface is authored
+	public Transform3D OriginTransform => _originTransform ??= GetNode<Node3D>(StaticInstancesPath).GlobalTransform;
 
 	public Transform3D BoundaryTransform { get; private set; }
 	public Vector3 BoundarySize { get; private set; }
@@ -87,16 +88,5 @@ public partial class PlotHandle : Node3D
 		}
 
 		_outline.Raise(tint, hasMarchingAnts);
-	}
-
-	private Transform3D CalculateOriginTransform()
-	{
-		var floorCollider = GetNode<CollisionShape3D>("Floor/Collider");
-
-		// The floor's surface, so that what rests on the origin's plane really touches what stands on it
-		var aabb = floorCollider.Shape.GetDebugMesh().GetAabb();
-		var position = floorCollider.GlobalTransform * (aabb.GetCenter() + Vector3.Up * aabb.Size.Y / 2);
-
-		return new Transform3D(floorCollider.GlobalBasis, position);
 	}
 }

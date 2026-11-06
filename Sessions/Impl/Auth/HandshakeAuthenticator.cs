@@ -158,13 +158,14 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 
 		if (data.Length < headerSize)
 		{
-			Failed?.Invoke("Handshake malformed.");
+			Failed?.Invoke("The host's handshake was malformed.");
 			return;
 		}
 
 		if (!data.AsSpan(headerSize).SequenceEqual(_version))
 		{
-			Failed?.Invoke($"Version mismatch (host {FormatVersion(data.AsSpan(headerSize))}, local {version}).");
+			Failed?.Invoke(
+				$"Version mismatch: the host runs {FormatVersion(data.AsSpan(headerSize))}, and you run {version}.");
 			return;
 		}
 
@@ -176,7 +177,7 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 
 		if (_password is null)
 		{
-			Failed?.Invoke("Password required.");
+			Failed?.Invoke("The host requires a password.");
 			return;
 		}
 
@@ -222,7 +223,10 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 			Log.Warning("Peer {PeerId} timed out or was rejected during authentication", peerId);
 		// Hosts only drop clients that answered the challenge when the password is wrong
 		else
-			Failed?.Invoke(_hasSentPassword ? "Incorrect password." : "Authentication failed.");
+			Failed?.Invoke(
+				_hasSentPassword
+					? "Incorrect password."
+					: "The handshake failed or timed out. After a wrong password, wait a moment before retrying.");
 	}
 
 	private string? GetAddressKey(long peerId) =>

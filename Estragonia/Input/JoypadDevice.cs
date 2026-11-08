@@ -56,10 +56,6 @@ internal sealed class JoypadDevice(int id) : IJoypadDevice
 		rawArgs.Handled = args.Handled;
 	}
 
-	// TODO:
-	// `ProcessAxisEvent` has thrown: Unable to cast object of type 'PresentationSource' to type 'IInputElement'
-	// ReSharper was right. This needs an actual fix, possibly a guard. Nullability is a Band-Aid fix.
-
 	// Every Avalonia IInputRoot is a TopLevel, and therefore an InputElement, but ReSharper can't see
 	// that through the referenced assembly
 	// ReSharper disable once SuspiciousTypeConversion.Global

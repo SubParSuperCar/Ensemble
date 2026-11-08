@@ -135,7 +135,7 @@
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
     <None Include="**/*.tscn;**/*.scn" Exclude=".godot/**;bin/**;scenes/**"/>
-    <None Include="Common/Text/ProfanityList.LICENSE.txt"/>
+    <None Include="**/*LICENSE*"/>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-#if NATIVE_AOT && !GODOT_MACOS
+#if EXPORT && NATIVE_AOT && !GODOT_MACOS
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.CompilerServices;

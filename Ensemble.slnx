@@ -35,11 +35,9 @@
     <File Path=".github/workflows/src.yml"/>
   </Folder>
   <Folder Name="/Solution Items/IntelliJ Run Configs/">
-    <File Path=".run/Editor.run.xml"/>
     <File Path=".run/EnsembleGame_ Player (PATH Launcher) (External Console).run.xml"/>
     <File Path=".run/Host + Client (Side by Side).run.xml"/>
     <File Path=".run/Player (External Console).run.xml"/>
-    <File Path=".run/Player.run.xml"/>
   </Folder>
   <Folder Name="/Vendored/">
     <Project Path="Estragonia/Estragonia.csproj"/>

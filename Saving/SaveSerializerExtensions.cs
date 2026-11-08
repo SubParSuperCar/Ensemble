@@ -2,7 +2,6 @@ using EnsembleRoot.Saving.Pipeline;
 
 namespace EnsembleRoot.Saving;
 
-// TODO: We might want to support progress tracking for the UI and similar consumers
 public static class SaveSerializerExtensions
 {
 	extension(ISaveSerializer serializer)

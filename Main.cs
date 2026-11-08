@@ -228,7 +228,6 @@ public partial class Main : Node
 
 	private async Task LoadDeferredAsync()
 	{
-		// TODO: Await a readiness signal (if one exists) instead of a magic number of frames
 		// Testing showed that the Avalonia UI takes exactly 3 frames to appear, for unclear reasons
 		var renderingServer = RenderingServer.Singleton;
 

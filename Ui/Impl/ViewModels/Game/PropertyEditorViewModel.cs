@@ -180,7 +180,8 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		ReleaseSink();
 	}
 
-	// The sink outlasts the key press until the key comes back up, so it doesn't also reach whatever the game binds it to
+	// The sink outlasts the key press until the key comes back up, so it doesn't also reach whatever the game binds it
+	// to
 	private void ReleaseSink()
 	{
 		if (_listeningItem is null && _heldKey is null)

@@ -85,14 +85,14 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked, IRep
 		_reverseKey = GetKeyProperty(ReverseBinding);
 		_toggles = Instance.Properties.GetValue(TogglesKey).AsBool();
 
-		Speed = GetNumberProperty(SpeedKey, -MaxSpeed, MaxSpeed) * MathF.Tau / TimeSpan.SecondsPerMinute;
+		Speed = GetNumberProperty(SpeedKey, -MaxSpeed, MaxSpeed) * float.Tau / TimeSpan.SecondsPerMinute;
 		Torque = GetNumberProperty(TorqueKey, 0, MaxTorque);
 	}
 
 	protected abstract void Drive(bool isDirectionChanged, in SimulationTick tick);
 
-	// A positive target velocity spins node B backward about the joint's Z axis. Writing to a joint wakes its bodies, so
-	// only changes are written, and an idle creation can fall asleep
+	// A positive target velocity spins node B backward about the joint's Z axis. Writing to a joint wakes its bodies,
+	// so only changes are written, and an idle creation can fall asleep
 	// ReSharper disable once CompareOfFloatsByEqualityOperator
 	protected void SetVelocity(float velocity)
 	{

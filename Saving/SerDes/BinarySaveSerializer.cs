@@ -6,6 +6,11 @@ using static EnsembleRoot.Saving.SerDes.SaveValidation;
 
 namespace EnsembleRoot.Saving.SerDes;
 
+// TODO:
+// We should add a simple serializer based on this one that uses 6 unique face dirs instead of full quats for rots
+// (ultra compact). It could also have less precision for positions; maybe property names could be optimized too
+// (using hashes?).
+
 /// <remarks>
 ///     Counts are stored plus one, and floats must be finite, so all-zero and all-one values (the most likely
 ///     corruption) are rejected. Counts and string lengths are also bounded, so a malicious save can't exhaust memory.
@@ -24,6 +29,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 	public void Serialize(Stream stream, CreationSaveData data)
 	{
+		// TODO: Why not save up to the limit and log a warning instead of tossing out the op?
 		if (data.Instances.Count > IInstances.MaxPossibleCount)
 			throw new InvalidOperationException(string.Create(
 				CultureInfo.InvariantCulture, $"Saves support at most {IInstances.MaxPossibleCount} instances."));

@@ -68,7 +68,7 @@
                                 <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush3}" />
                             </Style>
 
-                            <Style Selector="Border.kickable">
+                            <Style Selector="Border.moderatable">
                                 <Setter Property="ContextMenu">
                                     <Template>
                                         <ContextMenu x:DataType="vm:PlayerItem">
@@ -102,7 +102,7 @@
                                 <Border
                                     Classes="player"
                                     Classes.local="{Binding IsLocal}"
-                                    Classes.kickable="{Binding CanKick}"
+                                    Classes.moderatable="{Binding CanModerate}"
                                     ToolTip.Tip="{Binding Id, StringFormat='Player ID: {0}'}"
                                     Padding="2,1">
 

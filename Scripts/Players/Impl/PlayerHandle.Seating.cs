@@ -23,7 +23,9 @@ public partial class PlayerHandle
 
 	public bool CanSit => Seat is null && Stopwatch.GetElapsedTime(_leftSeatTimestamp) >= SitCooldown;
 
-	/// <summary>Whether the creation this character controls binds a key of the action, which then drives it instead.</summary>
+	/// <summary>
+	///     Whether the creation this character controls binds a key of the action, which then drives it instead.
+	/// </summary>
 	public bool IsActionTaken(StringName action)
 	{
 		if (

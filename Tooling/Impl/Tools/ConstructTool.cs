@@ -54,7 +54,7 @@ public partial class ConstructTool : ToolBase
 	public RotationSpace RotationSpace { get; set; } = RotationSpace.Global;
 
 	public float? SnappingIncrementLinear { get; set; } = 1f;
-	public float SnappingIncrementAngularRadians { get; set; } = MathF.PI / 2;
+	public float SnappingIncrementAngularRadians { get; set; } = float.Pi / 2;
 
 	public int AssetId { get; private set; }
 

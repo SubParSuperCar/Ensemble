@@ -2,7 +2,9 @@ using Godot;
 
 namespace EnsembleRoot.Scripts.Plots.Placement;
 
-/// <summary>Moves a box resting against a surface to the nearest free spot, on the plot's grid while snapping.</summary>
+/// <summary>
+///     Moves a box resting against a surface to the nearest free spot, on the plot's grid while snapping.
+/// </summary>
 /// <remarks>
 ///     The placement pipeline, in the plot's local space:
 ///     <list type="number">
@@ -78,8 +80,8 @@ public sealed class PlacementSolver
 	/// <summary>
 	///     Rounds a point onto the plot's lattice of half <paramref name="cellSize" /> steps, per axis, where it lies
 	///     within <see cref="LatticeTolerance" />. Snapping aligns colliders' boxes, so a collider inset or offset by a
-	///     hair (e.g., to keep a face from welding) would otherwise carry its asset's origin, and with it the meshes, off
-	///     the grid by as much.
+	///     hair (e.g., to keep a face from welding) would otherwise carry its asset's origin, and with it the meshes,
+	///     off the grid by as much.
 	/// </summary>
 	public static Vector3 SnapToLattice(Vector3 point, float cellSize)
 	{

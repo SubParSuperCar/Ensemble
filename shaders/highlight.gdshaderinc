@@ -36,7 +36,9 @@ vec3 edge_masks(vec3 d)
 	vec3 aa = fwidth(distance_to_edge);
 	vec3 masks = 1.0 - smoothstep(edge_thickness - aa, edge_thickness + aa, distance_to_edge);
 
-	return origin_edges_only ? masks * step(local_position.yxx, vec3(0.0)) * step(local_position.zzy, vec3(0.0)) : masks;
+	return origin_edges_only
+		? masks * step(local_position.yxx, vec3(0.0)) * step(local_position.zzy, vec3(0.0))
+		: masks;
 }
 
 // One-hot mask of the largest component; ties go to the earlier axis

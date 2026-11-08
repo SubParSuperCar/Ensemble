@@ -56,7 +56,9 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	[ObservableProperty] public partial DocFile SelectedFile { get; set; }
 	[ObservableProperty] public partial MarkdownDocumentUpdate? Document { get; private set; }
 
-	/// <summary>Occurs when a heading (by its index in the document) should scroll into view, or the top for null.</summary>
+	/// <summary>
+	///     Occurs when a heading (by its index in the document) should scroll into view, or the top for null.
+	/// </summary>
 	public event Action<int?>? ScrollRequested;
 
 	protected override void OnDispose() => CancelAndDispose(Interlocked.Exchange(ref _cts, null));

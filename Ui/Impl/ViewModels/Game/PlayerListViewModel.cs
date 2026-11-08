@@ -98,7 +98,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 			Id = gdPlayer.Id,
 			PeerId = peer?.Id ?? None,
 			IsLocal = ReferenceEquals(gdPlayer, GPlayers.Local),
-			CanKick = manager.IsServer && peer is not null && peer.Id != manager.LocalPeerId
+			CanModerate = manager.IsServer && peer is not null && peer.Id != manager.LocalPeerId
 		};
 
 		Players.Insert(Players.TakeWhile(other => ComparePlayers(other, player) < 0).Count(), player);
@@ -150,7 +150,7 @@ public sealed partial class PlayerItem : ObservableObject
 
 	public int PeerId { get; init; }
 	public bool IsLocal { get; init; }
-	public bool CanKick { get; init; }
+	public bool CanModerate { get; init; }
 
 	[ObservableProperty] public partial int PingMs { get; internal set; }
 

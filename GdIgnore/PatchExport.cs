@@ -1,3 +1,9 @@
+// TODO:
+// Instead of hoisting DLLs, we should use .NET's `SetDllImportResolver` to point to Godot's DLL data dir.
+// If we do this, we can adjust bin.yml and use Windows' `Compress-Archive` instead of 7z
+// (because we won't need to keep empty dirs).
+// We could also keep hoisting the data dir, as it likely keeps licenses at root.
+
 #if EXPORT && NATIVE_AOT && !GODOT_MACOS
 using System.Diagnostics;
 using System.Globalization;
@@ -25,7 +31,7 @@ public static class PatchExport
 			Console.WriteLine("Patching export layout...");
 			var stopwatch = Stopwatch.StartNew();
 
-			foreach (var dataDir in Directory.EnumerateDirectories(exeDir, "data*", SearchOption.TopDirectoryOnly))
+			foreach (var dataDir in Directory.EnumerateDirectories(exeDir, "data_*", SearchOption.TopDirectoryOnly))
 				MoveContents(dataDir, exeDir);
 
 			stopwatch.Stop();

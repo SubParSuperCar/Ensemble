@@ -166,8 +166,8 @@ Baja Builders did it (a model, two parts, and a constraint):
 - **Properties** are the asset's defaults (the handle's `Properties` export), copied into each instance and edited per
   instance through actions (the PropertyTool's, or Lua's). Keys starting with `_` are the engine's (`_colorHex`,
   `_materialId`); the others are the asset's own. Values are booleans, integers, floats, or strings (`CoreVariant`);
-  `AssetManager` warns about any other type, which reads as null. Core's `PropertyRules` only checks that a value keeps
-  its type, stays finite, and fits in 256 characters, so **each asset clamps what it reads** to what it supports
+  `AssetManager` warns about any other type, which reads as null. `GdProperties.Check` only makes a value keep its type,
+  stay finite, and fit its length limit, so **each asset clamps what it reads** to what it supports
   (`AssetHandle.GetNumberProperty(key, min, max)`): any stored value is safe, and the limits live with the code that
   knows them.
 - Exported node references (`[Export] public Node3D CoilEnd`) are resolved when the scene is instantiated, so they stay

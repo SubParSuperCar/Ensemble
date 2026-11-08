@@ -39,7 +39,7 @@ public partial class Servo : DrivenHinge
 		if (!IsLive)
 			return;
 
-		_maxAngle = Mathf.DegToRad(GetNumberProperty(MaxAngleKey, 0, MaxAngleLimit));
+		_maxAngle = float.DegreesToRadians(GetNumberProperty(MaxAngleKey, 0, MaxAngleLimit));
 		_returnsToCenter = Instance.Properties.GetValue(ReturnsToCenterKey).AsBool();
 
 		// Nothing has moved yet, so this is the angle as built

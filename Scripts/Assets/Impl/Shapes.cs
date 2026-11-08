@@ -52,6 +52,6 @@ public static class Shapes
 		return default;
 	}
 
-	private static float GetBallVolume(float radius) => 4 / 3f * MathF.PI * radius * radius * radius;
-	private static float GetDiscArea(float radius) => MathF.PI * radius * radius;
+	private static float GetBallVolume(float radius) => 4 / 3f * float.Pi * radius * radius * radius;
+	private static float GetDiscArea(float radius) => float.Pi * radius * radius;
 }

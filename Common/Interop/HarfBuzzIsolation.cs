@@ -1,4 +1,4 @@
-#if !(NATIVE_AOT && GODOT_LINUXBSD)
+#if !NATIVE_AOT || GODOT_LINUXBSD
 using System.Reflection;
 using System.Runtime.InteropServices;
 using HarfBuzzSharp;
@@ -26,8 +26,10 @@ internal static class HarfBuzzIsolation
 
 	public static void Apply()
 	{
+#if !NATIVE_AOT
 		if (!OperatingSystem.IsLinux())
 			return;
+#endif
 
 		try
 		{

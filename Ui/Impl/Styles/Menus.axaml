@@ -1,0 +1,38 @@
+<Styles xmlns="https://github.com/avaloniaui">
+
+    <Style Selector="ContextMenu, MenuFlyoutPresenter">
+        <Setter Property="FontSize" Value="{StaticResource MenuFontSize}" />
+    </Style>
+
+    <!-- SimpleTheme sizes icons 20 square but clips a menu's to 16 -->
+    <Style Selector="MenuItem PathIcon">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+    </Style>
+
+    <!-- The text boxes' own menus, by their SimpleTheme headers -->
+    <Style Selector="MenuItem[Header=Cut]">
+        <Setter Property="Icon">
+            <Template>
+                <PathIcon Data="{StaticResource CutIcon}" />
+            </Template>
+        </Setter>
+    </Style>
+
+    <Style Selector="MenuItem[Header=Copy]">
+        <Setter Property="Icon">
+            <Template>
+                <PathIcon Data="{StaticResource CopyIcon}" />
+            </Template>
+        </Setter>
+    </Style>
+
+    <Style Selector="MenuItem[Header=Paste]">
+        <Setter Property="Icon">
+            <Template>
+                <PathIcon Data="{StaticResource PasteIcon}" />
+            </Template>
+        </Setter>
+    </Style>
+
+</Styles>

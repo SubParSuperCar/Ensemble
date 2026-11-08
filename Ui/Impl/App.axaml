@@ -1,9 +1,7 @@
 <Application
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:cm="using:EnsembleRoot.Common"
     xmlns:e="using:EnsembleRoot.Ui.Easings"
-    xmlns:md="using:LiveMarkdown.Avalonia"
     x:Class="EnsembleRoot.Ui.App"
     RequestedThemeVariant="Default">
 
@@ -58,155 +56,10 @@
             <Setter Property="FontSize" Value="{StaticResource FontSize}" />
         </Style>
 
-        <!-- LiveMarkdown names OS fonts (Arial, Consolas), which each platform resolves differently -->
-        <Style
-            Selector="md|MarkdownTextBlock, md|CodeBlock, md|CodeInline, TextBlock.ListBlockNumber, TextBlock.ListBlockBullet">
-            <Setter Property="TextElement.FontFamily" Value="{StaticResource Font}" />
-        </Style>
-
-        <!-- LiveMarkdown fixes its selection and task lists to blues of its own -->
-        <Style Selector="md|MarkdownTextBlock">
-            <Setter Property="SelectionBrush" Value="{DynamicResource HighlightBrush}" />
-            <Setter Property="SelectionForegroundBrush" Value="{DynamicResource HighlightForegroundBrush}" />
-        </Style>
-
-        <Style Selector="CheckBox.TaskList /template/ Border#Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}" />
-        </Style>
-
-        <Style Selector="CheckBox.TaskList:checked /template/ Border#Border">
-            <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
-        </Style>
-
-        <Style Selector="CheckBox.TaskList /template/ Path#CheckMark">
-            <Setter Property="Fill" Value="{DynamicResource HighlightForegroundBrush}" />
-        </Style>
-
-        <Style Selector="ScrollBar /template/ Thumb#thumb">
-            <Setter Property="Background" Value="{DynamicResource ThemeAccentBrush}" />
-        </Style>
-
-        <Style Selector="ScrollBar /template/ Thumb#thumb:pointerover, ScrollBar /template/ Thumb#thumb:pressed">
-            <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
-        </Style>
-
-        <Style Selector="ContextMenu, MenuFlyoutPresenter">
-            <Setter Property="FontSize" Value="{StaticResource MenuFontSize}" />
-        </Style>
-
-        <!-- The flyouts' gap from what opens them, which SimpleTheme's drop-down lists lack -->
-        <Style Selector="ComboBox /template/ Popup#PART_Popup">
-            <Setter Property="Placement" Value="Top" />
-            <Setter Property="VerticalOffset" Value="-2" />
-        </Style>
-
-        <!-- SimpleTheme insets its text box by a margin as well as this padding, which made it taller than a text box -->
-        <Style Selector="NumericUpDown">
-            <Setter Property="Padding" Value="0" />
-        </Style>
-
-        <!-- An empty box is only a binding's error, as it keeps its last good value; NumberBoxes shows the real ones -->
-        <Style Selector="NumericUpDown /template/ DataValidationErrors">
-            <Setter Property="ErrorTemplate">
-                <DataTemplate>
-                    <Panel />
-                </DataTemplate>
-            </Setter>
-        </Style>
-
-        <Style Selector="NumericUpDown.invalid /template/ TextBox#PART_TextBox">
-            <Setter Property="Foreground" Value="{StaticResource DangerBrush}" />
-        </Style>
-
-        <!-- SimpleTheme sizes icons 20 square but clips a menu's to 16 -->
-        <Style Selector="MenuItem PathIcon">
-            <Setter Property="Width" Value="16" />
-            <Setter Property="Height" Value="16" />
-        </Style>
-
-        <!-- The text boxes' own menus, by their SimpleTheme headers -->
-        <Style Selector="MenuItem[Header=Cut]">
-            <Setter Property="Icon">
-                <Template>
-                    <PathIcon Data="{StaticResource CutIcon}" />
-                </Template>
-            </Setter>
-        </Style>
-
-        <Style Selector="MenuItem[Header=Copy]">
-            <Setter Property="Icon">
-                <Template>
-                    <PathIcon Data="{StaticResource CopyIcon}" />
-                </Template>
-            </Setter>
-        </Style>
-
-        <Style Selector="MenuItem[Header=Paste]">
-            <Setter Property="Icon">
-                <Template>
-                    <PathIcon Data="{StaticResource PasteIcon}" />
-                </Template>
-            </Setter>
-        </Style>
-
-        <!-- Capped at the window's width, where text tips wrap rather than run off it -->
-        <Style Selector="ToolTip">
-            <Setter Property="Background" Value="{StaticResource TranslucentBackgroundBrush}" />
-            <Setter Property="IsHitTestVisible" Value="False" />
-            <Setter Property="MaxWidth" Value="{Binding $parent[TopLevel].Bounds.Width}" />
-        </Style>
-
-        <Style Selector="ToolTip /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Opacity" Value="0" />
-
-            <Setter Property="Transitions">
-                <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector="ToolTip:open /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
-
-        <Style Selector=":is(Control).fade">
-            <Setter Property="Opacity" Value="0" />
-
-            <Setter Property="Transitions">
-                <Transitions>
-                    <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
-                </Transitions>
-            </Setter>
-        </Style>
-
-        <Style Selector=":is(Control).fade.shown">
-            <Setter Property="Opacity" Value="1" />
-        </Style>
-
-        <Style Selector=":is(Control).fade.hidden">
-            <Setter Property="Opacity" Value="0" />
-            <Setter Property="IsHitTestVisible" Value="False" />
-        </Style>
-
-        <Style Selector="ToggleButton:checked:not(.plain) /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
-            <Setter Property="Foreground" Value="{DynamicResource HighlightForegroundBrush}" />
-        </Style>
-
-        <Style Selector="Border.primary, Border.danger">
-            <Setter Property="BorderThickness" Value="{StaticResource BorderThickness}" />
-            <Setter Property="CornerRadius" Value="8" />
-            <Setter Property="ClipToBounds" Value="True" />
-        </Style>
-
-        <Style Selector="Border.primary">
-            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
-        </Style>
-
-        <Style Selector="Border.danger">
-            <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}" />
-        </Style>
+        <StyleInclude Source="Styles/Markdown.axaml" />
+        <StyleInclude Source="Styles/Controls.axaml" />
+        <StyleInclude Source="Styles/Menus.axaml" />
+        <StyleInclude Source="Styles/Classes.axaml" />
     </Application.Styles>
 
 </Application>

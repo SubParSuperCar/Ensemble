@@ -135,7 +135,7 @@
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
     <None Include="**/*.tscn;**/*.scn" Exclude=".godot/**;bin/**;scenes/**"/>
-    <None Include="**/*LICENSE*"/>
+    <None Include="**/*LICENSE*" Exclude="Estragonia/**/*LICENSE*"/>
     <None Include="Properties/**" Exclude="**/*.gdignore"/>
   </ItemGroup>
 

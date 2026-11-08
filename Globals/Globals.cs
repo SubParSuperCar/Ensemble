@@ -8,7 +8,9 @@ using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Scripts.Plots;
 using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Sessions;
+#if !DEDICATED_SERVER
 using EnsembleRoot.Tooling;
+#endif
 
 namespace EnsembleRoot.Globals;
 
@@ -81,9 +83,11 @@ public static class Globals
 		set;
 	} = null!;
 
+#if !DEDICATED_SERVER
 	/// <inheritdoc cref="ToolManager" />
 	public static ToolManager GToolManager =>
 		ToolManager.Instance ?? throw Unavailable(nameof(ToolManager), ClientAutoloadLifetime);
+#endif
 
 	/// <inheritdoc cref="WrappedTimeProvider" />
 	public static WrappedTimeProvider GTimeProvider { get; } = new();

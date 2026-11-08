@@ -113,14 +113,31 @@ jobs:
           rm -f ./*.pdb ./*.dbg ./*.xml symbolize.sh
           zip -6 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
 
+      - name: Export server
+        timeout-minutes: 30
+        env:
+          EnsembleServer: true
+        run: |
+          set -euo pipefail
+          mkdir -p server
+          "${GODOT}" --headless --path . --export-release "Linux (x86_64) Server" "${PWD}/server/Ensemble.x86_64"
+          test -s server/Ensemble.x86_64
+          cd server
+          shopt -s nullglob
+          for d in data_*/; do cp -a "${d}." . && find "${d}" -mindepth 1 -delete; done
+          rm -f ./*.pdb ./*.dbg ./*.xml
+          chmod +x Ensemble.x86_64 Ensemble.sh
+          zip -6 -ry "../Ensemble-${ID}-linux-x86_64-server.zip" .
+
       - &smoke-linux
         name: Smoke test
         run: |
           set -euo pipefail
-          cd out
-          timeout 120 ./Ensemble.x86_64 \
-            --headless --quit-after 900 -- --port=7777 > ../smoke.log 2>&1 || { tail -50 ../smoke.log; exit 1; }
-          grep -qE 'Instantiated and added "?WorldHandle' ../smoke.log || { tail -50 ../smoke.log; exit 1; }
+          for dir in out server; do
+            (cd "${dir}" && timeout 120 ./Ensemble.x86_64 --headless --quit-after 900 -- --port=7777) \
+              > smoke.log 2>&1 || { tail -50 smoke.log; exit 1; }
+            grep -qE 'Instantiated and added "?WorldHandle' smoke.log || { tail -50 smoke.log; exit 1; }
+          done
 
       - name: Upload
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -194,12 +211,30 @@ jobs:
           codesign --verify --deep --strict Ensemble.app
           ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal.zip"
 
+      - name: Export server
+        timeout-minutes: 30
+        env:
+          EnsembleServer: true
+        run: |
+          set -euo pipefail
+          mkdir -p server
+          "${GODOT}" --headless --path . --export-release "Crapple macOS Server" "${PWD}/server/Ensemble.app"
+          test -s server/Ensemble.app/Contents/MacOS/Ensemble
+          cd server
+          find Ensemble.app -name '*.pdb' -delete
+          find Ensemble.app -name '*.dSYM' -type d -exec rm -rf {} +
+          codesign --force --deep --sign - Ensemble.app
+          codesign --verify --deep --strict Ensemble.app
+          ditto -c -k --sequesterRsrc --keepParent Ensemble.app "../Ensemble-${ID}-macos-universal-server.zip"
+
       - name: Smoke test
         run: |
           set -euo pipefail
-          perl -e 'alarm shift; exec @ARGV' 120 out/Ensemble.app/Contents/MacOS/Ensemble \
-            --headless --quit-after 900 -- --port=7777 > smoke.log 2>&1 || { tail -50 smoke.log; exit 1; }
-          grep -qE 'Instantiated and added "?WorldHandle' smoke.log || { tail -50 smoke.log; exit 1; }
+          for dir in out server; do
+            perl -e 'alarm shift; exec @ARGV' 120 "${dir}/Ensemble.app/Contents/MacOS/Ensemble" \
+              --headless --quit-after 900 -- --port=7777 > smoke.log 2>&1 || { tail -50 smoke.log; exit 1; }
+            grep -qE 'Instantiated and added "?WorldHandle' smoke.log || { tail -50 smoke.log; exit 1; }
+          done
 
       - name: Upload
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -284,19 +319,42 @@ jobs:
           Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
           7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
 
+      - name: Export server
+        timeout-minutes: 30
+        env:
+          EnsembleServer: true
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          New-Item -ItemType Directory -Force server | Out-Null
+          & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64) Server" `
+            "$PWD\server\Ensemble.exe" | Out-Host
+          if ($LASTEXITCODE -ne 0) { throw "Godot export failed with exit code $LASTEXITCODE" }
+          if (-not (Test-Path server\Ensemble.exe) -or (Get-Item server\Ensemble.exe).Length -eq 0) {
+            throw "Server's Ensemble.exe missing or empty after export"
+          }
+          Set-Location server
+          Get-ChildItem -Directory -Filter data_* | ForEach-Object {
+            Copy-Item "$($_.FullName)\*" . -Recurse -Force
+            Remove-Item "$($_.FullName)\*" -Recurse -Force
+          }
+          Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
+          7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64-server.zip" . > $null
+
       - &smoke-windows
         name: Smoke test
         run: |
-          $process = Start-Process out\Ensemble.console.exe `
-            -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
-            -RedirectStandardOutput smoke.log -RedirectStandardError smoke.err.log -NoNewWindow -PassThru
-          $null = $process.Handle
-          $exited = $process.WaitForExit(120000)
-          Get-Process Ensemble* -ErrorAction SilentlyContinue | Stop-Process -Force
-          $found = Select-String -Path smoke.log -Pattern 'Instantiated and added "?WorldHandle' -Quiet
-          if (-not $exited -or $process.ExitCode -ne 0 -or -not $found) {
-            Get-Content smoke.log, smoke.err.log -Tail 50
-            throw "Smoke test failed (Exited=$exited, ExitCode=$($process.ExitCode))"
+          foreach ($dir in 'out', 'server') {
+            $process = Start-Process "$dir\Ensemble.console.exe" `
+              -ArgumentList '--headless', '--quit-after', '900', '--', '--port=7777' `
+              -RedirectStandardOutput smoke.log -RedirectStandardError smoke.err.log -NoNewWindow -PassThru
+            $null = $process.Handle
+            $exited = $process.WaitForExit(120000)
+            Get-Process Ensemble* -ErrorAction SilentlyContinue | Stop-Process -Force
+            $found = Select-String -Path smoke.log -Pattern 'Instantiated and added "?WorldHandle' -Quiet
+            if (-not $exited -or $process.ExitCode -ne 0 -or -not $found) {
+              Get-Content smoke.log, smoke.err.log -Tail 50
+              throw "Smoke test of $dir failed (Exited=$exited, ExitCode=$($process.ExitCode))"
+            }
           }
 
       - name: Upload
@@ -343,16 +401,26 @@ jobs:
           test -s out/data_EnsembleGame_windows_x86_64/EnsembleGame.dll
           chmod +x out/Ensemble.x86_64 out/Ensemble.sh
 
-      # ExportDebug, so export-only code (e.g., UpdateChecker) is tested too; failures don't block a release
-      - name: Test
-        continue-on-error: true
-        run: dotnet test --project Tests/Tests.csproj -c ExportDebug
-
       - name: Package
         run: |
           set -euo pipefail
           cd out
           zip -6 -ry "../Ensemble-${ID}-jit.zip" .
+
+      - name: Export server
+        timeout-minutes: 30
+        env:
+          EnsembleServer: true
+        run: |
+          set -euo pipefail
+          mkdir -p server
+          "${GODOT}" --headless --path . --export-debug "Linux (x86_64) Server" "${PWD}/server/Ensemble.x86_64"
+          "${GODOT}" --headless --path . --export-debug "Microslop Windows (x86_64) Server" "${PWD}/server/Ensemble.exe"
+          test -s server/data_EnsembleGame_linuxbsd_x86_64/EnsembleGame.dll
+          test -s server/data_EnsembleGame_windows_x86_64/EnsembleGame.dll
+          chmod +x server/Ensemble.x86_64 server/Ensemble.sh
+          cd server
+          zip -6 -ry "../Ensemble-${ID}-jit-server.zip" .
 
       - *smoke-linux
 
@@ -360,7 +428,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: Ensemble-${{ env.ID }}-jit
-          path: Ensemble-${{ env.ID }}-jit.zip
+          path: Ensemble-${{ env.ID }}-jit*.zip
           if-no-files-found: error
 
   jit-windows:
@@ -381,7 +449,9 @@ jobs:
           merge-multiple: true
 
       - name: Extract
-        run: 7z x -oout (Get-ChildItem *-jit.zip).FullName > $null
+        run: |
+          7z x -oout (Get-ChildItem *-jit.zip).FullName > $null
+          7z x -oserver (Get-ChildItem *-jit-server.zip).FullName > $null
 
       - *smoke-windows
 

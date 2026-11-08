@@ -95,9 +95,8 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
   clients don't verify it yet, so it stops eavesdroppers, not a man in the middle
 - [ ] (S) Host certificate pinning - clients remember a host's certificate on first join and warn if it changes
 - [x] (S) Headless dedicated server - `--headless -- --port=N --password=X --max-clients=N --upnp` (or `--join=HOST:P`)
-- [ ] (M) Server-only builds - a dedicated-server export (Godot's `dedicated_server` preset strips textures, meshes, and
-  shaders) built without `Ui/` and its Avalonia, Skia, HarfBuzz, and WebView natives, behind a define like
-  `NATIVE_AOT`; NsDepCop already keeps `Ui` at the top, so only `Main.cs` and the Avalonia packages need conditions
+- [x] (M) Server-only builds - a `-server` ZIP per platform and for JIT: Godot's dedicated-server export without the UI,
+  tools, Lua console, or their packages
 - [x] (S) UPnP port forwarding - opt-out host checkbox (remembered), leased + renewed off the main thread, join code
   shown under the player list
 - (WIP) (M) Character replication - position / yaw and the flashlight (`F`, off by default) at 20 Hz, server-relayed,

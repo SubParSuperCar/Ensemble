@@ -57,6 +57,7 @@ dotnet_diagnostic.NSDEPCOP01.severity = warning
 
 dotnet_diagnostic.CA1720.severity = none
 dotnet_diagnostic.CA2255.severity = none
+
 dotnet_diagnostic.MA0003.severity = none
 dotnet_diagnostic.MA0007.severity = none
 dotnet_diagnostic.MA0026.severity = none

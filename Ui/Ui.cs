@@ -1,3 +1,16 @@
+#if DEDICATED_SERVER
+using Godot;
+
+namespace EnsembleRoot.Ui;
+
+// The main scene names this script, so a server, which has no UI, still needs the class
+[GlobalClass]
+public partial class Ui : Control
+{
+	public override void _Ready() => QueueFree();
+}
+
+#else
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
@@ -262,3 +275,5 @@ public partial class Ui : Control
 		}
 	}
 }
+
+#endif

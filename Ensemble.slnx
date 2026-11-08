@@ -12,6 +12,7 @@
     <File Path="FodyWeavers.xml"/>
     <File Path="global.json"/>
     <File Path="LICENSE.md"/>
+    <File Path="TrimmerRoots.Client.xml"/>
     <File Path="TrimmerRoots.xml"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/">
@@ -33,6 +34,7 @@
     <File Path=".github/workflows/bin.yml"/>
     <File Path=".github/workflows/cloc.yml"/>
     <File Path=".github/workflows/src.yml"/>
+    <File Path=".github/workflows/test.yml"/>
   </Folder>
   <Folder Name="/Solution Items/IntelliJ Run Configs/">
     <File Path=".run/EnsembleGame_ Player (PATH Launcher) (External Console).run.xml"/>

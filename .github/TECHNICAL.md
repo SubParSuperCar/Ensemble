@@ -41,7 +41,7 @@ spawned creations in depth, see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 | Networking     | Godot's `SceneMultiplayer` over ENet (DTLS-encrypted), with UPnP port forwarding   |
 | Scripting      | Lua 5.2 through LuaCSharp                                                          |
 | Logging        | Serilog: console, rolling JSON files, an in-game log view, and toasts for warnings |
-| Builds         | NativeAOT with full trimming for releases; a JIT build for testing                 |
+| Builds         | NativeAOT with full trimming for releases; a JIT build for testing; server builds  |
 | Tests and lint | xUnit v3, NsDepCop layering rules, Meziantou and .NET analyzers                    |
 | World addons   | Terrain3D (terrain), Sky3D (sky and day-night cycle), Resonate (audio)             |
 
@@ -638,10 +638,14 @@ content versions leave room to migrate old saves.
   (universal), each with a lean ZIP and a `-debug` ZIP carrying symbols. `GdIgnore/PatchExport.cs` flattens the export
   layout at first launch.
 - **A JIT build** bundles Windows and Linux in one download, with every assembly as a separate file, for testing.
-- **CI** (GitHub Actions): `bin.yml` builds every tag (or on demand), runs the tests in the JIT build's configuration
-  (without blocking the release), smoke-tests every package by booting a headless server, and publishes a release with
-  checksums; `src.yml` publishes source archives, and `cloc.yml` tracks lines of code. Dependabot keeps packages and
-  actions current.
+- **Dedicated server builds** exist for each of the above. Exporting with `EnsembleServer=true` in the environment and
+  a `Server` preset defines `DEDICATED_SERVER`, which leaves out the UI, tools, Lua console, and the packages only they
+  use, and Godot's dedicated-server mode strips textures and meshes and starts headless. `Ui.cs` and `AvaloniaLoader.cs`
+  stay as empty stand-ins, since Godot resources name them. `resources/` and `world.tscn` aren't stripped: a placeholder
+  can't stand in for a material a C# property or Terrain3D types exactly.
+- **CI** (GitHub Actions): `test.yml` runs the tests and builds the server on every push; `bin.yml` builds every tag (or
+  on demand), smoke-tests every package by booting a headless server, and publishes a release with checksums; `src.yml`
+  publishes source archives, and `cloc.yml` tracks lines of code. Dependabot keeps packages and actions current.
 - **Updates:** the game checks GitHub for newer releases on startup and offers each one once.
 
 ---

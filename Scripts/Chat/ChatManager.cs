@@ -2,7 +2,9 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using EnsembleRoot.Autoloading;
+#if !DEDICATED_SERVER
 using EnsembleRoot.Common.Audio;
+#endif
 using EnsembleRoot.Common.Text;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Players;
@@ -124,8 +126,10 @@ public partial class ChatManager : Node, IAutoload
 		_messages.Enqueue(message);
 		WriteToLog(message);
 
+#if !DEDICATED_SERVER
 		if (IsTtsEnabled && !isHistory)
 			TextToSpeech.Speak(ToSpeech(message), token: _speechCts.Token);
+#endif
 
 		EmitSignal(SignalName.MessageAdded, message);
 	}

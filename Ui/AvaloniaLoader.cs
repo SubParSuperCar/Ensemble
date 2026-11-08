@@ -1,3 +1,15 @@
+#if DEDICATED_SERVER
+using Godot;
+
+namespace EnsembleRoot.Ui;
+
+// project.godot names this script, so a server, which has no UI, still needs the class
+public partial class AvaloniaLoader : Node
+{
+	public override void _Ready() => QueueFree();
+}
+
+#else
 using System.Diagnostics;
 using System.Globalization;
 using Avalonia;
@@ -65,3 +77,5 @@ public partial class AvaloniaLoader : Node
 		}
 	}
 }
+
+#endif

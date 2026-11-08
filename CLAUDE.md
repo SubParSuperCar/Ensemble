@@ -120,8 +120,8 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 - **Ui:** Godot reaches view models through `DispatcherService`; `WeakReferenceMessenger` is only for the layers below
   Ui; DI registers `AsSelf`; AXAML imports with `using:`; designer sizes are never added for uniformity.
 - **Build:** the SDK's symbols (`DEBUG`, `GODOT_LINUXBSD` / `GODOT_MACOS` / `GODOT_WINDOWS`), custom ones only for
-  `EXPORT` and `NATIVE_AOT`; what a running build is comes from `BuildInfo`. XML files indent 2 spaces with `"/>`;
-  scripts use tabs and `#!/bin/sh`; CI names each tool by its full path.
+  `EXPORT`, `NATIVE_AOT`, and `DEDICATED_SERVER`; what a running build is comes from `BuildInfo`. XML files indent 2
+  spaces with `"/>`; scripts use tabs and `#!/bin/sh`; CI names each tool by its full path.
 
 ## Working Agreements
 

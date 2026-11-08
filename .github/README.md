@@ -122,7 +122,8 @@ On startup, Ensemble asks GitHub for the latest release and offers each newer ve
 also shares your activity (e.g., "In the Main Menu" or "Playing Multi-Player") without names or addresses.
 
 Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files. There is also a single `-jit` ZIP
-for testing and troubleshooting; see [**Platform Support**](#platform-support) before choosing it.
+for testing and troubleshooting; see [**Platform Support**](#platform-support) before choosing it. To host without
+playing, each platform and the JIT build also have a much smaller `-server` ZIP.
 
 > [!IMPORTANT]
 > macOS builds need one extra step before they'll open &mdash; see [**Bypassing Gatekeeper on
@@ -153,6 +154,7 @@ password only controls who can join, so don't use one that matters elsewhere.
   `--profanity-filter=false` to turn off the profanity filter). Every argument has a short form, e.g.,
   `--p=7777 --pw=abc` (`j`, `mc`, `n`, `p`, `pf`, `pw`, and `u`). The same arguments work without `--headless`: a
   regular window then hosts as a player (`--port`, with `--name`), or joins (`--join`), instead of opening the menu.
+  A `-server` download is always headless, so it can leave `--headless` out.
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
 and characters are replicated. A spawned creation is simulated by its plot's owner and streamed to everyone else; when
@@ -246,10 +248,10 @@ The regular builds are compiled ahead of time with NativeAOT: fast to start and 
 `-jit` ZIP instead runs Ensemble's code on the regular .NET runtime, which compiles it just in time (JIT). It is slower
 to start, larger, and **not recommended for playing**, but it bundles both Windows and Linux (`x86_64`) in one download
 and keeps every assembly and debug symbol as a separate file, which helps with testing and troubleshooting. It is also a
-debug build: `F12` opens Avalonia's developer tools, the UI shows render overlays, and `Pause` deliberately hangs the
-main thread to test the watchdog, which then ends the game. Run `Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux)
-from the extracted folder; each uses its own self-contained .NET runtime in its `data_EnsembleGame_<platform>_x86_64`
-folder, so keep those folders next to the executables.
+debug build: `F12` opens Avalonia's developer tools, the UI shows render overlays, `Pause` deliberately hangs the main
+thread to test the watchdog, which then ends the game, and single-player starts with test assets and players. Run
+`Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux) from the extracted folder; each uses its own self-contained .NET
+runtime in its `data_EnsembleGame_<platform>_x86_64` folder, so keep those folders next to the executables.
 
 ### Debug Symbols
 

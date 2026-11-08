@@ -46,13 +46,49 @@
     <OptimizationPreference>Speed</OptimizationPreference>
   </PropertyGroup>
 
+  <!-- A dedicated server (EnsembleServer=true) has no UI, tools, or console, so it leaves out what only they use -->
+  <PropertyGroup Condition="'$(EnsembleServer)' == 'true'">
+    <DefineConstants>$(DefineConstants);DEDICATED_SERVER</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <TrimmerRootAssembly Include="$(TargetName)"/>
     <TrimmerRootAssembly Include="GodotSharp"/>
     <TrimmerRootDescriptor Include="TrimmerRoots.xml"/>
+    <TrimmerRootDescriptor Include="TrimmerRoots.Client.xml" Condition="'$(EnsembleServer)' != 'true'"/>
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hardware.Info.Aot"/>
+    <PackageReference Include="Konscious.Security.Cryptography.Argon2"/>
+    <PackageReference Include="MethodBoundaryAspect.Fody"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
+    <PackageReference Include="Microsoft.Extensions.Logging"/>
+    <PackageReference Include="NsDepCop">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Serilog"/>
+    <PackageReference Include="Serilog.Expressions"/>
+    <PackageReference Include="Serilog.Extensions.Logging"/>
+    <PackageReference Include="Serilog.Settings.Configuration"/>
+    <PackageReference Include="Serilog.Sinks.Console"/>
+    <PackageReference Include="Serilog.Sinks.File"/>
+    <PackageReference Include="Serilog.Sinks.File.Header"/>
+    <PackageReference Include="System.Threading.RateLimiting"/>
+    <PackageReference Include="TinyDialogsNet"/>
+    <PackageReference Include="ZstdSharp.Port"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference
+      Include="AutoloadGenerator/AutoloadGenerator.csproj"
+      OutputItemType="Analyzer"
+      ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="Core/Core.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(EnsembleServer)' != 'true'">
     <PackageReference Include="Avalonia.AvaloniaEdit"/>
     <PackageReference Include="Avalonia.Controls.WebView"/>
     <!-- Excluded in favor of the patched Avalonia.Skia referenced below, which every assembly must use -->
@@ -68,47 +104,17 @@
     <PackageReference Include="CommunityToolkit.Mvvm"/>
     <PackageReference Include="DiscordRichPresence"/>
     <PackageReference Include="Fonts.Avalonia.JetBrainsMono"/>
-    <PackageReference Include="Hardware.Info.Aot"/>
     <PackageReference Include="Iciclecreek.Avalonia.Terminal"/>
-    <PackageReference Include="Konscious.Security.Cryptography.Argon2"/>
     <PackageReference Include="LiveMarkdown.Avalonia"/>
     <PackageReference Include="LiveMarkdown.Avalonia.Mermaid"/>
     <PackageReference Include="LiveMarkdown.Avalonia.Svg.Skia"/>
     <PackageReference Include="LuaCSharp"/>
-    <PackageReference Include="MethodBoundaryAspect.Fody"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
-    <PackageReference Include="Microsoft.Extensions.Logging"/>
-    <PackageReference Include="NsDepCop">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Optris.LoadingIndicators.Avalonia"/>
-    <PackageReference Include="Serilog"/>
-    <PackageReference Include="Serilog.Expressions"/>
-    <PackageReference Include="Serilog.Extensions.Logging"/>
-    <PackageReference Include="Serilog.Settings.Configuration"/>
-    <PackageReference Include="Serilog.Sinks.Console"/>
-    <PackageReference Include="Serilog.Sinks.File"/>
-    <PackageReference Include="Serilog.Sinks.File.Header"/>
     <PackageReference Include="ServiceScan.SourceGenerator">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Threading.RateLimiting"/>
-    <PackageReference Include="TinyDialogsNet"/>
-    <PackageReference Include="ZstdSharp.Port"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference
-      Include="AutoloadGenerator/AutoloadGenerator.csproj"
-      OutputItemType="Analyzer"
-      ReferenceOutputAssembly="false"/>
-    <ProjectReference Include="Core/Core.csproj"/>
     <ProjectReference Include="Estragonia/Estragonia.csproj"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Avalonia.Skia">
       <HintPath>Estragonia/Lib/Avalonia.Skia.dll</HintPath>
       <Private>true</Private>
@@ -152,6 +158,18 @@
     <Compile Remove="Core/**"/>
     <Compile Remove="Estragonia/**"/>
     <Compile Remove="Tests/**"/>
+  </ItemGroup>
+
+  <!-- Ui.cs and AvaloniaLoader.cs stay, as scenes and project.godot name them -->
+  <ItemGroup Condition="'$(EnsembleServer)' == 'true'">
+    <Compile Remove="Common/Audio/TextToSpeech.cs"/>
+    <Compile Remove="Common/Interop/HarfBuzzIsolation.cs"/>
+    <Compile Remove="Common/Messages/**"/>
+    <Compile Remove="Execution/**"/>
+    <Compile Remove="Scripts/DiscordRichPresence/**"/>
+    <Compile Remove="Scripts/Updates/**"/>
+    <Compile Remove="Tooling/**"/>
+    <Compile Remove="Ui/Impl/**"/>
   </ItemGroup>
 
   <!-- Regenerated only when the build's inputs change, so up-to-date builds don't recompile for a new time -->

@@ -224,7 +224,6 @@ public sealed partial class MainViewModel : ViewModelBase
 			Foreground = isDark ? Brushes.White : Brushes.Black,
 			Background = isDark ? Brushes.Black : Brushes.White,
 			SelectionBrush = selectionBrush,
-			Ligatures = true,
 			CursorStyle = CursorStyle.Block,
 			CursorColor = accent.Color,
 			CursorBlink = true,

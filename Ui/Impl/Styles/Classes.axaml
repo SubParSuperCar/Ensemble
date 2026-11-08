@@ -1,0 +1,39 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cm="using:EnsembleRoot.Common">
+
+    <Style Selector=":is(Control).fade">
+        <Setter Property="Opacity" Value="0" />
+
+        <Setter Property="Transitions">
+            <Transitions>
+                <DoubleTransition Property="Opacity" Duration="{x:Static cm:Constants.AnimationDuration}" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector=":is(Control).fade.shown">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+
+    <Style Selector=":is(Control).fade.hidden">
+        <Setter Property="Opacity" Value="0" />
+        <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+
+    <Style Selector="Border.primary, Border.danger">
+        <Setter Property="BorderThickness" Value="{StaticResource BorderThickness}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
+    <Style Selector="Border.primary">
+        <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}" />
+    </Style>
+
+    <Style Selector="Border.danger">
+        <Setter Property="BorderBrush" Value="{StaticResource DangerBrush}" />
+    </Style>
+
+</Styles>

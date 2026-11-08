@@ -1,0 +1,29 @@
+<Styles
+    xmlns="https://github.com/avaloniaui"
+    xmlns:md="using:LiveMarkdown.Avalonia">
+
+    <!-- LiveMarkdown names OS fonts (Arial, Consolas), which each platform resolves differently -->
+    <Style
+        Selector="md|MarkdownTextBlock, md|CodeBlock, md|CodeInline, TextBlock.ListBlockNumber, TextBlock.ListBlockBullet">
+        <Setter Property="TextElement.FontFamily" Value="{StaticResource Font}" />
+    </Style>
+
+    <!-- LiveMarkdown fixes its selection and task lists to blues of its own -->
+    <Style Selector="md|MarkdownTextBlock">
+        <Setter Property="SelectionBrush" Value="{DynamicResource HighlightBrush}" />
+        <Setter Property="SelectionForegroundBrush" Value="{DynamicResource HighlightForegroundBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox.TaskList /template/ Border#Border">
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox.TaskList:checked /template/ Border#Border">
+        <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox.TaskList /template/ Path#CheckMark">
+        <Setter Property="Fill" Value="{DynamicResource HighlightForegroundBrush}" />
+    </Style>
+
+</Styles>

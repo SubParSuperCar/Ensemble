@@ -2,13 +2,13 @@
 
 [![Latest Release](https://img.shields.io/github/v/tag/SubParSuperCar/Ensemble?label=Latest+Release)](https://github.com/SubParSuperCar/Ensemble/releases/latest)
 
-[![Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
-[![Create Source Release](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml)
-[![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
-[![Test](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml)
-
 [![Godot Engine](https://img.shields.io/badge/Godot-4.7-blue?logo=godot-engine)](https://godotengine.org/)
 [![.NET](https://img.shields.io/badge/.NET-10-purple?logo=dotnet)](https://dotnet.microsoft.com/)
+
+[![Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
+[![Test](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml)<br>
+[![Create Source Release](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml)
+[![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
 
 A free, open-source, multiplayer sandbox building game: claim a plot, grab some shapes, and build something with your
 friends. Made with Godot 4, C#, .NET, and Avalonia 12, it is created and maintained by

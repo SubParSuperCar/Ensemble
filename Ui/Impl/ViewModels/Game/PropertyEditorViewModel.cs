@@ -58,7 +58,6 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 	};
 
 	public event Action? Copied;
-
 	public event Action? Pasted;
 
 	protected override void OnDispose()

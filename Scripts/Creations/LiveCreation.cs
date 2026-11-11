@@ -15,7 +15,6 @@ namespace EnsembleRoot.Scripts.Creations;
 public partial class LiveCreation : Node3D
 {
 	private const float KillHeight = -1024f;
-	private const double KillCheckInterval = 1 / 4d;
 
 	private readonly List<Assembly> _assemblies = [];
 	private readonly List<(AssetHandle Handle, ISimulationTicked Ticked)> _ticked = [];
@@ -23,7 +22,6 @@ public partial class LiveCreation : Node3D
 	private bool _isAwaitingInput;
 	private bool _isResuming;
 	private InputState _previousInput;
-	private double _sinceKillCheck;
 
 	public PlotHandle Plot { get; init; } = null!;
 
@@ -49,9 +47,9 @@ public partial class LiveCreation : Node3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		KillLostAssemblies();
 		Tick(delta);
 		UpdateStream(delta);
-		KillFallenAssemblies(delta);
 	}
 
 	/// <summary>
@@ -90,19 +88,19 @@ public partial class LiveCreation : Node3D
 		_isResuming = false;
 	}
 
-	private void KillFallenAssemblies(double delta)
+	// Every tick, before anything reads or draws them: a frame drawn with a blown-up body stalls rendering for seconds
+	private void KillLostAssemblies()
 	{
-		_sinceKillCheck += delta;
-		if (_sinceKillCheck < KillCheckInterval)
-			return;
-
-		_sinceKillCheck = 0;
-
 		foreach (var assembly in _assemblies)
-			if (
-				assembly is { IsKilled: false, GlobalTransform: var transform } &&
-				(transform.Origin.Y < KillHeight || !transform.IsFinite()))
+		{
+			if (assembly.IsKilled)
+				continue;
+
+			var transform = assembly.IsSimulated ? assembly.GlobalTransform : assembly.ProxyTransform;
+
+			if (transform.Origin.Y < KillHeight || !transform.IsFinite())
 				Kill(assembly);
+		}
 	}
 
 	// A blown-up body is put below the kill height first, so the state it's kept alive with takes its proxies along

@@ -202,18 +202,9 @@ public partial class LiveCreation
 		}
 	}
 
-	// A body whose simulation blew up is killed, never sent
-	private AssemblyState GetState(Assembly assembly, Transform3D toLocal, bool isAwake)
+	private static AssemblyState GetState(Assembly assembly, Transform3D toLocal, bool isAwake)
 	{
-		var global = assembly.GlobalTransform;
-
-		if (!global.IsFinite())
-		{
-			Kill(assembly);
-			(global, isAwake) = (assembly.GlobalTransform, false);
-		}
-
-		var transform = toLocal * global;
+		var transform = toLocal * assembly.GlobalTransform;
 		var linearVelocity = isAwake ? toLocal.Basis * assembly.LinearVelocity : Vector3.Zero;
 		var angularVelocity = isAwake ? toLocal.Basis * assembly.AngularVelocity : Vector3.Zero;
 

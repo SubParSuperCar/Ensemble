@@ -64,7 +64,7 @@ are the same, without Roblox's limits.
   mode that speaks new messages.
 - **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a seat
   with controls takes the wheel. Anchors hold what you've built in place.
-- **Crash** it: creations collide with the terrain, with characters, and with each other's, whoever built them.
+- **Crash** it: creations collide with the terrain, with characters, and with one another, whoever built them.
 - **Paint** pieces in any color and give them a material with the Edit tool (turn on *Show Internal* in the Property
   Editor; a dedicated Paint tool comes later).
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.

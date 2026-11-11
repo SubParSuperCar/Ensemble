@@ -198,7 +198,8 @@ public sealed class SaveTests : IDisposable
 			Assert.Equal(left.AssetId, right.AssetId);
 			Assert.Equal(left.Position, right.Position);
 			Assert.Equal(left.Rotation, right.Rotation);
-			Assert.Equal(left.Properties ?? [], right.Properties ?? []);
+			Assert.Equal(
+				left.Properties ?? [with(StringComparer.Ordinal)], right.Properties ?? [with(StringComparer.Ordinal)]);
 		}
 	}
 }

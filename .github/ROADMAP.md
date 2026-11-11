@@ -46,8 +46,9 @@ The tool suite, in rough intended order of implementation.
       Editor reads them for its ranges (and sliders where both ends are set), and the asset's getters clamp to them;
       Core never enforces them. Dependent limits (e.g., Suspension's `targetLength` within its minimum and
       `maxLength`) stay in code
-- [ ] PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
-  (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
+- PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
+  (materials come from the `MaterialBank`: a look plus density, friction, and bounce) (WIP: painting already works
+  through the Property Editor's "Show Internal" option; the tool itself, with a palette, isn't started)
     - [x] (S) Paintable alpha - an opt-in `Paintable` setting under which `_colorHex` is `RRGGBBAA` instead of `RRGGBB`,
       so only assets meant to be see-through pay for transparent rendering (the Torus is the first)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste

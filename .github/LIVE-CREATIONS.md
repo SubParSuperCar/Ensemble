@@ -250,7 +250,9 @@ Baja Builders did it (a model, two parts, and a constraint):
   scaling bandwidth with creation size (a flat 40 a second made a one-body creation resend itself 40 times).
 - **Fallen and blown-up bodies:** an assembly below the kill height, or whose simulation blew up (extreme joint forces
   can leave Jolt with NaN), is switched off. The simulator first moves a blown-up one below the kill height, and killed
-  assemblies stay in the keepalives, so every proxy follows it out of the world instead of freezing where it was.
+  assemblies stay in the keepalives, so every proxy follows it out of the world instead of freezing where it was. The
+  check runs every tick, ahead of everything else, because one frame drawn with a blown-up body stalls a release build's
+  renderer for seconds (editor builds reject the transform with an error instead, which hid this at first).
 - **Support despawning:** Jolt leaves bodies asleep when what they rest on leaves the space, and a body handed off at
   rest starts asleep, so a tower propped against a creation that despawned kept leaning on nothing. Despawning wakes
   every peer's own sleeping bodies within the creation's bounds.

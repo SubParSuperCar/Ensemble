@@ -2,6 +2,11 @@ name: Build Binaries
 
 on:
   workflow_dispatch:
+    inputs:
+      itch:
+        description: Push the builds to itch.io
+        type: boolean
+        default: false
   push:
     tags:
       - 'v*'
@@ -481,3 +486,48 @@ jobs:
           sha256sum *.zip > SHA256SUMS.txt
           gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
             --title "${GITHUB_REF_NAME}" --generate-notes *.zip SHA256SUMS.txt
+
+  itch:
+    name: Publish to itch.io
+    needs: [ linux, macos, windows, jit, jit-windows ]
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.itch
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      BUTLER_VERSION: 15.32.0
+      BUTLER_SHA256: 2335971394ef6596f95ded0833e85ee28755e13761716ef4c91d6b11f69162f5
+      ITCH_GAME: subparsupercar/ensemble
+
+    steps:
+      - name: Download
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Set up Butler
+        run: |
+          set -euo pipefail
+          curl -fsSL -o butler.zip "https://broth.itch.zone/butler/linux-amd64/${BUTLER_VERSION}/archive/default"
+          echo "${BUTLER_SHA256}  butler.zip" | sha256sum -c -
+          unzip -q butler.zip -d "${HOME}/butler"
+          chmod +x "${HOME}/butler/butler"
+
+      # itch.io reads each build's platform from its channel's name, and patches players from folders, not archives
+      - name: Push
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          set -euo pipefail
+          push() {
+            zip="$(echo dist/Ensemble-*-"${1}.zip")"
+            id="${zip#dist/Ensemble-}"
+            id="${id%"-${1}.zip"}"
+            mkdir -p "itch/${2}"
+            unzip -q "${zip}" -d "itch/${2}"
+            "${HOME}/butler/butler" push "itch/${2}" "${ITCH_GAME}:${2}" --userversion "${id#v}"
+          }
+          push linux-x86_64 linux-alpha
+          push macos-universal osx-alpha
+          push windows-x86_64 windows-alpha

@@ -24,11 +24,12 @@ jobs:
         with:
           persist-credentials: false
 
+      # Only include files determined to be functionally relevant to the source code
       - name: Prepare source
         run: |
           set -euo pipefail
           mkdir src
-          rsync -a . src/ --exclude='.git' --exclude='src'
+          rsync -a . src/ --exclude='src' --exclude='.git' --exclude='.claude' --exclude="CLAUDE.md"
 
       - name: Create deterministic archive
         uses: timo-reymann/deterministic-zip-gh-action@7a36eed588fb801feb8f7ed7e75dd290b2d05b4f # v1

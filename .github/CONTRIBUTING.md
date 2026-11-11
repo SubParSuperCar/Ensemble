@@ -19,7 +19,7 @@ the conventions the codebase follows. For a map of the code, see [**TECHNICAL.md
 4. Download and install the [.NET SDK 11.0.100 or newer](https://dotnet.microsoft.com/en-us/download/dotnet/11.0/). The
    .NET SDK is required to build and run the project's C# code.
 
-5. (Optional) Download and install [JetBrains Rider 2025.3 or newer](https://www.jetbrains.com/rider/download/). Rider
+5. (Optional) Download and install [JetBrains Rider 2026.3 or newer](https://www.jetbrains.com/rider/download/). Rider
    is the recommended IDE for this project. See JetBrains' current licensing terms for information about its available
    licenses. **Visual Studio Code** is also supported, but its C# tooling is generally less comprehensive than Rider's.
    **Visual Studio 2026** can also be used, but only on Windows.

@@ -17,7 +17,7 @@ namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 {
-	private static readonly HashSet<string> ExpandedFolderPaths = [];
+	private static readonly HashSet<string> ExpandedFolderPaths = [with(StringComparer.Ordinal)];
 
 	private readonly List<INodeBase> _items = [];
 	private readonly Dictionary<int, AssetNode> _nodesByAssetId = [];

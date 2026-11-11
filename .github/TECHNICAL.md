@@ -35,7 +35,7 @@ spawned creations in depth, see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 | Layer          | Technology                                                                         |
 |----------------|------------------------------------------------------------------------------------|
 | Engine         | Godot 4.7 (.NET build), Mobile rendering method                                    |
-| Language       | C# 14 on .NET 10; GDScript only inside third-party addons                          |
+| Language       | C# 15 on .NET 11; GDScript only inside third-party addons                          |
 | UI             | Avalonia 12 through a forked Estragonia bridge, MVVM with CommunityToolkit.Mvvm    |
 | Physics        | Jolt, through Godot's built-in integration, at 100 ticks per second                |
 | Networking     | Godot's `SceneMultiplayer` over ENet (DTLS-encrypted), with UPnP port forwarding   |

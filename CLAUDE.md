@@ -1,7 +1,7 @@
 # Ensemble
 
 A multiplayer, collaborative sandbox builder: players build creations on plots, spawn them into live physics, and play
-together. Godot 4.7 + C# 14 / .NET 10, with an Avalonia 12 UI hosted in Godot through a vendored fork of Estragonia.
+together. Godot 4.7 + C# 15 / .NET 11, with an Avalonia 12 UI hosted in Godot through a vendored fork of Estragonia.
 It's the spiritual successor to the owner's Roblox game Baja Builders (BB), and inherits its ideas: grid placement with
 SAT overlap checks, plot ownership with co-op occupants, host authority, and widget-based UI.
 

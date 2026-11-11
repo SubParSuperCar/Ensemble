@@ -289,7 +289,7 @@ public static partial class LuaExecutor
 			var current = asset.Source.Properties;
 			var properties = new Dictionary();
 
-			foreach (var (key, value) in instance.Properties ?? [])
+			foreach (var (key, value) in instance.Properties ?? [with(StringComparer.Ordinal)])
 				if (current.TryGetValue(key, out var existing) && GdProperties.Check(key, value, existing) is null)
 					properties[key] = value.ToGodot();
 				else

@@ -1,9 +1,11 @@
 # Ensemble
 
 [![Latest Release](https://img.shields.io/github/v/release/SubParSuperCar/Ensemble?style=for-the-badge&label=Latest+Release&color=darkred)](https://github.com/SubParSuperCar/Ensemble/releases/latest)
+[![Itch.io](https://img.shields.io/badge/itch.io-%23FF0B34.svg?style=for-the-badge&logo=Itch.io&color=darkred&logoColor=white)](https://subparsupercar.itch.io/ensemble)
 
 [![Godot Engine](https://img.shields.io/badge/Godot-4.7-blue?logo=godot-engine)](https://godotengine.org/)
 [![.NET](https://img.shields.io/badge/.NET-11-purple?logo=dotnet)](https://dotnet.microsoft.com/)
+[![C#](https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 
 [![Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
 [![Test](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml)<br>

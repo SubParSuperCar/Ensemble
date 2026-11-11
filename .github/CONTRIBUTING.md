@@ -16,7 +16,7 @@ the conventions the codebase follows. For a map of the code, see [**TECHNICAL.md
 3. Download and install [Godot Mono 4.7.2](https://godotengine.org/download/archive/4.7.2-stable/). Be sure to download
    the **.NET (Mono)** version for your operating system and architecture.
 
-4. Download and install the [.NET SDK 10.0.100 or newer](https://dotnet.microsoft.com/en-us/download/dotnet/10.0/). The
+4. Download and install the [.NET SDK 11.0.100 or newer](https://dotnet.microsoft.com/en-us/download/dotnet/11.0/). The
    .NET SDK is required to build and run the project's C# code.
 
 5. (Optional) Download and install [JetBrains Rider 2025.3 or newer](https://www.jetbrains.com/rider/download/). Rider

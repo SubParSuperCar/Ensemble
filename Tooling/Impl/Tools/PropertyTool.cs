@@ -148,7 +148,7 @@ public partial class PropertyTool : ToolBase
 		ToolCommon.PlaySound(isEdited ? ToolCommon.AffirmSound : ToolCommon.DissentSound);
 
 	private bool IsEditable(string name, CoreVariant value) =>
-		(IsInternalShown || !name.StartsWith('_')) && !value.IsNull;
+		(IsInternalShown || !name.StartsWith('_', StringComparison.Ordinal)) && !value.IsNull;
 
 	// A value the instances disagree on turns null
 	private static CoreVariant Agree(CoreVariant left, CoreVariant right) => left == right ? left : CoreVariant.Null;

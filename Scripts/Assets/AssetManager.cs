@@ -84,7 +84,7 @@ public partial class AssetManager : Node
 		{
 			var entryPath = path.PathJoin(entry);
 
-			if (entry.EndsWith('/'))
+			if (entry.EndsWith('/', StringComparison.Ordinal))
 				ScanDirectory(entryPath);
 			else if (SceneFileRegex.IsMatch(entryPath))
 				try

@@ -39,7 +39,9 @@ internal sealed class QuaternionJsonConverter : JsonConverter<Quaternion>
 
 file static class FloatArray
 {
+#pragma warning disable CA1517
 	public static void Read(ref Utf8JsonReader reader, scoped Span<float> values)
+#pragma warning restore CA1517
 	{
 		if (reader.TokenType is not JsonTokenType.StartArray)
 			throw new JsonException($"Expected an array of {values.Length} numbers.");

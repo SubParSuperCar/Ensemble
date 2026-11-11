@@ -45,6 +45,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 	[
 		new("README.md", ".github/README.md"),
 		new("CONTRIBUTING.md", ".github/CONTRIBUTING.md"),
+		new("ASSETS.md", ".github/ASSETS.md"),
 		new("TECHNICAL.md", ".github/TECHNICAL.md"),
 		new("LIVE-CREATIONS.md", ".github/LIVE-CREATIONS.md"),
 		new("ROADMAP.md", ".github/ROADMAP.md"),
@@ -209,7 +210,7 @@ public sealed partial class DocFileViewModel : ViewModelBase
 			var root = link.IsImage ? DocFile.RepositoryRawUrl : DocFile.RepositoryBlobUrl;
 
 			// Like on GitHub, a leading "/" starts from the repository's root
-			if (url.StartsWith('/'))
+			if (url.StartsWith('/', StringComparison.Ordinal))
 				link.Url = root + url[1..];
 			else if (Uri.TryCreate(new Uri(root + file.Path), url, out var resolved))
 				link.Url = resolved.ToString();

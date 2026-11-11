@@ -13,11 +13,12 @@ public static class LuaValueFormatter
 	private const int MaxDepth = 3;
 	private const int MaxEntryCount = 32;
 
-	private static readonly HashSet<string> Keywords = new(StringComparer.Ordinal)
-	{
+	private static readonly HashSet<string> Keywords =
+	[
+		with(StringComparer.Ordinal),
 		"and", "break", "do", "else", "elseif", "end", "false", "for", "function", "goto", "if", "in", "local", "nil",
 		"not", "or", "repeat", "return", "then", "true", "until", "while"
-	};
+	];
 
 	/// <param name="value">The value to format.</param>
 	/// <param name="isQuoted">Whether a string is quoted; strings inside tables always are.</param>

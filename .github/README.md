@@ -10,9 +10,9 @@
 [![Create Source Release](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml)
 [![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
 
-A free, open-source, multiplayer sandbox building game: claim a plot, grab some shapes, and build something with your
-friends. Made with Godot 4, C#, .NET, and Avalonia 12, it is created and maintained by
-[**SubParSuperCar**](https://github.com/SubParSuperCar).
+A free, open-source, multiplayer sandbox building game: claim a plot, build a car out of blocks, motors, and
+suspensions, then drive it, and crash it, with your friends. Made with Godot 4, C#, .NET, and Avalonia 12, it is created
+and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 
 <img align="left" width="256" src="../assets/images/ensemble_icon.png" title="Ensemble's Icon (Made with Inkscape)" alt="Ensemble's Icon">
 
@@ -40,6 +40,7 @@ friends. Made with Godot 4, C#, .NET, and Avalonia 12, it is created and maintai
 |----------------------------------------------|---------------------------------------------------------------------|
 | [**TECHNICAL.md**](./TECHNICAL.md)           | Architecture, subsystems, diagrams, and the repository layout       |
 | [**CONTRIBUTING.md**](./CONTRIBUTING.md)     | Setting up a development environment, and the project's conventions |
+| [**ASSETS.md**](./ASSETS.md)                 | Making a build asset, and the art and audio the game still needs    |
 | [**ROADMAP.md**](./ROADMAP.md)               | What's done, in progress, and planned                               |
 | [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) | How spawned creations work, and the design for what comes next      |
 | [**LICENSE.md**](../LICENSE.md)              | Licensing for the code and the non-code assets                      |
@@ -63,6 +64,9 @@ are the same, without Roblox's limits.
   mode that speaks new messages.
 - **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a seat
   with controls takes the wheel. Anchors hold what you've built in place.
+- **Crash** it: creations collide with the terrain, with characters, and with each other's, whoever built them.
+- **Paint** pieces in any color and give them a material with the Edit tool (turn on *Show Internal* in the Property
+  Editor; a dedicated Paint tool comes later).
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.
@@ -115,8 +119,8 @@ Ensemble's test map:
 
 ## Download
 
-> [!NOTE]
-> Ensemble has very little gameplay. These builds exist for testing and feedback.
+- **itch.io:** [subparsupercar.itch.io/ensemble](https://subparsupercar.itch.io/ensemble) has the same builds as the
+  releases here, and the [itch app](https://itch.io/app) keeps them up to date.
 
 - **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
   Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or `Ensemble.app`
@@ -317,6 +321,15 @@ really resonated with me, and "baja" can be interpreted as "below" or "low" in S
 
 1. "Ensemble" literally means a group of people, which reflects the game's multiplayer and collaborative nature.
 2. It also sounds like "assemble," making it a fitting name for a building game.
+
+---
+
+## AI Use
+
+Ensemble is developed with an AI coding assistant (Anthropic's Claude, through Claude Code). It writes and refactors
+much of the code, runs the tests and experiments, and drafts documentation, from plans made together with the author.
+The author decides the features and the design, lays out the UI, reviews every change before it is committed, and
+play-tests every release. The models, icons, sounds, and map are made by people, not generated.
 
 ---
 

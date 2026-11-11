@@ -21,6 +21,7 @@
     <File Path=".github/LICENSE-CODE.txt"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Docs/">
+    <File Path=".github/ASSETS.md"/>
     <File Path=".github/CONTRIBUTING.md"/>
     <File Path=".github/IDEAS.md"/>
     <File Path=".github/LIVE-CREATIONS.md"/>

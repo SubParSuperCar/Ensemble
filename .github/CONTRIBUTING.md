@@ -66,7 +66,8 @@ the conventions the codebase follows. For a map of the code, see [**TECHNICAL.md
 - **Mind performance.** Ensemble aims for very high frame rates: measure rendering and per-frame changes, avoid reading
   many Godot objects through interop every frame, and keep cheap trade-offs (such as per-vertex shading on assets).
 - **Keep asset IDs stable.** Saves store each instance's `AssetId`, so once an asset ships, its ID must never change or
-  be reused; give new assets new IDs. Asset scenes live in `build_assets/`, with any asset script beside its scene.
+  be reused; give new assets new IDs. Asset scenes live in `build_assets/`, with any asset script beside its scene;
+  [**ASSETS.md**](/.github/ASSETS.md) explains how to make one, and lists the art and audio the game still needs.
 - **Build cleanly and test.** The solution must build without warnings, and the tests must pass. Add tests for real
   behavior and regressions rather than trivial operations.
 - **License your contributions.** By contributing, you agree that your code is licensed under GPL-3.0-or-later and your

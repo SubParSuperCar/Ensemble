@@ -14,7 +14,7 @@ public partial class SessionManager
 	private const double PingInterval = 1d;
 
 	private readonly System.Collections.Generic.Dictionary<int, Peer> _peersById = [];
-	private readonly System.Collections.Generic.Dictionary<string, Peer> _peersByPlayerId = [with(StringComparer.Ordinal)];
+	private readonly System.Collections.Generic.Dictionary<string, Peer> _peersByPlayerId = new(StringComparer.Ordinal);
 
 	private double _sincePingUpdate;
 

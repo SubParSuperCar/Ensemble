@@ -199,7 +199,8 @@ public sealed class SaveTests : IDisposable
 			Assert.Equal(left.Position, right.Position);
 			Assert.Equal(left.Rotation, right.Rotation);
 			Assert.Equal(
-				left.Properties ?? [with(StringComparer.Ordinal)], right.Properties ?? [with(StringComparer.Ordinal)]);
+				left.Properties ?? new Dictionary<string, CoreVariant>(IProperties.KeyComparer),
+				right.Properties ?? new Dictionary<string, CoreVariant>(IProperties.KeyComparer));
 		}
 	}
 }

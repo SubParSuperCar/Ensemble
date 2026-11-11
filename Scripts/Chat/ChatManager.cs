@@ -2,15 +2,15 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using EnsembleRoot.Autoloading;
-#if !DEDICATED_SERVER
-using EnsembleRoot.Common.Audio;
-#endif
 using EnsembleRoot.Common.Text;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Players;
 using Godot;
 using Godot.Collections;
 using Serilog;
+#if !DEDICATED_SERVER
+using EnsembleRoot.Common.Audio;
+#endif
 
 namespace EnsembleRoot.Scripts.Chat;
 

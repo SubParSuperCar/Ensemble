@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <Configurations>Debug;Release;ExportDebug;ExportRelease</Configurations>
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>14</LangVersion>
+    <TargetFramework>net11.0</TargetFramework>
+    <LangVersion>15</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>EnsembleGame</AssemblyName>
@@ -42,6 +42,8 @@
     <DefineConstants>$(DefineConstants);NATIVE_AOT</DefineConstants>
     <PublishAot>true</PublishAot>
     <TrimMode>full</TrimMode>
+    <!-- Godot's export looks for the library by the assembly's bare name, without the "lib" that .NET 11 adds -->
+    <UseNativeLibPrefix>false</UseNativeLibPrefix>
     <!-- Only affects NativeAOT; Avalonia and Lua are hot managed code, and the size cost is small next to the engine -->
     <OptimizationPreference>Speed</OptimizationPreference>
   </PropertyGroup>

@@ -14,7 +14,7 @@ public sealed partial class PlayerListViewModel : ViewModelBase
 {
 	private const int MaxPingMs = 999;
 
-	private readonly Dictionary<string, (PlayerItem Item, Action? Unsubscribe)> _playersById = [];
+	private readonly Dictionary<string, (PlayerItem Item, Action? Unsubscribe)> _playersById = [with(StringComparer.Ordinal)];
 
 	public PlayerListViewModel()
 	{

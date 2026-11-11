@@ -3,7 +3,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/SubParSuperCar/Ensemble?style=for-the-badge&label=Latest+Release&color=red)](https://github.com/SubParSuperCar/Ensemble/releases/latest)
 
 [![Godot Engine](https://img.shields.io/badge/Godot-4.7-blue?logo=godot-engine)](https://godotengine.org/)
-[![.NET](https://img.shields.io/badge/.NET-10-purple?logo=dotnet)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-11-purple?logo=dotnet)](https://dotnet.microsoft.com/)
 
 [![Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
 [![Test](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml)<br>

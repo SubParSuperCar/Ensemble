@@ -485,11 +485,13 @@ graph LR
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
-- Highlights (`Scripts/Adornments/`) are box meshes drawn in two passes: front faces that multiply a tint into what's
-  behind them, keeping the asset's shading visible, then edges over every face. `AxialHighlight` colors them by axis,
-  and `SolidHighlight` with one tint. Either can dash its edges into marching ants, which selections use, or pulse
-  their opacity, which the hovered instance does. They opt out of physics interpolation, as they are placed between
-  physics ticks. The local plot's outline rises from its grid in the active tool's color, fading in and out as it moves.
+- Highlights (`Scripts/Adornments/`) outline a box with edges drawn over everything, and fill their `Target`'s own
+  meshes through their material overlay, so only its geometry is tinted, never the space around it. `AxialHighlight`
+  colors both by axis (each surface by the axes it faces, blended in Oklab, and each edge fading in from white), and
+  `SolidHighlight` with one tint. Either can dash its edges into marching ants, which selections use, or pulse its
+  opacity, which the hovered instance does. Only one overlay fits a mesh, so the highlight shown last fills it. They opt
+  out of physics interpolation, as they are placed between physics ticks. The local plot's outline rises from its grid
+  in the active tool's color, fading in and out as it moves.
 
 ---
 

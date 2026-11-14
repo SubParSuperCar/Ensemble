@@ -9,7 +9,7 @@ public partial class AxialHighlight : HighlightBase
 
 	public AxialHighlight()
 	{
-		FaceTint = 1 / 2f;
+		FillOpacity = 1 / 2f;
 		SetParameter(AxialParameter, true);
 	}
 }

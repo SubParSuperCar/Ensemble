@@ -1,7 +1,7 @@
 # Live Creations
 
-How spawned creations work today, from welding to replication ([**section 1**](#1-how-it-works-today) walks through it),
-and the design for what comes next: asset logic, mechanisms, input, seats, and aerodynamics. The
+How spawned creations work today, from welding to replication and driving ([**section 1**](#1-how-it-works-today) walks
+through it), the designs behind them, and what comes next: pistons, forces, and aerodynamics. The
 [**roadmap**](./ROADMAP.md#live-physics) tracks its progress. Decisions are numbered **(D#)**; the table at the end
 lists them, resolved or open. Plans are a guide, not a contract: they bend when something unforeseen comes up.
 
@@ -70,7 +70,11 @@ graph TD
 6. **Arbitration.** When creations of different plots come close, the host hands them all to one simulator (that of the
    creation with the most assemblies), so their collisions are real physics on one machine, until they've been apart for
    2 s.
-7. **Despawning.** The owner despawns, or the last occupant leaves. Every peer wakes other creations' bodies that rested
+7. **Driving.** Each physics tick, the simulator runs its assets' logic (motors, servos, anchors) with the keys of the
+   plot's controller: its oldest occupant in a seat with controls, whose keys reach the simulator through the host.
+   What that logic decides and must outlast its simulator (an anchor's hold, a motor's latch) reaches every peer as
+   asset states.
+8. **Despawning.** The owner despawns, or the last occupant leaves. Every peer wakes other creations' bodies that rested
    on this one, frees the `LiveCreation` (and with it every assembly and stream buffer), and shows the static mirror
    again.
 
@@ -82,21 +86,26 @@ start in place.
 | Path                                | Role                                                                           |
 |-------------------------------------|--------------------------------------------------------------------------------|
 | `Scripts/Plots/PlotHandle.cs`       | A plot, with `Impl/PlotHandle.*.cs`: the static mirror (`Instances`), spawning |
-|                                     | (`Spawning`), who simulates (`Simulation`, `Arbitration`), and packets and     |
-|                                     | late joins (`Replication`)                                                     |
+|                                     | (`Spawning`), who simulates (`Simulation`, `Arbitration`), the controller and  |
+|                                     | its keys (`Input`), and packets and late joins (`Replication`)                 |
 | `Scripts/Plots/PlotManager.cs`      | All plots, the host's arbitration between them                                 |
 |                                     | (`Impl/PlotManager.Arbitration.cs`), and its relay budgets (`Bandwidth`)       |
 | `Scripts/Plots/Impl/Placement/`     | Oriented boxes (`Obb`), their grid, and the placement rules and solver         |
 | `Scripts/Creations/LiveCreation.cs` | A spawned creation, with `Impl/LiveCreation.*.cs`: building (`Building`),      |
-|                                     | streaming and proxies (`Streaming`), and arbitration spheres and waking        |
-|                                     | (`Neighbors`)                                                                  |
+|                                     | streaming and proxies (`Streaming`), asset states (`AssetStates`), seats and   |
+|                                     | bound keys (`Seating`), and arbitration spheres and waking (`Neighbors`)       |
 | `Scripts/Creations/Assembly.cs`     | One rigid body per welded group, with its proxy replay                         |
 |                                     | (`Impl/Assembly.Proxy.cs`)                                                     |
-| `Scripts/Creations/Impl/`           | Weld groups (`Welds`), arbitration spheres, and the wire format (`Packets/`)   |
+| `Scripts/Creations/Impl/`           | Weld groups (`Welds`), arbitration spheres, the tick and state interfaces      |
+|                                     | (`ISimulationTicked`, `IReplicatedState`), and the wire format (`Packets/`)    |
 | `Scripts/Assets/`                   | `AssetHandle` (an asset's root and piece 0), `AssetPiece`, `AssetComponent`,   |
-|                                     | and `AssetManager` (each piece's colliders, bounds, and mass); `Components/`,  |
-|                                     | `Materials/`                                                                   |
-| `build_assets/`                     | The asset scenes, with asset scripts beside them (`Advanced/Suspension.cs`)    |
+|                                     | and `AssetManager` (each piece's colliders, bounds, and mass); `Components/`   |
+|                                     | (`Paintable`, `Seat`), `Materials/`                                            |
+| `Scripts/Players/`                  | Characters, with `Impl/PlayerHandle.Seating.cs`: sitting, following a seat,    |
+|                                     | and standing up                                                                |
+| `Common/Input/InputState.cs`        | The keys assets can bind, and a controller's pressed ones as a mask            |
+| `build_assets/`                     | The asset scenes, with asset scripts beside them (`Advanced/Suspension.cs`,    |
+|                                     | `Advanced/Hinges/`, `Advanced/Anchor.cs`)                                      |
 | `shaders/helix.gdshader`            | The spring coil (a helix)                                                      |
 
 ## 2. Principles
@@ -119,8 +128,7 @@ start in place.
 
 ### Where asset scripts live
 
-- Engine-provided, reusable components stay in `Scripts/Assets/Components/` (e.g., `Paintable`, later `Seat`, `Airfoil`,
-  `Anchor`).
+- Engine-provided, reusable components stay in `Scripts/Assets/Components/` (`Paintable` and `Seat`; later, `Airfoil`).
 - Asset-specific scripts sit beside their scene in `build_assets/`: `build_assets/Advanced/Suspension.tscn` and
   `Suspension.cs`. Godot requires a script's file name to match its class, and asset scenes are PascalCase **(D1)**, so
   every `X.cs` pairs with its `X.tscn`. `AssetManager` only registers scenes, so the scripts don't disturb its scan.
@@ -151,8 +159,9 @@ Baja Builders did it (a model, two parts, and a constraint):
   piece's (its own, unless it has no colliders), and pieces without colliders ride with it. The handle keeps references
   to its pieces, so components never walk the tree after reparenting.
 - Godot's `exclude_nodes_from_collision` works per body, and an assembly is one body: a joint that keeps it on stops
-  everything on its two assemblies from colliding, not just its pieces. A joint whose pieces never touch (the
-  Suspension's plates) turns it off; per-piece exclusion for pieces that touch is on the roadmap.
+  everything on its two assemblies from colliding, not just its pieces. Every joint so far turns it off: the
+  Suspension's plates never touch, and a hinge's pieces keep a clearance (D16). Per-piece exclusion, for pieces that
+  must touch, is on the roadmap.
 - If a loop of welds puts both of a joint's pieces in one assembly, the joint would link a body to itself; it's skipped
   with a warning, as BB builds simply locked up.
 - `AssetManager` warns at startup about anything spawning would ignore: bodies other than `AssetPiece` children, joints
@@ -310,8 +319,8 @@ both to one simulator until they separate, and their collisions become real phys
   off. Snaps use the space hop (see the Jolt kinematic note), or a snapping proxy would shove nearby bodies.
 - **Testing:** Lua `set_net_sim(latency_ms?, jitter_ms?, loss?)` delays (in order) and drops this peer's incoming live
   state, creations and characters, to try poor connections without outside players.
-- Input masks: unreliable full masks on change plus a few repeats a second while held, controller -> host -> simulator.
-- Seats: reliable sit / leave messages; seated characters only send their flashlight.
+- Input masks: unreliable full masks on change, plus a few repeats a second, controller -> host -> simulator (section 8).
+- Seats: sitting and leaving are actions (section 9); seated characters only send their flashlight.
 
 Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):
 
@@ -356,8 +365,7 @@ promised.
 
 ## 7. Mechanisms and joints
 
-Most mechanisms only make sense with input, so they come after it; free hinges and springs (suspension) don't need it
-and may come earlier. Some glitching may be accepted at first.
+The Suspension, the Free Hinge, the Motor, and the Servo are built; the Piston comes next.
 
 - A **mechanism** is a set of assemblies linked by joints. A joint can't span two machines, but each plot's creation has
   one simulator (and arbitration merges close plots), so no joint ever does; mechanisms only matter once simulators can
@@ -368,13 +376,13 @@ and may come earlier. Some glitching may be accepted at first.
 | Asset      | Joint                                      | Driven by                                          |
 |------------|--------------------------------------------|----------------------------------------------------|
 | Free Hinge | `HingeJoint3D`, free                       | -                                                  |
-| Motor      | `HingeJoint3D`, free until driven          | Input sets the target velocity; torque from props  |
+| Motor      | `HingeJoint3D`, free until driven          | The keys set the target velocity, under its torque |
 | Servo      | `HingeJoint3D` with its motor and limits   | A P-controller toward its limit, or back to center |
 | Piston     | `Generic6DOFJoint3D`, one linear axis      | A linear motor toward an extension target          |
-| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel (done)     |
+| Suspension | `Generic6DOFJoint3D`, a linear spring axis | Authored stiffness, damping, and travel            |
 
-- Strengths are asset properties (non-underscore, so the future PropertyTool edits them), scaled for the default density
-  (125 kg/m3).
+- Strengths are asset properties (non-underscore, so the PropertyTool edits them), scaled for the default density (125
+  kg/m3).
 - Joint stability suffers at large mass ratios, worst when a light link joins heavy bodies (a wheel on a motor on a
   suspension). Jolt's velocity steps stiffen every joint at no measurable cost, and light wheels keep the ratios low;
   lowering every density instead makes joints worse, as their torques and springs stay as strong.

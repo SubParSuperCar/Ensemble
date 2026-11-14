@@ -64,7 +64,7 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(log_wan_ip4_addr), log_wan_ip4_addr), "",
 			"Logs this network's public IPv4 address (asks api.ipify.org)"),
 		(new LuaFunction(nameof(perf_mod), perf_mod), "render_scale?",
-			"Turns off costly effects (antialiasing, sky, terrain, lights, shading), optionally rendering 3D smaller"),
+			"Turns off costly effects (antialiasing, sky, ocean, lights, shading), optionally rendering 3D smaller"),
 		(new LuaFunction(nameof(print), print), "...", "Logs its arguments, showing tables' contents"),
 		(new LuaFunction(nameof(quit), quit), "force?", "Quits the game (force skips the shutdown sequence)"),
 		(new LuaFunction(nameof(redo), redo), "", "Redoes the last undone tool edit"),

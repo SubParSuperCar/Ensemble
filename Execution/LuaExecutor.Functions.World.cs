@@ -24,6 +24,7 @@ public static partial class LuaExecutor
 	private const double DefaultStressTestSeconds = 5d;
 
 	private static readonly StringName Sky3DEnabledProperty = "sky3d_enabled";
+	private static readonly StringName OceanEnabledProperty = "ocean_enabled";
 	private static readonly StringName GameTimeEnabledProperty = "game_time_enabled";
 	private static readonly StringName SystemSyncProperty = "system_sync";
 	private static readonly StringName CurrentTimeProperty = "current_time";
@@ -153,7 +154,7 @@ public static partial class LuaExecutor
 			}
 
 			if (world.GetNodeOrNull<Node3D>(TerrainPath) is { } terrain)
-				terrain.Call("ocean_enabled", false);
+				terrain.Set(OceanEnabledProperty, false);
 		}
 
 		Log.Information(

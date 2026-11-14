@@ -2,7 +2,7 @@
 
 A build asset is a Godot scene: a model, a few colliders, and, for moving parts, ordinary Godot joints. Most assets need
 no code. This page covers how to make one and try it in the game, and lists the art and audio Ensemble still needs. To
-set up the project first, see [**CONTRIBUTING.md**](/.github/CONTRIBUTING.md).
+set up the project first, see [**CONTRIBUTING.md**](./CONTRIBUTING.md).
 
 ## The Scene
 
@@ -103,6 +103,6 @@ starting something large, so two people don't make the same thing.
 - **A map.** Terrain is [Terrain3D](https://github.com/TokisanGames/Terrain3D): heightmaps, textures, and ideas for a
   world with flat building space, roads, ramps, and something to drive toward are all welcome.
 
-Contributed assets are licensed under CC BY-NC-SA 4.0 like the rest (see [**LICENSE.md**](/LICENSE.md)), and their
+Contributed assets are licensed under CC BY-NC-SA 4.0 like the rest (see [**LICENSE.md**](../LICENSE.md)), and their
 authors are credited in the README. Only submit work that is your own, or that its license lets us share on those terms,
 and say which.

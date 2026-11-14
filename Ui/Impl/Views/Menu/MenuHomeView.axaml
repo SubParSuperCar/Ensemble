@@ -16,7 +16,11 @@
                 ToolTip.Tip="Opens Ensemble's official GitHub repository page.&#x0a;Feel free to star it and/or contribute! :)">
 
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <PathIcon Data="{StaticResource GitHubIcon}" Width="20" Height="20" />
+                    <PathIcon
+                        Data="{StaticResource GitHubIcon}"
+                        Width="20" Height="20"
+                        Foreground="{DynamicResource ThemeForegroundBrush}" />
+
                     <TextBlock Text="GitHub" />
                 </StackPanel>
             </HyperlinkButton>
@@ -26,7 +30,11 @@
                 ToolTip.Tip="Opens Ensemble's itch.io page.&#x0a;The itch app keeps your copy up to date.">
 
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <PathIcon Data="{StaticResource ItchIcon}" Width="20" Height="20" />
+                    <PathIcon
+                        Data="{StaticResource ItchIcon}"
+                        Width="20" Height="20"
+                        Foreground="{DynamicResource ThemeForegroundBrush}" />
+
                     <TextBlock Text="itch.io" />
                 </StackPanel>
             </HyperlinkButton>

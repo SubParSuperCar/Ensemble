@@ -19,6 +19,12 @@ uniform float metallic : hint_range(0.0, 1.0) = 0.0;
 uniform float opacity : hint_range(0.0, 1.0) = 1.0;
 #endif
 
+#ifdef FILL
+#include "res://shaders/highlight_fill.gdshaderinc"
+
+varying vec3 lab;
+#endif
+
 // From the bottom of the tube to its top
 instance uniform float helix_length = 1.0;
 
@@ -46,14 +52,23 @@ void vertex()
 
 	VERTEX = center + tube_radius * offset;
 	NORMAL = offset;
+
+#ifdef FILL
+	lab = axial_lab(MODEL_NORMAL_MATRIX * NORMAL);
+#endif
 }
 
 void fragment()
 {
+#ifdef FILL
+	ALBEDO = fill_albedo(lab);
+	ALPHA = fill_alpha();
+#else
 	ALBEDO = color;
 	ROUGHNESS = roughness;
 	METALLIC = metallic;
 #ifdef TRANSLUCENT
 	ALPHA = opacity;
+#endif
 #endif
 }

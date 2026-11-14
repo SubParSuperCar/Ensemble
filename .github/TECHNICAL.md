@@ -489,9 +489,10 @@ graph LR
   meshes through their material overlay, so only its geometry is tinted, never the space around it. `AxialHighlight`
   colors both by axis (each surface by the axes it faces, blended in Oklab, and each edge fading in from white), and
   `SolidHighlight` with one tint. Either can dash its edges into marching ants, which selections use, or pulse its
-  opacity, which the hovered instance does. Only one overlay fits a mesh, so the highlight shown last fills it. They opt
-  out of physics interpolation, as they are placed between physics ticks. The local plot's outline rises from its grid
-  in the active tool's color, fading in and out as it moves.
+  opacity, which the hovered instance does. Only one overlay fits a mesh, so the highlight shown last fills it. A shader
+  that moves vertices names a fill variant in its `fill_shader` metadata (such as the coil's, `helix_fill.gdshader`),
+  as an overlay must move them alike. They opt out of physics interpolation, as they are placed between physics ticks.
+  The local plot's outline rises from its grid in the active tool's color, fading in and out as it moves.
 
 ---
 

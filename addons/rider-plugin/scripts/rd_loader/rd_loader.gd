@@ -20,7 +20,8 @@ func _exit_tree() -> void:
 		_restart_dialog = null
 
 func _install_path_to_rd_path(rider_path: String) -> String:
-	var godot_rd_base: String = rider_path.get_base_dir().get_base_dir().path_join("plugins").path_join("rider-godot").path_join("godot-rd")
+	var godot_rd_base: String = rider_path.get_base_dir().get_base_dir().path_join("plugins").path_join(
+		"rider-godot").path_join("godot-rd")
 	var gdextension_path: String = godot_rd_base.path_join("godot-rd.gdextension")
 	return gdextension_path
 
@@ -47,28 +48,28 @@ func _on_restart_dialog_visibility_changed() -> void:
 
 func _restart_editor() -> void:
 	EditorInterface.restart_editor()
-	
+
 class VersionCheckResult:
-	var minimum_version: String 
+	var minimum_version: String
 	var met_requirement: bool
-	
+
 	func _init(minimum_version: String, met_requirement: bool) -> void:
 		self.minimum_version = minimum_version
 		self.met_requirement = met_requirement
-	
+
 func check_gdextension_version(gdextension_path: String) -> VersionCheckResult:
 	var config := ConfigFile.new()
 	var error := config.load(gdextension_path)
 	if error != OK:
 		print_verbose("[RIDER RD] failed to load gdextension file as config to check its version.")
-		return VersionCheckResult.new("",false)
+		return VersionCheckResult.new("", false)
 
-	var minimum := str(config.get_value("configuration", "compatibility_minimum", ""))	
-	
+	var minimum := str(config.get_value("configuration", "compatibility_minimum", ""))
+
 	if minimum.is_empty():
 		print_verbose("[RIDER RD] failed to check minimum version, because it is missing.")
 		return VersionCheckResult.new("", false)
-	
+
 	return VersionCheckResult.new(minimum, engine_meets_minimum(minimum))
 
 func engine_meets_minimum(required: String) -> bool:
@@ -93,9 +94,10 @@ func engine_meets_minimum(required: String) -> bool:
 	return true
 
 
-func load_rd_extension(rider_path: String) -> void :
+func load_rd_extension(rider_path: String) -> void:
 	if !FileAccess.file_exists(rider_path):
-		print_verbose("[RIDER RD] load rd extension called on non existing path " + rider_path + ", perhaps the rider installation got deleted?")
+		print_verbose(
+			"[RIDER RD] load rd extension called on non existing path " + rider_path + ", perhaps the rider installation got deleted?")
 		return
 	var gdextension_path: String = _install_path_to_rd_path(rider_path)
 	var gdextension_exists: bool = FileAccess.file_exists(gdextension_path)
@@ -112,16 +114,19 @@ func load_rd_extension(rider_path: String) -> void :
 	var version_check := check_gdextension_version(gdextension_path)
 	if !version_check.met_requirement:
 		if version_check.minimum_version.is_empty():
-			push_warning("[RIDER RD] Failed to initialize communication between Godot and Rider, some features will not be available.")
-		else: 
+			push_warning(
+				"[RIDER RD] Failed to initialize communication between Godot and Rider, some features will not be available.")
+		else:
 			var current := Engine.get_version_info()
 			var current_str := "%s.%s.%s" % [current.major, current.minor, current.patch]
 			push_warning("[RIDER RD] Failed to initialize communication between Godot and Rider. " +
-				"The Rider RD extension is compatible with Godot %s or later, but the current version is %s." % [version_check.minimum_version, current_str]  )
+				"The Rider RD extension is compatible with Godot %s or later, but the current version is %s." % [
+				version_check.minimum_version, current_str])
 		return
 	# loading the same extension twice would fails with `GDExtensionManager.LOAD_STATUS_ALREADY_LOADED`
 	if (!GDExtensionManager.is_extension_loaded(gdextension_path)
 			&& GDExtensionManager.load_extension(gdextension_path) != GDExtensionManager.LOAD_STATUS_OK):
-		push_warning("[RIDER RD] Failed to initialize communication between Godot and Rider, some features will not be available.")
+		push_warning(
+			"[RIDER RD] Failed to initialize communication between Godot and Rider, some features will not be available.")
 	else:
 		_loaded_rd_path = gdextension_path

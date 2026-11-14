@@ -32,7 +32,7 @@ func _enter_tree() -> void:
 
 	_locator_service = RiderLocatorService.new()
 	_rd_loader = RdLoader.new()
-	
+
 	# add_child to get access to _enter/exit_tree
 	add_child(_rd_loader)
 	_locator_service.start_search()

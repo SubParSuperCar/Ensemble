@@ -6,7 +6,7 @@ const EXTERNAL_EDITOR_SETTING: String = "text_editor/external/editor"
 # this is Godot setting
 const EXEC_PATH_SETTING: String = "text_editor/external/exec_path"
 
-# Godot doesn't provide a  nice way to define a static signal, 
+# Godot doesn't provide a  nice way to define a static signal,
 # so this is a workaround
 class RiderInstallSignalEmitter extends RefCounted:
 	signal rider_install_changed(rider_path: String)

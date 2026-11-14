@@ -92,7 +92,8 @@ public partial class LiveCreation : Node3D
 	private void KillLostAssemblies()
 	{
 		foreach (
-			var assembly in from assembly in _assemblies
+			var assembly in
+			from assembly in _assemblies
 			where !assembly.IsKilled
 			let transform = assembly.IsSimulated ? assembly.GlobalTransform : assembly.ProxyTransform
 			where transform.Origin.Y < KillHeight || !transform.IsFinite()

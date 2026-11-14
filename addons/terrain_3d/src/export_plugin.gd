@@ -15,29 +15,29 @@ var _hash: String
 func _get_name() -> String:
 	return "Terrain3DExportPlugin"
 
-	
+
 func _begin_customize_resources(platform: EditorExportPlatform, features: PackedStringArray) -> bool:
 	# Godot caches exports based on this hash, so ensure we update on every version minimum
 	_hash = plugin.terrain.get_version()
 	for feat: String in features:
 		_hash += feat
 	_hash += platform.to_string()
-	return false # Won't call _customize_resource()
-	
-	
+	return false  # Won't call _customize_resource()
+
+
 func _customize_resource(resource: Resource, path: String) -> Resource:
 	#if resource is Terrain3DRegion:
-		#var region: Terrain3DRegion = resource.duplicate(true)
-		#if region.compressed_color_map != null:
-			## Read only compressed color map
-			#region.clear_color_map()
-		#else:
-			## Editable, uncompressed color map
-			#region.clear_compressed_color_map()
-		#return region
-	return null # No changes
-	
-	
+	#var region: Terrain3DRegion = resource.duplicate(true)
+	#if region.compressed_color_map != null:
+	## Read only compressed color map
+	#region.clear_color_map()
+	#else:
+	## Editable, uncompressed color map
+	#region.clear_compressed_color_map()
+	#return region
+	return null  # No changes
+
+
 func _get_customization_configuration_hash() -> int:
 	return hash(_hash)
 	# DEVELOPMENT ONLY: Forces Godot to skip the cache and run every time

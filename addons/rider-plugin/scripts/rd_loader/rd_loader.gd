@@ -42,7 +42,7 @@ func _show_restart_dialog(has_rd_available: bool) -> void:
 	_restart_dialog.popup_exclusive_centered(self)
 
 func _on_restart_dialog_visibility_changed() -> void:
-	if _restart_dialog != null && !_restart_dialog.visible:
+	if _restart_dialog != null && ! _restart_dialog.visible:
 		_restart_dialog.queue_free()
 		_restart_dialog = null
 
@@ -95,7 +95,7 @@ func engine_meets_minimum(required: String) -> bool:
 
 
 func load_rd_extension(rider_path: String) -> void:
-	if !FileAccess.file_exists(rider_path):
+	if ! FileAccess.file_exists(rider_path):
 		print_verbose(
 			"[RIDER RD] load rd extension called on non existing path " + rider_path + ", perhaps the rider installation got deleted?")
 		return
@@ -106,13 +106,13 @@ func load_rd_extension(rider_path: String) -> void:
 	if _needs_restart:
 		_show_restart_dialog(gdextension_exists)
 		return
-	if !_loaded_rd_path.is_empty():
+	if ! _loaded_rd_path.is_empty():
 		# loading multiple RD extensions would make it so the port file
 		# for which Rider listens, would get written to by both extensions.
 		_show_restart_dialog(gdextension_exists)
 		return
 	var version_check := check_gdextension_version(gdextension_path)
-	if !version_check.met_requirement:
+	if ! version_check.met_requirement:
 		if version_check.minimum_version.is_empty():
 			push_warning(
 				"[RIDER RD] Failed to initialize communication between Godot and Rider, some features will not be available.")
@@ -124,8 +124,8 @@ func load_rd_extension(rider_path: String) -> void:
 				version_check.minimum_version, current_str])
 		return
 	# loading the same extension twice would fails with `GDExtensionManager.LOAD_STATUS_ALREADY_LOADED`
-	if (!GDExtensionManager.is_extension_loaded(gdextension_path)
-			&& GDExtensionManager.load_extension(gdextension_path) != GDExtensionManager.LOAD_STATUS_OK):
+	if (! GDExtensionManager.is_extension_loaded(gdextension_path)
+		&& GDExtensionManager.load_extension(gdextension_path) != GDExtensionManager.LOAD_STATUS_OK):
 		push_warning(
 			"[RIDER RD] Failed to initialize communication between Godot and Rider, some features will not be available.")
 	else:

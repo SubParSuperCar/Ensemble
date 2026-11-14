@@ -8,7 +8,7 @@
 // 	draw_hex_grid(uv2, _region_texel_size, w_normal, ALBEDO);
 
 mat2 rotate2d(float _angle) {
-	return mat2(vec2(cos(_angle),-sin(_angle)), vec2(sin(_angle), cos(_angle)));
+	return mat2(vec2(cos(_angle), -sin(_angle)), vec2(sin(_angle), cos(_angle)));
 }
 
 void draw_hex_grid(vec2 uv, float texel_size, vec3 normal, inout vec3 albedo) {
@@ -41,9 +41,9 @@ void draw_hex_grid(vec2 uv, float texel_size, vec3 normal, inout vec3 albedo) {
 
 	// Find the hex center in UV space
 	vec2 hex_center = vec2(
-	    sqrt(3.0) * rounded.x + sqrt(3.0) / 2.0 * rounded.z,
-	    3.0 / 2.0 * rounded.z
-    );
+		sqrt(3.0) * rounded.x + sqrt(3.0) / 2.0 * rounded.z,
+		3.0 / 2.0 * rounded.z
+	);
 
 	// Relative position within the hex
 	vec2 local_pos = guv - hex_center;

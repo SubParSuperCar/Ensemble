@@ -1,5 +1,5 @@
 # Copyright © 2025 Cory Petkovsek, Roope Palmroos, and Contributors.
-class_name Terrain3DListEntry 
+class_name Terrain3DListEntry
 extends MarginContainer
 
 signal changed(resource: Resource)
@@ -17,8 +17,8 @@ var _thumbnail: Texture2D
 var drop_data: bool = false
 var is_hovered: bool = false
 var is_selected: bool = false
-var enabled: bool = false : set = set_enabled
-var highlighted: bool = false : set = set_highlighted
+var enabled: bool = false: set = set_enabled
+var highlighted: bool = false: set = set_highlighted
 
 var name_label: Label
 var count_label: Label
@@ -26,7 +26,7 @@ var button_row: FlowContainer
 var button_enabled: TextureButton
 var button_highlight: TextureButton
 var button_edit: TextureButton
-var spacer: Control 
+var spacer: Control
 var button_clear: TextureButton
 
 @onready var focus_style: StyleBox = get_theme_stylebox("focus", "Button").duplicate()
@@ -60,16 +60,16 @@ func _ready() -> void:
 
 func setup_buttons() -> void:
 	destroy_buttons()
-	
+
 	button_row = FlowContainer.new()
-	button_enabled = TextureButton.new() 
-	button_highlight = TextureButton.new() 
-	button_edit = TextureButton.new() 
+	button_enabled = TextureButton.new()
+	button_highlight = TextureButton.new()
+	button_edit = TextureButton.new()
 	spacer = Control.new()
 	button_clear = TextureButton.new()
-	
+
 	var icon_size: Vector2 = Vector2(12, 12)
-	
+
 	button_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button_row.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	button_row.alignment = FlowContainer.ALIGNMENT_CENTER
@@ -88,19 +88,19 @@ func setup_buttons() -> void:
 		button_enabled.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		button_enabled.pressed.connect(_on_enable_clicked)
 		button_row.add_child(button_enabled, true)
-		
+
 	button_highlight.set_texture_normal(highlight_icon)
 	button_highlight.set_custom_minimum_size(icon_size)
 	button_highlight.set_h_size_flags(Control.SIZE_SHRINK_END)
 	button_highlight.set_visible(resource != null)
-	button_highlight.tooltip_text = "Highlight " + ( "Instances" if type == Terrain3DAssets.TYPE_MESH else "Texture" )
+	button_highlight.tooltip_text = "Highlight " + ("Instances" if type == Terrain3DAssets.TYPE_MESH else "Texture")
 	button_highlight.toggle_mode = true
 	button_highlight.mouse_filter = Control.MOUSE_FILTER_PASS
 	button_highlight.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	button_highlight.set_pressed_no_signal(highlighted)
 	button_highlight.pressed.connect(_on_highlight_clicked)
 	button_row.add_child(button_highlight, true)
-	
+
 	button_edit.set_texture_normal(edit_icon)
 	button_edit.set_custom_minimum_size(icon_size)
 	button_edit.set_h_size_flags(Control.SIZE_SHRINK_END)
@@ -114,7 +114,7 @@ func setup_buttons() -> void:
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	spacer.mouse_filter = Control.MOUSE_FILTER_PASS
 	button_row.add_child(spacer, true)
-	
+
 	button_clear.set_texture_normal(clear_icon)
 	button_clear.set_custom_minimum_size(icon_size)
 	button_clear.set_h_size_flags(Control.SIZE_SHRINK_END)
@@ -124,7 +124,7 @@ func setup_buttons() -> void:
 	button_clear.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	button_clear.pressed.connect(_on_clear_clicked)
 	button_row.add_child(button_clear, true)
-	
+
 
 func destroy_buttons() -> void:
 	if button_row:
@@ -170,7 +170,7 @@ func setup_label() -> void:
 	name_label.add_theme_constant_override("shadow_offset_y", 1)
 	name_label.visible = false
 	name_label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS	
+	name_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	add_child(name_label, true)
 
 
@@ -189,7 +189,7 @@ func setup_count_label() -> void:
 	count_label.add_theme_constant_override("shadow_offset_y", 1)
 	add_child(count_label, true)
 	var mesh_resource: Terrain3DMeshAsset = resource as Terrain3DMeshAsset
-	if not mesh_resource: 
+	if not mesh_resource:
 		return
 	mesh_resource.instance_count_changed.connect(update_count_label)
 	update_count_label()
@@ -197,7 +197,7 @@ func setup_count_label() -> void:
 
 func update_count_label() -> void:
 	if not type == Terrain3DAssets.AssetType.TYPE_MESH or \
-			( resource and not resource.is_enabled() ):
+		(resource and not resource.is_enabled()):
 		count_label.text = ""
 		return
 	var mesh_resource: Terrain3DMeshAsset = resource as Terrain3DMeshAsset
@@ -215,7 +215,7 @@ func _notification(p_what) -> void:
 			# Hide spacer if icons are crowding small textures
 			spacer.visible = size.x > 94. or type == Terrain3DAssets.TYPE_TEXTURE
 			var rect: Rect2 = Rect2(Vector2.ZERO, get_size())
-			if !resource:
+			if ! resource:
 				button_row.visible = false
 				draw_style_box(background, rect)
 				draw_texture(add_icon, (get_size() / 2) - (add_icon.get_size() / 2))
@@ -230,7 +230,7 @@ func _notification(p_what) -> void:
 				if resource is Terrain3DTextureAsset:
 					self_modulate = resource.get_highlight_color() if highlighted else resource.get_albedo_color()
 				else:
-					button_enabled.set_pressed_no_signal(!resource.is_enabled())
+					button_enabled.set_pressed_no_signal(! resource.is_enabled())
 					self_modulate = resource.get_highlight_color()
 				button_highlight.self_modulate = Color("FC7F7F") if highlighted else Color.WHITE
 			if drop_data:
@@ -262,7 +262,7 @@ func _gui_input(p_event: InputEvent) -> void:
 			match p_event.get_button_index():
 				MOUSE_BUTTON_LEFT:
 					# If `Add new` is clicked
-					if !resource:
+					if ! resource:
 						if type == Terrain3DAssets.TYPE_TEXTURE:
 							set_edited_resource(Terrain3DTextureAsset.new(), false)
 						else:
@@ -286,7 +286,7 @@ func _can_drop_data(p_at_position: Vector2, p_data: Variant) -> bool:
 			drop_data = true
 	return drop_data
 
-	
+
 func _drop_data(p_at_position: Vector2, p_data: Variant) -> void:
 	if typeof(p_data) == TYPE_DICTIONARY:
 		var res: Resource = load(p_data.files[0])
@@ -303,7 +303,7 @@ func _drop_data(p_at_position: Vector2, p_data: Variant) -> void:
 			set_edited_resource(res, false)
 		elif res is PackedScene and type == Terrain3DAssets.TYPE_MESH:
 			if not resource:
-				resource = Terrain3DMeshAsset.new()		
+				resource = Terrain3DMeshAsset.new()
 			set_edited_resource(resource, false)
 			resource.set_scene_file(res)
 		elif res is Terrain3DMeshAsset and type == Terrain3DAssets.TYPE_MESH:
@@ -311,14 +311,14 @@ func _drop_data(p_at_position: Vector2, p_data: Variant) -> void:
 				res.id = resource.id
 			set_edited_resource(res, false)
 		else:
-			push_warning("Dropped invalid resource type, this dock is for %s" % 
+			push_warning("Dropped invalid resource type, this dock is for %s" %
 				["textures" if type == Terrain3DAssets.TYPE_TEXTURE else "meshes"])
 			return
 		clicked.emit()
 		edit_clicked.emit(self)
 
 
-func set_edited_resource(p_res: Resource, p_no_signal: bool = true) -> void:
+func set_edited_resource(p_res: Resource, p_no_signal: bool=true) -> void:
 	resource = p_res
 	if resource:
 		if not resource.setting_changed.is_connected(_on_resource_changed):
@@ -334,13 +334,13 @@ func set_edited_resource(p_res: Resource, p_no_signal: bool = true) -> void:
 
 	if button_clear:
 		button_clear.set_visible(resource != null)
-		
+
 	queue_redraw()
 	if not p_no_signal:
 		changed.emit(resource)
 
 
-func _on_resource_changed(_value: int = 0) -> void:
+func _on_resource_changed(_value: int=0) -> void:
 	queue_redraw()
 	changed.emit(resource)
 
@@ -364,8 +364,8 @@ func set_selected(value: bool) -> void:
 func _on_clear_clicked() -> void:
 	if resource:
 		clear_clicked.emit(self)
-		
-		
+
+
 func clear() -> void:
 	if resource:
 		name_label.hide()
@@ -380,12 +380,12 @@ func _on_edit_clicked() -> void:
 func _on_enable_clicked() -> void:
 	if resource:
 		enable_clicked.emit(self)
-	
-	
+
+
 func toggle_enabled() -> void:
-	enabled = !enabled
-	
-	
+	enabled = ! enabled
+
+
 func set_enabled(value: bool) -> void:
 	enabled = value
 	if resource is Terrain3DMeshAsset:
@@ -398,7 +398,7 @@ func _on_highlight_clicked() -> void:
 
 
 func toggle_highlighted() -> void:
-	highlighted = !highlighted
+	highlighted = ! highlighted
 
 
 func set_highlighted(value: bool) -> void:
@@ -406,7 +406,7 @@ func set_highlighted(value: bool) -> void:
 	if resource:
 		resource.set_highlighted(highlighted)
 	queue_redraw()
-	
+
 
 func _format_number(num: int) -> String:
 	var is_negative: bool = num < 0

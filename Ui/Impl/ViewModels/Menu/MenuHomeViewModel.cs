@@ -44,7 +44,6 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	private void OnSessionFailed(string reason) =>
 		Notice = $"Session ended: {TextElements.Truncate(reason, MaxReasonLength)}";
 
-	// TODO: This util helper should be pulled out of here, as more UI may convert Godot res images to Avalonia bitmaps
 	private static Bitmap? LoadBitmap(string path)
 	{
 		using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);

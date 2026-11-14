@@ -5,7 +5,7 @@ extends RefCounted
 const WINDOW_SCENE: String = "res://addons/terrain_3d/menu/channel_packer.tscn"
 const TEMPLATE_PATH: String = "res://addons/terrain_3d/menu/channel_packer_import_template.txt"
 const DRAG_DROP_SCRIPT: String = "res://addons/terrain_3d/menu/channel_packer_dragdrop.gd"
-enum {
+enum { 
 	INFO,
 	WARN,
 	ERROR,
@@ -15,7 +15,8 @@ enum {
 	IMAGE_ALBEDO,
 	IMAGE_HEIGHT,
 	IMAGE_NORMAL,
-	IMAGE_ROUGHNESS
+	IMAGE_ROUGHNESS,
+	IMAGE_AO
 }
 
 var plugin: EditorPlugin
@@ -36,11 +37,13 @@ var height_channel: Array[Button]
 var height_channel_selected: int = 0
 var roughness_channel: Array[Button]
 var roughness_channel_selected: int = 0
+var occlusion_channel: Array[Button]
+var occlusion_channel_selected: int = 0
 var last_opened_directory: String
 var last_saved_directory: String
 var packing_albedo: bool = false
 var queue_pack_normal_roughness: bool = false
-var images: Array[Image] = [null, null, null, null]
+var images: Array[Image] = [null, null, null, null, null]
 var status_label: Label
 var no_op: Callable = func(): pass
 var last_file_selected_fn: Callable = no_op
@@ -53,72 +56,97 @@ func pack_textures_popup() -> void:
 		window.grab_focus()
 		window.move_to_center()
 		return
+	
+	# Set background color to match theme
 	window = (load(WINDOW_SCENE) as PackedScene).instantiate()
+	var base_color: Color = plugin.editor_settings.get_setting("interface/theme/base_color")
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color = base_color
+	window.get_node("PanelContainer").set("theme_override_styles/panel", panel_style)
+
+	# Connect button signals
+	lumin_height_button = window.get_node("%LuminanceAsHeightButton") as Button
+	
+	invert_height_checkbox = window.get_node("%ConvertDepthToHeight") as CheckBox
+	normalize_height_checkbox = window.get_node("%NormalizeHeight") as CheckBox
+
+	invert_green_checkbox = window.get_node("%InvertGreenChannelCheckBox") as CheckBox
+	align_normals_checkbox = window.get_node("%AlignNormalsCheckBox") as CheckBox
+
+	invert_smooth_checkbox = window.get_node("%InvertSmoothCheckBox") as CheckBox
+
+	resize_toggle_checkbox = window.get_node("%ResizeToggle") as CheckBox
+	resize_option_box = window.get_node("%ResizeOptionBox") as SpinBox
+	resize_toggle_checkbox.toggled.connect(func(val:bool) -> void: resize_option_box.set_visible(val))
+	generate_mipmaps_checkbox = window.get_node("%GenerateMipmapsCheckBox") as CheckBox
+	high_quality_checkbox = window.get_node("%HighQualityCheckBox") as CheckBox
+
+	window.get_node("%PackButton").pressed.connect(_on_pack_button_pressed)
+	status_label = window.get_node("%StatusLabel") as Label
+	window.get_node("%CloseButton").pressed.connect(_on_close_requested)
 	window.close_requested.connect(_on_close_requested)
-	window.window_input.connect(func(event: InputEvent):
+	window.window_input.connect(func(event:InputEvent):
 		if event is InputEventKey:
 			if event.pressed and event.keycode == KEY_ESCAPE:
 				_on_close_requested()
-	)
-	window.find_child("CloseButton").pressed.connect(_on_close_requested)
-
-	status_label = window.find_child("StatusLabel") as Label
-	invert_green_checkbox = window.find_child("InvertGreenChannelCheckBox") as CheckBox
-	invert_smooth_checkbox = window.find_child("InvertSmoothCheckBox") as CheckBox
-	invert_height_checkbox = window.find_child("ConvertDepthToHeight") as CheckBox
-	normalize_height_checkbox = window.find_child("NormalizeHeight") as CheckBox
-	lumin_height_button = window.find_child("LuminanceAsHeightButton") as Button
-	generate_mipmaps_checkbox = window.find_child("GenerateMipmapsCheckBox") as CheckBox
-	high_quality_checkbox = window.find_child("HighQualityCheckBox") as CheckBox
-	align_normals_checkbox = window.find_child("AlignNormalsCheckBox") as CheckBox
-	resize_toggle_checkbox = window.find_child("ResizeToggle") as CheckBox
-	resize_option_box = window.find_child("ResizeOptionButton") as SpinBox
+		)
+		
 	height_channel = [
-		window.find_child("HeightChannelR") as Button,
-		window.find_child("HeightChannelG") as Button,
-		window.find_child("HeightChannelB") as Button,
-		window.find_child("HeightChannelA") as Button
+		window.get_node("%HeightChannelR") as Button,
+		window.get_node("%HeightChannelG") as Button,
+		window.get_node("%HeightChannelB") as Button,
+		window.get_node("%HeightChannelA") as Button
 	]
 	roughness_channel = [
-		window.find_child("RoughnessChannelR") as Button,
-		window.find_child("RoughnessChannelG") as Button,
-		window.find_child("RoughnessChannelB") as Button,
-		window.find_child("RoughnessChannelA") as Button
+		window.get_node("%RoughnessChannelR") as Button,
+		window.get_node("%RoughnessChannelG") as Button,
+		window.get_node("%RoughnessChannelB") as Button,
+		window.get_node("%RoughnessChannelA") as Button
 	]
-
+	occlusion_channel = [
+		window.get_node("%AOChannelR") as Button,
+		window.get_node("%AOChannelG") as Button,
+		window.get_node("%AOChannelB") as Button,
+		window.get_node("%AOChannelA") as Button
+	]
+	
 	height_channel[0].pressed.connect(func() -> void: height_channel_selected = 0)
 	height_channel[1].pressed.connect(func() -> void: height_channel_selected = 1)
 	height_channel[2].pressed.connect(func() -> void: height_channel_selected = 2)
 	height_channel[3].pressed.connect(func() -> void: height_channel_selected = 3)
-
+	
 	roughness_channel[0].pressed.connect(func() -> void: roughness_channel_selected = 0)
 	roughness_channel[1].pressed.connect(func() -> void: roughness_channel_selected = 1)
 	roughness_channel[2].pressed.connect(func() -> void: roughness_channel_selected = 2)
 	roughness_channel[3].pressed.connect(func() -> void: roughness_channel_selected = 3)
-
+	
+	occlusion_channel[0].pressed.connect(func() -> void: occlusion_channel_selected = 0)
+	occlusion_channel[1].pressed.connect(func() -> void: occlusion_channel_selected = 1)
+	occlusion_channel[2].pressed.connect(func() -> void: occlusion_channel_selected = 2)
+	occlusion_channel[3].pressed.connect(func() -> void: occlusion_channel_selected = 3)
+	
 	plugin.add_child(window)
 	_init_file_dialogs()
-
+	
 	# the dialog disables the parent window "on top" so, restore it after 1 frame to alow the dialog to clear.
-	var set_on_top_fn: Callable = func(_file: String="") -> void:
+	var set_on_top_fn: Callable = func(_file: String = "") -> void:
 		await RenderingServer.frame_post_draw
 		window.always_on_top = true
 	save_file_dialog.file_selected.connect(set_on_top_fn)
 	save_file_dialog.canceled.connect(set_on_top_fn)
 	open_file_dialog.file_selected.connect(set_on_top_fn)
 	open_file_dialog.canceled.connect(set_on_top_fn)
-
-	_init_texture_picker(window.find_child("AlbedoVBox"), IMAGE_ALBEDO)
-	_init_texture_picker(window.find_child("HeightVBox"), IMAGE_HEIGHT)
-	_init_texture_picker(window.find_child("NormalVBox"), IMAGE_NORMAL)
-	_init_texture_picker(window.find_child("RoughnessVBox"), IMAGE_ROUGHNESS)
-
-	(window.find_child("PackButton") as Button).pressed.connect(_on_pack_button_pressed)
+	
+	_init_texture_picker(window.get_node("%AlbedoVBox"), IMAGE_ALBEDO)
+	_init_texture_picker(window.get_node("%HeightVBox"), IMAGE_HEIGHT)
+	_init_texture_picker(window.get_node("%NormalVBox"), IMAGE_NORMAL)
+	_init_texture_picker(window.get_node("%RoughnessVBox"), IMAGE_ROUGHNESS)
+	_init_texture_picker(window.get_node("%AOVBox"), IMAGE_AO)
 
 
 func _on_close_requested() -> void:
 	last_file_selected_fn = no_op
-	images = [null, null, null, null]
+	images = [null, null, null, null, null]
 	window.queue_free()
 	window = null
 
@@ -134,7 +162,7 @@ func _init_file_dialogs() -> void:
 	#save_file_dialog.transient = false
 	#save_file_dialog.exclusive = false
 	#save_file_dialog.popup_window = true
-
+	
 	open_file_dialog = EditorFileDialog.new()
 	open_file_dialog.set_filters(PackedStringArray(
 		["*.png", "*.bmp", "*.exr", "*.hdr", "*.jpg", "*.jpeg", "*.tga", "*.svg", "*.webp", "*.ktx", "*.dds"]))
@@ -145,7 +173,7 @@ func _init_file_dialogs() -> void:
 	#open_file_dialog.transient = false
 	#open_file_dialog.exclusive = false
 	#open_file_dialog.popup_window = true
-
+	
 	window.add_child(save_file_dialog)
 	window.add_child(open_file_dialog)
 
@@ -157,7 +185,7 @@ func _init_texture_picker(p_parent: Node, p_image_index: int) -> void:
 	var texture_rect: TextureRect = p_parent.find_child("TextureRect") as TextureRect
 	var texture_button: Button = p_parent.find_child("TextureButton") as Button
 	texture_button.set_script(load(DRAG_DROP_SCRIPT) as GDScript)
-
+	
 	var set_channel_fn: Callable = func(used_channels: int) -> void:
 		var channel_count: int = 4
 		# enum Image.UsedChannels
@@ -176,7 +204,12 @@ func _init_texture_picker(p_parent: Node, p_image_index: int) -> void:
 				roughness_channel[i].visible = i < channel_count
 			roughness_channel[0].button_pressed = true
 			roughness_channel[0].pressed.emit()
-
+		elif p_image_index == IMAGE_AO:
+			for i in 4:
+				occlusion_channel[i].visible = i < channel_count
+			occlusion_channel[0].button_pressed = true
+			occlusion_channel[0].pressed.emit()
+	
 	var load_image_fn: Callable = func(path: String):
 		var image: Image = Image.new()
 		var error: int = OK
@@ -203,9 +236,9 @@ func _init_texture_picker(p_parent: Node, p_image_index: int) -> void:
 			_set_wh_labels(p_image_index, image.get_width(), image.get_height())
 			if p_image_index == IMAGE_NORMAL:
 				_set_normal_vector(image)
-			if p_image_index == IMAGE_HEIGHT or p_image_index == IMAGE_ROUGHNESS:
+			if p_image_index in [ IMAGE_HEIGHT, IMAGE_ROUGHNESS, IMAGE_AO ]:
 				set_channel_fn.call(image.detect_used_channels())
-
+	
 	var os_drop_fn: Callable = func(files: PackedStringArray) -> void:
 		# OS drag drop holds mouse focus until released,
 		# Get mouse pos and check directly if inside texture_rect
@@ -217,42 +250,42 @@ func _init_texture_picker(p_parent: Node, p_image_index: int) -> void:
 			else:
 				line_edit.text = files[0]
 				load_image_fn.call(files[0])
-
+	
 	var godot_drop_fn: Callable = func(path: String) -> void:
 		path = ProjectSettings.globalize_path(path)
 		line_edit.text = path
 		load_image_fn.call(path)
-
+	
 	var open_fn: Callable = func() -> void:
 		open_file_dialog.current_path = last_opened_directory
 		if last_file_selected_fn != no_op:
 			open_file_dialog.file_selected.disconnect(last_file_selected_fn)
-		last_file_selected_fn = func(path: String) -> void:
+		last_file_selected_fn = func(path: String) -> void: 
 			line_edit.text = path
 			load_image_fn.call(path)
 		open_file_dialog.file_selected.connect(last_file_selected_fn)
 		open_file_dialog.popup_centered_ratio()
-
+	
 	var line_edit_submit_fn: Callable = func(path: String) -> void:
 		line_edit.text = path
 		load_image_fn.call(path)
-
+	
 	var clear_fn: Callable = func() -> void:
 		line_edit.text = ""
 		texture_rect.texture = null
 		images[p_image_index] = null
 		_set_wh_labels(p_image_index, -1, -1)
-
+	
 	line_edit.text_submitted.connect(line_edit_submit_fn)
 	file_pick_button.pressed.connect(open_fn)
 	texture_button.pressed.connect(open_fn)
 	clear_button.pressed.connect(clear_fn)
 	texture_button.dropped.connect(godot_drop_fn)
 	window.files_dropped.connect(os_drop_fn)
-
+	
 	if p_image_index == IMAGE_HEIGHT:
 		var lumin_fn: Callable = func() -> void:
-			if ! images[IMAGE_ALBEDO]:
+			if !images[IMAGE_ALBEDO]:
 				_show_message(ERROR, "Albedo Image Required for Operation")
 			else:
 				line_edit.text = "Generated Height"
@@ -276,24 +309,17 @@ func _init_texture_picker(p_parent: Node, p_image_index: int) -> void:
 
 
 func _set_wh_labels(p_image_index: int, width: int, height: int) -> void:
-	var w: String = ""
-	var h: String = ""
-	if width > 0 and height > 0:
-		w = "w: " + str(width)
-		h = "h: " + str(height)
 	match p_image_index:
 		0:
-			window.find_child("AlbedoW").text = w
-			window.find_child("AlbedoH").text = h
+			window.get_node("%AlbedoSize").text = "(%d, %d)" % [ width, height ]
 		1:
-			window.find_child("HeightW").text = w
-			window.find_child("HeightH").text = h
+			window.get_node("%HeightSize").text = "(%d, %d)" % [ width, height ]
 		2:
-			window.find_child("NormalW").text = w
-			window.find_child("NormalH").text = h
+			window.get_node("%NormalSize").text = "(%d, %d)" % [ width, height ]
 		3:
-			window.find_child("RoughnessW").text = w
-			window.find_child("RoughnessH").text = h
+			window.get_node("%RoughnessSize").text = "(%d, %d)" % [ width, height ]
+		4:
+			window.get_node("%AOSize").text = "(%d, %d)" % [ width, height ]
 
 
 func _show_message(p_level: int, p_text: String) -> void:
@@ -305,7 +331,7 @@ func _show_message(p_level: int, p_text: String) -> void:
 		WARN:
 			push_warning("Terrain3DChannelPacker: " + p_text)
 			status_label.add_theme_color_override("font_color", Color(0.9, 0.9, 0))
-		ERROR, _:
+		ERROR,_:
 			push_error("Terrain3DChannelPacker: " + p_text)
 			status_label.add_theme_color_override("font_color", Color(0.9, 0, 0))
 
@@ -329,7 +355,7 @@ func _create_import_file(png_path: String) -> void:
 func _on_pack_button_pressed() -> void:
 	packing_albedo = images[IMAGE_ALBEDO] != null and images[IMAGE_HEIGHT] != null
 	var packing_normal_roughness: bool = images[IMAGE_NORMAL] != null and images[IMAGE_ROUGHNESS] != null
-
+	
 	if not packing_albedo and not packing_normal_roughness:
 		_show_message(WARN, "Please select an albedo and height texture or a normal and roughness texture")
 		return
@@ -350,14 +376,13 @@ func _on_save_file_selected(p_dst_path) -> void:
 	last_saved_directory = p_dst_path.get_base_dir() + "/"
 	var error: int
 	if packing_albedo:
-		error = _pack_textures(images[IMAGE_ALBEDO], images[IMAGE_HEIGHT], p_dst_path, false,
-			invert_height_checkbox.button_pressed, false, normalize_height_checkbox.button_pressed,
-			height_channel_selected)
+		error = _pack_textures(images[IMAGE_ALBEDO], images[IMAGE_HEIGHT], null, p_dst_path, false,
+		invert_height_checkbox.button_pressed, false, normalize_height_checkbox.button_pressed, height_channel_selected)
 	else:
-		error = _pack_textures(images[IMAGE_NORMAL], images[IMAGE_ROUGHNESS], p_dst_path,
+		error = _pack_textures(images[IMAGE_NORMAL], images[IMAGE_ROUGHNESS], images[IMAGE_AO], p_dst_path,
 			invert_green_checkbox.button_pressed, invert_smooth_checkbox.button_pressed,
-			align_normals_checkbox.button_pressed, false, roughness_channel_selected)
-
+			align_normals_checkbox.button_pressed, false, roughness_channel_selected, occlusion_channel_selected)
+	
 	if error == OK:
 		EditorInterface.get_resource_filesystem().scan()
 		if window.visible:
@@ -366,13 +391,13 @@ func _on_save_file_selected(p_dst_path) -> void:
 		# wait 1 extra frame, to ensure the UI is responsive.
 		await RenderingServer.frame_post_draw
 		window.show()
-
+	
 	if queue_pack_normal_roughness:
 		queue_pack_normal_roughness = false
 		packing_albedo = false
 		save_file_dialog.current_path = last_saved_directory + "packed_normal_roughness"
 		save_file_dialog.title = "Save Packed Normal/Roughness Texture"
-
+		
 		save_file_dialog.call_deferred("popup_centered_ratio")
 		save_file_dialog.call_deferred("grab_focus")
 
@@ -382,18 +407,18 @@ func _alignment_basis(normal: Vector3) -> Basis:
 	var v: Vector3 = normal.cross(up)
 	var c: float = normal.dot(up)
 	var k: float = 1.0 / (1.0 + c)
-
+	
 	var vxy: float = v.x * v.y * k
 	var vxz: float = v.x * v.z * k
 	var vyz: float = v.y * v.z * k
-
+	
 	return Basis(Vector3(v.x * v.x * k + c, vxy - v.z, vxz + v.y),
 		Vector3(vxy + v.z, v.y * v.y * k + c, vyz - v.x),
 		Vector3(vxz - v.y, vyz + v.x, v.z * v.z * k + c)
 	)
 
 
-func _set_normal_vector(source: Image, quiet: bool=false) -> void:
+func _set_normal_vector(source: Image, quiet: bool = false) -> void:
 	# Calculate texture normal sum direction
 	var normal: Image = source
 	var sum: Color = Color(0.0, 0.0, 0.0, 0.0)
@@ -405,12 +430,11 @@ func _set_normal_vector(source: Image, quiet: bool=false) -> void:
 	sum *= 2.0
 	sum -= Color(1.0, 1.0, 1.0)
 	normal_vector = Vector3(sum.r, sum.g, sum.b).normalized()
-	if normal_vector.dot(Vector3(0.0, 0.0, 1.0)) < 0.999 && ! quiet:
-		_show_message(WARN,
-			"Normal Texture Not Orthoganol to UV plane.\nFor Compatability with Detiling and Rotation, Select Orthoganolize Normals")
+	if normal_vector.dot(Vector3(0.0, 0.0, 1.0)) < 0.999 && !quiet:
+		_show_message(WARN, "Normal Texture Not Orthoganol to UV plane.\nFor Compatability with Detiling and Rotation, Select Orthoganolize Normals")
 
 
-func _align_normals(source: Image, iteration: int=0) -> void:
+func _align_normals(source: Image, iteration: int = 0) -> void:
 	# generate matrix to re-align the normalmap
 	var mat3: Basis = _alignment_basis(normal_vector)
 	# re-align the normal map pixels
@@ -428,30 +452,36 @@ func _align_normals(source: Image, iteration: int=0) -> void:
 			source.set_pixel(x, y, new_pixel)
 	_set_normal_vector(source, true)
 	if normal_vector.dot(Vector3(0.0, 0.0, 1.0)) < 0.999 && iteration < 3:
-		++ iteration
+		++iteration
 		_align_normals(source, iteration)
 
 
-func _pack_textures(p_rgb_image: Image, p_a_image: Image, p_dst_path: String, p_invert_green: bool,
-	p_invert_smooth: bool, p_align_normals: bool, p_normalize_height: bool, p_alpha_channel: int) -> Error:
+func _pack_textures(p_rgb_image: Image, p_a_image: Image, p_ao_image: Image, p_dst_path: String, p_invert_green: bool,
+	p_invert_smooth: bool, p_align_normals: bool, p_normalize_height: bool, p_alpha_channel: int, p_occlusion_channel: int = 0) -> Error:
 	if p_rgb_image and p_a_image:
-		if p_rgb_image.get_size() != p_a_image.get_size() and ! resize_toggle_checkbox.button_pressed:
+		if p_rgb_image.get_size() != p_a_image.get_size() and !resize_toggle_checkbox.button_pressed:
 			_show_message(ERROR, "Textures must be the same size.\nEnable resize to override image dimensions")
 			return FAILED
-
+		if p_ao_image:
+			if p_rgb_image.get_size() != p_ao_image.get_size() and !resize_toggle_checkbox.button_pressed:
+				_show_message(ERROR, "Textures must be the same size.\nEnable resize to override image dimensions")
+				return FAILED
+	
 		if resize_toggle_checkbox.button_pressed:
 			var size: int = max(128, resize_option_box.value)
 			p_rgb_image.resize(size, size, Image.INTERPOLATE_CUBIC)
 			p_a_image.resize(size, size, Image.INTERPOLATE_CUBIC)
-
+			if p_ao_image:
+				p_ao_image.resize(size, size, Image.INTERPOLATE_CUBIC)
+	
 		if p_align_normals and normal_vector.dot(Vector3(0.0, 0.0, 1.0)) < 0.999:
 			_align_normals(p_rgb_image)
 		elif p_align_normals:
 			_show_message(INFO, "Alignment OK, skipping Normal Orthogonalization")
-
-		var output_image: Image = Terrain3DUtil.pack_image(p_rgb_image, p_a_image,
-			p_invert_green, p_invert_smooth, p_normalize_height, p_alpha_channel)
-
+	
+		var output_image: Image = Terrain3DUtil.pack_image(p_rgb_image, p_a_image, p_ao_image,
+			p_invert_green, p_invert_smooth, p_normalize_height, p_alpha_channel, p_occlusion_channel)
+	
 		if not output_image:
 			_show_message(ERROR, "Failed to pack textures")
 			return FAILED

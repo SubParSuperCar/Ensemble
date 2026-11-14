@@ -525,6 +525,10 @@ where the difference is small.
   (e.g., a stack of suspensions) bent, as Jolt put them to sleep before their joints had pulled them straight.
 - **Terrain collision** is built for the whole terrain up front (Terrain3D's full mode), so bodies far from the local
   character, such as a creation another peer simulates or one a dedicated host takes over, stay on the ground.
+  Terrain3D 1.1.0 divides by zero building it as the terrain loads
+  ([#1072](https://github.com/TokisanGames/Terrain3D/issues/1072)), so its libraries are built from
+  [a fork](https://github.com/SubParSuperCar/Terrain3D/tree/ensemble/v1.1.0) with the fix (proposed upstream in
+  [#1077](https://github.com/TokisanGames/Terrain3D/pull/1077)); the next release that includes it replaces them.
 
 ---
 

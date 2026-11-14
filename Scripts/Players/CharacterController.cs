@@ -42,7 +42,7 @@ public partial class CharacterController : CharacterBody3D
 	internal bool IsSeated { get; set; }
 
 	[Export] public Camera3D Camera { get; set; } = null!;
-	[Export] public Node3D Terrain { get; set; } = null!; // Terrain3D, which has no C# bindings
+	[Export] public Node3D Terrain { get; set; } = null!; // Terrain3D, whose C# bindings the game leaves out
 
 	public override void _Ready()
 	{

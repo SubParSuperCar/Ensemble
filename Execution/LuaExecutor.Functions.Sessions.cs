@@ -13,7 +13,6 @@ using static EnsembleRoot.Sessions.SessionManager;
 
 namespace EnsembleRoot.Execution;
 
-// TODO: Should we add a function for fetching the multiplayer password after it's been passed to Session Manager?
 // Sessions started here go through the same SessionManager calls as the menu, which follows them
 public static partial class LuaExecutor
 {

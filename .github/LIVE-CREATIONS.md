@@ -319,7 +319,8 @@ both to one simulator until they separate, and their collisions become real phys
   off. Snaps use the space hop (see the Jolt kinematic note), or a snapping proxy would shove nearby bodies.
 - **Testing:** Lua `set_net_sim(latency_ms?, jitter_ms?, loss?)` delays (in order) and drops this peer's incoming live
   state, creations and characters, to try poor connections without outside players.
-- Input masks: unreliable full masks on change, plus a few repeats a second, controller -> host -> simulator (section 8).
+- Input masks: unreliable full masks on change, plus a few repeats a second, controller -> host -> simulator (section
+  8).
 - Seats: sitting and leaving are actions (section 9); seated characters only send their flashlight.
 
 Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bits, epoch 16, sequence 16, count 16):

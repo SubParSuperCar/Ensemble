@@ -1,4 +1,5 @@
 using System.Globalization;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.Profanity;
 using EnsembleRoot.Sessions.Actions;
@@ -49,6 +50,29 @@ public static partial class LuaExecutor
 		GChatManager.IsTtsEnabled = isEnabled;
 
 		Log.Information("Set chat TTS to {IsEnabled}", isEnabled);
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_profanity_filter_level(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var level = context.GetArgumentOrDefault(0, 1);
+
+		if (GSessionManager is { IsActive: true, IsServer: false })
+		{
+			Log.Warning("Only the host can set the profanity filter's level");
+			return context.ReturnNothing();
+		}
+
+		if (level is not (>= 1 and <= 4))
+		{
+			Log.Error("Invalid profanity filter level: {Level} (takes 1 to 4)", level);
+			return context.ReturnNothing();
+		}
+
+		ProfanityFilter.MinSeverity = level;
+		Log.Information("Set profanity filter level to {Level}", level);
 
 		return context.ReturnNothing();
 	}

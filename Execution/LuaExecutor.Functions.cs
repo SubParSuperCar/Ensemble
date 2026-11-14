@@ -98,6 +98,8 @@ public static partial class LuaExecutor
 			"Overrides who simulates a plot's creation (host only; none resets it)"),
 		(new LuaFunction(nameof(set_plot_spawned), set_plot_spawned), "is_spawned",
 			"Spawns or despawns your plot's creation"),
+		(new LuaFunction(nameof(set_profanity_filter_level), set_profanity_filter_level), "level?",
+			"Masks only profanity at least as severe as level, from 1 to 4 (host only; none resets it to 1)"),
 		(new LuaFunction(nameof(set_profanity_filter_on), set_profanity_filter_on), "is_on",
 			"Turns the profanity filter on or off (host only)"),
 		(new LuaFunction(nameof(set_sky_time), set_sky_time), "hours?",

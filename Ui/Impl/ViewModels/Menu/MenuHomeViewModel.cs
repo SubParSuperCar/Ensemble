@@ -6,7 +6,6 @@ using EnsembleRoot.Ui.Services;
 using Serilog;
 using Bitmap = Avalonia.Media.Imaging.Bitmap;
 using FileAccess = Godot.FileAccess;
-using OS = Godot.OS;
 
 namespace EnsembleRoot.Ui.ViewModels;
 
@@ -26,14 +25,12 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	// Loaded once and shared, as menu pages are recreated on every navigation
 	public static Bitmap? Icon { get; } = LoadBitmap(GameIconPath);
 
-	public static string GitHubPageLabel => $"Ensemble - GitHub Page\ngithub.com/{GitHubRepoPath}";
+	public static Uri GitHubPageUri { get; } = new(GitHubRepoUrl);
+	public static Uri ItchPageUri { get; } = new(ItchPageUrl);
 
 	[ObservableProperty] public partial string? Notice { get; private set; }
 
 	protected override void OnDispose() => GSessionManager.SessionFailed -= OnSessionFailed;
-
-	[RelayCommand]
-	private static void OpenGitHubPage() => OS.ShellOpen(GitHubRepoUrl);
 
 	[RelayCommand]
 	private void GoToSession() => _navigator.GoTo<SessionModeSelectorViewModel>();
@@ -47,6 +44,7 @@ public sealed partial class MenuHomeViewModel : ViewModelBase
 	private void OnSessionFailed(string reason) =>
 		Notice = $"Session ended: {TextElements.Truncate(reason, MaxReasonLength)}";
 
+	// TODO: This util helper should be pulled out of here, as more UI may convert Godot res images to Avalonia bitmaps
 	private static Bitmap? LoadBitmap(string path)
 	{
 		using var file = FileAccess.Open(path, FileAccess.ModeFlags.Read);

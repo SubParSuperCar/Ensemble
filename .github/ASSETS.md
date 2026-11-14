@@ -30,6 +30,9 @@ One Godot unit is one meter, and one grid cell is half a meter: the Cube is 0.5 
 origin, and size the asset in whole cells wherever its shape allows, so it lines up with everything else. Players can
 snap more finely than a cell, so odd sizes work too; they are just harder to build with.
 
+The origin is where the player's cursor holds the asset, and what it turns around. Most assets center it; a long one can
+put it in an end cell instead (the beams do), so players place it from that end.
+
 ## Colliders
 
 - Colliders must be direct children of the root (or of a piece; see [**Moving Parts**](#moving-parts)). Godot ignores

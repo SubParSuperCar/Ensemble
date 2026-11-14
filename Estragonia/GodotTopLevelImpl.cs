@@ -24,6 +24,7 @@ namespace Estragonia;
 internal sealed class GodotTopLevelImpl : ITopLevelImpl
 {
 	private static readonly HashSet<GodotTopLevelImpl> Dragging = [];
+	private static readonly GodotLauncher Launcher = new();
 	private readonly IClipboard _clipboard;
 	private readonly IGodotPlatformGraphics _platformGraphics;
 	private readonly TouchDevice _touchDevice = new();
@@ -123,7 +124,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	}
 
 	object? IOptionalFeatureProvider.TryGetFeature(Type featureType) =>
-		featureType == typeof(IClipboard) ? _clipboard : null;
+		featureType == typeof(IClipboard) ? _clipboard : featureType == typeof(ILauncher) ? Launcher : null;
 
 	public void Dispose()
 	{

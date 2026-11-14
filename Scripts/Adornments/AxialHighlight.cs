@@ -5,12 +5,11 @@ namespace EnsembleRoot.Scripts.Adornments;
 [GlobalClass]
 public partial class AxialHighlight : HighlightBase
 {
-	private static readonly Shader HighlightShader = GD.Load<Shader>(ShadersDir + "axial_highlight.gdshader");
+	private static readonly StringName AxialParameter = "axial";
 
 	public AxialHighlight()
 	{
-		FaceAlpha = 3 / 16f;
+		FaceTint = 1 / 2f;
+		SetParameter(AxialParameter, true);
 	}
-
-	protected override Shader Shader => HighlightShader;
 }

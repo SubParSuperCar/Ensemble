@@ -12,8 +12,8 @@
     <File Path="FodyWeavers.xml"/>
     <File Path="global.json"/>
     <File Path="LICENSE.md"/>
-    <File Path="TrimmerRoots.xml"/>
     <File Path="TrimmerRoots.Client.xml"/>
+    <File Path="TrimmerRoots.xml"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/">
     <File Path=".github/dependabot.yml"/>

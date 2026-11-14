@@ -10,9 +10,9 @@ namespace EnsembleRoot.Scripts.Plots.Placement;
 ///     <list type="number">
 ///         <item>
 ///             Contact: while snapping, the caller rounds the hit normal to its dominant grid axis, so a curved surface
-///             steeper than 45 degrees counts as a side. The box is pushed out along the normal by its projected
-///             radius, just touching the hit point's tangent plane, then out of the hit asset's box along the normal
-///             (see <see cref="Contact" />).
+///             steeper than 45 degrees counts as a side. The asset's origin is put at the hit point, then its box
+///             slides along the normal until it just touches the hit point's tangent plane, then out of the hit
+///             asset's box (see <see cref="Contact" />).
 ///         </item>
 ///         <item>
 ///             Resolve: each overlapping obstacle pushes the box out by its SAT minimum translation, never against the
@@ -50,13 +50,14 @@ public sealed class PlacementSolver
 	private readonly List<Obb> _candidates = [];
 
 	/// <summary>
-	///     Puts a box against a hit surface. An asset's box can reach past the collider hit (a hinge's base past its
-	///     head), so the box also leaves <paramref name="hit" />'s along the normal: pushed out the shortest way, it
-	///     would slide off to the side instead.
+	///     Slides a box along the normal until it just touches the hit point's tangent plane, so an asset whose origin
+	///     was put at the hit point keeps it under the hit point. An asset's box can reach past the collider hit (a
+	///     hinge's base past its head), so the box also leaves <paramref name="hit" />'s along the normal: pushed out
+	///     the shortest way, it would slide off to the side instead.
 	/// </summary>
 	public static Obb Contact(Obb box, Vector3 point, Vector3 normal, Obb? hit)
 	{
-		box = box.At(point + normal * box.Radius(normal));
+		box = box.At(box.Center + normal * (box.Radius(normal) - (box.Center - point).Dot(normal)));
 		return hit is { } surface ? box.At(box.Center + normal * box.GetSeparationDistance(surface, normal)) : box;
 	}
 

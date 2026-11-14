@@ -61,7 +61,6 @@ public static class ProfanityFilter
 	///     The least severe entries masked, on the list's scale from 1 (mild, so every entry) to 4 (severe entries
 	///     only).
 	/// </summary>
-	// ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global, MemberCanBePrivate.Global
 	public static int MinSeverity { get; set; } = 1;
 
 	/// <summary>Loads the list on the thread pool, so the first <see cref="Censor" /> call doesn't stall.</summary>

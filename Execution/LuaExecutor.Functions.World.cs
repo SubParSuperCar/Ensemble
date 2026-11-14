@@ -15,7 +15,6 @@ public static partial class LuaExecutor
 	private const string SkyPath = "Sky";
 	private const string TerrainPath = "Terrain";
 	private const string TimeOfDayPath = "Sky/TimeOfDay";
-	private const string NightLightPath = "Night Light";
 	private const string TemporalStaticPath = "Temporal Static";
 
 	// Slower, and a physics tick would come too seldom to show motion
@@ -155,10 +154,6 @@ public static partial class LuaExecutor
 
 			if (world.GetNodeOrNull<Node3D>(TerrainPath) is { } terrain)
 				terrain.Visible = false;
-
-			foreach (var plot in GPlots.GetAll())
-				if (GPlotManager.GetHandle(plot.Id).GetNodeOrNull<AreaLight3D>(NightLightPath) is { } nightLight)
-					nightLight.Visible = false;
 		}
 
 		Log.Information(

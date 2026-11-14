@@ -164,7 +164,7 @@ public partial class ConstructTool : ToolBase
 			normal = ToGridAxis(normal);
 
 		var surface = toPlot * hit.Position;
-		var box = PlotPlacement.GetBox(AssetId, Vector3.Zero, _rotation);
+		var box = PlotPlacement.GetBox(AssetId, surface / GridToWorldScale, _rotation);
 		var cellSize = IsSnapping ? SnappingIncrementLinear * GridToWorldScale : null;
 
 		box = _solver.Settle(

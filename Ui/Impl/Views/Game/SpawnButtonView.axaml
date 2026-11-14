@@ -7,6 +7,16 @@
     Margin="4"
     FontSize="20" FontWeight="ExtraLight">
 
+    <UserControl.Styles>
+        <Style Selector="PathIcon#SpawnIcon">
+            <Setter Property="Data" Value="{StaticResource PlayIcon}" />
+        </Style>
+
+        <Style Selector="Button.spawned PathIcon#SpawnIcon">
+            <Setter Property="Data" Value="{StaticResource PauseIcon}" />
+        </Style>
+    </UserControl.Styles>
+
     <Border
         Background="{DynamicResource TranslucentBackgroundBrush}"
         CornerRadius="6"
@@ -14,11 +24,18 @@
 
         <Border BorderBrush="{StaticResource PrimaryBrush}" BorderThickness="{StaticResource BorderThickness}">
             <Button
-                Content="{Binding Label}"
+                Classes.spawned="{Binding IsSpawned}"
                 Command="{Binding ToggleCommand}"
                 ToolTip.Tip="Spawns your plot's creation, or despawns it to keep building. (Owner only)"
-                MinWidth="96"
-                LetterSpacing="-1" />
+                HorizontalContentAlignment="Stretch"
+                MinWidth="128"
+                LetterSpacing="-1">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="{Binding Label}" HorizontalAlignment="Center" />
+                    <PathIcon Name="SpawnIcon" Grid.Column="1" Width="16" Height="16" />
+                </Grid>
+            </Button>
         </Border>
     </Border>
 

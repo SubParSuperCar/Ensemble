@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://boypbgb8eumkh" path="res://scenes/player.tscn" id="14_lakw3"]
 [ext_resource type="Script" uid="uid://deifgknfa4son" path="res://Scripts/Plots/PlotManager.cs" id="15_7t5mc"]
 [ext_resource type="ArrayMesh" uid="uid://brgrd3hjktrcx" path="res://assets/meshes/plots_base.obj" id="18_lakw3"]
+[ext_resource type="Material" uid="uid://cgk4glwmc4vk2" path="res://addons/terrain_3d/extras/shaders/M_ocean.tres" id="18_pm21f"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rysoc"]
 shader = ExtResource("2_xo05s")
@@ -48,7 +49,7 @@ shader_parameter/moon_texture_flip_u = false
 shader_parameter/moon_texture_flip_v = false
 shader_parameter/moon_size = 0.02
 shader_parameter/atm_moon_mie_tint = Color(0.137255, 0.184314, 0.292196, 1)
-shader_parameter/atm_moon_mie_intensity = 0.7
+shader_parameter/atm_moon_mie_intensity = 0.0
 shader_parameter/atm_moon_partial_mie_phase = Vector3(0.36, 1.64, 1.6)
 shader_parameter/starmap_color = Color(0.709804, 0.709804, 0.709804, 0.854902)
 shader_parameter/starmap_texture = ExtResource("8_7iits")
@@ -72,8 +73,8 @@ shader_parameter/cirrus_absorption = 2.0
 shader_parameter/cirrus_sky_tint_fade = 0.5
 shader_parameter/cirrus_size = 1.0
 shader_parameter/cirrus_uv = Vector2(0.16, 0.11)
-shader_parameter/cirrus_position1 = Vector2(0.017281797, 0.017281797)
-shader_parameter/cirrus_position2 = Vector2(0.017281797, 0.017281797)
+shader_parameter/cirrus_position1 = Vector2(0.00024041628, 0.00024041628)
+shader_parameter/cirrus_position2 = Vector2(0.00024041628, 0.00024041628)
 shader_parameter/cirrus_texture = ExtResource("3_dss4m")
 shader_parameter/cumulus_visible = true
 shader_parameter/cumulus_intensity = 0.5
@@ -83,7 +84,7 @@ shader_parameter/cumulus_absorption = 2.0
 shader_parameter/cumulus_noise_freq = 2.7
 shader_parameter/cumulus_sky_tint_fade = 0.0
 shader_parameter/cumulus_size = 0.5
-shader_parameter/cumulus_position = Vector2(0.086409174, 0.086409174)
+shader_parameter/cumulus_position = Vector2(0.0012020814, 0.0012020814)
 shader_parameter/cumulus_texture = ExtResource("4_7t5mc")
 shader_parameter/cumulus_partial_mie_phase = Vector3(0.957564, 1.042436, 0.412)
 shader_parameter/cumulus_mie_intensity = 1.0
@@ -110,47 +111,21 @@ glow_strength = 1.2
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_1kice"]
 
-[sub_resource type="Gradient" id="Gradient_u5sy4"]
-offsets = PackedFloat32Array(0.2, 1)
-colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_gee14"]
-noise_type = 2
-frequency = 0.03
-cellular_jitter = 3.0
-cellular_return_type = 0
-domain_warp_enabled = true
-domain_warp_type = 1
-domain_warp_amplitude = 50.0
-domain_warp_fractal_type = 2
-domain_warp_fractal_lacunarity = 1.5
-domain_warp_fractal_gain = 1.0
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_0tnpc"]
-noise = SubResource("FastNoiseLite_gee14")
-color_ramp = SubResource("Gradient_u5sy4")
-seamless = true
-
 [sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_vtaks"]
 _shader_parameters = {
 &"bias_distance": null,
 &"blend_sharpness": null,
 &"depth_blur": null,
-&"enable_macro_variation": null,
-&"enable_projection": null,
+&"distant_normal_scale": null,
 &"flat_terrain_normals": null,
-&"macro_variation1": null,
-&"macro_variation2": null,
-&"macro_variation_slope": null,
+&"general_uniforms": null,
 &"mipmap_bias": null,
-&"noise1_angle": null,
-&"noise1_offset": null,
-&"noise1_scale": null,
-&"noise2_scale": null,
-&"noise_texture": SubResource("NoiseTexture2D_0tnpc"),
-&"projection_threshold": null
+&"mipmaps": null,
+&"private": null
 }
+world_background = 0
 show_region_grid = true
+displacement_sharpness = 0.25
 show_checkered = true
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_i6g32"]
@@ -260,16 +235,21 @@ dome_path = NodePath("../SkyDome")
 system_sync = true
 current_time = 15.0
 
-[node name="Terrain" type="Terrain3D" parent="." unique_id=1739292469]
+[node name="Terrain" type="Terrain3D" parent="." unique_id=1739292469 node_paths=PackedStringArray("light_target")]
 data_directory = "res://resources/terrain_regions"
 material = SubResource("Terrain3DMaterial_vtaks")
 assets = ExtResource("12_xgqkh")
-save_16_bit = true
+light_target = NodePath("../Sky/SunLight")
 label_distance = 512.0
 label_size = 24
 show_grid = true
+save_16_bit = true
 collision_mode = 3
+mesh_lods = 4
 cast_shadows = 0
+ocean_enabled = true
+ocean_tessellation_level = 1
+ocean_material = ExtResource("18_pm21f")
 show_region_grid = true
 show_checkered = true
 top_level = true

@@ -1,14 +1,14 @@
 // Copyright (c) 2023-2025 Cory Petkovsek and Contributors
 // Copyright (c) 2021 J. Cuellar
 
-const float INV_PI      = 1. / PI;
-const float HALF_PI     = PI / 2.;
+const float INV_PI = 1. / PI;
+const float HALF_PI = PI / 2.;
 const float INV_HALF_PI = 1. / HALF_PI;
-const float QRT_PI      = PI / 4.;
-const float INV_QRT_PI  = 1. / QRT_PI;
-const float PI4         = PI * 4.;
-const float INV_PI4     = 1. / PI4;
-const float INV_TAU     = 1. / TAU;
+const float QRT_PI = PI / 4.;
+const float INV_QRT_PI = 1. / QRT_PI;
+const float PI4 = PI * 4.;
+const float INV_PI4 = 1. / PI4;
+const float INV_TAU = 1. / TAU;
 
 const float RAYLEIGH_ZENITH_LENGTH = 8.4e3;
 const float MIE_ZENITH_LENGTH = 1.25e3;

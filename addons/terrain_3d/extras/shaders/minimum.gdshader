@@ -2,16 +2,16 @@
 // This shader is the minimum needed to allow the terrain to function, without any texturing.
 
 shader_type spatial;
-render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx,skip_vertex_transform;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_schlick_ggx, skip_vertex_transform;
 
 // Defined Constants
 #define MAX_REGIONS 1024 // Match Terrain3DMaterial.max_regions. Set to 64-256 for mobile
 
 // Inline Functions
 #if CURRENT_RENDERER == RENDERER_COMPATIBILITY
-    #define fma(a, b, c) ((a) * (b) + (c))
-    #define dFdxCoarse(a) dFdx(a)
-    #define dFdyCoarse(a) dFdy(a)
+#define fma(a, b, c) ((a) * (b) + (c))
+#define dFdxCoarse(a) dFdx(a)
+#define dFdyCoarse(a) dFdy(a)
 #endif
 
 // Private uniforms
@@ -28,19 +28,19 @@ uniform float _region_size = 1024.0;
 uniform float _region_texel_size = 0.0009765625; // = 1./region_size
 uniform int _region_map_size = 32;
 uniform int _region_map[1024];
-//uniform vec2 _region_locations[MAX_REGIONS];
-//uniform float _texture_normal_depth_array[32];
-//uniform float _texture_ao_strength_array[32];
-//uniform float _texture_ao_affect_array[32];
-//uniform float _texture_roughness_mod_array[32];
-//uniform float _texture_uv_scale_array[32];
-//uniform vec2 _texture_detile_array[32];
-//uniform vec4 _texture_color_array[32];
+// uniform vec2 _region_locations[MAX_REGIONS];
+// uniform float _texture_normal_depth_array[32];
+// uniform float _texture_ao_strength_array[32];
+// uniform float _texture_ao_affect_array[32];
+// uniform float _texture_roughness_mod_array[32];
+// uniform float _texture_uv_scale_array[32];
+// uniform vec2 _texture_detile_array[32];
+// uniform vec4 _texture_color_array[32];
 uniform highp sampler2DArray _height_maps : repeat_disable;
 uniform highp sampler2DArray _control_maps : repeat_disable;
-//uniform highp sampler2DArray _color_maps : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
-//uniform highp sampler2DArray _texture_array_albedo : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
-//uniform highp sampler2DArray _texture_array_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
+// uniform highp sampler2DArray _color_maps : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
+// uniform highp sampler2DArray _texture_array_albedo : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+// uniform highp sampler2DArray _texture_array_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 group_uniforms;
 
 // Public uniforms
@@ -54,9 +54,9 @@ varying vec3 v_vertex;
 varying float v_vertex_xz_dist;
 varying vec3 v_camera_pos;
 
-////////////////////////
+// //////////////////////
 // Vertex
-////////////////////////
+// //////////////////////
 
 // Takes in world space XZ (UV) coordinates
 // Returns ivec3 with:
@@ -73,8 +73,8 @@ ivec3 get_index_coord(const vec2 uv) {
 	// Editor dummies are negative; keep them != -1 so the shader still sees a region
 	int is_dummy = bounds * int(map_val < 0);
 	int layer_index = is_region * raw_index
-	               + is_dummy * (map_val - 1)
-	               - (1 - is_region - is_dummy);
+		+ is_dummy * (map_val - 1)
+		- (1 - is_region - is_dummy);
 	return ivec3(ivec2(mod(r_uv, _region_size)), layer_index);
 }
 
@@ -128,7 +128,7 @@ void vertex() {
 		// Shift from regular to symmetric
 		mix(vertex_fract, vec2(vertex_fract.x, -vertex_fract.y),
 			round(fract(round(mod(v_vertex.z * inv_scale, 4.0)) *
-			round(mod(v_vertex.x * inv_scale, 4.0)) * 0.25))) :
+				round(mod(v_vertex.x * inv_scale, 4.0)) * 0.25))) :
 		// Symmetric shift
 		vertex_fract * round((fract(v_vertex.xz * 0.25 * inv_scale) - 0.5) * 4.0);
 	vec2 start_pos = v_vertex.xz * _vertex_density;
@@ -144,11 +144,11 @@ void vertex() {
 	// Discard vertices for Holes. 1 lookup
 	ivec3 v_region = get_index_coord(start_pos);
 	uint control = floatBitsToUint(texelFetch(_control_maps, v_region, 0)).r;
-	bool hole = bool(control >>2u & 0x1u);
+	bool hole = bool(control >> 2u & 0x1u);
 
 	// Show holes to all cameras except mouse camera (on exactly 1 layer)
-	if ( !(CAMERA_VISIBLE_LAYERS == _mouse_layer) &&
-			(hole || (_background_mode == 0u && is_none_bg(UV)))) {
+	if (!(CAMERA_VISIBLE_LAYERS == _mouse_layer) &&
+		(hole || (_background_mode == 0u && is_none_bg(UV)))) {
 		v_vertex.x = 0. / 0.;
 	} else {
 		// Set final vertex height.
@@ -160,7 +160,7 @@ void vertex() {
 		} else {
 			ivec3 coord_a = get_index_coord(start_pos);
 			ivec3 coord_b = get_index_coord(end_pos);
-			h = mix(texelFetch(_height_maps, coord_a, 0).r,texelFetch(_height_maps, coord_b, 0).r,vertex_lerp);
+			h = mix(texelFetch(_height_maps, coord_a, 0).r, texelFetch(_height_maps, coord_b, 0).r, vertex_lerp);
 		}
 		v_vertex.y = h;
 	}
@@ -172,14 +172,14 @@ void vertex() {
 	TANGENT = normalize((MODELVIEW_MATRIX * vec4(TANGENT, 0.0)).xyz);
 }
 
-////////////////////////
+// //////////////////////
 // Fragment
-////////////////////////
+// //////////////////////
 
 void fragment() {
 	// Recover UVs
 	vec2 uv = UV;
-	//vec2 uv2 = UV2;
+	// vec2 uv2 = UV2;
 
 	// Lookup offsets, ID and blend weight
 	const vec3 offsets = vec3(0, 1, 2);
@@ -195,7 +195,7 @@ void fragment() {
 
 	vec3 base_ddx = dFdxCoarse(v_vertex);
 	vec3 base_ddy = dFdyCoarse(v_vertex);
-	//vec4 base_derivatives = vec4(base_ddx.xz, base_ddy.xz);
+	// vec4 base_derivatives = vec4(base_ddx.xz, base_ddy.xz);
 	// Calculate the effective mipmap for regionspace, and if less than 0,
 	// skip all extra lookups required for bilinear blend.
 	float region_mip = log2(max(length(base_ddx.xz), length(base_ddy.xz)) * _vertex_density);
@@ -242,9 +242,9 @@ void fragment() {
 		// Set interpolated world normal
 		w_normal =
 			index_normal[0] * weights[0] +
-			index_normal[1] * weights[1] +
-			index_normal[2] * weights[2] +
-			index_normal[3] * weights[3] ;
+				index_normal[1] * weights[1] +
+				index_normal[2] * weights[2] +
+				index_normal[3] * weights[3];
 	}
 
 	// Apply terrain normals
@@ -255,7 +255,7 @@ void fragment() {
 	BINORMAL = mat3(VIEW_MATRIX) * w_binormal;
 
 	if (flat_terrain_normals) {
-		NORMAL = normalize(cross(dFdyCoarse(VERTEX),dFdxCoarse(VERTEX)));
+		NORMAL = normalize(cross(dFdyCoarse(VERTEX), dFdxCoarse(VERTEX)));
 		TANGENT = normalize(cross(NORMAL, VIEW_MATRIX[2].xyz));
 		BINORMAL = normalize(cross(NORMAL, TANGENT));
 	}

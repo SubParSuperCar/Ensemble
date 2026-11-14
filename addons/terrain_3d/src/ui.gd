@@ -12,39 +12,38 @@ const GradientOperationBuilder: Script = preload("res://addons/terrain_3d/src/gr
 const LIVE_INFO_PANEL: String = "res://addons/terrain_3d/src/live_info_panel.tscn"
 
 # Decal colors
-const COLOR_RAISE := Color(1., 1., 1.) # White
-const COLOR_LOWER := Color(0.2, 0.2, 0.2) # Dark gray
-const COLOR_SMOOTH := Color(0.5, 0.0, 0.2) # Dark Red
-const COLOR_AVERAGE := Color(0.6, 0.1, 0.3) # Neutral purple
-const COLOR_LIFT := Color(1.0, 0.6, 0.0) # Bright orange
-const COLOR_FLATTEN := Color(0.0, 0.6, 1.0) # Cyan
-const COLOR_HEIGHT := Color(0.0, 0.8, 0.8) # Brighter cyan
-const COLOR_SLOPE := Color(1.0, 1.0, 0.0) # Bright yellow
-const COLOR_PAINT := Color(0.0, 0.5, 0.0) # Dark green
-const COLOR_SPRAY := Color(0.4, 0.8, 0.4) # Lighter green
-const COLOR_UNSPRAY := Color(0.5, 0.2, 0.5) # Neutral purple
-const COLOR_WET := Color(0.4, 0.6, 1.0) # Light blue
-const COLOR_DRY := Color(0.6, 0.4, 0.0) # Warm brown
-const COLOR_AUTOSHADER := Color(0.36, 0.2, 0.09) # Chocolate
-const COLOR_HOLES := Color(0.1, 0.1, 0.1) # Near-black
-const COLOR_NAVIGATION := Color(0.5, 0.2, 0.5) # Purple
-const COLOR_INSTANCE := Color(0.863, 0.08, 0.235) # Crimson
-const COLOR_UNINSTANCE := Color(0.2, 0.9, 0.6) # Cyan-green
+const COLOR_RAISE := Color(1., 1., 1.)  # White
+const COLOR_LOWER := Color(0.2, 0.2, 0.2)  # Dark gray
+const COLOR_SMOOTH := Color(0.5, 0.0, 0.2)  # Dark Red
+const COLOR_AVERAGE := Color(0.6, 0.1, 0.3)  # Neutral purple
+const COLOR_LIFT := Color(1.0, 0.6, 0.0)  # Bright orange
+const COLOR_FLATTEN := Color(0.0, 0.6, 1.0)  # Cyan
+const COLOR_HEIGHT := Color(0.0, 0.8, 0.8)  # Brighter cyan
+const COLOR_SLOPE := Color(1.0, 1.0, 0.0)  # Bright yellow
+const COLOR_PAINT := Color(0.0, 0.5, 0.0)  # Dark green
+const COLOR_SPRAY := Color(0.4, 0.8, 0.4)  # Lighter green
+const COLOR_UNSPRAY := Color(0.5, 0.2, 0.5)  # Neutral purple
+const COLOR_WET := Color(0.4, 0.6, 1.0)  # Light blue
+const COLOR_DRY := Color(0.6, 0.4, 0.0)  # Warm brown
+const COLOR_AUTOSHADER := Color(0.36, 0.2, 0.09)  # Chocolate
+const COLOR_HOLES := Color(0.1, 0.1, 0.1)  # Near-black
+const COLOR_NAVIGATION := Color(0.5, 0.2, 0.5)  # Purple
+const COLOR_INSTANCE := Color(0.863, 0.08, 0.235)  # Crimson
+const COLOR_UNINSTANCE := Color(0.2, 0.9, 0.6)  # Cyan-green
 const COLOR_PICK := Color.WHITE
 
 const OP_NONE: int = 0x0
 const OP_POSITIVE_ONLY: int = 0x01
 const OP_NEGATIVE_ONLY: int = 0x02
 
-@onready var region_texture := ImageTexture.new() :
+@onready var region_texture := ImageTexture.new():
 	set(value):
 		var image: Image = Image.create_empty(1, 1, false, Image.FORMAT_R8)
 		image.fill(Color.WHITE)
 		value.create_from_image(image)
 		region_texture = value
 
-
-var plugin: EditorPlugin # Actually Terrain3DEditorPlugin, but Godot still has CRC errors
+var plugin: EditorPlugin  # Actually Terrain3DEditorPlugin, but Godot still has CRC errors
 var toolbar: TerrainToolbar
 var tool_settings: TerrainToolSettings
 var terrain_menu: TerrainMenu
@@ -69,9 +68,9 @@ var editor_decal_rotation: Array[float] = [0., 0., 0.]
 var editor_decal_size: Array[float] = [0., 0., 0.]
 var editor_decal_color: Array[Color] = [Color(), Color(), Color()]
 var editor_decal_visible: Array[bool] = [false, false, false]
-var editor_decal_part: Array[bool] = [true, true] # Decal[0] cursor components: brush, reticle
+var editor_decal_part: Array[bool] = [true, true]  # Decal[0] cursor components: brush, reticle
 var editor_decal_timer: Timer
-var editor_decal_fade: float :
+var editor_decal_fade: float:
 	set(value):
 		editor_decal_fade = value
 		if editor_decal_color.size() > 0:
@@ -91,7 +90,7 @@ func _enter_tree() -> void:
 	toolbar.plugin = plugin
 	toolbar.hide()
 	toolbar.tool_changed.connect(_on_tool_changed)
-	
+
 	tool_settings = TerrainToolSettings.new()
 	tool_settings.setting_changed.connect(_on_setting_changed)
 	tool_settings.picking.connect(_on_picking)
@@ -107,7 +106,7 @@ func _enter_tree() -> void:
 	plugin.add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, terrain_menu)
 
 	_on_tool_changed(Terrain3DEditor.REGION, Terrain3DEditor.ADD)
-	
+
 	editor_decal_timer = Timer.new()
 	editor_decal_timer.wait_time = .5
 	editor_decal_timer.one_shot = true
@@ -129,9 +128,9 @@ func _exit_tree() -> void:
 	live_info_panel.queue_free()
 
 
-func set_visible(p_visible: bool, p_menu_only: bool = false) -> void:
+func set_visible(p_visible: bool, p_menu_only: bool=false) -> void:
 	if plugin.debug:
-		print("Terrain3DUI: set_visible(%s, %s)" % [ p_visible, p_menu_only ])
+		print("Terrain3DUI: set_visible(%s, %s)" % [p_visible, p_menu_only])
 
 	terrain_menu.set_visible(p_visible)
 
@@ -145,18 +144,18 @@ func set_visible(p_visible: bool, p_menu_only: bool = false) -> void:
 		live_info_panel.set_visible(p_visible)
 
 	if plugin.editor and plugin.terrain and p_visible:
-			await get_tree().process_frame # Won't work, otherwise
-			if plugin.debug:
-				print("Terrain3DUI: set_visible: calling _on_tool_changed()")
-			_on_tool_changed(_selected_tool, _selected_operation)
-			if _selected_tool in [ Terrain3DEditor.REGION, Terrain3DEditor.NAVIGATION ]:
-				plugin.terrain.material.update(Terrain3DMaterial.FULL_REBUILD)
+		await get_tree().process_frame  # Won't work, otherwise
+		if plugin.debug:
+			print("Terrain3DUI: set_visible: calling _on_tool_changed()")
+		_on_tool_changed(_selected_tool, _selected_operation)
+		if _selected_tool in [Terrain3DEditor.REGION, Terrain3DEditor.NAVIGATION]:
+			plugin.terrain.material.update(Terrain3DMaterial.FULL_REBUILD)
 
-	
+
 func set_menu_visibility(p_list: Control, p_visible: bool) -> void:
 	if p_list:
 		p_list.get_parent().get_parent().visible = p_visible
-	
+
 
 func _on_tool_changed(p_tool: Terrain3DEditor.Tool, p_operation: Terrain3DEditor.Operation) -> void:
 	if plugin.debug:
@@ -175,7 +174,7 @@ func _on_tool_changed(p_tool: Terrain3DEditor.Tool, p_operation: Terrain3DEditor
 
 	# Select which settings to show. Options in tool_settings.gd:_ready
 	var to_show: PackedStringArray = []
-	
+
 	match _selected_tool:
 		Terrain3DEditor.REGION:
 			to_show.push_back("instructions")
@@ -187,7 +186,7 @@ func _on_tool_changed(p_tool: Terrain3DEditor.Tool, p_operation: Terrain3DEditor
 			to_show.push_back("size")
 			to_show.push_back("strength")
 			if _selected_operation in [Terrain3DEditor.ADD, Terrain3DEditor.SUBTRACT]:
-					to_show.push_back("invert")
+				to_show.push_back("invert")
 			elif _selected_operation == Terrain3DEditor.GRADIENT:
 				to_show.push_back("gradient_points")
 				to_show.push_back("drawable")
@@ -286,15 +285,15 @@ func _on_tool_changed(p_tool: Terrain3DEditor.Tool, p_operation: Terrain3DEditor
 	_on_setting_changed()
 
 
-func _on_setting_changed(p_setting: Variant = null) -> void:
+func _on_setting_changed(p_setting: Variant=null) -> void:
 	if plugin.debug:
 		print("Terrain3DUI: _on_setting_changed: ", p_setting if p_setting else "update all")
-	if not plugin.asset_dock: # Skip function if not _ready()
+	if not plugin.asset_dock:  # Skip function if not _ready()
 		return
 	brush_data = tool_settings.get_settings()
 	brush_data["mesh_asset_ids"] = plugin.asset_dock.mesh_list.selected_list
-	brush_data["texture_asset_ids"] =  plugin.asset_dock.texture_list.selected_list
-		
+	brush_data["texture_asset_ids"] = plugin.asset_dock.texture_list.selected_list
+
 	if plugin.debug:
 		print("Terrain3DUI: _on_setting_changed: selected mesh resource IDs: ", brush_data["mesh_asset_ids"])
 		print("Terrain3DUI: _on_setting_changed: selected texture resource IDs: ", brush_data["texture_asset_ids"])
@@ -302,7 +301,7 @@ func _on_setting_changed(p_setting: Variant = null) -> void:
 		plugin.editor.set_brush_data(brush_data)
 	inverted_input = brush_data.get("invert", false)
 	if p_setting is CheckBox and p_setting.name == &"Invert":
-		plugin._read_input() # Revalidate keyboard input for modifier_ctrl
+		plugin._read_input()  # Revalidate keyboard input for modifier_ctrl
 	set_active_operation()
 	update_decal()
 
@@ -316,12 +315,12 @@ func set_active_operation() -> void:
 
 	# Toggle toolbar buttons
 	toolbar.show_add_buttons(not inverted)
-	
+
 	# If Shift, Smoothness
 	if plugin.modifier_shift and not inverted:
 		match _selected_tool:
 			Terrain3DEditor.SCULPT, Terrain3DEditor.HEIGHT, Terrain3DEditor.HOLES, \
-			Terrain3DEditor.INSTANCER:
+				Terrain3DEditor.INSTANCER:
 				active_tool = Terrain3DEditor.SCULPT
 				active_operation = Terrain3DEditor.AVERAGE
 			Terrain3DEditor.TEXTURE:
@@ -333,7 +332,7 @@ func set_active_operation() -> void:
 			Terrain3DEditor.ROUGHNESS:
 				active_tool = Terrain3DEditor.ROUGHNESS
 				active_operation = Terrain3DEditor.AVERAGE
-	
+
 	# Else if Ctrl/Invert checked, opposite
 	elif _selected_operation == Terrain3DEditor.ADD and inverted:
 		active_tool = _selected_tool
@@ -361,32 +360,32 @@ func set_active_operation() -> void:
 func update_decal() -> void:
 	if not plugin.terrain or not plugin.viewport or brush_data.size() <= 3:
 		return
-	
+
 	# If not a state that should show the decal, hide everything and return
-	mat_rid = plugin.terrain.material.get_material_rid() # Used in hide_decal() and below
+	mat_rid = plugin.terrain.material.get_material_rid()  # Used in hide_decal() and below
 	if not visible or \
 		plugin._input_mode == -1 or \
 		# After moving camera, wait for mouse cursor to update before revealing
 		# See https://github.com/godotengine/godot/issues/70098
 		Time.get_ticks_msec() - plugin.rmb_release_time <= 100:
-			hide_decal()
-			return
-	
+		hide_decal()
+		return
+
 	# Only show decal if in viewport or toolbars
 	var main: Control = plugin.get_editor_viewport_container()
 	if not main:
 		return
 	var main_rect := Rect2(main.position, main.size)
 	main_rect.size.y += tool_settings.size.y
-	if not ( main_rect.has_point(plugin.viewport.get_mouse_position()) && plugin.mouse_in_main ):
+	if not (main_rect.has_point(plugin.viewport.get_mouse_position()) && plugin.mouse_in_main):
 		return
-	
+
 	reset_decal_arrays()
 	editor_decal_position[0] = Vector2(plugin.mouse_global_position.x, plugin.mouse_global_position.z)
-	editor_decal_visible = [true, false, false] # Show cursor by default
-	editor_decal_part = [true, true] # Show brush and reticle by default
+	editor_decal_visible = [true, false, false]  # Show cursor by default
+	editor_decal_part = [true, true]  # Show brush and reticle by default
 	editor_decal_timer.start()
-	
+
 	## Region Operations
 	var r_map: PackedInt32Array = plugin.terrain.data.get_region_map()
 	if plugin.editor.get_tool() == Terrain3DEditor.REGION:
@@ -399,11 +398,11 @@ func update_decal() -> void:
 		editor_decal_position[0] = pos
 		editor_decal_size[0] = r_size
 		editor_decal_rotation[0] = 0.0
-		editor_decal_part[1] = false # Disable reticle
-		
+		editor_decal_part[1] = false  # Disable reticle
+
 		var loc: Vector2i = plugin.terrain.data.get_region_location(plugin.mouse_global_position)
 		loc += Vector2i(map_size / 2, map_size / 2)
-		if !(loc.x < 0 or loc.x > map_size - 1 or loc.y < 0 or loc.y > map_size - 1):
+		if ! (loc.x < 0 or loc.x > map_size - 1 or loc.y < 0 or loc.y > map_size - 1):
 			var index: int = clampi(loc.y * map_size + loc.x, 0, map_size * map_size - 1)
 			if plugin.terrain.material.get_world_background() == Terrain3DMaterial.WorldBackground.NONE:
 				if r_map[index] == 0 and active_operation == Terrain3DEditor.ADD:
@@ -416,7 +415,7 @@ func update_decal() -> void:
 						editor_decal_color[0].a = 0.25
 					else:
 						hide_decal()
-				
+
 				Terrain3DEditor.SUBTRACT:
 					if r_map[index] > 0:
 						editor_decal_color[0] = Color.WHITE * .15
@@ -428,7 +427,7 @@ func update_decal() -> void:
 
 	## Picking
 	elif picking != Terrain3DEditor.TOOL_MAX:
-		editor_decal_part[0] = false # Hide brush
+		editor_decal_part[0] = false  # Hide brush
 		editor_decal_size[0] = plugin.terrain.get_vertex_spacing()
 		editor_decal_color[0] = COLOR_PICK
 		editor_decal_color[0].a = 1.0
@@ -471,7 +470,7 @@ func update_decal() -> void:
 				editor_decal_color[0].a = clamp(brush_data["strength"], .2, .5) + .25
 			Terrain3DEditor.TEXTURE:
 				if plugin._input_mode == 1:
-					editor_decal_part[0] = false # Hide brush
+					editor_decal_part[0] = false  # Hide brush
 				if plugin.modifier_shift:
 					editor_decal_color[0] = COLOR_AVERAGE
 					editor_decal_color[0].a = clamp(brush_data["strength"], .2, .5) + .25
@@ -498,7 +497,7 @@ func update_decal() -> void:
 					editor_decal_color[0].a *= clamp(brush_data["strength"], .3, .5)
 			Terrain3DEditor.ROUGHNESS:
 				if plugin._input_mode == 1:
-					editor_decal_part[0] = false # Hide brush
+					editor_decal_part[0] = false  # Hide brush
 				if plugin.modifier_shift:
 					editor_decal_color[0] = COLOR_AVERAGE
 					editor_decal_color[0].a = clamp(brush_data["strength"], .2, .5) + .25
@@ -518,17 +517,17 @@ func update_decal() -> void:
 				editor_decal_color[0] = COLOR_NAVIGATION
 				editor_decal_color[0].a = .80
 			Terrain3DEditor.INSTANCER:
-				editor_decal_part[0] = false # Hide brush
+				editor_decal_part[0] = false  # Hide brush
 				if plugin.modifier_ctrl:
 					editor_decal_color[0] = COLOR_UNINSTANCE
 					editor_decal_color[0].a = .75
 				else:
 					editor_decal_color[0] = COLOR_INSTANCE
 					editor_decal_color[0].a = .75
-	
+
 	if plugin.editor.get_tool() != Terrain3DEditor.REGION and not brush_data["show_brush_texture"]:
-		editor_decal_part[0] = false # Hide brush
-	
+		editor_decal_part[0] = false  # Hide brush
+
 	if active_operation == Terrain3DEditor.GRADIENT:
 		var point1: Vector3 = brush_data["gradient_points"][0]
 		if point1 != Vector3.ZERO:
@@ -542,11 +541,11 @@ func update_decal() -> void:
 			editor_decal_size[2] = 0.25
 			editor_decal_visible[2] = true
 			editor_decal_position[2] = Vector2(point2.x, point2.z)
-	
+
 	if RenderingServer.get_current_rendering_method().contains("gl_compatibility"):
 		for i in editor_decal_color.size():
 			editor_decal_color[i].a = maxf(0.1, editor_decal_color[i].a - .25)
-	
+
 	editor_decal_fade = editor_decal_color[0].a
 	# Update Shader params
 	if is_shader_valid():
@@ -608,7 +607,7 @@ func _on_picking(p_type: Terrain3DEditor.Tool, p_callback: Callable) -> void:
 		if get_tree().process_frame.is_connected(_update_picker_highlight):
 			get_tree().process_frame.disconnect(_update_picker_highlight)
 
-		
+
 func _update_picker_highlight() -> void:
 	var mesh_asset_id: int = -1
 	if plugin.terrain.data.has_regionp(plugin.mouse_global_position):
@@ -617,13 +616,13 @@ func _update_picker_highlight() -> void:
 		var ma: Terrain3DMeshAsset = plugin.terrain.assets.get_mesh_asset(i)
 		if ma:
 			ma.set_highlighted(i == mesh_asset_id)
-		
+
 
 func clear_picking() -> void:
 	picking = Terrain3DEditor.TOOL_MAX
 	if get_tree().process_frame.is_connected(_update_picker_highlight):
 		get_tree().process_frame.disconnect(_update_picker_highlight)
-		for i: int in range(0,  plugin.terrain.assets.get_mesh_count()):
+		for i: int in range(0, plugin.terrain.assets.get_mesh_count()):
 			var ma: Terrain3DMeshAsset = plugin.terrain.assets.get_mesh_asset(i)
 			if ma:
 				ma.set_highlighted(false)
@@ -633,10 +632,10 @@ func clear_picking() -> void:
 func is_picking() -> bool:
 	if picking != Terrain3DEditor.TOOL_MAX:
 		return true
-	
+
 	if operation_builder and operation_builder.is_picking():
 		return true
-	
+
 	return false
 
 
@@ -672,7 +671,7 @@ func pick(p_global_position: Vector3) -> void:
 			picking_callback.call(picking, color, p_global_position)
 			picking_callback = Callable()
 		clear_picking()
-	
+
 	elif operation_builder and operation_builder.is_picking():
 		operation_builder.pick(p_global_position, plugin.terrain)
 

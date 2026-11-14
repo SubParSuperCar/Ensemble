@@ -2,7 +2,7 @@
 // This shader is the minimum needed to allow the terrain to function, without any texturing.
 
 shader_type spatial;
-render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlick_ggx,skip_vertex_transform;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_schlick_ggx, skip_vertex_transform;
 
 /* This is an example stripped down shader with maximum performance in mind.
  * Only Autoshader/Base/Over/Blend/Holes/Colormap are supported.
@@ -28,9 +28,9 @@ render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlic
 #define DECODE_HOLE(control) bool(control >>2u & 0x1u)
 
 #if CURRENT_RENDERER == RENDERER_COMPATIBILITY
-    #define fma(a, b, c) ((a) * (b) + (c))
-    #define dFdxCoarse(a) dFdx(a)
-    #define dFdyCoarse(a) dFdy(a)
+#define fma(a, b, c) ((a) * (b) + (c))
+#define dFdxCoarse(a) dFdx(a)
+#define dFdyCoarse(a) dFdy(a)
 #endif
 
 // Private uniforms
@@ -62,7 +62,7 @@ group_uniforms;
 
 // Public uniforms
 group_uniforms general_uniforms;
-uniform float ground_level : hint_range(-1000., 1000.) = 0.0;
+uniform float ground_level : hint_range(- 1000., 1000.) = 0.0;
 uniform float region_blend : hint_range(.001, 1., 0.001) = 0.25;
 uniform bool flat_terrain_normals = false;
 uniform bool textures_enabled = true;
@@ -80,7 +80,7 @@ group_uniforms macro_variation;
 uniform bool macro_variation_enabled = true;
 uniform vec3 macro_variation1 : source_color = vec3(1.);
 uniform vec3 macro_variation2 : source_color = vec3(1.);
-uniform float macro_variation_slope : hint_range(0., 1.)  = 0.333;
+uniform float macro_variation_slope : hint_range(0., 1.) = 0.333;
 uniform highp sampler2D noise_texture : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
 uniform float noise1_scale : hint_range(0.001, 1.) = 0.04; // Used for macro variation 1. Scaled up 10x
 uniform float noise1_angle : hint_range(0, 6.283) = 0.;
@@ -95,9 +95,9 @@ varying vec3 v_normal;
 varying vec3 v_camera_pos;
 varying mat3 TBN;
 
-////////////////////////
+// //////////////////////
 // Vertex
-////////////////////////
+// //////////////////////
 
 // Takes in world space XZ (UV) coordinates
 // Returns ivec3 with:
@@ -114,8 +114,8 @@ ivec3 get_index_coord(const vec2 uv) {
 	// Editor dummies are negative; keep them != -1 so the shader still sees a region
 	int is_dummy = bounds * int(map_val < 0);
 	int layer_index = is_region * raw_index
-	               + is_dummy * (map_val - 1)
-	               - (1 - is_region - is_dummy);
+		+ is_dummy * (map_val - 1)
+		- (1 - is_region - is_dummy);
 	return ivec3(ivec2(mod(r_uv, _region_size)), layer_index);
 }
 
@@ -130,8 +130,8 @@ vec3 get_index_uv(const vec2 uv2) {
 	int is_region = bounds * int(raw_index >= 0) * int(raw_index < MAX_REGIONS);
 	int is_dummy = bounds * int(map_val < 0);
 	int layer_index = is_region * raw_index
-	               + is_dummy * (map_val - 1)
-	               - (1 - is_region - is_dummy);
+		+ is_dummy * (map_val - 1)
+		- (1 - is_region - is_dummy);
 	return vec3(uv2 - _region_locations[layer_index], float(layer_index));
 }
 
@@ -148,9 +148,9 @@ bool is_none_bg(const vec2 uv) {
 // Takes in UV2 region space coordinates, returns 1.0 or 0.0 if a region is present or not.
 float check_region(const vec2 uv2) {
 	ivec2 pos = ivec2(floor(uv2)) + (_region_map_size / 2);
-    int bounds = int(uint(pos.x | pos.y) < uint(_region_map_size));
-    int raw_index = _region_map[pos.y * _region_map_size + pos.x] - 1;
-    int is_valid = bounds * int(raw_index >= 0) * int(raw_index < MAX_REGIONS);
+	int bounds = int(uint(pos.x | pos.y) < uint(_region_map_size));
+	int raw_index = _region_map[pos.y * _region_map_size + pos.x] - 1;
+	int is_valid = bounds * int(raw_index >= 0) * int(raw_index < MAX_REGIONS);
 	return float(is_valid);
 }
 
@@ -209,7 +209,7 @@ void vertex() {
 		// Shift from regular to symmetric
 		mix(vertex_fract, vec2(vertex_fract.x, -vertex_fract.y),
 			round(fract(round(mod(v_vertex.z * inv_scale, 4.0)) *
-			round(mod(v_vertex.x * inv_scale, 4.0)) * 0.25))) :
+				round(mod(v_vertex.x * inv_scale, 4.0)) * 0.25))) :
 		// Symmetric shift
 		vertex_fract * round((fract(v_vertex.xz * 0.25 * inv_scale) - 0.5) * 4.0);
 	vec2 start_pos = v_vertex.xz * _vertex_density;
@@ -228,8 +228,8 @@ void vertex() {
 	bool hole = DECODE_HOLE(control);
 
 	// Show holes to all cameras except mouse camera (on exactly 1 layer)
-	if ( !(CAMERA_VISIBLE_LAYERS == _mouse_layer) &&
-			(hole || (_background_mode == 0u && is_none_bg(UV)))) {
+	if (!(CAMERA_VISIBLE_LAYERS == _mouse_layer) &&
+		(hole || (_background_mode == 0u && is_none_bg(UV)))) {
 		v_vertex.x = 0. / 0.;
 	} else {
 		// Set final vertex height, and vertex normal.
@@ -275,9 +275,9 @@ void vertex() {
 	TANGENT = normalize((VIEW_MATRIX * vec4(w_tangent, 0.0)).xyz);
 }
 
-////////////////////////
+// //////////////////////
 // Fragment
-////////////////////////
+// //////////////////////
 
 mat2 rotate_plane(float angle) {
 	float c = cos(angle), s = sin(angle);
@@ -319,7 +319,7 @@ void fragment() {
 	vec4 color_map = region_uv.z > -1.0 ? textureLod(_color_maps, region_uv, region_mip) : COLOR_MAP;
 
 	if (flat_terrain_normals) {
-		NORMAL = normalize(cross(dFdyCoarse(VERTEX),dFdxCoarse(VERTEX)));
+		NORMAL = normalize(cross(dFdyCoarse(VERTEX), dFdxCoarse(VERTEX)));
 		TANGENT = normalize(cross(NORMAL, VIEW_MATRIX[2].xyz));
 		BINORMAL = normalize(cross(NORMAL, TANGENT));
 	}
@@ -356,17 +356,17 @@ void fragment() {
 			uvec4 is_auto = (control & uvec4(0x1u)) |
 				uvec4(lessThan(ivec4(index[0].z, index[1].z, index[2].z, index[3].z), ivec4(0)));
 			uint u_auto =
-				((uint(auto_base_texture) & 0x1Fu) << 27u) |
+			((uint(auto_base_texture) & 0x1Fu) << 27u) |
 				((uint(auto_overlay_texture) & 0x1Fu) << 22u) |
-				((uint(fma(auto_blend, 255.0 , 0.5)) & 0xFFu) << 14u);
+				((uint(fma(auto_blend, 255.0, 0.5)) & 0xFFu) << 14u);
 			control = control * (1u - is_auto) + u_auto * is_auto;
 		}
 
 
 		// Texture weights
 		// Vectorised Deocode of all texture IDs, then swizzle to per index mapping.
-		ivec4 t_id[2] = {ivec4(control >> uvec4(27u) & uvec4(0x1Fu)),
-			ivec4(control >> uvec4(22u) & uvec4(0x1Fu))};
+		ivec4 t_id[2] = { ivec4(control >> uvec4(27u) & uvec4(0x1Fu)),
+			ivec4(control >> uvec4(22u) & uvec4(0x1Fu)) };
 		ivec2 texture_ids[4] = ivec2[4](
 			ivec2(t_id[0].x, t_id[1].x),
 			ivec2(t_id[0].y, t_id[1].y),
@@ -376,16 +376,16 @@ void fragment() {
 		// interpolated weights.
 		vec4 weights_id_1 = vec4(control >> uvec4(14u) & uvec4(0xFFu)) * DIV_255 * weights;
 		vec4 weights_id_0 = weights - weights_id_1;
-		vec2 t_weights[4] = {vec2(0), vec2(0), vec2(0), vec2(0)};
+		vec2 t_weights[4] = { vec2(0), vec2(0), vec2(0), vec2(0) };
 		for (int i = 0; i < 4; i++) {
-				vec2 w_0 = vec2(weights_id_0[i]);
-				vec2 w_1 = vec2(weights_id_1[i]);
-				ivec2 id_0 = texture_ids[i].xx;
-				ivec2 id_1 = texture_ids[i].yy;
-				t_weights[0] += fma(w_0, vec2(equal(texture_ids[0], id_0)), w_1 * vec2(equal(texture_ids[0], id_1)));
-				t_weights[1] += fma(w_0, vec2(equal(texture_ids[1], id_0)), w_1 * vec2(equal(texture_ids[1], id_1)));
-				t_weights[2] += fma(w_0, vec2(equal(texture_ids[2], id_0)), w_1 * vec2(equal(texture_ids[2], id_1)));
-				t_weights[3] += fma(w_0, vec2(equal(texture_ids[3], id_0)), w_1 * vec2(equal(texture_ids[3], id_1)));
+			vec2 w_0 = vec2(weights_id_0[i]);
+			vec2 w_1 = vec2(weights_id_1[i]);
+			ivec2 id_0 = texture_ids[i].xx;
+			ivec2 id_1 = texture_ids[i].yy;
+			t_weights[0] += fma(w_0, vec2(equal(texture_ids[0], id_0)), w_1 * vec2(equal(texture_ids[0], id_1)));
+			t_weights[1] += fma(w_0, vec2(equal(texture_ids[1], id_0)), w_1 * vec2(equal(texture_ids[1], id_1)));
+			t_weights[2] += fma(w_0, vec2(equal(texture_ids[2], id_0)), w_1 * vec2(equal(texture_ids[2], id_1)));
+			t_weights[3] += fma(w_0, vec2(equal(texture_ids[3], id_0)), w_1 * vec2(equal(texture_ids[3], id_1)));
 		}
 
 

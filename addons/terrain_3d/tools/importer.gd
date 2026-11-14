@@ -26,7 +26,7 @@ func reset_settings() -> void:
 
 func reset_terrain() -> void:
 	data_directory = ""
-	for region:Terrain3DRegion in data.get_regions_active():
+	for region: Terrain3DRegion in data.get_regions_active():
 		data.remove_region(region, false)
 	data.update_maps(Terrain3DRegion.TYPE_MAX, true, false)
 
@@ -45,7 +45,7 @@ func update_heights() -> void:
 ## Any RGB or RGBA format is fine; PNG or Webp are recommended.
 @export_global_file var color_file_name: String = ""
 ## The top left (-X, -Y) corner position of where to place the imported data. Positions are descaled and ignore the vertex_spacing setting.
-@export var import_position: Vector2i = Vector2i(0, 0) : set = set_import_position
+@export var import_position: Vector2i = Vector2i(0, 0): set = set_import_position
 ## This scales the height of imported values.
 @export var height_scale: float = 1.0
 ## This vertically offsets the height of imported values.
@@ -53,7 +53,7 @@ func update_heights() -> void:
 ## The lowest and highest height values of the imported image. Only use for r16 files.
 @export var r16_range: Vector2 = Vector2(0, 1)
 ## The dimensions of the imported image. Only use for r16 files.
-@export var r16_size: Vector2i = Vector2i(1024, 1024) : set = set_r16_size
+@export var r16_size: Vector2i = Vector2i(1024, 1024): set = set_r16_size
 @export_tool_button("Run Import") var run_import = start_import
 
 @export_dir var destination_directory: String = ""
@@ -73,9 +73,9 @@ func set_r16_size(p_value: Vector2i) -> void:
 func start_import() -> void:
 	print("Terrain3DImporter: Importing files:")
 	var output_names: String = ""
-	for str: String in [ height_file_name, control_file_name, color_file_name]:
+	for str: String in [height_file_name, control_file_name, color_file_name]:
 		if not str.is_empty():
-			output_names += "\t" + str + "\n" 
+			output_names += "\t" + str + "\n"
 	print(output_names)
 
 	var imported_images: Array[Image]
@@ -84,9 +84,11 @@ func start_import() -> void:
 	var img: Image
 	if height_file_name:
 		if height_file_name.get_extension() == "png":
-			push_warning("Terrain3DImporter: 16-bit height map PNGs aren't supported by Godot. All PNGs are read as 8-bit.")
-		if  height_file_name.get_extension() in [ "png", "jpg" ]:
-			push_warning("Terrain3DImporter: 8-bit height map detected. Heights will be terraced. Use a 16-bit data source and file type for smooth heights.")			
+			push_warning(
+				"Terrain3DImporter: 16-bit height map PNGs aren't supported by Godot. All PNGs are read as 8-bit.")
+		if height_file_name.get_extension() in ["png", "jpg"]:
+			push_warning(
+				"Terrain3DImporter: 8-bit height map detected. Heights will be terraced. Use a 16-bit data source and file type for smooth heights.")
 		img = Terrain3DUtil.load_image(height_file_name, ResourceLoader.CACHE_MODE_IGNORE, r16_range, r16_size)
 		min_max = Terrain3DUtil.get_min_max(img)
 		imported_images[Terrain3DRegion.TYPE_HEIGHT] = img
@@ -112,11 +114,10 @@ func save_data() -> void:
 
 
 @export_group("Export File")
-
-enum { TYPE_HEIGHT, TYPE_CONTROL, TYPE_COLOR }
+enum {TYPE_HEIGHT, TYPE_CONTROL, TYPE_COLOR}
 @export_enum("Height:0", "Control:1", "Color:2") var map_type: int = TYPE_HEIGHT
 
-enum { EXPORT_SLICES, EXPORT_REGIONS }
+enum {EXPORT_SLICES, EXPORT_REGIONS}
 @export_enum("Slices:0", "Per Region:1") var export_mode: int = EXPORT_SLICES
 
 @export var file_name_out: String = ""

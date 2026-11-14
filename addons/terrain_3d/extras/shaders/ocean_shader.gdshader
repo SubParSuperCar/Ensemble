@@ -5,19 +5,19 @@
 shader_type spatial;
 render_mode cull_back, depth_draw_always, diffuse_burley, specular_schlick_ggx, shadows_disabled, skip_vertex_transform;
 
-//////////////////////////////
+// ////////////////////////////
 // Constants
-//////////////////////////////
+// ////////////////////////////
 const int ITERATIONS_VERTEX = 1;
 const int ITERATIONS_FRAGMENT = 3;
 
-//////////////////////////////
+// ////////////////////////////
 // Uniforms
-//////////////////////////////
+// ////////////////////////////
 group_uniforms water;
-uniform float sea_level : hint_range(-50.0, 50.0, 0.001) = 1.0;
+uniform float sea_level : hint_range(- 50.0, 50.0, 0.001) = 1.0;
 uniform vec3 water_color : source_color = vec3(.1058, .1568, .2117); // This is a common deep blue
-//uniform vec3 water_color : source_color = vec3(0.102, 0.212, 0.235); // This is a more green ocean
+// uniform vec3 water_color : source_color = vec3(0.102, 0.212, 0.235); // This is a more green ocean
 uniform float visible_depth : hint_range(0.001, 10000., .1) = 256.;
 uniform float depth_curve : hint_range(0.001, 5.0) = .1;
 uniform float shore_blend : hint_range(0.0, 10.0, 0.001) = 1.;
@@ -62,7 +62,7 @@ uniform float _mesh_size = 32.;
 uniform float _subdiv = 1.;
 uniform float _vertex_spacing = 1.;
 uniform float _vertex_density = 1.;
-uniform vec3 _target_pos = vec3(0.,0.,0.);
+uniform vec3 _target_pos = vec3(0., 0., 0.);
 uniform vec3 _light_direction = vec3(0.0, 0.0, 0.0);
 uniform vec3 _light_color : source_color = vec3(1.0, 1.0, 1.0);
 group_uniforms;
@@ -73,28 +73,28 @@ uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_n
 varying vec3 v_vertex;
 varying float v_vertex_distance;
 
-//////////////////////////////
+// ////////////////////////////
 // Ocean Noise
-//////////////////////////////
+// ////////////////////////////
 
 float hash(vec2 p) {
 	uvec2 q = uvec2(ivec2(p)) * uvec2(1597334673u, 3812015801u);
-    uint n = (q.x ^ q.y) * 1597334673u;
-    return float(n) * (1.0 / float(0xffffffffu));
+	uint n = (q.x ^ q.y) * 1597334673u;
+	return float(n) * (1.0 / float(0xffffffffu));
 }
 
 float noise(vec2 p) {
-    vec2 i = floor(p);
-    vec2 f = fract(p);
-    vec2 u = smoothstep(0., 1., f);
-    vec2 i1 = i + 1.0;
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	vec2 u = smoothstep(0., 1., f);
+	vec2 i1 = i + 1.0;
 
-    float a = hash(i);
-    float b = hash(vec2(i1.x, i.y));
-    float c = hash(vec2(i.x, i1.y));
-    float d = hash(i1);
+	float a = hash(i);
+	float b = hash(vec2(i1.x, i.y));
+	float c = hash(vec2(i.x, i1.y));
+	float d = hash(i1);
 
-    return 2.0 * mix(mix(a, b, u.x), mix(c, d, u.x), u.y) - 1.0;
+	return 2.0 * mix(mix(a, b, u.x), mix(c, d, u.x), u.y) - 1.0;
 }
 
 float octave(vec2 uv) {
@@ -114,25 +114,25 @@ float ocean_height(vec2 pos, int iterations) {
 	float t = TIME * time_scale;
 
 	for (int i = 0; i < iterations; i++) {
-	    h += (octave((uv + t) * freq) + octave((uv - t) * freq)) * amp;
-	    uv *= mat2(vec2(1.8, 0.8), vec2(-0.8, 1.8));
-	    freq *= 1.9;
-	    amp *= 0.2;
+		h += (octave((uv + t) * freq) + octave((uv - t) * freq)) * amp;
+		uv *= mat2(vec2(1.8, 0.8), vec2(-0.8, 1.8));
+		freq *= 1.9;
+		amp *= 0.2;
 	}
-    return h * 0.1 * height_scale;
+	return h * 0.1 * height_scale;
 }
 
-//////////////////////////////
+// ////////////////////////////
 // Vertex
 //
 // vertex() positions the vertices of the clipmap mesh across the geomorphed lods. You'll need the
 // first two blocks for any other water shader, from the start to setting v_vertex.xz. After that
 // your own shader can set the UV and v_vertex.Y however you like.
-//////////////////////////////
+// ////////////////////////////
 
 void vertex() {
 	// Get vertex of flat plane in world coordinates and set world UV
-    v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 
 	// Geomorph vertex across clipmap LODs
 	float scale = MODEL_MATRIX[0][0];
@@ -145,24 +145,24 @@ void vertex() {
 		// Shift from regular to symmetric
 		mix(vertex_fract, vec2(vertex_fract.x, -vertex_fract.y),
 			round(fract(round(mod(v_vertex.z * inv_scale, 4.0)) *
-			round(mod(v_vertex.x * inv_scale, 4.0)) * 0.25))) :
+				round(mod(v_vertex.x * inv_scale, 4.0)) * 0.25))) :
 		// Symmetric shift
 		vertex_fract * round((fract(v_vertex.xz * 0.25 * inv_scale) - 0.5) * 4.0);
-    v_vertex.xz -= shift * scale * vertex_lerp;
+	v_vertex.xz -= shift * scale * vertex_lerp;
 
 	// UV coordinates in region space. 0-1 covers 1 region, 1-2 is the next region, etc.
-    UV = v_vertex.xz;
+	UV = v_vertex.xz;
 
 	// Set height according to waves
-    v_vertex.y = sea_level + ocean_height(UV, ITERATIONS_VERTEX);
-    VERTEX = (VIEW_MATRIX * vec4(v_vertex, 1.0)).xyz;
+	v_vertex.y = sea_level + ocean_height(UV, ITERATIONS_VERTEX);
+	VERTEX = (VIEW_MATRIX * vec4(v_vertex, 1.0)).xyz;
 
 	v_vertex_distance = length(v_vertex - _target_pos);
 }
 
-//////////////////////////////
+// ////////////////////////////
 // Fragment
-//////////////////////////////
+// ////////////////////////////
 
 void fragment() {
 	// Normals
@@ -174,7 +174,7 @@ void fragment() {
 	u = ocean_height(n_uv + vec2(dv, 0.0), ITERATIONS_FRAGMENT);
 	v = ocean_height(n_uv + vec2(0.0, dv), ITERATIONS_FRAGMENT);
 	const float wave_distance = 512.;
-	vec3 world_normal = normalize(vec3(wave_height - u, max(.1, v_vertex_distance/wave_distance), wave_height - v));
+	vec3 world_normal = normalize(vec3(wave_height - u, max(.1, v_vertex_distance / wave_distance), wave_height - v));
 	NORMAL = mat3(VIEW_MATRIX) * world_normal;
 	TANGENT = normalize(cross(NORMAL, VIEW_MATRIX[2].xyz));
 	BINORMAL = normalize(cross(NORMAL, TANGENT));
@@ -188,7 +188,7 @@ void fragment() {
 	float fresnel = clamp(fresnel_scale * fresnel_base, 0.0, 1.0);
 	ROUGHNESS = mix(0.02, 0.8, fresnel) * daytime_mask;
 	SPECULAR = specular * fresnel;
-	SPECULAR = clamp (SPECULAR - .5 *  (1. - daytime_mask), 0.15, 1.); // Mask far distance when sun is below horizon
+	SPECULAR = clamp(SPECULAR - .5 * (1. - daytime_mask), 0.15, 1.); // Mask far distance when sun is below horizon
 
 	// Terrain pixel position
 	float depth_raw = textureLod(depth_texture, SCREEN_UV, 0.0).r;
@@ -238,7 +238,7 @@ void fragment() {
 	// Foam
 	float foam_mask = 0.0;
 	if (foam_enabled) {
-		float detail_wave = wave_height * 0.005 ;
+		float detail_wave = wave_height * 0.005;
 		float foam_noise = texture(foam_noise_texture, UV * .1 * foam_noise_scale).r;
 		foam_mask = clamp(wave_height * 0.5 + (detail_wave * foam_top_intensity + float(foam_shore_enabled) * shore_mask * foam_shore_intensity) * foam_noise * 1.5 - foam_height, 0.0, 1.0);
 		float dist_fade = 1. - smoothstep(0., 1., v_vertex_distance / foam_distance);
@@ -259,7 +259,7 @@ void fragment() {
 		// Direct light scattering
 		light_factor += direct_scattering * dot(_light_direction, world_normal) * water_color * _light_color;
 		// Apply horizon fade to the whole scattering
-    	BACKLIGHT = light_factor * 4.0 * clamp(depth_fade, 0.4, 1.0) * max(1.0 - foam_mask, 0.5) * daytime_mask;
+		BACKLIGHT = light_factor * 4.0 * clamp(depth_fade, 0.4, 1.0) * max(1.0 - foam_mask, 0.5) * daytime_mask;
 	}
 
 }

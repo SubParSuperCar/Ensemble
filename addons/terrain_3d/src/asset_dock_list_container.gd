@@ -14,14 +14,14 @@ var asset_list: Array
 ## Filtered list of asset resources
 var display_list: Array
 ## Array of ASSET_IDS
-var selected_list : Array[int] = [0]
+var selected_list: Array[int] = [0]
 
 var height: float = 0.
 var width: float = 90.
 var focus_style: StyleBox
 
 var search_text: String = ""
-enum SORT_MODES { ASSET_ID, ALPHABETICAL }
+enum SORT_MODES {ASSET_ID, ALPHABETICAL}
 var sort_mode: SORT_MODES = SORT_MODES.ASSET_ID
 
 var _entry_idx_to_asset_id_map: Dictionary = {}
@@ -42,17 +42,17 @@ func clear_list_entries() -> void:
 		e.queue_free()
 	_entries.clear()
 	_entry_idx_to_asset_id_map.clear()
-	
+
 ## This updates the master list
 func update_asset_list() -> void:
 	if plugin.debug:
 		print("Terrain3DListContainer ", name, ": update_asset_list")
-	
+
 	# Grab terrain
 	var t: Terrain3D = plugin.get_terrain()
 	if not (t and t.assets):
 		return
-	
+
 	if type == Terrain3DAssets.TYPE_TEXTURE:
 		asset_list = t.assets.get_texture_list()
 	else:
@@ -68,7 +68,7 @@ func update_asset_list() -> void:
 
 func matches_search(value: Terrain3DAssetResource) -> bool:
 	return value.name.containsn(search_text)
-	
+
 ## Returns the relevant custom search callable depending on the selected mode
 func get_custom_sort() -> Callable:
 	match sort_mode:
@@ -84,7 +84,7 @@ func sort_by_id(a: Terrain3DAssetResource, b: Terrain3DAssetResource) -> bool:
 
 
 func sort_alphabetical(a: Terrain3DAssetResource, b: Terrain3DAssetResource) -> bool:
-# Handle invalid entries
+	# Handle invalid entries
 	var a_valid: bool = a != null and a.name != null
 	var b_valid: bool = b != null and b.name != null
 
@@ -93,11 +93,11 @@ func sort_alphabetical(a: Terrain3DAssetResource, b: Terrain3DAssetResource) -> 
 	if not a_valid:
 		return false  # a goes after b
 	if not b_valid:
-		return true   # a goes before b
+		return true  # a goes before b
 
 	# Both valid: alphabetical compare
-	return a.name < b.name	
-	
+	return a.name < b.name
+
 
 ## This updates the visuals only for sorting and/or filtering - see also update_asset_list() 
 func update_list_entries() -> void:
@@ -116,7 +116,7 @@ func update_list_entries() -> void:
 	update_selection()
 
 
-func add_list_entry(p_resource: Resource = null) -> void:
+func add_list_entry(p_resource: Resource=null) -> void:
 	var entry: Terrain3DListEntry = Terrain3DListEntry.new()
 	entry.focus_style = focus_style
 	entry.set_edited_resource(p_resource)
@@ -124,7 +124,7 @@ func add_list_entry(p_resource: Resource = null) -> void:
 	var res_id: int = p_resource.id if p_resource else _entries.size()
 	# Add to the mapping to look up later 
 	_entry_idx_to_asset_id_map[_entries.size()] = res_id
-	
+
 	entry.type = type
 	entry.hovered.connect(_on_resource_hovered.bind(res_id))
 	entry.clicked.connect(_on_entry_clicked.bind(_entries.size()))
@@ -136,7 +136,7 @@ func add_list_entry(p_resource: Resource = null) -> void:
 
 	add_child(entry, true)
 	_entries.push_back(entry)
-	
+
 
 func _on_resource_hovered(p_id: int):
 	if type == Terrain3DAssets.TYPE_MESH:
@@ -149,7 +149,7 @@ func set_selected_after_swap(p_type: Terrain3DAssets.AssetType, p_old_id: int, p
 	if p_type != type:
 		return
 	EditorInterface.mark_scene_as_unsaved()
-	selected_list = [ p_new_id ]
+	selected_list = [p_new_id]
 	update_selection()
 
 
@@ -157,13 +157,13 @@ func _on_entry_clicked(p_entry_idx: int) -> void:
 	if plugin.debug:
 		print("Terrain3DListContainer: Clicked %s" % p_entry_idx)
 	if type == Terrain3DAssets.TYPE_TEXTURE:
-		if not plugin.editor.get_tool() in [ Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR, Terrain3DEditor.ROUGHNESS ]:
+		if not plugin.editor.get_tool() in [Terrain3DEditor.TEXTURE, Terrain3DEditor.COLOR, Terrain3DEditor.ROUGHNESS]:
 			plugin.ui.toolbar.change_tool("PaintTexture")
-		add_entry_to_selection( [p_entry_idx], true)
+		add_entry_to_selection([p_entry_idx], true)
 	elif type == Terrain3DAssets.TYPE_MESH:
 		if plugin.editor.get_tool() != Terrain3DEditor.INSTANCER:
 			plugin.ui.toolbar.change_tool("InstanceMeshes")
-		var entry_arr: Array = [ p_entry_idx ]
+		var entry_arr: Array = [p_entry_idx]
 		var modifier_shift: bool = Input.is_key_pressed(KEY_SHIFT)
 		if modifier_shift:
 			if _anchor_entry_idx != -1:
@@ -171,12 +171,12 @@ func _on_entry_clicked(p_entry_idx: int) -> void:
 				var upper_bound: int = maxi(_anchor_entry_idx, p_entry_idx) + 1
 				entry_arr = range(lower_bound, upper_bound)
 		# Editor responds to modifier_ctrl so we must register touchscreen Invert
-		var modifier_ctrl: bool = false 
+		var modifier_ctrl: bool = false
 		if plugin._use_meta:
 			modifier_ctrl = Input.is_key_pressed(KEY_META) || plugin.ui.inverted_input
 		else:
 			modifier_ctrl = Input.is_key_pressed(KEY_CTRL) || plugin.ui.inverted_input
-		add_entry_to_selection(entry_arr, !modifier_ctrl)
+		add_entry_to_selection(entry_arr, ! modifier_ctrl)
 
 
 func add_entry_to_selection(p_entry_idx_array: Array, p_clear: bool) -> void:
@@ -188,7 +188,7 @@ func add_entry_to_selection(p_entry_idx_array: Array, p_clear: bool) -> void:
 			continue
 		var asset_id: int = _entry_idx_to_asset_id_map[entry_idx]
 		if selected_list.has(asset_id):
-			if not p_clear and selected_list.size() > 1  and p_entry_idx_array.size() == 1:
+			if not p_clear and selected_list.size() > 1 and p_entry_idx_array.size() == 1:
 				selected_list.erase(asset_id)
 		else:
 			selected_list.push_back(asset_id)
@@ -201,16 +201,16 @@ func add_entry_to_selection(p_entry_idx_array: Array, p_clear: bool) -> void:
 
 func update_selection() -> void:
 	if selected_list.is_empty():
-			selected_list = [0]
+		selected_list = [0]
 	for entry: Terrain3DListEntry in _entries:
 		if entry.resource:
 			entry.set_selected(entry.resource.get_id() in selected_list)
 	selected_list_size_changed.emit(selected_list.size())
 	plugin.ui._on_setting_changed()
-	
+
 
 func _on_edit_clicked(p_entry: Terrain3DListEntry) -> void:
-	selected_list = [ p_entry.resource.id ]
+	selected_list = [p_entry.resource.id]
 	update_selection()
 	EditorInterface.edit_resource(p_entry.resource)
 
@@ -225,12 +225,12 @@ func _on_highlight_clicked(p_entry: Terrain3DListEntry) -> void:
 			if not entry.resource:
 				continue
 			if entry.resource.id in selected_list:
-				entry.set_highlighted(!highlight_state)
+				entry.set_highlighted(! highlight_state)
 	else:
 		# Highlight only this asset
 		p_entry.toggle_highlighted()
-		
-	
+
+
 func _on_clear_clicked(p_entry: Terrain3DListEntry) -> void:
 	if not p_entry.resource:
 		return
@@ -240,8 +240,8 @@ func _on_clear_clicked(p_entry: Terrain3DListEntry) -> void:
 		clear_resources(selected_list)
 	else:
 		clear_resources([p_entry.resource.id])
-		
-		
+
+
 func _on_enable_clicked(p_entry: Terrain3DListEntry) -> void:
 	if not p_entry.resource:
 		return
@@ -252,23 +252,25 @@ func _on_enable_clicked(p_entry: Terrain3DListEntry) -> void:
 			if not entry.resource:
 				continue
 			if entry.resource.id in selected_list:
-				entry.set_enabled(!enable_state)
+				entry.set_enabled(! enable_state)
 	else:
 		# Toggle enabled for only this asset
 		p_entry.toggle_enabled()
-		
+
 
 func clear_resources(p_asset_ids: Array[int]) -> void:
 	var asset_dock: Control = get_parent().get_parent().get_parent()
 	if type == Terrain3DAssets.TYPE_TEXTURE:
-		asset_dock.confirm_dialog.dialog_text = "Are you sure you want to clear %s texture%s?" % [p_asset_ids.size(), "" if p_asset_ids.size() == 1 else "s"]
+		asset_dock.confirm_dialog.dialog_text = "Are you sure you want to clear %s texture%s?" % [p_asset_ids.size(),
+			"" if p_asset_ids.size() == 1 else "s"]
 	else:
-		asset_dock.confirm_dialog.dialog_text = "Are you sure you want to clear %s mesh%s and delete all instances?" % [p_asset_ids.size(), "" if p_asset_ids.size() == 1 else "es"]
+		asset_dock.confirm_dialog.dialog_text = "Are you sure you want to clear %s mesh%s and delete all instances?" % [
+			p_asset_ids.size(), "" if p_asset_ids.size() == 1 else "es"]
 	asset_dock.confirm_dialog.popup_centered()
 	await asset_dock.confirmation_closed
 	if not asset_dock._confirmed:
 		return
-	selected_list = [ 0 ]
+	selected_list = [0]
 	for asset_id: int in p_asset_ids:
 		update_resource(null, asset_id)
 	for key: int in _entry_idx_to_asset_id_map.keys():
@@ -300,7 +302,7 @@ func _on_resource_changed(p_resource: Resource, p_id: int) -> void:
 	if not p_resource:
 		return
 	update_resource(p_resource, p_id)
-	
+
 
 func remove_all_highlights():
 	if not plugin.terrain:
@@ -309,8 +311,8 @@ func remove_all_highlights():
 		var resource: Terrain3DAssetResource = _entries[i].resource
 		if resource and resource.is_highlighted():
 			resource.set_highlighted(false)
-			
-			
+
+
 func set_entry_width(value: float) -> void:
 	width = clamp(value, 90., 512.)
 	redraw()
@@ -327,8 +329,8 @@ func redraw() -> void:
 	var columns: int = 3
 	columns = clamp(size.x / width, 1, 100)
 	var tile_size: Vector2 = Vector2(width, width) - Vector2(separation, separation)
-	var count_font_size = clamp(tile_size.x/11, 11, 16)
-	var name_font_size = clamp(tile_size.x/12, 12, 18)
+	var count_font_size = clamp(tile_size.x / 11, 11, 16)
+	var name_font_size = clamp(tile_size.x / 12, 12, 18)
 	for c in get_children():
 		if is_instance_valid(c):
 			c.size = tile_size
@@ -345,7 +347,7 @@ func redraw() -> void:
 func _get_minimum_size() -> Vector2:
 	return Vector2(0, height)
 
-	
+
 func _notification(p_what) -> void:
 	if p_what == NOTIFICATION_SORT_CHILDREN:
 		redraw()

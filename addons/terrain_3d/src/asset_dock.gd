@@ -30,11 +30,11 @@ var search_button: Button
 
 #DEPRECATED 4.5
 #class EdDock extends EditorDock:
-	#func _update_layout(layout: int) -> void:
-		#layout 1 vertical, 2 horizontal, 4 window
-		#print("Terrain3DAssetDock: _update_layout called with: ", layout)
+#func _update_layout(layout: int) -> void:
+#layout 1 vertical, 2 horizontal, 4 window
+#print("Terrain3DAssetDock: _update_layout called with: ", layout)
 
-var _dock: MarginContainer #DEPRECATED 4.5 - Use EdDock
+var _dock: MarginContainer  #DEPRECATED 4.5 - Use EdDock
 var _initialized: bool = false
 var plugin: EditorPlugin
 var window: Window
@@ -44,18 +44,18 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_ENTER_TREE:
 		await get_tree().process_frame
 		update_layout()
-		
-		
+
+
 func initialize(p_plugin: EditorPlugin) -> void:
 	if p_plugin:
 		plugin = p_plugin
 
-	_dock = ClassDB.instantiate("EditorDock") #DEPRECATED 4.5 - EdDock.new()
+	_dock = ClassDB.instantiate("EditorDock")  #DEPRECATED 4.5 - EdDock.new()
 	_dock.title = "Terrain3D"
 	_dock.dock_icon = preload("../icons/terrain3d.svg")
-	_dock.default_slot = 8 #DEPRECATED 4.5 - EditorDock.DockSlot.DOCK_SLOT_BOTTOM
+	_dock.default_slot = 8  #DEPRECATED 4.5 - EditorDock.DockSlot.DOCK_SLOT_BOTTOM
 	_dock.closable = false
-	_dock.available_layouts = 0x7 #DEPRECATED 4.5 - EditorDock.DOCK_LAYOUT_ALL
+	_dock.available_layouts = 0x7  #DEPRECATED 4.5 - EditorDock.DOCK_LAYOUT_ALL
 	_dock.add_child(self)
 	plugin.add_dock(_dock)
 	_dock.open()
@@ -75,7 +75,7 @@ func initialize(p_plugin: EditorPlugin) -> void:
 	var editor_scale: float = EditorInterface.get_editor_scale()
 	search_box.custom_minimum_size = Vector2(100. * editor_scale, 30. * editor_scale)
 	search_button = $Box/Buttons/SearchBox/SearchButton
-	
+
 	texture_list = Terrain3DListContainer.new()
 	texture_list.name = "TextureList"
 	texture_list.plugin = plugin
@@ -106,7 +106,7 @@ func initialize(p_plugin: EditorPlugin) -> void:
 
 	search_box.text_changed.connect(_on_search_text_changed)
 	search_button.pressed.connect(_on_search_button_pressed)
-	
+
 	confirm_dialog = ConfirmationDialog.new()
 	add_child(confirm_dialog, true)
 	confirm_dialog.hide()
@@ -141,7 +141,7 @@ func _gui_input(p_event: InputEvent) -> void:
 ## Dock placement
 
 
-func remove_dock(p_force: bool = false) -> void:
+func remove_dock(p_force: bool=false) -> void:
 	plugin.remove_dock(_dock)
 	# plugin.remove_dock() only unregisters _dock; it was created here via
 	# ClassDB.instantiate() and is owned by this script, not the scene tree.
@@ -167,7 +167,7 @@ func update_layout() -> void:
 	if not _initialized:
 		return
 	if plugin.debug > 1:
-		print("Terrain3DAssetDock: update_layout")	
+		print("Terrain3DAssetDock: update_layout")
 
 	## Detect if we have a new window from `Make floating` and grab it
 	if not window:
@@ -175,12 +175,12 @@ func update_layout() -> void:
 			window = get_parent().get_parent().get_parent()
 			_on_pin_changed(pinned_btn.button_pressed)
 			plugin.godot_editor_window.mouse_entered.connect(_on_godot_window_entered)
-			return # Displaying will call this function again
+			return  # Displaying will call this function again
 		# Check if window was just freed. Freed objects have a different hash than null
 		elif hash(window) != hash(null):
 			window = null
 			plugin.godot_editor_window.mouse_entered.disconnect(_on_godot_window_entered)
-			return # Will call this function again upon display
+			return  # Will call this function again upon display
 
 	## Vertical layout: buttons on top
 	if size.x < 700:
@@ -192,7 +192,7 @@ func update_layout() -> void:
 		box.move_child(size_slider, 2)
 		pinned_btn.reparent(buttons)
 	else:
-	# Wide layout: buttons on left
+		# Wide layout: buttons on left
 		box.vertical = false
 		buttons.vertical = true
 		search_box.reparent(buttons)
@@ -211,8 +211,8 @@ func _on_godot_window_entered() -> void:
 		print("Terrain3DAssetDock: _on_godot_window_entered")
 	if is_instance_valid(window) and window.has_focus():
 		plugin.godot_editor_window.grab_focus()
-	
-	
+
+
 func _on_search_text_changed() -> void:
 	if plugin.debug:
 		print("Terrain3DAssetDock: _on_search_text_changed: ", search_box.text)
@@ -223,7 +223,7 @@ func _on_search_text_changed() -> void:
 		search_button.icon = get_theme_icon("Close", "EditorIcons")
 	else:
 		search_button.icon = get_theme_icon("Search", "EditorIcons")
-		
+
 	mesh_list.search_text = search_box.text
 	texture_list.search_text = search_box.text
 	current_list.update_list_entries()
@@ -273,7 +273,7 @@ func _on_meshes_pressed() -> void:
 		print("Terrain3DAssetDock: _on_meshes_pressed")
 	plugin.ui.toolbar.change_tool("InstanceMeshes")
 
-	
+
 func set_dock_mode(tool: Terrain3DEditor.Tool) -> void:
 	var mesh_mode: bool = tool == Terrain3DEditor.Tool.INSTANCER
 	if not mesh_mode and tool != Terrain3DEditor.Tool.TEXTURE:
@@ -284,15 +284,15 @@ func set_dock_mode(tool: Terrain3DEditor.Tool) -> void:
 	_updating_list = true
 	current_list = list_to_set
 	mesh_list.visible = mesh_mode
-	texture_list.visible = !mesh_mode
+	texture_list.visible = ! mesh_mode
 	meshes_btn.set_pressed_no_signal(mesh_mode)
-	textures_btn.set_pressed_no_signal(!mesh_mode)
+	textures_btn.set_pressed_no_signal(! mesh_mode)
 	current_list.update_asset_list()
 	if plugin.is_terrain_valid():
 		EditorInterface.edit_node(plugin.terrain)
 	save_editor_settings()
 	_updating_list = false
-	
+
 
 func _on_tool_changed(p_tool: Terrain3DEditor.Tool, p_operation: Terrain3DEditor.Operation) -> void:
 	if plugin.debug:
@@ -309,7 +309,7 @@ func _on_mesh_selection_changed(count: int) -> void:
 	if not meshes_btn:
 		return
 	meshes_btn.text = "Meshes"
-	meshes_btn.text += " (%s)" % count if count >=2 else ""
+	meshes_btn.text += " (%s)" % count if count >= 2 else ""
 
 
 func update_assets() -> void:
@@ -317,7 +317,7 @@ func update_assets() -> void:
 		print("Terrain3DAssetDock: update_assets: ", plugin.terrain.assets if plugin.terrain else "")
 	if not _initialized:
 		return
-	
+
 	# Verify signals to individual lists
 	if plugin.is_terrain_valid() and plugin.terrain.assets:
 		if not plugin.terrain.assets.textures_changed.is_connected(texture_list.update_asset_list):
@@ -337,7 +337,7 @@ func update_assets() -> void:
 func load_editor_settings() -> void:
 	# Remove old editor settings
 	const ES_DOCK: String = "terrain3d/dock/"
-	for setting in [ "slot", "floating", "window_position", "window_size" ]:
+	for setting in ["slot", "floating", "window_position", "window_size"]:
 		plugin.erase_setting(ES_DOCK + setting)
 	pinned_btn.button_pressed = plugin.get_setting(ES_DOCK_PINNED, true)
 	size_slider.value = plugin.get_setting(ES_DOCK_TILE_SIZE, 90)

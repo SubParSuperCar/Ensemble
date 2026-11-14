@@ -65,12 +65,12 @@ var _godot_last_state: Window.Mode = Window.MODE_FULLSCREEN
 func initialize(p_plugin: EditorPlugin) -> void:
 	if p_plugin:
 		plugin = p_plugin
-	
+
 	_godot_last_state = plugin.godot_editor_window.mode
 	placement_opt = $Box/Buttons/PlacementOpt
 	pinned_btn = $Box/Buttons/Pinned
 	floating_btn = $Box/Buttons/Floating
-	floating_btn.owner = null # Godot complains about buttons that are reparented
+	floating_btn.owner = null  # Godot complains about buttons that are reparented
 	size_slider = $Box/Buttons/SizeSlider
 	size_slider.owner = null
 	box = $Box
@@ -81,7 +81,7 @@ func initialize(p_plugin: EditorPlugin) -> void:
 	search_box = $Box/Buttons/SearchBox
 	search_box.owner = null
 	search_button = $Box/Buttons/SearchBox/SearchButton
-	
+
 	texture_list = Terrain3DListContainer.new()
 	texture_list.name = "TextureList"
 	texture_list.plugin = plugin
@@ -105,7 +105,7 @@ func initialize(p_plugin: EditorPlugin) -> void:
 	placement_opt.item_selected.connect(set_slot)
 	floating_btn.pressed.connect(make_dock_float)
 	pinned_btn.toggled.connect(_on_pin_changed)
-	pinned_btn.visible = ( window != null )
+	pinned_btn.visible = (window != null)
 	pinned_btn.owner = null
 	size_slider.value_changed.connect(_on_slider_changed)
 	plugin.ui.toolbar.tool_changed.connect(_on_tool_changed)
@@ -121,7 +121,7 @@ func initialize(p_plugin: EditorPlugin) -> void:
 func _ready() -> void:
 	if not _initialized:
 		return
-		
+
 	# Setup styles
 	set("theme_override_styles/panel", get_theme_stylebox("panel", "Panel"))
 	# Avoid saving icon resources in tscn when editing w/ a tool script
@@ -131,10 +131,10 @@ func _ready() -> void:
 		floating_btn.icon = get_theme_icon("MakeFloating", "EditorIcons")
 		floating_btn.text = ""
 		search_button.icon = get_theme_icon("Search", "EditorIcons")
-	
+
 	search_box.text_changed.connect(_on_search_text_changed)
 	search_button.pressed.connect(_on_search_button_pressed)
-	
+
 	confirm_dialog = ConfirmationDialog.new()
 	add_child(confirm_dialog, true)
 	confirm_dialog.hide()
@@ -160,8 +160,8 @@ func _gui_input(p_event: InputEvent) -> void:
 func set_slot(p_slot: int) -> void:
 	if plugin.debug:
 		print("Terrain3DAssetDock: set_slot: ", p_slot)
-	p_slot = clamp(p_slot, 0, POS_MAX-1)
-	
+	p_slot = clamp(p_slot, 0, POS_MAX - 1)
+
 	if slot != p_slot:
 		slot = p_slot
 		placement_opt.selected = slot
@@ -170,7 +170,7 @@ func set_slot(p_slot: int) -> void:
 		update_dock()
 
 
-func remove_dock(p_force: bool = false) -> void:
+func remove_dock(p_force: bool=false) -> void:
 	if state == SIDEBAR:
 		plugin.remove_control_from_docks(self)
 		state = HIDDEN
@@ -195,7 +195,7 @@ func remove_dock(p_force: bool = false) -> void:
 		pinned_btn.visible = false
 		placement_opt.visible = true
 		state = HIDDEN
-		update_dock() # return window to side/bottom
+		update_dock()  # return window to side/bottom
 
 
 func update_dock() -> void:
@@ -219,7 +219,7 @@ func update_dock() -> void:
 
 func update_layout() -> void:
 	if plugin.debug > 1:
-		print("Terrain3DAssetDock: update_layout")	
+		print("Terrain3DAssetDock: update_layout")
 	if not _initialized:
 		return
 
@@ -227,10 +227,10 @@ func update_layout() -> void:
 	if not window and get_parent() and get_parent().get_parent() is Window:
 		window = get_parent().get_parent()
 		make_dock_float()
-		return # Will call this function again upon display
+		return  # Will call this function again upon display
 
 	# Vertical layout: buttons on top
-	if size.x < 500 or ( not window and slot < POS_BOTTOM ):
+	if size.x < 500 or (not window and slot < POS_BOTTOM):
 		box.vertical = true
 		buttons.vertical = false
 		search_box.reparent(box)
@@ -240,7 +240,7 @@ func update_layout() -> void:
 		floating_btn.reparent(buttons)
 		pinned_btn.reparent(buttons)
 	else:
-	# Wide layout: buttons on left
+		# Wide layout: buttons on left
 		box.vertical = false
 		buttons.vertical = true
 		search_box.reparent(buttons)
@@ -263,7 +263,7 @@ func _on_search_text_changed() -> void:
 		search_button.icon = get_theme_icon("Close", "EditorIcons")
 	else:
 		search_button.icon = get_theme_icon("Search", "EditorIcons")
-		
+
 	mesh_list.search_text = search_box.text
 	texture_list.search_text = search_box.text
 	current_list.update_list_entries()
@@ -313,7 +313,7 @@ func _on_meshes_pressed() -> void:
 		print("Terrain3DAssetDock: _on_meshes_pressed")
 	plugin.ui.toolbar.change_tool("InstanceMeshes")
 
-	
+
 func set_dock_mode(tool: Terrain3DEditor.Tool) -> void:
 	var mesh_mode: bool = tool == Terrain3DEditor.Tool.INSTANCER
 	if not mesh_mode and tool != Terrain3DEditor.Tool.TEXTURE:
@@ -324,9 +324,9 @@ func set_dock_mode(tool: Terrain3DEditor.Tool) -> void:
 	_updating_list = true
 	current_list = list_to_set
 	mesh_list.visible = mesh_mode
-	texture_list.visible = !mesh_mode
+	texture_list.visible = ! mesh_mode
 	meshes_btn.set_pressed_no_signal(mesh_mode)
-	textures_btn.set_pressed_no_signal(!mesh_mode)
+	textures_btn.set_pressed_no_signal(! mesh_mode)
 	current_list.update_asset_list()
 	if plugin.is_terrain_valid():
 		EditorInterface.edit_node(plugin.terrain)
@@ -349,15 +349,15 @@ func _on_mesh_selection_changed(count: int) -> void:
 	if not meshes_btn:
 		return
 	meshes_btn.text = "Meshes"
-	meshes_btn.text += " (%s)" % count if count >=2 else ""
-	
-	
+	meshes_btn.text += " (%s)" % count if count >= 2 else ""
+
+
 func update_assets() -> void:
 	if plugin.debug:
 		print("Terrain3DAssetDock: update_assets: ", plugin.terrain.assets if plugin.terrain else "")
 	if not _initialized:
 		return
-	
+
 	# Verify signals to individual lists
 	if plugin.is_terrain_valid() and plugin.terrain.assets:
 		if not plugin.terrain.assets.textures_changed.is_connected(texture_list.update_asset_list):
@@ -381,7 +381,7 @@ func make_dock_float() -> void:
 		create_window()
 
 	state = WINDOWED
-	visible = true # Asset dock contents are hidden when popping out of the bottom!
+	visible = true  # Asset dock contents are hidden when popping out of the bottom!
 	pinned_btn.visible = true
 	floating_btn.visible = false
 	placement_opt.visible = false
@@ -423,7 +423,7 @@ func clamp_window_position() -> void:
 			bounds = DisplayServer.screen_get_position(window.current_screen)
 			bounds += DisplayServer.screen_get_size(window.current_screen)
 		var margin: int = 40
-		window.position.x = clamp(window.position.x, -window.size.x + 2*margin, bounds.x - margin)
+		window.position.x = clamp(window.position.x, -window.size.x + 2 * margin, bounds.x - margin)
 		window.position.y = clamp(window.position.y, 25, bounds.y - margin)
 
 

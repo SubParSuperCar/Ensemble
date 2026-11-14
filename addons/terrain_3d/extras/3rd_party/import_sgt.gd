@@ -34,9 +34,10 @@ func clear_multimeshes() -> void:
 
 func import_sgt() -> void:
 	var sgt_mm: MultiMesh = simple_grass_textured.multimesh
-	var global_xform: Transform3D = simple_grass_textured.global_transform	
-	print("Starting to import %d instances from SimpleGrassTextured using mesh id %d" % [ sgt_mm.instance_count, assign_mesh_id])
+	var global_xform: Transform3D = simple_grass_textured.global_transform
+	print("Starting to import %d instances from SimpleGrassTextured using mesh id %d" % [sgt_mm.instance_count,
+		assign_mesh_id])
 	var time: int = Time.get_ticks_msec()
-	get_instancer().add_multimesh(assign_mesh_id, sgt_mm, simple_grass_textured.global_transform)	
-	print("Import complete in %.2f seconds" % [ float(Time.get_ticks_msec() - time)/1000. ])
+	get_instancer().add_multimesh(assign_mesh_id, sgt_mm, simple_grass_textured.global_transform)
+	print("Import complete in %.2f seconds" % [float(Time.get_ticks_msec() - time) / 1000.])
 	

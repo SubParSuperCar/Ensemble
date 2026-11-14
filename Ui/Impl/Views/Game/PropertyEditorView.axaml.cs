@@ -38,19 +38,13 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 	{
 		base.OnDataContextChanged(e);
 
-		if (_viewModel is not null)
-		{
-			_viewModel.Copied -= _copyFlash.Flash;
-			_viewModel.Pasted -= _pasteFlash.Flash;
-		}
+		_viewModel?.Copied -= _copyFlash.Flash;
+		_viewModel?.Pasted -= _pasteFlash.Flash;
 
 		_viewModel = DataContext as PropertyEditorViewModel;
 
-		if (_viewModel is null)
-			return;
-
-		_viewModel.Copied += _copyFlash.Flash;
-		_viewModel.Pasted += _pasteFlash.Flash;
+		_viewModel?.Copied += _copyFlash.Flash;
+		_viewModel?.Pasted += _pasteFlash.Flash;
 	}
 
 	// The editor's bound value, which an editor's own edits update only when committed
@@ -64,7 +58,7 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 		Items.Resources[NameMaxWidthKey] = e.NewSize.Width * NameWidthShare;
 
 	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) =>
-		(DataContext as PropertyEditorViewModel)?.FilterQuery = string.Empty;
+		_viewModel?.FilterQuery = string.Empty;
 
 	private void OnKeyButtonClick(object? sender, RoutedEventArgs e) =>
 		TopLevel.GetTopLevel(this)?.FocusManager.Focus(null);

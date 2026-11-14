@@ -18,8 +18,8 @@
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon
                         Data="{StaticResource GitHubIcon}"
-                        Width="20" Height="20"
-                        Foreground="{DynamicResource ThemeForegroundBrush}" />
+                        Foreground="{DynamicResource ThemeForegroundBrush}"
+                        Width="20" Height="20" />
 
                     <TextBlock Text="GitHub" />
                 </StackPanel>
@@ -32,8 +32,8 @@
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <PathIcon
                         Data="{StaticResource ItchIcon}"
-                        Width="20" Height="20"
-                        Foreground="{DynamicResource ThemeForegroundBrush}" />
+                        Foreground="{DynamicResource ThemeForegroundBrush}"
+                        Width="20" Height="20" />
 
                     <TextBlock Text="itch.io" />
                 </StackPanel>

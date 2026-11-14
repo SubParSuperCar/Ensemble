@@ -48,7 +48,7 @@ public sealed partial class AssetSelectorView : UserControl, IViewFor<AssetSelec
 	}
 
 	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) =>
-		(DataContext as AssetSelectorViewModel)?.FilterQuery = string.Empty;
+		_viewModel?.FilterQuery = string.Empty;
 
 	private void OnTreeViewContainerPrepared(object? sender, ContainerPreparedEventArgs e)
 	{

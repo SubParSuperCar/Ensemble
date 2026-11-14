@@ -442,8 +442,14 @@ sequenceDiagram
 
 Each state packs an assembly's ID, position, rotation, and velocities into 204 bits (`AssemblyState`, `CreationPackets`,
 `BitWriter`). Sleeping assemblies are sent once at rest and then only as slow keepalives.
-[**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) walks through all of it, with a map of the code, and holds the design for
-what comes next (asset logic, mechanisms, input, and seats).
+
+Driving happens on the simulator too: each physics tick, it runs its assets' logic (`ISimulationTicked`: motors, servos,
+anchors) with the keys of the plot's controller (its oldest occupant sitting in a seat with controls), sent through the
+host as a mask (`InputState`). Sitting and leaving are actions (`SetSeatAction`), and what an asset decides that must
+outlast its simulator reaches every peer as asset states (`IReplicatedState`).
+
+[**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) walks through all of it, with a map of the code, the designs behind it, and
+what comes next (pistons, forces, and aerodynamics).
 
 ---
 
@@ -516,8 +522,8 @@ where the difference is small.
 - **Shadows.** The sun uses soft shadow filter quality 3 and a 64 m shadow distance, which keeps thin shapes (like the
   suspension's coil) crisp.
 - **`perf_mod(render_scale?)`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing
-  (including terminal windows opened afterward), glow, Sky3D, the terrain, spot and omni light shadows (an empty shadow
-  atlas), and lighting itself (the unshaded debug draw), and renders 3D at `render_scale` (e.g., `0.5`) if given.
+  (including terminal windows opened afterward), glow, Sky3D, the terrain's ocean, spot and omni light shadows (an empty
+  shadow atlas), and lighting itself (the unshaded debug draw), and renders 3D at `render_scale` (e.g., `0.5`) if given.
 - **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World, 2 Character,
   3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics ticks
   (highlights, the placement preview, other players' characters) opt out of interpolation. Its Baumgarte factor (how
@@ -656,8 +662,9 @@ content versions leave room to migrate old saves.
   stay as empty stand-ins, since Godot resources name them. `resources/` and `world.tscn` aren't stripped: a placeholder
   can't stand in for a material a C# property or Terrain3D types exactly.
 - **CI** (GitHub Actions): `test.yml` runs the tests and builds the server on every push; `bin.yml` builds every tag (or
-  on demand), smoke-tests every package by booting a headless server, and publishes a release with checksums; `src.yml`
-  publishes source archives, and `cloc.yml` tracks lines of code. Dependabot keeps packages and actions current.
+  on demand), smoke-tests every package by booting a headless server, publishes a release with checksums, and pushes
+  the builds to itch.io; `src.yml` publishes source archives, and `cloc.yml` tracks lines of code. Dependabot keeps
+  packages and actions current.
 - **Updates:** the game checks GitHub for newer releases on startup and offers each one once.
 
 ---
@@ -684,7 +691,7 @@ content versions leave room to migrate old saves.
 | `Estragonia/`           | The Avalonia-in-Godot bridge (forked and maintained here)                                |
 | `Tests/`                | Unit tests for Core, saving, geometry, welds, placement, chat text, and more             |
 | `scenes/`               | The main, world, plot, player, and camera scenes                                         |
-| `shaders/`              | Highlight, helix, and static-effect shaders                                              |
+| `shaders/`              | Highlight, plot grid, forward-indicator, helix, and static-effect shaders                |
 | `assets/`, `resources/` | Meshes, images, audio, materials, and terrain data                                       |
 | `addons/`               | Third-party Godot addons: Terrain3D, Sky3D, Resonate, and the Rider plugin               |
 | `GdIgnore/`             | Build-only code kept from Godot (`PatchExport`)                                          |

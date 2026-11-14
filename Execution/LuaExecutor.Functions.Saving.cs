@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.Common.Interop;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Utils;
@@ -290,9 +289,7 @@ public static partial class LuaExecutor
 			var current = asset.Source.Properties;
 			var properties = new Dictionary();
 
-			foreach (var (key, value) in instance.Properties ??
-										 new System.Collections.Generic.Dictionary<string, CoreVariant>(IProperties
-											 .KeyComparer))
+			foreach (var (key, value) in instance.Properties?.AsEnumerable() ?? [])
 				if (current.TryGetValue(key, out var existing) && GdProperties.Check(key, value, existing) is null)
 					properties[key] = value.ToGodot();
 				else

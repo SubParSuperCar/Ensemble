@@ -32,20 +32,14 @@ public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewMod
 	{
 		base.OnDataContextChanged(e);
 
-		if (_viewModel is not null)
-		{
-			_viewModel.Lines.CollectionChanged -= OnLinesChanged;
-			_viewModel.FocusRequested -= OnFocusRequested;
-		}
+		_viewModel?.Lines.CollectionChanged -= OnLinesChanged;
+		_viewModel?.FocusRequested -= OnFocusRequested;
 
 		_viewModel = DataContext as TextChatViewModel;
 		RebuildLog();
 
-		if (_viewModel is null)
-			return;
-
-		_viewModel.Lines.CollectionChanged += OnLinesChanged;
-		_viewModel.FocusRequested += OnFocusRequested;
+		_viewModel?.Lines.CollectionChanged += OnLinesChanged;
+		_viewModel?.FocusRequested += OnFocusRequested;
 	}
 
 	// Nametag colors depend on the theme, which is null while detached (e.g., as the widget closes) despite its type

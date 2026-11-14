@@ -11,8 +11,12 @@ size = Vector3(32, 32, 32)
 size = Vector3(32, 0.001, 32)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_grid"]
+render_priority = 0
 shader = ExtResource("4_grid")
 shader_parameter/color = Color(0.86599994, 1, 0.32999998, 1)
+shader_parameter/spacings = Vector3(0.0625, 0.5, 4)
+shader_parameter/widths = Vector3(0.0078125, 0.015625, 0.03125)
+shader_parameter/opacities = Vector3(0.333333, 0.666667, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_72cjw"]
 shading_mode = 0
@@ -26,6 +30,9 @@ size = Vector2(32, 32)
 render_priority = 2
 shader = ExtResource("5_dart")
 shader_parameter/color = Color(0.2509804, 0.627451, 1, 1)
+shader_parameter/size = 4.0
+shader_parameter/width = 0.0234375
+shader_parameter/opacity = 1.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_cyvgl"]
 material = SubResource("ShaderMaterial_dart")
@@ -66,4 +73,3 @@ mesh = SubResource("PlaneMesh_f03gw")
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_cyvgl")
-

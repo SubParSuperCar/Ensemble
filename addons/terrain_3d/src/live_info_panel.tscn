@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://dfxfplbduvpw6"]
+[gd_scene format=3 uid="uid://dfxfplbduvpw6"]
 
 [ext_resource type="Script" uid="uid://dgpd4t1nmfjug" path="res://addons/terrain_3d/src/live_info_panel.gd" id="1_1615y"]
 
@@ -15,7 +15,7 @@ border_width_right = 2
 border_width_bottom = 2
 corner_detail = 1
 
-[node name="Terrain3DLiveInfoPanel" type="MarginContainer"]
+[node name="Terrain3DLiveInfoPanel" type="MarginContainer" unique_id=879980738]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -28,14 +28,14 @@ theme_override_constants/margin_left = 10
 theme_override_constants/margin_bottom = 10
 script = ExtResource("1_1615y")
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1144168919]
 custom_minimum_size = Vector2(220, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 theme_override_styles/panel = SubResource("StyleBoxFlat_1615y")
 
-[node name="InfoLabel" type="Label" parent="PanelContainer"]
+[node name="InfoLabel" type="Label" parent="PanelContainer" unique_id=251006373]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 8

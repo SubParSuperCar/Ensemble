@@ -153,7 +153,7 @@ public static partial class LuaExecutor
 			}
 
 			if (world.GetNodeOrNull<Node3D>(TerrainPath) is { } terrain)
-				terrain.Visible = false;
+				terrain.Call("ocean_enabled", false);
 		}
 
 		Log.Information(

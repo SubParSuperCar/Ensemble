@@ -10,6 +10,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private static readonly Shader EdgesShader = GD.Load<Shader>(ShadersDir + "highlight_edges.gdshader");
 	private static readonly Shader FillShader = GD.Load<Shader>(ShadersDir + "highlight_fill.gdshader");
 
+	// A shader that moves vertices names its variant for fills, as the fill must move them alike
+	private static readonly StringName FillShaderMeta = "fill_shader";
+
 	private static readonly StringName BoxSizeParameter = "box_size";
 	private static readonly StringName EdgeThicknessParameter = "edge_thickness";
 	private static readonly StringName FillOpacityParameter = "fill_opacity";
@@ -42,8 +45,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 	// Depth-tested on the target's surfaces, it sorts with the scene, just over translucent geometry at the default
 	// priority (which it may be tinting)
 	private readonly ShaderMaterial _fill = new() { Shader = FillShader, RenderPriority = 1 };
+	private readonly List<ShaderMaterial> _fillVariants = [];
 
-	private readonly List<MeshInstance3D> _filled = [];
+	private readonly List<(MeshInstance3D Mesh, ShaderMaterial Fill)> _filled = [];
 
 	private bool _isPulseCounted;
 
@@ -83,8 +87,8 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	}
 
-	/// <summary>The share of light the fill replaces on the target's surfaces.</summary>
 	// ReSharper disable once MemberCanBeProtected.Global
+	/// <summary>The share of light the fill replaces on the target's surfaces.</summary>
 	[Export(PropertyHint.Range, "0,1")]
 	public float FillOpacity
 	{
@@ -245,7 +249,15 @@ public abstract partial class HighlightBase : MeshInstance3D
 	protected void SetParameter(StringName name, Variant value)
 	{
 		_edges.SetShaderParameter(name, value);
+		SetFillParameter(name, value);
+	}
+
+	private void SetFillParameter(StringName name, Variant value)
+	{
 		_fill.SetShaderParameter(name, value);
+
+		foreach (var variant in _fillVariants)
+			variant.SetShaderParameter(name, value);
 	}
 
 	private void UpdateMesh()
@@ -259,8 +271,7 @@ public abstract partial class HighlightBase : MeshInstance3D
 		SetParameter(BoxSizeParameter, Aabb.Size);
 	}
 
-	private void UpdateAxes() =>
-		_fill.SetShaderParameter(WorldToAxesParameter, GlobalBasis.Orthonormalized().Transposed());
+	private void UpdateAxes() => SetFillParameter(WorldToAxesParameter, GlobalBasis.Orthonormalized().Transposed());
 
 	private void UpdateFill()
 	{
@@ -277,18 +288,19 @@ public abstract partial class HighlightBase : MeshInstance3D
 				if (!FillsByMesh.TryGetValue(mesh, out var fills))
 					FillsByMesh.Add(mesh, fills = []);
 
-				fills.Add(_fill);
-				mesh.MaterialOverlay = _fill;
-				_filled.Add(mesh);
+				var fill = GetFill(mesh);
+				fills.Add(fill);
+				mesh.MaterialOverlay = fill;
+				_filled.Add((mesh, fill));
 			}
 	}
 
 	private void ClearFill()
 	{
-		foreach (var mesh in _filled)
+		foreach (var (mesh, fill) in _filled)
 		{
 			var fills = FillsByMesh[mesh];
-			fills.Remove(_fill);
+			fills.Remove(fill);
 
 			if (fills.Count is 0)
 				FillsByMesh.Remove(mesh);
@@ -298,6 +310,31 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 
 		_filled.Clear();
+		_fillVariants.Clear();
+	}
+
+	// A variant copies the mesh's material, keeping how it moves vertices, and takes the fill's parameters
+	private ShaderMaterial GetFill(MeshInstance3D mesh)
+	{
+		if (
+			mesh.GetActiveMaterial(0) is not ShaderMaterial material || !material.HasMeta(FillShaderMeta) ||
+			material.GetMeta(FillShaderMeta).Obj is not Shader shader)
+			return _fill;
+
+		var variant = (ShaderMaterial)material.Duplicate();
+		variant.Shader = shader;
+		variant.RenderPriority = _fill.RenderPriority;
+
+		foreach (var uniform in FillShader.GetShaderUniformList())
+		{
+			var name = uniform.AsGodotDictionary()["name"].AsStringName();
+
+			if (_fill.GetShaderParameter(name) is { VariantType: not Variant.Type.Nil } value)
+				variant.SetShaderParameter(name, value);
+		}
+
+		_fillVariants.Add(variant);
+		return variant;
 	}
 
 	private void UpdateEdgeThickness() => SetParameter(EdgeThicknessParameter, EdgeThickness);

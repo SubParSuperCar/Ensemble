@@ -1,8 +1,8 @@
 // Colors are given in sRGB, as they look, and decoded to the linear light shaders work in
 
-vec3 srgb_to_linear(vec3 color)
+vec3 srgb_to_linear(vec3 rgb)
 {
-	return mix(color / 12.92, pow((color + 0.055) / 1.055, vec3(2.4)), step(0.04045, color));
+	return mix(rgb / 12.92, pow((rgb + 0.055) / 1.055, vec3(2.4)), step(0.04045, rgb));
 }
 
 // Blending happens in linear light too, where a surface would look more opaque than its opacity; decoding the opacity
@@ -30,9 +30,9 @@ const mat3 LMS_TO_LINEAR = mat3(
 	vec3(4.0767416621, -3.3077115913, 0.2309699292), vec3(-1.2684380046, 2.6097574011, -0.3413193965),
 	vec3(-0.0041960863, -0.7034186147, 1.7076147010));
 
-vec3 linear_to_oklab(vec3 color)
+vec3 linear_to_oklab(vec3 rgb)
 {
-	return pow(color * LINEAR_TO_LMS, vec3(1.0 / 3.0)) * LMS_TO_OKLAB;
+	return pow(rgb * LINEAR_TO_LMS, vec3(1.0 / 3.0)) * LMS_TO_OKLAB;
 }
 
 vec3 oklab_to_linear(vec3 lab)

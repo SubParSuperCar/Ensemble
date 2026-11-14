@@ -11,7 +11,7 @@
     <AvaloniaVersion>12.1.6</AvaloniaVersion>
     <AvaloniaEditVersion>12.0.0</AvaloniaEditVersion>
     <GodotSharpVersion>4.7.2</GodotSharpVersion>
-    <LiveMarkdownVersion>2.5.1</LiveMarkdownVersion>
+    <LiveMarkdownVersion>2.6.1</LiveMarkdownVersion>
     <MicrosoftExtensionsVersion>11.0.0</MicrosoftExtensionsVersion>
     <!-- Pinned to the SkiaSharp version Avalonia.Skia is built against; newer major versions are incompatible -->
     <SkiaSharpVersion>3.119.4</SkiaSharpVersion>
@@ -20,7 +20,7 @@
   <ItemGroup>
     <PackageVersion Include="Avalonia" Version="$(AvaloniaVersion)"/>
     <PackageVersion Include="Avalonia.AvaloniaEdit" Version="$(AvaloniaEditVersion)"/>
-    <PackageVersion Include="Avalonia.Controls.WebView" Version="12.1.1"/>
+    <PackageVersion Include="Avalonia.Controls.WebView" Version="12.1.2"/>
     <PackageVersion Include="Avalonia.HarfBuzz" Version="$(AvaloniaVersion)"/>
     <PackageVersion Include="Avalonia.Skia" Version="$(AvaloniaVersion)"/>
     <PackageVersion Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)"/>
@@ -41,7 +41,7 @@
     <PackageVersion Include="LiveMarkdown.Avalonia.Mermaid" Version="$(LiveMarkdownVersion)"/>
     <PackageVersion Include="LiveMarkdown.Avalonia.Svg.Skia" Version="$(LiveMarkdownVersion)"/>
     <PackageVersion Include="LuaCSharp" Version="0.5.8"/>
-    <PackageVersion Include="MethodBoundaryAspect.Fody" Version="3.6.0"/>
+    <PackageVersion Include="MethodBoundaryAspect.Fody" Version="3.7.0"/>
     <!-- An analyzer only, so it floats to the latest 3.x without touching the game's binaries -->
     <PackageVersion Include="Meziantou.Analyzer" Version="3.*"/>
     <!-- A generator only loads in compilers at least this new, so it stays below every .NET 11 SDK's -->

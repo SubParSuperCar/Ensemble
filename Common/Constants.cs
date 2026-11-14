@@ -32,6 +32,7 @@ public static class Constants
 
 	public const string GitHubRepoPath = "SubParSuperCar/Ensemble";
 	public const string GitHubRepoUrl = HttpsScheme + "github.com/" + GitHubRepoPath;
+	public const string ItchPageUrl = HttpsScheme + "subparsupercar.itch.io/ensemble";
 
 	public const int RegexMatchTimeoutMs = 100;
 

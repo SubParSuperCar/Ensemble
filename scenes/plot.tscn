@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://bctdhk6awxx0r"]
 
 [ext_resource type="Script" uid="uid://bifs2ecg5a883" path="res://Scripts/Plots/PlotHandle.cs" id="1_cyvgl"]
-[ext_resource type="Texture2D" uid="uid://d3grw53v0y6b8" path="res://assets/images/cartesian_grid.png" id="2_cyvgl"]
-[ext_resource type="Texture2D" uid="uid://ba4lcp5cx2vnd" path="res://assets/images/dart_outline.png" id="3_410i3"]
+[ext_resource type="Shader" uid="uid://dw0x4vpm3w0nu" path="res://shaders/plot_grid.gdshader" id="4_grid"]
+[ext_resource type="Shader" uid="uid://duga8j0dur4us" path="res://shaders/dart.gdshader" id="5_dart"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_f03gw"]
 size = Vector3(32, 32, 32)
@@ -10,14 +10,9 @@ size = Vector3(32, 32, 32)
 [sub_resource type="BoxShape3D" id="BoxShape3D_sbat0"]
 size = Vector3(32, 0.001, 32)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_syd1t"]
-transparency = 1
-shading_mode = 0
-albedo_color = Color(0.86599994, 1, 0.32999998, 1)
-albedo_texture = ExtResource("2_cyvgl")
-uv1_scale = Vector3(0.25, 0.25, 0.25)
-uv1_triplanar = true
-texture_filter = 4
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_grid"]
+shader = ExtResource("4_grid")
+shader_parameter/color = Color(0.86599994, 1, 0.32999998, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_72cjw"]
 shading_mode = 0
@@ -27,18 +22,14 @@ albedo_color = Color(0, 0, 0, 1)
 material = SubResource("StandardMaterial3D_72cjw")
 size = Vector2(32, 32)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cyvgl"]
-render_priority = 1
-transparency = 1
-no_depth_test = true
-shading_mode = 0
-albedo_color = Color(0.2509804, 0.627451, 1, 1)
-albedo_texture = ExtResource("3_410i3")
-texture_filter = 2
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dart"]
+render_priority = 2
+shader = ExtResource("5_dart")
+shader_parameter/color = Color(0.2509804, 0.627451, 1, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_cyvgl"]
-material = SubResource("StandardMaterial3D_cyvgl")
-size = Vector2(4, 4)
+material = SubResource("ShaderMaterial_dart")
+size = Vector2(4.125, 4.125)
 
 [node name="Plot" type="Node3D" unique_id=1176841675]
 script = ExtResource("1_cyvgl")
@@ -67,7 +58,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0005, 0)
 shape = SubResource("BoxShape3D_sbat0")
 
 [node name="Mesh" type="MeshInstance3D" parent="Floor" unique_id=890436308]
-material_overlay = SubResource("StandardMaterial3D_syd1t")
+material_overlay = SubResource("ShaderMaterial_grid")
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_f03gw")
 
@@ -76,10 +67,3 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_cyvgl")
 
-[node name="Night Light" type="AreaLight3D" parent="." unique_id=1182533585]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
-light_intensity_lumens = 100000.0
-area_range = 1.75
-area_attenuation = 2.0
-area_normalize_energy = false
-area_size = Vector2(32, 32)

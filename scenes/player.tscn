@@ -9,25 +9,25 @@ radius = 0.313
 height = 1.375
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dqkch"]
-render_priority = 1
+render_priority = 4
 transparency = 1
+no_depth_test = true
 shading_mode = 0
 grow = true
 grow_amount = 0.01
 stencil_mode = 3
 stencil_flags = 1
 stencil_compare = 5
-metadata/_stencil_owned = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8p2pg"]
 next_pass = SubResource("StandardMaterial3D_dqkch")
+render_priority = 3
 transparency = 4
 cull_mode = 2
 shading_mode = 0
 albedo_color = Color(0.2509804, 0.627451, 1, 0.2509804)
-stencil_mode = 1
-stencil_flags = 2
-stencil_color = Color(1, 1, 1, 1)
+stencil_mode = 3
+stencil_flags = 6
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_agfs1"]
 material = SubResource("StandardMaterial3D_8p2pg")

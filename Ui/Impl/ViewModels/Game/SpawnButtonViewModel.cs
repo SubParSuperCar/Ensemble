@@ -14,6 +14,7 @@ public sealed partial class SpawnButtonViewModel : ViewModelBase
 		IsLocalPlotSpawnedChanged += OnIsLocalPlotSpawnedChanged;
 	}
 
+	[ObservableProperty] public partial bool IsSpawned { get; private set; }
 	[ObservableProperty] public partial string Label { get; private set; } = string.Empty;
 
 	protected override void OnDispose() => IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
@@ -21,5 +22,9 @@ public sealed partial class SpawnButtonViewModel : ViewModelBase
 	[RelayCommand]
 	private static void Toggle() => new SetPlotSpawnedAction(IsLocalPlotSpawned is not true).Submit();
 
-	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned) => Label = isSpawned is true ? "Despawn!" : "Spawn!";
+	private void OnIsLocalPlotSpawnedChanged(bool? isSpawned)
+	{
+		IsSpawned = isSpawned is true;
+		Label = IsSpawned ? "Despawn!" : "Spawn!";
+	}
 }

@@ -7,9 +7,12 @@ namespace EnsembleRoot.Scripts.Adornments;
 
 public abstract partial class HighlightBase : MeshInstance3D
 {
+	private static readonly Shader FacesShader = GD.Load<Shader>(ShadersDir + "highlight_faces.gdshader");
+	private static readonly Shader EdgesShader = GD.Load<Shader>(ShadersDir + "highlight_edges.gdshader");
+
 	private static readonly StringName BoxSizeParameter = "box_size";
 	private static readonly StringName EdgeThicknessParameter = "edge_thickness";
-	private static readonly StringName FaceAlphaParameter = "face_alpha";
+	private static readonly StringName FaceTintParameter = "face_tint";
 	private static readonly StringName OpacityParameter = "opacity";
 	private static readonly StringName OriginEdgesOnlyParameter = "origin_edges_only";
 	private static readonly StringName MarchingAntsParameter = "marching_ants";
@@ -27,9 +30,18 @@ public abstract partial class HighlightBase : MeshInstance3D
 
 	private readonly BoxMesh _box = new();
 
-	private bool _isPulseCounted;
+	// Edges draw over every face, so each shows its full color
+	private readonly ShaderMaterial _edges = new()
+	{
+		Shader = EdgesShader, RenderPriority = (int)Material.RenderPriorityMax
+	};
 
-	protected ShaderMaterial Material { get; } = new();
+	private readonly ShaderMaterial _faces = new()
+	{
+		Shader = FacesShader, RenderPriority = (int)Material.RenderPriorityMax - 1
+	};
+
+	private bool _isPulseCounted;
 
 	[Export]
 	public Aabb Aabb
@@ -53,16 +65,17 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1 / 64f;
 
+	/// <summary>How strongly front faces tint what is behind them, from 0 (not at all) to 1 (in their full color).</summary>
 	[Export(PropertyHint.Range, "0,1")]
-	public float FaceAlpha
+	public float FaceTint
 	{
 		get;
 		set
 		{
 			field = value;
-			UpdateFaceAlpha();
+			UpdateFaceTint();
 		}
-	} = 1 / 8f;
+	} = 1 / 4f;
 
 	[Export(PropertyHint.Range, "0,1")]
 	public float Opacity
@@ -74,6 +87,18 @@ public abstract partial class HighlightBase : MeshInstance3D
 			UpdateOpacity();
 		}
 	} = 1f;
+
+	/// <summary>The edges' render priority; the faces draw one beneath it.</summary>
+	[Export(PropertyHint.Range, "-127,127")]
+	public int RenderPriority
+	{
+		get => _edges.RenderPriority;
+		set
+		{
+			_edges.RenderPriority = value;
+			_faces.RenderPriority = value - 1;
+		}
+	}
 
 	[Export]
 	public bool OriginEdgesOnly
@@ -153,22 +178,19 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1 / 2f;
 
-	protected abstract Shader Shader { get; }
-
 	public override void _Ready()
 	{
 		// Highlights are placed between physics ticks, so interpolating would drag them from where they last were
 		PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 
-		Material.Shader = Shader;
-		Material.RenderPriority = (int)Godot.Material.RenderPriorityMax;
+		_faces.NextPass = _edges;
 
 		Mesh = _box;
-		MaterialOverride = Material;
+		MaterialOverride = _faces;
 
 		UpdateMesh();
 		UpdateEdgeThickness();
-		UpdateFaceAlpha();
+		UpdateFaceTint();
 		UpdateOpacity();
 		UpdateOriginEdgesOnly();
 		UpdateMarchingAnts();
@@ -183,13 +205,18 @@ public abstract partial class HighlightBase : MeshInstance3D
 	public override void _ExitTree() => UpdatePulseClock(false);
 
 	public override void _Process(double delta) =>
-		Material.SetShaderParameter(
-			PulseTimeParameter, Stopwatch.GetElapsedTime(_pulseStartTimestamp).TotalSeconds);
+		SetParameter(PulseTimeParameter, Stopwatch.GetElapsedTime(_pulseStartTimestamp).TotalSeconds);
 
 	public override void _Notification(int what)
 	{
 		if (what == NotificationVisibilityChanged)
 			UpdatePulseClock();
+	}
+
+	protected void SetParameter(StringName name, Variant value)
+	{
+		_faces.SetShaderParameter(name, value);
+		_edges.SetShaderParameter(name, value);
 	}
 
 	private void UpdateMesh()
@@ -200,25 +227,25 @@ public abstract partial class HighlightBase : MeshInstance3D
 		_box.Size = Aabb.Size;
 		Position = Aabb.Position + Aabb.Size / 2;
 
-		Material.SetShaderParameter(BoxSizeParameter, Aabb.Size);
+		SetParameter(BoxSizeParameter, Aabb.Size);
 	}
 
-	private void UpdateEdgeThickness() => Material.SetShaderParameter(EdgeThicknessParameter, EdgeThickness);
-	private void UpdateFaceAlpha() => Material.SetShaderParameter(FaceAlphaParameter, FaceAlpha);
-	private void UpdateOpacity() => Material.SetShaderParameter(OpacityParameter, Opacity);
-	private void UpdateOriginEdgesOnly() => Material.SetShaderParameter(OriginEdgesOnlyParameter, OriginEdgesOnly);
-	private void UpdateMarchingAnts() => Material.SetShaderParameter(MarchingAntsParameter, MarchingAnts);
-	private void UpdateAntSpacing() => Material.SetShaderParameter(AntSpacingParameter, AntSpacing);
-	private void UpdateAntSpeed() => Material.SetShaderParameter(AntSpeedParameter, AntSpeed);
+	private void UpdateEdgeThickness() => SetParameter(EdgeThicknessParameter, EdgeThickness);
+	private void UpdateFaceTint() => SetParameter(FaceTintParameter, FaceTint);
+	private void UpdateOpacity() => SetParameter(OpacityParameter, Opacity);
+	private void UpdateOriginEdgesOnly() => SetParameter(OriginEdgesOnlyParameter, OriginEdgesOnly);
+	private void UpdateMarchingAnts() => SetParameter(MarchingAntsParameter, MarchingAnts);
+	private void UpdateAntSpacing() => SetParameter(AntSpacingParameter, AntSpacing);
+	private void UpdateAntSpeed() => SetParameter(AntSpeedParameter, AntSpeed);
 
 	private void UpdatePulsing()
 	{
-		Material.SetShaderParameter(PulsingParameter, Pulsing);
+		SetParameter(PulsingParameter, Pulsing);
 		UpdatePulseClock();
 	}
 
-	private void UpdatePulseMinimum() => Material.SetShaderParameter(PulseMinimumParameter, PulseMinimum);
-	private void UpdatePulsePeriod() => Material.SetShaderParameter(PulsePeriodParameter, PulsePeriod);
+	private void UpdatePulseMinimum() => SetParameter(PulseMinimumParameter, PulseMinimum);
+	private void UpdatePulsePeriod() => SetParameter(PulsePeriodParameter, PulsePeriod);
 
 	// One pulse handing over to another in the same frame (e.g., hovering from one selection to another) keeps the beat
 	private void UpdatePulseClock(bool isStaying = true)

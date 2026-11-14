@@ -227,8 +227,7 @@ Main                                main.tscn, Main.cs
          |     |- Boundary          the plot's bounds
          |     |- Instances/Static  build mode: one AssetHandle per instance
          |     |- Instances/Dynamic live mode: the LiveCreation while spawned
-         |     |- Floor             the plot's grid floor, whose surface is its origin
-         |     '- Night Light       AreaLight3D
+         |     '- Floor             the plot's grid floor, whose surface is its origin
          |- Sky                     Sky3D: sun, moon, and the day-night cycle
          |- Terrain                 Terrain3D
          '- Map                     the base beneath the plots
@@ -471,10 +470,11 @@ graph LR
 
 - `ToolManager` creates tools lazily and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while
   the local plot is editable (not spawned), and optionally come back after a despawn (`RestoreOnDespawn`).
-- `ConstructTool` shows a translucent preview with an axial highlight, snaps edges (not centers) to the plot grid,
-  resolves overlaps with oriented bounding boxes, and supports `RotateX/Y/Z()` and `ResetRotation()` in global or local
-  space. A shader material fades only if its `translucent_shader` metadata names a translucent variant of its shader
-  with an `opacity` uniform (such as the coil's), so opaque instances never pay for transparency.
+- `ConstructTool` shows a translucent preview with an axial highlight, holds the asset by its origin at the cursor,
+  snaps edges (not centers) to the plot grid, resolves overlaps with oriented bounding boxes, and supports
+  `RotateX/Y/Z()` and `ResetRotation()` in global or local space. A shader material fades only if its
+  `translucent_shader` metadata names a translucent variant of its shader with an `opacity` uniform (such as the
+  coil's), so opaque instances never pay for transparency.
 - `MultiSelector` holds a selection shared across tools: `Shift`-clicking toggles an instance, clicking a selected
   instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` box-selects by
   `Ctrl`-dragging (Baja Builders parity).
@@ -485,8 +485,9 @@ graph LR
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
-- Highlights (`Scripts/Adornments/`) are box meshes with an edge shader, in two flavors: `AxialHighlight` (per-axis
-  colors) and `SolidHighlight` (one tint). Either can dash its edges into marching ants, which selections use, or pulse
+- Highlights (`Scripts/Adornments/`) are box meshes drawn in two passes: front faces that multiply a tint into what's
+  behind them, keeping the asset's shading visible, then edges over every face. `AxialHighlight` colors them by axis,
+  and `SolidHighlight` with one tint. Either can dash its edges into marching ants, which selections use, or pulse
   their opacity, which the hovered instance does. They opt out of physics interpolation, as they are placed between
   physics ticks. The local plot's outline rises from its grid in the active tool's color, fading in and out as it moves.
 
@@ -500,17 +501,20 @@ where the difference is small.
 - **Mobile renderer.** Godot's Mobile rendering method, with 4x MSAA and SMAA, and physical light units.
 - **Per-vertex shading.** Asset meshes and the map base use per-vertex shading, which is much cheaper with many
   instances. `Paintable` keeps each asset's authored shading when it paints it (one shared material per material, color,
-  and shading, so painted geometry still batches). Per-vertex surfaces receive no light from area lights (the plots'
-  night lights), nor spot or omni light shadows; directional shadows are still sampled per pixel.
-- **Unshaded overlays.** Characters, highlights, and the plot grid are unshaded.
+  and shading, so painted geometry still batches). Per-vertex surfaces receive no light from area lights, nor spot or
+  omni light shadows; directional shadows are still sampled per pixel.
+- **Unshaded overlays.** Characters, highlights, the plot grid, and forward indicators are unshaded, and the last three
+  draw their lines alike (`shaders/lines.gdshaderinc`): widths are in meters, so lines recede like geometry; a line
+  thinner than a pixel is drawn a pixel wide but dimmed in proportion; lines too dense to resolve blend into their
+  average; and opacities render as stated over black, since blending happens in linear light.
+- **Glow.** Only what is brighter than white glows; nothing blooms the whole screen.
 - **VSync.** Exports use Adaptive (capped at the refresh rate, tearing only below it, to spare laptops' batteries and
   fans); runs from the editor use Mailbox (uncapped without tearing), so performance regressions show.
 - **Shadows.** The sun uses soft shadow filter quality 3 and a 64 m shadow distance, which keeps thin shapes (like the
   suspension's coil) crisp.
 - **`perf_mod(render_scale?)`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing
-  (including terminal windows opened afterward), glow, Sky3D, the terrain, the plots' night lights, spot and omni light
-  shadows (an empty shadow atlas), and lighting itself (the unshaded debug draw), and renders 3D at `render_scale`
-  (e.g., `0.5`) if given.
+  (including terminal windows opened afterward), glow, Sky3D, the terrain, spot and omni light shadows (an empty shadow
+  atlas), and lighting itself (the unshaded debug draw), and renders 3D at `render_scale` (e.g., `0.5`) if given.
 - **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World, 2 Character,
   3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics ticks
   (highlights, the placement preview, other players' characters) opt out of interpolation. Its Baumgarte factor (how
@@ -569,7 +573,8 @@ yields, and `print` and returned values show what tables hold.
 |-------------|----------------------------------------------------------------------------------------------------|
 | App         | `quit`, `restart`, `set_clock_offset`, `set_discord_on`, `set_vol`, `tts`, `wait`                  |
 | Building    | `add_inst`, `clr_insts`, `dmp_assets`, `dmp_insts`, `rm_insts`, `set_inst_prop`                    |
-| Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_on`                |
+| Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_level`,            |
+|             | `set_profanity_filter_on`                                                                          |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`                         |
 | Display     | `cap_fps`, `dmp_draw_modes`, `dmp_vsync_modes`, `set_draw_mode`, `set_ui_dark_theme_on`,           |
 |             | `set_ui_scale`, `set_vsync_mode`                                                                   |

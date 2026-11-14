@@ -10,10 +10,11 @@ namespace EnsembleRoot.Scripts.Plots.Outlines;
 /// </summary>
 public partial class PlotOutline : Node3D
 {
-	// Plots dwarf instances, so their ants are far longer and faster than a selection's
+	// Plots dwarf instances, so their ants are far longer and faster than a selection's. It draws beneath the plots'
+	// forward indicators and the characters' halos, which also ignore depth.
 	private readonly SolidHighlight _highlight = new()
 	{
-		Name = "Highlight", EdgeThickness = 1 / 16f, FaceAlpha = 0f, AntSpacing = 2f, AntSpeed = 4f
+		Name = "Highlight", EdgeThickness = 1 / 16f, FaceTint = 0f, AntSpacing = 2f, AntSpeed = 4f, RenderPriority = 1
 	};
 
 	private bool? _isRaising;

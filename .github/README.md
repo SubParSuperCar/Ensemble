@@ -160,6 +160,9 @@ password only controls who can join, so don't use one that matters elsewhere.
       (`Tab`; it isn't shown, since it contains your public IP address) and share it. If your router has UPnP disabled,
       or is behind another NAT (e.g., CGNAT), forward the UDP port manually and share the address from
       `log_wan_ip4_addr()` instead.
+    - **Either way:** your firewall must let UDP traffic in on the port. Windows usually asks the first time you host,
+      but an enabled Linux firewall (e.g., ufw or firewalld) blocks it silently: allow it, e.g.,
+      `sudo ufw allow 7777/udp`.
 - **Join:** *Play &rarr; Multi-Player (Online) &rarr; Join (Client)*, then enter the host's address (or host name) and
   port, or a single `<address>:<port>` code.
 - **Dedicated server:** run the executable headless with user arguments, e.g.,
@@ -191,7 +194,7 @@ aloud. The console offers `chat("message")`, `dmp_chat()`, `set_chat_log_on(true
 The profanity filter masks profane words in chat (with `#`, or `<Redacted>` if nothing else remains) and gives joining
 players with inappropriate display names the default name instead. Hosts choose it in the host menu (on by default and
 remembered; dedicated servers take `--profanity-filter=false`), and can toggle it mid-session in the chat's options or
-with `set_profanity_filter_on(false)`.
+with `set_profanity_filter_on(false)`, or leave milder words unmasked with `set_profanity_filter_level`.
 
 </details>
 
@@ -344,8 +347,9 @@ or copyright holders' terms. The chat's profanity filter uses David Sojevic's
 [profanity-list](https://github.com/dsojevic/profanity-list) (MIT; see `/Common/Text/ProfanityList.LICENSE.txt`), with
 `allow_partial` set on entries that misfire inside ordinary words. It's stored compressed, so its terms aren't readable
 in the source; see `/.github/scripts/profanity-list.sh`. UI icons are from Microsoft's [Fluent UI System
-Icons](https://github.com/microsoft/fluentui-system-icons) (MIT; see `/Ui/Impl/Icons.LICENSE.txt`). Chat nametag colors
-use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
+Icons](https://github.com/microsoft/fluentui-system-icons) (MIT; see `/Ui/Impl/Icons.LICENSE.txt`), and the GitHub and
+itch.io logos from [Simple Icons](https://simpleicons.org/) (CC0); the logos are their owners' trademarks. Chat nametag
+colors use the algorithm from Baja Builders, Ensemble's Roblox predecessor.
 
 ---
 

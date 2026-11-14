@@ -70,10 +70,25 @@ public sealed class PlacementSolverTests
 		var obstacles = new ObbGrid();
 		obstacles.Add(0, hinge);
 
-		var box = PlacementSolver.Contact(Cube(Vector3.Zero), new Vector3(0.95f, 2.9f, 0.95f), Vector3.Down, hinge);
+		var point = new Vector3(0.95f, 2.9f, 0.95f);
+		var box = PlacementSolver.Contact(Cube(point), point, Vector3.Down, hinge);
 		box = _solver.Settle(box, obstacles, 0f, Vector3.Down, 1f);
 
 		Assert.Equal(new Vector3(0.5f, 1.5f, 0.5f), box.Center);
+	}
+
+	// A beam's origin is in its first cell, so the cell under the cursor is where it starts, not its middle
+	[Fact]
+	public void Contact_OffCenterOrigin_KeepsOriginCellAtHit()
+	{
+		var point = new Vector3(0.3f, 0f, 0.2f);
+		var beam = Obb.From(
+			new Aabb(-Vector3.One / 4, new Vector3(2f, 0.5f, 0.5f)), new Transform3D(Basis.Identity, point));
+
+		var box = PlacementSolver.Contact(beam, point, Vector3.Up, null);
+		box = _solver.Settle(box, new ObbGrid(), 0f, Vector3.Up, 0.5f);
+
+		Assert.Equal(new Vector3(1f, 0.25f, 0.25f), box.Center);
 	}
 
 	// A half slab's far edge finds the grid, so it can sit flush on another half slab and complete the cell

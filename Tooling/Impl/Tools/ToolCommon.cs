@@ -23,7 +23,7 @@ internal static class ToolCommon
 	private static readonly StringName PlayMethod = "play";
 
 	// Checks the local plot first, as a session's end frees the world before the tools hear of it
-	public static PlotHandle? LocalHandle => LocalPlot is { } plot ? GPlotManager.GetHandleOrNull(plot.Id) : null;
+	public static PlotHandle? LocalHandle => LocalPlot is null ? null : GPlotManager.LocalHandle;
 
 	private static Node SoundManager => field ??= ((SceneTree)Engine.GetMainLoop()).Root.GetNode(SoundManagerPath);
 

@@ -7,12 +7,13 @@ namespace EnsembleRoot.Scripts.Adornments;
 
 public abstract partial class HighlightBase : MeshInstance3D
 {
-	private static readonly Shader FacesShader = GD.Load<Shader>(ShadersDir + "highlight_faces.gdshader");
 	private static readonly Shader EdgesShader = GD.Load<Shader>(ShadersDir + "highlight_edges.gdshader");
+	private static readonly Shader FillShader = GD.Load<Shader>(ShadersDir + "highlight_fill.gdshader");
 
 	private static readonly StringName BoxSizeParameter = "box_size";
 	private static readonly StringName EdgeThicknessParameter = "edge_thickness";
-	private static readonly StringName FaceTintParameter = "face_tint";
+	private static readonly StringName FillOpacityParameter = "fill_opacity";
+	private static readonly StringName WorldToAxesParameter = "world_to_axes";
 	private static readonly StringName OpacityParameter = "opacity";
 	private static readonly StringName OriginEdgesOnlyParameter = "origin_edges_only";
 	private static readonly StringName MarchingAntsParameter = "marching_ants";
@@ -23,6 +24,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 	private static readonly StringName PulsePeriodParameter = "pulse_period";
 	private static readonly StringName PulseTimeParameter = "pulse_time";
 
+	// Only one overlay fits a mesh, so the highlight shown last fills it, handing it back to the one before when hidden
+	private static readonly Dictionary<MeshInstance3D, List<ShaderMaterial>> FillsByMesh = [];
+
 	// Every pulse shares one clock, so they stay in step; it restarts when pulses begin after none were showing
 	private static int _pulseCount;
 	private static ulong _pulsesEndedFrame;
@@ -30,16 +34,16 @@ public abstract partial class HighlightBase : MeshInstance3D
 
 	private readonly BoxMesh _box = new();
 
-	// Edges draw over every face, so each shows its full color
 	private readonly ShaderMaterial _edges = new()
 	{
 		Shader = EdgesShader, RenderPriority = (int)Material.RenderPriorityMax
 	};
 
-	private readonly ShaderMaterial _faces = new()
-	{
-		Shader = FacesShader, RenderPriority = (int)Material.RenderPriorityMax - 1
-	};
+	// Depth-tested on the target's surfaces, it sorts with the scene, just over translucent geometry at the default
+	// priority (which it may be tinting)
+	private readonly ShaderMaterial _fill = new() { Shader = FillShader, RenderPriority = 1 };
+
+	private readonly List<MeshInstance3D> _filled = [];
 
 	private bool _isPulseCounted;
 
@@ -65,15 +69,30 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1 / 64f;
 
-	/// <summary>How strongly front faces tint what is behind them, from 0 (not at all) to 1 (in their full color).</summary>
+	/// <summary>The node whose meshes the fill tints, if any; the box only outlines it.</summary>
+	public Node3D? Target
+	{
+		get;
+		set
+		{
+			if (ReferenceEquals(field, value))
+				return;
+
+			field = value;
+			UpdateFill();
+		}
+	}
+
+	/// <summary>The share of light the fill replaces on the target's surfaces.</summary>
+	// ReSharper disable once MemberCanBeProtected.Global
 	[Export(PropertyHint.Range, "0,1")]
-	public float FaceTint
+	public float FillOpacity
 	{
 		get;
 		set
 		{
 			field = value;
-			UpdateFaceTint();
+			UpdateFillOpacity();
 		}
 	} = 1 / 4f;
 
@@ -88,16 +107,12 @@ public abstract partial class HighlightBase : MeshInstance3D
 		}
 	} = 1f;
 
-	/// <summary>The edges' render priority; the faces draw one beneath it.</summary>
-	[Export(PropertyHint.Range, "-127,127")]
+	/// <summary>The edges' render priority, as they ignore depth.</summary>
+	[Export(PropertyHint.Range, "-128,127")]
 	public int RenderPriority
 	{
 		get => _edges.RenderPriority;
-		set
-		{
-			_edges.RenderPriority = value;
-			_faces.RenderPriority = value - 1;
-		}
+		set => _edges.RenderPriority = value;
 	}
 
 	[Export]
@@ -183,14 +198,15 @@ public abstract partial class HighlightBase : MeshInstance3D
 		// Highlights are placed between physics ticks, so interpolating would drag them from where they last were
 		PhysicsInterpolationMode = PhysicsInterpolationModeEnum.Off;
 
-		_faces.NextPass = _edges;
-
 		Mesh = _box;
-		MaterialOverride = _faces;
+		MaterialOverride = _edges;
+		SetNotifyTransform(true);
 
 		UpdateMesh();
+		UpdateAxes();
+		UpdateFill();
 		UpdateEdgeThickness();
-		UpdateFaceTint();
+		UpdateFillOpacity();
 		UpdateOpacity();
 		UpdateOriginEdgesOnly();
 		UpdateMarchingAnts();
@@ -202,21 +218,34 @@ public abstract partial class HighlightBase : MeshInstance3D
 	}
 
 	// Still inside the tree at this point
-	public override void _ExitTree() => UpdatePulseClock(false);
+	public override void _ExitTree()
+	{
+		UpdatePulseClock(false);
+		ClearFill();
+	}
 
 	public override void _Process(double delta) =>
 		SetParameter(PulseTimeParameter, Stopwatch.GetElapsedTime(_pulseStartTimestamp).TotalSeconds);
 
 	public override void _Notification(int what)
 	{
-		if (what == NotificationVisibilityChanged)
-			UpdatePulseClock();
+		switch ((long)what)
+		{
+			case NotificationVisibilityChanged:
+				UpdatePulseClock();
+				UpdateFill();
+				break;
+
+			case NotificationTransformChanged:
+				UpdateAxes();
+				break;
+		}
 	}
 
 	protected void SetParameter(StringName name, Variant value)
 	{
-		_faces.SetShaderParameter(name, value);
 		_edges.SetShaderParameter(name, value);
+		_fill.SetShaderParameter(name, value);
 	}
 
 	private void UpdateMesh()
@@ -230,8 +259,49 @@ public abstract partial class HighlightBase : MeshInstance3D
 		SetParameter(BoxSizeParameter, Aabb.Size);
 	}
 
+	private void UpdateAxes() =>
+		_fill.SetShaderParameter(WorldToAxesParameter, GlobalBasis.Orthonormalized().Transposed());
+
+	private void UpdateFill()
+	{
+		ClearFill();
+
+		if (
+			Target is not { } target || !IsInstanceValid(target) || !IsInsideTree() || !IsVisibleInTree() ||
+			IsQueuedForDeletion())
+			return;
+
+		foreach (var node in target.FindChildren("*", nameof(MeshInstance3D), true, false))
+			if (node is MeshInstance3D mesh and not HighlightBase)
+			{
+				if (!FillsByMesh.TryGetValue(mesh, out var fills))
+					FillsByMesh.Add(mesh, fills = []);
+
+				fills.Add(_fill);
+				mesh.MaterialOverlay = _fill;
+				_filled.Add(mesh);
+			}
+	}
+
+	private void ClearFill()
+	{
+		foreach (var mesh in _filled)
+		{
+			var fills = FillsByMesh[mesh];
+			fills.Remove(_fill);
+
+			if (fills.Count is 0)
+				FillsByMesh.Remove(mesh);
+
+			if (IsInstanceValid(mesh))
+				mesh.MaterialOverlay = fills.LastOrDefault();
+		}
+
+		_filled.Clear();
+	}
+
 	private void UpdateEdgeThickness() => SetParameter(EdgeThicknessParameter, EdgeThickness);
-	private void UpdateFaceTint() => SetParameter(FaceTintParameter, FaceTint);
+	private void UpdateFillOpacity() => SetParameter(FillOpacityParameter, FillOpacity);
 	private void UpdateOpacity() => SetParameter(OpacityParameter, Opacity);
 	private void UpdateOriginEdgesOnly() => SetParameter(OriginEdgesOnlyParameter, OriginEdgesOnly);
 	private void UpdateMarchingAnts() => SetParameter(MarchingAntsParameter, MarchingAnts);

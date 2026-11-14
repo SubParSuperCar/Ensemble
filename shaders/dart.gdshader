@@ -2,6 +2,7 @@ shader_type spatial;
 
 render_mode unshaded, blend_mix, depth_draw_never, depth_test_disabled, cull_back;
 
+#include "res://shaders/color.gdshaderinc"
 #include "res://shaders/lines.gdshaderinc"
 
 uniform vec3 color : source_color = vec3(1.0);

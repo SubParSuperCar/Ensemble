@@ -24,15 +24,3 @@ float grid_coverage(float position, float spacing, float width, float footprint)
 
 	return mix(width / spacing, line_coverage(distance, width, footprint), resolved);
 }
-
-vec3 srgb_to_linear(vec3 color)
-{
-	return mix(color / 12.92, pow((color + 0.055) / 1.055, vec3(2.4)), step(0.04045, color));
-}
-
-// Blending happens in linear light, where a line would look brighter than its opacity; decoding the opacity as sRGB
-// makes a solid line show at exactly that opacity over black
-float opacity_to_alpha(float opacity)
-{
-	return srgb_to_linear(vec3(opacity)).x;
-}

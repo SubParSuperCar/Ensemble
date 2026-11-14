@@ -68,6 +68,7 @@ public partial class SelectionHighlights : Node
 
 		highlight.Aabb = aabb;
 		highlight.GlobalTransform = transform;
+		highlight.Target = handle;
 	}
 
 	private void UpdateHover()

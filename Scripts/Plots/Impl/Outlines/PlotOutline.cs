@@ -14,7 +14,7 @@ public partial class PlotOutline : Node3D
 	// forward indicators and the characters' halos, which also ignore depth.
 	private readonly SolidHighlight _highlight = new()
 	{
-		Name = "Highlight", EdgeThickness = 1 / 16f, FaceTint = 0f, AntSpacing = 2f, AntSpeed = 4f, RenderPriority = 1
+		Name = "Highlight", EdgeThickness = 1 / 16f, AntSpacing = 2f, AntSpeed = 4f, RenderPriority = 1
 	};
 
 	private bool? _isRaising;

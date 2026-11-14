@@ -144,4 +144,6 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 - Build: `dotnet build Ensemble.slnx`. NativeAOT release settings: `dotnet build EnsembleGame.csproj -c ExportRelease`.
 - Test: `dotnet test --solution Ensemble.slnx` (xUnit v3 on Microsoft.Testing.Platform).
 - Inspect and clean up: JetBrains' CLI tools (`jb inspectcode`, `jb cleanupcode`); run CleanupCode in a copy of the repo
-  and apply its diff, never on Estragonia, addons, or Godot resource files.
+  and apply its diff, never on Estragonia or Godot resource files. Leave addons out by default: they rarely change, so
+  cleaning them spends time for nothing and risks corrupting them; clean an addon right after updating it. The CLI
+  skips GDScript, which only the Rider IDE's Reformat Code formats.

@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://coffwd0qtibsc"]
+
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_6vmmo"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_8xkxj"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_gflwd"]
+height = 0.375
+radius = 0.749
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_puxdk"]
+shading_mode = 2
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_dvw24"]
+material = SubResource("StandardMaterial3D_puxdk")
+top_radius = 0.75
+bottom_radius = 0.75
+height = 0.375
+radial_segments = 32
+rings = 0
+
+[node name="Cylinder 3" type="StaticBody3D" unique_id=726135581]
+script = ExtResource("1_6vmmo")
+AssetId = 4
+AssetName = &"Cylinder 3x3 (Wheel)"
+Description = &"A wide disc four cubes across, like a wheel."
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "404040",
+&"_materialId": 1
+})
+MaxInstanceCount = 500
+Density = 62.5
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=262735334]
+shape = SubResource("CylinderShape3D_gflwd")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
+mesh = SubResource("CylinderMesh_dvw24")
+
+[node name="Paintable" type="Node" parent="." unique_id=1136470923]
+script = ExtResource("2_8xkxj")
+metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

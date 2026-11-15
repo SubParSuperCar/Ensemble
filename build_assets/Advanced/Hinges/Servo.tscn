@@ -31,7 +31,7 @@ Hinge = NodePath("Hinge")
 Base = NodePath("Base")
 Head = NodePath("Head")
 AssetId = 15
-AssetName = &"Servo"
+AssetName = &"Servo (Motor2)"
 Description = &"Turns whatever is welded to its head to an angle, with its keys, and back to center."
 Properties = Dictionary[StringName, Variant]({
 &"forwardKey": 65,

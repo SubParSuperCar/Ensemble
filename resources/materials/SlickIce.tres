@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="AssetMaterial" format=3 uid="uid://ckawon1wsafgf"]
+
+[ext_resource type="Script" uid="uid://ctgp55iclfbsa" path="res://Scripts/Assets/Materials/AssetMaterial.cs" id="1_7rgkm"]
+
+[sub_resource type="Gradient" id="Gradient_teewt"]
+colors = PackedColorArray(0.62352943, 1, 1, 1, 0.8745098, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_0mpla"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_mgcgg"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_0mpla")
+color_ramp = SubResource("Gradient_teewt")
+seamless = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dms3b"]
+transparency = 4
+albedo_color = Color(1, 1, 1, 0.75000006)
+albedo_texture = SubResource("NoiseTexture2D_mgcgg")
+roughness = 0.25
+uv1_triplanar = true
+
+[resource]
+script = ExtResource("1_7rgkm")
+Look = SubResource("StandardMaterial3D_dms3b")
+Density = 62.5
+Friction = 0.0
+metadata/_custom_type_script = "uid://ctgp55iclfbsa"

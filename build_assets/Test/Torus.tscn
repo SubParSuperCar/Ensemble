@@ -26,7 +26,7 @@ ring_segments = 4
 [node name="Test Torus" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_wpl7w")
 AssetId = 6
-AssetName = &"Torus (TEST!)"
+AssetName = &"Torus [TEST!]"
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "8000FF80",
 &"_materialId": 0,

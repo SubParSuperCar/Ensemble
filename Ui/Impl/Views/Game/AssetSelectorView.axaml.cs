@@ -47,8 +47,7 @@ public sealed partial class AssetSelectorView : UserControl, IViewFor<AssetSelec
 		flash.Flash();
 	}
 
-	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) =>
-		_viewModel?.FilterQuery = string.Empty;
+	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) => _viewModel?.FilterQuery = string.Empty;
 
 	private void OnTreeViewContainerPrepared(object? sender, ContainerPreparedEventArgs e)
 	{

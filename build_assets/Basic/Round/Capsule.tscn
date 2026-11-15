@@ -19,7 +19,7 @@ radial_segments = 32
 [node name="Capsule" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_nw72c")
 AssetId = 11
-AssetName = &"Capsule"
+AssetName = &"Capsule (Pill)"
 Description = &"A rounded rod, two cubes long."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",

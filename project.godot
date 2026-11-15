@@ -13,7 +13,7 @@ config_version=5
 config/name="Ensemble"
 config/description="Ensemble - A multiplayer, collaborative sandbox building game made with Godot 4, C#, .NET, and Avalonia 12.
 https://github.com/SubParSuperCar/Ensemble"
-config/version="0.58.7"
+config/version="0.58.8"
 run/main_scene="uid://ddgi4ajn3rnnq"
 config/use_custom_user_dir=true
 config/auto_accept_quit=false
@@ -28,10 +28,10 @@ boot_splash/minimum_display_time=100
 
 manager/sound/bus="Sound"
 manager/sound/pool_1D_size=4
-manager/sound/pool_2D_size=1
-manager/sound/pool_3D_size=1
+manager/sound/pool_2D_size=2
+manager/sound/pool_3D_size=2
 manager/music/bus="Music"
-manager/sound/max_polyphony=6
+manager/sound/max_polyphony=8
 
 [autoload]
 

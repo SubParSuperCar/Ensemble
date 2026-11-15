@@ -57,8 +57,7 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 	private void OnItemsSizeChanged(object? sender, SizeChangedEventArgs e) =>
 		Items.Resources[NameMaxWidthKey] = e.NewSize.Width * NameWidthShare;
 
-	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) =>
-		_viewModel?.FilterQuery = string.Empty;
+	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) => _viewModel?.FilterQuery = string.Empty;
 
 	private void OnKeyButtonClick(object? sender, RoutedEventArgs e) =>
 		TopLevel.GetTopLevel(this)?.FocusManager.Focus(null);

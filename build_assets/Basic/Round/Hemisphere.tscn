@@ -20,7 +20,7 @@ is_hemisphere = true
 [node name="Hemisphere" type="StaticBody3D" unique_id=726135581]
 script = ExtResource("1_62e8s")
 AssetId = 7
-AssetName = &"Chrome Hemisphere"
+AssetName = &"Hemisphere"
 Description = &"Half a ball, flat side down."
 MaxInstanceCount = 750
 Density = 250.0

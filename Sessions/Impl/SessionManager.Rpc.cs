@@ -9,22 +9,27 @@ public partial class SessionManager
 {
 	// A drained bucket refills in 5 s, so token costs read as percentages of a peer's 5-second budget. Requests beyond
 	// it wait in a queue of up to another bucket's worth, and only then get dropped.
-	private static readonly TokenBucketRateLimiterOptions RateLimiterOptions = new()
-	{
-		TokenLimit = NetworkActionRegistry.MaxTokenCost,
-		QueueLimit = 100,
-		TokensPerPeriod = 2,
-		ReplenishmentPeriod = TimeSpan.FromMilliseconds(100),
-		AutoReplenishment = true
-	};
+	private static readonly TokenBucketRateLimiterOptions RateLimiterOptions =
+		CreateRateLimiterOptions(NetworkActionRegistry.MaxTokenCost);
+
+	// A client paces its own requests to a copy of the host's bucket, so a large edit arrives late rather than dropped.
+	// Its queue is far longer, as what waits there costs the host nothing.
+	private static readonly TokenBucketRateLimiterOptions OutgoingRateLimiterOptions =
+		CreateRateLimiterOptions(100 * NetworkActionRegistry.MaxTokenCost);
 
 	// Per sender, so a lease granted out of order can't run a request before an earlier one. Main thread only.
 	private readonly Dictionary<int, Queue<PendingRpc>> _pendingRpcsByPeerId = [];
 	private readonly Dictionary<int, TokenBucketRateLimiter> _rateLimitersByPeerId = [];
 
-	/// <summary>How long a drained rate limiter takes to regain <paramref name="tokens" />, for pacing.</summary>
-	public static TimeSpan GetRefillTime(int tokens) =>
-		RateLimiterOptions.ReplenishmentPeriod * Math.Ceiling(tokens / (double)RateLimiterOptions.TokensPerPeriod);
+	private static TokenBucketRateLimiterOptions CreateRateLimiterOptions(int queueLimit) =>
+		new()
+		{
+			TokenLimit = NetworkActionRegistry.MaxTokenCost,
+			QueueLimit = queueLimit,
+			TokensPerPeriod = 2,
+			ReplenishmentPeriod = TimeSpan.FromMilliseconds(100),
+			AutoReplenishment = true
+		};
 
 	private static void RunSafely(Action action)
 	{
@@ -85,7 +90,8 @@ public partial class SessionManager
 
 	/// <summary>
 	///     Runs <paramref name="action" /> on the main thread once the sender's rate limiter allows it, or
-	///     <paramref name="onDropped" /> instead if it drops the request. Requests from one sender run in order.
+	///     <paramref name="onDropped" /> instead if it drops the request. Requests from one sender run in order. A
+	///     client's own requests wait on its copy of the host's limiter before they're sent.
 	/// </summary>
 	private void EnqueueRpc(int senderId, int tokens, Action action, Action? onDropped = null)
 	{
@@ -93,7 +99,8 @@ public partial class SessionManager
 			return;
 
 		if (!_rateLimitersByPeerId.TryGetValue(senderId, out var limiter))
-			_rateLimitersByPeerId[senderId] = limiter = new TokenBucketRateLimiter(RateLimiterOptions);
+			_rateLimitersByPeerId[senderId] = limiter = new TokenBucketRateLimiter(
+				senderId == LocalPeerId ? OutgoingRateLimiterOptions : RateLimiterOptions);
 
 		if (!_pendingRpcsByPeerId.TryGetValue(senderId, out var queue))
 			_pendingRpcsByPeerId[senderId] = queue = [];

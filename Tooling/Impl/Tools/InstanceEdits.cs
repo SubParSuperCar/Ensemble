@@ -29,6 +29,12 @@ internal static class InstanceEdits
 			history.Do(() => SubmitRemove(specs), () => SubmitAdd(specs));
 		}
 
+		public void Clear(GdInstances instances)
+		{
+			InstanceSpec[] specs = [.. instances.Source.All.Select(GdInstance.From).Select(Capture)];
+			history.Do(static () => new ClearInstancesAction().Submit(), () => SubmitAdd(specs));
+		}
+
 		public void SetProperties(
 			IEnumerable<(GdInstance Instance, IReadOnlyDictionary<string, CoreVariant> Properties)> edits)
 		{

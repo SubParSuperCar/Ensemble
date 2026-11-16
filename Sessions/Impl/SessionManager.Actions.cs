@@ -17,10 +17,20 @@ public partial class SessionManager
 			return;
 		}
 
+		var payload = action.ToPayload();
+
 		if (IsServer)
-			HandleAction(TAction.Id, action.ToPayload(), LocalPeerId);
-		else
-			RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcRequestAction, TAction.Id, action.ToPayload());
+		{
+			HandleAction(TAction.Id, payload, LocalPeerId);
+			return;
+		}
+
+		var source = new ActionSource(LocalPeerId, LocalPeer?.PlayerId ?? string.Empty);
+
+		EnqueueRpc(
+			LocalPeerId, NetworkActionRegistry.GetTokenCost(TAction.Id, payload, source),
+			() => RpcId(MultiplayerPeer.TargetPeerServer, MethodName.RpcRequestAction, TAction.Id, payload),
+			() => RejectAction(TAction.Id, RateLimitedReason, LocalPeerId));
 	}
 
 	[Rpc(MultiplayerApi.RpcMode.AnyPeer)]

@@ -35,7 +35,7 @@
                 <Button
                     Content="&#x26A0; Clear All (2x) &#x26A0;"
                     DoubleTapped="OnClearAllDoubleTapped"
-                    ToolTip.Tip="Removes every asset from your plot. (Double-click)&#x0a;&#x26A0; WARNING: THIS ACTION CANNOT BE UNDONE! &#x26A0;"
+                    ToolTip.Tip="Removes every asset from your plot. (Double-click)&#x0a;Undo (Ctrl+Z) brings them back."
                     HorizontalContentAlignment="Center"
                     IsEnabled="{Binding IsClearAllEnabled}" />
             </Border>

@@ -5,7 +5,6 @@ using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Saving;
 using EnsembleRoot.Scripts.Plots;
-using EnsembleRoot.Sessions;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;
@@ -50,26 +49,17 @@ public static partial class LuaExecutor
 			return context.Return();
 
 		var (specs, skippedInstances, skippedValues) = ToSpecs(data);
-		var batches = specs.Chunk(AddInstancesAction.MaxCount).Select(static batch => new AddInstancesAction(batch));
 		var countBefore = plot.Instances.Count;
-		var tokenCost = 0;
 
-		foreach (var action in batches)
+		// By identity, since a later session's plot with the same ID is another object
+		if (!ReferenceEquals(LocalPlot, plot) || plot.IsSpawned)
 		{
-			// The host's own requests skip the rate limiter; clients keep under it, so no batch is dropped
-			if (tokenCost > 0)
-				await DelayAsync(SessionManager.GetRefillTime(tokenCost), cancellationToken).ConfigureAwait(true);
-
-			// By identity, since a later session's plot with the same ID is another object
-			if (!ReferenceEquals(LocalPlot, plot) || plot.IsSpawned)
-			{
-				Log.Warning("Stopped loading {Name}: plot {PlotId} is no longer editable", name, plot.Id);
-				return context.Return();
-			}
-
-			action.Submit();
-			tokenCost = GSessionManager.IsServer ? 0 : AddInstancesAction.GetTokenCost(action.ToPayload(), default);
+			Log.Warning("Stopped loading {Name}: plot {PlotId} is no longer editable", name, plot.Id);
+			return context.Return();
 		}
+
+		foreach (var batch in specs.Chunk(AddInstancesAction.MaxCount))
+			new AddInstancesAction(batch).Submit();
 
 		if (GSessionManager.IsServer)
 			Log.Information(

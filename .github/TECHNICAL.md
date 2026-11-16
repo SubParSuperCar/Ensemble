@@ -334,7 +334,8 @@ need (actions, characters, live creations) reaches them through the host's check
   themselves through module initializers and are sent with `action.Submit()`.
 - **Rate limiting.** Each peer has a token bucket of 100 tokens that refills in 5 seconds, and each action costs tokens,
   so costs read as percentages. Requests beyond it queue for up to another bucket's worth, and are then rejected with a
-  reason.
+  reason. Clients pace their own requests to a copy of their bucket before sending them, so a large edit (a loaded
+  save, a big undo) arrives later rather than partly rejected.
 - **Late joiners** receive snapshots (plots, instances, and live creations; characters; chat history; the filter state)
   before any further action reaches them, so nothing arrives out of order.
 - **Characters** replicate at 20 Hz while moving and once a second while idle, relayed by the host. Each state carries
@@ -629,16 +630,15 @@ yields, and `print` and returned values show what tables hold.
   `save_creation("name", { plot_id = 1, compression = "zstandard", level = 19, password = "secret", checksum = true })`
   saves a plot (every option is optional) to `user://creations/`, as JSON if the name ends in `.json` and binary
   (`.ensb`) otherwise; `CreationSaves` (in `Scripts`) owns the files, so the console only parses and reports.
-  `load_creation("name", "password")` adds a save to the local plot through `AddInstancesAction` batches, paced under
-  the rate limit on clients, so placement rules apply and others see it; `loc_load_creation(plot_id, "name")` adds it
-  directly. Loads skip unknown assets and invalid values, and add to what is already there (`clr_insts()` first to
-  replace it). Overwriting a save first copies the old file to a backup (`castle.ensb` to `castle.bak.ensb`, one
-  generation), and `rm_creation("name")` moves a save to the OS's trash (Recycle Bin, Trash), while
-  `rm_creation("name", true)` deletes it for good after a native Yes / No dialog (No by default where the OS supports
-  it; shown off the main thread, so the game keeps running). Permanent deletion doesn't overwrite the file first: SSDs
-  and copy-on-write file systems (btrfs, APFS, ZFS) write overwrites elsewhere, snapshots keep old blocks, and atomic
-  saves never wrote over earlier versions, so a shred would promise what it can't keep. Password-protected saves are the
-  real protection, since every leftover copy stays encrypted.
+  `load_creation("name", "password")` adds a save to the local plot through `AddInstancesAction` batches, so placement
+  rules apply and others see it; `loc_load_creation(plot_id, "name")` adds it directly. Loads skip unknown assets and
+  invalid values, and add to what is already there (`clr_insts()` first to replace it). Overwriting a save first copies
+  the old file to a backup (`castle.ensb` to `castle.bak.ensb`, one generation), and `rm_creation("name")` moves a save
+  to the OS's trash (Recycle Bin, Trash), while `rm_creation("name", true)` deletes it for good after a native Yes / No
+  dialog (No by default where the OS supports it; shown off the main thread, so the game keeps running). Permanent
+  deletion doesn't overwrite the file first: SSDs and copy-on-write file systems (btrfs, APFS, ZFS) write overwrites
+  elsewhere, snapshots keep old blocks, and atomic saves never wrote over earlier versions, so a shred would promise
+  what it can't keep. Password-protected saves are the real protection, since every leftover copy stays encrypted.
 - **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for warnings.
 - **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging
   silently.

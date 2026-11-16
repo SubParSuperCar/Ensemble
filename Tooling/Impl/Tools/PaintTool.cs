@@ -11,7 +11,8 @@ namespace EnsembleRoot.Tooling.Tools;
 /// <summary>
 ///     Paints the local plot's paintable instances with the brush: its color and material, each only if applied. A
 ///     press paints the hovered instance and a drag every one it sweeps, as one edit on release; a marquee paints its
-///     box. The eyedropper takes the brush from an instance instead: every press while it's on, or a marquee click.
+///     box. The eyedropper takes the brush from an instance instead: the next press while it's on (which turns it off,
+///     so the next paints), or a marquee click.
 /// </summary>
 public partial class PaintTool : ToolBase
 {
@@ -98,7 +99,9 @@ public partial class PaintTool : ToolBase
 
 		if (IsEyedropping)
 		{
-			Sample(_highlights.HoveredId);
+			if (Sample(_highlights.HoveredId))
+				IsEyedropping = false;
+
 			return;
 		}
 
@@ -225,14 +228,14 @@ public partial class PaintTool : ToolBase
 	private static string Rewrite(string hex, bool hasAlpha) =>
 		Paintable.WriteColor(Paintable.ReadColor(hex, hasAlpha), hasAlpha);
 
-	private void Sample(int? instanceId)
+	private bool Sample(int? instanceId)
 	{
 		if (
 			instanceId is not { } id || LocalPlot?.Instances.GetInstance(id) is not { } instance ||
 			!GAssetManager.IsPaintable(instance.Asset.Id))
 		{
 			ToolCommon.PlaySound(ToolCommon.DissentSound);
-			return;
+			return false;
 		}
 
 		var properties = instance.Properties.Source.All;
@@ -247,5 +250,7 @@ public partial class PaintTool : ToolBase
 
 		ToolCommon.PlaySound(ToolCommon.AffirmSound);
 		Log.Verbose("Sampled the brush from instance {InstanceId}", id);
+
+		return true;
 	}
 }

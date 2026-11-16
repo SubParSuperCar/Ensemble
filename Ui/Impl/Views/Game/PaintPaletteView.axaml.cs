@@ -4,15 +4,22 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.ViewModels;
 
 namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class PaintPaletteView : UserControl, IViewFor<PaintPaletteViewModel>
 {
+	private const double ScrollBarGap = 2d;
+
 	public PaintPaletteView()
 	{
 		InitializeComponent();
+
+		ScrollBarInset.ApplyGap(NamedScroll, NamedSwatches, ScrollBarGap);
+		ScrollBarInset.ApplyGap(RecentScroll, RecentSwatches, ScrollBarGap);
+		ScrollBarInset.ApplyGap(MaterialsScroll, Materials, ScrollBarGap);
 
 		// Handled ones too, as number boxes handle Enter themselves
 		AddHandler(KeyDownEvent, OnKeyDown, RoutingStrategies.Bubble, true);

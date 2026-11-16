@@ -494,8 +494,8 @@ graph LR
   property when the assets agree on one default and some instance differs from it.
 - `PaintTool` paints paintable instances (assets with a `Paintable` component) with a brush: a color and a material,
   each applied only if chosen. A press paints the hovered instance, a drag every instance it sweeps (previewed as wet
-  paint, submitted as one edit on release), a marquee its box, and Paint All the whole plot; `Ctrl`-clicking, or any
-  press while its eyedropper is on, takes the brush from an instance instead. `AssetManager` records which assets are
+  paint, submitted as one edit on release), a marquee its box, and Paint All the whole plot; `Ctrl`-clicking, or the
+  next press while its eyedropper is on, takes the brush from an instance instead. `AssetManager` records which assets are
   paintable and which take alpha, so the tool writes `RRGGBB` or `RRGGBBAA` as `Paintable` reads it. The Paint Palette
   widget edits the brush with Avalonia's color controls, and shows each material as a sphere `MaterialPreviews`
   renders once in an offscreen viewport of its own.

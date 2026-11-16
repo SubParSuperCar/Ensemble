@@ -245,11 +245,10 @@
                                     <StackPanel ToolTip.Tip="{Binding Stats}" Width="72" Spacing="2">
                                         <Image Source="{Binding Preview}" Width="56" Height="56" />
 
-                                        <TextBlock
+                                        <c:ScrollingTextBlock
                                             Text="{Binding Name}"
                                             HorizontalAlignment="Center"
-                                            TextTrimming="CharacterEllipsis"
-                                            FontSize="12" />
+                                            TextElement.FontSize="12" />
                                     </StackPanel>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>

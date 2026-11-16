@@ -44,6 +44,7 @@ public partial class ToolManager : Node, IAutoload
 	public ConstructTool Construct => Get<ConstructTool>();
 	public DestructTool Destruct => Get<DestructTool>();
 	public PropertyTool Property => Get<PropertyTool>();
+	public PaintTool Paint => Get<PaintTool>();
 
 	public MultiSelector Selector { get; } = new();
 	public UndoRedo UndoRedo { get; } = new();
@@ -95,6 +96,8 @@ public partial class ToolManager : Node, IAutoload
 			Toggle<DestructTool>();
 		else if (@event.IsActionPressed(PropertyTool.ToggleAction))
 			Toggle<PropertyTool>();
+		else if (@event.IsActionPressed(PaintTool.ToggleAction))
+			Toggle<PaintTool>();
 		else if (@event.IsActionPressed(UndoAction))
 			UndoRedo.Undo();
 		else if (@event.IsActionPressed(RedoAction))

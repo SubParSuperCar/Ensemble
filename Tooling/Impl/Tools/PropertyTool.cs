@@ -37,7 +37,7 @@ public partial class PropertyTool : ToolBase
 	private bool _isStale;
 
 	public override Color ThemeColor => Theme;
-	public override bool UsesSelection => true;
+	protected override bool UsesSelection => true;
 
 	public Clipboard<PropertyKey, CoreVariant> Clipboard { get; } = new();
 

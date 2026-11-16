@@ -13,7 +13,7 @@ public partial class DestructTool : ToolBase
 	private readonly SelectionHighlights _highlights = new() { Name = "Highlights", Tint = Theme };
 
 	public override Color ThemeColor => Theme;
-	public override bool UsesSelection => true;
+	protected override bool UsesSelection => true;
 
 	public override void _Ready() => AddChild(_highlights);
 

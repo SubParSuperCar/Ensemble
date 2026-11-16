@@ -14,6 +14,12 @@ public partial class AssetMaterial : Resource
 	public const float DefaultFriction = 0.5f;
 	public const float DefaultBounce = 0.25f;
 
+	/// <summary>What the material ID property names, so it never changes once shipped (saves store it).</summary>
+	[Export(PropertyHint.Range, "0,0,1,or_greater,hide_slider")]
+	public int MaterialId { get; set; }
+
+	[Export] public StringName MaterialName { get; set; } = null!;
+
 	/// <summary>Painted geometry uses a copy of it, with the albedo tinted by the instance's color.</summary>
 	[Export]
 	public BaseMaterial3D? Look { get; set; }

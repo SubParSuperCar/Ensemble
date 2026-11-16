@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using EnsembleRoot.GdCore.Utils;
+using EnsembleRoot.Scripts.Assets.Components;
 using EnsembleRoot.Scripts.Assets.Materials;
 using Godot;
 using Godot.Collections;
@@ -53,6 +54,10 @@ public partial class AssetManager : Node
 	public string GetCategory(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Category ?? string.Empty;
 	public string? GetDescription(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Description;
 	public int GetPieceCount(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Pieces.Length ?? 0;
+	public bool IsPaintable(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Paint is not null;
+
+	/// <summary>Whether the asset's color is <c>RRGGBBAA</c> (see <see cref="Paintable.HasAlpha" />).</summary>
+	public bool HasPaintAlpha(int assetId) => _assetsById.GetValueOrDefault(assetId)?.Paint?.HasAlpha is true;
 
 	/// <summary>Gets a piece's collider bounds, in its handle's space.</summary>
 	public IReadOnlyList<Aabb> GetColliderBounds(int assetId, int piece) => GetPiece(assetId, piece).Bounds;
@@ -123,7 +128,11 @@ public partial class AssetManager : Node
 		var category = path.GetBaseDir().TrimPrefix(BuildAssetsDir.TrimSuffix("/")).TrimPrefix("/");
 		var description = handle.Description is { IsEmpty: false } text ? text.ToString() : null;
 		var pieces = Enumerable.Range(0, handle.PieceCount).Select(piece => GetPieceInfo(handle, piece)).ToArray();
-		var asset = new AssetInfo(scene, category, description, handle.BoundaryAabb, handle.Density, pieces);
+		var paint = handle.GetChildren().OfType<Paintable>().FirstOrDefault() is { } paintable
+			? new PaintInfo(paintable.HasAlpha)
+			: null;
+
+		var asset = new AssetInfo(scene, category, description, handle.BoundaryAabb, handle.Density, pieces, paint);
 
 		WarnAboutStructure(handle, path);
 		WarnAboutProperties(handle, path);
@@ -195,7 +204,10 @@ public partial class AssetManager : Node
 		string? Description,
 		Aabb Boundary,
 		float Density,
-		PieceInfo[] Pieces);
+		PieceInfo[] Pieces,
+		PaintInfo? Paint);
+
+	private sealed record PaintInfo(bool HasAlpha);
 
 	private sealed record PieceInfo((Shape3D, Transform3D)[] Colliders, Aabb[] Bounds, float Volume, Vector3 Centroid)
 	{

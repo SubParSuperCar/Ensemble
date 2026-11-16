@@ -6,8 +6,8 @@ using EnsembleRoot.GdCore.Plots;
 namespace EnsembleRoot.Tooling;
 
 /// <summary>
-///     The local plot's selected instances, shared by every tool so a selection carries across them. Removed instances
-///     leave it, and it clears when the local plot changes.
+///     A set of the local plot's instances: the selection, shared by every tool so it carries across them, or one a
+///     tool keeps for itself (a paint stroke). Removed instances leave it, and it clears when the local plot changes.
 /// </summary>
 public sealed class MultiSelector : IDisposable
 {
@@ -34,7 +34,6 @@ public sealed class MultiSelector : IDisposable
 
 	public bool Contains(int instanceId) => _instanceIds.Contains(instanceId);
 
-	// ReSharper disable once UnusedMember.Global
 	public void Add(IEnumerable<int> instanceIds) => Select([.. instanceIds.Distinct().Where(IsSelectable)]);
 
 	public void Remove(IEnumerable<int> instanceIds) => Deselect([.. instanceIds.Distinct().Where(Contains)]);

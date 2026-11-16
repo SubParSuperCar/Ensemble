@@ -24,6 +24,8 @@ uv1_triplanar = true
 
 [resource]
 script = ExtResource("1_5qb6j")
+MaterialId = 1
+MaterialName = &"Grippy Rubber"
 Look = SubResource("ORMMaterial3D_523sa")
 Density = 31.25
 Friction = 1.0

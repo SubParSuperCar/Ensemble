@@ -1,17 +1,19 @@
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Tooling.Tools;
 using Godot;
-using Serilog;
 
 namespace EnsembleRoot.Tooling;
 
 /// <summary>
-///     Box-selects the local plot's instances whose centers fall within a dragged viewport area (Baja Builders parity).
-///     Dragging with the marquee key held sets the selection, or toggles it with the selection toggle key held on
-///     release. Releasing the marquee key or pressing cancel aborts the drag.
+///     Finds the local plot's instances whose centers fall within a viewport area dragged with the marquee key held
+///     (Baja Builders parity), for the last enabled tool that uses it: tools that select set the selection, or toggle
+///     it with the selection toggle key held on release. Releasing the marquee key or pressing cancel aborts the drag.
 /// </summary>
 public partial class MarqueeSelector : Node
 {
+	// How far a press may wander, in pixels, and still count as a click rather than a drag
+	private const float ClickSlop = 4f;
+
 	private static readonly StringName CancelAction = "ui_cancel";
 
 	private ToolManager _manager = null!;
@@ -22,7 +24,7 @@ public partial class MarqueeSelector : Node
 
 	public Color Color { get; private set; } = Colors.White;
 
-	public bool CanSelect => _manager.EnabledTools.Any(static tool => tool.UsesSelection);
+	public bool CanStart => _manager.EnabledTools.Any(static tool => tool.UsesMarquee);
 
 	public event Action<Rect2?>? AreaChanged;
 
@@ -46,7 +48,7 @@ public partial class MarqueeSelector : Node
 	{
 		if (
 			_origin is not null || InputSink.IsSunk || !@event.IsActionPressed(ToolCommon.TriggerAction) ||
-			!Input.IsActionPressed(ToolCommon.SelectionMarqueeAction) || !CanSelect)
+			!Input.IsActionPressed(ToolCommon.SelectionMarqueeAction) || !CanStart)
 			return;
 
 		GetViewport().SetInputAsHandled();
@@ -62,7 +64,7 @@ public partial class MarqueeSelector : Node
 		if (_origin is not { } origin)
 			return;
 
-		if (!CanSelect || !Input.IsActionPressed(ToolCommon.SelectionMarqueeAction))
+		if (!CanStart || !Input.IsActionPressed(ToolCommon.SelectionMarqueeAction))
 		{
 			Stop();
 			return;
@@ -79,17 +81,15 @@ public partial class MarqueeSelector : Node
 		var area = Area;
 		Stop();
 
-		if (area is not { } rect)
+		if (_manager.EnabledTools.LastOrDefault(static tool => tool.UsesMarquee) is not { } tool)
 			return;
 
-		var instanceIds = ToolCommon.FindInstancesInArea(GetViewport(), rect);
-
-		if (Input.IsActionPressed(ToolCommon.SelectionToggleAction))
-			_manager.Selector.Toggle(instanceIds);
+		if (area is { Size: var size } rect && (size.X >= ClickSlop || size.Y >= ClickSlop))
+			tool.OnMarqueeFinished(
+				ToolCommon.FindInstancesInArea(GetViewport(), rect),
+				Input.IsActionPressed(ToolCommon.SelectionToggleAction));
 		else
-			_manager.Selector.Set(instanceIds);
-
-		Log.Verbose("Marquee-selected {Count} instance(s)", instanceIds.Count);
+			tool.OnMarqueeClicked();
 	}
 
 	private void Stop()

@@ -1,7 +1,9 @@
+using System.Globalization;
 using EnsembleCoreRoot.Api.Assets;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
+using EnsembleRoot.Scripts.Assets.Materials;
 using EnsembleRoot.Scripts.Plots.Placement;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
@@ -57,6 +59,18 @@ public static partial class LuaExecutor
 		var assets = GAssets.GetAll().OrderBy(static asset => asset.Id);
 
 		Log.Information("Assets: {Count}\n{Assets}", GAssets.Count, string.Join('\n', assets));
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> dmp_mats(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var materials = MaterialBank.All.Select(static material => string.Create(
+			CultureInfo.InvariantCulture,
+			$"{material.MaterialId}: {material.MaterialName} (density {material.Density} kg/m\u00b3, friction " +
+			$"{material.Friction}, bounce {material.Bounce})"));
+
+		Log.Information("Materials: {Count}\n{Materials}", MaterialBank.All.Count, string.Join('\n', materials));
 
 		return context.ReturnNothing();
 	}

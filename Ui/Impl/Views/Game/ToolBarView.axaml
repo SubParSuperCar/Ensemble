@@ -39,6 +39,21 @@
                     HorizontalContentAlignment="Center"
                     IsEnabled="{Binding IsClearAllEnabled}" />
             </Border>
+
+            <Border
+                Grid.Column="3"
+                BorderBrush="{x:Static vm:ToolBarViewModel.PaintBrush}"
+                BorderThickness="{StaticResource BorderThickness}"
+                Margin="0,0,0,4"
+                IsVisible="{Binding IsPaintAllVisible}">
+
+                <Button
+                    Content="Paint All"
+                    Command="{Binding PaintAllCommand}"
+                    ToolTip.Tip="Paints every asset on your plot with the brush."
+                    HorizontalContentAlignment="Center"
+                    IsEnabled="{Binding IsPaintAllEnabled}" />
+            </Border>
         </Grid>
 
         <Border
@@ -93,11 +108,16 @@
                         ToolTip.Tip="Toggles the editing (property) tool. (Bound to 3 / Three)&#x0a;&#x0a;Click an asset to select it, or Shift-click to (de)select it.&#x0a;Ctrl-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Ctrl+C copies the selection's shared properties; Ctrl+V pastes them onto the selection." />
                 </Border>
 
-                <Border Grid.Column="3" BorderBrush="#E050E0" BorderThickness="{StaticResource BorderThickness}">
+                <Border
+                    Grid.Column="3"
+                    BorderBrush="{x:Static vm:ToolBarViewModel.PaintBrush}"
+                    BorderThickness="{StaticResource BorderThickness}">
+
                     <ToggleButton
                         Content="Paint (4)"
-                        ToolTip.Tip="Toggles the painting (material) tool. (Bound to 4 / Four)"
-                        IsEnabled="False" />
+                        Command="{Binding TogglePaintToolCommand}"
+                        IsChecked="{Binding IsPaintToolEnabled}"
+                        ToolTip.Tip="Toggles the painting (paint) tool. (Bound to 4 / Four)&#x0a;&#x0a;Click an asset to paint it, or drag across assets to paint each one.&#x0a;Ctrl-drag to paint a box, or Ctrl-click an asset to pick up its paint; Esc cancels." />
                 </Border>
 
                 <Border Grid.Column="4" BorderBrush="#E0C000" BorderThickness="{StaticResource BorderThickness}">

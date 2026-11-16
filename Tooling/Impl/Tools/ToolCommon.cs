@@ -41,7 +41,7 @@ internal static class ToolCommon
 	// Presses with the marquee key held start a marquee instead, if any enabled tool selects
 	public static bool IsTriggerPressed(InputEvent @event) =>
 		@event.IsActionPressed(TriggerAction) &&
-		(!Input.IsActionPressed(SelectionMarqueeAction) || !GToolManager.Marquee.CanSelect);
+		(!Input.IsActionPressed(SelectionMarqueeAction) || !GToolManager.Marquee.CanStart);
 
 	public static bool IsHandleLocal(AssetHandle handle) =>
 		LocalHandle is { } plot && ReferenceEquals(handle.Plot, plot);

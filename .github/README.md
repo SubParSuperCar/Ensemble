@@ -67,8 +67,9 @@ are the same, without Roblox's limits.
 - **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a seat
   with controls takes the wheel. Anchors hold what you've built in place.
 - **Crash** it: creations collide with the terrain, with characters, and with one another, whoever built them.
-- **Paint** pieces in any color and give them a material with the Edit tool (turn on *Show Internal* in the Property
-  Editor; a dedicated Paint tool comes later).
+- **Paint** pieces with the Paint tool: click one, sweep across several, or box-select them, and `Ctrl`-click a piece
+  to pick up its color and material. A palette for choosing them is on the way; until then, set the brush with
+  `set_paint` in the Lua console.
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.
@@ -128,8 +129,9 @@ Ensemble's test map:
   Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or `Ensemble.app`
   (macOS) &mdash; no install, no runtime needed.
 
-- **Latest commit:** run the [Build Binaries (CI/CD)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
-  workflow ("Run workflow"; on a fork if you lack write access), then download the artifacts from the finished run.
+- **Latest commit:** run the
+  [Build Binaries (CI/CD)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml) workflow ("Run
+  workflow"; on a fork if you lack write access), then download the artifacts from the finished run.
 
 On startup, Ensemble asks GitHub for the latest release and offers each newer version once. If Discord is running, it
 also shares your activity (e.g., "In the Main Menu" or "Playing Multi-Player") without names or addresses.
@@ -209,10 +211,11 @@ with `set_profanity_filter_on(false)`, or leave milder words unmasked with `set_
 |---------------------------------------|------------------------------------------------------------|
 | Move / run / jump                     | `WASD` or `Up` `Down` / `Shift` / `Space`                  |
 | Orbit / turn / zoom camera            | Right mouse / `Q` `E` or `Left` `Right` / wheel, `I` `O`   |
-| Toggle place / delete / edit tool     | `1` / `2` / `3`                                            |
-| Place, delete, or select (trigger)    | Left mouse                                                 |
+| Toggle place / delete / edit / paint  | `1` / `2` / `3` / `4`                                      |
+| Place, delete, select, or paint       | Left mouse (drag to paint several)                         |
 | Toggle selection (delete / edit tool) | `Shift` + left mouse                                       |
 | Box-select (delete / edit tool)       | `Ctrl` + drag (`Shift` toggles, `Esc` cancels)             |
+| Box-paint / pick up paint (paint)     | `Ctrl` + drag / `Ctrl` + left mouse (`Esc` cancels)        |
 | Copy / paste properties (edit tool)   | `Ctrl+C` / `Ctrl+V`                                        |
 | Undo / redo (tools)                   | `Ctrl+Z` / `Ctrl+X`                                        |
 | Rotate placement (X / Y / Z)          | `R` / `T` / `Y`                                            |

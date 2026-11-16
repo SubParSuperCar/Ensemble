@@ -496,7 +496,9 @@ graph LR
   each applied only if chosen. A press paints the hovered instance, a drag every instance it sweeps (previewed as wet
   paint, submitted as one edit on release), a marquee its box, and Paint All the whole plot; `Ctrl`-clicking, or any
   press while its eyedropper is on, takes the brush from an instance instead. `AssetManager` records which assets are
-  paintable and which take alpha, so the tool writes `RRGGBB` or `RRGGBBAA` as `Paintable` reads it.
+  paintable and which take alpha, so the tool writes `RRGGBB` or `RRGGBBAA` as `Paintable` reads it. The Paint Palette
+  widget edits the brush with Avalonia's color controls, and shows each material as a sphere `MaterialPreviews`
+  renders once in an offscreen viewport of its own.
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
@@ -558,9 +560,9 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
   `IScopedObject`, `ISingletonObject`); views bind to view models through `IViewFor<TViewModel>` and
   `ViewLocatorService`.
 - **Navigation.** `NavigatorService` handles menu navigation (`GoTo<TViewModel>()`, `GoBack()`).
-- **Widgets.** In-game windows (Plot Selector, Asset Selector, Property Editor, Text Chat, Web Browser, Lua Editor, Log
-  Output) are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed by
-  `WidgetManagerService`; they drag, resize, maximize, and reopen where they were.
+- **Widgets.** In-game windows (Plot Selector, Asset Selector, Property Editor, Paint Palette, Text Chat, Web Browser,
+  Lua Editor, Log Output) are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed
+  by `WidgetManagerService`; they drag, resize, maximize, and reopen where they were.
 - **Theming** follows the OS's light or dark mode and accent color, adjusting colors in the Oklab color space to keep
   text readable.
 - **Rich tools:** a Markdown document viewer (with Mermaid diagrams) for these docs, a Lua editor with syntax

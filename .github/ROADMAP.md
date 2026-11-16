@@ -47,14 +47,13 @@ The tool suite, in rough intended order of implementation.
       Core never enforces them. Dependent limits (e.g., Suspension's `targetLength` within its minimum and
       `maxLength`) stay in code
 - PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
-  (materials come from the `MaterialBank`: a look plus density, friction, and bounce) (WIP: the tool is done; its
-  palette isn't)
+  (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
     - [x] (M) The tool - a brush (a color and a material, each applied or not) painted by click, by stroke (every
       instance swept while held, as one edit), by marquee, or onto the whole plot (Paint All); `Ctrl`-click or the
       eyedropper takes the brush from an instance; Lua `set_paint` and `paint_all`
     - [x] (S) Stable material IDs - a material's ID and name are its own, like an asset's, not its place in the bank
-    - [ ] (L) Paint Palette - a widget with a color field, RGB / HSV / hex entry, Ensemble and recent swatches, and a
-      searchable grid of materials with rendered previews and their stats
+    - [x] (L) Paint Palette - a widget with a color field and sliders, RGB / HSV / hex entry, named and recent swatches
+      (remembered across launches), and a searchable grid of materials with rendered previews and their stats
     - [x] (S) Paintable alpha - an opt-in `Paintable` setting under which `_colorHex` is `RRGGBBAA` instead of `RRGGBB`,
       so only assets meant to be see-through pay for transparent rendering (the Torus is the first)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
@@ -194,7 +193,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
   NavigatorService dependency; MenuDocFileView / MenuWebBrowserView wrappers add the Back button for menu use
 - (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
   maximizable frames with fades, a collapsible widget drawer with badges; Plot Selector, Asset Selector, Property
-  Editor, Web Browser, Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and persisted layouts
+  Editor, Paint Palette, Web Browser, Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and
+  persisted layouts
 - [x] (M) Developer console - Lua functions for sessions (`start_sp`, `host_mp`, `join_mp`, and `host_server` for a
   local headless server to join), the tools and their history, creations, plots, and moderation; `help()` with
   descriptions, readable tables in `print` and results, and `user://scripts/` for `run_script` and `require`

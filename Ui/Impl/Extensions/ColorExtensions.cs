@@ -24,6 +24,8 @@ public static class ColorExtensions
 		private double RelativeLuminance =>
 			0.2126 * Linearize(source.R) + 0.7152 * Linearize(source.G) + 0.0722 * Linearize(source.B);
 
+		public Godot.Color ToGodotColor() => Godot.Color.Color8(source.R, source.G, source.B, source.A);
+
 		/// <summary>Keeps the hue, but makes the color stand out against the light or dark theme.</summary>
 		public Color ToReadable(bool isDark) =>
 			isDark

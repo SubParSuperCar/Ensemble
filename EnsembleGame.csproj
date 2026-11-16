@@ -92,6 +92,7 @@
 
   <ItemGroup Condition="'$(EnsembleServer)' != 'true'">
     <PackageReference Include="Avalonia.AvaloniaEdit"/>
+    <PackageReference Include="Avalonia.Controls.ColorPicker"/>
     <PackageReference Include="Avalonia.Controls.WebView"/>
     <!-- Excluded in favor of the patched Avalonia.Skia referenced below, which every assembly must use -->
     <PackageReference Include="Avalonia.Skia" IncludeAssets="none"/>

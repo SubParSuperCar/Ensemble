@@ -67,9 +67,9 @@ are the same, without Roblox's limits.
 - **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a seat
   with controls takes the wheel. Anchors hold what you've built in place.
 - **Crash** it: creations collide with the terrain, with characters, and with one another, whoever built them.
-- **Paint** pieces with the Paint tool: click one, sweep across several, or box-select them, and `Ctrl`-click a piece
-  to pick up its color and material. A palette for choosing them is on the way; until then, set the brush with
-  `set_paint` in the Lua console.
+- **Paint** pieces with the Paint tool: choose any color and a material (such as rubber or ice) in its palette, then
+  click a piece, sweep across several, or box-select them, and `Ctrl`-click a piece to pick up its color and
+  material.
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.

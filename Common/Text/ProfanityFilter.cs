@@ -100,11 +100,10 @@ public static class ProfanityFilter
 		}
 
 		char[]? censored = null;
-		var minSeverity = MinSeverity;
 
 		try
 		{
-			foreach (var entry in entries.Where(entry => entry.Severity >= minSeverity))
+			foreach (var entry in entries.Where(static entry => entry.Severity >= MinSeverity))
 				for (var match = entry.Pattern.Match(text); match.Success; match = match.NextMatch())
 				{
 					var core = match.Groups[CoreGroup];

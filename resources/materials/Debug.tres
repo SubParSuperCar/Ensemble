@@ -11,7 +11,7 @@ uv1_triplanar = true
 texture_filter = 0
 
 [resource]
-resource_name = "Debug"
 script = ExtResource("1_debug")
+MaterialName = &"Debug"
 Look = SubResource("StandardMaterial3D_debug")
 Bounce = 0.1

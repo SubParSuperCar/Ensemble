@@ -27,6 +27,20 @@ public partial class Paintable : AssetComponent
 
 	public override void _ExitTree() => _properties?.Changed -= OnPropertyChanged;
 
+	/// <summary>Reads a color property's value, white if it isn't a color, and opaque unless it has alpha.</summary>
+	public static Color ReadColor(string hex, bool hasAlpha)
+	{
+		var color = Color.HtmlIsValid(hex) ? Color.FromHtml(hex) : Colors.White;
+
+		if (!hasAlpha)
+			color.A = 1;
+
+		return color;
+	}
+
+	/// <summary>Writes a color as a color property's value: <c>RRGGBBAA</c> with alpha, <c>RRGGBB</c> without.</summary>
+	public static string WriteColor(Color color, bool hasAlpha) => color.ToHtml(hasAlpha).ToUpperInvariant();
+
 	public void PaintDefaults(AssetHandle handle)
 	{
 		CollectGeometries(handle);
@@ -85,10 +99,7 @@ public partial class Paintable : AssetComponent
 
 	private void Paint(string hex, AssetMaterial? material)
 	{
-		var color = Color.HtmlIsValid(hex) ? Color.FromHtml(hex) : Colors.White;
-
-		if (!HasAlpha)
-			color.A = 1;
+		var color = ReadColor(hex, HasAlpha);
 
 		foreach (var (geometry, shading) in _geometries)
 			geometry.MaterialOverride = Paints.Get(material, color, shading);

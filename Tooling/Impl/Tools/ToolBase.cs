@@ -1,4 +1,5 @@
 using Godot;
+using Serilog;
 
 namespace EnsembleRoot.Tooling.Tools;
 
@@ -10,7 +11,10 @@ public abstract partial class ToolBase : Node
 
 	public abstract Color ThemeColor { get; }
 
-	public virtual bool UsesSelection => false;
+	protected virtual bool UsesSelection => false;
+
+	/// <summary>Whether the marquee works while the tool is enabled; a tool that selects selects with it.</summary>
+	public virtual bool UsesMarquee => UsesSelection;
 
 	protected MultiSelector Selector => _manager.Selector;
 	protected UndoRedo UndoRedo => _manager.UndoRedo;
@@ -19,6 +23,19 @@ public abstract partial class ToolBase : Node
 	public void Disable() => SetEnabled(false);
 
 	internal void Initialize(ToolManager manager) => _manager = manager;
+
+	internal virtual void OnMarqueeFinished(IReadOnlyList<int> instanceIds, bool isToggling)
+	{
+		if (isToggling)
+			Selector.Toggle(instanceIds);
+		else
+			Selector.Set(instanceIds);
+
+		Log.Verbose("Marquee-selected {Count} instance(s)", instanceIds.Count);
+	}
+
+	// A marquee press released without a drag
+	internal virtual void OnMarqueeClicked() { }
 
 	internal void SetEnabled(bool isEnabled)
 	{

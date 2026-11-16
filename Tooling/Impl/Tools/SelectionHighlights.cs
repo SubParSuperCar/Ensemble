@@ -17,7 +17,21 @@ public partial class SelectionHighlights : Node
 	private SolidHighlight? _pulsingSelection;
 	private MultiSelector? _selector;
 
-	public Color Tint { get; init; } = Colors.White;
+	public Color Tint
+	{
+		get;
+		set
+		{
+			field = value;
+			_hoverHighlight.Tint = value;
+
+			foreach (var (_, highlight) in _selectionHighlights)
+				highlight.Tint = value;
+		}
+	} = Colors.White;
+
+	/// <summary>Which of the local plot's instances can be hovered; any, if null.</summary>
+	public Func<AssetHandle, bool>? Filter { get; init; }
 
 	public int? HoveredId => _hovered is { } hovered && IsLive(hovered) ? hovered.InstanceId : null;
 
@@ -76,7 +90,7 @@ public partial class SelectionHighlights : Node
 		if (
 			ToolCommon.CastCursorRay(GetViewport()) is { Collider: var collider } &&
 			ToolCommon.FindInHierarchy<AssetHandle>(collider) is { } handle &&
-			ToolCommon.IsHandleLocal(handle))
+			ToolCommon.IsHandleLocal(handle) && Filter?.Invoke(handle) is not false)
 			SetHovered(handle);
 		else
 			SetHovered(null);

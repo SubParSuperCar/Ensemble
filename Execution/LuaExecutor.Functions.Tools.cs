@@ -1,5 +1,7 @@
+using EnsembleRoot.Scripts.Assets.Materials;
 using EnsembleRoot.Tooling;
 using EnsembleRoot.Tooling.Tools;
+using Godot;
 using Lua;
 using Serilog;
 
@@ -13,6 +15,22 @@ public static partial class LuaExecutor
 	private const string ConstructToolName = "construct";
 	private const string DestructToolName = "destruct";
 	private const string PropertyToolName = "property";
+	private const string PaintToolName = "paint";
+
+	private const string ColorKey = "color";
+	private const string MaterialKey = "material";
+	private const string ApplyColorKey = "apply_color";
+	private const string ApplyMaterialKey = "apply_material";
+
+	private static readonly string[] PaintKeys = [ColorKey, MaterialKey, ApplyColorKey, ApplyMaterialKey];
+
+	private static ValueTask<int> paint_all(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		if (GetToolManager(nameof(paint_all)) is { } tools)
+			tools.Paint.PaintAll();
+
+		return context.ReturnNothing();
+	}
 
 	private static ValueTask<int> redo(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -52,6 +70,23 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
+	private static ValueTask<int> set_paint(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var table = context.GetArgument<LuaTable>(0);
+
+		if (
+			!TryReadPaintOptions(table, out var options) ||
+			GetToolManager(nameof(set_paint)) is not { Paint: var paint })
+			return context.ReturnNothing();
+
+		paint.Color = options.Color ?? paint.Color;
+		paint.MaterialId = options.MaterialId ?? paint.MaterialId;
+		paint.IsColorApplied = options.IsColorApplied ?? paint.IsColorApplied;
+		paint.IsMaterialApplied = options.IsMaterialApplied ?? paint.IsMaterialApplied;
+
+		return context.ReturnNothing();
+	}
+
 	private static ValueTask<int> set_tool_on(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var name = context.GetArgument<string>(0);
@@ -65,13 +100,14 @@ public static partial class LuaExecutor
 			ConstructToolName => SetToolOn<ConstructTool>(tools, isOn),
 			DestructToolName => SetToolOn<DestructTool>(tools, isOn),
 			PropertyToolName => SetToolOn<PropertyTool>(tools, isOn),
+			PaintToolName => SetToolOn<PaintTool>(tools, isOn),
 			_ => null
 		};
 
 		if (isEnabled is null)
 			Log.Error(
-				"Tool {Name} not found (use {Construct}, {Destruct}, or {Property})",
-				name, ConstructToolName, DestructToolName, PropertyToolName);
+				"Tool {Name} not found (use {Construct}, {Destruct}, {Property}, or {Paint})",
+				name, ConstructToolName, DestructToolName, PropertyToolName, PaintToolName);
 		else if (isEnabled != isOn)
 			Log.Error("Tools need a claimed plot that isn't spawned");
 
@@ -100,6 +136,40 @@ public static partial class LuaExecutor
 		return tools.IsEnabled<TTool>();
 	}
 
+	private static bool TryReadPaintOptions(LuaTable table, out PaintOptions options)
+	{
+		options = default;
+
+		foreach (var (key, value) in table)
+		{
+			var name = key.Type is LuaValueType.String ? key.Read<string>() : null;
+			var text = value.Type is LuaValueType.String ? value.Read<string>() : null;
+			var number = ToInt(value);
+			bool? flag = value.Type is LuaValueType.Boolean ? value.Read<bool>() : null;
+
+			PaintOptions? updated = name switch
+			{
+				ColorKey when text is not null && Color.HtmlIsValid(text) =>
+					options with { Color = Color.FromHtml(text) },
+				MaterialKey when number is None || (number is { } id && MaterialBank.Get(id) is not null) =>
+					options with { MaterialId = number },
+				ApplyColorKey when flag is not null => options with { IsColorApplied = flag },
+				ApplyMaterialKey when flag is not null => options with { IsMaterialApplied = flag },
+				_ => null
+			};
+
+			if (updated is not { } valid)
+			{
+				LogInvalidOption(key, value, PaintKeys);
+				return false;
+			}
+
+			options = valid;
+		}
+
+		return true;
+	}
+
 	private static ToolManager? GetToolManager(string function)
 	{
 		if (ToolManager.Instance is { } tools)
@@ -108,4 +178,10 @@ public static partial class LuaExecutor
 		Log.Error("{Function} needs the tools, which headless servers don't have", function);
 		return null;
 	}
+
+	private readonly record struct PaintOptions(
+		Color? Color,
+		int? MaterialId,
+		bool? IsColorApplied,
+		bool? IsMaterialApplied);
 }

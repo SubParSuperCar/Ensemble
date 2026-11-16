@@ -47,8 +47,14 @@ The tool suite, in rough intended order of implementation.
       Core never enforces them. Dependent limits (e.g., Suspension's `targetLength` within its minimum and
       `maxLength`) stay in code
 - PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
-  (materials come from the `MaterialBank`: a look plus density, friction, and bounce) (WIP: painting already works
-  through the Property Editor's "Show Internal" option; the tool itself, with a palette, isn't started)
+  (materials come from the `MaterialBank`: a look plus density, friction, and bounce) (WIP: the tool is done; its
+  palette isn't)
+    - [x] (M) The tool - a brush (a color and a material, each applied or not) painted by click, by stroke (every
+      instance swept while held, as one edit), by marquee, or onto the whole plot (Paint All); `Ctrl`-click or the
+      eyedropper takes the brush from an instance; Lua `set_paint` and `paint_all`
+    - [x] (S) Stable material IDs - a material's ID and name are its own, like an asset's, not its place in the bank
+    - [ ] (L) Paint Palette - a widget with a color field, RGB / HSV / hex entry, Ensemble and recent swatches, and a
+      searchable grid of materials with rendered previews and their stats
     - [x] (S) Paintable alpha - an opt-in `Paintable` setting under which `_colorHex` is `RRGGBBAA` instead of `RRGGBB`,
       so only assets meant to be see-through pay for transparent rendering (the Torus is the first)
 - [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste

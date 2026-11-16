@@ -463,6 +463,7 @@ graph LR
     ToolManager --> Construct["ConstructTool (Place)"]
     ToolManager --> Destruct["DestructTool (Delete)"]
     ToolManager --> Property["PropertyTool (Edit)"]
+    ToolManager --> Paint["PaintTool (Paint)"]
     ToolManager --> Selector["MultiSelector"]
     ToolManager --> Marquee["MarqueeSelector"]
     ToolManager --> History["UndoRedo"]
@@ -472,6 +473,7 @@ graph LR
     Construct -->|"AddInstancesAction"| Net["SessionManager"]
     Destruct -->|"RemoveInstancesAction"| Net
     Property -->|"SetPropertiesAction"| Net
+    Paint -->|"SetPropertiesAction"| Net
 ```
 
 - `ToolManager` creates tools lazily and, with `UseMutex`, keeps at most one enabled. Tools can only be enabled while
@@ -482,12 +484,18 @@ graph LR
   `translucent_shader` metadata names a translucent variant of its shader with an `opacity` uniform (such as the
   coil's), so opaque instances never pay for transparency.
 - `MultiSelector` holds a selection shared across tools: `Shift`-clicking toggles an instance, clicking a selected
-  instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` box-selects by
-  `Ctrl`-dragging (Baja Builders parity).
+  instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` boxes instances by
+  `Ctrl`-dragging (Baja Builders parity) for the active tool: the selecting tools select them, and the PaintTool paints
+  them.
 - `PropertyTool` edits the selection's properties, except the engine's underscore-prefixed ones unless the editor's Show
   Internal option is on. Instances sharing a property (by name and type) show one value, or a neutral one where they
   differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection, and a row can reset its
   property when the assets agree on one default and some instance differs from it.
+- `PaintTool` paints paintable instances (assets with a `Paintable` component) with a brush: a color and a material,
+  each applied only if chosen. A press paints the hovered instance, a drag every instance it sweeps (previewed as wet
+  paint, submitted as one edit on release), a marquee its box, and Paint All the whole plot; `Ctrl`-clicking, or any
+  press while its eyedropper is on, takes the brush from an instance instead. `AssetManager` records which assets are
+  paintable and which take alpha, so the tool writes `RRGGBB` or `RRGGBBAA` as `Paintable` reads it.
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
@@ -585,7 +593,7 @@ yields, and `print` and returned values show what tables hold.
 | Group       | Functions                                                                                          |
 |-------------|----------------------------------------------------------------------------------------------------|
 | App         | `quit`, `restart`, `set_clock_offset`, `set_discord_on`, `set_vol`, `tts`, `wait`                  |
-| Building    | `add_inst`, `clr_insts`, `dmp_assets`, `dmp_insts`, `rm_insts`, `set_inst_prop`                    |
+| Building    | `add_inst`, `clr_insts`, `dmp_assets`, `dmp_insts`, `dmp_mats`, `rm_insts`, `set_inst_prop`        |
 | Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_level`,            |
 |             | `set_profanity_filter_on`                                                                          |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`                         |
@@ -597,7 +605,8 @@ yields, and `print` and returned values show what tables hold.
 | Saving      | `dmp_saves`, `load_creation`, `loc_load_creation`, `rm_creation`, `save_creation`                  |
 | Scripts     | `dmp_scripts`, `run_script` (and `require`)                                                        |
 | Sessions    | `host_mp`, `host_server`, `join_mp`, `start_sp`, `stop_servers`, `stop_session`                    |
-| Tools       | `redo`, `set_construct_asset`, `set_construct_rot`, `set_tool_on`, `undo`                          |
+| Tools       | `paint_all`, `redo`, `set_construct_asset`, `set_construct_rot`, `set_paint`, `set_tool_on`,       |
+|             | `undo`                                                                                             |
 | World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,              |
 |             | `set_static_shader_on`, `set_time_scale`, `tp_char`                                                |
 

@@ -201,10 +201,11 @@ Baja Builders did it (a model, two parts, and a constraint):
 ### Materials (the material bank)
 
 - A `MaterialBank` node under Main with a static `Instance` (no `Globals` accessor), exporting an array of
-  `AssetMaterial` resources edited in the inspector. An asset's `_materialId` indexes it; `-1` (matching `Sentinels`)
-  means none, the plain color. Painted materials are shared per material and color (`Paints`), so painted geometry still
-  batches. An asset opts in to see-through paint with `Paintable.HasAlpha`, which reads `_colorHex` as `RRGGBBAA`, so
-  nothing else pays for transparent rendering.
+  `AssetMaterial` resources edited in the inspector. An instance's `_materialId` names one by its `MaterialId`, which,
+  like an asset's ID, never changes once shipped; `-1` (matching `Sentinels`) means none, the plain color. Painted
+  materials are shared per material and color (`Paints`), so painted geometry still batches. An asset opts in to
+  see-through paint with `Paintable.HasAlpha`, which reads `_colorHex` as `RRGGBBAA`, so nothing else pays for
+  transparent rendering.
 - **(D5)** An `AssetMaterial` holds the look (`Look`, any `BaseMaterial3D` template, its albedo tinted by the instance's
   color) and the physics (`Density`, `Friction`, `Bounce`), so `Paintable` and the mass calculation read the same entry:
   rocks sink, wood floats, rubber grips, and ice slips. An instance without a material uses its asset's `Density`.

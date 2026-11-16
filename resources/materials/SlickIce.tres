@@ -23,6 +23,8 @@ uv1_triplanar = true
 
 [resource]
 script = ExtResource("1_7rgkm")
+MaterialId = 2
+MaterialName = &"Slick Ice"
 Look = SubResource("StandardMaterial3D_dms3b")
 Density = 62.5
 Friction = 0.0

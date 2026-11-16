@@ -3,12 +3,15 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.ViewModels;
 
 namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class WidgetDrawerView : UserControl, IViewFor<WidgetDrawerViewModel>
 {
+	private const double ScrollBarGap = 2d;
+
 	private readonly TranslateTransform _slide = new()
 	{
 		Transitions = [new DoubleTransition { Property = TranslateTransform.XProperty, Duration = AnimationDuration }]
@@ -18,6 +21,8 @@ public sealed partial class WidgetDrawerView : UserControl, IViewFor<WidgetDrawe
 	{
 		InitializeComponent();
 		Drawer.RenderTransform = _slide;
+
+		ScrollBarInset.ApplyGap(EntriesScroll, Entries, ScrollBarGap);
 	}
 
 	private void OnMenuSizeChanged(object? sender, SizeChangedEventArgs e) => UpdateSlide();

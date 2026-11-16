@@ -3,13 +3,13 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Media.Immutable;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Assets.Materials;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.Extensions;
 using EnsembleRoot.Ui.ViewModels.Utils;
 using Estragonia;
@@ -52,7 +52,7 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 				new MaterialItem(material.MaterialId, material.MaterialName.ToString(), material))
 		];
 
-		RecentSwatches = [.. LoadRecentColors().Select(static color => new SwatchItem(null, color))];
+		RecentSwatches = [.. LoadRecentColors().Select(static color => CreateSwatch(null, color))];
 		FilterMaterials();
 
 		OnBrushChanged();
@@ -63,9 +63,9 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 	private static PaintTool Paint => GToolManager.Paint;
 
 	/// <summary>The named web colors, by hue and then lightness, with the grays last.</summary>
-	public static IReadOnlyList<SwatchItem> NamedSwatches { get; } = CreateNamedSwatches();
+	public static IReadOnlyList<Swatch> NamedSwatches { get; } = CreateNamedSwatches();
 
-	public ObservableCollection<SwatchItem> RecentSwatches { get; }
+	public ObservableCollection<Swatch> RecentSwatches { get; }
 	public ObservableCollection<MaterialItem> VisibleMaterials { get; } = [];
 
 	[ObservableProperty] public partial HsvColor HsvColor { get; set; } = Colors.White.ToHsv();
@@ -100,7 +100,7 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 	[ObservableProperty] public partial bool IsMaterialApplied { get; set; }
 	[ObservableProperty] public partial bool IsEyedropping { get; set; }
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 16, 14, 16))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 20, 9, 12))
 	{
 		Title = "Paint Palette",
 		Description = "Lets you choose the paint tool's color and material.",
@@ -114,7 +114,7 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 	}
 
 	[RelayCommand]
-	private void ApplySwatch(SwatchItem swatch) => HsvColor = swatch.Color.ToHsv();
+	private void ApplySwatch(Swatch swatch) => HsvColor = swatch.Color.ToHsv();
 
 	private static IEnumerable<Color> LoadRecentColors()
 	{
@@ -125,18 +125,24 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 				yield return color.ToRgb();
 	}
 
-	private static SwatchItem[] CreateNamedSwatches() =>
+	private static Swatch[] CreateNamedSwatches() =>
 	[
 		.. Enum.GetValues<KnownColor>()
 			.Select(static known => (known, color: System.Drawing.Color.FromKnownColor(known)))
 			.Where(static pair => pair.color is { IsSystemColor: false, A: byte.MaxValue })
-			.Select(static pair => new SwatchItem(
+			.Select(static pair => CreateSwatch(
 				SplitWords(pair.known.ToString()), Color.FromRgb(pair.color.R, pair.color.G, pair.color.B)))
 			.DistinctBy(static swatch => swatch.Color)
 			.OrderBy(static swatch => swatch.Color.ToHsv().S < GraySaturation)
 			.ThenBy(static swatch => swatch.Color.ToHsv().S < GraySaturation ? 0 : swatch.Color.ToHsv().H)
 			.ThenBy(static swatch => swatch.Color.ToHsv().V)
 	];
+
+	private static Swatch CreateSwatch(string? name, Color color)
+	{
+		var hex = PaintColorFormat.Format(color.ToHsv(), ColorEntryMode.Hex);
+		return new Swatch(color, Checkerboard.Under(color), name is null ? hex : $"{name} ({hex})");
+	}
 
 	// "CornflowerBlue" -> "Cornflower Blue"
 	private static string SplitWords(string name) =>
@@ -280,7 +286,7 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 		if (RecentSwatches.FirstOrDefault(swatch => swatch.Color == color) is { } existing)
 			RecentSwatches.Remove(existing);
 
-		RecentSwatches.Insert(0, new SwatchItem(null, color));
+		RecentSwatches.Insert(0, CreateSwatch(null, color));
 
 		while (RecentSwatches.Count > MaxRecentCount)
 			RecentSwatches.RemoveAt(RecentSwatches.Count - 1);
@@ -290,17 +296,6 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 			RecentSwatches.Select(static swatch => PaintColorFormat.Format(swatch.Color.ToHsv(), ColorEntryMode.Hex))
 				.ToArray());
 	}
-}
-
-/// <param name="name">The color's name, if it has one.</param>
-public sealed class SwatchItem(string? name, Color color)
-{
-	public Color Color { get; } = color;
-	public IBrush Brush { get; } = new ImmutableSolidColorBrush(color);
-
-	public string Tip { get; } = name is null
-		? PaintColorFormat.Format(color.ToHsv(), ColorEntryMode.Hex)
-		: $"{name} ({PaintColorFormat.Format(color.ToHsv(), ColorEntryMode.Hex)})";
 }
 
 public sealed partial class MaterialItem : ObservableObject

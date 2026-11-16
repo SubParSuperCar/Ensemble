@@ -39,8 +39,8 @@
             <Grid RowDefinitions="Auto,*" RowSpacing="4">
                 <TextBlock Text="Widgets" ToolTip.Tip="Opens and closes widgets." HorizontalAlignment="Center" />
 
-                <ScrollViewer Grid.Row="1" MaxHeight="256">
-                    <ItemsControl ItemsSource="{Binding Entries}">
+                <ScrollViewer Name="EntriesScroll" Grid.Row="1" MaxHeight="256">
+                    <ItemsControl Name="Entries" ItemsSource="{Binding Entries}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <StackPanel Spacing="4" />

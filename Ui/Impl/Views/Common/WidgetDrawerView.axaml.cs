@@ -10,7 +10,7 @@ namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class WidgetDrawerView : UserControl, IViewFor<WidgetDrawerViewModel>
 {
-	private const double ScrollBarGap = 2d;
+	private const double ScrollBarGap = 4d;
 
 	private readonly TranslateTransform _slide = new()
 	{

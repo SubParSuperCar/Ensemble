@@ -58,6 +58,7 @@ public sealed partial class GameViewModel : ViewModelBase
 
 		SetWidgetOpen<AssetSelectorViewModel>(GToolManager.IsEnabled<ConstructTool>());
 		SetWidgetOpen<PropertyEditorViewModel>(GToolManager.IsEnabled<PropertyTool>());
+		SetWidgetOpen<PaintPaletteViewModel>(GToolManager.IsEnabled<PaintTool>());
 		GToolManager.ToolIsEnabledChanged += OnToolIsEnabledChanged;
 	}
 
@@ -122,6 +123,10 @@ public sealed partial class GameViewModel : ViewModelBase
 
 			case PropertyTool:
 				SetWidgetOpen<PropertyEditorViewModel>(isEnabled);
+				break;
+
+			case PaintTool:
+				SetWidgetOpen<PaintPaletteViewModel>(isEnabled);
 				break;
 		}
 	}

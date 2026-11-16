@@ -10,6 +10,7 @@ updates:
     # Meziantou.Analyzer floats
     ignore:
       - dependency-name: 'Avalonia'
+      - dependency-name: 'Avalonia.Controls.ColorPicker'
       - dependency-name: 'Avalonia.HarfBuzz'
       - dependency-name: 'Avalonia.Skia'
       - dependency-name: 'Avalonia.Themes.Simple'

@@ -1,0 +1,282 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
+    xmlns:cp="using:Avalonia.Controls.Primitives"
+    mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="384"
+    x:Class="EnsembleRoot.Ui.Views.PaintPaletteView"
+    x:DataType="vm:PaintPaletteViewModel">
+
+    <UserControl.Resources>
+        <!-- Behind each swatch, so see-through colors show as such -->
+        <DrawingBrush x:Key="CheckerBrush" TileMode="Tile" DestinationRect="0,0,8,8">
+            <DrawingBrush.Drawing>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="White" Geometry="M0,0 H8 V8 H0 Z" />
+                    <GeometryDrawing Brush="#C0C0C0" Geometry="M0,0 H4 V4 H0 Z M4,4 H8 V8 H4 Z" />
+                </DrawingGroup>
+            </DrawingBrush.Drawing>
+        </DrawingBrush>
+
+        <DataTemplate x:Key="SwatchTemplate" x:DataType="vm:SwatchItem">
+            <Button
+                Classes="swatch"
+                Command="{Binding $parent[UserControl].((vm:PaintPaletteViewModel)DataContext).ApplySwatchCommand, FallbackValue={x:Null}}"
+                CommandParameter="{Binding}"
+                ToolTip.Tip="{Binding Tip}">
+
+                <Panel>
+                    <Border Background="{StaticResource CheckerBrush}" />
+                    <Border Background="{Binding Brush}" />
+                </Panel>
+            </Button>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <UserControl.Styles>
+        <!-- A half whose part of the brush isn't applied stays editable, for when it is again -->
+        <Style Selector="Grid.dimmed">
+            <Setter Property="Opacity" Value="0.75" />
+        </Style>
+
+        <Style Selector="Button.swatch">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Margin" Value="1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderMidBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        </Style>
+
+        <Style Selector="NumericUpDown.component">
+            <Setter Property="Minimum" Value="0" />
+            <Setter Property="Increment" Value="1" />
+            <Setter Property="FormatString" Value="0" />
+            <Setter Property="ParsingNumberStyle" Value="Integer" />
+            <Setter Property="ShowButtonSpinner" Value="False" />
+            <Setter Property="Width" Value="52" />
+        </Style>
+    </UserControl.Styles>
+
+    <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
+        <Grid RowDefinitions="Auto,*" RowSpacing="2">
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto" ColumnSpacing="2">
+                <cp:ColorPreviewer
+                    HsvColor="{Binding HsvColor}"
+                    ToolTip.Tip="The brush's color."
+                    IsAccentColorsVisible="False"
+                    Width="32" />
+
+                <TextBox
+                    Grid.Column="1"
+                    Text="{Binding ColorText, UpdateSourceTrigger=LostFocus}"
+                    ToolTip.Tip="The brush's color as text. Type hex (#RRGGBB or #RRGGBBAA) or values separated by&#x0a;commas (R, G, B, A, or H, S, V, A in HSV mode), then press Enter."
+                    VerticalContentAlignment="Center" />
+
+                <ComboBox
+                    Grid.Column="2"
+                    SelectedIndex="{Binding ModeIndex}"
+                    ToolTip.Tip="How the color reads: as RGB or HSV values (and sliders), or as hex."
+                    VerticalAlignment="Stretch">
+
+                    <ComboBoxItem Content="RGB" />
+                    <ComboBoxItem Content="HSV" />
+                    <ComboBoxItem Content="Hex" />
+                </ComboBox>
+
+                <ToggleButton
+                    Grid.Column="3"
+                    Content="Eyedropper"
+                    IsChecked="{Binding IsEyedropping}"
+                    ToolTip.Tip="Click an asset to take its paint as the brush's, while on. Esc turns it off.&#x0a;Ctrl-click an asset to do the same at any time." />
+
+                <DropDownButton Grid.Column="4" ToolTip.Tip="What the brush applies (and the eyedropper takes).">
+                    <DropDownButton.Flyout>
+                        <Flyout Placement="BottomEdgeAlignedRight" VerticalOffset="2">
+                            <!-- 5 matches SimpleTheme's context menu padding, so the flyout lines up with menus -->
+                            <StackPanel Spacing="5">
+                                <CheckBox
+                                    Content="Color"
+                                    IsChecked="{Binding IsColorApplied}"
+                                    ToolTip.Tip="Whether painting applies the brush's color." />
+
+                                <CheckBox
+                                    Content="Material"
+                                    IsChecked="{Binding IsMaterialApplied}"
+                                    ToolTip.Tip="Whether painting applies the brush's material." />
+                            </StackPanel>
+                        </Flyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+            </Grid>
+
+            <Grid Grid.Row="1" ColumnDefinitions="*,4,*">
+                <Grid
+                    Classes.dimmed="{Binding !IsColorApplied}"
+                    RowDefinitions="*,Auto,Auto,Auto,Auto,*"
+                    RowSpacing="2"
+                    MinWidth="160">
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="2" MinHeight="64">
+                        <cp:ColorSpectrum
+                            HsvColor="{Binding HsvColor}"
+                            ToolTip.Tip="Drag to pick the hue (across) and saturation (down)."
+                            Components="HueSaturation" />
+
+                        <cp:ColorSlider
+                            Grid.Column="1"
+                            HsvColor="{Binding HsvColor}"
+                            ToolTip.Tip="Brightness."
+                            ColorComponent="Component3"
+                            ColorModel="Hsva"
+                            Orientation="Vertical" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="2">
+                        <cp:ColorSlider
+                            HsvColor="{Binding HsvColor}"
+                            ColorComponent="Component1"
+                            ColorModel="{Binding SliderModel}"
+                            VerticalAlignment="Center" />
+
+                        <NumericUpDown
+                            Grid.Column="1"
+                            Classes="component"
+                            Value="{Binding Component1, UpdateSourceTrigger=LostFocus}"
+                            Maximum="{Binding ComponentMaximum1}" />
+                    </Grid>
+
+                    <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="2">
+                        <cp:ColorSlider
+                            HsvColor="{Binding HsvColor}"
+                            ColorComponent="Component2"
+                            ColorModel="{Binding SliderModel}"
+                            VerticalAlignment="Center" />
+
+                        <NumericUpDown
+                            Grid.Column="1"
+                            Classes="component"
+                            Value="{Binding Component2, UpdateSourceTrigger=LostFocus}"
+                            Maximum="{Binding ComponentMaximum23}" />
+                    </Grid>
+
+                    <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="2">
+                        <cp:ColorSlider
+                            HsvColor="{Binding HsvColor}"
+                            ColorComponent="Component3"
+                            ColorModel="{Binding SliderModel}"
+                            VerticalAlignment="Center" />
+
+                        <NumericUpDown
+                            Grid.Column="1"
+                            Classes="component"
+                            Value="{Binding Component3, UpdateSourceTrigger=LostFocus}"
+                            Maximum="{Binding ComponentMaximum23}" />
+                    </Grid>
+
+                    <Grid Grid.Row="4" ColumnDefinitions="*,Auto" ColumnSpacing="2">
+                        <cp:ColorSlider
+                            HsvColor="{Binding HsvColor}"
+                            ToolTip.Tip="Alpha (opacity), for assets that can be see-through."
+                            ColorComponent="Alpha"
+                            ColorModel="{Binding SliderModel}"
+                            IsAlphaVisible="True"
+                            VerticalAlignment="Center" />
+
+                        <NumericUpDown
+                            Grid.Column="1"
+                            Classes="component"
+                            Value="{Binding Alpha, UpdateSourceTrigger=LostFocus}"
+                            Maximum="255" />
+                    </Grid>
+
+                    <TabControl Grid.Row="5" Padding="0" MinHeight="64">
+                        <TabItem Header="Swatches" ToolTip.Tip="The named web colors.">
+                            <ScrollViewer>
+                                <ItemsControl
+                                    ItemsSource="{x:Static vm:PaintPaletteViewModel.NamedSwatches}"
+                                    ItemTemplate="{StaticResource SwatchTemplate}">
+
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </TabItem>
+
+                        <TabItem Header="Recent" ToolTip.Tip="The colors you painted last, newest first.">
+                            <ScrollViewer>
+                                <ItemsControl
+                                    ItemsSource="{Binding RecentSwatches}"
+                                    ItemTemplate="{StaticResource SwatchTemplate}">
+
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
+
+                <GridSplitter Grid.Column="1" ResizeDirection="Columns" Background="Transparent" />
+
+                <Grid
+                    Grid.Column="2"
+                    Classes.dimmed="{Binding !IsMaterialApplied}"
+                    RowDefinitions="Auto,*,Auto"
+                    RowSpacing="2"
+                    MinWidth="160">
+
+                    <TextBox
+                        Text="{Binding MaterialQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        PlaceholderText="Filter by Name or ID&#x2026;"
+                        GotFocus="OnMaterialFilterGotFocus"
+                        ToolTip.Tip="Filters the materials below by name or internal ID." />
+
+                    <ListBox
+                        Grid.Row="1"
+                        ItemsSource="{Binding VisibleMaterials}"
+                        SelectedItem="{Binding SelectedMaterial}"
+                        SelectionMode="Single">
+
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="vm:MaterialItem">
+                                <StackPanel ToolTip.Tip="{Binding Stats}" Width="72" Spacing="2">
+                                    <Image Source="{Binding Preview}" Width="56" Height="56" />
+
+                                    <TextBlock
+                                        Text="{Binding Name}"
+                                        HorizontalAlignment="Center"
+                                        TextTrimming="CharacterEllipsis"
+                                        FontSize="12" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Text="{Binding CurrentMaterial.Stats, FallbackValue={x:Null}}"
+                        FontSize="12"
+                        IsVisible="{Binding CurrentMaterial.Stats, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}" />
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
+
+</UserControl>

@@ -4,8 +4,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Plots;
-using EnsembleRoot.Replication.Actions;
-using EnsembleRoot.Sessions.Actions;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Abstractions;
 using Estragonia;
@@ -71,9 +69,7 @@ public sealed partial class ToolBarViewModel : ViewModelBase
 
 	public static void ClearAll()
 	{
-		Log.Debug("Clearing {Count} local plot instance(s)...", LocalPlot?.Instances.Count);
-		new ClearInstancesAction().Submit();
-
+		GToolManager.Destruct.ClearAll();
 		GToolManager.Destruct.Disable();
 	}
 

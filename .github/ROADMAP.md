@@ -16,7 +16,7 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) SolidHighlight, a flat-color variant of AxialHighlight, red for destruct
     - [x] (S) Raycast collision mask - the tools' rays hit World and Static Instances only, never characters
     - [x] (S) "Clear All" toolbar button - visible only with DestructTool on, owner, not spawned; disabled at 0
-      instances; double-click to confirm; disables DestructTool after use
+      instances; double-click to confirm; disables DestructTool after use; undoable like any tool edit
     - [x] (M) Multi-selection - `Shift`-click to toggle, click a selected instance to delete them all, bulk
       `RemoveInstancesAction` (up to 256, token cost scales with count)
     - [x] (S) Marching ants - selected instances' highlights dash their edges, marching toward each axis's positive end,

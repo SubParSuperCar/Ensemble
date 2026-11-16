@@ -13,7 +13,7 @@
     <UserControl.Styles>
         <!-- A half whose part of the brush isn't applied stays editable, for when it is again -->
         <Style Selector="Grid.dimmed">
-            <Setter Property="Opacity" Value="0.75" />
+            <Setter Property="Opacity" Value="0.5" />
         </Style>
 
         <!-- At the widget's top, unlike the other drop-down lists, so this one opens downward -->

@@ -1,4 +1,4 @@
-name: Build Binaries
+name: Build Binaries (CI/CD)
 
 on:
   workflow_dispatch:
@@ -99,6 +99,9 @@ jobs:
           set -euo pipefail
           dotnet restore EnsembleGame.csproj
           dotnet build EnsembleGame.csproj -c ExportRelease --no-restore
+          # The headless editor loads the Debug build's scripts; without them, scenes export through placeholder
+          # scripts, which drop exported node arrays (e.g., Paintable.Excluded)
+          dotnet build EnsembleGame.csproj --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
@@ -197,6 +200,9 @@ jobs:
           set -euo pipefail
           dotnet restore EnsembleGame.csproj
           dotnet build EnsembleGame.csproj -c ExportRelease --no-restore
+          # The headless editor loads the Debug build's scripts; without them, scenes export through placeholder
+          # scripts, which drop exported node arrays (e.g., Paintable.Excluded)
+          dotnet build EnsembleGame.csproj --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
@@ -301,6 +307,10 @@ jobs:
           $PSNativeCommandUseErrorActionPreference = $false
           dotnet build EnsembleGame.csproj -c ExportRelease
           if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
+          # The headless editor loads the Debug build's scripts; without them, scenes export through placeholder
+          # scripts, which drop exported node arrays (e.g., Paintable.Excluded)
+          dotnet build EnsembleGame.csproj
+          if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
           dotnet build-server shutdown
           & $env:GODOT --headless --path . --import | Out-Host
           & $env:GODOT --headless --path . --import | Out-Host
@@ -395,6 +405,9 @@ jobs:
           set -euo pipefail
           dotnet restore EnsembleGame.csproj
           dotnet build EnsembleGame.csproj -c ExportDebug --no-restore
+          # The headless editor loads the Debug build's scripts; without them, scenes export through placeholder
+          # scripts, which drop exported node arrays (e.g., Paintable.Excluded)
+          dotnet build EnsembleGame.csproj --no-restore
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out

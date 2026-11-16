@@ -372,7 +372,7 @@ sequenceDiagram
 | `SetPropertiesAction`      | Changes the properties of up to 256 instances    |
 | `ClearInstancesAction`     | Removes every instance on a plot (owner or host) |
 | `KickOccupantAction`       | Removes a player from their plot (owner or host) |
-| `SendChatMessageAction`    | Posts a chat message (filtered by the host)      |
+| `PostChatMessageAction`    | Posts a chat message (filtered by the host)      |
 | `SetProfanityFilterAction` | Toggles the profanity filter (host only)         |
 
 Snapshots (`Replication/Snapshots/`): `PlotsSnapshot`, `CharactersSnapshot`, `ChatSnapshot`, and

@@ -13,7 +13,7 @@ public static partial class LuaExecutor
 	// ReSharper disable once InconsistentNaming
 	private static ValueTask<int> chat(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		SendChatMessageAction.Send(context.GetArgument<string>(0));
+		PostChatMessageAction.Post(context.GetArgument<string>(0));
 
 		return context.ReturnNothing();
 	}

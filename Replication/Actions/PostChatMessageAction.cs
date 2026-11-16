@@ -8,11 +8,11 @@ using static EnsembleRoot.Sessions.Actions.ActionValidation;
 
 namespace EnsembleRoot.Replication.Actions;
 
-public readonly record struct SendChatMessageAction(string Text) : INetworkAction<SendChatMessageAction>
+public readonly record struct PostChatMessageAction(string Text) : INetworkAction<PostChatMessageAction>
 {
 	public static int TokenCost { get; } = 10;
 
-	public static SendChatMessageAction FromPayload(Array<Variant> payload) => new(payload[0].AsString());
+	public static PostChatMessageAction FromPayload(Array<Variant> payload) => new(payload[0].AsString());
 
 	public Array<Variant> ToPayload() => [Text];
 
@@ -20,8 +20,8 @@ public readonly record struct SendChatMessageAction(string Text) : INetworkActio
 		ChatText.IsValid(Text) ? Accept : Reject("Invalid chat message.");
 
 	// The host's own messages aren't filtered
-	public SendChatMessageAction Rewrite(ActionSource source) =>
-		source.IsHost ? this : new SendChatMessageAction(GProfanityFilterManager.Filter(Text));
+	public PostChatMessageAction Rewrite(ActionSource source) =>
+		source.IsHost ? this : new PostChatMessageAction(GProfanityFilterManager.Filter(Text));
 
 	public void Apply(ActionSource source) =>
 		GChatManager.Add(
@@ -32,13 +32,13 @@ public readonly record struct SendChatMessageAction(string Text) : INetworkActio
 				Text = Text
 			});
 
-	/// <summary>Sanitizes and sends <paramref name="text" />, unless nothing is left of it.</summary>
-	public static void Send(string text)
+	/// <summary>Sanitizes and posts <paramref name="text" />, unless nothing is left of it.</summary>
+	public static void Post(string text)
 	{
 		if (ChatText.Sanitize(text) is { Length: > 0 } sanitized)
-			new SendChatMessageAction(sanitized).Submit();
+			new PostChatMessageAction(sanitized).Submit();
 	}
 
 	[ModuleInitializer]
-	internal static void Register() => NetworkActionRegistry.Register<SendChatMessageAction>();
+	internal static void Register() => NetworkActionRegistry.Register<PostChatMessageAction>();
 }

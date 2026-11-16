@@ -133,12 +133,9 @@
 
   <!-- Shown in the IDE only -->
   <ItemGroup>
-    <None Include="**/*.gd;**/*.gdshader;**/*.gdshaderinc;assets/**" Exclude=".godot/**;bin/**;**/*.import;**/*.mp3">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-    </None>
-    <None Include="**/*.tscn;**/*.scn" Exclude=".godot/**;bin/**;scenes/**"/>
-    <None Include="**/*LICENSE*" Exclude="Estragonia/**/*LICENSE*;bin/**"/>
-    <None Include="Properties/**" Exclude="**/*.gdignore"/>
+    <None
+      Include="**/*.gd;**/*.gdshader;**/*.gdshaderinc;**/*.tscn;**/*.scn;**/*LICENSE*;assets/**;Properties/**"
+      Exclude="@(None);.godot/**;bin/**;Estragonia/**;scenes/**;**/*.gdignore;**/*.import;**/*.mp3"/>
   </ItemGroup>
 
   <!-- A script nests under the same-named scene beside it (Motor.cs under Motor.tscn), as .axaml.cs under .axaml -->

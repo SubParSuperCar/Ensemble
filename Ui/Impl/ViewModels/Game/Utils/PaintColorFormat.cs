@@ -31,8 +31,8 @@ public static class PaintColorFormat
 		{
 			ColorEntryMode.Hsv => Join(Round(color.H), Round(color.S * 100), Round(color.V * 100), rgb.A),
 			ColorEntryMode.Hex => rgb.A is byte.MaxValue
-				? string.Create(CultureInfo.InvariantCulture, $"#{rgb.R:X2}{rgb.G:X2}{rgb.B:X2}")
-				: string.Create(CultureInfo.InvariantCulture, $"#{rgb.R:X2}{rgb.G:X2}{rgb.B:X2}{rgb.A:X2}"),
+				? $"#{rgb.R:X2}{rgb.G:X2}{rgb.B:X2}"
+				: $"#{rgb.R:X2}{rgb.G:X2}{rgb.B:X2}{rgb.A:X2}",
 			_ => Join(rgb.R, rgb.G, rgb.B, rgb.A)
 		};
 	}
@@ -90,7 +90,7 @@ public static class PaintColorFormat
 	private static bool TryParseHex(string text, out Color color)
 	{
 		color = default;
-		var digits = text.StartsWith('#') ? text[1..] : text;
+		var digits = text.StartsWith('#', StringComparison.Ordinal) ? text[1..] : text;
 
 		if (
 			digits.Length is not (6 or 8) ||
@@ -110,7 +110,7 @@ public static class PaintColorFormat
 
 		var inner = text[prefix.Length..].TrimStart('a', 'A').Trim();
 
-		if (!inner.StartsWith('(') || !inner.EndsWith(')'))
+		if (!inner.StartsWith('(', StringComparison.Ordinal) || !inner.EndsWith(')', StringComparison.Ordinal))
 			return false;
 
 		text = inner[1..^1];

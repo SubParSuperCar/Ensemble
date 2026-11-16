@@ -100,7 +100,7 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 	[ObservableProperty] public partial bool IsMaterialApplied { get; set; }
 	[ObservableProperty] public partial bool IsEyedropping { get; set; }
 
-	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 20, 9, 12))
+	public static WidgetDescriptor Descriptor { get; } = new(WidgetDescriptor.Cells(0, 20, 8, 12))
 	{
 		Title = "Paint Palette",
 		Description = "Lets you choose the paint tool's color and material.",

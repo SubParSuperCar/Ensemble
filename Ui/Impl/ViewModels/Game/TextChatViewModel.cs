@@ -71,7 +71,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	[RelayCommand(CanExecute = nameof(CanSend))]
 	private void Send()
 	{
-		SendChatMessageAction.Send(Message);
+		PostChatMessageAction.Post(Message);
 		Message = string.Empty;
 	}
 
@@ -112,7 +112,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	// Local only, so the sender learns why a message went nowhere
 	private void OnActionRejected(string actionId, string reason)
 	{
-		if (actionId is nameof(SendChatMessageAction) or nameof(SetProfanityFilterAction))
+		if (actionId is nameof(PostChatMessageAction) or nameof(SetProfanityFilterAction))
 			AddLine(new TextChatLine(null, default, reason));
 	}
 

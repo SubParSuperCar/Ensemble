@@ -7,8 +7,8 @@
 [![.NET](https://img.shields.io/badge/.NET-11-purple?logo=dotnet)](https://dotnet.microsoft.com/)
 [![C#](https://custom-icon-badges.demolab.com/badge/C%23-%23239120.svg?logo=cshrp)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 
-[![Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
-[![Test](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml)<br>
+[![Build Binaries (CI/CD)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
+[![Test and Build Server](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/test.yml)<br>
 [![Create Source Release](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/src.yml)
 [![Upload Source Lines of Code](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml/badge.svg)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/cloc.yml)
 
@@ -128,7 +128,7 @@ Ensemble's test map:
   Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or `Ensemble.app`
   (macOS) &mdash; no install, no runtime needed.
 
-- **Latest commit:** run the [Build Binaries](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
+- **Latest commit:** run the [Build Binaries (CI/CD)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml)
   workflow ("Run workflow"; on a fork if you lack write access), then download the artifacts from the finished run.
 
 On startup, Ensemble asks GitHub for the latest release and offers each newer version once. If Discord is running, it

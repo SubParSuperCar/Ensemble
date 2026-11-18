@@ -30,6 +30,12 @@ public partial class Assembly : RigidBody3D
 
 	public bool IsKilled { get; private set; }
 
+	/// <summary>How many times the inertia its shapes give it the body gets, once it simulates.</summary>
+	internal float InertiaScale { get; set; } = 1f;
+
+	// A massless body stays frozen
+	private bool HasMass => _mass > 0;
+
 	// Frozen bodies never count as asleep, and killed ones never move again
 	internal bool IsAtRest => IsKilled || Sleeping || Freeze;
 
@@ -113,7 +119,7 @@ public partial class Assembly : RigidBody3D
 		if (_bounds is { } bounds)
 			Bounds = bounds with { Position = bounds.Position - center };
 
-		if (_mass <= 0)
+		if (!HasMass)
 			return;
 
 		foreach (var body in _pieces)
@@ -144,6 +150,30 @@ public partial class Assembly : RigidBody3D
 	}
 
 	/// <summary>
+	///     Gives the body <see cref="InertiaScale" /> times the largest inertia Jolt computed from its shapes, about
+	///     every axis alike, as Godot can't take the principal axes Jolt computed it about. Jolt's state is only
+	///     readable while the body simulates, during physics processing.
+	/// </summary>
+	/// <returns>Whether it did, or never will (a killed or massless body).</returns>
+	internal bool TryScaleInertia()
+	{
+		if (IsKilled || !HasMass)
+			return true;
+
+		if (Freeze)
+			return false;
+
+		var inverse = PhysicsServer3D.BodyGetDirectState(GetRid()).InverseInertia;
+		var smallest = MathF.Min(inverse.X, MathF.Min(inverse.Y, inverse.Z));
+
+		if (smallest <= 0)
+			return false;
+
+		Inertia = Vector3.One * (InertiaScale / smallest);
+		return true;
+	}
+
+	/// <summary>
 	///     Switches the assembly off (out of the physics space, hidden), as only despawning frees a creation.
 	/// </summary>
 	internal void Kill()
@@ -153,7 +183,7 @@ public partial class Assembly : RigidBody3D
 		Visible = false;
 	}
 
-	private void UpdateFreeze() => Freeze = !IsSimulated || _mass <= 0 || _holds.IsSet;
+	private void UpdateFreeze() => Freeze = !IsSimulated || !HasMass || _holds.IsSet;
 
 	public override string ToString() =>
 		string.Create(

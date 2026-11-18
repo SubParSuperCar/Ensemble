@@ -18,6 +18,7 @@ public partial class LiveCreation : Node3D
 
 	private readonly List<Assembly> _assemblies = [];
 	private readonly List<(AssetHandle Handle, ISimulationTicked Ticked)> _ticked = [];
+	private readonly List<Assembly> _unscaledInertias = [];
 
 	private bool _isAwaitingInput;
 	private bool _isResuming;
@@ -47,6 +48,7 @@ public partial class LiveCreation : Node3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		_unscaledInertias.RemoveAll(static assembly => assembly.TryScaleInertia());
 		KillLostAssemblies();
 		Tick(delta);
 		UpdateStream(delta);

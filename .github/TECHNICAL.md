@@ -37,7 +37,7 @@ spawned creations in depth, see [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md).
 | Engine         | Godot 4.7 (.NET build), Mobile rendering method                                    |
 | Language       | C# 15 on .NET 11; GDScript only inside third-party addons                          |
 | UI             | Avalonia 12 through a forked Estragonia bridge, MVVM with CommunityToolkit.Mvvm    |
-| Physics        | Jolt, through Godot's built-in integration, at 100 ticks per second                |
+| Physics        | Jolt, through Godot's built-in integration, at 120 ticks per second                |
 | Networking     | Godot's `SceneMultiplayer` over ENet (DTLS-encrypted), with UPnP port forwarding   |
 | Scripting      | Lua 5.2 through LuaCSharp                                                          |
 | Logging        | Serilog: console, rolling JSON files, an in-game log view, and toasts for warnings |
@@ -407,7 +407,9 @@ geometry. `PlotHandle` creates a `LiveCreation`, which lives until the plot desp
 `Welds.Group` (the `Obb.Abuts` face test, then union-find), and builds one `Assembly` (a `RigidBody3D`) per group,
 carrying its pieces' collision shapes and mass, with its origin on its center of mass. The pieces' own bodies ride along
 outside the physics space, joints authored between an asset's pieces link their assemblies, and the handles and their
-components are initialized once the whole creation exists. The static instances stay in sync with Core, only hidden and
+components are initialized once the whole creation exists. An assembly far lighter than one it's jointed to (a
+suspension's links under a car's body) gets more inertia, in proportion, since Jolt can't otherwise hold its joints in
+line. The static instances stay in sync with Core, only hidden and
 disabled while spawned, so despawning is instant.
 
 ```mermaid
@@ -536,7 +538,7 @@ where the difference is small.
 - **`perf_mod(render_scale?)`** trades the rest of the looks for speed, one way: it disables 3D and UI anti-aliasing
   (including terminal windows opened afterward), glow, Sky3D, the terrain's ocean, spot and omni light shadows (an empty
   shadow atlas), and lighting itself (the unshaded debug draw), and renders 3D at `render_scale` (e.g., `0.5`) if given.
-- **Jolt physics** at 100 ticks per second on its own thread, with physics interpolation. Layers: 1 World, 2 Character,
+- **Jolt physics** at 120 ticks per second on its own thread, with physics interpolation. Layers: 1 World, 2 Character,
   3 Static Instances, and 4 Dynamic Instances (`Constants.PhysicsLayers`). Nodes moved between physics ticks
   (highlights, the placement preview, other players' characters) opt out of interpolation. Its Baumgarte factor (how
   much of a constraint's error each step corrects) is 0.5, up from 0.2: with 0.2, a hard knock left jointed pieces

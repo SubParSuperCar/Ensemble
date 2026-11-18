@@ -14,6 +14,9 @@ namespace EnsembleRoot.Scripts.Creations;
 
 public partial class LiveCreation
 {
+	// How many times heavier than a body the heaviest one jointed to it may be before the body gets more inertia
+	private const float MaxJointedMassRatio = 8f;
+
 	private const uint AssemblyMask =
 		PhysicsLayers.World | PhysicsLayers.Character | PhysicsLayers.StaticInstances | PhysicsLayers.DynamicInstances;
 
@@ -48,6 +51,8 @@ public partial class LiveCreation
 			handle.ConnectJoints();
 		}
 
+		ScaleLightInertias(handles.Values);
+
 		foreach (var instance in instances)
 		{
 			var handle = handles[instance.Id];
@@ -66,6 +71,33 @@ public partial class LiveCreation
 			Log.Warning(
 				"Plot {PlotId} has {Count} assemblies, and other peers won't see those past the first {MaxCount} move",
 				Plot.Id, _assemblies.Count, AssemblyState.MaxId + 1);
+	}
+
+	// Jolt can't hold a body far lighter than one it's jointed to in place, so its joints bend (e.g., a suspension's
+	// links under a car's body); past a ratio, such a body gets more inertia, in proportion
+	private void ScaleLightInertias(IEnumerable<AssetHandle> handles)
+	{
+		var heaviestNeighbors = new Dictionary<Assembly, float>();
+
+		foreach (var (joint, _, _) in handles.SelectMany(static handle => handle.Joints))
+		{
+			if (
+				joint.GetNodeOrNull<Assembly>(joint.NodeA) is not { } a ||
+				joint.GetNodeOrNull<Assembly>(joint.NodeB) is not { } b)
+				continue;
+
+			heaviestNeighbors[a] = MathF.Max(heaviestNeighbors.GetValueOrDefault(a), b.Mass);
+			heaviestNeighbors[b] = MathF.Max(heaviestNeighbors.GetValueOrDefault(b), a.Mass);
+		}
+
+		foreach (var (assembly, neighborMass) in heaviestNeighbors)
+		{
+			if (neighborMass / assembly.Mass / MaxJointedMassRatio is not (var scale and > 1f))
+				continue;
+
+			assembly.InertiaScale = scale;
+			_unscaledInertias.Add(assembly);
+		}
 	}
 
 	// The pieces with colliders weld; an asset without any still gets an assembly for its handle to ride

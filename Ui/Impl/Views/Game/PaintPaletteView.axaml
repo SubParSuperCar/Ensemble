@@ -12,7 +12,7 @@
 
     <UserControl.Styles>
         <!-- A side whose part of the brush isn't applied stays editable, for when it is again -->
-        <Style Selector="Grid.dimmed">
+        <Style Selector=":is(Panel).dimmed">
             <Setter Property="Opacity" Value="0.5" />
         </Style>
 
@@ -224,20 +224,27 @@
                     ResizeDirection="Columns"
                     Background="{StaticResource PrimaryBrush}" />
 
-                <Grid
+                <!-- Docked, so the hidden stats take no gap -->
+                <DockPanel
                     Grid.Column="2"
                     Classes.dimmed="{Binding !IsMaterialApplied}"
-                    RowDefinitions="Auto,*,Auto"
-                    RowSpacing="2">
+                    VerticalSpacing="2">
 
                     <TextBox
+                        DockPanel.Dock="Top"
                         Text="{Binding MaterialQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         PlaceholderText="Filter by Name or ID&#x2026;"
                         GotFocus="OnMaterialFilterGotFocus"
                         ToolTip.Tip="Filters the materials below by name or internal ID." />
 
+                    <TextBlock
+                        DockPanel.Dock="Bottom"
+                        Text="{Binding CurrentMaterial.Stats, FallbackValue={x:Null}}"
+                        FontSize="12"
+                        IsVisible="{Binding CurrentMaterial.Stats, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}" />
+
                     <!-- Scrolled outside the list, so its scroll bar can keep a gap; its items wrap at its width -->
-                    <ScrollViewer Name="MaterialsScroll" Grid.Row="1">
+                    <ScrollViewer Name="MaterialsScroll">
                         <ListBox
                             Name="Materials"
                             ItemsSource="{Binding VisibleMaterials}"
@@ -266,13 +273,7 @@
                             </ListBox.ItemTemplate>
                         </ListBox>
                     </ScrollViewer>
-
-                    <TextBlock
-                        Grid.Row="2"
-                        Text="{Binding CurrentMaterial.Stats, FallbackValue={x:Null}}"
-                        FontSize="12"
-                        IsVisible="{Binding CurrentMaterial.Stats, Converter={x:Static ObjectConverters.IsNotNull}, FallbackValue=False}" />
-                </Grid>
+                </DockPanel>
             </Grid>
         </Grid>
     </Border>

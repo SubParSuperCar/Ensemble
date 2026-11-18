@@ -37,6 +37,7 @@ public sealed class App : Application
 	public override void Initialize()
 	{
 		NumberBoxes.Register();
+		PanelSpacing.Register();
 		AvaloniaXamlLoader.Load(this);
 	}
 

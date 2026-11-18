@@ -613,8 +613,10 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			if (_owner._isDisposed || !GodotPlatform.TryBeginProcess(delta, out _))
 				return;
 
-			GodotPlatform.TriggerRenderTick();
+			// As in AvaloniaControl: the queued work runs first, so the tick renders this frame's changes
 			AvDispatcher.UIThread.RunJobs();
+			GodotPlatform.TriggerRenderTick();
+			_owner._topLevelImpl.UpdateShownSurface();
 
 			var window = _owner._gdWindow;
 			var winSize = window.Size;
@@ -628,10 +630,6 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			{
 				_owner._lastProcessRenderSize = pixelSize;
 				_owner._topLevelImpl.SetRenderSize(pixelSize, 1.0);
-				// Run the layout jobs queued by SetRenderSize before drawing. Without this, maximizing
-				// or going fullscreen shows a blurry texture, as OnDraw would render the old layout
-				// onto the new surface.
-				AvDispatcher.UIThread.RunJobs();
 			}
 
 			// Enable the popup overlay after the first layout pass, which needs a valid size
@@ -654,7 +652,6 @@ internal sealed class GodotWindowImpl : IWindowImpl
 				window.CallDeferred(GdWindow.MethodName.SetPosition, centerPos);
 			}
 
-			_owner._topLevelImpl.OnDraw(new Rect(pixelSize.ToSize(1.0)));
 			QueueRedraw();
 		}
 
@@ -663,8 +660,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 			if (_owner._isDisposed)
 				return;
 
-			var surface = _owner._topLevelImpl.GetOrCreateSurface();
-			DrawTexture(surface.GdTexture, Vector2.Zero);
+			_owner._topLevelImpl.Draw(this);
 		}
 
 		public override void _GuiInput(InputEvent @event)

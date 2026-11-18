@@ -9,12 +9,9 @@ internal sealed class MtlSynchronizer : ISurfaceSynchronizer
 {
 	private bool _gpuBlitFailed;
 
-	/// <summary>Prepares the surface for Skia rendering.</summary>
+	/// <summary>Prepares the surface for Skia rendering, which Metal needs nothing for.</summary>
 	public void PrepareForRendering(IGodotSkiaSurface surface)
 	{
-		// Clear the texture on first draw to avoid corruption on some GPUs
-		if (surface.DrawCount == 0)
-			surface.RenderingDevice.TextureClear(surface.GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
 	}
 
 	/// <summary>Finalizes rendering by blitting from the Skia surface to the Godot texture.</summary>

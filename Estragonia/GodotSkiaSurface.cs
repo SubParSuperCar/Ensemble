@@ -19,6 +19,8 @@ internal sealed class GodotSkiaSurface(
 	VkBarrierHelper barrierHelper
 ) : IGodotSkiaSurface
 {
+	private ulong? _clearFrame;
+
 	public VkImage VkImage { get; } = vkImage;
 
 	public VkImageLayout LastLayout { get; set; } = lastLayout;
@@ -36,11 +38,24 @@ internal sealed class GodotSkiaSurface(
 
 	public bool IsDisposed { get; private set; }
 
+	public bool IsReplaced { get; set; }
+
+	public bool IsReady => Engine.GetProcessFrames() != _clearFrame;
+
 	SKSurface ISkiaSurface.Surface => SkSurface;
 
 	bool ISkiaSurface.CanBlit => false;
 
 	void ISkiaSurface.Blit(SKCanvas canvas) => throw new NotSupportedException();
+
+	public void ClearForDisplay()
+	{
+		RenderingDevice.TextureClear(GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
+		_clearFrame = Engine.GetProcessFrames();
+
+		// Where Godot leaves it once it has drawn it
+		LastLayout = VkImageLayout.SHADER_READ_ONLY_OPTIMAL;
+	}
 
 	public void Dispose()
 	{

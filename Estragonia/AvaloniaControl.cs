@@ -83,7 +83,7 @@ public class AvaloniaControl : GdControl
 	/// <returns>A texture.</returns>
 	/// <exception cref="InvalidOperationException">Thrown if the control isn't ready or has been disposed.</exception>
 	// ReSharper disable once UnusedMember.Global
-	public Texture2D GetTexture() => GetTopLevel().Impl.GetOrCreateSurface().GdTexture;
+	public Texture2D GetTexture() => GetTopLevel().Impl.GetTexture();
 
 	protected override bool InvokeGodotClassMethod(
 		in godot_string_name method,
@@ -166,7 +166,8 @@ public class AvaloniaControl : GdControl
 			GodotPlatform.Compositor
 		)
 		{
-			CursorChanged = OnAvaloniaCursorChanged
+			CursorChanged = OnAvaloniaCursorChanged,
+			DrawingChanged = QueueRedraw
 		};
 
 		topLevelImpl.SetRenderSize(GetFrameSize(), RenderScaling);
@@ -203,23 +204,22 @@ public class AvaloniaControl : GdControl
 			return;
 
 		GodotTopLevelImpl.FlushPendingDrags();
-		ApplyPendingResize();
 
 		Processing?.Invoke(processDelta);
-		GodotPlatform.TriggerRenderTick();
 
-		// Process all the queued Avalonia dispatcher work items (layout passes, animations, and so on),
-		// so that the layout is up to date before a synchronous render is forced
+		// The queued work (animations, layout, and the composition commit) runs first, so the tick renders this
+		// frame's changes. Only what changed is redrawn; a forced render (Paint) would redraw everything.
 		AvDispatcher.UIThread.RunJobs();
+		GodotPlatform.TriggerRenderTick();
+		_topLevel?.Impl.UpdateShownSurface();
 
-		RenderAvalonia();
+		// After rendering, as a new surface takes Skia's drawing from the next frame on
+		ApplyPendingResize();
 
 		Processed?.Invoke(processDelta);
 	}
 
 	private PixelSize GetFrameSize() => PixelSize.FromSize(Size.ToAvaloniaSize(), 1.0);
-
-	private void RenderAvalonia() => _topLevel?.Impl.OnDraw(new Rect(Size.ToAvaloniaSize()));
 
 	private void OnAvaloniaCursorChanged(CursorShape cursor) => MouseDefaultCursorShape = cursor;
 
@@ -234,9 +234,6 @@ public class AvaloniaControl : GdControl
 
 		_isResizePending = false;
 		_topLevel.Impl.SetRenderSize(GetFrameSize(), RenderScaling);
-
-		// The surface may be new, and the last draw holds the old one
-		QueueRedraw();
 	}
 
 	private void OnFocusEntered()
@@ -264,14 +261,7 @@ public class AvaloniaControl : GdControl
 
 	private void OnFocusExited() => _topLevel?.Impl.OnLostFocus();
 
-	public override void _Draw()
-	{
-		if (_topLevel is null)
-			return;
-
-		var surface = _topLevel.Impl.GetOrCreateSurface();
-		DrawTexture(surface.GdTexture, Vector2.Zero);
-	}
+	public override void _Draw() => _topLevel?.Impl.Draw(this);
 
 	public override void _GuiInput(InputEvent @event)
 	{

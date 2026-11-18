@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Godot;
 using static Estragonia.VkInterop;
 
 namespace Estragonia;
@@ -20,13 +19,6 @@ internal sealed class VkBarrierHelper(VkDevice device, VkQueue queue, VkDeviceAp
 	{
 		if (surface is not GodotSkiaSurface vkSurface)
 			throw new ArgumentException("Surface must be a Vulkan surface", nameof(surface));
-
-		// Clear the texture on first draw. This is already done by Avalonia, but Godot doesn't know that.
-		// It's needed to avoid texture corruption on first draw on AMD GPUs, at the cost of a few
-		// transparent frames after a resize.
-		// TODO: Find a better solution.
-		if (vkSurface.DrawCount == 0)
-			vkSurface.RenderingDevice.TextureClear(vkSurface.GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
 
 		// Godot leaves the image in SHADER_READ_ONLY_OPTIMAL but Skia expects it in COLOR_ATTACHMENT_OPTIMAL
 		vkSurface.TransitionLayoutTo(VkImageLayout.COLOR_ATTACHMENT_OPTIMAL);

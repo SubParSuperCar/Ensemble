@@ -104,7 +104,7 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 	{
 		Title = "Paint Palette",
 		Description = "Lets you choose the paint tool's color and material.",
-		MinSize = new Size(448, 320)
+		MinSize = new Size(448, 352)
 	};
 
 	protected override void OnDispose()

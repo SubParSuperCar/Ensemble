@@ -20,6 +20,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Messages;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.Extensions;
 using EnsembleRoot.Ui.Services;
 using EnsembleRoot.Ui.ViewModels;
@@ -89,7 +90,7 @@ public partial class Ui : Control
 				CultureInfo.InvariantCulture, $"Started {nameof(Ui)} in {stopwatch.Elapsed.TotalMilliseconds:F3} ms"));
 
 			WeakReferenceMessenger.Default.Register<Ui, SetUiRenderScaleMessage>(
-				this, static (ui, message) => ui._host.RenderScaling = message.Value);
+				this, static (ui, message) => ui.SetRenderScale(message.Value));
 
 			WeakReferenceMessenger.Default.Register<Ui, DisableUiAntialiasingMessage>(
 				this, static (ui, _) => ui.DisableAntialiasing());
@@ -161,6 +162,12 @@ public partial class Ui : Control
 		RenderOptions.SetEdgeMode(visual, _isAntialiased ? EdgeMode.Antialias : EdgeMode.Aliased);
 		TextOptions.SetTextRenderingMode(visual,
 			_isAntialiased ? TextRenderingMode.Antialias : TextRenderingMode.Alias);
+	}
+
+	private void SetRenderScale(double scale)
+	{
+		_host.RenderScaling = scale;
+		PanelSpacing.Scale = scale;
 	}
 
 	private void DisableAntialiasing()
@@ -260,7 +267,7 @@ public partial class Ui : Control
 			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
 
 			// Set the initial UI scale for better UX; it doesn't update when viewport resolution changes
-			_host.RenderScaling = GetRenderScale(GetWindow().Size);
+			SetRenderScale(GetRenderScale(GetWindow().Size));
 			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), _host.RenderScaling);
 		}
 		catch (Exception exception)

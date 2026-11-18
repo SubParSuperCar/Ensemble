@@ -564,6 +564,9 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
 - **Widgets.** In-game windows (Plot Selector, Asset Selector, Property Editor, Paint Palette, Text Chat, Web Browser,
   Lua Editor, Log Output) are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed
   by `WidgetManagerService`; they drag, resize, maximize, and reopen where they were.
+- **Rendering.** Each UI frame runs Avalonia's queued work (animations, layout) and then redraws only the regions that
+  changed into a texture Godot draws. A resize starts a new texture, which Godot shows once the UI has drawn to it.
+  Panel spacing snaps to whole pixels at the UI's scale, since Avalonia rounds children but not the gaps between them.
 - **Theming** follows the OS's light or dark mode and accent color, adjusting colors in the Oklab color space to keep
   text readable.
 - **Rich tools:** a Markdown document viewer (with Mermaid diagrams) for these docs, a Lua editor with syntax

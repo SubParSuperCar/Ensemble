@@ -11,7 +11,7 @@
     x:DataType="vm:PaintPaletteViewModel">
 
     <UserControl.Styles>
-        <!-- A half whose part of the brush isn't applied stays editable, for when it is again -->
+        <!-- A side whose part of the brush isn't applied stays editable, for when it is again -->
         <Style Selector="Grid.dimmed">
             <Setter Property="Opacity" Value="0.5" />
         </Style>
@@ -28,6 +28,13 @@
             <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
             <Setter Property="MinHeight" Value="0" />
             <Setter Property="Padding" Value="6,1" />
+        </Style>
+
+        <!-- Rounded like the number boxes (in HSV only). Setting it also places the thumb, which a slider otherwise skips
+             while its color, component, and model all keep their defaults (white, the first, and RGB) -->
+        <Style Selector="cp|ColorSlider.component">
+            <Setter Property="IsRoundingEnabled" Value="True" />
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
 
         <Style Selector="NumericUpDown.component">
@@ -86,8 +93,8 @@
                 </DropDownButton>
             </Grid>
 
-            <!-- The splitter keeps each half wide enough for its controls -->
-            <Grid Grid.Row="1">
+            <!-- The splitter keeps each side wide enough for its controls -->
+            <Grid Grid.Row="1" ColumnSpacing="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" MinWidth="192" />
                     <ColumnDefinition Width="4" />
@@ -99,20 +106,22 @@
                     RowDefinitions="*,Auto,Auto,Auto,Auto,*"
                     RowSpacing="2">
 
-                    <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="2" MinHeight="64">
-                        <!-- The color's preview takes the room beside the square field -->
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="2" MinHeight="64">
+                        <!-- A strip shaped like the brightness slider across from it; the theme fixes its height -->
                         <cp:ColorPreviewer
                             HsvColor="{Binding HsvColor}"
                             ToolTip.Tip="The brush's color."
-                            IsAccentColorsVisible="False" />
+                            IsAccentColorsVisible="False"
+                            Width="20"
+                            Height="NaN"
+                            CornerRadius="10" />
 
-                        <!-- Square, as tall as its row allows; the row's height never depends on its width -->
+                        <!-- Draws itself as the largest square that fits, centered -->
                         <cp:ColorSpectrum
                             Grid.Column="1"
                             HsvColor="{Binding HsvColor}"
                             ToolTip.Tip="Drag to pick the hue (across) and saturation (down)."
-                            Components="HueSaturation"
-                            Width="{Binding $self.Bounds.Height}" />
+                            Components="HueSaturation" />
 
                         <cp:ColorSlider
                             Grid.Column="2"
@@ -125,10 +134,10 @@
 
                     <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="2">
                         <cp:ColorSlider
+                            Classes="component"
                             HsvColor="{Binding HsvColor}"
                             ColorComponent="Component1"
-                            ColorModel="{Binding SliderModel}"
-                            VerticalAlignment="Center" />
+                            ColorModel="{Binding SliderModel}" />
 
                         <NumericUpDown
                             Grid.Column="1"
@@ -139,10 +148,10 @@
 
                     <Grid Grid.Row="2" ColumnDefinitions="*,Auto" ColumnSpacing="2">
                         <cp:ColorSlider
+                            Classes="component"
                             HsvColor="{Binding HsvColor}"
                             ColorComponent="Component2"
-                            ColorModel="{Binding SliderModel}"
-                            VerticalAlignment="Center" />
+                            ColorModel="{Binding SliderModel}" />
 
                         <NumericUpDown
                             Grid.Column="1"
@@ -153,10 +162,10 @@
 
                     <Grid Grid.Row="3" ColumnDefinitions="*,Auto" ColumnSpacing="2">
                         <cp:ColorSlider
+                            Classes="component"
                             HsvColor="{Binding HsvColor}"
                             ColorComponent="Component3"
-                            ColorModel="{Binding SliderModel}"
-                            VerticalAlignment="Center" />
+                            ColorModel="{Binding SliderModel}" />
 
                         <NumericUpDown
                             Grid.Column="1"
@@ -167,12 +176,12 @@
 
                     <Grid Grid.Row="4" ColumnDefinitions="*,Auto" ColumnSpacing="2">
                         <cp:ColorSlider
+                            Classes="component"
                             HsvColor="{Binding HsvColor}"
                             ToolTip.Tip="Alpha (opacity), for assets that can be see-through."
                             ColorComponent="Alpha"
                             ColorModel="{Binding SliderModel}"
-                            IsAlphaVisible="True"
-                            VerticalAlignment="Center" />
+                            IsAlphaVisible="True" />
 
                         <NumericUpDown
                             Grid.Column="1"
@@ -210,7 +219,10 @@
                     </TabControl>
                 </Grid>
 
-                <GridSplitter Grid.Column="1" ResizeDirection="Columns" Background="Transparent" />
+                <GridSplitter
+                    Grid.Column="1"
+                    ResizeDirection="Columns"
+                    Background="{StaticResource PrimaryBrush}" />
 
                 <Grid
                     Grid.Column="2"

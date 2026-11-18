@@ -22,7 +22,7 @@
                 Name="Splitter"
                 Grid.Column="1"
                 ResizeDirection="Columns"
-                Background="YellowGreen"
+                Background="{StaticResource PrimaryBrush}"
                 Width="4" />
 
             <ContentControl Grid.Column="2" Content="{Binding Editor}" />

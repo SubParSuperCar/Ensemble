@@ -11,7 +11,8 @@
     x:DataType="vm:LogOutputViewModel">
 
     <UserControl.Styles>
-        <Style Selector="SelectableTextBlock#Output">
+        <!-- Only while there's a selection, since each step redraws all of the text -->
+        <Style Selector="SelectableTextBlock#Output:selection">
             <Style.Animations>
                 <Animation
                     Duration="{x:Static cm:Constants.AnimationDuration}"

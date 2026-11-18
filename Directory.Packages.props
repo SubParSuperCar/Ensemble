@@ -53,8 +53,8 @@
     <PackageVersion Include="Optris.LoadingIndicators.Avalonia" Version="12.1.0"/>
     <PackageVersion Include="Serilog" Version="4.4.0"/>
     <PackageVersion Include="Serilog.Expressions" Version="5.0.0"/>
-    <PackageVersion Include="Serilog.Extensions.Logging" Version="10.0.0"/>
-    <PackageVersion Include="Serilog.Settings.Configuration" Version="10.0.1"/>
+    <PackageVersion Include="Serilog.Extensions.Logging" Version="11.0.0"/>
+    <PackageVersion Include="Serilog.Settings.Configuration" Version="11.0.0"/>
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1"/>
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0"/>
     <PackageVersion Include="Serilog.Sinks.File.Header" Version="1.1.0"/>

@@ -34,10 +34,10 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	private int _lastMouseDeviceId = GodotDevices.EmulatedDeviceId;
 	private (InputEventMouseMotion Event, ulong Timestamp)? _pendingDrag;
 	private PixelSize _renderSize;
+	private IGodotSkiaSurface? _shownSurface;
 
 	// The surface Skia draws to, and the one Godot shows: the last that Skia drew, until the newer one is drawn
 	private IGodotSkiaSurface? _surface;
-	private IGodotSkiaSurface? _shownSurface;
 
 	public GodotTopLevelImpl(IGodotPlatformGraphics platformGraphics, IClipboard clipboard, AvCompositor compositor)
 	{
@@ -55,6 +55,9 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	///     Avoids reflection into this class's private fields.
 	/// </summary>
 	internal IInputRoot? InputRoot { get; private set; }
+
+	/// <summary>Gets or sets the action run when what <see cref="Draw" /> draws changes.</summary>
+	public Action? DrawingChanged { get; init; }
 
 	public double RenderScaling { get; private set; } = 1.0;
 
@@ -80,9 +83,6 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	} = WindowTransparencyLevel.Transparent;
 
 	public Action<Rect>? Paint { get; set; }
-
-	/// <summary>Gets or sets the action run when what <see cref="Draw" /> draws changes.</summary>
-	public Action? DrawingChanged { get; init; }
 
 	public Action<Size, WindowResizeReason>? Resized { get; set; }
 

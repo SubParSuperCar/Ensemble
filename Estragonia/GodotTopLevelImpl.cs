@@ -35,7 +35,9 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	private (InputEventMouseMotion Event, ulong Timestamp)? _pendingDrag;
 	private PixelSize _renderSize;
 
+	// The surface Skia draws to, and the one Godot shows: the last that Skia drew, until the newer one is drawn
 	private IGodotSkiaSurface? _surface;
+	private IGodotSkiaSurface? _shownSurface;
 
 	public GodotTopLevelImpl(IGodotPlatformGraphics platformGraphics, IClipboard clipboard, AvCompositor compositor)
 	{
@@ -78,6 +80,9 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	} = WindowTransparencyLevel.Transparent;
 
 	public Action<Rect>? Paint { get; set; }
+
+	/// <summary>Gets or sets the action run when what <see cref="Draw" /> draws changes.</summary>
+	public Action? DrawingChanged { get; init; }
 
 	public Action<Size, WindowResizeReason>? Resized { get; set; }
 
@@ -133,11 +138,11 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 		_isDisposed = true;
 
-		if (_surface is not null)
-		{
-			_surface.Dispose();
-			_surface = null;
-		}
+		if (_shownSurface != _surface)
+			_shownSurface?.Dispose();
+
+		_surface?.Dispose();
+		_surface = _shownSurface = null;
 
 		Closed?.Invoke();
 
@@ -147,10 +152,33 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 	private IGodotSkiaSurface CreateSurface()
 	{
 		ObjectDisposedException.ThrowIf(_isDisposed, nameof(GodotTopLevelImpl));
-		return _platformGraphics.GetSharedContext().CreateSurface(_renderSize, RenderScaling);
+
+		var surface = _platformGraphics.GetSharedContext().CreateSurface(_renderSize, RenderScaling);
+		surface.ClearForDisplay();
+
+		DrawingChanged?.Invoke();
+		return surface;
 	}
 
-	public IGodotSkiaSurface GetOrCreateSurface() => _surface ??= CreateSurface();
+	private IGodotSkiaSurface GetOrCreateSurface() => _surface ??= CreateSurface();
+
+	/// <summary>Gets the texture Godot shows.</summary>
+	public Texture2D GetTexture() => (_shownSurface ?? GetOrCreateSurface()).GdTexture;
+
+	/// <summary>
+	///     Draws the last texture Skia drew, and the newer surface's while it waits for its first draw: that one is
+	///     still clear, and Godot must draw it in the frame it clears it
+	///     (see <see cref="IGodotSkiaSurface.ClearForDisplay" />).
+	/// </summary>
+	public void Draw(CanvasItem canvasItem)
+	{
+		var surface = GetOrCreateSurface();
+
+		if (_shownSurface is not null && _shownSurface != surface)
+			canvasItem.DrawTexture(_shownSurface.GdTexture, Vector2.Zero);
+
+		canvasItem.DrawTexture(surface.GdTexture, Vector2.Zero);
+	}
 
 	private IPlatformRenderSurface[] GetOrCreateSurfaces() => [GetOrCreateSurface()];
 
@@ -170,11 +198,13 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		{
 			_renderSize = renderSize;
 
-			if (_surface is not null)
-			{
-				_surface.Dispose();
-				_surface = null;
-			}
+			// The shown surface stays until the new one is drawn, and one never drawn is never shown
+			if (_surface == _shownSurface)
+				_surface?.IsReplaced = true;
+			else
+				_surface?.Dispose();
+
+			_surface = null;
 
 			if (_isDisposed)
 				return;
@@ -195,12 +225,15 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 			);
 	}
 
-	public void OnDraw(Rect rect)
+	/// <summary>Shows the newest surface once Skia has drawn to it, in place of the one it replaces.</summary>
+	public void UpdateShownSurface()
 	{
-		if (_isDisposed)
+		if (_surface is not { DrawCount: > 0 } || _surface == _shownSurface)
 			return;
 
-		Paint?.Invoke(rect);
+		_shownSurface?.Dispose();
+		_shownSurface = _surface;
+		DrawingChanged?.Invoke();
 	}
 
 	public bool OnMouseMotion(InputEventMouseMotion inputEvent, ulong timestamp)

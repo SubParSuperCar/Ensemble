@@ -55,8 +55,9 @@ public partial class AvaloniaLoader : Node
 				})
 				.With(new CompositionOptions
 				{
-					// Enabling this reduces FPS by about 13% in some heavy-UI scenarios
-					UseRegionDirtyRectClipping = false
+					// Redraws the changed regions apart, rather than one rectangle spanning them all (e.g., the clock
+					// and a spinner across the screen, and every widget between them)
+					UseRegionDirtyRectClipping = true
 				})
 				.With(new GodotPlatformOptions { ProcessInterval = Ui.ProcessInterval })
 				.LogToTrace()

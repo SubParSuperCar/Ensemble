@@ -15,7 +15,8 @@ internal sealed class GodotSkiaRenderTarget(
 	private readonly double _renderScaling = surface.RenderScaling;
 
 	private bool IsCorrupted =>
-		surface.IsDisposed || grContext.IsAbandoned || !_renderScaling.Equals(surface.RenderScaling);
+		surface.IsDisposed || surface.IsReplaced || grContext.IsAbandoned ||
+		!_renderScaling.Equals(surface.RenderScaling);
 
 	public PlatformRenderTargetState State =>
 		IsCorrupted ? PlatformRenderTargetState.Corrupted : PlatformRenderTargetState.Ready;

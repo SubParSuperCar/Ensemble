@@ -19,6 +19,8 @@ internal sealed class GodotSkiaSurfaceMetal(
 	GRBackendTexture? backendTexture = null
 ) : IGodotSkiaSurface
 {
+	private ulong? _clearFrame;
+
 	/// <summary>Gets the Metal command queue handle used for GPU blitting.</summary>
 	public IntPtr CommandQueue { get; } = commandQueue;
 
@@ -49,11 +51,21 @@ internal sealed class GodotSkiaSurfaceMetal(
 
 	public bool IsDisposed { get; private set; }
 
+	public bool IsReplaced { get; set; }
+
+	public bool IsReady => Engine.GetProcessFrames() != _clearFrame;
+
 	SKSurface ISkiaSurface.Surface => SkSurface;
 
 	bool ISkiaSurface.CanBlit => false;
 
 	void ISkiaSurface.Blit(SKCanvas canvas) => throw new NotSupportedException();
+
+	public void ClearForDisplay()
+	{
+		RenderingDevice.TextureClear(GdTexture.TextureRdRid, new Color(0u), 0, 1, 0, 1);
+		_clearFrame = Engine.GetProcessFrames();
+	}
 
 	public void Dispose()
 	{

@@ -25,4 +25,15 @@ internal interface IGodotSkiaSurface : ISkiaSurface, IPlatformRenderSurface
 
 	/// <summary>Gets whether this surface has been disposed.</summary>
 	bool IsDisposed { get; }
+
+	/// <summary>Gets or sets whether a newer surface has replaced this one, so Skia no longer draws to it.</summary>
+	bool IsReplaced { get; set; }
+
+	/// <summary>Clears the texture through Godot, which must draw it in the same frame.</summary>
+	/// <remarks>
+	///     Godot runs its commands when it submits the frame, after Skia's, so the surface isn't ready for Skia until
+	///     the next frame. Without the clear, Godot sees a texture it never wrote, which some GPUs (e.g., AMD's) show
+	///     corrupted.
+	/// </remarks>
+	void ClearForDisplay();
 }

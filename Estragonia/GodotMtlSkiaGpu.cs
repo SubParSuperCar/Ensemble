@@ -57,7 +57,8 @@ internal sealed class GodotMtlSkiaGpu : IGodotSkiaGpu
 
 	IDisposable IPlatformGraphicsContext.EnsureCurrent() => EmptyDisposable.Instance;
 
-	public bool IsReadyToCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces) => true;
+	public bool IsReadyToCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces) =>
+		surfaces.All(static surface => surface.IsReady);
 
 	public ISkiaGpuRenderTarget? TryCreateRenderTarget(IEnumerable<IPlatformRenderSurface> surfaces) =>
 		surfaces.OfType<GodotSkiaSurfaceMetal>().FirstOrDefault() is { } surface

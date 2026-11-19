@@ -6,14 +6,14 @@ using Serilog.Events;
 
 namespace EnsembleRoot.Ui.ViewModels;
 
-public sealed class ToastListViewModel : ViewModelBase
+public sealed class ToasterViewModel : ViewModelBase
 {
 	private const LogEventLevel MinimumLevel = LogEventLevel.Warning;
 	private const int MaxCount = 10;
 
 	private static readonly TimeSpan Lifetime = TimeSpan.FromSeconds(10);
 
-	public ToastListViewModel()
+	public ToasterViewModel()
 	{
 		VolatileLogHistorySink.Emitted += OnLogEmitted;
 	}

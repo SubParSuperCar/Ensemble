@@ -5,8 +5,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
     mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="256"
-    x:Class="EnsembleRoot.Ui.Views.ToastListView"
-    x:DataType="vm:ToastListViewModel">
+    x:Class="EnsembleRoot.Ui.Views.ToasterView"
+    x:DataType="vm:ToasterViewModel">
 
     <ScrollViewer Name="ToastScroll" MaxHeight="256" HorizontalScrollBarVisibility="Disabled">
         <ItemsControl Name="Toasts" ItemsSource="{Binding Toasts}">

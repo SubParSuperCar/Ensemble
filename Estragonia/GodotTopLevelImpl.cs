@@ -182,6 +182,8 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 
 	private IPlatformRenderSurface[] GetOrCreateSurfaces() => [GetOrCreateSurface()];
 
+	public void SetRenderScaling(double renderScaling) => SetRenderSize(_renderSize, renderScaling);
+
 	public void SetRenderSize(PixelSize renderSize, double renderScaling)
 	{
 		var hasScalingChanged = !RenderScaling.Equals(renderScaling);

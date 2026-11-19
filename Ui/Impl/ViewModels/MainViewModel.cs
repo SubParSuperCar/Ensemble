@@ -48,7 +48,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
 		Stats = services.Create<StatViewModel>();
 		Clock = services.Create<ClockViewModel>();
-		Toasts = services.Create<ToastListViewModel>();
+		Toaster = services.Create<ToasterViewModel>();
 
 		dispatcher.Input += OnInput;
 		dispatcher.Notification += OnNotification;
@@ -77,7 +77,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
 	[ObservableProperty]
 	[DisposeOldObservableValueOnChanging]
-	public partial ToastListViewModel? Toasts { get; private set; }
+	public partial ToasterViewModel? Toaster { get; private set; }
 
 	[ObservableProperty]
 	[DisposeOldObservableValueOnChanging]
@@ -105,7 +105,7 @@ public sealed partial class MainViewModel : ViewModelBase
 		Main = null;
 		Stats = null;
 		Clock = null;
-		Toasts = null;
+		Toaster = null;
 		IsConsoleVisible = false;
 	}
 
@@ -124,11 +124,14 @@ public sealed partial class MainViewModel : ViewModelBase
 	private void OnSessionStopped()
 	{
 		IsPhotoMode = false;
-		_dispatcher.UiProcess += OnUiProcess;
 
-		// Menus only change when the UI does, and the main loop would otherwise spin as fast as it can between
+#if !DEBUG
+		// Menus only change when the UI does, and the main loop would otherwise spin as fast as it can between. Debug
+		// builds let it spin, so a slow menu shows in the frame rate.
+		_dispatcher.UiProcess += OnUiProcess;
 		OS.LowProcessorUsageMode = true;
 		Log.Debug("Started forced render drawing");
+#endif
 
 		Main = _services.Create<MenuViewModel>();
 	}
@@ -138,8 +141,12 @@ public sealed partial class MainViewModel : ViewModelBase
 		if (InputSink.IsSunk && @event is InputEventKey { Unicode: not 0 })
 			return;
 
+		// Photo mode hides the console, so asking for it there brings the UI back with the console open
 		if (Input.IsActionJustPressedByEvent(ToggleConsoleAction, @event))
-			IsConsoleVisible = !IsConsoleVisible;
+		{
+			IsConsoleVisible = IsPhotoMode || !IsConsoleVisible;
+			IsPhotoMode = false;
+		}
 		else if (Input.IsActionJustPressedByEvent(OpenTerminalAction, @event))
 			OpenTerminal();
 		// Only a session has a world to show without the UI
@@ -159,6 +166,7 @@ public sealed partial class MainViewModel : ViewModelBase
 	// Every toggle starts over, so no stage of a left photo mode carries on
 	partial void OnIsPhotoModeChanged(bool value)
 	{
+		Log.Debug("Set photo mode to {IsPhotoMode}", value);
 		_photoModeTimer.Stop();
 		IsPhotoModeHintShown = value;
 		IsRendered = true;

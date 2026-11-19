@@ -65,7 +65,7 @@
             </Grid>
 
             <ContentControl
-                Content="{Binding Toasts}"
+                Content="{Binding Toaster}"
                 HorizontalAlignment="Center" VerticalAlignment="Top"
                 Width="512"
                 Margin="0,36,0,0" />

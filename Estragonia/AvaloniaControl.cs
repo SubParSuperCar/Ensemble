@@ -50,7 +50,9 @@ public class AvaloniaControl : GdControl
 				return;
 
 			field = value;
-			OnResized();
+
+			// A new scale keeps the surface, so unlike a resize it applies at once, and this frame lays out at it
+			_topLevel?.Impl.SetRenderScaling(value);
 			QueueRedraw();
 		}
 	} = 1.0;

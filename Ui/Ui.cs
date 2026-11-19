@@ -38,7 +38,12 @@ namespace EnsembleRoot.Ui;
 [GlobalClass]
 public partial class Ui : Control
 {
+#if DEBUG
+	// Uncapped, so the UI's cost shows in the frame rate
+	public const double ProcessInterval = 0d;
+#else
 	public const double ProcessInterval = 1 / 120d;
+#endif
 
 	public static readonly StringName ProcessTimeMonitor = "Ensemble/Time/UIProcess";
 
@@ -79,6 +84,8 @@ public partial class Ui : Control
 			_host.Processing += OnHostProcessing;
 			_host.Processed += OnHostProcessed;
 
+			// The loading screen takes the real UI's scale, so the swap doesn't change it
+			SetRenderScale(GetRenderScale(GetWindow().Size));
 			_host.Control = CreateLoadingScreen();
 			AddChild(_host);
 
@@ -259,16 +266,17 @@ public partial class Ui : Control
 				[],
 				Performance.MonitorType.Time);
 
+			// Again, should the window have changed size since, and before the real UI is laid out. The scale doesn't
+			// follow later window resizes.
+			SetRenderScale(GetRenderScale(GetWindow().Size));
+			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), _host.RenderScaling);
+
 			var viewModel = _viewModel = services.Create<MainViewModel>();
 			_host.Control = locator.Build(viewModel);
 			viewModel.PropertyChanged += OnViewModelPropertyChanged;
 
 			stopwatch.Stop();
 			Log.Debug("Swapped loading UI to real UI in {ElapsedMs:F3} ms", stopwatch.Elapsed.TotalMilliseconds);
-
-			// Set the initial UI scale for better UX; it doesn't update when viewport resolution changes
-			SetRenderScale(GetRenderScale(GetWindow().Size));
-			Log.Debug("Initial {Class} render scale: {Scale}", nameof(Ui), _host.RenderScaling);
 		}
 		catch (Exception exception)
 		{

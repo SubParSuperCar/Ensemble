@@ -3,6 +3,7 @@ using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using EnsembleRoot.Common.Logging;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Services;
 using Godot;
@@ -15,8 +16,8 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 {
 	private readonly DispatcherService _dispatcher;
 
-	// The entries the output holds, in order, joined by line breaks
-	private readonly List<LogEntry> _shownEntries = [];
+	// The entries the output holds, in order, joined by line breaks, with the segments that style them
+	private readonly List<(LogEntry Entry, StyleSegment[] Segments)> _shownEntries = [];
 
 	private byte _isHistoryDirty;
 
@@ -24,6 +25,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 	{
 		_dispatcher = dispatcher;
 		Output.UndoStack.SizeLimit = 0;
+		Styles = new TextSegmentCollection<StyleSegment>(Output);
 
 		dispatcher.UiProcess += OnUiProcess;
 
@@ -35,6 +37,9 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 
 	/// <summary>The shown entries' text, edited as the history changes rather than rewritten.</summary>
 	public TextDocument Output { get; } = new();
+
+	/// <summary>The styled runs of <see cref="Output" />, which move with its edits.</summary>
+	public TextSegmentCollection<StyleSegment> Styles { get; }
 
 	[ObservableProperty] public partial LogEventLevel MinimumLevel { get; set; } = LogEventLevel.Debug;
 
@@ -57,6 +62,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 	partial void OnMinimumLevelChanged(LogEventLevel value)
 	{
 		_shownEntries.Clear();
+		Styles.Clear();
 		Output.Text = string.Empty;
 
 		UpdateOutput();
@@ -82,9 +88,9 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 		Output.BeginUpdate();
 
 		for (var index = 0; index < _shownEntries.Count;)
-			if (kept < entries.Count && ReferenceEquals(entries[kept], _shownEntries[index]))
+			if (kept < entries.Count && ReferenceEquals(entries[kept], _shownEntries[index].Entry))
 			{
-				offset += _shownEntries[index].Text.Length + 1;
+				offset += _shownEntries[index].Entry.Text.Length + 1;
 				kept++;
 				index++;
 			}
@@ -92,18 +98,36 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 				RemoveShownEntry(index, offset);
 
 		foreach (var entry in entries.Skip(kept))
-		{
-			Output.Insert(Output.TextLength, _shownEntries.Count is 0 ? entry.Text : "\n" + entry.Text);
-			_shownEntries.Add(entry);
-		}
+			AddShownEntry(entry);
 
 		Output.EndUpdate();
+	}
+
+	private void AddShownEntry(LogEntry entry)
+	{
+		var isFirst = _shownEntries.Count is 0;
+		var start = isFirst ? 0 : Output.TextLength + 1;
+
+		Output.Insert(Output.TextLength, isFirst ? entry.Text : "\n" + entry.Text);
+
+		var segments = entry.Styles
+			.Select(run => new StyleSegment(run.Style) { StartOffset = start + run.Start, Length = run.Length })
+			.ToArray();
+
+		foreach (var segment in segments)
+			Styles.Add(segment);
+
+		_shownEntries.Add((entry, segments));
 	}
 
 	// With the line break between it and the next entry, or for the last one, the previous
 	private void RemoveShownEntry(int index, int offset)
 	{
-		var length = _shownEntries[index].Text.Length;
+		var (entry, segments) = _shownEntries[index];
+		var length = entry.Text.Length;
+
+		foreach (var segment in segments)
+			Styles.Remove(segment);
 
 		if (index < _shownEntries.Count - 1)
 			Output.Remove(offset, length + 1);
@@ -113,5 +137,10 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 			Output.Remove(offset, length);
 
 		_shownEntries.RemoveAt(index);
+	}
+
+	public sealed class StyleSegment(AnsiStyle style) : TextSegment
+	{
+		public AnsiStyle Style { get; } = style;
 	}
 }

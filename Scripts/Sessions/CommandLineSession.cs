@@ -93,14 +93,35 @@ public partial class CommandLineSession : Node, IAutoload
 
 	public override void _ExitTree() => GSessionManager.SessionFailed -= OnSessionFailed;
 
-	private static int? GetInt(Dictionary<string, string> args, string key) =>
-		int.TryParse(args.GetValueOrDefault(key), CultureInfo.InvariantCulture, out var value) ? value : null;
+	private static int? GetInt(Dictionary<string, string> args, string key)
+	{
+		if (!args.TryGetValue(key, out var text))
+			return null;
+
+		if (int.TryParse(text, CultureInfo.InvariantCulture, out var value))
+			return value;
+
+		Log.Warning("Ignored {Arg}, which isn't a whole number", FormatArg(key, text));
+		return null;
+	}
 
 	private static bool GetFlag(Dictionary<string, string> args, string key) => GetBool(args, key) is true;
 
 	// Present without a value means true
-	private static bool? GetBool(Dictionary<string, string> args, string key) =>
-		args.TryGetValue(key, out var value) ? value.Length is 0 || (bool.TryParse(value, out var flag) && flag) : null;
+	private static bool? GetBool(Dictionary<string, string> args, string key)
+	{
+		if (!args.TryGetValue(key, out var text))
+			return null;
+
+		if (text.Length is 0)
+			return true;
+
+		if (bool.TryParse(text, out var value))
+			return value;
+
+		Log.Warning("Read {Arg} as false, as it's neither true nor false", FormatArg(key, text));
+		return false;
+	}
 
 	private static void OnSessionFailed(string reason)
 	{

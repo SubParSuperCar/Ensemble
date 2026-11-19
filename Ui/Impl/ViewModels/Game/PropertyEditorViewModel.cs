@@ -13,7 +13,6 @@ using Godot;
 
 namespace EnsembleRoot.Ui.ViewModels;
 
-// ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 {
 	private readonly DispatcherService _dispatcher;

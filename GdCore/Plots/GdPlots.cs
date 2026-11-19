@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using EnsembleCoreRoot.Api.Plots;
 using Godot;
 using Godot.Collections;
+using Serilog;
 
 namespace EnsembleRoot.GdCore.Plots;
 
@@ -70,11 +71,21 @@ public partial class GdPlots : RefCounted
 			if (current.Id == plotId)
 				return;
 
+			Log.Debug(
+				"Clearing plot {PlotId}, as its last occupant leaves (InstanceCount={InstanceCount})",
+				current.Id, current.Instances.Count);
+
 			current.Instances.Clear();
 			current.Despawn();
 		}
 
+		var previousPlotId = occupant.Plot?.Id;
 		Source.SetPlot(guid, plotId is None ? null : plotId, shouldResolveOwnerIfNullOrRelinquishing);
+
+		if (occupant.Plot?.Id != previousPlotId)
+			Log.Debug(
+				"{Player} moved from plot {PreviousPlotId} to plot {PlotId}",
+				occupant.Player.Name, previousPlotId, occupant.Plot?.Id);
 	}
 
 	public GdOccupant? GetOccupant(string playerId) =>

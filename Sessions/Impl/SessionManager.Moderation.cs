@@ -20,7 +20,7 @@ public partial class SessionManager
 	{
 		if (!IsServer || !IsPeerConnected(peerId))
 		{
-			Log.Warning("Cannot kick peer {PeerId}", peerId);
+			Log.Warning("Cannot kick peer {PeerId}: {Reason}", peerId, IsServer ? "not connected" : "not the host");
 			return;
 		}
 
@@ -35,7 +35,10 @@ public partial class SessionManager
 	{
 		if (!IsServer || !IsPeerConnected(peerId) || _session?.GetAddress(peerId) is not { Length: > 0 } address)
 		{
-			Log.Warning("Cannot ban peer {PeerId}", peerId);
+			Log.Warning(
+				"Cannot ban peer {PeerId}: {Reason}", peerId,
+				!IsServer ? "not the host" : IsPeerConnected(peerId) ? "no address" : "not connected");
+
 			return;
 		}
 
@@ -102,8 +105,11 @@ public partial class SessionManager
 
 		ScheduleForSession(KickTimeout, () =>
 		{
-			if (IsPeerConnected(peerId))
-				ForceDisconnect(peerId);
+			if (!IsPeerConnected(peerId))
+				return;
+
+			Log.Debug("Peer {PeerId} ignored the end of its session, so it's disconnected", peerId);
+			ForceDisconnect(peerId);
 		});
 	}
 

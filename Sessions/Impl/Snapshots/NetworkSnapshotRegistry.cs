@@ -36,21 +36,24 @@ public static class NetworkSnapshotRegistry
 		}
 	}
 
-	internal static void Restore(string snapshotId, Array<Variant> payload)
+	/// <returns>Whether the snapshot was restored.</returns>
+	internal static bool Restore(string snapshotId, Array<Variant> payload)
 	{
 		if (!EntriesBySnapshotId.TryGetValue(snapshotId, out var entry))
 		{
 			Log.Warning("Discarded unknown snapshot {SnapshotId}", snapshotId);
-			return;
+			return false;
 		}
 
 		try
 		{
 			entry.Restore(payload);
+			return true;
 		}
 		catch (Exception exception)
 		{
 			Log.Error(exception, "Failed to restore snapshot {SnapshotId}", snapshotId);
+			return false;
 		}
 	}
 

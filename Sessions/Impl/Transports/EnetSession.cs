@@ -6,6 +6,7 @@ using EnsembleRoot.Sessions.Api;
 using EnsembleRoot.Sessions.Auth;
 using EnsembleRoot.Sessions.Nat;
 using Godot;
+using Serilog;
 
 #pragma warning disable CA1001
 
@@ -110,9 +111,13 @@ public sealed class EnetSession(SceneMultiplayer multiplayer, ISessionConfig con
 			return;
 
 		if (addresses is [])
+		{
 			Failed?.Invoke($"Failed to resolve {join.Address}.");
-		else
-			Start(addresses[0].ToString());
+			return;
+		}
+
+		Log.Debug("Resolved {Host} to {Address}", join.Address, addresses[0]);
+		Start(addresses[0].ToString());
 	}
 
 	private void Start(string? address)

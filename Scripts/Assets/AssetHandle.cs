@@ -63,7 +63,6 @@ public partial class AssetHandle : StaticBody3D
 	/// <summary>The assembly carrying this handle while its plot is spawned, set for the handle's whole life.</summary>
 	public Assembly? Assembly { get; internal set; }
 
-	// ReSharper disable once MemberCanBeProtected.Global
 	public bool IsLive => Assembly is not null;
 
 	/// <summary>The asset's other pieces, in scene order, so piece <c>i</c> (from 1) is <c>Pieces[i - 1]</c>.</summary>
@@ -82,7 +81,6 @@ public partial class AssetHandle : StaticBody3D
 			CollectPieces();
 	}
 
-	// ReSharper disable once UnusedMember.Global
 	public TComponent? GetComponent<TComponent>() where TComponent : AssetComponent =>
 		Components.OfType<TComponent>().FirstOrDefault();
 

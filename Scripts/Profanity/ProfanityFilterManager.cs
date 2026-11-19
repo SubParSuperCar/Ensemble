@@ -2,6 +2,7 @@ using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Text;
 using EnsembleRoot.Common.Utils;
 using Godot;
+using Serilog;
 
 namespace EnsembleRoot.Scripts.Profanity;
 
@@ -67,8 +68,9 @@ public partial class ProfanityFilterManager : Node, IAutoload
 			return false;
 
 		IsEnabled = isEnabled;
-		EmitSignal(SignalName.EnabledChanged, isEnabled);
+		Log.Debug("Set the profanity filter to {IsEnabled}", isEnabled);
 
+		EmitSignal(SignalName.EnabledChanged, isEnabled);
 		return true;
 	}
 

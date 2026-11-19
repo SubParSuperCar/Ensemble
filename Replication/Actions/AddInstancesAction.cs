@@ -5,6 +5,7 @@ using EnsembleRoot.Scripts.Plots.Placement;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;
+using Serilog;
 using static EnsembleRoot.Sessions.Actions.ActionValidation;
 
 namespace EnsembleRoot.Replication.Actions;
@@ -61,18 +62,27 @@ public readonly record struct AddInstancesAction(IReadOnlyList<InstanceSpec> Ins
 	{
 		var plot = source.Plot!;
 		var handle = GPlotManager.GetHandle(plot.Id);
+		var skippedCount = 0;
 
 		// Each one is placed against those before it, so overlaps and quotas within the batch hold too
 		foreach (var spec in Instances)
 		{
 			if (!IsPlaceable(handle, spec))
+			{
+				skippedCount++;
 				continue;
+			}
 
 			var properties = plot.Instances.Add(spec.AssetId, spec.Position, spec.Rotation).Properties;
 
 			foreach (var (key, value) in spec.Properties)
 				properties.TryUpdate(key.AsString(), value);
 		}
+
+		if (skippedCount > 0)
+			Log.Debug(
+				"Skipped {SkippedCount} of {Count} instance(s) that no longer fit plot {PlotId}",
+				skippedCount, Instances.Count, plot.Id);
 	}
 
 	private static bool IsPlaceable(PlotHandle handle, InstanceSpec spec) =>

@@ -98,6 +98,11 @@ public partial class LiveCreation
 			assembly.InertiaScale = scale;
 			_unscaledInertias.Add(assembly);
 		}
+
+		if (_unscaledInertias.Count > 0)
+			Log.Debug(
+				"Gave {Count} light jointed assemblies of plot {PlotId} more inertia",
+				_unscaledInertias.Count, Plot.Id);
 	}
 
 	// The pieces with colliders weld; an asset without any still gets an assembly for its handle to ride

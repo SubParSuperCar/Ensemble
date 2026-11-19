@@ -216,7 +216,7 @@ public partial class ConstructTool : ToolBase
 		}
 
 		if (_state is { } state)
-			Log.Debug("Cannot place asset {AssetId}: {State}", AssetId, state);
+			Log.Verbose("Cannot place asset {AssetId}: {State}", AssetId, state);
 	}
 
 	private static Obb? GetHitBox(PlotHandle plot, Node3D collider) =>

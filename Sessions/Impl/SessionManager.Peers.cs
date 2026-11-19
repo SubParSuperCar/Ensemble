@@ -1,4 +1,5 @@
 using EnsembleCoreRoot.Globals;
+using EnsembleRoot.Common.Text;
 using Godot;
 using Godot.Collections;
 using Serilog;
@@ -89,7 +90,10 @@ public partial class SessionManager
 
 		if (!IsValidDisplayName(displayName))
 		{
-			Log.Debug("Discarded invalid display name from peer {PeerId}: {DisplayName}", peerId, displayName);
+			// Cut just past the longest valid name, as a hostile peer could send any length
+			Log.Debug(
+				"Discarded invalid display name from peer {PeerId}: {DisplayName}", peerId,
+				TextElements.Truncate(displayName, MaxDisplayNameLength + 1));
 			displayName = string.Empty;
 		}
 		// The host's own name isn't filtered, like its chat messages
@@ -183,7 +187,7 @@ public partial class SessionManager
 
 	private void OnPeerConnected(long id)
 	{
-		Log.Debug("Peer connected: {PeerId}", id);
+		Log.Debug("Peer {PeerId} connected", id);
 
 		if (!IsServer)
 			return;
@@ -192,7 +196,7 @@ public partial class SessionManager
 
 		if (IsBanned(peerId))
 		{
-			Log.Information("Turning away banned peer {PeerId}...", peerId);
+			Log.Debug("Turning away banned peer {PeerId} at {Address}...", peerId, _session?.GetAddress(peerId));
 			Disconnect(peerId, "Banned from this session.");
 
 			return;
@@ -211,7 +215,7 @@ public partial class SessionManager
 
 	private void OnPeerDisconnected(long id)
 	{
-		Log.Debug("Peer disconnected: {PeerId}", id);
+		Log.Debug("Peer {PeerId} disconnected", id);
 
 		var peerId = (int)id;
 		DisposeRateLimiter(peerId);

@@ -117,6 +117,8 @@ public partial class ToolManager : Node, IAutoload
 			Get<TTool>().Disable();
 		else if (CanEnableTools)
 			Get<TTool>().Enable();
+		else
+			Log.Verbose("Cannot enable {Tool} without a claimed plot that isn't spawned", typeof(TTool).Name);
 	}
 
 	internal void RequestEnable(ToolBase tool)

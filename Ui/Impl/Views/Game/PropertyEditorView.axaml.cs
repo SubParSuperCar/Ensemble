@@ -29,9 +29,8 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 
 		ScrollBarInset.ApplyGap(ItemsScroll, Items, ScrollBarGap);
 
-		// Handled ones too, as number boxes handle Enter and spins themselves
+		// Handled ones too, as number boxes handle Enter themselves
 		Items.AddHandler(KeyDownEvent, OnItemsKeyDown, RoutingStrategies.Bubble, true);
-		Items.AddHandler(Spinner.SpinEvent, OnItemsSpin, RoutingStrategies.Bubble, true);
 	}
 
 	protected override void OnDataContextChanged(EventArgs e)
@@ -73,12 +72,5 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 
 		e.Handled = true;
 		TopLevel.GetTopLevel(this)?.FocusManager.Focus(null);
-	}
-
-	// Typed values wait for Enter or focus loss, but spins are done at once
-	private static void OnItemsSpin(object? sender, SpinEventArgs e)
-	{
-		if (e.Source is Control source)
-			GetValueBinding(source)?.UpdateSource();
 	}
 }

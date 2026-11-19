@@ -12,12 +12,12 @@ public sealed record Swatch(Color Color, IBrush Brush, string Tip);
 
 /// <summary>
 ///     Color swatches in rows that wrap at the control's width, drawn as one visual: a palette has hundreds, and a
-///     control apiece made it slow to open and to draw. Pressing a swatch runs <see cref="Command" /> with it.
+///     control apiece made it slow to open and to draw. Left-clicking a swatch runs <see cref="Command" /> with it.
 /// </summary>
 public sealed class SwatchGrid : Control
 {
-	private const double CellSize = 20;
-	private const double Gap = 2;
+	private const double CellSize = 20d;
+	private const double Gap = 2d;
 	private const double Pitch = CellSize + Gap;
 
 	public static readonly StyledProperty<IReadOnlyList<Swatch>?> ItemsProperty =
@@ -127,7 +127,9 @@ public sealed class SwatchGrid : Control
 	{
 		base.OnPointerPressed(e);
 
-		if (Items is { } items && HitTest(e.GetPosition(this)) is var index and >= 0)
+		if (
+			e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && Items is { } items &&
+			HitTest(e.GetPosition(this)) is var index and >= 0)
 			Command?.Execute(items[index]);
 	}
 

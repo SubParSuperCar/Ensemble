@@ -140,19 +140,16 @@ public partial class PlayerHandle
 
 	private void ReceiveReplicated(int senderId, ushort sequence, Vector3 position, float yaw, bool isFlashlightOn)
 	{
-		if (!IsValidState(position, yaw))
-			return;
-
 		if (GSessionManager.IsServer)
 		{
 			if (
 				GSessionManager.GetPeerByPlayerId(Id)?.Id != senderId || !GSessionManager.IsPeerSynced(senderId) ||
-				!_relayGate.TryTake())
+				!IsValidState(position, yaw) || !_relayGate.TryTake())
 				return;
 
 			Relay(sequence, position, yaw, isFlashlightOn, senderId);
 		}
-		else if (senderId != MultiplayerPeer.TargetPeerServer)
+		else if (senderId != MultiplayerPeer.TargetPeerServer || !IsValidState(position, yaw))
 			return;
 
 		// It follows its seat instead, so only the flashlight is taken; a state sent just before sitting is simply late

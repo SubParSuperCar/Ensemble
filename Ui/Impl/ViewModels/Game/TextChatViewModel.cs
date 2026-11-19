@@ -22,6 +22,9 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 	private readonly DispatcherService _dispatcher;
 
+	// A client's messages on their way, oldest first, as the host relays or rejects each in the order they were sent
+	private readonly Queue<string> _sentTexts = [];
+
 	public TextChatViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
@@ -71,7 +74,10 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	[RelayCommand(CanExecute = nameof(CanSend))]
 	private void Send()
 	{
-		PostChatMessageAction.Post(Message);
+		// The host's own messages are neither rate limited nor filtered
+		if (PostChatMessageAction.Post(Message) is { } text && !IsHost)
+			_sentTexts.Enqueue(text);
+
 		Message = string.Empty;
 	}
 
@@ -107,13 +113,32 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 
 		var nametag = $"[{ChatText.ShortenName(message.SenderName)}]:";
 		AddLine(new TextChatLine(nametag, message.SenderColor.ToAvaloniaColor(), message.Text));
+
+		// Only the sender hears why, as the others see the masks alone
+		if (
+			string.Equals(message.SenderId, GSessionManager.LocalPeer?.PlayerId, StringComparison.Ordinal) &&
+			_sentTexts.TryDequeue(out var sent) && !string.Equals(sent, message.Text, StringComparison.Ordinal))
+			AddLine(new TextChatLine(null, default, DescribeFiltered(message.Text)));
 	}
 
-	// Local only, so the sender learns why a message went nowhere
+	private static string DescribeFiltered(string text) =>
+		text switch
+		{
+			ProfanityFilter.Redacted => "The profanity filter hid your whole message.",
+			ProfanityFilter.Failed => "The profanity filter failed, so your message was hidden.",
+			_ => "The profanity filter masked part of your message."
+		};
+
+	// Local only, so the sender learns why a message went nowhere, and can send it again
 	private void OnActionRejected(string actionId, string reason)
 	{
-		if (actionId is nameof(PostChatMessageAction) or nameof(SetProfanityFilterAction))
-			AddLine(new TextChatLine(null, default, reason));
+		if (actionId is not (nameof(PostChatMessageAction) or nameof(SetProfanityFilterAction)))
+			return;
+
+		AddLine(new TextChatLine(null, default, reason));
+
+		if (actionId is nameof(PostChatMessageAction) && _sentTexts.TryDequeue(out var sent) && Message.Length is 0)
+			Message = sent;
 	}
 
 	private void OnProfanityFilterEnabledChanged(bool isEnabled) => IsProfanityFilterEnabled = isEnabled;

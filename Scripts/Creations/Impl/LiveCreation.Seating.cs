@@ -19,11 +19,12 @@ public partial class LiveCreation
 	internal Seat? GetSeat(int instanceId) => _seatsByInstanceId.GetValueOrDefault(instanceId);
 
 	/// <summary>Player IDs by instance ID.</summary>
+	// In the order the riders sat, which decides who controls
 	internal Dictionary CaptureSeats()
 	{
 		var seats = new Dictionary();
 
-		foreach (var (instanceId, seat) in _seatsByInstanceId)
+		foreach (var (instanceId, seat) in _seatsByInstanceId.OrderBy(static pair => pair.Value.SitOrder))
 			if (seat.Occupant is { } occupant)
 				seats[instanceId] = occupant.Id;
 

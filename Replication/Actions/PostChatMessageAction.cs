@@ -33,10 +33,14 @@ public readonly record struct PostChatMessageAction(string Text) : INetworkActio
 			});
 
 	/// <summary>Sanitizes and posts <paramref name="text" />, unless nothing is left of it.</summary>
-	public static void Post(string text)
+	/// <returns>The text posted, or null if none was.</returns>
+	public static string? Post(string text)
 	{
-		if (ChatText.Sanitize(text) is { Length: > 0 } sanitized)
-			new PostChatMessageAction(sanitized).Submit();
+		if (ChatText.Sanitize(text) is not { Length: > 0 } sanitized)
+			return null;
+
+		new PostChatMessageAction(sanitized).Submit();
+		return sanitized;
 	}
 
 	[ModuleInitializer]

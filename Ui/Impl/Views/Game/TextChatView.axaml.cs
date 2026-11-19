@@ -50,7 +50,7 @@ public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewMod
 	{
 		// ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
 		if (ActualThemeVariant is not null)
-			RebuildLog();
+			ChatLog.TextArea.TextView.Redraw();
 	}
 
 	private void RebuildLog()
@@ -71,8 +71,12 @@ public sealed partial class TextChatView : UserControl, IViewFor<TextChatViewMod
 		if (e.NewItems is not { } newItems)
 			return;
 
-		foreach (TextChatLine line in newItems)
-			document.Insert(document.TextLength, document.TextLength is 0 ? Format(line) : "\n" + Format(line));
+		// By index, as an empty line leaves the document empty too
+		for (var i = 0; i < newItems.Count; i++)
+		{
+			var text = Format((TextChatLine)newItems[i]!);
+			document.Insert(document.TextLength, e.NewStartingIndex + i is 0 ? text : "\n" + text);
+		}
 	}
 
 	private void OnChatLogTemplateApplied(object? sender, TemplateAppliedEventArgs e)

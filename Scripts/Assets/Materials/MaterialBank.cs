@@ -7,7 +7,9 @@ using Serilog;
 
 namespace EnsembleRoot.Scripts.Assets.Materials;
 
-/// <summary>The game's asset materials, by their IDs, which the material ID property names; None (-1) means none.</summary>
+/// <summary>
+///     The game's asset materials, by their IDs, which the material ID property names; None (-1) means none.
+/// </summary>
 [GlobalClass]
 public partial class MaterialBank : Node
 {

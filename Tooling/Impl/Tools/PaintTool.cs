@@ -11,8 +11,8 @@ namespace EnsembleRoot.Tooling.Tools;
 /// <summary>
 ///     Paints the local plot's paintable instances with the brush: its color and material, each only if applied. A
 ///     press paints the hovered instance and a drag every one it sweeps, as one edit on release; a marquee paints its
-///     box. The eyedropper takes the brush from an instance instead: the next press while it's on (which turns it off,
-///     so the next paints), or a marquee click.
+///     box. The eyedropper, toggled by tapping the marquee key alone, takes the brush from an instance instead: the
+///     next press while it's on, or a marquee click, after which it turns off so the next press paints.
 /// </summary>
 public partial class PaintTool : ToolBase
 {
@@ -28,6 +28,7 @@ public partial class PaintTool : ToolBase
 
 	private readonly MultiSelector _stroke = new();
 
+	private bool _isMarqueeKeyTapped;
 	private bool _isStroking;
 
 	public override Color ThemeColor => Theme;
@@ -76,6 +77,8 @@ public partial class PaintTool : ToolBase
 	// Releases land here even over the UI, so a stroke always ends, and cancels before Esc's other uses
 	public override void _Input(InputEvent @event)
 	{
+		UpdateEyedropperTap(@event);
+
 		if (_isStroking && @event.IsActionReleased(ToolCommon.TriggerAction))
 			FinishStroke();
 		else if (@event.IsActionPressed(CancelAction) && (_isStroking || IsEyedropping))
@@ -99,9 +102,7 @@ public partial class PaintTool : ToolBase
 
 		if (IsEyedropping)
 		{
-			if (Sample(_highlights.HoveredId))
-				IsEyedropping = false;
-
+			SampleHovered();
 			return;
 		}
 
@@ -116,10 +117,14 @@ public partial class PaintTool : ToolBase
 	}
 
 	/// <summary>Paints every paintable instance of the local plot.</summary>
-	public void PaintAll()
+	/// <returns>Whether there was a plot to paint: one that's claimed and not spawned.</returns>
+	public bool PaintAll()
 	{
-		if (LocalPlot is { } plot)
-			Paint([.. plot.Instances.Source.All.Select(static instance => instance.Id)]);
+		if (IsLocalPlotSpawned is not false || LocalPlot is not { } plot)
+			return false;
+
+		Paint([.. plot.Instances.Source.All.Select(static instance => instance.Id)]);
+		return true;
 	}
 
 	internal override void OnMarqueeFinished(IReadOnlyList<int> instanceIds, bool isToggling)
@@ -128,7 +133,7 @@ public partial class PaintTool : ToolBase
 			Paint(instanceIds);
 	}
 
-	internal override void OnMarqueeClicked() => Sample(_highlights.HoveredId);
+	internal override void OnMarqueeClicked() => SampleHovered();
 
 	protected override void OnEnable()
 	{
@@ -157,6 +162,22 @@ public partial class PaintTool : ToolBase
 
 	// The highlights preview the paint's color, opaque, as their fill has its own opacity
 	private void UpdateTint() => _highlights.Tint = IsColorApplied && !IsEyedropping ? Color with { A = 1 } : Theme;
+
+	// Any other key or button pressed while it's held makes it a modifier, so a marquee or shortcut toggles nothing
+	private void UpdateEyedropperTap(InputEvent @event)
+	{
+		if (@event.IsActionPressed(ToolCommon.SelectionMarqueeAction))
+			_isMarqueeKeyTapped = IsEnabled && !_isStroking && !InputSink.IsSunk;
+		else if (@event.IsActionReleased(ToolCommon.SelectionMarqueeAction))
+		{
+			if (_isMarqueeKeyTapped && IsEnabled)
+				IsEyedropping = !IsEyedropping;
+
+			_isMarqueeKeyTapped = false;
+		}
+		else if (@event is InputEventKey { Pressed: true, Echo: false } or InputEventMouseButton { Pressed: true })
+			_isMarqueeKeyTapped = false;
+	}
 
 	private void Sweep()
 	{
@@ -227,6 +248,12 @@ public partial class PaintTool : ToolBase
 	// So the same color written another way isn't an edit
 	private static string Rewrite(string hex, bool hasAlpha) =>
 		Paintable.WriteColor(Paintable.ReadColor(hex, hasAlpha), hasAlpha);
+
+	private void SampleHovered()
+	{
+		if (Sample(_highlights.HoveredId))
+			IsEyedropping = false;
+	}
 
 	private bool Sample(int? instanceId)
 	{

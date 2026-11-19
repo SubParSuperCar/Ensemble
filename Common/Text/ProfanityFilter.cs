@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
@@ -13,7 +14,8 @@ namespace EnsembleRoot.Common.Text;
 ///     unless they set <c>allow_partial</c> to false. The bundled copy sets it on the entries whose partial matches hit
 ///     ordinary words (e.g., "class" or "grape"); those only match as words, optionally inflected. Each entry's
 ///     exceptions (e.g., "sp*" for "sparse") are honored, and each entry's severity is weighed against
-///     <see cref="MinSeverity" />.
+///     <see cref="MinSeverity" />. Text is folded before matching (accents dropped, fullwidth and look-alike letters
+///     read as Latin), and words spelled out a letter at a time (e.g., "d a m n") match as words.
 ///     <para>
 ///         The list is embedded GZip-compressed, so its terms can't be read or searched in the source. Convert it
 ///         with .github/scripts/profanity-list.sh.
@@ -39,6 +41,22 @@ public static class ProfanityFilter
 	private const RegexOptions PatternOptions = RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
 
 	private static readonly TimeSpan MatchTimeout = TimeSpan.FromMilliseconds(RegexMatchTimeoutMs);
+
+	// At least three lone letters or digits, as two-letter runs are common in ordinary text ("a I")
+	private static readonly Regex SpelledOut = new(
+		@"(?<![\p{L}\p{N}])(?:[\p{L}\p{N}][\W_]+){2,}[\p{L}\p{N}](?![\p{L}\p{N}])", PatternOptions, MatchTimeout);
+
+	// Cyrillic and Greek letters drawn like Latin ones, which compatibility folding leaves alone
+	private static readonly Dictionary<char, char> LookAlikes = new()
+	{
+		['\u0430'] = 'a', ['\u0435'] = 'e', ['\u043E'] = 'o', ['\u0440'] = 'p', ['\u0441'] = 'c', ['\u0443'] = 'y',
+		['\u0445'] = 'x', ['\u0455'] = 's', ['\u0456'] = 'i', ['\u0458'] = 'j', ['\u0410'] = 'A', ['\u0412'] = 'B',
+		['\u0415'] = 'E', ['\u041A'] = 'K', ['\u041C'] = 'M', ['\u041D'] = 'H', ['\u041E'] = 'O', ['\u0420'] = 'P',
+		['\u0421'] = 'C', ['\u0422'] = 'T', ['\u0425'] = 'X', ['\u03B1'] = 'a', ['\u03BF'] = 'o', ['\u03BD'] = 'v',
+		['\u03C1'] = 'p', ['\u0391'] = 'A', ['\u0392'] = 'B', ['\u0395'] = 'E', ['\u0397'] = 'H', ['\u0399'] = 'I',
+		['\u039A'] = 'K', ['\u039C'] = 'M', ['\u039D'] = 'N', ['\u039F'] = 'O', ['\u03A1'] = 'P', ['\u03A4'] = 'T',
+		['\u03A7'] = 'X'
+	};
 
 	private static readonly Dictionary<char, string> Substitutes = new()
 	{
@@ -99,26 +117,16 @@ public static class ProfanityFilter
 			return Failed;
 		}
 
-		char[]? censored = null;
+		List<(int Start, int End)> ranges;
+		var (folded, origins) = Fold(text);
 
 		try
 		{
-			foreach (var entry in entries.Where(static entry => entry.Severity >= MinSeverity))
-				for (var match = entry.Pattern.Match(text); match.Success; match = match.NextMatch())
-				{
-					var core = match.Groups[CoreGroup];
+			ranges = [.. FindProfanity(entries, folded)];
 
-					if (entry.IsException(text, core.Index, core.Length))
-						continue;
-
-					var (start, end) = (match.Index, match.Index + match.Length);
-
-					if (entry.AllowsPartial)
-						(start, end) = ExpandToWord(text, start, end);
-
-					censored ??= text.ToCharArray();
-					censored.AsSpan(start, end - start).Fill(Mask);
-				}
+			foreach (Match run in SpelledOut.Matches(folded))
+				if (FindProfanity(entries, string.Concat(run.Value.Where(char.IsLetterOrDigit))).Any())
+					ranges.Add((run.Index, run.Index + run.Length));
 		}
 		catch (RegexMatchTimeoutException exception)
 		{
@@ -126,10 +134,68 @@ public static class ProfanityFilter
 			return Failed;
 		}
 
-		if (censored is null)
+		if (ranges is [])
 			return text;
 
+		var censored = text.ToCharArray();
+
+		// Back onto the text, with any marks trailing the last letter
+		foreach (var (start, end) in ranges)
+		{
+			var (from, to) = (origins?[start] ?? start, (origins?[end - 1] ?? end - 1) + 1);
+
+			while (to < text.Length && CharUnicodeInfo.GetUnicodeCategory(text[to]) is UnicodeCategory.NonSpacingMark)
+				to++;
+
+			censored.AsSpan(from, to - from).Fill(Mask);
+		}
+
 		return Array.Exists(censored, char.IsLetterOrDigit) ? new string(censored) : Redacted;
+	}
+
+	private static IEnumerable<(int Start, int End)> FindProfanity(Entry[] entries, string text)
+	{
+		foreach (var entry in entries.Where(static entry => entry.Severity >= MinSeverity))
+			for (var match = entry.Pattern.Match(text); match.Success; match = match.NextMatch())
+			{
+				var core = match.Groups[CoreGroup];
+
+				if (entry.IsException(text, core.Index, core.Length))
+					continue;
+
+				var (start, end) = (match.Index, match.Index + match.Length);
+				yield return entry.AllowsPartial ? ExpandToWord(text, start, end) : (start, end);
+			}
+	}
+
+	// Each folded character keeps the index of the one it came from, or none while the text is plain ASCII
+	private static (string Folded, int[]? Origins) Fold(string text)
+	{
+		if (Ascii.IsValid(text))
+			return (text, null);
+
+		var folded = new StringBuilder(text.Length);
+		var origins = new List<int>(text.Length);
+
+		for (var i = 0; i < text.Length; i++)
+		{
+			var c = text[i];
+
+			// Compatibility forms (fullwidth letters) decompose to ordinary ones, and accents to marks, which go
+			var parts = LookAlikes.TryGetValue(c, out var latin) ? latin.ToString()
+				: char.IsAscii(c) || char.IsSurrogate(c) ? c.ToString()
+				: c.ToString().Normalize(NormalizationForm.FormKD);
+
+			// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+			foreach (var part in parts)
+				if (CharUnicodeInfo.GetUnicodeCategory(part) is not UnicodeCategory.NonSpacingMark)
+				{
+					folded.Append(part);
+					origins.Add(i);
+				}
+		}
+
+		return (folded.ToString(), [.. origins]);
 	}
 
 	private static (int Start, int End) ExpandToWord(string text, int start, int end)

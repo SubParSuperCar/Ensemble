@@ -50,7 +50,7 @@
                 <Button
                     Content="Paint All"
                     Command="{Binding PaintAllCommand}"
-                    ToolTip.Tip="Paints every asset on your plot with the brush."
+                    ToolTip.Tip="Paints every paintable asset on your plot with the brush."
                     HorizontalContentAlignment="Center"
                     IsEnabled="{Binding IsPaintAllEnabled}" />
             </Border>
@@ -117,7 +117,7 @@
                         Content="Paint (4)"
                         Command="{Binding TogglePaintToolCommand}"
                         IsChecked="{Binding IsPaintToolEnabled}"
-                        ToolTip.Tip="Toggles the painting (paint) tool. (Bound to 4 / Four)&#x0a;&#x0a;Click an asset to paint it, or drag across assets to paint each one.&#x0a;Ctrl-drag to paint a box, or Ctrl-click an asset to pick up its paint; Esc cancels." />
+                        ToolTip.Tip="Toggles the painting (paint) tool. (Bound to 4 / Four)&#x0a;&#x0a;Click an asset to paint it, or drag across assets to paint each one.&#x0a;Ctrl-drag to paint a box, or tap Ctrl for the eyedropper to pick up an asset's paint; Esc cancels." />
                 </Border>
 
                 <Border Grid.Column="4" BorderBrush="#E0C000" BorderThickness="{StaticResource BorderThickness}">

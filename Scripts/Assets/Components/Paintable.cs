@@ -38,7 +38,9 @@ public partial class Paintable : AssetComponent
 		return color;
 	}
 
-	/// <summary>Writes a color as a color property's value: <c>RRGGBBAA</c> with alpha, <c>RRGGBB</c> without.</summary>
+	/// <summary>
+	///     Writes a color as a color property's value: <c>RRGGBBAA</c> with alpha, <c>RRGGBB</c> without.
+	/// </summary>
 	public static string WriteColor(Color color, bool hasAlpha) => color.ToHtml(hasAlpha).ToUpperInvariant();
 
 	public void PaintDefaults(AssetHandle handle)

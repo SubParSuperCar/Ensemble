@@ -12,17 +12,7 @@ public partial class LiveCreation
 	private readonly HashSet<Key> _boundKeys = [];
 	private readonly System.Collections.Generic.Dictionary<int, Seat> _seatsByInstanceId = [];
 
-	internal bool IsControlSeatTaken
-	{
-		get
-		{
-			foreach (var seat in _seatsByInstanceId.Values)
-				if (seat is { HasControls: true, Occupant: not null })
-					return true;
-
-			return false;
-		}
-	}
+	internal System.Collections.Generic.Dictionary<int, Seat>.ValueCollection Seats => _seatsByInstanceId.Values;
 
 	internal IReadOnlySet<Key> BoundKeys => _boundKeys;
 

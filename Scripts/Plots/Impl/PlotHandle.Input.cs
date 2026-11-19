@@ -28,18 +28,36 @@ public partial class PlotHandle
 	///     The plot's occupant whose keys drive its creation: the oldest one sitting in one of its seats with controls.
 	///     Every peer derives it alike from who occupies the plot and who sits where.
 	/// </summary>
+	/// <remarks>Runs every frame, so it reads Core's occupants rather than GdCore's wrappers, which allocate.</remarks>
 	internal PlayerHandle? GetController()
 	{
-		if (Creation is not { IsControlSeatTaken: true })
+		if (Creation is not { } creation)
 			return null;
 
-		foreach (var occupant in _plot.Occupants.GetAll())
-			if (
-				GPlayerManager.GetHandleOrNull(occupant.Player.Id) is { Seat: { HasControls: true } seat } player &&
-				seat.Handle.Plot == this)
-				return player;
+		PlayerHandle? controller = null;
 
-		return null;
+		foreach (var seat in creation.Seats)
+			if (
+				seat is { HasControls: true, Occupant: { } rider } && rider.Occupancy.Plot == _plot.Source &&
+				(controller is null || HasArrivedBefore(rider, controller)))
+				controller = rider;
+
+		return controller;
+	}
+
+	// The plot's occupants are in order of arrival
+	private bool HasArrivedBefore(PlayerHandle player, PlayerHandle other)
+	{
+		foreach (var occupant in _plot.Source.Occupants.All.Values)
+		{
+			if (occupant == player.Occupancy)
+				return true;
+
+			if (occupant == other.Occupancy)
+				return false;
+		}
+
+		return false;
 	}
 
 	private void UpdateInput(double delta)

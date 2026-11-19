@@ -38,6 +38,13 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
+	private static ValueTask<int> dmp_window_modes(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		Log.Information("Available window modes:\n{Modes}", FormatEnum(Enum.GetValues<DisplayServer.WindowMode>()));
+		return context.ReturnNothing();
+	}
+
 	private static ValueTask<int> set_draw_mode(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
@@ -93,7 +100,23 @@ public static partial class LuaExecutor
 			Log.Information("Set VSync mode to {Mode}", result);
 		}
 		else
-			Log.Error("Invalid VSync mode: {Mode}", argument);
+			Log.Error("Invalid VSync mode: {Mode} (see {Function}())", argument, nameof(dmp_vsync_modes));
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_window_mode(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var argument = context.GetArgument<LuaValue>(0);
+
+		if (ToEnum(argument, Enum.GetValues<DisplayServer.WindowMode>()) is { } result)
+		{
+			DisplayServer.WindowSetMode(result);
+			Log.Information("Set window mode to {Mode}", result);
+		}
+		else
+			Log.Error("Invalid window mode: {Mode} (see {Function}())", argument, nameof(dmp_window_modes));
 
 		return context.ReturnNothing();
 	}

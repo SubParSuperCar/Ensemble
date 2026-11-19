@@ -1,6 +1,8 @@
+using EnsembleRoot.Common.Text;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Templates;
+using Serilog.Templates.Themes;
 
 namespace EnsembleRoot.Common.Logging;
 
@@ -17,8 +19,11 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 
 	private static readonly ExpressionTemplate MessageFormatter = new("{@m:lj}");
 
+	// Themed as the console is, wherever the output goes, for the in-game log to color alike. A literal or JSON
+	// message (lj) would take one color, where a plain one colors each value.
 	private static readonly ExpressionTemplate TextFormatter = new(
-		"[{@t:HH:mm:ss.fff} {@l:u3}] {@m:lj}{#if @x is not null}\n{@x}{#end}");
+		"[{@t:HH:mm:ss.fff} {@l:u3}] {@m}{#if @x is not null}\n{@x}{#end}", theme: TemplateTheme.Code,
+		applyThemeWhenOutputIsRedirected: true);
 
 	private static long _sequence;
 
@@ -34,7 +39,8 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 
 	public void Emit(LogEvent logEvent)
 	{
-		var entry = new LogEntry(logEvent.Level, Format(MessageFormatter, logEvent), Format(TextFormatter, logEvent));
+		var (text, styles) = AnsiText.Parse(Format(TextFormatter, logEvent));
+		var entry = new LogEntry(logEvent.Level, Format(MessageFormatter, logEvent), text, styles);
 
 		var isVerbose = logEvent.Level is LogEventLevel.Verbose;
 		var (queue, capacity) = isVerbose ? (VerboseEntries, MaxVerboseEntries) : (Entries, MaxEntries);

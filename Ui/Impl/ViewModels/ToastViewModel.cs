@@ -9,12 +9,12 @@ namespace EnsembleRoot.Ui.ViewModels;
 
 public sealed partial class ToastViewModel : ViewModelBase
 {
-	private readonly ToastListViewModel _owner;
+	private readonly ToasterViewModel _owner;
 	private readonly DispatcherTimer _timer;
 
 	private int _repeatCount = 1;
 
-	internal ToastViewModel(ToastListViewModel owner, LogEntry entry, TimeSpan lifetime)
+	internal ToastViewModel(ToasterViewModel owner, LogEntry entry, TimeSpan lifetime)
 	{
 		_owner = owner;
 		_timer = new DispatcherTimer(lifetime, DispatcherPriority.Normal, OnTimerTick);

@@ -206,7 +206,7 @@ jobs:
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
-          "${GODOT}" --headless --path . --export-release "Crapple macOS" "${PWD}/out/Ensemble.app"
+          "${GODOT}" --headless --path . --export-release "Crapple Macintosh OS" "${PWD}/out/Ensemble.app"
           test -d out/Ensemble.app
           test -s out/Ensemble.app/Contents/MacOS/Ensemble
 
@@ -229,7 +229,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p server
-          "${GODOT}" --headless --path . --export-release "Crapple macOS Server" "${PWD}/server/Ensemble.app"
+          "${GODOT}" --headless --path . --export-release "Crapple Macintosh OS Server" "${PWD}/server/Ensemble.app"
           test -s server/Ensemble.app/Contents/MacOS/Ensemble
           cd server
           find Ensemble.app -name '*.pdb' -delete

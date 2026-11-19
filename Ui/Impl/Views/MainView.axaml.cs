@@ -40,10 +40,10 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 		_hoverTimer.Start();
 
 #if DEBUG
+		// Not the layout time graph: showing each pass's timing changes the composition target, so all of it redraws
 		_topLevel?.RendererDiagnostics.DebugOverlays =
 			RendererDebugOverlays.Fps |
-			RendererDebugOverlays.RenderTimeGraph |
-			RendererDebugOverlays.LayoutTimeGraph;
+			RendererDebugOverlays.RenderTimeGraph;
 #endif
 	}
 

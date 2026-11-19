@@ -165,6 +165,20 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   firing when the creation they control binds them
 - [x] (M) Bandwidth - the host shares a budget per peer among the creations streaming to it, nearest first, thinning out
   far ones only when they don't all fit
+- [ ] (M) Forces - the per-assembly force accumulator and assembly state for asset logic, arriving with the first asset
+  that pushes rather than drives a joint: the Thruster, then the Hover Thruster (see
+  [**aerodynamics and other forces**](./LIVE-CREATIONS.md#10-aerodynamics-and-other-forces-later))
+- [ ] (M) Airfoils and propellers - lift and drag from the airflow over a plate or wing, once those models exist
+  (gliders first), and propellers as spun airfoils or a cheaper thrust from their hinge's spin
+- [ ] (M) Water and buoyancy - the ocean's surface (sea level, about -2 m, where the ocean shader draws it) becomes
+  water. What's below it is pushed up by the weight of the water it displaces, so creations float or sink by their
+  materials' densities (lighter than water floats, with ballast and helium assets to follow), lean and right themselves
+  as their hulls tip, and slow down in the water. Each assembly gets sample points spread through its colliders at
+  spawn, each carrying its share of the volume; each tick, on the simulator alone, the points under the surface add
+  their share of the lift and of a drag at their own positions through the force accumulator, so only what's in the
+  water costs anything. The plane is read from the ocean material's sea level, so the physics and the picture can't
+  disagree; waves stay visual until matching them in C# is worth it. Swimming or wading characters, splashes, and
+  underwater fog are separate items
 - [ ] (M) Characters riding moving creations (platform velocity)
 - [x] (M) Anchors - an asset that freezes its assembly while it holds it, switched by a key
 - [ ] (M) Flip button - lets a seated simulator right the assembly their seat is on, beside the Spawn / Despawn button
@@ -202,6 +216,12 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
   text as signatures), Lua keywords, and globals; layout waits for the owner
 - [ ] (M) Settings menu (hosted in a window)
 - [ ] (M) In-game HUD pass
+    - [ ] (M) Instruments - while the local player controls a creation, a cluster of gauges: speed (in the units the
+      stats overlay shows), altitude above sea level and above the ground, vertical speed, G-force, and heading, with
+      room for the creation's own readouts later (motor RPM, throttle). Sampled a few times a second from the seat's
+      assembly, whose state every peer has (proxies replay it), and smoothed, as G-force differentiates velocity; the
+      height above ground is one ray down. A HUD element rather than a widget, as it appears and goes with the seat;
+      the backend comes first, and the layout waits for the owner
 - [ ] (S) Main menu personality - community links (e.g., Discord) and randomized flavor text
 - [ ] (S) Web browser on WPE WebKit 2.54+ - blocked on Avalonia's WPE adapter moving to the WPEPlatform API; it only
   renders on Linux with WPE WebKit 2.52 or older (other engines need native windows Estragonia doesn't have)

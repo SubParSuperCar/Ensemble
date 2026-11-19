@@ -297,13 +297,14 @@ classDiagram
 ```
 
 Assets are scenes in `build_assets/`, registered by `AssetManager` on load: each is an `AssetHandle` (a `StaticBody3D`)
-with an `AssetId`, a name, default properties, and an instance limit. Its direct colliders are piece 0; `AssetPiece`
-children are further pieces that can move on their own. Reusable behaviors are `AssetComponent` nodes dropped under the
-handle (such as `Paintable`, which applies the instance's `_colorHex` and `_materialId`), and unique behaviors subclass
-`AssetHandle` (such as `Suspension`, or `Motor` and `Servo` through `DrivenHinge`). Saves store each instance's
-`AssetId`, so shipped IDs never change. A collider may sit 1 to 2 mm inside its asset's cell (`MinColliderInset` to
-`MaxColliderInset`) to keep a face from welding: `Epsilon`, the distance within which faces touch, is half the narrowest
-inset, and placement snaps the asset itself, not its inset colliders, onto the grid.
+with an `AssetId`, a name, a description (the Asset Selector's tooltip, kept by `AssetManager`, as Core has no use for
+it), default properties, an instance limit, a density, and the box that snaps to the grid. Its direct colliders are
+piece 0; `AssetPiece` children are further pieces that can move on their own. Reusable behaviors are `AssetComponent`
+nodes dropped under the handle (such as `Paintable`, which applies the instance's `_colorHex` and `_materialId`), and
+unique behaviors subclass `AssetHandle` (such as `Suspension`, or `Motor` and `Servo` through `DrivenHinge`). Saves
+store each instance's `AssetId`, so shipped IDs never change. A collider may sit slightly inside its asset's cell
+(`MinColliderInset` to `MaxColliderInset`) to keep a face from welding: `Epsilon`, the distance within which faces
+touch, is half the narrowest inset, and placement snaps the asset itself, not its inset colliders, onto the grid.
 
 Placement is validated by shared rules (`PlotPlacement`: bounds, overlaps, and quotas) that run on the client for
 previews and on the host for authority. Overlaps are resolved with oriented bounding boxes and the separating axis
@@ -447,9 +448,9 @@ Each state packs an assembly's ID, position, rotation, and velocities into 204 b
 `BitWriter`). Sleeping assemblies are sent once at rest and then only as slow keepalives.
 
 Driving happens on the simulator too: each physics tick, it runs its assets' logic (`ISimulationTicked`: motors, servos,
-anchors) with the keys of the plot's controller (its oldest occupant sitting in a seat with controls), sent through the
-host as a mask (`InputState`). Sitting and leaving are actions (`SetSeatAction`), and what an asset decides that must
-outlast its simulator reaches every peer as asset states (`IReplicatedState`).
+anchors) with the keys of the plot's controller (whichever occupant has sat longest in a seat with controls), sent
+through the host as a mask (`InputState`). Sitting and leaving are actions (`SetSeatAction`), and what an asset decides
+that must outlast its simulator reaches every peer as asset states (`IReplicatedState`).
 
 [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) walks through all of it, with a map of the code, the designs behind it, and
 what comes next (pistons, forces, and aerodynamics).
@@ -496,12 +497,12 @@ graph LR
   property when the assets agree on one default and some instance differs from it.
 - `PaintTool` paints paintable instances (assets with a `Paintable` component) with a brush: a color and a material,
   each applied only if chosen. A press paints the hovered instance, a drag every instance it sweeps (previewed as wet
-  paint, submitted as one edit on release), a marquee its box, and Paint All the whole plot; `Ctrl`-clicking, or the
-  next press while its eyedropper is on, takes the brush from an instance instead. `AssetManager` records which assets
-  are
-  paintable and which take alpha, so the tool writes `RRGGBB` or `RRGGBBAA` as `Paintable` reads it. The Paint Palette
-  widget edits the brush with Avalonia's color controls, and shows each material as a sphere `MaterialPreviews`
-  renders once in an offscreen viewport of its own.
+  paint, submitted as one edit on release), a marquee its box, and Paint All the whole plot. Its eyedropper, toggled by
+  tapping `Ctrl` alone or by the palette's button (one state), takes the brush from the next instance pressed, or
+  `Ctrl`-clicked, and then turns off. `AssetManager` records which assets are paintable and which take alpha, so the
+  tool writes `RRGGBB` or `RRGGBBAA` as `Paintable` reads it. The Paint Palette widget edits the brush with Avalonia's
+  color controls, and shows each material as a sphere `MaterialPreviews` renders once in an offscreen viewport of its
+  own.
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
   history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
@@ -586,7 +587,9 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
   identically on every peer. Chat lines and read-aloud speech shorten long sender names (default names end in a random
   suffix); everything else keeps the whole name.
 - The host's profanity filter matches a compressed word list case-insensitively and through common substitutions (like
-  "4" for "a"), while avoiding false positives inside ordinary words. Fully masked messages become `<Redacted>`.
+  "4" for "a"), while avoiding false positives inside ordinary words. It reads text folded first (accents dropped,
+  fullwidth and look-alike Cyrillic or Greek letters as Latin) and catches words spelled out a letter at a time.
+  Fully masked messages become `<Redacted>`, and only the sender is told when the filter changed theirs.
 - The host can kick peers and ban IP addresses (from the player list or the console). A ban lasts until the session
   ends, kicks every peer connected from the address, and turns it away on reconnect; IPv6 bans cover the whole /64,
   since devices pick addresses within it freely. Banning a peer bans its address, so both ways behave the same.
@@ -608,8 +611,8 @@ yields, and `print` and returned values show what tables hold.
 | Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_level`,            |
 |             | `set_profanity_filter_on`                                                                          |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`                         |
-| Display     | `cap_fps`, `dmp_draw_modes`, `dmp_vsync_modes`, `set_draw_mode`, `set_ui_dark_theme_on`,           |
-|             | `set_ui_scale`, `set_vsync_mode`                                                                   |
+| Display     | `cap_fps`, `dmp_draw_modes`, `dmp_vsync_modes`, `dmp_window_modes`, `set_draw_mode`,               |
+|             | `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`, `set_window_mode`                        |
 | Moderation  | `ban_addr`, `ban_peer`, `dmp_bans`, `kick_peer`, `unban_addr`, `unban_all`                         |
 | Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                                 |
 | Plots       | `dmp_creation`, `dmp_plots`, `kick_occupant`, `set_plot`, `set_plot_simulator`, `set_plot_spawned` |
@@ -650,6 +653,8 @@ yields, and `print` and returned values show what tables hold.
   elsewhere, snapshots keep old blocks, and atomic saves never wrote over earlier versions, so a shred would promise
   what it can't keep. Password-protected saves are the real protection, since every leftover copy stays encrypted.
 - **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for warnings.
+  The in-game history keeps the console's colors as styled runs (`AnsiText` reads its escape codes), which the log view
+  tracks as segments of its document, so they move with each edit.
 - **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging
   silently.
 - **Startup report:** the OS, hardware, build, and commit are logged at startup, so bug reports carry their context.

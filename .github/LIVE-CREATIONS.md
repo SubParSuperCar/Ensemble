@@ -71,7 +71,8 @@ graph TD
    creation with the most assemblies), so their collisions are real physics on one machine, until they've been apart for
    2 s.
 7. **Driving.** Each physics tick, the simulator runs its assets' logic (motors, servos, anchors) with the keys of the
-   plot's controller: its oldest occupant in a seat with controls, whose keys reach the simulator through the host.
+   plot's controller: whichever occupant has sat longest in a seat with controls, whose keys reach the simulator
+   through the host.
    What that logic decides and must outlast its simulator (an anchor's hold, a motor's latch) reaches every peer as
    asset states.
 8. **Despawning.** The owner despawns, or the last occupant leaves. Every peer wakes other creations' bodies that rested
@@ -358,6 +359,14 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
   `ApplyForce` / `ApplyTorque` per assembly per tick. A thousand wings make a thousand C# additions, not a thousand
   interop calls.
 - Joint motors are driven through their joint (target velocity, max torque), set only when a value changes.
+- The accumulator lives in `LiveCreation`, as a force and a torque per assembly, indexed by assembly ID like its
+  assemblies. An asset adds world-space forces at world-space points; the accumulator turns each into a force and a
+  torque about its assembly's center of mass, which is the assembly's origin (section 1). A force on a piece pushes the
+  piece's assembly, not the handle's.
+- It flushes once every ticked asset has run, and only for assemblies whose sum isn't zero, since applying a force
+  wakes a body: an idle thruster lets its creation fall asleep, as an idle motor does.
+- The state is read lazily, at most once per assembly per tick, so assets that only drive joints still pay nothing.
+  A point's velocity is `v + w x r` from that state, with no call of its own.
 
 ### Ownership-dependent state
 
@@ -423,9 +432,9 @@ Measured in a prototype with the game's physics settings; each point is what an 
 
 ## 8. Input
 
-- **Controller:** each spawned plot has at most one, chosen by occupant order among the plot's occupants sitting in
-  control seats, not by who sat down first. The owner is always the oldest occupant, so a seated owner always has
-  control. Players who don't occupy the plot never get control. No controller means no input.
+- **Controller:** each spawned plot has at most one: of the plot's occupants sitting in control seats, whoever sat down
+  first, owner or not, so riders hand control around by swapping seats. Players who don't occupy the plot never get
+  control. No controller means no input.
 - **Input state:** the controller's pressed keys (Godot `Key`s; mouse buttons stay with the camera), from a fixed table
   of up to 64 bindable keys (letters, digits, arrows, Space, Shift, ...), as a 64-bit mask. Every send carries the whole
   state, so presses and releases are found by comparing with the previous mask: no start / stop bits or toggles, and a
@@ -438,7 +447,8 @@ Measured in a prototype with the game's physics settings; each point is what an 
   whenever it changes, plus a few times a second regardless, so a lost press or release heals itself and a key can't
   stick. It's a custom RPC, not an action: it changes too often for the action rate limiter, and needs no validation
   beyond "the sender is the plot's current controller", which the host checks. Every peer derives the controller alike
-  from the plot's occupants and seats, so it needs no replication, and a simulator with no controller zeroes the input
+  from the plot's occupants and seats (seat actions apply in the host's order everywhere, and snapshots keep the order
+  riders sat in), so it needs no replication, and a simulator with no controller zeroes the input
   itself, as it does when a controller's updates stop arriving, so nobody can leave a key held. Only the keys the
   creation binds are sampled and sent.
 - **Who receives it (D8):** only the creation's **simulator**, via the host; it drives the physics (which way motors
@@ -508,6 +518,24 @@ fall through what it stands on. Options to prototype later:
 - Buoyancy (from material densities, section 3) and optional global air drag fit the same accumulator.
 - None of this costs anything for assets without these components.
 
+What each needs, for asset authors and for the code (each waits for its model):
+
+- **Directions come from the scene.** A component exports a marker `Node3D` whose axes give its thrust or its
+  chord and normal, so an author aims it in the editor instead of typing vectors; the component reads the marker's
+  transform relative to its piece once at spawn.
+- **Thruster:** pushes along its marker while its key is held (or latched, as motors toggle), with its thrust as a
+  property. Its flame follows input, which only the simulator has (D8), so it replicates its throttle as an asset state.
+  The Hover Thruster (Plane Crazy) casts a ray along its axis each tick and pushes harder the nearer what it hits; a
+  ray per thruster per tick wants measuring at scale.
+- **Airfoil:** a plate asset first (gliders), then wings; stall and drag curves stay simple (linear lift, then a fall,
+  plus induced drag). Lift is about the airflow's square, so a fast creation's wings need the tick's real delta and
+  sane limits (`GetNumberProperty`), or one bad property launches it.
+- **Propeller:** a driven hinge whose blades are airfoils works with no special code, but costs a few airfoils per
+  propeller; a cheaper Propeller pushes along its axis in proportion to its hinge's measured spin.
+- **Piston:** no accumulator; a driven joint (section 7).
+- **Order:** the accumulator and state with the first force asset (the Thruster, the simplest), then the Airfoil, the
+  Propeller, and buoyancy, which then cost one component each.
+
 ## 11. Performance
 
 Measured on an i7-9700K, 2000 loose instances (2000 assemblies, the worst case):
@@ -575,3 +603,4 @@ proportional to what moves and thinks, not to what exists.
 | D14 | Does controlling move the simulator | No; the plot's owner usually simulates, whoever controls          |
 | D15 | Chairs and control chairs           | One Seat asset with a `hasControls` property                      |
 | D16 | A motor's head against its base     | A clearance, leaving both assemblies collidable                   |
+| D17 | Who controls among seated occupants | Whoever sat down first, not the oldest occupant                   |

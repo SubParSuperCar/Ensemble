@@ -40,11 +40,11 @@ and maintained by [**SubParSuperCar**](https://github.com/SubParSuperCar).
 
 | Document                                     | What it covers                                                      |
 |----------------------------------------------|---------------------------------------------------------------------|
-| [**TECHNICAL.md**](./TECHNICAL.md)           | Architecture, subsystems, diagrams, and the repository layout       |
 | [**CONTRIBUTING.md**](./CONTRIBUTING.md)     | Setting up a development environment, and the project's conventions |
 | [**ASSETS.md**](./ASSETS.md)                 | Making a build asset, and the art and audio the game still needs    |
-| [**ROADMAP.md**](./ROADMAP.md)               | What's done, in progress, and planned                               |
+| [**TECHNICAL.md**](./TECHNICAL.md)           | Architecture, subsystems, diagrams, and the repository layout       |
 | [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) | How spawned creations work, and the design for what comes next      |
+| [**ROADMAP.md**](./ROADMAP.md)               | What's done, in progress, and planned                               |
 | [**LICENSE.md**](../LICENSE.md)              | Licensing for the code and the non-code assets                      |
 
 ---
@@ -64,12 +64,12 @@ are the same, without Roblox's limits.
   join with a single code. Sessions can have passwords and player limits, and run on dedicated servers.
 - **Chat** with Roblox-style colored nametags, an optional profanity filter (hosts choose), and an optional "read aloud"
   mode that speaks new messages.
-- **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and the plot's first occupant in a seat
+- **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and whoever has sat longest in a seat
   with controls takes the wheel. Anchors hold what you've built in place.
 - **Crash** it: creations collide with the terrain, with characters, and with one another, whoever built them.
 - **Paint** pieces with the Paint tool: choose any color and a material (such as rubber or ice) in its palette, then
-  click a piece, sweep across several, or box-select them, and `Ctrl`-click a piece to pick up its color and
-  material.
+  click a piece, sweep across several, or box-select them. Tap `Ctrl` for the eyedropper, then click a piece to pick
+  up its color and material.
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.
@@ -115,6 +115,15 @@ Ensemble's blocks at night, generated using the `loc_add_rand_insts` Lua functio
 
 Ensemble's test map:
 ![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
+
+</details>
+
+### Legacy Screenshots
+
+<details>
+  <summary>Click to expand/collapse this section.</summary>
+
+Earlier looks at Ensemble, kept to show how it has grown.
 
 </details>
 
@@ -188,15 +197,17 @@ and `unban_addr("address")` and `unban_all()` lift them. Players can be kicked o
 which plot owners can also use on their own plots. Display names are remembered between sessions. The host has authority
 over the session: they can clear any plot they occupy, and their chat messages bypass the profanity filter.
 
-Chat happens in the Text Chat widget, which opens in multiplayer: press `/` to type and `Enter` to send. Nametags are
-colored per display name, like in Roblox's legacy chat, joins and leaves are announced, and late joiners receive the
-recent history. The widget's options can also save each session's chat to `user://chat_logs/` and read new messages
-aloud. The console offers `chat("message")`, `dmp_chat()`, `set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
+Chat happens in the Text Chat widget, which opens in multiplayer: press `/` to type and `Enter` to send (a message the
+host turns away, say for sending too fast, comes back to the box to send again). Nametags are colored per display name,
+like in Roblox's legacy chat, joins and leaves are announced, and late joiners receive the recent history. The widget's
+options can also save each session's chat to `user://chat_logs/` and read new messages aloud. The console offers
+`chat("message")`, `dmp_chat()`, `set_chat_log_on(true)`, and `set_chat_tts_on(true)`.
 
-The profanity filter masks profane words in chat (with `#`, or `<Redacted>` if nothing else remains) and gives joining
-players with inappropriate display names the default name instead. Hosts choose it in the host menu (on by default and
-remembered; dedicated servers take `--profanity-filter=false`), and can toggle it mid-session in the chat's options or
-with `set_profanity_filter_on(false)`, or leave milder words unmasked with `set_profanity_filter_level`.
+The profanity filter masks profane words in chat (with `#`, or `<Redacted>` if nothing else remains), telling the sender
+when it changed their message, and gives joining players with inappropriate display names the default name instead.
+Hosts choose it in the host menu (on by default and remembered; dedicated servers take `--profanity-filter=false`), and
+can toggle it mid-session in the chat's options or with `set_profanity_filter_on(false)`, or leave milder words unmasked
+with `set_profanity_filter_level`.
 
 </details>
 
@@ -215,7 +226,8 @@ with `set_profanity_filter_on(false)`, or leave milder words unmasked with `set_
 | Place, delete, select, or paint       | Left mouse (drag to paint several)                         |
 | Toggle selection (delete / edit tool) | `Shift` + left mouse                                       |
 | Box-select (delete / edit tool)       | `Ctrl` + drag (`Shift` toggles, `Esc` cancels)             |
-| Box-paint / pick up paint (paint)     | `Ctrl` + drag / `Ctrl` + left mouse (`Esc` cancels)        |
+| Box-paint (paint tool)                | `Ctrl` + drag (`Esc` cancels)                              |
+| Eyedropper on / off (paint tool)      | Tap `Ctrl`, then left mouse to pick up paint (`Esc` stops) |
 | Copy / paste properties (edit tool)   | `Ctrl+C` / `Ctrl+V`                                        |
 | Undo / redo (tools)                   | `Ctrl+Z` / `Ctrl+X`                                        |
 | Rotate placement (X / Y / Z)          | `R` / `T` / `Y`                                            |

@@ -169,6 +169,8 @@ public partial class ChatManager : Node, IAutoload
 			if (_log.BaseStream.Length >= MaxLogFileBytes)
 			{
 				_log.WriteLine("* The chat log reached its size limit, so logging stops for this session.");
+				Log.Warning("The chat log reached its size limit; chat logging stops for this session");
+
 				StopLog();
 
 				return;

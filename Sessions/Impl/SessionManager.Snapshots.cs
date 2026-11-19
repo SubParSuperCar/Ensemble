@@ -26,12 +26,16 @@ public partial class SessionManager
 	[Rpc]
 	private void RpcRestoreSnapshot(string snapshotId, Array<Variant> payload)
 	{
-		NetworkSnapshotRegistry.Restore(snapshotId, payload);
-		Log.Debug("Restored snapshot {SnapshotId} for peer {PeerId}", snapshotId, LocalPeerId);
+		if (NetworkSnapshotRegistry.Restore(snapshotId, payload))
+			Log.Debug("Restored snapshot {SnapshotId} for peer {PeerId}", snapshotId, LocalPeerId);
 	}
 
 	[Rpc]
-	private void RpcFinishSnapshots() => EmitSignal(SignalName.SnapshotsFinished);
+	private void RpcFinishSnapshots()
+	{
+		Log.Debug("Received every snapshot from the host");
+		EmitSignal(SignalName.SnapshotsFinished);
+	}
 
 	private void SendSnapshots(int peerId)
 	{

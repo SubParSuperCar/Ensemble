@@ -104,7 +104,7 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 			_lastFailureTimestampsByAddress.TryGetValue(address, out var lastFailure) &&
 			Stopwatch.GetElapsedTime(lastFailure) < FailureCooldown)
 		{
-			Log.Warning("Peer {PeerId} retried a password too soon", peerId);
+			Log.Warning("Peer {PeerId} at {Address} retried a password too soon", peerId, address);
 			multiplayer.DisconnectPeer((int)peerId);
 
 			return;
@@ -112,7 +112,7 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 
 		if (address is not null && CountPendingChallenges(address) >= MaxPendingPerAddress)
 		{
-			Log.Warning("Peer {PeerId} joined while its address had too many pending challenges", peerId);
+			Log.Warning("Peer {PeerId} at {Address} joined while it had too many pending challenges", peerId, address);
 			multiplayer.DisconnectPeer((int)peerId);
 
 			return;
@@ -121,6 +121,7 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 		var nonce = RandomNumberGenerator.GetBytes(NonceSize);
 		_pendingChallengesByPeerId[peerId] = (nonce, address);
 
+		Log.Debug("Challenged peer {PeerId} for the password", peerId);
 		multiplayer.SendAuth((int)peerId, [LockedFlag, .. _salt, .. nonce, .. _version]);
 	}
 
@@ -141,13 +142,14 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 
 		if (data.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(data, expected))
 		{
-			Log.Warning("Peer {PeerId} failed password authentication", peerId);
+			Log.Warning("Peer {PeerId} at {Address} failed password authentication", peerId, pending.Address);
 			RecordFailure(peerId);
 			multiplayer.DisconnectPeer((int)peerId);
 
 			return;
 		}
 
+		Log.Debug("Peer {PeerId} passed password authentication", peerId);
 		multiplayer.CompleteAuth((int)peerId);
 	}
 
@@ -217,10 +219,11 @@ public sealed class HandshakeAuthenticator(SceneMultiplayer multiplayer, string 
 
 	private void OnPeerAuthenticationFailed(long peerId)
 	{
-		_pendingChallengesByPeerId.Remove(peerId);
+		_pendingChallengesByPeerId.Remove(peerId, out var pending);
 
 		if (_isServer)
-			Log.Warning("Peer {PeerId} timed out or was rejected during authentication", peerId);
+			Log.Warning(
+				"Peer {PeerId} at {Address} timed out or was rejected during authentication", peerId, pending.Address);
 		// Hosts only drop clients that answered the challenge when the password is wrong
 		else
 			Failed?.Invoke(

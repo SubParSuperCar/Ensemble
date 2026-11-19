@@ -40,7 +40,5 @@ public sealed class MenuViewModel : ViewModelBase
 
 		Log.Debug("Navigating back from {ViewModel}...", Navigator.Current?.GetType().Name);
 		Navigator.GoBack();
-
-		Log.Debug("Navigated back to {ViewModel}", Navigator.Current?.GetType().Name);
 	}
 }

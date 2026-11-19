@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Attributes;
 using EnsembleRoot.Ui.Extensions;
+using Serilog;
 
 namespace EnsembleRoot.Ui.Services;
 
@@ -47,6 +48,7 @@ public sealed partial class NavigatorService(IServiceProvider services) : Dispos
 	{
 		_createCurrent = create;
 		Current = create();
+		Log.Debug("Showed {ViewModel}", Current.GetType().Name);
 
 		OnPropertyChanged(nameof(CanGoBack));
 	}

@@ -1,6 +1,5 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedMethodReturnValue.Global
 
 namespace EnsembleRoot.Common.Utils;
 

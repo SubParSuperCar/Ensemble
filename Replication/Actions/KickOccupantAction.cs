@@ -4,6 +4,7 @@ using EnsembleRoot.Scripts.Chat;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;
+using Serilog;
 using static EnsembleRoot.Sessions.Actions.ActionValidation;
 
 namespace EnsembleRoot.Replication.Actions;
@@ -46,6 +47,8 @@ public readonly record struct KickOccupantAction(string PlayerId) : INetworkActi
 		var text = string.Create(CultureInfo.InvariantCulture, $"{name} was kicked from plot {plotId}.");
 
 		GPlots.SetPlot(PlayerId, None);
+		Log.Debug("{Player} was kicked from plot {PlotId}", name, plotId);
+
 		GChatManager.Add(new ChatMessage { Text = text });
 	}
 

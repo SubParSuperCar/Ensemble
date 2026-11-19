@@ -2,6 +2,7 @@ using System.Runtime.CompilerServices;
 using EnsembleRoot.Sessions.Actions;
 using Godot;
 using Godot.Collections;
+using Serilog;
 using static EnsembleRoot.Sessions.Actions.ActionValidation;
 
 namespace EnsembleRoot.Replication.Actions;
@@ -23,7 +24,13 @@ public readonly record struct ClearInstancesAction : INetworkAction<ClearInstanc
 		return source.IsHost || source.Owns(plot) ? Accept : Reject("Player not the owner.");
 	}
 
-	public void Apply(ActionSource source) => source.Plot!.Instances.Clear();
+	public void Apply(ActionSource source)
+	{
+		var plot = source.Plot!;
+
+		Log.Debug("Clearing {Count} instance(s) from plot {PlotId}", plot.Instances.Count, plot.Id);
+		plot.Instances.Clear();
+	}
 
 	[ModuleInitializer]
 	internal static void Register() => NetworkActionRegistry.Register<ClearInstancesAction>();

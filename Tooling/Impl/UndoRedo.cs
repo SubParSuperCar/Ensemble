@@ -1,4 +1,5 @@
 using EnsembleRoot.GdCore.Plots;
+using Serilog;
 using Edit = (System.Action Undo, System.Action Redo);
 
 namespace EnsembleRoot.Tooling;
@@ -55,6 +56,8 @@ public sealed class UndoRedo : IDisposable
 		_redos.Push(edit);
 
 		edit.Undo();
+		Log.Verbose("Undid a tool edit ({UndoCount} left to undo)", _undos.Count);
+
 		Changed?.Invoke();
 	}
 
@@ -67,6 +70,8 @@ public sealed class UndoRedo : IDisposable
 		_undos.Add(edit);
 
 		edit.Redo();
+		Log.Verbose("Redid a tool edit ({RedoCount} left to redo)", _redos.Count);
+
 		Changed?.Invoke();
 	}
 

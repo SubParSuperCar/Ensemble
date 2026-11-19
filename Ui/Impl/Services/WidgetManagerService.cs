@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Extensions;
 using EnsembleRoot.Ui.ViewModels;
+using Serilog;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedMember.Global
@@ -69,6 +70,8 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		Activate(widget);
 
 		entry.IsOpen = true;
+		Log.Debug("Opened widget {Widget}", entry.Type.Name);
+
 		return widget;
 	}
 
@@ -76,6 +79,8 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 	{
 		if (!_widgetsByType.Remove(type, out var widget))
 			return false;
+
+		Log.Debug("Closing widget {Widget}...", type.Name);
 
 		widget.Entry.LastBounds = widget.RestoredBounds;
 		widget.Entry.WasMaximized = widget.IsMaximized;

@@ -62,7 +62,11 @@ public partial class PlotHandle
 		GSessionManager.PeerUnregistered -= OnPeerUnregistered;
 	}
 
-	private void OnOwnerChanged(GdOccupant? _) => ClearSimulatorOverride();
+	private void OnOwnerChanged(GdOccupant? owner)
+	{
+		Log.Debug("Plot {PlotId}'s owner is now {Player}", Id, owner?.Player.Name);
+		ClearSimulatorOverride();
+	}
 
 	// A departing owner arrives as an owner change, which may come before or after this, so only the peers an override
 	// or arbitration chose matter here

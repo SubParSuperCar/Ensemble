@@ -278,6 +278,7 @@ public partial class SessionManager : Node
 	private void OnSessionStarted()
 	{
 		LocalPeerId = Multiplayer.GetUniqueId();
+		Log.Debug("Started the session's transport as peer {PeerId}", LocalPeerId);
 
 		if (IsDedicated)
 		{

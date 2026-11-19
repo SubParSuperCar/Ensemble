@@ -18,6 +18,7 @@ public partial class SessionManager
 		}
 
 		var payload = action.ToPayload();
+		Log.Verbose("Submitted action {ActionId}", TAction.Id);
 
 		if (IsServer)
 		{
@@ -61,8 +62,11 @@ public partial class SessionManager
 	}
 
 	[Rpc]
-	private void RpcRejectAction(string actionId, string reason) =>
+	private void RpcRejectAction(string actionId, string reason)
+	{
+		Log.Debug("The host rejected action {ActionId}: {Reason}", actionId, reason);
 		EmitSignal(SignalName.ActionRejected, actionId, reason);
+	}
 
 	private void HandleAction(string actionId, Array<Variant> payload, int sourcePeerId)
 	{

@@ -23,6 +23,9 @@ public static class UserData
 
 		if (config.Save(UserDataCfgPath) is var result and not Error.Ok)
 			Log.Warning("Failed to save {Path}: {Error}", UserDataCfgPath, result);
+		// The key alone, as values may be personal (a name, an address)
+		else
+			Log.Verbose("Saved {Key} in [{Section}] of {Path}", key, section, UserDataCfgPath);
 	}
 
 	private static ConfigFile? Load()

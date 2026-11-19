@@ -88,9 +88,12 @@ public sealed class App : Application
 			return;
 
 		if (focus.NewFocusedElement is TextBox or TextArea or SelectableTextBlock or TerminalView)
-			InputSink.Sink.Acquire(FocusSinkToken);
-		else
-			InputSink.Sink.Release(FocusSinkToken);
+		{
+			if (InputSink.Sink.Acquire(FocusSinkToken))
+				Log.Verbose("Sinking game input while {Control} has focus", focus.NewFocusedElement.GetType().Name);
+		}
+		else if (InputSink.Sink.Release(FocusSinkToken))
+			Log.Verbose("Released game input from the UI's focus");
 	}
 
 	// Swallows Space, and Tab and the navigation keys while in session, to prevent unintended UI navigation

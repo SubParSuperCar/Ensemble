@@ -54,8 +54,8 @@ public partial class PlotHandle
 
 		stopwatch.Stop();
 		Log.Debug(
-			"Spawned plot {PlotId} as {AssemblyCount} assemblies in {ElapsedMs:F3} ms", Id, Creation.Assemblies.Count,
-			stopwatch.Elapsed.TotalMilliseconds);
+			"Spawned plot {PlotId}'s {InstanceCount} instance(s) as {AssemblyCount} assemblies in {ElapsedMs:F3} ms",
+			Id, _plot.Instances.Count, Creation.Assemblies.Count, stopwatch.Elapsed.TotalMilliseconds);
 	}
 
 	private void Despawn()

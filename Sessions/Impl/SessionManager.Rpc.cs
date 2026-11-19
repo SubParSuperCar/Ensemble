@@ -48,7 +48,7 @@ public partial class SessionManager
 		using var lease = await limiter.AcquireAsync(tokens).ConfigureAwait(false);
 
 		if (!lease.IsAcquired)
-			Log.Debug("Peer {PeerId} hit the RPC rate limit", senderId);
+			Log.Verbose("Peer {PeerId} hit the RPC rate limit", senderId);
 
 		return lease.IsAcquired;
 	}

@@ -65,6 +65,8 @@ public static class NetworkActionRegistry
 		}
 
 		action.Apply(source);
+		Log.Verbose("Applied action {ActionId} from peer {PeerId}", TAction.Id, source.PeerId);
+
 		return validation;
 	}
 

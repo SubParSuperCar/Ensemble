@@ -14,11 +14,24 @@ public partial class Seat : AssetComponent
 {
 	private const string HasControlsKey = "hasControls";
 
+	private static long _sitCount;
+
 	[Export] public Area3D Area { get; set; } = null!;
 
 	public bool HasControls { get; private set; }
 
-	public PlayerHandle? Occupant { get; internal set; }
+	public PlayerHandle? Occupant
+	{
+		get;
+		internal set
+		{
+			field = value;
+			SitOrder = value is null ? 0 : ++_sitCount;
+		}
+	}
+
+	// Alike on every peer, as every peer seats riders in the host's order
+	internal long SitOrder { get; private set; }
 
 	internal static event Action<Seat>? SitRequested;
 	internal static event Action? LeaveRequested;

@@ -45,6 +45,11 @@
             <Setter Property="ShowButtonSpinner" Value="False" />
             <Setter Property="Width" Value="52" />
         </Style>
+
+        <!-- About as tall as the text, leaving the swatches more room -->
+        <Style Selector="NumericUpDown.component /template/ TextBox#PART_TextBox">
+            <Setter Property="Margin" Value="4,1" />
+        </Style>
     </UserControl.Styles>
 
     <Border Background="{DynamicResource TranslucentBackgroundBrush}" Padding="2">
@@ -71,7 +76,7 @@
                     Grid.Column="2"
                     Content="Eyedropper"
                     IsChecked="{Binding IsEyedropping}"
-                    ToolTip.Tip="Takes the paint of the next asset you click as the brush's (Esc cancels).&#x0a;Ctrl-click an asset to do the same at any time." />
+                    ToolTip.Tip="Takes the paint of the next asset you click as the brush's (Esc cancels).&#x0a;(Bound to a tap of Ctrl)" />
 
                 <DropDownButton Grid.Column="3" ToolTip.Tip="What the brush applies (and the eyedropper takes).">
                     <DropDownButton.Flyout>

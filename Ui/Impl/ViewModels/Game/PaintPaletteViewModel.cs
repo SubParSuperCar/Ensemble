@@ -28,7 +28,6 @@ namespace EnsembleRoot.Ui.ViewModels;
 ///     The paint tool's brush: its color (by field, sliders, text, or swatch), its material, which of them it applies,
 ///     and its eyedropper. The colors it paints are kept as recent swatches, across launches.
 /// </summary>
-// ReSharper disable once ClassNeverInstantiated.Global
 public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 {
 	private const int MaxRecentCount = 36;
@@ -300,6 +299,9 @@ public sealed partial class PaintPaletteViewModel : ViewModelBase, IWidget
 
 public sealed partial class MaterialItem : ObservableObject
 {
+	// Shared by every palette opened, which would otherwise copy each preview again
+	private static readonly Dictionary<int, Bitmap> PreviewsById = [];
+
 	public MaterialItem(int id, string name, AssetMaterial? material)
 	{
 		Id = id;
@@ -334,9 +336,15 @@ public sealed partial class MaterialItem : ObservableObject
 
 	private async Task LoadPreviewAsync()
 	{
+		if (PreviewsById.TryGetValue(Id, out var preview))
+		{
+			Preview = preview;
+			return;
+		}
+
 		try
 		{
-			Preview = (await MaterialPreviews.GetAsync(Id).ConfigureAwait(true)).ToAvaloniaBitmap();
+			Preview = PreviewsById[Id] = (await MaterialPreviews.GetAsync(Id).ConfigureAwait(true)).ToAvaloniaBitmap();
 		}
 		catch (Exception exception)
 		{

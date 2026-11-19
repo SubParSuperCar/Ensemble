@@ -22,12 +22,14 @@ public static partial class LuaExecutor
 	private const string ApplyColorKey = "apply_color";
 	private const string ApplyMaterialKey = "apply_material";
 
+	private const string EditablePlotNeeded = "Tools need a claimed plot that isn't spawned";
+
 	private static readonly string[] PaintKeys = [ColorKey, MaterialKey, ApplyColorKey, ApplyMaterialKey];
 
 	private static ValueTask<int> paint_all(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		if (GetToolManager(nameof(paint_all)) is { } tools)
-			tools.Paint.PaintAll();
+		if (GetToolManager(nameof(paint_all)) is { } tools && !tools.Paint.PaintAll())
+			Log.Error(EditablePlotNeeded);
 
 		return context.ReturnNothing();
 	}
@@ -109,7 +111,7 @@ public static partial class LuaExecutor
 				"Tool {Name} not found (use {Construct}, {Destruct}, {Property}, or {Paint})",
 				name, ConstructToolName, DestructToolName, PropertyToolName, PaintToolName);
 		else if (isEnabled != isOn)
-			Log.Error("Tools need a claimed plot that isn't spawned");
+			Log.Error(EditablePlotNeeded);
 
 		return context.ReturnNothing();
 	}

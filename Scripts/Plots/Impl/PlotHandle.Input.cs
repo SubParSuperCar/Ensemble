@@ -1,5 +1,6 @@
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.Common.Networking;
+using EnsembleRoot.Scripts.Assets.Components;
 using EnsembleRoot.Scripts.Creations;
 using EnsembleRoot.Scripts.Players;
 using EnsembleRoot.Sessions;
@@ -25,8 +26,8 @@ public partial class PlotHandle
 	private double _sinceInputSent;
 
 	/// <summary>
-	///     The plot's occupant whose keys drive its creation: the oldest one sitting in one of its seats with controls.
-	///     Every peer derives it alike from who occupies the plot and who sits where.
+	///     The plot's occupant whose keys drive its creation: whichever has sat longest in one of its seats with
+	///     controls. Every peer derives it alike from who occupies the plot and who sits where.
 	/// </summary>
 	/// <remarks>Runs every frame, so it reads Core's occupants rather than GdCore's wrappers, which allocate.</remarks>
 	internal PlayerHandle? GetController()
@@ -34,30 +35,15 @@ public partial class PlotHandle
 		if (Creation is not { } creation)
 			return null;
 
-		PlayerHandle? controller = null;
+		Seat? controls = null;
 
 		foreach (var seat in creation.Seats)
 			if (
 				seat is { HasControls: true, Occupant: { } rider } && rider.Occupancy.Plot == _plot.Source &&
-				(controller is null || HasArrivedBefore(rider, controller)))
-				controller = rider;
+				(controls is null || seat.SitOrder < controls.SitOrder))
+				controls = seat;
 
-		return controller;
-	}
-
-	// The plot's occupants are in order of arrival
-	private bool HasArrivedBefore(PlayerHandle player, PlayerHandle other)
-	{
-		foreach (var occupant in _plot.Source.Occupants.All.Values)
-		{
-			if (occupant == player.Occupancy)
-				return true;
-
-			if (occupant == other.Occupancy)
-				return false;
-		}
-
-		return false;
+		return controls?.Occupant;
 	}
 
 	private void UpdateInput(double delta)

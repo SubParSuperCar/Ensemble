@@ -12,11 +12,14 @@ public static class MaterialPreviews
 
 	private static readonly Dictionary<int, Task<Image>> PreviewsByMaterialId = [];
 
-	/// <summary>Gets a material's picture, or the plain one for None, rendering it the first time.</summary>
+	/// <summary>
+	///     Gets a material's picture, or the plain one for None, rendering it the first time (or again, should that
+	///     have failed).
+	/// </summary>
 	public static Task<Image> GetAsync(int materialId)
 	{
-		if (!PreviewsByMaterialId.TryGetValue(materialId, out var preview))
-			PreviewsByMaterialId.Add(materialId, preview = RenderAsync(MaterialBank.Get(materialId)));
+		if (!PreviewsByMaterialId.TryGetValue(materialId, out var preview) || preview.IsFaulted)
+			PreviewsByMaterialId[materialId] = preview = RenderAsync(MaterialBank.Get(materialId));
 
 		return preview;
 	}

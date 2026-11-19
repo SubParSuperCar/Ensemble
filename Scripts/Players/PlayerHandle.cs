@@ -1,3 +1,4 @@
+using EnsembleCoreRoot.Api.Plots;
 using EnsembleRoot.Common.Input;
 using EnsembleRoot.GdCore.Players;
 using EnsembleRoot.GdCore.Plots;
@@ -35,6 +36,9 @@ public partial class PlayerHandle : Node3D
 	[Export] public Vector3 SpawnLocation { get; set; }
 
 	public string Id { get; set; } = null!;
+
+	/// <summary>The player's place among their plot's occupants, in Core.</summary>
+	internal IOccupant Occupancy => _occupant.Source;
 
 	public CharacterBody3D Body { get; private set; } = null!;
 

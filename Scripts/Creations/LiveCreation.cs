@@ -90,17 +90,21 @@ public partial class LiveCreation : Node3D
 		_isResuming = false;
 	}
 
-	// Every tick, before anything reads or draws them: a frame drawn with a blown-up body stalls rendering for seconds
+	// Every tick, before anything reads or draws them: a frame drawn with a blown-up body stalls rendering for seconds.
+	// A plain loop, as a query here allocated every tick.
 	private void KillLostAssemblies()
 	{
-		foreach (
-			var assembly in
-			from assembly in _assemblies
-			where !assembly.IsKilled
-			let transform = assembly.IsSimulated ? assembly.GlobalTransform : assembly.ProxyTransform
-			where transform.Origin.Y < KillHeight || !transform.IsFinite()
-			select assembly)
-			Kill(assembly);
+		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		foreach (var assembly in _assemblies)
+		{
+			if (assembly.IsKilled)
+				continue;
+
+			var transform = assembly.IsSimulated ? assembly.GlobalTransform : assembly.ProxyTransform;
+
+			if (transform.Origin.Y < KillHeight || !transform.IsFinite())
+				Kill(assembly);
+		}
 	}
 
 	// A blown-up body is put below the kill height first, so the state it's kept alive with takes its proxies along

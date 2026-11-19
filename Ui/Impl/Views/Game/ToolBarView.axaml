@@ -33,7 +33,7 @@
                 IsVisible="{Binding IsClearAllVisible}">
 
                 <Button
-                    Content="&#x26A0; Clear All (2x) &#x26A0;"
+                    Content="Clear All (2x)"
                     DoubleTapped="OnClearAllDoubleTapped"
                     ToolTip.Tip="Removes every asset from your plot. (Double-click)&#x0a;Undo (Ctrl+Z) brings them back."
                     HorizontalContentAlignment="Center"

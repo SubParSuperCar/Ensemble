@@ -4,11 +4,19 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
-    xmlns:c="using:EnsembleRoot.Ui.Controls"
     xmlns:t="using:EnsembleRoot.Common.Text"
+    xmlns:ae="using:AvaloniaEdit"
+    xmlns:aee="using:AvaloniaEdit.Editing"
     mc:Ignorable="d" d:DesignWidth="320" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Views.TextChatView"
     x:DataType="vm:TextChatViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="aee|TextArea">
+            <Setter Property="SelectionBorder" Value="{x:Null}" />
+            <Setter Property="SelectionCornerRadius" Value="0" />
+        </Style>
+    </UserControl.Styles>
 
     <Border Padding="2">
         <Border.Background>
@@ -18,10 +26,20 @@
         </Border.Background>
 
         <Grid RowDefinitions="*,Auto" RowSpacing="2">
-            <ScrollViewer Name="ChatScroll" HorizontalScrollBarVisibility="Disabled">
-                <!-- Filled in code-behind, since inlines can't be bound -->
-                <c:WholeSelectableTextBlock Name="ChatLog" FontSize="12" TextWrapping="Wrap" />
-            </ScrollViewer>
+            <!-- Filled in code-behind, which styles the names. Shows the lines in view alone, as laying out the whole
+                 chat again for each message stalled frames -->
+            <ae:TextEditor
+                Name="ChatLog"
+                TemplateApplied="OnChatLogTemplateApplied"
+                Background="Transparent"
+                FontSize="12"
+                IsReadOnly="True"
+                WordWrap="True">
+
+                <ae:TextEditor.Options>
+                    <ae:TextEditorOptions AllowScrollBelowDocument="False" />
+                </ae:TextEditor.Options>
+            </ae:TextEditor>
 
             <TextBlock
                 Grid.Row="0"

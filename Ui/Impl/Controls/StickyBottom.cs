@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 
 namespace EnsembleRoot.Ui.Controls;
 
@@ -9,7 +10,7 @@ namespace EnsembleRoot.Ui.Controls;
 /// <remarks>Starts stuck, so the first text lands at the bottom however late layout settles.</remarks>
 public static class StickyBottom
 {
-	public static void Apply(ScrollViewer scrollViewer, TextBlock text)
+	public static void Apply(ScrollViewer scrollViewer, Control text)
 	{
 		var isStuck = true;
 
@@ -24,7 +25,7 @@ public static class StickyBottom
 			}
 
 			var distanceToBottom = scrollViewer.Extent.Height - scrollViewer.Offset.Y - scrollViewer.Viewport.Height;
-			isStuck = distanceToBottom <= text.FontSize;
+			isStuck = distanceToBottom <= TextElement.GetFontSize(text);
 		};
 	}
 }

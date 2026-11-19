@@ -4,15 +4,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
-    xmlns:c="using:EnsembleRoot.Ui.Controls"
     xmlns:cm="using:EnsembleRoot.Common"
+    xmlns:ae="using:AvaloniaEdit"
+    xmlns:aee="using:AvaloniaEdit.Editing"
     mc:Ignorable="d" d:DesignWidth="448" d:DesignHeight="256"
     x:Class="EnsembleRoot.Ui.Views.LogOutputView"
     x:DataType="vm:LogOutputViewModel">
 
     <UserControl.Styles>
-        <!-- Only while there's a selection, since each step redraws all of the text -->
-        <Style Selector="SelectableTextBlock#Output:selection">
+        <Style Selector="aee|TextArea">
+            <Setter Property="SelectionForeground" Value="Black" />
+            <Setter Property="SelectionBorder" Value="{x:Null}" />
+            <Setter Property="SelectionCornerRadius" Value="0" />
+        </Style>
+
+        <!-- Only while there's a selection, as an endless animation would redraw the output every frame -->
+        <Style Selector="aee|TextArea.selection">
             <Style.Animations>
                 <Animation
                     Duration="{x:Static cm:Constants.AnimationDuration}"
@@ -37,17 +44,22 @@
     </UserControl.Styles>
 
     <Grid>
-        <ScrollViewer Name="OutputScroll" HorizontalScrollBarVisibility="Disabled">
-            <c:WholeSelectableTextBlock
-                Name="Output"
-                Text="{Binding Output}"
-                Background="Black" Foreground="White"
-                SelectionForegroundBrush="Black"
-                Padding="1"
-                FontSize="12" FontWeight="ExtraLight"
-                LetterSpacing="-0.375" LineSpacing="3"
-                TextWrapping="Wrap" />
-        </ScrollViewer>
+        <!-- Shows the lines in view alone, as laying out the whole log again for each entry stalled frames -->
+        <ae:TextEditor
+            Name="Output"
+            Document="{Binding Output}"
+            Watermark="&lt;Empty&gt;"
+            TemplateApplied="OnOutputTemplateApplied"
+            Background="Black" Foreground="White"
+            Padding="1"
+            FontSize="12" FontWeight="ExtraLight"
+            IsReadOnly="True"
+            WordWrap="True">
+
+            <ae:TextEditor.Options>
+                <ae:TextEditorOptions AllowScrollBelowDocument="False" />
+            </ae:TextEditor.Options>
+        </ae:TextEditor>
 
         <TextBlock
             Name="SourceLabel"

@@ -569,6 +569,8 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
 - **Rendering.** Each UI frame runs Avalonia's queued work (animations, layout) and then redraws only the regions that
   changed into a texture Godot draws. A resize starts a new texture, which Godot shows once the UI has drawn to it.
   Panel spacing snaps to whole pixels at the UI's scale, since Avalonia rounds children but not the gaps between them.
+  Text that keeps growing (the log output, the chat) lives in AvaloniaEdit documents, which lay out only the lines in
+  view; a text block lays out all of its text again on any change.
 - **Theming** follows the OS's light or dark mode and accent color, adjusting colors in the Oklab color space to keep
   text readable.
 - **Rich tools:** a Markdown document viewer (with Mermaid diagrams) for these docs, a Lua editor with syntax

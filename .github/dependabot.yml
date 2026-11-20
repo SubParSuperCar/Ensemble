@@ -18,6 +18,7 @@ updates:
       - dependency-name: 'Avalonia.X11'
       - dependency-name: 'GodotSharp'
       - dependency-name: 'Meziantou.Analyzer'
+      - dependency-name: 'Microsoft.CodeAnalysis.CSharp'
       - dependency-name: 'SkiaSharp*'
   - package-ecosystem: 'github-actions'
     directory: '/'

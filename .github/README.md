@@ -92,6 +92,7 @@ More moving parts (like pistons), a Saves menu, a real map, and more building to
 Two Ensemble clients connected to a headless host with widgets and a Bash pseudo-terminal window opened:
 ![Ensemble's Widgets & Multiplayer](https://github.com/user-attachments/assets/a317a9a8-99a5-4e05-b29c-49bc69074b48)
 
+<!-- TODO: Organize -->
 <img width="2560" height="1440" alt="Screenshot_20261119_192105" src="https://github.com/user-attachments/assets/77959776-1598-4ec5-ab75-3c27bbd9aaff" />
 <img width="2560" height="1440" alt="Screenshot_20261119_192218" src="https://github.com/user-attachments/assets/47f1ebd8-d91f-4ed1-bfa0-fdb8510d63c0" />
 <img width="2560" height="1440" alt="Screenshot_20261119_192405" src="https://github.com/user-attachments/assets/01fb6fb9-e7fe-4321-b612-68fed93d353e" />

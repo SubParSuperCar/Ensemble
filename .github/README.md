@@ -92,6 +92,36 @@ More moving parts (like pistons), a Saves menu, a real map, and more building to
 Two Ensemble clients connected to a headless host with widgets and a Bash pseudo-terminal window opened:
 ![Ensemble's Widgets & Multiplayer](https://github.com/user-attachments/assets/a317a9a8-99a5-4e05-b29c-49bc69074b48)
 
+<img width="2560" height="1440" alt="Screenshot_20261119_192105" src="https://github.com/user-attachments/assets/77959776-1598-4ec5-ab75-3c27bbd9aaff" />
+<img width="2560" height="1440" alt="Screenshot_20261119_192218" src="https://github.com/user-attachments/assets/47f1ebd8-d91f-4ed1-bfa0-fdb8510d63c0" />
+<img width="2560" height="1440" alt="Screenshot_20261119_192405" src="https://github.com/user-attachments/assets/01fb6fb9-e7fe-4321-b612-68fed93d353e" />
+<img width="2560" height="1440" alt="Screenshot_20261119_192720" src="https://github.com/user-attachments/assets/cfb655fc-9047-406d-ac07-52a102dbb4f2" />
+<img width="2560" height="1440" alt="Screenshot_20261119_192942" src="https://github.com/user-attachments/assets/9d3ed082-5a68-4b02-bba2-b4e0af4f9a2e" />
+<img width="2560" height="1440" alt="Screenshot_20261119_193225" src="https://github.com/user-attachments/assets/761e3387-4710-48f0-83ce-ebf55921c1ab" />
+<img width="2560" height="1440" alt="Screenshot_20261119_193330" src="https://github.com/user-attachments/assets/cecf5760-0052-4536-8f14-f7606c94544d" />
+<img width="2560" height="1440" alt="Screenshot_20261119_193526" src="https://github.com/user-attachments/assets/a6ce59e2-e332-44ea-9fe8-d75bbc77165d" />
+<img width="2560" height="1440" alt="Screenshot_20261119_193821" src="https://github.com/user-attachments/assets/7582d534-a1c1-4384-acf0-e57855cd479c" />
+<img width="2560" height="1440" alt="Screenshot_20261119_194220" src="https://github.com/user-attachments/assets/050d8e34-cd5a-48cc-ac8c-3cd5e3407d73" />
+<img width="2560" height="200" alt="Screenshot_20261119_194256" src="https://github.com/user-attachments/assets/f3a77faa-4fa8-41e1-906b-d8c885cdf697" />
+<img width="2560" height="1440" alt="Screenshot_20261119_194418" src="https://github.com/user-attachments/assets/7eb46038-4475-4cfc-a044-8a3974c88ae4" />
+<img width="2560" height="1440" alt="Screenshot_20261119_191747" src="https://github.com/user-attachments/assets/862259c5-67eb-4ba1-8f26-1dbf412a6f06" />
+<img width="2560" height="1440" alt="Screenshot_20261119_191801" src="https://github.com/user-attachments/assets/990888fc-9214-4676-8122-35014472f66e" />
+<img width="2560" height="1440" alt="Screenshot_20261119_191851" src="https://github.com/user-attachments/assets/13a45a54-5865-4b8a-bec7-2b85c9d0e7e8" />
+<img width="2560" height="1440" alt="Screenshot_20261119_192014" src="https://github.com/user-attachments/assets/ec330d44-4e8a-4aa9-9448-1fd72b6fbb1e" />
+<img width="2560" height="1440" alt="Screenshot_20261119_192024" src="https://github.com/user-attachments/assets/f461420f-9536-444a-b11c-6be069cb4c1f" />
+
+Ensemble's web browser displaying Ensemble's official GitHub repository page:
+![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
+
+</details>
+
+### Legacy Screenshots
+
+<details>
+  <summary>Click to expand/collapse this section.</summary>
+
+Earlier looks at Ensemble, kept to show how it has grown.
+
 Ensemble's placement tool, its preview, and the Plot Selector and Asset Selector widgets:
 ![Ensemble's Construct Tool, Assets, & Widgets](./screenshots/construct-tool.webp)
 
@@ -100,9 +130,6 @@ Ensemble's main menu:
 
 Ensemble's document file viewer showing Ensemble's `README.md` file:
 ![Ensemble's Document File Viewer UI](https://github.com/user-attachments/assets/bd3e6834-2556-43ea-937a-2819d2b32651)
-
-Ensemble's web browser displaying Ensemble's official GitHub repository page:
-![Ensemble's Web Browser UI](https://github.com/user-attachments/assets/069fb79b-2d65-4460-99f6-caecd6cb74f2)
 
 Ensemble's blocks during the day with the light-mode UI enabled using the `set_ui_dark_theme_on` Lua function:
 ![Ensemble's Blocks During the Day](./screenshots/light-theme-day.webp)
@@ -115,15 +142,6 @@ Ensemble's blocks at night, generated using the `loc_add_rand_insts` Lua functio
 
 Ensemble's test map:
 ![Ensemble's Map](https://github.com/user-attachments/assets/b4340622-e985-4c7f-9e27-7e2570ca5683)
-
-</details>
-
-### Legacy Screenshots
-
-<details>
-  <summary>Click to expand/collapse this section.</summary>
-
-Earlier looks at Ensemble, kept to show how it has grown.
 
 </details>
 

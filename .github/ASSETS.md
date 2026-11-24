@@ -60,8 +60,22 @@ Edit tool, and saves keep them.
 
 - A name starting with an underscore is internal, hidden unless the player asks. Every paintable asset has
   `_colorHex` (`"FFFFFF"`) and `_materialId` (`-1`, for none).
-- A name ending in `Key` is a key binding, edited with a key picker.
+- A name ending in `Key` is a key binding, edited with a key picker; its default is a Godot key code (below).
 - Lengths are in grid cells, not meters.
+
+Only these keys can be bound, with these codes:
+
+| Keys                          | Code                                   |
+|-------------------------------|----------------------------------------|
+| `A` to `Z`                    | 65 to 90 (their capitals' ASCII codes) |
+| `0` to `9`                    | 48 to 57                               |
+| `Space`                       | 32                                     |
+| `'` `,` `-` `.` `/`           | 39, 44, 45, 46, 47                     |
+| `;` `=`                       | 59, 61                                 |
+| `[` `\` `]` `` ` ``           | 91, 92, 93, 96                         |
+| `Tab`, `Backspace`, `Enter`   | 4194306, 4194308, 4194309              |
+| `Left`, `Up`, `Right`, `Down` | 4194319, 4194320, 4194321, 4194322     |
+| `Shift`, `Ctrl`, `Alt`        | 4194325, 4194326, 4194328              |
 
 ## Moving Parts
 

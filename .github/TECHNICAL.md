@@ -490,11 +490,12 @@ graph LR
 - `MultiSelector` holds a selection shared across tools: `Shift`-clicking toggles an instance, clicking a selected
   instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` boxes instances by
   `Ctrl`-dragging (Baja Builders parity) for the active tool: the selecting tools select them, and the PaintTool paints
-  them.
+  them. Each tool hovers and boxes only the assets it targets (`ToolBase.CanTarget`).
 - `PropertyTool` edits the selection's properties, except the engine's underscore-prefixed ones unless the editor's Show
-  Internal option is on. Instances sharing a property (by name and type) show one value, or a neutral one where they
-  differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them onto another selection, and a row can reset its
-  property when the assets agree on one default and some instance differs from it.
+  Internal option is on, and targets only assets with a property it shows. Instances sharing a property (by name and
+  type) show one value, or a neutral one where they differ; `Ctrl+C` / `Ctrl+V` copy the agreed values and paste them
+  onto another selection, and a row can reset its property when the assets agree on one default and some instance
+  differs from it.
 - `PaintTool` paints paintable instances (assets with a `Paintable` component) with a brush: a color and a material,
   each applied only if chosen. A press paints the hovered instance, a drag every instance it sweeps (previewed as wet
   paint, submitted as one edit on release), a marquee its box, and Paint All the whole plot. Its eyedropper, toggled by

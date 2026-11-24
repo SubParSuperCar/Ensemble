@@ -21,10 +21,7 @@ public partial class PaintTool : ToolBase
 
 	private static readonly StringName CancelAction = "ui_cancel";
 
-	private readonly SelectionHighlights _highlights = new()
-	{
-		Name = "Highlights", Filter = static handle => GAssetManager.IsPaintable(handle.AssetId)
-	};
+	private readonly SelectionHighlights _highlights = new() { Name = "Highlights" };
 
 	private readonly MultiSelector _stroke = new();
 
@@ -127,6 +124,8 @@ public partial class PaintTool : ToolBase
 		return true;
 	}
 
+	internal override bool CanTarget(int assetId) => GAssetManager.IsPaintable(assetId);
+
 	internal override void OnMarqueeFinished(IReadOnlyList<int> instanceIds, bool isToggling)
 	{
 		if (!IsEyedropping)
@@ -138,7 +137,7 @@ public partial class PaintTool : ToolBase
 	protected override void OnEnable()
 	{
 		UpdateTint();
-		_highlights.Attach(_stroke);
+		_highlights.Attach(_stroke, CanTarget);
 	}
 
 	protected override void OnDisable()

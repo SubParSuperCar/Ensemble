@@ -46,6 +46,6 @@ public partial class DestructTool : ToolBase
 		Log.Debug("Submitted clearing {Count} local plot instance(s)", plot.Instances.Count);
 	}
 
-	protected override void OnEnable() => _highlights.Attach(Selector);
+	protected override void OnEnable() => _highlights.Attach(Selector, CanTarget);
 	protected override void OnDisable() => _highlights.Detach();
 }

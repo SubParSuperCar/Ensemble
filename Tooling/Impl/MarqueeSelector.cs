@@ -86,7 +86,7 @@ public partial class MarqueeSelector : Node
 
 		if (area is { Size: var size } rect && (size.X >= ClickSlop || size.Y >= ClickSlop))
 			tool.OnMarqueeFinished(
-				ToolCommon.FindInstancesInArea(GetViewport(), rect),
+				ToolCommon.FindInstancesInArea(GetViewport(), rect, tool.CanTarget),
 				Input.IsActionPressed(ToolCommon.SelectionToggleAction));
 		else
 			tool.OnMarqueeClicked();

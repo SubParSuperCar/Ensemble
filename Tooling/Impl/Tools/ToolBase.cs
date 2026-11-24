@@ -24,6 +24,9 @@ public abstract partial class ToolBase : Node
 
 	internal void Initialize(ToolManager manager) => _manager = manager;
 
+	/// <summary>Whether the tool works on an asset's instances: only these can be hovered or boxed with it.</summary>
+	internal virtual bool CanTarget(int assetId) => true;
+
 	internal virtual void OnMarqueeFinished(IReadOnlyList<int> instanceIds, bool isToggling)
 	{
 		if (isToggling)

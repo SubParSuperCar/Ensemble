@@ -66,8 +66,10 @@ internal static class ToolCommon
 				result["position"].AsVector3(), result["normal"].AsVector3(), result["collider"].As<Node3D>());
 	}
 
-	/// <summary>Finds the local plot's instances whose boundary centers project within a viewport area.</summary>
-	public static List<int> FindInstancesInArea(Viewport viewport, Rect2 area)
+	/// <summary>
+	///     Finds the local plot's instances a tool can target whose boundary centers project within a viewport area.
+	/// </summary>
+	public static List<int> FindInstancesInArea(Viewport viewport, Rect2 area, Func<int, bool> canTarget)
 	{
 		if (viewport.GetCamera3D() is not { } camera || LocalPlot is not { } plot || LocalHandle is not { } handle)
 			return [];
@@ -76,7 +78,7 @@ internal static class ToolCommon
 
 		foreach (var instance in plot.Instances.Source.All)
 		{
-			if (handle.GetInstanceHandle(instance.Id) is not { } asset)
+			if (!canTarget(instance.Asset.Id) || handle.GetInstanceHandle(instance.Id) is not { } asset)
 				continue;
 
 			var center = asset.GlobalTransform * GAssetManager.GetBoundary(asset.AssetId).GetCenter();

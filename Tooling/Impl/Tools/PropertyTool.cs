@@ -121,9 +121,13 @@ public partial class PropertyTool : ToolBase
 	public void ResetProperty(PropertyKey key) =>
 		PlayEditSound(Edit((instance, candidate) => candidate == key ? GetDefault(instance, key) : CoreVariant.Null));
 
+	internal override bool CanTarget(int assetId) =>
+		GAssets.Source.All.TryGetValue(assetId, out var asset) &&
+		asset.Properties.Any(pair => IsEditable(pair.Key, pair.Value));
+
 	protected override void OnEnable()
 	{
-		_highlights.Attach(Selector);
+		_highlights.Attach(Selector, CanTarget);
 
 		OnSelectionAdded([.. Selector.InstanceIds]);
 		Selector.Added += OnSelectionAdded;

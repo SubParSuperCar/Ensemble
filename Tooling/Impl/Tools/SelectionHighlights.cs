@@ -13,6 +13,7 @@ public partial class SelectionHighlights : Node
 
 	private readonly Dictionary<int, SolidHighlight> _selectionHighlights = [];
 
+	private Func<int, bool>? _canHover;
 	private AssetHandle? _hovered;
 	private SolidHighlight? _pulsingSelection;
 	private MultiSelector? _selector;
@@ -30,9 +31,6 @@ public partial class SelectionHighlights : Node
 		}
 	} = Colors.White;
 
-	/// <summary>Which of the local plot's instances can be hovered; any, if null.</summary>
-	public Func<AssetHandle, bool>? Filter { get; init; }
-
 	public int? HoveredId => _hovered is { } hovered && IsLive(hovered) ? hovered.InstanceId : null;
 
 	public override void _Ready()
@@ -48,9 +46,11 @@ public partial class SelectionHighlights : Node
 			UpdateHover();
 	}
 
-	public void Attach(MultiSelector selector)
+	/// <summary>Highlights a selection, and hovered instances of assets <paramref name="canHover" /> takes.</summary>
+	public void Attach(MultiSelector selector, Func<int, bool> canHover)
 	{
 		_selector = selector;
+		_canHover = canHover;
 
 		OnSelectionAdded([.. selector.InstanceIds]);
 		selector.Added += OnSelectionAdded;
@@ -67,6 +67,7 @@ public partial class SelectionHighlights : Node
 		OnSelectionRemoved([.. _selectionHighlights.Keys]);
 
 		_selector = null;
+		_canHover = null;
 		ClearHover();
 	}
 
@@ -90,7 +91,7 @@ public partial class SelectionHighlights : Node
 		if (
 			ToolCommon.CastCursorRay(GetViewport()) is { Collider: var collider } &&
 			ToolCommon.FindInHierarchy<AssetHandle>(collider) is { } handle &&
-			ToolCommon.IsHandleLocal(handle) && Filter?.Invoke(handle) is not false)
+			ToolCommon.IsHandleLocal(handle) && _canHover?.Invoke(handle.AssetId) is true)
 			SetHovered(handle);
 		else
 			SetHovered(null);

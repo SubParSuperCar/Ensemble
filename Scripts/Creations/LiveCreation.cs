@@ -86,6 +86,11 @@ public partial class LiveCreation : Node3D
 			if (handle.Assembly is { IsKilled: false })
 				ticked.Tick(tick);
 
+		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+		foreach (var assembly in _assemblies)
+			if (!assembly.IsKilled)
+				assembly.EndTick();
+
 		_previousInput = Input;
 		_isResuming = false;
 	}

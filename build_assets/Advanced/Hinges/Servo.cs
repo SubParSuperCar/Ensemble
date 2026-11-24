@@ -81,7 +81,8 @@ public partial class Servo : DrivenHinge
 	// How far the head has turned about the hinge since it was built
 	private float GetAngle()
 	{
-		var relative = (Base.Assembly!.GlobalBasis.Inverse() * Head.Assembly!.GlobalBasis).GetRotationQuaternion();
+		var relative = (Base.Assembly!.State.Transform.Basis.Inverse() * Head.Assembly!.State.Transform.Basis)
+			.GetRotationQuaternion();
 		var turn = relative * _builtRotation.Inverse();
 
 		return Mathf.Wrap(2 * MathF.Atan2(new Vector3(turn.X, turn.Y, turn.Z).Dot(_axis), turn.W), -float.Pi, float.Pi);

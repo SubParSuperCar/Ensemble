@@ -1,0 +1,101 @@
+[gd_scene format=3 uid="uid://ove6y7wy6kwu"]
+
+[ext_resource type="Script" uid="uid://vrsulhhqdje6" path="res://build_assets/Advanced/Thrusters/HoverThruster.cs" id="1_yi3qk"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_yi3qk"]
+height = 0.1
+radius = 0.25
+
+[sub_resource type="Curve" id="Curve_yi3qk"]
+bake_resolution = 16
+_data = [Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0.75), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t61f8"]
+shading_mode = 2
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_yi3qk"]
+material = SubResource("StandardMaterial3D_t61f8")
+radius = 0.25
+radial_steps = 32
+sections = 2
+section_length = 0.05
+section_rings = 8
+cap_top = false
+curve = SubResource("Curve_yi3qk")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yi3qk"]
+shading_mode = 2
+albedo_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+
+[sub_resource type="TubeTrailMesh" id="TubeTrailMesh_t61f8"]
+material = SubResource("StandardMaterial3D_yi3qk")
+flip_faces = true
+radius = 0.25
+radial_steps = 32
+sections = 2
+section_length = 0.05
+section_rings = 8
+cap_top = false
+curve = SubResource("Curve_yi3qk")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_t6gdr"]
+material = SubResource("StandardMaterial3D_yi3qk")
+top_radius = 0.249
+bottom_radius = 0.249
+height = 0.001
+radial_segments = 32
+rings = 0
+cap_bottom = false
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t6gdr"]
+shading_mode = 2
+albedo_color = Color(0, 0.7490196, 0.5019608, 1)
+emission_enabled = true
+emission = Color(0, 0.7490196, 0.5019608, 1)
+emission_energy_multiplier = 10.0
+emission_intensity = 10000.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_y30lf"]
+material = SubResource("StandardMaterial3D_t6gdr")
+top_radius = 0.2
+bottom_radius = 0.0
+height = 0.013
+radial_segments = 32
+rings = 0
+cap_bottom = false
+
+[node name="Hover Thruster" type="StaticBody3D" unique_id=587340981 node_paths=PackedStringArray("Ray")]
+script = ExtResource("1_yi3qk")
+Ray = NodePath("Ray")
+AssetId = 23
+AssetName = &"Hover Thruster"
+Description = &"Pushes itself away from whatever its face points at within range, the harder the nearer, like a cushion of air: point it down to hover. Its power starts at half and rises or falls while its keys are held (T and G by default), scaling both its range (Max Length at full power, in cubes) and its push (Max Force at full power, in newtons)."
+Properties = Dictionary[StringName, Variant]({
+&"maxForce": 1000.0,
+&"maxLength": 4.0,
+&"powerDownKey": 71,
+&"powerUpKey": 84
+})
+MaxInstanceCount = 200
+metadata/_custom_type_script = "uid://chfhof1o4nmth"
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=2091407826]
+shape = SubResource("CylinderShape3D_yi3qk")
+
+[node name="Shell Mesh" type="MeshInstance3D" parent="." unique_id=836022774]
+mesh = SubResource("TubeTrailMesh_yi3qk")
+
+[node name="Shell Interior Mesh" type="MeshInstance3D" parent="." unique_id=35595074]
+mesh = SubResource("TubeTrailMesh_t61f8")
+
+[node name="Thrust Surface Mesh" type="MeshInstance3D" parent="." unique_id=866250768]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0)
+mesh = SubResource("CylinderMesh_t6gdr")
+
+[node name="Thruster Mesh" type="MeshInstance3D" parent="." unique_id=14528042]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.038, 0)
+mesh = SubResource("CylinderMesh_y30lf")
+
+[node name="Ray" type="RayCast3D" parent="." unique_id=1633458572]
+transform = Transform3D(1, 0, 0, 0, -1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0.05, 0)

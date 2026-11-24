@@ -569,7 +569,8 @@ device (Vulkan, or native Metal on macOS) and forwards input, focus, clipboard, 
   Lua Editor, Log Output) are widgets (`IWidget` + `WidgetDescriptor`), registered automatically and opened and closed
   by `WidgetManagerService`; they drag, resize, maximize, and reopen where they were.
 - **Rendering.** Each UI frame runs Avalonia's queued work (animations, layout) and then redraws only the regions that
-  changed into a texture Godot draws. A resize starts a new texture, which Godot shows once the UI has drawn to it.
+  changed, straight into the texture Godot draws, which keeps the rest (Debug builds' render overlays draw through a
+  layer instead). A resize starts a new texture, which Godot shows once the UI has drawn to it.
   Panel spacing snaps to whole pixels at the UI's scale, since Avalonia rounds children but not the gaps between them.
   Text that keeps growing (the log output, the chat) lives in AvaloniaEdit documents, which lay out only the lines in
   view; a text block lays out all of its text again on any change.

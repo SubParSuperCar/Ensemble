@@ -9,6 +9,10 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
+	// Camera3D.Fov's own limits
+	private const double MinFov = 1d;
+	private const double MaxFov = 179d;
+
 	private static readonly Viewport.DebugDrawEnum[] DrawModes =
 	[
 		Viewport.DebugDrawEnum.Disabled, Viewport.DebugDrawEnum.Unshaded, Viewport.DebugDrawEnum.Lighting,
@@ -42,6 +46,28 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Log.Information("Available window modes:\n{Modes}", FormatEnum(Enum.GetValues<DisplayServer.WindowMode>()));
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_cam_fov(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var degrees = context.GetArgument<double>(0);
+
+		if (((SceneTree)Engine.GetMainLoop()).Root.GetCamera3D() is not { } camera)
+		{
+			Log.Error("{Function} needs a camera", nameof(set_cam_fov));
+			return context.ReturnNothing();
+		}
+
+		if (degrees is not (>= MinFov and <= MaxFov))
+		{
+			Log.Error("Invalid camera FOV: {Degrees} degree(s) (takes {Min} to {Max})", degrees, MinFov, MaxFov);
+			return context.ReturnNothing();
+		}
+
+		camera.Fov = (float)degrees;
+		Log.Information("Set camera FOV to {Degrees} degree(s)", degrees);
+
 		return context.ReturnNothing();
 	}
 

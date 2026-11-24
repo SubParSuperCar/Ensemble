@@ -82,6 +82,8 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(save_creation), save_creation),
 			"name, {plot_id, compression, level, password, checksum}?",
 			$"Saves a plot (yours by default) to {CreationsDir}"),
+		(new LuaFunction(nameof(set_cam_fov), set_cam_fov), "degrees",
+			"Sets the camera's vertical field of view, for this session"),
 		(new LuaFunction(nameof(set_chat_log_on), set_chat_log_on), "is_on", "Turns chat file logging on or off"),
 		(new LuaFunction(nameof(set_chat_tts_on), set_chat_tts_on), "is_on", "Turns reading chat aloud on or off"),
 		(new LuaFunction(nameof(set_clock_offset), set_clock_offset), "seconds?",

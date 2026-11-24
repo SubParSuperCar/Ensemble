@@ -228,8 +228,9 @@
     <member
       name="M:Avalonia.Skia.FontManagerImpl.CreateMatchedTypeface(SkiaSharp.SKTypeface,Avalonia.Media.FontStyle,Avalonia.Media.FontWeight,Avalonia.Media.FontStretch)">
       <summary>
-        Wraps a typeface the platform matched like<see
-        cref="M:Avalonia.Skia.FontManagerImpl.CreatePlatformTypeface(SkiaSharp.SKTypeface,Avalonia.Media.FontStyle,Avalonia.Media.FontWeight,Avalonia.Media.FontStretch)"/>
+        Wraps a typeface the platform matched like
+        <see
+          cref="M:Avalonia.Skia.FontManagerImpl.CreatePlatformTypeface(SkiaSharp.SKTypeface,Avalonia.Media.FontStyle,Avalonia.Media.FontWeight,Avalonia.Media.FontStretch)"/>
         , after replacing a colour font face the platform simulated with the face
         of its family as designed.
       </summary>

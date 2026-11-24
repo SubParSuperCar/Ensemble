@@ -62,7 +62,9 @@ script = ExtResource("2_0wfyh")
 metadata/_custom_type_script = "uid://0hf0xbvnk1kd"
 
 [node name="Tray Icon" type="StatusIndicator" parent="." unique_id=943331807]
-tooltip = "Ensemble"
+tooltip = "Ensemble
+This tray icon will do more than just sit here soon(TM).
+Options like Quit are coming!"
 icon = ExtResource("13_trceg")
 
 [node name="Material Bank" type="Node" parent="." unique_id=1783696896]

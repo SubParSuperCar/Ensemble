@@ -14,8 +14,11 @@ public sealed partial class WidgetPanel : Panel
 		AffectsParentArrange<WidgetPanel>(RelativeBoundsProperty, MinSizeProperty);
 	}
 
-	[GeneratedAttachedProperty] public static partial Rect GetRelativeBounds(Control control);
-	[GeneratedAttachedProperty] public static partial Size GetMinSize(Control control);
+	[GeneratedAttachedProperty]
+	public static partial Rect GetRelativeBounds(Control control);
+
+	[GeneratedAttachedProperty]
+	public static partial Size GetMinSize(Control control);
 
 	protected override Size MeasureOverride(Size availableSize)
 	{

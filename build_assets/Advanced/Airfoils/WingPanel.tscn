@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://cm6gs2ygq2wus"]
+
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_gp3bu"]
+[ext_resource type="Script" uid="uid://1si561g82ann" path="res://Scripts/Assets/Components/Airfoil.cs" id="2_airfo"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_usfo5"]
+size = Vector3(0.5, 0.05, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ai0bo"]
+shading_mode = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_gp3bu"]
+material = SubResource("StandardMaterial3D_ai0bo")
+size = Vector3(0.5, 0.05, 0.5)
+
+[node name="Wing Panel" type="StaticBody3D" unique_id=1516143770]
+script = ExtResource("1_gp3bu")
+AssetId = 21
+AssetName = &"Wing Panel"
+Description = &"A flat panel the air pushes on, for gliders and planes. Tilted into the airflow, it lifts, more with speed and with its angle, until it stalls at about 15 degrees; it always drags. Build wings, tails, and fins from several, and scale their lift and drag with Lift Scale and Drag Scale."
+Properties = Dictionary[StringName, Variant]({
+&"dragScale": 1.0,
+&"liftScale": 1.0
+})
+MaxInstanceCount = 400
+metadata/_custom_type_script = "uid://chfhof1o4nmth"
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=270833242]
+shape = SubResource("BoxShape3D_usfo5")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=527191379]
+mesh = SubResource("BoxMesh_gp3bu")
+
+[node name="Lift Center" type="Marker3D" parent="." unique_id=1927081603]
+
+[node name="Airfoil" type="Node" parent="." node_paths=PackedStringArray("Marker") unique_id=2126699806]
+script = ExtResource("2_airfo")
+Marker = NodePath("../Lift Center")
+metadata/_custom_type_script = "uid://1si561g82ann"

@@ -179,7 +179,7 @@ public partial class AssetHandle : StaticBody3D
 	///     Reads a numeric property of the instance, clamped to what the asset supports: properties take any value of
 	///     their type, so each asset enforces its own limits where it uses them.
 	/// </summary>
-	protected float GetNumberProperty(string key, float min, float max) =>
+	public float GetNumberProperty(string key, float min, float max) =>
 		Math.Clamp((float)Instance.Properties.GetValue(key).AsDouble(), min, max);
 
 	/// <summary>

@@ -15,6 +15,7 @@ namespace EnsembleRoot.Ui.ViewModels;
 public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 {
 	private readonly DispatcherService _dispatcher;
+	private readonly List<LogEntry> _history = [];
 
 	// The entries the output holds, in order, joined by line breaks, with the segments that style them
 	private readonly List<(LogEntry Entry, StyleSegment[] Segments)> _shownEntries = [];
@@ -24,6 +25,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 	public LogOutputViewModel(DispatcherService dispatcher)
 	{
 		_dispatcher = dispatcher;
+
 		Output.UndoStack.SizeLimit = 0;
 		Styles = new TextSegmentCollection<StyleSegment>(Output);
 
@@ -81,14 +83,14 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 	// history only drops its oldest entries and appends new ones, so one walk in order finds both
 	private void UpdateOutput()
 	{
-		var entries = VolatileLogHistorySink.History.Where(entry => entry.Level >= MinimumLevel).ToList();
+		VolatileLogHistorySink.CopyHistory(_history, MinimumLevel);
 		var kept = 0;
 		var offset = 0;
 
 		Output.BeginUpdate();
 
 		for (var index = 0; index < _shownEntries.Count;)
-			if (kept < entries.Count && ReferenceEquals(entries[kept], _shownEntries[index].Entry))
+			if (kept < _history.Count && ReferenceEquals(_history[kept], _shownEntries[index].Entry))
 			{
 				offset += _shownEntries[index].Entry.Text.Length + 1;
 				kept++;
@@ -97,8 +99,8 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 			else
 				RemoveShownEntry(index, offset);
 
-		foreach (var entry in entries.Skip(kept))
-			AddShownEntry(entry);
+		for (var index = kept; index < _history.Count; index++)
+			AddShownEntry(_history[index]);
 
 		Output.EndUpdate();
 	}

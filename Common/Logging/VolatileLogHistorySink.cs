@@ -27,16 +27,6 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 
 	private static long _sequence;
 
-	/// <summary>Gets a snapshot of the recorded entries, oldest first.</summary>
-	public static IReadOnlyList<LogEntry> History
-	{
-		get
-		{
-			lock (HistoryLock)
-				return Merge(Entries, VerboseEntries);
-		}
-	}
-
 	public void Emit(LogEvent logEvent)
 	{
 		var (text, styles) = AnsiText.Parse(Format(TextFormatter, logEvent));
@@ -60,8 +50,17 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 	/// <summary>Raised on the logging thread for every recorded entry.</summary>
 	public static event Action<LogEntry>? Emitted;
 
-	/// <summary>Raised on the changing thread whenever <see cref="History" /> changes (including clears).</summary>
+	/// <summary>Raised on the changing thread whenever the history changes (including clears).</summary>
 	public static event Action? Updated;
+
+	/// <summary>Replaces a list's contents with the recorded entries at or above a level, oldest first.</summary>
+	public static void CopyHistory(ICollection<LogEntry> destination, LogEventLevel minimumLevel)
+	{
+		destination.Clear();
+
+		lock (HistoryLock)
+			Merge(Entries, VerboseEntries, destination, minimumLevel);
+	}
 
 	public static void Clear()
 	{
@@ -74,29 +73,34 @@ public sealed class VolatileLogHistorySink : ILogEventSink
 		Updated?.Invoke();
 	}
 
-	private static LogEntry[] Merge(
-		Queue<(long Sequence, LogEntry Entry)> left, Queue<(long Sequence, LogEntry Entry)> right)
+	private static void Merge(
+		Queue<(long Sequence, LogEntry Entry)> left, Queue<(long Sequence, LogEntry Entry)> right,
+		ICollection<LogEntry> destination, LogEventLevel minimumLevel)
 	{
-		var merged = new LogEntry[left.Count + right.Count];
 		using var leftItems = left.GetEnumerator();
 		using var rightItems = right.GetEnumerator();
 
 		var hasLeft = leftItems.MoveNext();
 		var hasRight = rightItems.MoveNext();
 
-		for (var i = 0; i < merged.Length; i++)
+		while (hasLeft || hasRight)
+		{
+			LogEntry entry;
+
 			if (hasLeft && (!hasRight || leftItems.Current.Sequence < rightItems.Current.Sequence))
 			{
-				merged[i] = leftItems.Current.Entry;
+				entry = leftItems.Current.Entry;
 				hasLeft = leftItems.MoveNext();
 			}
 			else
 			{
-				merged[i] = rightItems.Current.Entry;
+				entry = rightItems.Current.Entry;
 				hasRight = rightItems.MoveNext();
 			}
 
-		return merged;
+			if (entry.Level >= minimumLevel)
+				destination.Add(entry);
+		}
 	}
 
 	private static string Format(ExpressionTemplate formatter, LogEvent logEvent)

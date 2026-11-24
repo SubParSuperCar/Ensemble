@@ -134,8 +134,9 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
   only in history.
 - **Verify, don't assume.** Build, run the tests, and when behavior changes, run the game (headless probes or a nested
   KWin session) and read the logs for errors, not just for the expected lines.
-- **Commits:** local commits after a finished piece of work are welcome (`git commit -s`, with the co-author trailer);
-  pushing is always the owner's call. The owner does bulk renames and moves in Rider.
+- **Commits:** local commits after a finished piece of work are welcome (`git commit -s`); pushing is always the
+  owner's call. An AI-assisted commit ends with an `Assisted-by: Claude <model>` trailer, never `Co-authored-by` (GitHub
+  lists co-authors as contributors). The owner does bulk renames and moves in Rider.
 - **System changes:** least invasive first; explain anything needing `sudo`, its risks, and how to undo it.
 - **New UI surfaces** wait for the owner's layout; build and verify the backend first.
 

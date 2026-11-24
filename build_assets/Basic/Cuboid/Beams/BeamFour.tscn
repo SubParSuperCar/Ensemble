@@ -17,7 +17,7 @@ size = Vector3(2, 0.5, 0.5)
 script = ExtResource("1_wprhi")
 AssetId = 9
 AssetName = &"Beam x4"
-Description = &"Four cubes long, in one piece, so it counts as one instance."
+Description = &"Four cubes long, in one piece, so it counts as one\ninstance."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1

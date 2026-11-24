@@ -11,7 +11,7 @@ radius = 0.499
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wpl7w"]
 shading_mode = 0
-albedo_color = Color(0.5019608, 0, 1, 1)
+albedo_color = Color(0.5, 0, 1, 1)
 albedo_texture = SubResource("PlaceholderTexture2D_gee14")
 uv1_triplanar = true
 texture_filter = 0

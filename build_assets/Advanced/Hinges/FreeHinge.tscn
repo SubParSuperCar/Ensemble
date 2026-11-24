@@ -8,7 +8,7 @@ size = Vector3(0.5, 0.05, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1dwf4"]
 shading_mode = 2
-albedo_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+albedo_color = Color(0.5, 0.5, 0.5, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_1dwf4"]
 material = SubResource("StandardMaterial3D_1dwf4")
@@ -29,7 +29,7 @@ size = Vector3(0.25, 0.4, 0.25)
 script = ExtResource("1_cnceo")
 AssetId = 16
 AssetName = &"Free Hinge"
-Description = &"Lets whatever is welded to its head spin freely, with no motor to drive it: for free wheels, doors, and flaps."
+Description = &"Lets whatever is welded to its head spin freely,\nwith no motor to drive it: for free wheels, doors,\nand flaps."
 MaxInstanceCount = 200
 
 [node name="Base" type="StaticBody3D" parent="." unique_id=1906701301]

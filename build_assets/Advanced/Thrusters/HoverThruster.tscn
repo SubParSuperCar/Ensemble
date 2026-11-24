@@ -26,7 +26,7 @@ curve = SubResource("Curve_yi3qk")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yi3qk"]
 shading_mode = 2
-albedo_color = Color(0.5019608, 0.5019608, 0.5019608, 1)
+albedo_color = Color(0.5, 0.5, 0.5, 1)
 
 [sub_resource type="TubeTrailMesh" id="TubeTrailMesh_t61f8"]
 material = SubResource("StandardMaterial3D_yi3qk")
@@ -50,9 +50,9 @@ cap_bottom = false
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t6gdr"]
 shading_mode = 2
-albedo_color = Color(0, 0.7490196, 0.5019608, 1)
+albedo_color = Color(0, 0.75, 0.5, 1)
 emission_enabled = true
-emission = Color(0, 0.7490196, 0.5019608, 1)
+emission = Color(0, 0.75, 0.5, 1)
 emission_energy_multiplier = 10.0
 emission_intensity = 10000.0
 
@@ -70,12 +70,12 @@ script = ExtResource("1_yi3qk")
 Ray = NodePath("Ray")
 AssetId = 23
 AssetName = &"Hover Thruster"
-Description = &"Pushes itself away from whatever its face points at within range, the harder the nearer, like a cushion of air: point it down to hover. Its power starts at half and rises or falls while its keys are held (T and G by default), scaling both its range (Max Length at full power, in cubes) and its push (Max Force at full power, in newtons)."
+Description = &"Pushes itself away from whatever its face points\nat within range, the harder the nearer, like a\ncushion of air: point it down to hover. Its power\nstarts at half and rises or falls while its keys\nare held (Shift and Ctrl by default), scaling both\nits range (Max Length at full power, in cubes) and\nits push (Max Force at full power, in newtons)."
 Properties = Dictionary[StringName, Variant]({
 &"maxForce": 1000.0,
 &"maxLength": 4.0,
-&"powerDownKey": 71,
-&"powerUpKey": 84
+&"powerDownKey": 4194326,
+&"powerUpKey": 4194325
 })
 MaxInstanceCount = 200
 metadata/_custom_type_script = "uid://chfhof1o4nmth"

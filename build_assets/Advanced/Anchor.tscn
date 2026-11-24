@@ -35,7 +35,7 @@ depth = 0.501
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_efkga"]
 shading_mode = 0
-albedo_color = Color(0, 0.5019608, 1, 1)
+albedo_color = Color(0, 0.5, 1, 1)
 
 [sub_resource type="TextMesh" id="TextMesh_efkga"]
 material = SubResource("StandardMaterial3D_efkga")
@@ -47,7 +47,7 @@ depth = 0.501
 script = ExtResource("1_anchor")
 AssetId = 17
 AssetName = &"Anchor"
-Description = &"Freezes everything welded to it in place while it\'s anchored, for docks, bases, and holding a creation still. Its key (B by default) toggles it."
+Description = &"Freezes everything welded to it in place while\nit\'s anchored, for docks, bases, and holding a\ncreation still. Its key (B by default) toggles it."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "808080",
 &"_materialId": -1,

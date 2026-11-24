@@ -17,7 +17,7 @@ size = Vector3(0.5, 0.05, 0.5)
 script = ExtResource("1_gp3bu")
 AssetId = 21
 AssetName = &"Wing Panel"
-Description = &"A flat panel the air pushes on, for gliders and planes. Tilted into the airflow, it lifts, more with speed and with its angle, until it stalls at about 15 degrees; it always drags. Build wings, tails, and fins from several, and scale their lift and drag with Lift Scale and Drag Scale."
+Description = &"A flat panel the air pushes on, for gliders and\nplanes. Tilted into the airflow, it lifts, more\nwith speed and with its angle, until it stalls at\nabout 15 degrees; it always drags. Build wings,\ntails, and fins from several, and scale their lift\nand drag with Lift Scale and Drag Scale."
 Properties = Dictionary[StringName, Variant]({
 &"dragScale": 1.0,
 &"liftScale": 1.0
@@ -33,7 +33,7 @@ mesh = SubResource("BoxMesh_gp3bu")
 
 [node name="Lift Center" type="Marker3D" parent="." unique_id=1927081603]
 
-[node name="Airfoil" type="Node" parent="." node_paths=PackedStringArray("Marker") unique_id=2126699806]
+[node name="Airfoil" type="Node" parent="." unique_id=2126699806 node_paths=PackedStringArray("Marker")]
 script = ExtResource("2_airfo")
 Marker = NodePath("../Lift Center")
 metadata/_custom_type_script = "uid://1si561g82ann"

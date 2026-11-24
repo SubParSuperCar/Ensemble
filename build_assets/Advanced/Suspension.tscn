@@ -43,7 +43,7 @@ Coil = NodePath("Bottom/Coil")
 CoilEnd = NodePath("Top/Coil End")
 AssetId = 12
 AssetName = &"Suspension"
-Description = &"A boingy sproingy: a spring between two plates, for wheels and soft landings. Target Length is how long it rests and Max Length how far it may stretch (0 for as far as it reaches), both end to end in cubes; stiffness is in newtons per meter and damping in newton-seconds per meter."
+Description = &"A boingy sproingy: a spring between two plates,\nfor wheels and soft landings. Target Length is how\nlong it rests and Max Length how far it may\nstretch (0 for as far as it reaches), both end to\nend in cubes; stiffness is in newtons per meter\nand damping in newton-seconds per meter."
 Properties = Dictionary[StringName, Variant]({
 &"damping": 50.0,
 &"maxLength": 0.0,

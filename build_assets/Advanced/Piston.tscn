@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bgwxebeganofo"]
 
-[ext_resource type="Script" uid="uid://y5iswmhwndez" path="res://build_assets/Advanced/Piston.cs" id="1_2mr3x"]
+[ext_resource type="Script" uid="uid://y5iswmhwnde0" path="res://build_assets/Advanced/Piston.cs" id="1_2mr3x"]
 [ext_resource type="Script" uid="uid://df6a4m2i61bg5" path="res://Scripts/Assets/AssetPiece.cs" id="2_03uev"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2mr3x"]
@@ -13,20 +13,20 @@ shading_mode = 2
 material = SubResource("StandardMaterial3D_nieao")
 size = Vector3(0.5, 0.4, 0.5)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
-size = Vector3(0.498, 0.1, 0.498)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2mr3x"]
 shading_mode = 2
 albedo_color = Color(0.5, 0.5, 0.5, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_2mr3x"]
-material = SubResource("StandardMaterial3D_2mr3x")
-size = Vector3(0.5, 0.1, 0.5)
-
 [sub_resource type="BoxMesh" id="BoxMesh_dvf64"]
 material = SubResource("StandardMaterial3D_2mr3x")
 size = Vector3(0.05, 1, 0.05)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
+size = Vector3(0.498, 0.1, 0.498)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2mr3x"]
+material = SubResource("StandardMaterial3D_2mr3x")
+size = Vector3(0.5, 0.1, 0.5)
 
 [node name="Piston" type="StaticBody3D" unique_id=726135581 node_paths=PackedStringArray("Ram", "Base", "Plate", "Shaft", "ShaftEnd")]
 script = ExtResource("1_2mr3x")
@@ -37,7 +37,7 @@ Shaft = NodePath("Base/Shaft")
 ShaftEnd = NodePath("Plate/Shaft End")
 AssetId = 20
 AssetName = &"Piston"
-Description = &"Pushes its plate out to its target length while its extend key is held (T by default), and back in with its retract key (G), like a hydraulic ram; released, it retracts unless it holds. Lengths are end to end, in cubes (it\'s one cube long when in), speed in cubes per second, and force in newtons, so a heavy enough load pushes it back."
+Description = &"Pushes its plate out to its target length while\nits extend key is held (T by default), and back in\nwith its retract key (G), like a hydraulic ram;\nreleased, it retracts unless it holds. Lengths are\nend to end, in cubes (it\'s one cube long when in),\nspeed in cubes per second, and force in newtons,\nso a heavy enough load pushes it back."
 Properties = Dictionary[StringName, Variant]({
 &"autoRetract": true,
 &"extendKey": 84,

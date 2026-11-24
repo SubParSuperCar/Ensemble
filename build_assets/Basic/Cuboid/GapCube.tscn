@@ -17,7 +17,7 @@ size = Vector3(0.5, 0.475, 0.5)
 script = ExtResource("1_ypv8f")
 AssetId = 22
 AssetName = &"Cube x0.95"
-Description = &"Just like the cube, but 0.95 cubes tall: its top face sits a little lower, so whatever is placed on it stays apart, unwelded, and moving parts beside it don\'t rub."
+Description = &"Just like the cube, but 0.95 cubes tall: its top\nface sits a little lower, so whatever is placed on\nit stays apart, unwelded, and moving parts beside\nit don\'t rub."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1

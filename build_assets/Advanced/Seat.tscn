@@ -28,7 +28,7 @@ size = Vector3(0.6, 0.8, 0.5)
 script = ExtResource("1_handle")
 AssetId = 14
 AssetName = &"Seat"
-Description = &"Touch it to sit, and press Space to leave. With controls, its rider drives the plot\'s creation with the keys its assets bind (the longest-seated rider, if several)."
+Description = &"Touch it to sit, and press Space to leave. With\ncontrols, its rider drives the plot\'s creation\nwith the keys its assets bind (the longest-seated\nrider, if several)."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "A04030",
 &"_materialId": -1,

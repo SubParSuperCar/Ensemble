@@ -17,7 +17,7 @@ size = Vector3(0.5, 0.25, 0.25)
 script = ExtResource("1_mrn5t")
 AssetId = 18
 AssetName = &"Mini Beam"
-Description = &"A skinny beam, one cube long and half as thick, for posts, railings, and frames.\nPlease don\'t build anything inappropriate with this, or I will find you."
+Description = &"A skinny beam, one cube long and half as thick,\nfor posts, railings, and frames.\nPlease don\'t build anything inappropriate with\nthis, or I will find you."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1

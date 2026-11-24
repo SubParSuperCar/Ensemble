@@ -8,7 +8,7 @@ size = Vector3(0.5, 0.05, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1dwf4"]
 shading_mode = 2
-albedo_color = Color(0.1254902, 0.3137255, 0.5019608, 1)
+albedo_color = Color(0.125, 0.3125, 0.5, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_1dwf4"]
 material = SubResource("StandardMaterial3D_1dwf4")
@@ -32,7 +32,7 @@ Base = NodePath("Base")
 Head = NodePath("Head")
 AssetId = 13
 AssetName = &"Motor"
-Description = &"Spins whatever is welded to its head while its keys are held (W and S by default), or toggled on. Speed is in RPM (negative reverses it) and torque in newton-meters; it can brake when idle, and its torque can fall off with speed, like an electric motor\'s."
+Description = &"Spins whatever is welded to its head while its\nkeys are held (W and S by default), or toggled on.\nSpeed is in RPM (negative reverses it) and torque\nin newton-meters; it can brake when idle, and its\ntorque can fall off with speed, like an electric\nmotor\'s."
 Properties = Dictionary[StringName, Variant]({
 &"brakesWhenIdle": true,
 &"forwardKey": 87,

@@ -16,7 +16,7 @@ seamless = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dms3b"]
 transparency = 4
-albedo_color = Color(1, 1, 1, 0.75000006)
+albedo_color = Color(1, 1, 1, 0.75)
 albedo_texture = SubResource("NoiseTexture2D_mgcgg")
 roughness = 0.25
 uv1_triplanar = true

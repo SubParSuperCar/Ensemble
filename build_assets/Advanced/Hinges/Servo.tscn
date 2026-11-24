@@ -8,7 +8,7 @@ size = Vector3(0.5, 0.05, 0.5)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1dwf4"]
 shading_mode = 2
-albedo_color = Color(0.3764706, 0.1254902, 0.5019608, 1)
+albedo_color = Color(0.375, 0.125, 0.5, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_1dwf4"]
 material = SubResource("StandardMaterial3D_1dwf4")
@@ -32,7 +32,7 @@ Base = NodePath("Base")
 Head = NodePath("Head")
 AssetId = 15
 AssetName = &"Servo (Motor2)"
-Description = &"Turns whatever is welded to its head toward Max Angle while its keys are held (A and D by default), and back to center when they\'re released, unless it holds: for steering, flaps, and arms. Angles are in degrees either way (180 turns a full circle), speed in RPM, and torque in newton-meters."
+Description = &"Turns whatever is welded to its head toward Max\nAngle while its keys are held (A and D by\ndefault), and back to center when they\'re\nreleased, unless it holds: for steering, flaps,\nand arms. Angles are in degrees either way (180\nturns a full circle), speed in RPM, and torque in\nnewton-meters."
 Properties = Dictionary[StringName, Variant]({
 &"forwardKey": 65,
 &"maxAngle": 45.0,

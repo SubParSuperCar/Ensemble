@@ -22,7 +22,7 @@ rings = 0
 script = ExtResource("1_45bji")
 AssetId = 19
 AssetName = &"Cylinder"
-Description = &"One cube across and tall. Totally tubular (if it were hollow)."
+Description = &"One cube across and tall. Totally tubular (if it\nwere hollow)."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1

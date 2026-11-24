@@ -91,7 +91,7 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 - **Competing forms:** count them codebase-wide and take the majority unless this file decides. Settled: a `foreach`
   whose body is one `if` has no braces; a wrapped condition opens with `if (` alone on its line; a one-statement
   constructor keeps its block body; locals are `var x = new List<T>();` (collection expressions are for fields,
-  properties, and target-typed returns, passing a comparer or capacity through `with(...)` where InspectCode asks);
+  properties, and target-typed returns);
   rounding names its `MidpointRounding`; a measured duration is `Stopwatch.StartNew()`, with `Stop()` before it's logged
   (`Stopwatch.GetTimestamp()` is for instants kept in fields); removing from a dictionary while scanning it is in place,
   unless the loop raises events whose handlers may change it; a lone extension method takes `this`, and extension blocks

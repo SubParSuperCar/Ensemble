@@ -301,8 +301,8 @@ with an `AssetId`, a name, a description (the Asset Selector's tooltip, kept by 
 it), default properties, an instance limit, a density, and the box that snaps to the grid. Its direct colliders are
 piece 0; `AssetPiece` children are further pieces that can move on their own. Reusable behaviors are `AssetComponent`
 nodes dropped under the handle (such as `Paintable`, which applies the instance's `_colorHex` and `_materialId`), and
-unique behaviors subclass `AssetHandle` (such as `Suspension`, or `Motor` and `Servo` through `DrivenHinge`). Saves
-store each instance's `AssetId`, so shipped IDs never change. A collider may sit slightly inside its asset's cell
+unique behaviors subclass `AssetHandle` (such as `Suspension`, `Piston`, or `Motor` and `Servo` through `DrivenHinge`).
+Saves store each instance's `AssetId`, so shipped IDs never change. A collider may sit slightly inside its asset's cell
 (`MinColliderInset` to `MaxColliderInset`) to keep a face from welding: `Epsilon`, the distance within which faces
 touch, is half the narrowest inset, and placement snaps the asset itself, not its inset colliders, onto the grid.
 
@@ -448,12 +448,14 @@ Each state packs an assembly's ID, position, rotation, and velocities into 204 b
 `BitWriter`). Sleeping assemblies are sent once at rest and then only as slow keepalives.
 
 Driving happens on the simulator too: each physics tick, it runs its assets' logic (`ISimulationTicked`: motors, servos,
-anchors) with the keys of the plot's controller (whichever occupant has sat longest in a seat with controls), sent
-through the host as a mask (`InputState`). Sitting and leaving are actions (`SetSeatAction`), and what an asset decides
-that must outlast its simulator reaches every peer as asset states (`IReplicatedState`).
+pistons, anchors, hover thrusters, airfoils) with the keys of the plot's controller (whichever occupant has sat longest
+in a seat with controls), sent through the host as a mask (`InputState`). Sitting and leaving are actions
+(`SetSeatAction`), and what an asset decides that must outlast its simulator reaches every peer as asset states
+(`IReplicatedState`). Assets read their assemblies' motion and push them through `Assembly` (`State`, `AddForce`), whose
+forces are summed in C# and applied once per tick.
 
 [**LIVE-CREATIONS.md**](./LIVE-CREATIONS.md) walks through all of it, with a map of the code, the designs behind it, and
-what comes next (pistons, forces, and aerodynamics).
+what comes next (thrusters, propellers, and buoyancy).
 
 ---
 

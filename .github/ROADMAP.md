@@ -158,18 +158,18 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   character (another peer's creation, or a dedicated host's) stay on the ground
 - (WIP) (L) Live asset logic - `AssetComponent` nodes under an asset's `AssetHandle` (unique behaviors may subclass
   `AssetHandle`) initialize once their whole creation exists, and tick in one batch on the creation's simulator;
-  `Paintable` and the `MaterialBank` are done. Next: pistons
+  `Paintable`, the `MaterialBank`, pistons, and the `Airfoil` are done. Next: thrusters
 - (WIP) (L) Drivable creations - simulation ticks, the Motor, seats, input from a plot's controller, key pickers in the
-  Property Editor, the Servo, and the Free Hinge are done, so steered cars drive. Next: the Piston, and a build guide
+  Property Editor, the Servo, the Free Hinge, and the Piston are done, so steered cars drive. Next: a build guide
 - [x] (S) Seated input - a seated player's flashlight replicates, and game keys (`Q` / `E` camera yaw, `F`, `H`) stop
   firing when the creation they control binds them
 - [x] (M) Bandwidth - the host shares a budget per peer among the creations streaming to it, nearest first, thinning out
   far ones only when they don't all fit
-- [ ] (M) Forces - the per-assembly force accumulator and assembly state for asset logic, arriving with the first asset
-  that pushes rather than drives a joint: the Thruster, then the Hover Thruster (see
-  [**aerodynamics and other forces**](./LIVE-CREATIONS.md#10-aerodynamics-and-other-forces-later))
-- [ ] (M) Airfoils and propellers - lift and drag from the airflow over a plate or wing, once those models exist
-  (gliders first), and propellers as spun airfoils or a cheaper thrust from their hinge's spin
+- [x] (M) Forces - each assembly's motion read once per tick, and forces summed in C# and applied once per tick, with
+  the Hover Thruster, which pushes off what its ray hits (see
+  [**aerodynamics and other forces**](./LIVE-CREATIONS.md#10-aerodynamics-and-other-forces)). Next: the Thruster
+- (WIP) (M) Airfoils and propellers - lift and drag from the airflow over a plate or wing: the `Airfoil` and the Wing
+  Panel are done. Next: propellers, as spun airfoils or a cheaper thrust from their hinge's spin
 - [ ] (M) Water and buoyancy - the ocean's surface (sea level, about -2 m, where the ocean shader draws it) becomes
   water. What's below it is pushed up by the weight of the water it displaces, so creations float or sink by their
   materials' densities (lighter than water floats, with ballast and helium assets to follow), lean and right themselves

@@ -1,7 +1,7 @@
 # Live Creations
 
 How spawned creations work today, from welding to replication and driving ([**section 1**](#1-how-it-works-today) walks
-through it), the designs behind them, and what comes next: pistons, forces, and aerodynamics. The
+through it), the designs behind them, and what comes next: thrusters, propellers, and buoyancy. The
 [**roadmap**](./ROADMAP.md#live-physics) tracks its progress. Decisions are numbered **(D#)**; the table at the end
 lists them, resolved or open. Plans are a guide, not a contract: they bend when something unforeseen comes up.
 
@@ -96,17 +96,19 @@ start in place.
 |                                     | streaming and proxies (`Streaming`), asset states (`AssetStates`), seats and   |
 |                                     | bound keys (`Seating`), and arbitration spheres and waking (`Neighbors`)       |
 | `Scripts/Creations/Assembly.cs`     | One rigid body per welded group, with its proxy replay                         |
-|                                     | (`Impl/Assembly.Proxy.cs`)                                                     |
+|                                     | (`Impl/Assembly.Proxy.cs`), and its motion and forces                          |
+|                                     | (`Impl/Assembly.Forces.cs`)                                                    |
 | `Scripts/Creations/Impl/`           | Weld groups (`Welds`), arbitration spheres, the tick and state interfaces      |
-|                                     | (`ISimulationTicked`, `IReplicatedState`), and the wire format (`Packets/`)    |
+|                                     | (`ISimulationTicked`, `IReplicatedState`), driving keys (`DrivingKeys`), and   |
+|                                     | the wire format (`Packets/`)                                                   |
 | `Scripts/Assets/`                   | `AssetHandle` (an asset's root and piece 0), `AssetPiece`, `AssetComponent`,   |
 |                                     | and `AssetManager` (each piece's colliders, bounds, and mass); `Components/`   |
-|                                     | (`Paintable`, `Seat`), `Materials/`                                            |
+|                                     | (`Paintable`, `Seat`, `Airfoil`), `Materials/`                                 |
 | `Scripts/Players/`                  | Characters, with `Impl/PlayerHandle.Seating.cs`: sitting, following a seat,    |
 |                                     | and standing up                                                                |
 | `Common/Input/InputState.cs`        | The keys assets can bind, and a controller's pressed ones as a mask            |
 | `build_assets/`                     | The asset scenes, with asset scripts beside them (`Advanced/Suspension.cs`,    |
-|                                     | `Advanced/Hinges/`, `Advanced/Anchor.cs`)                                      |
+|                                     | `Advanced/Piston.cs`, `Advanced/Hinges/`, `Advanced/Thrusters/`, and others)   |
 | `shaders/helix.gdshader`            | The spring coil (a helix)                                                      |
 
 ## 2. Principles
@@ -129,7 +131,7 @@ start in place.
 
 ### Where asset scripts live
 
-- Engine-provided, reusable components stay in `Scripts/Assets/Components/` (`Paintable` and `Seat`; later, `Airfoil`).
+- Engine-provided, reusable components stay in `Scripts/Assets/Components/` (`Paintable`, `Seat`, and `Airfoil`).
 - Asset-specific scripts sit beside their scene in `build_assets/`: `build_assets/Advanced/Suspension.tscn` and
   `Suspension.cs`. Godot requires a script's file name to match its class, and asset scenes are PascalCase **(D1)**, so
   every `X.cs` pairs with its `X.tscn`. `AssetManager` only registers scenes, so the scripts don't disturb its scan.
@@ -345,28 +347,24 @@ Bit budget per moving assembly (204 bits, about 25.5 bytes; header: plot ID 8 bi
       simulating means not ticked, so assets never check ownership themselves.
     - Plain Godot `_Process` for visuals on every peer (lights, effects). Normal Godot callbacks stay available, but
       heavy per-tick work belongs in the simulation tick.
-- The tick argument carries the infrastructure, so an asset implements one method and writes no plumbing. It starts with
-  input and delta; body state and the force accumulator join it with the first asset that needs them, since joint motors
-  use neither.
+- The tick argument carries the controller's input and the tick's length, so an asset implements one method and writes
+  no plumbing. Motion and forces belong to each assembly (below), which an asset reaches through the pieces it moves.
 - `LiveCreation` collects the ticked handles and components once at spawn, so 1000 motors cost one engine callback plus
   1000 C# calls per tick.
 
-### State and forces (planned)
+### State and forces
 
-- `SimulationTick` exposes the assembly's state, read once per tick per assembly: transform, linear and angular
-  velocity, center of mass.
-- Forces go into a per-assembly C# accumulator (`tick.AddForce(force, position)`, `AddTorque`), flushed with one
-  `ApplyForce` / `ApplyTorque` per assembly per tick. A thousand wings make a thousand C# additions, not a thousand
-  interop calls.
-- Joint motors are driven through their joint (target velocity, max torque), set only when a value changes.
-- The accumulator lives in `LiveCreation`, as a force and a torque per assembly, indexed by assembly ID like its
-  assemblies. An asset adds world-space forces at world-space points; the accumulator turns each into a force and a
-  torque about its assembly's center of mass, which is the assembly's origin (section 1). A force on a piece pushes the
-  piece's assembly, not the handle's.
-- It flushes once every ticked asset has run, and only for assemblies whose sum isn't zero, since applying a force
-  wakes a body: an idle thruster lets its creation fall asleep, as an idle motor does.
-- The state is read lazily, at most once per assembly per tick, so assets that only drive joints still pay nothing.
-  A point's velocity is `v + w x r` from that state, with no call of its own.
+- `Assembly.State` is the body's motion this tick (`BodyState`: its transform, whose origin is the center of mass
+  (section 1), and its linear and angular velocity), read from the engine lazily, at most once per assembly per tick, so
+  the assets that ask share one read and the rest pay nothing. A point's velocity is `v + w x r` from that state
+  (`GetVelocityAt`), with no call of its own. Motors and servos read their pieces' motion from it too.
+- `Assembly.AddForce(force, position)` and `AddTorque` take world-space values and sum them in C#: a force at a point
+  becomes a force and a torque about the center of mass, so a force on a piece pushes the piece's assembly, not the
+  handle's. A thousand wings make a thousand C# additions, not a thousand interop calls.
+- `LiveCreation` applies each assembly's sums once every ticked asset has run, and only those that aren't zero, since
+  applying a force wakes a body: a hover thruster at no power lets its creation fall asleep, as an idle motor does.
+  Both are for simulation ticks, which run before the tick's physics step.
+- Joint motors are driven through their joint (target velocity, max torque or force), set only when a value changes.
 
 ### Ownership-dependent state
 
@@ -376,7 +374,7 @@ promised.
 
 ## 7. Mechanisms and joints
 
-The Suspension, the Free Hinge, the Motor, and the Servo are built; the Piston comes next.
+The Suspension, the Free Hinge, the Motor, the Servo, and the Piston are built.
 
 - A **mechanism** is a set of assemblies linked by joints. A joint can't span two machines, but each plot's creation has
   one simulator (and arbitration merges close plots), so no joint ever does; mechanisms only matter once simulators can
@@ -409,7 +407,7 @@ Measured in a prototype with the game's physics settings; each point is what an 
   never undefined.
 - **Idle (D10):** a motor coasts, its joint free, unless a property holds it at zero speed as a brake.
 - **Toggling:** a property makes a key press latch the motor on, until the other key reverses it or the same key stops
-  it. The latch is an asset state, so it survives a hand-off.
+  it. The latch is an asset state, so it survives a hand-off. Hinges and pistons share these keys (`DrivingKeys`).
 - **Torque falloff:** torque is constant by default, as Ensemble isn't after realism. An optional property makes it fall
   in a straight line from full at a standstill to none at full speed, as in a real electric motor.
 - **Writing to joints:** changing a motor's parameters wakes a sleeping creation, so scripts never wake bodies, but must
@@ -420,6 +418,11 @@ Measured in a prototype with the game's physics settings; each point is what an 
   proportional gain makes the arm chatter, since the motor answers a tick late. A key aims at the limit that way, its
   speed capping how fast it turns; with neither pressed the servo returns to center (a property can make it hold
   instead), and with both it stays put (D11). The widest limit lets it turn a full circle.
+- **Pistons:** the 6DOF joint's linear motor takes its force limit in newtons, unlike a hinge's impulse per tick, and a
+  positive target velocity moves `node_b` out along the joint's axis. Godot reports no extension either, so the script
+  finds it from the two assemblies' transforms, and the servo's P-controller aims at the target length while extending,
+  and at fully in while retracting or released (a property can make it hold instead). Its limits stop it at fully in and
+  just past its reach, and its shaft stretches between base and plate on every peer, as a suspension's coil does.
 - **Anchors** hold their assembly frozen with an `OwnershipFlag`, so several on one assembly don't undo each other. A
   frozen assembly counts as at rest, so it streams only keepalives. Whether it's switched on is an asset state.
 - **Pieces keep a clearance (D16):** a motor's head and base stay collidable, with a little more than Jolt's contact
@@ -508,12 +511,13 @@ fall through what it stands on. Options to prototype later:
 - Accept today's behavior until vehicles make it matter (the current choice). Players deliberately blocking others'
   creations could later be handled by moderation (e.g., per-plot blocklists).
 
-## 10. Aerodynamics and other forces (later)
+## 10. Aerodynamics and other forces
 
-- An `Airfoil` component on any asset: area (from its collider bounds by default, overridable), a lift curve (linear up
-  to a stall angle, then falling), and drag. Each simulation tick it computes the local airflow from the assembly's
-  state (`v + w x r`) and adds lift and drag at its position to the accumulator: a few dozen float operations, no
-  interop.
+- An `Airfoil` component on any asset: area (its handle's bounds across its marker's normal by default, overridable), a
+  lift curve (a thin airfoil's, linear in the angle of attack up to a stall angle, then a flat plate's), and drag (skin
+  friction, the drag of lift while the flow is attached, and a flat plate's from the air it turns). Each simulation tick
+  it finds the airflow at its marker from the assembly's state (`v + w x r`) and adds lift and drag there: a few dozen
+  float operations, no interop.
 - Thrusters and propellers work the same way: input-driven forces at a point.
 - Buoyancy (from material densities, section 3) and optional global air drag fit the same accumulator.
 - None of this costs anything for assets without these components.
@@ -523,18 +527,21 @@ What each needs, for asset authors and for the code (each waits for its model):
 - **Directions come from the scene.** A component exports a marker `Node3D` whose axes give its thrust or its
   chord and normal, so an author aims it in the editor instead of typing vectors; the component reads the marker's
   transform relative to its piece once at spawn.
-- **Thruster:** pushes along its marker while its key is held (or latched, as motors toggle), with its thrust as a
-  property. Its flame follows input, which only the simulator has (D8), so it replicates its throttle as an asset state.
-  The Hover Thruster (Plane Crazy) casts a ray along its axis each tick and pushes harder the nearer what it hits; a
-  ray per thruster per tick wants measuring at scale.
-- **Airfoil:** a plate asset first (gliders), then wings; stall and drag curves stay simple (linear lift, then a fall,
-  plus induced drag). Lift is about the airflow's square, so a fast creation's wings need the tick's real delta and
-  sane limits (`GetNumberProperty`), or one bad property launches it.
+- **Thruster (next):** pushes along its marker while its key is held (or latched, as motors toggle), with its thrust as
+  a property. Its flame follows input, which only the simulator has (D8), so it replicates its throttle as an asset
+  state.
+- **Hover Thruster (built):** casts its ray from its face each tick, on the simulator alone, and pushes back the harder
+  the nearer what it hits, like a spring that only pushes, damped by its closing speed so it settles instead of bobbing.
+  Its power, which its keys raise and lower, scales its range and force, and is an asset state. At its instance cap, the
+  rays and pushes cost on the order of a millisecond per physics tick.
+- **Airfoil (built):** the Wing Panel is the first, a plain plate. Lift is about the airflow's square, so the airspeed
+  it counts is capped, which keeps a light surface's drag from overshooting within a tick, and its lift and drag scales
+  are clamped (`GetNumberProperty`), so no property launches it.
 - **Propeller:** a driven hinge whose blades are airfoils works with no special code, but costs a few airfoils per
   propeller; a cheaper Propeller pushes along its axis in proportion to its hinge's measured spin.
 - **Piston:** no accumulator; a driven joint (section 7).
-- **Order:** the accumulator and state with the first force asset (the Thruster, the simplest), then the Airfoil, the
-  Propeller, and buoyancy, which then cost one component each.
+- **Order:** the Hover Thruster brought the accumulator and state, and the Wing Panel the Airfoil; the Thruster, the
+  Propeller, and buoyancy now cost one script or component each.
 
 ## 11. Performance
 
@@ -581,7 +588,8 @@ proportional to what moves and thinks, not to what exists.
 |         | Property Editor                                                                                |
 | 0.58.1  | The Servo, Free Hinge, and Anchor; riders and coils interpolate with what carries them         |
 | 0.58.2  | Relay budgets per peer, asset states that survive hand-offs, and seated input                  |
-| Next    | The Piston, then force accumulators, Airfoil, and other forces                                 |
+| 0.60.0  | The Piston, body state and forces, the Hover Thruster, and the Airfoil (the Wing Panel)        |
+| Next    | The Thruster, propellers, and buoyancy                                                         |
 
 ## 13. Decisions
 

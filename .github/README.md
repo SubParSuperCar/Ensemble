@@ -76,8 +76,8 @@ are the same, without Roblox's limits.
 - **Tinker** with a built-in Lua console (which also saves and loads creations for now), and even a web browser and
   system terminal inside the game.
 
-More moving parts (like pistons), a Saves menu, a real map, and more building tools are on the way; see the
-[**roadmap**](./ROADMAP.md).
+More moving parts (like thrusters and propellers), a Saves menu, a real map, and more building tools are on the way; see
+the [**roadmap**](./ROADMAP.md).
 
 ---
 

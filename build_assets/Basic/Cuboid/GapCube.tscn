@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://b1f1a7xqq4yqf"]
+
+[ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_ypv8f"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="2_5dogl"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
+size = Vector3(0.5, 0.475, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ahla0"]
+shading_mode = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
+material = SubResource("StandardMaterial3D_ahla0")
+size = Vector3(0.5, 0.475, 0.5)
+
+[node name="Gap Cube" type="StaticBody3D" unique_id=726135581]
+script = ExtResource("1_ypv8f")
+AssetId = 22
+AssetName = &"Cube x0.95"
+Description = &"Just like the cube, but 0.95 cubes tall: its top face sits a little lower, so whatever is placed on it stays apart, unwelded, and moving parts beside it don\'t rub."
+Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF",
+&"_materialId": -1
+})
+MaxInstanceCount = 1000
+
+[node name="Collider" type="CollisionShape3D" parent="." unique_id=237803691]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0125, 0)
+shape = SubResource("BoxShape3D_8kdi2")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=529259739]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0125, 0)
+mesh = SubResource("BoxMesh_8kdi2")
+
+[node name="Paintable" type="Node" parent="." unique_id=107636412]
+script = ExtResource("2_5dogl")
+metadata/_custom_type_script = "uid://ceyc15wgcmlmc"

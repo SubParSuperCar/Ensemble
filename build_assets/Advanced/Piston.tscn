@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://bgwxebeganofo"]
+
+[ext_resource type="Script" uid="uid://y5iswmhwndez" path="res://build_assets/Advanced/Piston.cs" id="1_2mr3x"]
+[ext_resource type="Script" uid="uid://df6a4m2i61bg5" path="res://Scripts/Assets/AssetPiece.cs" id="2_03uev"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2mr3x"]
+size = Vector3(0.5, 0.35, 0.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nieao"]
+shading_mode = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_8kdi2"]
+material = SubResource("StandardMaterial3D_nieao")
+size = Vector3(0.5, 0.4, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8kdi2"]
+size = Vector3(0.498, 0.1, 0.498)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2mr3x"]
+shading_mode = 2
+albedo_color = Color(0.5, 0.5, 0.5, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2mr3x"]
+material = SubResource("StandardMaterial3D_2mr3x")
+size = Vector3(0.5, 0.1, 0.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dvf64"]
+material = SubResource("StandardMaterial3D_2mr3x")
+size = Vector3(0.05, 1, 0.05)
+
+[node name="Piston" type="StaticBody3D" unique_id=726135581 node_paths=PackedStringArray("Ram", "Base", "Plate", "Shaft", "ShaftEnd")]
+script = ExtResource("1_2mr3x")
+Ram = NodePath("Ram")
+Base = NodePath("Base")
+Plate = NodePath("Plate")
+Shaft = NodePath("Base/Shaft")
+ShaftEnd = NodePath("Plate/Shaft End")
+AssetId = 20
+AssetName = &"Piston"
+Description = &"Pushes its plate out to its target length while its extend key is held (T by default), and back in with its retract key (G), like a hydraulic ram; released, it retracts unless it holds. Lengths are end to end, in cubes (it\'s one cube long when in), speed in cubes per second, and force in newtons, so a heavy enough load pushes it back."
+Properties = Dictionary[StringName, Variant]({
+&"autoRetract": true,
+&"extendKey": 84,
+&"force": 1000.0,
+&"retractKey": 71,
+&"speed": 1.0,
+&"targetLength": 2.0,
+&"toggles": false
+})
+MaxInstanceCount = 200
+
+[node name="Base" type="StaticBody3D" parent="." unique_id=1838132400]
+script = ExtResource("2_03uev")
+
+[node name="Base Collider" type="CollisionShape3D" parent="Base" unique_id=237803691]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.075, 0)
+shape = SubResource("BoxShape3D_2mr3x")
+
+[node name="Base Mesh" type="MeshInstance3D" parent="Base" unique_id=529259739]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, 0)
+mesh = SubResource("BoxMesh_8kdi2")
+
+[node name="Shaft" type="MeshInstance3D" parent="Base" unique_id=541746434]
+transform = Transform3D(1, 0, 0, 0, 0.35, 0, 0, 0, 1, 0, -0.025, 0)
+mesh = SubResource("BoxMesh_dvf64")
+
+[node name="Plate" type="StaticBody3D" parent="." unique_id=854620350]
+script = ExtResource("2_03uev")
+
+[node name="Plate Collider" type="CollisionShape3D" parent="Plate" unique_id=1998526592]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+shape = SubResource("BoxShape3D_8kdi2")
+
+[node name="Plate Mesh" type="MeshInstance3D" parent="Plate" unique_id=1753757602]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+mesh = SubResource("BoxMesh_2mr3x")
+
+[node name="Shaft End" type="Marker3D" parent="Plate" unique_id=1610343127]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+
+[node name="Ram" type="Generic6DOFJoint3D" parent="." unique_id=1448128195]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+node_a = NodePath("../Base")
+node_b = NodePath("../Plate")
+exclude_nodes_from_collision = false

@@ -547,7 +547,7 @@ What each needs, for asset authors and for the code (each waits for its model):
 
 Measured on an i7-9700K, 2000 loose instances (2000 assemblies, the worst case):
 
-| Step                                      | Before (ms) | After a2a576a (ms) |
+| Step                                      | Before (ms) | After 2271745 (ms) |
 |-------------------------------------------|-------------|--------------------|
 | Prep (read instances, disable static set) | 32          | 33                 |
 | Weld groups                               | 29          | 29                 |

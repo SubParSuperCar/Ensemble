@@ -7,7 +7,6 @@ namespace EnsembleRoot.Common.Utils;
 public static class Ease
 {
 	public static double In(double progress) => progress * progress;
-
 	public static double Out(double progress) => progress * (2 - progress);
 
 	public static double InOut(double progress) =>

@@ -27,7 +27,7 @@ public sealed partial class LogOutputViewModel : ViewModelBase, IWidget
 		_dispatcher = dispatcher;
 
 		Output.UndoStack.SizeLimit = 0;
-		Styles = [with(Output)];
+		Styles = new TextSegmentCollection<StyleSegment>(Output);
 
 		dispatcher.UiProcess += OnUiProcess;
 

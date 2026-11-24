@@ -32,7 +32,9 @@ internal sealed class GodotSkiaRenderTarget(
 	public PlatformRenderTargetState State =>
 		IsCorrupted ? PlatformRenderTargetState.Corrupted : PlatformRenderTargetState.Ready;
 
+#pragma warning disable CA1822
 	RenderTargetProperties ISkiaGpuRenderTarget.Properties => DirectProperties;
+#pragma warning restore CA1822
 
 	public ISkiaGpuRenderSession BeginRenderingSession(IRenderTarget.RenderTargetSceneInfo sceneInfo)
 	{

@@ -91,10 +91,11 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
 - **Competing forms:** count them codebase-wide and take the majority unless this file decides. Settled: a `foreach`
   whose body is one `if` has no braces; a wrapped condition opens with `if (` alone on its line; a one-statement
   constructor keeps its block body; locals are `var x = new List<T>();` (collection expressions are for fields,
-  properties, and target-typed returns); rounding names its `MidpointRounding`; a measured duration is
-  `Stopwatch.StartNew()`, with `Stop()` before it's logged (`Stopwatch.GetTimestamp()` is for instants kept in fields);
-  removing from a dictionary while scanning it is in place, unless the loop raises events whose handlers may change it;
-  a lone extension method takes `this`, and extension blocks are for properties or several members.
+  properties, and target-typed returns, passing a comparer or capacity through `with(...)` where InspectCode asks);
+  rounding names its `MidpointRounding`; a measured duration is `Stopwatch.StartNew()`, with `Stop()` before it's logged
+  (`Stopwatch.GetTimestamp()` is for instants kept in fields); removing from a dictionary while scanning it is in place,
+  unless the loop raises events whose handlers may change it; a lone extension method takes `this`, and extension blocks
+  are for properties or several members.
 - **Design:** an abstraction with one implementation goes, as does a wrapper that only forwards to its owner. Unused
   isn't dead: keep members that complete an API (`IsOpen` beside `Open`, a `bool` saying whether a call acted). Parallel
   collections keyed by one ID become one collection of records; a helper duplicated across modules moves to

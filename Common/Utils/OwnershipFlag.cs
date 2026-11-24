@@ -8,7 +8,7 @@ namespace EnsembleRoot.Common.Utils;
 public sealed class OwnershipFlag
 {
 	private readonly Lock _lock = new();
-	private readonly HashSet<object> _owners = new(ReferenceEqualityComparer.Instance);
+	private readonly HashSet<object> _owners = [with(ReferenceEqualityComparer.Instance)];
 
 	public bool IsSet => Count > 0;
 

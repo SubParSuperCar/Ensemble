@@ -7,7 +7,7 @@ public partial class SessionManager
 	private static readonly TimeSpan KickTimeout = TimeSpan.FromSeconds(2);
 
 	// Server-side, until the session ends; keyed by AddressKey
-	private readonly HashSet<string> _bannedAddresses = new(StringComparer.Ordinal);
+	private readonly HashSet<string> _bannedAddresses = [with(StringComparer.Ordinal)];
 
 	private readonly HashSet<int> _kickedPeerIds = [];
 

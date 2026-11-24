@@ -66,7 +66,7 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 		{
 			Version = version,
 			UtcCreatedAt = new DateTimeOffset(utcTicks, TimeSpan.Zero),
-			Instances = new List<SaveInstance>(Math.Min(instanceCount, MaxPreallocatedCount))
+			Instances = [with(Math.Min(instanceCount, MaxPreallocatedCount))]
 		};
 
 		var totalPropertyCount = 0;

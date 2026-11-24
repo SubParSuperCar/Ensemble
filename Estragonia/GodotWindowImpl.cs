@@ -61,7 +61,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		_isManagedDialog = GodotPlatform.IsManagedDialogWindow;
 		_topLevelImpl = new GodotTopLevelImpl(platformGraphics, clipboard, compositor);
 		_screenImpl = new GodotScreenImpl();
-		_topLevelImpl.Paint = rect => Paint?.Invoke(rect);
+		_topLevelImpl.Paint = options => Paint?.Invoke(options);
 		_topLevelImpl.Resized = (size, reason) => Resized?.Invoke(size, reason);
 		_topLevelImpl.Input = args => Input?.Invoke(args);
 		_topLevelImpl.LostFocus = () => LostFocus?.Invoke();
@@ -92,7 +92,7 @@ internal sealed class GodotWindowImpl : IWindowImpl
 		_gdWindow.FilesDropped += OnFilesDropped;
 	}
 
-	public Action<Rect>? Paint { get; set; }
+	public Action<ITopLevelImpl.PaintOptions?>? Paint { get; set; }
 	public Action<Size, WindowResizeReason>? Resized { get; set; }
 	public Action? Closed { get; set; }
 	public Action<RawInputEventArgs>? Input { get; set; }

@@ -82,7 +82,7 @@ internal sealed class GodotTopLevelImpl : ITopLevelImpl
 		}
 	} = WindowTransparencyLevel.Transparent;
 
-	public Action<Rect>? Paint { get; set; }
+	public Action<ITopLevelImpl.PaintOptions?>? Paint { get; set; }
 
 	public Action<Size, WindowResizeReason>? Resized { get; set; }
 

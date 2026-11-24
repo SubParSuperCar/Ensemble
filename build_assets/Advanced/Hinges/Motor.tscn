@@ -32,7 +32,7 @@ Base = NodePath("Base")
 Head = NodePath("Head")
 AssetId = 13
 AssetName = &"Motor"
-Description = &"Spins whatever is welded to its head, while its keys are held or toggled on."
+Description = &"Spins whatever is welded to its head while its keys are held (W and S by default), or toggled on. Speed is in RPM (negative reverses it) and torque in newton-meters; it can brake when idle, and its torque can fall off with speed, like an electric motor\'s."
 Properties = Dictionary[StringName, Variant]({
 &"brakesWhenIdle": true,
 &"forwardKey": 87,

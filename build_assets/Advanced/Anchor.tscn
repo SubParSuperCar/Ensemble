@@ -47,7 +47,7 @@ depth = 0.501
 script = ExtResource("1_anchor")
 AssetId = 17
 AssetName = &"Anchor"
-Description = &"Freezes everything welded to it in place, while it\'s anchored."
+Description = &"Freezes everything welded to it in place while it\'s anchored, for docks, bases, and holding a creation still. Its key (B by default) toggles it."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "808080",
 &"_materialId": -1,

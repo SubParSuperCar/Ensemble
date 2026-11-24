@@ -41,7 +41,7 @@ shading_mode = 0
 
 [sub_resource type="PrismMesh" id="PrismMesh_fjrip"]
 material = SubResource("StandardMaterial3D_qhqgy")
-size = Vector3(0.125, 0.125, 0.063)
+size = Vector3(0.125, 0.125, 0.0625)
 
 [node name="Player" type="Node3D" unique_id=1257470157]
 script = ExtResource("1_3vyb7")

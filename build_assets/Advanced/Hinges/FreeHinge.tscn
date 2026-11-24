@@ -29,7 +29,7 @@ size = Vector3(0.25, 0.4, 0.25)
 script = ExtResource("1_cnceo")
 AssetId = 16
 AssetName = &"Free Hinge"
-Description = &"Lets whatever is welded to its head spin freely, with no motor to drive it."
+Description = &"Lets whatever is welded to its head spin freely, with no motor to drive it: for free wheels, doors, and flaps."
 MaxInstanceCount = 200
 
 [node name="Base" type="StaticBody3D" parent="." unique_id=1906701301]

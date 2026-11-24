@@ -32,7 +32,7 @@ Base = NodePath("Base")
 Head = NodePath("Head")
 AssetId = 15
 AssetName = &"Servo (Motor2)"
-Description = &"Turns whatever is welded to its head to an angle, with its keys, and back to center."
+Description = &"Turns whatever is welded to its head toward Max Angle while its keys are held (A and D by default), and back to center when they\'re released, unless it holds: for steering, flaps, and arms. Angles are in degrees either way (180 turns a full circle), speed in RPM, and torque in newton-meters."
 Properties = Dictionary[StringName, Variant]({
 &"forwardKey": 65,
 &"maxAngle": 45.0,

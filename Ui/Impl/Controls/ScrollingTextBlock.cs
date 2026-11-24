@@ -9,7 +9,7 @@ namespace EnsembleRoot.Ui.Controls;
 ///     A line of text, trimmed with an ellipsis where it doesn't fit, that scrolls back and forth while hovered to
 ///     show the rest, fading at each edge the text runs past.
 /// </summary>
-public sealed class ScrollingTextBlock : Control
+public sealed partial class ScrollingTextBlock : Control
 {
 	// In pixels per second, and seconds of pause before each pass
 	private const double ScrollSpeed = 48d;
@@ -17,9 +17,6 @@ public sealed class ScrollingTextBlock : Control
 
 	// In pixels, eased in over as much travel, so an edge's fade never pops on or off
 	private const double FadeWidth = 8d;
-
-	public static readonly StyledProperty<string?> TextProperty =
-		AvaloniaProperty.Register<ScrollingTextBlock, string?>(nameof(Text));
 
 	private readonly LinearGradientBrush _fade = new()
 	{
@@ -48,11 +45,7 @@ public sealed class ScrollingTextBlock : Control
 		VisualChildren.Add(_text);
 	}
 
-	public string? Text
-	{
-		get => GetValue(TextProperty);
-		set => SetValue(TextProperty, value);
-	}
+	[GeneratedStyledProperty] public partial string? Text { get; set; }
 
 	private double Overflow => Math.Max(_text.DesiredSize.Width - Bounds.Width, 0);
 

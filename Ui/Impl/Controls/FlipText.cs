@@ -7,11 +7,8 @@ namespace EnsembleRoot.Ui.Controls;
 
 /// <summary>A line of text whose characters flip over and fade as they change, like a flip clock's.</summary>
 /// <remarks>Meant for monospace fonts, so a flipping character doesn't shift the rest.</remarks>
-public sealed class FlipText : Control
+public sealed partial class FlipText : Control
 {
-	public static readonly StyledProperty<string?> TextProperty =
-		AvaloniaProperty.Register<FlipText, string?>(nameof(Text));
-
 	private readonly StackPanel _cells = new() { Orientation = Orientation.Horizontal };
 
 	private readonly CompositePageTransition _flip = new()
@@ -28,11 +25,7 @@ public sealed class FlipText : Control
 		VisualChildren.Add(_cells);
 	}
 
-	public string? Text
-	{
-		get => GetValue(TextProperty);
-		set => SetValue(TextProperty, value);
-	}
+	[GeneratedStyledProperty] public partial string? Text { get; set; }
 
 	protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
 	{

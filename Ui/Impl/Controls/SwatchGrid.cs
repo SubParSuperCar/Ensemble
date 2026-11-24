@@ -16,22 +16,10 @@ public sealed record Swatch(Color Color, IBrush Brush, string Tip);
 ///     visual: a palette has hundreds, and a control apiece made it slow to open and to draw. Left-clicking a swatch
 ///     runs <see cref="Command" /> with it.
 /// </summary>
-public sealed class SwatchGrid : Control
+public sealed partial class SwatchGrid : Control
 {
 	private const double MinCellSize = 20d;
 	private const double Gap = 2d;
-
-	public static readonly StyledProperty<IReadOnlyList<Swatch>?> ItemsProperty =
-		AvaloniaProperty.Register<SwatchGrid, IReadOnlyList<Swatch>?>(nameof(Items));
-
-	public static readonly StyledProperty<ICommand?> CommandProperty =
-		AvaloniaProperty.Register<SwatchGrid, ICommand?>(nameof(Command));
-
-	public static readonly StyledProperty<IBrush?> BorderBrushProperty =
-		AvaloniaProperty.Register<SwatchGrid, IBrush?>(nameof(BorderBrush));
-
-	public static readonly StyledProperty<IBrush?> HoverBrushProperty =
-		AvaloniaProperty.Register<SwatchGrid, IBrush?>(nameof(HoverBrush));
 
 	private double _cellSize = MinCellSize;
 	private int _columns = 1;
@@ -42,29 +30,10 @@ public sealed class SwatchGrid : Control
 		AffectsRender<SwatchGrid>(BorderBrushProperty, HoverBrushProperty);
 	}
 
-	public IReadOnlyList<Swatch>? Items
-	{
-		get => GetValue(ItemsProperty);
-		set => SetValue(ItemsProperty, value);
-	}
-
-	public ICommand? Command
-	{
-		get => GetValue(CommandProperty);
-		set => SetValue(CommandProperty, value);
-	}
-
-	public IBrush? BorderBrush
-	{
-		get => GetValue(BorderBrushProperty);
-		set => SetValue(BorderBrushProperty, value);
-	}
-
-	public IBrush? HoverBrush
-	{
-		get => GetValue(HoverBrushProperty);
-		set => SetValue(HoverBrushProperty, value);
-	}
+	[GeneratedStyledProperty] public partial IReadOnlyList<Swatch>? Items { get; set; }
+	[GeneratedStyledProperty] public partial ICommand? Command { get; set; }
+	[GeneratedStyledProperty] public partial IBrush? BorderBrush { get; set; }
+	[GeneratedStyledProperty] public partial IBrush? HoverBrush { get; set; }
 
 	private double Pitch => _cellSize + Gap;
 

@@ -6,27 +6,16 @@ namespace EnsembleRoot.Ui.Controls;
 /// <summary>
 ///     Arranges children by bounds relative to its size, from 0 to 1, keeping each whole and at least its minimum size.
 /// </summary>
-public sealed class WidgetPanel : Panel
+public sealed partial class WidgetPanel : Panel
 {
-	public static readonly AttachedProperty<Rect> RelativeBoundsProperty =
-		AvaloniaProperty.RegisterAttached<WidgetPanel, Control, Rect>("RelativeBounds");
-
-	public static readonly AttachedProperty<Size> MinSizeProperty =
-		AvaloniaProperty.RegisterAttached<WidgetPanel, Control, Size>("MinSize");
-
 	static WidgetPanel()
 	{
 		AffectsParentMeasure<WidgetPanel>(RelativeBoundsProperty, MinSizeProperty);
 		AffectsParentArrange<WidgetPanel>(RelativeBoundsProperty, MinSizeProperty);
 	}
 
-	public static Rect GetRelativeBounds(Control control) => control.GetValue(RelativeBoundsProperty);
-
-	public static void SetRelativeBounds(Control control, Rect value) =>
-		control.SetValue(RelativeBoundsProperty, value);
-
-	public static Size GetMinSize(Control control) => control.GetValue(MinSizeProperty);
-	public static void SetMinSize(Control control, Size value) => control.SetValue(MinSizeProperty, value);
+	[GeneratedAttachedProperty] public static partial Rect GetRelativeBounds(Control control);
+	[GeneratedAttachedProperty] public static partial Size GetMinSize(Control control);
 
 	protected override Size MeasureOverride(Size availableSize)
 	{

@@ -112,14 +112,25 @@
                     RowSpacing="2">
 
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="2" MinHeight="64">
-                        <!-- A strip shaped like the brightness slider across from it; the theme fixes its height -->
-                        <cp:ColorPreviewer
-                            HsvColor="{Binding HsvColor}"
-                            ToolTip.Tip="The brush's color."
-                            IsAccentColorsVisible="False"
-                            Width="20"
-                            Height="NaN"
-                            CornerRadius="10" />
+                        <!-- A strip shaped like the brightness slider across from it; the theme fixes its height. Dark and
+                             light rings set it off from any background -->
+                        <Border
+                            BorderBrush="Black" BorderThickness="{StaticResource BorderThickness}"
+                            CornerRadius="13">
+
+                            <Border
+                                BorderBrush="White" BorderThickness="{StaticResource BorderThickness}"
+                                CornerRadius="11.5">
+
+                                <cp:ColorPreviewer
+                                    HsvColor="{Binding HsvColor}"
+                                    ToolTip.Tip="The brush's color."
+                                    IsAccentColorsVisible="False"
+                                    Width="20"
+                                    Height="NaN"
+                                    CornerRadius="10" />
+                            </Border>
+                        </Border>
 
                         <!-- Draws itself as the largest square that fits, centered -->
                         <cp:ColorSpectrum

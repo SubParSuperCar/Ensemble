@@ -3,6 +3,7 @@ using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Media;
 
 namespace EnsembleRoot.Ui.Controls;
@@ -11,14 +12,14 @@ namespace EnsembleRoot.Ui.Controls;
 public sealed record Swatch(Color Color, IBrush Brush, string Tip);
 
 /// <summary>
-///     Color swatches in rows that wrap at the control's width, drawn as one visual: a palette has hundreds, and a
-///     control apiece made it slow to open and to draw. Left-clicking a swatch runs <see cref="Command" /> with it.
+///     Color swatches in rows that wrap at the control's width and stretch to fill it, like a flex row, drawn as one
+///     visual: a palette has hundreds, and a control apiece made it slow to open and to draw. Left-clicking a swatch
+///     runs <see cref="Command" /> with it.
 /// </summary>
 public sealed class SwatchGrid : Control
 {
-	private const double CellSize = 20d;
+	private const double MinCellSize = 20d;
 	private const double Gap = 2d;
-	private const double Pitch = CellSize + Gap;
 
 	public static readonly StyledProperty<IReadOnlyList<Swatch>?> ItemsProperty =
 		AvaloniaProperty.Register<SwatchGrid, IReadOnlyList<Swatch>?>(nameof(Items));
@@ -32,6 +33,7 @@ public sealed class SwatchGrid : Control
 	public static readonly StyledProperty<IBrush?> HoverBrushProperty =
 		AvaloniaProperty.Register<SwatchGrid, IBrush?>(nameof(HoverBrush));
 
+	private double _cellSize = MinCellSize;
 	private int _columns = 1;
 	private int _hovered = -1;
 
@@ -64,6 +66,8 @@ public sealed class SwatchGrid : Control
 		set => SetValue(HoverBrushProperty, value);
 	}
 
+	private double Pitch => _cellSize + Gap;
+
 	public override void Render(DrawingContext context)
 	{
 		if (Items is not { } items)
@@ -86,10 +90,11 @@ public sealed class SwatchGrid : Control
 	protected override Size MeasureOverride(Size availableSize)
 	{
 		var count = Items?.Count ?? 0;
+		var width = availableSize.Width;
 
-		_columns = double.IsFinite(availableSize.Width)
-			? Math.Max(1, (int)((availableSize.Width + Gap) / Pitch))
-			: Math.Max(1, count);
+		// As many columns as fit at the smallest size, whose cells then grow to fill the row
+		_columns = Math.Max(1, double.IsFinite(width) ? (int)((width + Gap) / (MinCellSize + Gap)) : count);
+		_cellSize = double.IsFinite(width) ? Math.Max(MinCellSize, (width + Gap) / _columns - Gap) : MinCellSize;
 
 		var rows = (count + _columns - 1) / _columns;
 		return new Size(Math.Min(count, _columns) * Pitch - Gap, Math.Max(0, rows * Pitch - Gap));
@@ -133,10 +138,18 @@ public sealed class SwatchGrid : Control
 			Command?.Execute(items[index]);
 	}
 
+	// On whole pixels, so stretched cells keep crisp edges
 	private Rect GetCell(int index)
 	{
 		var (row, column) = Math.DivRem(index, _columns);
-		return new Rect(column * Pitch, row * Pitch, CellSize, CellSize);
+		var scale = LayoutHelper.GetLayoutScale(this);
+
+		var left = LayoutHelper.RoundLayoutValue(column * Pitch, scale);
+		var top = LayoutHelper.RoundLayoutValue(row * Pitch, scale);
+		var right = LayoutHelper.RoundLayoutValue(column * Pitch + _cellSize, scale);
+		var bottom = LayoutHelper.RoundLayoutValue(row * Pitch + _cellSize, scale);
+
+		return new Rect(left, top, right - left, bottom - top);
 	}
 
 	private int HitTest(Point point)

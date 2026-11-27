@@ -90,15 +90,21 @@ public partial class Main : Node
 			CultureInfo.InvariantCulture,
 			$"{count} other player(s) are in the session you host. {action} ends it for all of them.\n\nContinue?");
 
+		// A box that can't open answers No, which would leave no way to quit
 		try
 		{
-			return await YesNoDialog.AskAsync(title, message, MessageBoxIconType.Warning, false).ConfigureAwait(true);
+			if (await Task.Run(static () => YesNoDialog.IsAvailable).ConfigureAwait(true))
+				return await YesNoDialog.AskAsync(title, message, MessageBoxIconType.Warning, false)
+					.ConfigureAwait(true);
+
+			Log.Warning("Ending the session without asking, as no dialog can open here");
 		}
 		catch (Exception exception)
 		{
-			Log.Error(exception, "Failed to show dialog");
-			return false;
+			Log.Error(exception, "Failed to show dialog; ending the session without asking");
 		}
+
+		return true;
 	}
 
 	public static void FailFast(Exception? exception = null)

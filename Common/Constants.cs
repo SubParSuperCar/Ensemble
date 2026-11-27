@@ -67,8 +67,8 @@ public static class Constants
 	private static TimeSpan? _animationDuration;
 
 	/// <summary>
-	///     How long the UI's transitions take, or none while they're turned off, as of this launch: styles read it once,
-	///     as they load.
+	///     How long the UI's transitions take, or none while they're turned off, as of this launch: styles read it
+	///     once, as they load.
 	/// </summary>
 	public static TimeSpan AnimationDuration =>
 		_animationDuration ??= AreAnimationsOn ? TimeSpan.FromSeconds(3 / 16d) : TimeSpan.Zero;

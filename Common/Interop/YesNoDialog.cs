@@ -15,6 +15,17 @@ internal static class YesNoDialog
 	private const string LibraryName = "tinyfiledialogs";
 	private const string DialogType = "yesno";
 
+	// A title tinyfd answers without showing anything: 1 if it can show graphical boxes
+	private const string QueryTitle = "tinyfd_query";
+
+	private static bool? _isAvailable;
+
+	/// <summary>
+	///     Whether a box can open at all: not where tinyfd finds no dialog tool, or isn't built for the platform (e.g.,
+	///     ARM).
+	/// </summary>
+	public static bool IsAvailable => _isAvailable ??= QueryAvailability();
+
 	/// <exception cref="ArgumentException">The title contains a line break, a tab, or a quote.</exception>
 	public static bool Ask(string title, string message, MessageBoxIconType icon, bool isYesDefault)
 	{
@@ -44,6 +55,22 @@ internal static class YesNoDialog
 	/// <inheritdoc cref="Ask" />
 	public static Task<bool> AskAsync(string title, string message, MessageBoxIconType icon, bool isYesDefault) =>
 		Task.Run(() => Ask(title, message, icon, isYesDefault));
+
+	private static bool QueryAvailability()
+	{
+		try
+		{
+			var response = OperatingSystem.IsWindows()
+				? MessageBoxUtf16(QueryTitle, string.Empty, DialogType, "question", 0)
+				: MessageBoxUtf8(QueryTitle, string.Empty, DialogType, "question", 0);
+
+			return response is 1;
+		}
+		catch (Exception exception) when (exception is DllNotFoundException or EntryPointNotFoundException)
+		{
+			return false;
+		}
+	}
 
 	private static string RemoveQuotes(string text) =>
 		text

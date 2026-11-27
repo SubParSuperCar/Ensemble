@@ -24,7 +24,7 @@ public partial class AssetMaterial : Resource
 	[Export]
 	public BaseMaterial3D? Look { get; set; }
 
-	[Export(PropertyHint.Range, "0,0,0.001,or_greater,hide_slider,suffix:kg/m\u00b3")]
+	[Export(PropertyHint.Range, "0,0,0.001,or_greater,hide_slider,suffix:kg/m³")]
 	public float Density { get; set; } = AssetHandle.DefaultDensity;
 
 	[Export(PropertyHint.Range, "0,1,0.001")]

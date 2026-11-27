@@ -33,7 +33,7 @@ public partial class PopperCam : SpringArm3D
 	[Export(PropertyHint.Range, "0,90,radians_as_degrees")]
 	public float PitchMinMax { get; set; } = float.DegreesToRadians(80f);
 
-	[Export(PropertyHint.None, "radians_as_degrees,suffix:\u00B0/s")]
+	[Export(PropertyHint.None, "radians_as_degrees,suffix:°/s")]
 	public float YawRate { get; set; } = float.DegreesToRadians(90f);
 
 	// "Dolly", not "zoom": zooming changes the FOV, while dollying moves the camera

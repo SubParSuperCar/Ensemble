@@ -67,7 +67,7 @@ public static partial class LuaExecutor
 	{
 		var materials = MaterialBank.All.Select(static material => string.Create(
 			CultureInfo.InvariantCulture,
-			$"{material.MaterialId}: {material.MaterialName} (density {material.Density} kg/m\u00b3, friction " +
+			$"{material.MaterialId}: {material.MaterialName} (density {material.Density} kg/m³, friction " +
 			$"{material.Friction}, bounce {material.Bounce})"));
 
 		Log.Information("Materials: {Count}\n{Materials}", MaterialBank.All.Count, string.Join('\n', materials));

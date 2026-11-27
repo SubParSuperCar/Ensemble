@@ -47,7 +47,7 @@ public partial class Airfoil : AssetComponent, ISimulationTicked
 	public Node3D Marker { get; set; } = null!;
 
 	/// <summary>Square meters, or, if 0, the handle's bounds across <see cref="Marker" />'s normal.</summary>
-	[Export(PropertyHint.Range, "0,0,0.001,or_greater,hide_slider,suffix:m\u00b2")]
+	[Export(PropertyHint.Range, "0,0,0.001,or_greater,hide_slider,suffix:m²")]
 	public float Area { get; set; }
 
 	public void Tick(in SimulationTick tick)

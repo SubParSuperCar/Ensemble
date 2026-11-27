@@ -37,7 +37,7 @@ public partial class AssetHandle : StaticBody3D
 	[Export(PropertyHint.Range, "-1,0,1,or_greater,hide_slider")]
 	public int MaxInstanceCount { get; set; }
 
-	[Export(PropertyHint.Range, "0,0,0.001,or_greater,hide_slider,suffix:kg/m\u00b3")]
+	[Export(PropertyHint.Range, "0,0,0.001,or_greater,hide_slider,suffix:kg/m³")]
 	public float Density { get; set; } = DefaultDensity;
 
 	// A zero size means unset; the flag keeps a calculated zero size (e.g., no collider) from recalculating

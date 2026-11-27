@@ -736,5 +736,5 @@ content versions leave room to migrate old saves.
   the difference is small.
 - **Generic parts, specific callers.** Reusable components stay neutral; whoever uses them decides the specifics.
 - **Nothing silent.** Failures are logged or shown, and background tasks never fail unobserved.
-- **Tidy by default.** ASCII-only sources, 120-column lines, minimal comments that explain *why*, and zero build
+- **Tidy by default.** Extended-ASCII sources, 120-column lines, minimal comments that explain *why*, and zero build
   warnings.

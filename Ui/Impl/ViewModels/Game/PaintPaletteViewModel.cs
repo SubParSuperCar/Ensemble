@@ -327,7 +327,7 @@ public sealed partial class MaterialItem : ObservableObject
 	{
 		var stats = string.Create(
 			CultureInfo.InvariantCulture,
-			$"Density: {material.Density} kg/m\u00b3\nFriction: {material.Friction}\nBounce: {material.Bounce}");
+			$"Density: {material.Density} kg/m³\nFriction: {material.Friction}\nBounce: {material.Bounce}");
 
 		return material.Look?.Transparency is null or BaseMaterial3D.TransparencyEnum.Disabled
 			? stats

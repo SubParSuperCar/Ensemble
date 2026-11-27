@@ -74,7 +74,8 @@ columns. Builds must have 0 warnings, and InspectCode should be clean on touched
   mirroring setup.
 - **Literals.** `float` as `1f` / `0.5f`, `double` as `1d` / `0.5`; explicit forms in declarations. Prefer base-2
   fractions where they explain themselves (`3 / 16d`); hoist config-like values to named constants.
-- **ASCII only**, everywhere (non-ASCII only through escapes); `-` for dashes in prose.
+- **Extended ASCII only** (code points 0 to 255, Latin-1, so `°`, `²`, and `×` are fine), everywhere, stored as UTF-8;
+  anything beyond only through escapes (`\u2026`). `-` for dashes in prose.
 - **Suppressions:** a rule firing once gets a local `// ReSharper disable once X`; several times, one sorted file-level
   block after the usings. Prefer fixing over suppressing.
 - **Logging (Serilog):** message templates have no trailing period; exception and UI sentences do.

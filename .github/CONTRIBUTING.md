@@ -55,8 +55,8 @@ the conventions the codebase follows. For a map of the code, see [**TECHNICAL.md
 
 - **Keep changes focused.** One feature or fix per pull request, with a short description of what changed and why.
 - **Match the existing style.** Run Rider's **Code Cleanup** on changed files (formatting is defined by the repository's
-  `.editorconfig`), keep lines within 120 columns, and use ASCII only (escape other characters, e.g., `\u2026`).
-  Comments are kept to a minimum: explain why, not what.
+  `.editorconfig`), keep lines within 120 columns, and use extended ASCII only (Latin-1, code points up to 255; escape
+  other characters, e.g., `\u2026`). Comments are kept to a minimum: explain why, not what.
 - **Respect the module boundaries.** Layering is enforced at build time by NsDepCop (`config.nsdepcop`); see [**Module
   Layering**](/.github/TECHNICAL.md#module-layering). `Core` stays plain C# with no Godot dependencies, and only `Ui`
   may use Avalonia.

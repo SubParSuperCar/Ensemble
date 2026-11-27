@@ -6,9 +6,7 @@ using EnsembleCoreRoot.Api.Plots;
 namespace EnsembleCoreRoot;
 
 /// <inheritdoc />
-/// <remarks>
-///     Core is non-authoritative; max counts are metadata only and are not enforced.
-/// </remarks>
+/// <remarks>Core is non-authoritative; max counts are metadata only and are not enforced.</remarks>
 public sealed class Core : ICore
 {
 	private readonly Assets.Assets _assets;

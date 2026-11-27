@@ -80,21 +80,27 @@ public static class AnsiText
 				case 0:
 					style = default;
 					break;
+
 				case 1:
 					style = style with { IsBold = true };
 					break;
+
 				case 22:
 					style = style with { IsBold = false };
 					break;
+
 				case >= 30 and <= 37:
 					style = style with { Foreground = codes[i] - 30 };
 					break;
+
 				case 39:
 					style = style with { Foreground = null };
 					break;
+
 				case >= 90 and <= 97:
 					style = style with { Foreground = codes[i] - 90 + 8 };
 					break;
+
 				// An extended foreground or background: 5 and an index, or 2 and red, green, and blue
 				case 38 or 48 when i + 1 < codes.Count:
 					if (codes[i] is 38 && codes[i + 1] is 5 && i + 2 < codes.Count)

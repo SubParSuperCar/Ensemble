@@ -32,11 +32,11 @@ public readonly record struct InputState(ulong Mask)
 		if (InputSink.IsSunk)
 			return default;
 
-		var mask = 0ul;
+		var mask = 0UL;
 
 		foreach (var key in keys)
 			if (BitsByKey.TryGetValue(key, out var bit) && Godot.Input.IsKeyPressed(key))
-				mask |= 1ul << bit;
+				mask |= 1UL << bit;
 
 		return new InputState(mask);
 	}

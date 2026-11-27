@@ -1,8 +1,6 @@
 namespace EnsembleRoot.Autoloading;
 
-/// <summary>
-///     What to do if this Autoload fails to be instantiated, added to the tree, or initialized.
-/// </summary>
+/// <summary>What to do if this Autoload fails to be instantiated, added to the tree, or initialized.</summary>
 public enum AutoloadFailurePolicy : byte
 {
 	/// <summary>
@@ -11,9 +9,7 @@ public enum AutoloadFailurePolicy : byte
 	/// </summary>
 	AskUser,
 
-	/// <summary>
-	///     Log the failure and continue loading. Best for components whose loss is negligible.
-	/// </summary>
+	/// <summary>Log the failure and continue loading. Best for components whose loss is negligible.</summary>
 	LogAndContinue,
 
 	/// <summary>

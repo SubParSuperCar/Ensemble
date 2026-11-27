@@ -8,7 +8,7 @@ namespace EnsembleRoot.Tests;
 public sealed class RpcChannelTests
 {
 	// Anything may call these, so each must check its sender, its shape, and its rate before acting (see TECHNICAL.md).
-	// A new one belongs here only once it does
+	// A new one belongs here only once it does.
 	private static readonly string[] AnyPeerRpcs =
 	[
 		"PlayerHandle.RpcReplicate",

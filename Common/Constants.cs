@@ -55,14 +55,14 @@ public static class Constants
 	/// </summary>
 	public const float Epsilon = MinColliderInset / 2;
 
-	private const string UiSection = "ui";
-	private const string AreAnimationsOnKey = "are_animations_on";
-
 	/// <summary>
 	///     Propagated through the tree once the game has decided to quit, past the engine's own notifications. The
 	///     window's close request only asks, as the player may cancel it.
 	/// </summary>
 	public const int NotificationQuitting = 1 << 20;
+
+	private const string UiSection = "ui";
+	private const string AreAnimationsOnKey = "are_animations_on";
 
 	private static TimeSpan? _animationDuration;
 

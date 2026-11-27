@@ -9,15 +9,16 @@ namespace EnsembleRoot.Common.Audio;
 ///     waiting. Never throws: speech depends on each platform's voices and helper binaries, which have gone missing.
 /// </summary>
 /// <remarks>
-///     Canceling an utterance's token skips it while it waits, or stops it mid-speech, so a caller (e.g., the chat)
-///     can silence its own text without cutting off anyone else's.
+///     Canceling an utterance's token skips it while it waits, or stops it mid-speech, so a caller can silence its own
+///     text without cutting off anyone else's.
 /// </remarks>
 public static class TextToSpeech
 {
 	private const int MaxQueuedCount = 8;
 
 	private static readonly Channel<Utterance> Queue = Channel.CreateBounded<Utterance>(
-		new BoundedChannelOptions(MaxQueuedCount) { FullMode = BoundedChannelFullMode.DropWrite, SingleReader = true });
+		new BoundedChannelOptions(MaxQueuedCount) { FullMode = BoundedChannelFullMode.DropWrite, SingleReader = true },
+		static _ => Log.Debug("Skipped TTS, since too much text is waiting"));
 
 	static TextToSpeech()
 	{
@@ -26,11 +27,8 @@ public static class TextToSpeech
 
 	public static void Speak(
 		string text, string culture = "en", float rate = 1f, float pitch = 1f, float volume = 1f,
-		CancellationToken token = default)
-	{
-		if (!Queue.Writer.TryWrite(new Utterance(text, culture, rate, pitch, volume, token)))
-			Log.Debug("Skipped TTS, since too much text is waiting");
-	}
+		CancellationToken token = default) =>
+		Queue.Writer.TryWrite(new Utterance(text, culture, rate, pitch, volume, token));
 
 	private static async Task SpeakQueuedAsync()
 	{

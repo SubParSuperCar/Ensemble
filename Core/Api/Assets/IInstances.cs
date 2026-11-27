@@ -4,9 +4,7 @@ using EnsembleCoreRoot.Api.Plots;
 
 namespace EnsembleCoreRoot.Api.Assets;
 
-/// <summary>
-///     The <see cref="IInstance" /> objects placed on a single <see cref="IPlot" />.
-/// </summary>
+/// <summary>The <see cref="IInstance" /> objects placed on a single <see cref="IPlot" />.</summary>
 public interface IInstances
 {
 	/// <summary>

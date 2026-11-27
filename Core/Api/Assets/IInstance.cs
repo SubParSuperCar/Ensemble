@@ -2,9 +2,7 @@ using System.Numerics;
 
 namespace EnsembleCoreRoot.Api.Assets;
 
-/// <summary>
-///     The representation of a placed asset.
-/// </summary>
+/// <summary>The representation of a placed asset.</summary>
 public interface IInstance
 {
 	int Id { get; }

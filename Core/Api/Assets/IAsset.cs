@@ -11,8 +11,6 @@ public interface IAsset
 
 	int MaxInstanceCount { get; }
 
-	/// <summary>
-	///     The default property values, read-only until copied to an <see cref="IInstance" />.
-	/// </summary>
+	/// <summary>The default property values, read-only until copied to an <see cref="IInstance" />.</summary>
 	IReadOnlyDictionary<string, CoreVariant> Properties { get; }
 }

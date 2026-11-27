@@ -163,6 +163,7 @@ public sealed class PlacementSolverTests
 
 			var start = Obb.From(cell,
 				new Transform3D(Basis.Identity, RandomVector(random, 3f) with { Y = random.NextSingle() * 3 }));
+
 			var box = _solver.Settle(start, obstacles, 0f, normals[random.Next(normals.Length)], cellSize);
 
 			if (obstacles.Overlaps(box))

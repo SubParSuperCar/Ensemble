@@ -6,6 +6,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Platform;
 using Avalonia.Reactive;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
@@ -79,7 +80,10 @@ public sealed class App : Application
 #endif
 
 		ApplyAccentColor();
+		PlatformSettings?.ColorValuesChanged += OnColorValuesChanged;
 	}
+
+	private void OnColorValuesChanged(object? sender, PlatformColorValues e) => ApplyAccentColor();
 
 	// Sinks game input while a text control has focus
 	private static void OnFocusChanged((object Sender, RoutedEventArgs Args) value)

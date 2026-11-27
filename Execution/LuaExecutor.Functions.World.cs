@@ -166,7 +166,6 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
-	// Peers keep their own time, so a host slowed alone would fall behind its own creations' streams
 	private static ValueTask<int> set_grav(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var gravity = context.GetArgumentOrDefault(0, WorldHandle.DefaultGravity);
@@ -184,9 +183,11 @@ public static partial class LuaExecutor
 		}
 
 		new SetGravityAction(gravity).Submit();
+
 		return context.ReturnNothing();
 	}
 
+	// Peers keep their own time, so a host slowed alone would fall behind its own creations' streams
 	private static ValueTask<int> set_time_scale(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{

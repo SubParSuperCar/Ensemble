@@ -33,6 +33,7 @@ public static partial class LuaExecutor
 	{
 		// Godot's other modes need Forward+ or only show their own effects, so they'd draw nothing here
 		Log.Information("Available draw modes:\n{Modes}", FormatEnum(DrawModes));
+
 		return context.ReturnNothing();
 	}
 
@@ -40,6 +41,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Log.Information("Available VSync modes:\n{Modes}", FormatEnum(Enum.GetValues<DisplayServer.VSyncMode>()));
+
 		return context.ReturnNothing();
 	}
 
@@ -47,6 +49,7 @@ public static partial class LuaExecutor
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		Log.Information("Available window modes:\n{Modes}", FormatEnum(Enum.GetValues<DisplayServer.WindowMode>()));
+
 		return context.ReturnNothing();
 	}
 
@@ -104,6 +107,7 @@ public static partial class LuaExecutor
 	private static ValueTask<int> set_stats_on(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		WeakReferenceMessenger.Default.Send(new SetStatsShownMessage(context.GetArgument<bool>(0)));
+
 		return context.ReturnNothing();
 	}
 

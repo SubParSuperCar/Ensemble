@@ -19,8 +19,6 @@ public partial class PaintTool : ToolBase
 	public static readonly StringName ToggleAction = "tool_paint_toggle";
 	public static readonly Color Theme = new("#E050E0");
 
-	private static readonly StringName CancelAction = "ui_cancel";
-
 	private readonly SelectionHighlights _highlights = new() { Name = "Highlights" };
 
 	private readonly MultiSelector _stroke = new();
@@ -78,7 +76,7 @@ public partial class PaintTool : ToolBase
 
 		if (_isStroking && @event.IsActionReleased(ToolCommon.TriggerAction))
 			FinishStroke();
-		else if (@event.IsActionPressed(CancelAction) && (_isStroking || IsEyedropping))
+		else if (@event.IsActionPressed(ToolCommon.CancelAction) && (_isStroking || IsEyedropping))
 		{
 			GetViewport().SetInputAsHandled();
 

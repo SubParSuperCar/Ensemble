@@ -14,8 +14,6 @@ public partial class MarqueeSelector : Node
 	// How far a press may wander, in pixels, and still count as a click rather than a drag
 	private const float ClickSlop = 4f;
 
-	private static readonly StringName CancelAction = "ui_cancel";
-
 	private ToolManager _manager = null!;
 	private Vector2? _origin;
 
@@ -35,7 +33,7 @@ public partial class MarqueeSelector : Node
 		if (_origin is null)
 			return;
 
-		if (@event.IsActionPressed(CancelAction))
+		if (@event.IsActionPressed(ToolCommon.CancelAction))
 		{
 			GetViewport().SetInputAsHandled();
 			Stop();

@@ -15,6 +15,7 @@ internal static class ToolCommon
 	private const uint SelectableLayers = PhysicsLayers.World | PhysicsLayers.StaticInstances;
 	private const string SoundBus = "master";
 
+	public static readonly StringName CancelAction = "ui_cancel";
 	public static readonly StringName TriggerAction = "tool_trigger";
 	public static readonly StringName SelectionMarqueeAction = "tool_selection_marquee";
 	public static readonly StringName SelectionToggleAction = "tool_selection_toggle";

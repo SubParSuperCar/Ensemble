@@ -95,6 +95,7 @@ public partial class SessionManager
 			Log.Debug(
 				"Discarded invalid display name from peer {PeerId}: {DisplayName}", peerId,
 				TextElements.Truncate(displayName, MaxDisplayNameLength + 1));
+
 			displayName = string.Empty;
 		}
 		// The host's own name isn't filtered, like its chat messages

@@ -57,6 +57,7 @@ public static partial class LuaExecutor
 		}
 
 		Log.Information("Saved creations in {Path}:\n{Files}", directory.FullName, string.Join('\n', lines));
+
 		return context.Return();
 	}
 

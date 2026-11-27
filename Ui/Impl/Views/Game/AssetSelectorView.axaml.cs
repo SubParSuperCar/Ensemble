@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.ViewModels;
@@ -24,6 +25,12 @@ public sealed partial class AssetSelectorView : UserControl, IViewFor<AssetSelec
 		_rotateXFlash = new PressFlash(RotateXButton);
 		_rotateYFlash = new PressFlash(RotateYButton);
 		_rotateZFlash = new PressFlash(RotateZButton);
+
+		// Tunneling, so the reset preempts the text box's own context menu
+		LinearIncrementBox.AddHandler(
+			ContextRequestedEvent, OnLinearIncrementContextRequested, RoutingStrategies.Tunnel);
+		AngularIncrementBox.AddHandler(
+			ContextRequestedEvent, OnAngularIncrementContextRequested, RoutingStrategies.Tunnel);
 	}
 
 	protected override void OnDataContextChanged(EventArgs e)
@@ -45,6 +52,18 @@ public sealed partial class AssetSelectorView : UserControl, IViewFor<AssetSelec
 		};
 
 		flash.Flash();
+	}
+
+	private void OnLinearIncrementContextRequested(object? sender, ContextRequestedEventArgs e)
+	{
+		_viewModel?.ResetLinearSnappingIncrement();
+		e.Handled = true;
+	}
+
+	private void OnAngularIncrementContextRequested(object? sender, ContextRequestedEventArgs e)
+	{
+		_viewModel?.ResetAngularSnappingIncrement();
+		e.Handled = true;
 	}
 
 	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) => _viewModel?.FilterQuery = string.Empty;

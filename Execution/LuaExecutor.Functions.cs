@@ -18,7 +18,7 @@ public static partial class LuaExecutor
 	private static readonly (LuaFunction Function, string Parameters, string Description)[] Functions =
 	[
 		(new LuaFunction(nameof(add_inst), add_inst), "asset_id, x?, y?, z?, rx?, ry?, rz?",
-			"Places an asset on your plot (grid units, degrees), resting on the floor by default"),
+			"Places an asset on your plot (cubes, degrees), resting on the floor by default"),
 		(new LuaFunction(nameof(ban_addr), ban_addr), "address, reason?",
 			"Kicks everyone at an IP address and bans it for the session"),
 		(new LuaFunction(nameof(ban_peer), ban_peer), "player, reason?", "Bans a player's IP address for the session"),

@@ -19,6 +19,9 @@ public enum RotationSpace : byte
 
 public partial class ConstructTool : ToolBase
 {
+	public const float DefaultSnappingIncrementLinear = 1f;
+	public const float DefaultSnappingIncrementAngularRadians = float.Pi / 2;
+
 	private const float LinearSmoothingRate = 40f;
 	private const float AngularSmoothingRate = 36f;
 
@@ -53,8 +56,8 @@ public partial class ConstructTool : ToolBase
 
 	public RotationSpace RotationSpace { get; set; } = RotationSpace.Global;
 
-	public float? SnappingIncrementLinear { get; set; } = 1f;
-	public float SnappingIncrementAngularRadians { get; set; } = float.Pi / 2;
+	public float? SnappingIncrementLinear { get; set; } = DefaultSnappingIncrementLinear;
+	public float SnappingIncrementAngularRadians { get; set; } = DefaultSnappingIncrementAngularRadians;
 
 	public int AssetId { get; private set; }
 
@@ -85,7 +88,7 @@ public partial class ConstructTool : ToolBase
 			return;
 
 		var current = preview.GlobalTransform;
-		var linearWeight = Smoothing.GetWeight(LinearSmoothingRate, delta);
+		var linearWeight = IsSnapping ? Smoothing.GetWeight(LinearSmoothingRate, delta) : 1f;
 		var angularWeight = Smoothing.GetWeight(AngularSmoothingRate, delta);
 
 		var rotation = current.Basis.GetRotationQuaternion().Normalized()

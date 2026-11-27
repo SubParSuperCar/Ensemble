@@ -77,6 +77,12 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 	private void OnRotated(Vector3.Axis axis) => Rotated?.Invoke(axis);
 
+	public void ResetLinearSnappingIncrement() =>
+		LinearSnappingIncrement = ConstructTool.DefaultSnappingIncrementLinear;
+
+	public void ResetAngularSnappingIncrement() =>
+		AngularSnappingIncrement = float.RadiansToDegrees(ConstructTool.DefaultSnappingIncrementAngularRadians);
+
 	partial void OnLinearSnappingIncrementChanging(float value) =>
 		Construct.SnappingIncrementLinear = value is 0f ? null : value;
 

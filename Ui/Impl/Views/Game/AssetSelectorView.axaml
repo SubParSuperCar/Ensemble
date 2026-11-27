@@ -60,11 +60,13 @@
                         <TextBlock Text="{Binding Name}" ToolTip.Tip="{Binding Path}" TextTrimming="CharacterEllipsis" />
                     </TreeDataTemplate>
 
+                    <!-- Lighter than the folders' text, so assets stand apart from them at a glance -->
                     <DataTemplate DataType="vm:AssetNode">
                         <Border
                             ToolTip.Tip="{Binding Description}"
                             Background="{DynamicResource TranslucentBackgroundBrush}"
-                            Padding="4,0">
+                            Padding="4,0"
+                            TextElement.FontWeight="ExtraLight">
 
                             <Grid ColumnSpacing="16">
                                 <Grid.ColumnDefinitions>
@@ -84,17 +86,19 @@
 
             <Grid Grid.Row="3" ColumnDefinitions="*,*,Auto" ColumnSpacing="2">
                 <NumericUpDown
+                    Name="LinearIncrementBox"
                     Value="{Binding LinearSnappingIncrement}"
                     PlaceholderText="&lt;Lin. Incr.&gt;"
-                    ToolTip.Tip="The grid snapping increment, in units. Zero disables snapping."
+                    ToolTip.Tip="The grid snapping increment, in cubes (half a meter each). Zero disables snapping. Right-click to reset it to one cube."
                     Minimum="0" Maximum="10"
                     Increment="0.125" />
 
                 <NumericUpDown
+                    Name="AngularIncrementBox"
                     Grid.Column="1"
                     Value="{Binding AngularSnappingIncrement}"
                     PlaceholderText="&lt;Rot. Incr. Deg.&gt;"
-                    ToolTip.Tip="The rotation snapping increment, in degrees."
+                    ToolTip.Tip="The rotation snapping increment, in degrees. Right-click to reset it to 90 degrees."
                     Minimum="-180" Maximum="180"
                     Increment="11.25"
                     ButtonSpinnerLocation="Left" />

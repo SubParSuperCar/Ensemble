@@ -9,6 +9,7 @@ using Hardware.Info;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Environment = System.Environment;
+using OS = Godot.OS;
 using Entry = (string Name, string Value);
 
 namespace EnsembleRoot.Scripts.Logging;
@@ -19,20 +20,26 @@ public partial class DiagnosticLogger : Node, IAutoload
 {
 	private const string LinuxKernelVersionFilePath = "/proc/sys/kernel/osrelease";
 
-	public void Initialize() =>
-		_ = Task.Run(static () =>
+	// The renderer is read here, as the rendering server belongs to the main thread
+	public void Initialize()
+	{
+		var renderer = new List<Entry>();
+		AddRendererInfo(renderer);
+
+		_ = Task.Run(() =>
 		{
 			try
 			{
-				LogReport();
+				LogReport(renderer);
 			}
 			catch (Exception exception)
 			{
 				Log.Error(exception, "Failed to build {Class} report", nameof(DiagnosticLogger));
 			}
 		});
+	}
 
-	private static void LogReport()
+	private static void LogReport(List<Entry> renderer)
 	{
 		Log.Debug("Building {Class} report...", nameof(DiagnosticLogger));
 		var stopwatch = Stopwatch.StartNew();
@@ -50,6 +57,8 @@ public partial class DiagnosticLogger : Node, IAutoload
 		{
 			Log.Warning(exception, "Failed to collect hardware info");
 		}
+
+		entries.AddRange(renderer);
 
 		AddLocaleInfo(entries);
 
@@ -143,6 +152,29 @@ public partial class DiagnosticLogger : Node, IAutoload
 			.OrderBy(static adapter => adapter.Name, StringComparer.OrdinalIgnoreCase);
 		foreach (var adapter in adapters)
 			Add(entries, "NIC", adapter.Name);
+	}
+
+	// What the game renders with, of the GPUs listed, so a wrong pick (e.g., an integrated one) shows
+	private static void AddRendererInfo(List<Entry> entries)
+	{
+		if (Main.IsHeadlessServer)
+			return;
+
+		var type = RenderingServer.GetVideoAdapterType() switch
+		{
+			RenderingDevice.DeviceType.IntegratedGpu => "integrated",
+			RenderingDevice.DeviceType.DiscreteGpu => "discrete",
+			RenderingDevice.DeviceType.VirtualGpu => "virtual",
+			RenderingDevice.DeviceType.Cpu => "software",
+			_ => "other"
+		};
+
+		Add(entries, "Render GPU",
+			$"{RenderingServer.GetVideoAdapterName()} ({RenderingServer.GetVideoAdapterVendor()}, {type})");
+		Add(entries, "Render API",
+			$"{RenderingServer.GetCurrentRenderingDriverName()} {RenderingServer.GetVideoAdapterApiVersion()} " +
+			$"({RenderingServer.GetCurrentRenderingMethod()})");
+		Add(entries, "GPU Driver", string.Join(' ', OS.GetVideoAdapterDriverInfo()));
 	}
 
 	private static void AddLocaleInfo(List<Entry> entries)

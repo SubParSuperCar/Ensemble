@@ -658,10 +658,13 @@ yields, and `print` and returned values show what tables hold.
   what it can't keep. Password-protected saves are the real protection, since every leftover copy stays encrypted.
 - **Logging:** Serilog writes colored console output, rolling JSON files, the in-game log view, and toasts for warnings.
   The in-game history keeps the console's colors as styled runs (`AnsiText` reads its escape codes), which the log view
-  tracks as segments of its document, so they move with each edit.
+  tracks as segments of its document, so they move with each edit. The engine's own output (Godot's and its addons'
+  errors, warnings, and prints) reaches the files and the log view too, through a Godot `Logger` (`EngineLog`); the
+  console and the editor already show it, so their sinks skip it.
 - **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging
   silently.
-- **Startup report:** the OS, hardware, build, and commit are logged at startup, so bug reports carry their context.
+- **Startup report:** the OS, hardware, build, and commit are logged at startup, so bug reports carry their context,
+  with the GPU the game actually renders on beside the ones installed.
 - **Stats overlay:** frame and process times, memory, draw calls, and network traffic, in the top-left corner.
 
 ---

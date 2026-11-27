@@ -8,6 +8,11 @@ namespace EnsembleRoot.Scripts.Logging;
 
 public sealed class LogSink : ILogEventSink
 {
+	[ThreadStatic] private static bool _isEmitting;
+
+	/// <summary>Whether this thread is printing through the engine, whose loggers then hear it back.</summary>
+	internal static bool IsEmitting => _isEmitting;
+
 	public void Emit(LogEvent logEvent)
 	{
 		var renderedMessage = logEvent.RenderMessage(CultureInfo.InvariantCulture);
@@ -22,7 +27,21 @@ public sealed class LogSink : ILogEventSink
 		if (logEvent.Properties.TryGetValue(NativeFrames.PropertyName, out var nativeFrames))
 			message = string.Concat(message, "\nNative frames:\n", (nativeFrames as ScalarValue)?.Value);
 
-		switch (logEvent.Level)
+		_isEmitting = true;
+
+		try
+		{
+			Print(logEvent.Level, message);
+		}
+		finally
+		{
+			_isEmitting = false;
+		}
+	}
+
+	private static void Print(LogEventLevel level, string message)
+	{
+		switch (level)
 		{
 			case LogEventLevel.Error or LogEventLevel.Fatal:
 				GD.PushError(message);

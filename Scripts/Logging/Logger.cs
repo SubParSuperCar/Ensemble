@@ -35,6 +35,7 @@ public partial class Logger : Node, IAutoload
 		$"{{#if {NativeFrames.PropertyName} is not null}}Native frames:\n{{{NativeFrames.PropertyName}}}\n{{#end}}",
 		CultureInfo.InvariantCulture, theme: TemplateTheme.Code);
 
+	private EngineLog? _engineLog;
 	private ILoggerFactory? _factory;
 
 	public static ILoggerFactory? Factory { get; private set; }
@@ -79,6 +80,9 @@ public partial class Logger : Node, IAutoload
 
 		Factory = _factory;
 
+		_engineLog = new EngineLog();
+		OS.AddLogger(_engineLog);
+
 		if (failure is null)
 			Log.Information(
 				"Writing {Class} log files to {Directory} with name template {NameTemplate}",
@@ -99,6 +103,9 @@ public partial class Logger : Node, IAutoload
 	{
 		Log.Debug("Closing and flushing logger...");
 
+		if (_engineLog is not null)
+			OS.RemoveLogger(_engineLog);
+
 		_factory?.Dispose();
 		if (ReferenceEquals(Factory, _factory))
 			Factory = null;
@@ -113,10 +120,17 @@ public partial class Logger : Node, IAutoload
 			.Enrich.With(new LogEnricher())
 			.WriteTo.Sink(new VolatileLogHistorySink());
 
-		// The editor's Output panel only shows Godot's prints, which drop ANSI colors, so other runs skip Godot
-		return EngineDebugger.IsActive()
-			? config.WriteTo.Sink(new LogSink())
-			: config.WriteTo.Console(ConsoleFormatter, standardErrorFromLevel: LogEventLevel.Warning);
+		// The editor's Output panel only shows Godot's prints, which drop ANSI colors, so other runs skip Godot. Both
+		// already show the engine's own output.
+		return config.WriteTo.Conditional(
+			static logEvent => !EngineLog.IsFromEngine(logEvent),
+			static sinks =>
+			{
+				if (EngineDebugger.IsActive())
+					sinks.Sink(new LogSink());
+				else
+					sinks.Console(ConsoleFormatter, standardErrorFromLevel: LogEventLevel.Warning);
+			});
 	}
 
 	private static LoggerConfiguration CreateConfig(string logDir, bool useUserCopy, out string? syncNote)

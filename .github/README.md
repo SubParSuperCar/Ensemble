@@ -156,8 +156,8 @@ Ensemble's test map:
   releases here, and the [itch app](https://itch.io/app) keeps them up to date.
 
 - **Tagged builds:** the [latest release](https://github.com/SubParSuperCar/Ensemble/releases/latest) has self-contained
-  Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` (Linux), or `Ensemble.app`
-  (macOS) &mdash; no install, no runtime needed.
+  Windows, Linux, and macOS builds. Unzip and run `Ensemble.exe` (Windows), `Ensemble.x86_64` or `Ensemble.arm64`
+  (Linux), or `Ensemble.app` (macOS) &mdash; no install, no runtime needed.
 
 - **Latest commit:** run the
   [Build Binaries (CI/CD)](https://github.com/SubParSuperCar/Ensemble/actions/workflows/bin.yml) workflow ("Run

@@ -138,7 +138,9 @@ Decided during the 2026-10 refinement campaign; they apply everywhere.
   KWin session) and read the logs for errors, not just for the expected lines.
 - **Commits:** local commits after a finished piece of work are welcome (`git commit -s`); pushing is always the
   owner's call. An AI-assisted commit ends with an `Assisted-by: Claude <model>` trailer, never `Co-authored-by` (GitHub
-  lists co-authors as contributors). The owner does bulk renames and moves in Rider.
+  lists co-authors as contributors). Renames and moves that ripple through code (namespaces, types, many files) are
+  the owner's, in Rider; a few files that code doesn't name (e.g., a scene its folder is scanned for) can be moved with
+  `git mv`, then reimported (`--headless --import`) so Godot's UID cache follows.
 - **System changes:** least invasive first; explain anything needing `sudo`, its risks, and how to undo it.
 - **New UI surfaces** wait for the owner's layout; build and verify the backend first.
 

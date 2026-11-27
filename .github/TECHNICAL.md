@@ -508,7 +508,7 @@ graph LR
   own.
 - `UndoRedo` records each tool edit as a pair of thunks that submit actions, so undoing is validated like any edit.
   `InstanceEdits` gives the tools one call per add, removal, or property edit; recreated instances get new IDs, so the
-  history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X`).
+  history finds them by asset and transform. It clears when the local plot changes (`Ctrl+Z` / `Ctrl+X` or `Ctrl+Y`).
 - Highlights (`Scripts/Adornments/`) outline a box with edges drawn over everything, and fill their `Target`'s own
   meshes through their material overlay, so only its geometry is tinted, never the space around it. `AxialHighlight`
   colors both by axis (each surface by the axes it faces, blended in Oklab, and each edge fading in from white), and

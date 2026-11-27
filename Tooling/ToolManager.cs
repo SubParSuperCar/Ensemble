@@ -99,9 +99,9 @@ public partial class ToolManager : Node, IAutoload
 		else if (@event.IsActionPressed(PaintTool.ToggleAction))
 			Toggle<PaintTool>();
 		else if (@event.IsActionPressed(UndoAction))
-			UndoRedo.Undo();
+			HandleHistory(UndoRedo.Undo);
 		else if (@event.IsActionPressed(RedoAction))
-			UndoRedo.Redo();
+			HandleHistory(UndoRedo.Redo);
 	}
 
 	private TTool Get<TTool>() where TTool : ToolBase, new() =>
@@ -187,6 +187,13 @@ public partial class ToolManager : Node, IAutoload
 				RequestEnable(tool);
 
 		_spawnDisabledTools.Clear();
+	}
+
+	// Handled, so no tool also takes the keys (Ctrl+Y would rotate the ConstructTool too)
+	private void HandleHistory(Action step)
+	{
+		step();
+		GetViewport().SetInputAsHandled();
 	}
 
 	private void DisableAll(ToolBase? exception = null)

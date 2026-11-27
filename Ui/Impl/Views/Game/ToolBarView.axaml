@@ -144,7 +144,7 @@
                     <Button
                         Content="-&gt;"
                         Command="{Binding RedoCommand}"
-                        ToolTip.Tip="Redoes your last undone tool edit on this plot. (Bound to Ctrl+X)"
+                        ToolTip.Tip="Redoes your last undone tool edit on this plot. (Bound to Ctrl+X or Ctrl+Y)"
                         IsEnabled="{Binding IsRedoEnabled}" />
                 </StackPanel>
 

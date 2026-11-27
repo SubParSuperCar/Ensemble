@@ -247,8 +247,8 @@ with `set_profanity_filter_level`.
 | Box-select (delete / edit tool)       | `Ctrl` + drag (`Shift` toggles, `Esc` cancels)             |
 | Box-paint (paint tool)                | `Ctrl` + drag (`Esc` cancels)                              |
 | Eyedropper on / off (paint tool)      | Tap `Ctrl`, then left mouse to pick up paint (`Esc` stops) |
-| Copy / paste properties (edit tool)   | `Ctrl+C` / `Ctrl+V`                                        |
-| Undo / redo (tools)                   | `Ctrl+Z` / `Ctrl+X`                                        |
+| Copy / paste properties (edit tool)   | `C` or `Ctrl+C` / `V` or `Ctrl+V`                          |
+| Undo / redo (tools)                   | `Ctrl+Z` / `Ctrl+X` or `Ctrl+Y`                            |
 | Rotate placement (X / Y / Z)          | `R` / `T` / `Y`                                            |
 | Reset character position              | Hold `H` for 1 second                                      |
 | Toggle flashlight                     | `F`                                                        |

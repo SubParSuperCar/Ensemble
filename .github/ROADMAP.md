@@ -72,10 +72,10 @@ The tool suite, in rough intended order of implementation.
   paste in chat (reuses the save pipeline)
 - [x] (M) Undo / redo - a local history the tools push to, not part of the actions (Lua and large scripted edits stay
   out of it): each entry pairs a redo with an undo thunk that submits the counter-action (e.g., re-adding removed
-  instances), so validation still applies; `Ctrl+Z` / `Ctrl+X` (beside the clipboard keys, not `Ctrl+Y`), cleared
+  instances), so validation still applies; `Ctrl+Z` / `Ctrl+X` (beside the clipboard keys) or `Ctrl+Y`, cleared
   when the local plot changes
-- [x] (M) Clipboard - `Ctrl+C` / `Ctrl+V` copy the selection's shared properties and paste them onto others, next to
-  undo / redo on the same hand
+- [x] (M) Clipboard - `C` / `V` (or with `Ctrl`) copy the selection's shared properties and paste them onto others,
+  next to undo / redo on the same hand
 - [ ] (M) Build replays - record a plot's add / remove / property actions and replay them as a time-lapse
 
 ## Multiplayer / replication

@@ -30,6 +30,7 @@
     <File Path=".github/TECHNICAL.md"/>
   </Folder>
   <Folder Name="/Solution Items/GitHub/Scripts/">
+    <File Path=".github/scripts/godot.ps1"/>
     <File Path=".github/scripts/profanity-list.sh"/>
     <File Path=".github/scripts/symbolize.sh"/>
   </Folder>

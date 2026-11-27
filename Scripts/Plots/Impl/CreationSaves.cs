@@ -53,7 +53,7 @@ public static class CreationSaves
 	public static Task<SaveSummary> SummarizeAsync(string path, CancellationToken cancellationToken) =>
 		Task.Run(() => SaveFile.Summarize(path), cancellationToken);
 
-	public static SaveFormat GetFormat(string path) =>
+	private static SaveFormat GetFormat(string path) =>
 		string.Equals(Path.GetExtension(path), JsonExtension, StringComparison.OrdinalIgnoreCase)
 			? SaveFormat.Json
 			: SaveFormat.Binary;

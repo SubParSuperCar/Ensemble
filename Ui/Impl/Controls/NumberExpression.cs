@@ -69,10 +69,13 @@ public static class NumberExpression
 
 		private decimal ParseUnary()
 		{
-			if (Accept('-') || Accept(format.NegativeSign))
-				return -ParseUnary();
+			var sign = 1;
 
-			return Accept('+') ? ParseUnary() : ParsePrimary();
+			while (true)
+				if (Accept('-') || Accept(format.NegativeSign))
+					sign = -sign;
+				else if (!Accept('+'))
+					return sign * ParsePrimary();
 		}
 
 		private decimal ParsePrimary()

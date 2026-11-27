@@ -72,7 +72,7 @@ public partial class PlotHandle : Node3D
 	/// <summary>Sets the spacing of the floor grid's finest lines in meters, or the grid's own with null.</summary>
 	public void SetFineGridSpacing(float? spacing) =>
 		GetNode<MeshInstance3D>(FloorMeshPath).SetInstanceShaderParameter(
-			FineGridSpacingParameter, spacing is { } meters ? meters : default(Variant));
+			FineGridSpacingParameter, spacing ?? default(Variant));
 
 	public void SetOutline(Color? color, bool hasMarchingAnts)
 	{

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Godot;
 using Godot.Collections;
 using Serilog;
@@ -39,12 +40,15 @@ internal sealed partial class EngineLog : Godot.Logger
 
 		var level = (ErrorType)errorType is ErrorType.Warning ? LogEventLevel.Warning : LogEventLevel.Error;
 
-		Write(level, $"{(string.IsNullOrEmpty(rationale) ? code : rationale)} (at {function} in {file}:{line})");
+		var message = string.IsNullOrEmpty(rationale) ? code : rationale;
+		Write(level, string.Create(CultureInfo.InvariantCulture, $"{message} (at {function} in {file}:{line})"));
 	}
 
 	// As the template itself, escaped, so the log view shows it as plain text rather than a value it colors
 	// ReSharper disable once TemplateIsNotCompileTimeConstantProblem
+#pragma warning disable CA2254
 	private void Write(LogEventLevel level, string text) =>
 		_log.Write(
 			level, text.Replace("{", "{{", StringComparison.Ordinal).Replace("}", "}}", StringComparison.Ordinal));
+#pragma warning restore CA2254
 }

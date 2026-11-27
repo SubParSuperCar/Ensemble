@@ -11,6 +11,7 @@ public static class PlotGrids
 		get;
 		set
 		{
+			// ReSharper disable once CompareOfFloatsByEqualityOperator
 			if (field == value)
 				return;
 

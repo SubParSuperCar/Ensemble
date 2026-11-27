@@ -8,10 +8,9 @@ namespace EnsembleRoot.Scripts.Logging;
 
 public sealed class LogSink : ILogEventSink
 {
-	[ThreadStatic] private static bool _isEmitting;
-
 	/// <summary>Whether this thread is printing through the engine, whose loggers then hear it back.</summary>
-	internal static bool IsEmitting => _isEmitting;
+	[field: ThreadStatic]
+	internal static bool IsEmitting { get; private set; }
 
 	public void Emit(LogEvent logEvent)
 	{
@@ -27,7 +26,7 @@ public sealed class LogSink : ILogEventSink
 		if (logEvent.Properties.TryGetValue(NativeFrames.PropertyName, out var nativeFrames))
 			message = string.Concat(message, "\nNative frames:\n", (nativeFrames as ScalarValue)?.Value);
 
-		_isEmitting = true;
+		IsEmitting = true;
 
 		try
 		{
@@ -35,7 +34,7 @@ public sealed class LogSink : ILogEventSink
 		}
 		finally
 		{
-			_isEmitting = false;
+			IsEmitting = false;
 		}
 	}
 

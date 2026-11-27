@@ -142,7 +142,7 @@ public sealed partial class StatViewModel : ViewModelBase
 	{
 		var vsync = string.Create(
 			CultureInfo.InvariantCulture,
-			$"{DisplayServer.WindowGetVsyncMode()} at {DisplayServer.ScreenGetRefreshRate():F0} Hz");
+			$"{DisplayServer.WindowGetVsyncMode()} @ {DisplayServer.ScreenGetRefreshRate():F0} Hz");
 
 		return Engine.MaxFps > 0
 			? string.Create(CultureInfo.InvariantCulture, $"{vsync}, capped at {Engine.MaxFps} FPS")

@@ -65,6 +65,7 @@ public partial class ConstructTool : ToolBase
 			UpdateGrid();
 		}
 	} = DefaultSnappingIncrementLinear;
+
 	public float SnappingIncrementAngularRadians { get; set; } = DefaultSnappingIncrementAngularRadians;
 
 	public int AssetId { get; private set; }

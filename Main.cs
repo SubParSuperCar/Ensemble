@@ -88,7 +88,7 @@ public partial class Main : Node
 
 		var message = string.Create(
 			CultureInfo.InvariantCulture,
-			$"{count} other player(s) are in the session you host. {action} ends it for all of them.\n\nContinue?");
+			$"{count} other player(s) are in the session you host.\n{action} ends it for all of them.\n\nContinue?");
 
 		// A box that can't open answers No, which would leave no way to quit
 		try

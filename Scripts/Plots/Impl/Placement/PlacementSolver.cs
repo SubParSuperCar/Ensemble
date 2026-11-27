@@ -117,7 +117,8 @@ public sealed class PlacementSolver
 				if (!box.Overlaps(obstacle))
 					continue;
 
-				var translation = IsInFront(obstacle, normal, surface) &&
+				var translation =
+					IsInFront(obstacle, normal, surface) &&
 					box.GetTangentialTranslation(obstacle, normal) is { } sideways
 						? sideways
 						: box.GetMinimumTranslation(obstacle, normal);

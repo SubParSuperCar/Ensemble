@@ -62,19 +62,19 @@ shape = SubResource("BoxShape3D_anchor")
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=736963371]
 mesh = SubResource("BoxMesh_anchor")
 
-[node name="Text" type="Node3D" parent="." unique_id=1206868681]
+[node name="Axial Labels" type="Node3D" parent="." unique_id=1206868681]
 
-[node name="X" type="MeshInstance3D" parent="Text" unique_id=493250829]
+[node name="X" type="MeshInstance3D" parent="Axial Labels" unique_id=493250829]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 0, 0, 0)
 mesh = SubResource("TextMesh_n5rky")
 
-[node name="Y" type="MeshInstance3D" parent="Text" unique_id=100439530]
+[node name="Y" type="MeshInstance3D" parent="Axial Labels" unique_id=100439530]
 transform = Transform3D(-4.371139e-08, -1, -4.371139e-08, 0, -4.371139e-08, 1, -1, 4.371139e-08, 1.9106855e-15, 0, 0, 0)
 mesh = SubResource("TextMesh_dx7pn")
 
-[node name="Z" type="MeshInstance3D" parent="Text" unique_id=2130514297]
+[node name="Z" type="MeshInstance3D" parent="Axial Labels" unique_id=2130514297]
 mesh = SubResource("TextMesh_efkga")
 
 [node name="Paintable" type="Node" parent="." unique_id=1224380187 node_paths=PackedStringArray("Excluded")]
 script = ExtResource("2_paint")
-Excluded = [NodePath("../Text/X"), NodePath("../Text/Y"), NodePath("../Text/Z")]
+Excluded = [NodePath("../Axial Labels/X"), NodePath("../Axial Labels/Y"), NodePath("../Axial Labels/Z")]

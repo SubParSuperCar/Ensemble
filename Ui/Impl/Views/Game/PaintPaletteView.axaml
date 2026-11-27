@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:EnsembleRoot.Ui.ViewModels"
     xmlns:c="using:EnsembleRoot.Ui.Controls"
+    xmlns:cm="using:EnsembleRoot.Common"
     xmlns:cp="using:Avalonia.Controls.Primitives"
     mc:Ignorable="d" d:DesignWidth="512" d:DesignHeight="384"
     x:Class="EnsembleRoot.Ui.Views.PaintPaletteView"
@@ -232,6 +233,10 @@
                                     Margin="1" />
                             </ScrollViewer>
                         </TabItem>
+
+                        <TabControl.PageTransition>
+                            <PageSlide Duration="{x:Static cm:Constants.AnimationDuration}" />
+                        </TabControl.PageTransition>
                     </TabControl>
                 </Grid>
 

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://chfhof1o4nmth" path="res://Scripts/Assets/AssetHandle.cs" id="1_gp3bu"]
 [ext_resource type="Script" uid="uid://1si561g82ann" path="res://Scripts/Assets/Components/Airfoil.cs" id="2_airfo"]
+[ext_resource type="Script" uid="uid://ceyc15wgcmlmc" path="res://Scripts/Assets/Components/Paintable.cs" id="3_usfo5"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_usfo5"]
 size = Vector3(0.5, 0.05, 0.5)
@@ -19,6 +20,8 @@ AssetId = 21
 AssetName = &"Wing Panel"
 Description = &"A flat panel the air pushes on, for gliders and\nplanes. Tilted into the airflow, it lifts, more\nwith speed and with its angle, until it stalls at\nabout 15 degrees; it always drags. Build wings,\ntails, and fins from several, and scale their lift\nand drag with Lift Scale and Drag Scale."
 Properties = Dictionary[StringName, Variant]({
+&"_colorHex": "FFFFFF",
+&"_materialId": -1,
 &"dragScale": 1.0,
 &"liftScale": 1.0
 })
@@ -32,6 +35,10 @@ shape = SubResource("BoxShape3D_usfo5")
 mesh = SubResource("BoxMesh_gp3bu")
 
 [node name="Lift Center" type="Marker3D" parent="." unique_id=1927081603]
+
+[node name="Paintable" type="Node" parent="." unique_id=821454540]
+script = ExtResource("3_usfo5")
+metadata/_custom_type_script = "uid://ceyc15wgcmlmc"
 
 [node name="Airfoil" type="Node" parent="." unique_id=2126699806 node_paths=PackedStringArray("Marker")]
 script = ExtResource("2_airfo")

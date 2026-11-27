@@ -92,6 +92,15 @@ public static partial class LuaExecutor
 		return context.ReturnNothing();
 	}
 
+	private static ValueTask<int> set_ui_anims_on(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		AreAnimationsOn = context.GetArgument<bool>(0);
+		Log.Information("UI animations will be {State} from the next launch", AreAnimationsOn ? "on" : "off");
+
+		return context.ReturnNothing();
+	}
+
 	private static ValueTask<int> set_stats_on(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		WeakReferenceMessenger.Default.Send(new SetStatsShownMessage(context.GetArgument<bool>(0)));

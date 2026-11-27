@@ -617,8 +617,8 @@ yields, and `print` and returned values show what tables hold.
 |             | `set_profanity_filter_on`                                                                          |
 | Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`, `trace_frames`         |
 | Display     | `cap_fps`, `dmp_draw_modes`, `dmp_vsync_modes`, `dmp_window_modes`, `set_cam_fov`,                 |
-|             | `set_draw_mode`, `set_mouse_sens`, `set_stats_on`, `set_ui_dark_theme_on`, `set_ui_scale`,         |
-|             | `set_vsync_mode`, `set_window_mode`                                                                |
+|             | `set_draw_mode`, `set_mouse_sens`, `set_stats_on`, `set_ui_anims_on`, `set_ui_dark_theme_on`,      |
+|             | `set_ui_scale`, `set_vsync_mode`, `set_window_mode`                                                |
 | Moderation  | `ban_addr`, `ban_peer`, `dmp_bans`, `kick_peer`, `unban_addr`, `unban_all`                         |
 | Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                                 |
 | Plots       | `dmp_creation`, `dmp_plots`, `kick_occupant`, `set_plot`, `set_plot_simulator`, `set_plot_spawned` |

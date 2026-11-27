@@ -1,4 +1,5 @@
 using System.Reflection;
+using EnsembleRoot.Common.Utils;
 using Godot;
 
 // ReSharper disable MemberCanBePrivate.Global
@@ -54,13 +55,30 @@ public static class Constants
 	/// </summary>
 	public const float Epsilon = MinColliderInset / 2;
 
-	public static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(3 / 16d);
+	private const string UiSection = "ui";
+	private const string AreAnimationsOnKey = "are_animations_on";
 
 	/// <summary>
 	///     Propagated through the tree once the game has decided to quit, past the engine's own notifications. The
 	///     window's close request only asks, as the player may cancel it.
 	/// </summary>
 	public const int NotificationQuitting = 1 << 20;
+
+	private static TimeSpan? _animationDuration;
+
+	/// <summary>
+	///     How long the UI's transitions take, or none while they're turned off, as of this launch: styles read it once,
+	///     as they load.
+	/// </summary>
+	public static TimeSpan AnimationDuration =>
+		_animationDuration ??= AreAnimationsOn ? TimeSpan.FromSeconds(3 / 16d) : TimeSpan.Zero;
+
+	/// <summary>Whether the UI animates, remembered across launches; a change takes effect on the next one.</summary>
+	public static bool AreAnimationsOn
+	{
+		get => UserData.GetValue(UiSection, AreAnimationsOnKey, true).AsBool();
+		set => UserData.SetValue(UiSection, AreAnimationsOnKey, value);
+	}
 
 	/// <remarks>Also the multi-player handshake version: peers must match exactly.</remarks>
 	public static string GameVersion => field ??= ProjectSettings.GetSetting("application/config/version").AsString();

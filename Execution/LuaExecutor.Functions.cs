@@ -130,6 +130,8 @@ public static partial class LuaExecutor
 			"Slows the world down in single-player (none resets it)"),
 		(new LuaFunction(nameof(set_tool_on), set_tool_on), "tool, is_on",
 			"Turns the construct, destruct, property, or paint tool on or off"),
+		(new LuaFunction(nameof(set_ui_anims_on), set_ui_anims_on), "is_on",
+			"Turns the UI's animations on or off, remembered across launches, from the next one"),
 		(new LuaFunction(nameof(set_ui_dark_theme_on), set_ui_dark_theme_on), "is_on?",
 			"Picks the dark or light UI theme, or the system's with none"),
 		(new LuaFunction(nameof(set_ui_scale), set_ui_scale), "scale", "Sets the UI render scale"),

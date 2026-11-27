@@ -141,8 +141,8 @@
                                     Margin="4,0,2,0">
 
                                     <Button
-                                        Classes="reset"
                                         DockPanel.Dock="Right"
+                                        Classes="reset"
                                         Command="{Binding ResetCommand}"
                                         ToolTip.Tip="Resets this property to its default on the selected assets."
                                         VerticalAlignment="Stretch"

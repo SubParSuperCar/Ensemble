@@ -11,6 +11,7 @@ namespace EnsembleRoot.Ui.Services;
 public sealed partial class NavigatorService(IServiceProvider services) : DisposableObject, IScopedObject
 {
 	private readonly Stack<Func<ViewModelBase>> _history = [];
+
 	private Func<ViewModelBase>? _createCurrent;
 	private bool _shouldExcludeFromHistory;
 

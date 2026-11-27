@@ -126,10 +126,9 @@
                                 <cp:ColorPreviewer
                                     HsvColor="{Binding HsvColor}"
                                     ToolTip.Tip="The brush's color."
-                                    IsAccentColorsVisible="False"
-                                    Width="20"
-                                    Height="NaN"
-                                    CornerRadius="10" />
+                                    Width="20" Height="NaN"
+                                    CornerRadius="10"
+                                    IsAccentColorsVisible="False" />
                             </Border>
                         </Border>
 
@@ -142,11 +141,11 @@
 
                         <cp:ColorSlider
                             Grid.Column="2"
+                            Orientation="Vertical"
                             HsvColor="{Binding HsvColor}"
                             ToolTip.Tip="Brightness."
                             ColorComponent="Component3"
-                            ColorModel="Hsva"
-                            Orientation="Vertical" />
+                            ColorModel="Hsva" />
                     </Grid>
 
                     <Grid Grid.Row="1" ColumnDefinitions="*,Auto" ColumnSpacing="2">
@@ -207,7 +206,7 @@
                             Maximum="255" />
                     </Grid>
 
-                    <TabControl Grid.Row="5" Padding="0" MinHeight="64">
+                    <TabControl Grid.Row="5" MinHeight="64" Padding="0">
                         <TabItem Header="Swatches" ToolTip.Tip="The named web colors.">
                             <ScrollViewer Name="NamedScroll">
                                 <c:SwatchGrid
@@ -290,7 +289,7 @@
 
                             <ListBox.ItemTemplate>
                                 <DataTemplate DataType="vm:MaterialItem">
-                                    <StackPanel ToolTip.Tip="{Binding Stats}" Width="72" Spacing="2">
+                                    <StackPanel Spacing="2" ToolTip.Tip="{Binding Stats}" Width="72">
                                         <Image Source="{Binding Preview}" Width="56" Height="56" />
 
                                         <c:ScrollingTextBlock

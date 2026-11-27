@@ -90,6 +90,7 @@ public sealed partial class GameViewModel : ViewModelBase
 
 		IsLocalPlotSpawnedChanged -= OnIsLocalPlotSpawnedChanged;
 		IsPlotOwnerChanged -= OnIsPlotOwnerChanged;
+
 		GToolManager.ToolIsEnabledChanged -= OnToolIsEnabledChanged;
 
 		PlayerList = null;

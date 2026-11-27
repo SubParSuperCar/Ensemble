@@ -29,6 +29,7 @@ public sealed partial class AssetSelectorView : UserControl, IViewFor<AssetSelec
 		// Tunneling, so the reset preempts the text box's own context menu
 		LinearIncrementBox.AddHandler(
 			ContextRequestedEvent, OnLinearIncrementContextRequested, RoutingStrategies.Tunnel);
+
 		AngularIncrementBox.AddHandler(
 			ContextRequestedEvent, OnAngularIncrementContextRequested, RoutingStrategies.Tunnel);
 	}

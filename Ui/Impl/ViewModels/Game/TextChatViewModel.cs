@@ -46,7 +46,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	[NotifyCanExecuteChangedFor(nameof(SendCommand))]
 	public partial string Message { get; set; } = string.Empty;
 
-	public bool IsHost { get; } = GSessionManager.IsServer;
+	public bool IsServer { get; } = GSessionManager.IsServer;
 
 	[ObservableProperty] public partial bool IsProfanityFilterEnabled { get; set; } = GProfanityFilterManager.IsEnabled;
 	[ObservableProperty] public partial bool IsFileLoggingEnabled { get; set; } = GChatManager.IsFileLoggingEnabled;
@@ -75,7 +75,7 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	private void Send()
 	{
 		// The host's own messages are neither rate limited nor filtered
-		if (PostChatMessageAction.Post(Message) is { } text && !IsHost)
+		if (PostChatMessageAction.Post(Message) is { } text && !IsServer)
 			_sentTexts.Enqueue(text);
 
 		Message = string.Empty;
@@ -100,7 +100,6 @@ public sealed partial class TextChatViewModel : ViewModelBase, IWidget
 	}
 
 	partial void OnIsFileLoggingEnabledChanged(bool value) => GChatManager.IsFileLoggingEnabled = value;
-
 	partial void OnIsTtsEnabledChanged(bool value) => GChatManager.IsTtsEnabled = value;
 
 	private void OnMessageAdded(ChatMessage message)

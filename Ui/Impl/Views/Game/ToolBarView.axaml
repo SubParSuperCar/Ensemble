@@ -148,7 +148,12 @@
                         IsEnabled="{Binding IsRedoEnabled}" />
                 </StackPanel>
 
-                <StackPanel Grid.Column="6" Spacing="4" VerticalAlignment="Center" TextElement.FontSize="12">
+                <StackPanel
+                    Grid.Column="6"
+                    Spacing="4"
+                    VerticalAlignment="Center"
+                    TextElement.FontSize="12">
+
                     <CheckBox
                         Content="Mut.Ex."
                         IsChecked="{Binding IsMutexEnforced}"

@@ -21,6 +21,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 
 	private readonly List<INodeBase> _items = [];
 	private readonly Dictionary<int, AssetNode> _nodesByAssetId = [];
+
 	private GdInstances? _instances;
 
 	public AssetSelectorViewModel()
@@ -70,6 +71,7 @@ public sealed partial class AssetSelectorViewModel : ViewModelBase, IWidget
 		SelectedItems.CollectionChanged -= OnSelectedItemsChanged;
 		Construct.AssetIdChanged -= OnAssetIdChanged;
 		Construct.Rotated -= OnRotated;
+
 		LocalPlotChanged -= OnLocalPlotChanged;
 
 		SetInstances(null);

@@ -26,6 +26,7 @@ public sealed partial class StatViewModel : ViewModelBase
 
 	private readonly DispatcherService _dispatcher;
 	private readonly Queue<double> _uiFrameTimes = [];
+
 	private double _sinceRefresh;
 
 	public StatViewModel(DispatcherService dispatcher)
@@ -87,8 +88,8 @@ public sealed partial class StatViewModel : ViewModelBase
 			? Performance.GetCustomMonitor(Ui.ProcessTimeMonitor).AsDouble() * TimeSpan.MillisecondsPerSecond
 			: 0d;
 
-		List<(string Key, object Value)> stats =
-		[
+		var stats = new List<(string Key, object Value)>
+		{
 			("3D Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{fps} FPS ({frameTimeMs:F3} mspf)")),
 			("Process Time", string.Create(CultureInfo.InvariantCulture, $"{processTimeMs:F3} msec")),
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
@@ -106,7 +107,7 @@ public sealed partial class StatViewModel : ViewModelBase
 			("Draw Calls", Performance.GetMonitor(Performance.Monitor.RenderTotalDrawCallsInFrame)),
 			("Render Prims.", Performance.GetMonitor(Performance.Monitor.RenderTotalPrimitivesInFrame)),
 			("Input Sinking", InputSink.IsSunk)
-		];
+		};
 
 		AddSessionStats(stats);
 

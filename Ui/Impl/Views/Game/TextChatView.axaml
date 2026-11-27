@@ -80,7 +80,7 @@
                                     Content="Profanity Filter"
                                     IsChecked="{Binding IsProfanityFilterEnabled}"
                                     ToolTip.Tip="Masks profanity in chat and replaces inappropriate player names. (Host only)"
-                                    IsVisible="{Binding IsHost}" />
+                                    IsVisible="{Binding IsServer}" />
 
                                 <CheckBox
                                     Content="Log to File"

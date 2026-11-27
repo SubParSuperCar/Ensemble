@@ -265,7 +265,7 @@ public partial class Ui : Control
 			Performance.AddCustomMonitor(
 				ProcessTimeMonitor,
 				// A hidden host does no work at all
-				Callable.From(() => _host.Visible ? _lastUiProcessTime : 0),
+				Callable.From(() => _host.Visible ? _lastUiProcessTime : 0d),
 				[],
 				Performance.MonitorType.Time);
 

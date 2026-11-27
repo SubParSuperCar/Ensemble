@@ -125,8 +125,7 @@ public sealed partial class WidgetView : UserControl, IViewFor<WidgetViewModel>
 	private void BeginDrag(DragKind drag, PointerPressedEventArgs e)
 	{
 		if (
-			ViewModel is not { } viewModel ||
-			Area is not { } area ||
+			ViewModel is not { } viewModel || Area is not { } area ||
 			!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
 			return;
 

@@ -17,6 +17,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 	private static readonly TimeSpan HoverPollInterval = TimeSpan.FromSeconds(1 / 8d);
 
 	private readonly DispatcherTimer _hoverTimer = new() { Interval = HoverPollInterval };
+
 	private TopLevel? _topLevel;
 
 	public MainView()
@@ -55,7 +56,7 @@ public sealed partial class MainView : UserControl, IViewFor<MainViewModel>
 		_topLevel = null;
 	}
 
-	// Its text always stays opaque. Polls Godot's cursor, as what ignores hit tests gets no pointer events
+	// Its text always stays opaque. Polls Godot's cursor, as what ignores hit tests gets no pointer events.
 	private void OnHoverTimerTick(object? sender, EventArgs e)
 	{
 		if (_topLevel is null || Engine.GetMainLoop() is not SceneTree tree)

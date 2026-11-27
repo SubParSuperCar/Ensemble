@@ -62,8 +62,6 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 	protected override void OnDispose()
 	{
-		_heldKey = null;
-		StopListening();
 		_dispatcher.Input -= OnInput;
 
 		Property.PropertiesChanged -= OnPropertiesChanged;
@@ -72,6 +70,9 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		Property.Pasted -= OnPasted;
 
 		GSessionManager.ActionRejected -= OnActionRejected;
+
+		_heldKey = null;
+		StopListening();
 	}
 
 	// ReSharper disable once UnusedParameterInPartialMethod
@@ -127,13 +128,11 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 	{
 		var query = FilterQuery.Trim();
 
-		PropertyItem[] items =
-		[
-			.. _itemsByKey.Values
-				.Where(item => item.Matches(query))
-				.OrderBy(static item => item.DisplayName, StringComparer.OrdinalIgnoreCase)
-				.ThenBy(static item => item.Key.Type)
-		];
+		var items = _itemsByKey.Values
+			.Where(item => item.Matches(query))
+			.OrderBy(static item => item.DisplayName, StringComparer.OrdinalIgnoreCase)
+			.ThenBy(static item => item.Key.Type)
+			.ToArray();
 
 		Notice = items.Length > 0 ? null : GetNotice();
 
@@ -179,8 +178,7 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 		ReleaseSink();
 	}
 
-	// The sink outlasts the key press until the key comes back up, so it doesn't also reach whatever the game binds it
-	// to
+	// The sink is held until the key comes back up, so it doesn't also reach whatever the game binds it to
 	private void ReleaseSink()
 	{
 		if (_listeningItem is null && _heldKey is null)

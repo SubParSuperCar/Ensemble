@@ -12,6 +12,7 @@ public sealed partial class WidgetViewModel : ViewModelBase
 	private static readonly Rect MaximizedBounds = new(0, 0, 1, 1);
 
 	private readonly WidgetManagerService _manager;
+
 	private Rect? _restoreBounds;
 
 	internal WidgetViewModel(

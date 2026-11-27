@@ -24,7 +24,7 @@ public static class ScrollBarInset
 
 		Watch(scrollViewer, scrollBar =>
 		{
-			var inset = scrollBar.IsVisible ? scrollBar.Bounds.Width : 0;
+			var inset = scrollBar.IsVisible ? scrollBar.Bounds.Width : 0d;
 
 			foreach (var (overlay, margin) in overlays.Zip(margins))
 				overlay.Margin = new Thickness(margin.Left, margin.Top, margin.Right + inset, margin.Bottom);

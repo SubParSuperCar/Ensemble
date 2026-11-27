@@ -30,6 +30,7 @@ public sealed partial class ScrollingTextBlock : Control
 	};
 
 	private readonly WholeTextBlock _text = new() { TextTrimming = TextTrimming.CharacterEllipsis };
+
 	private bool _isFramePending;
 	private bool _isScrolling;
 	private double _offset;
@@ -61,6 +62,7 @@ public sealed partial class ScrollingTextBlock : Control
 		var width = _isScrolling || _text.DesiredSize.Width <= finalSize.Width
 			? _text.DesiredSize.Width
 			: finalSize.Width;
+
 		_text.Arrange(new Rect(-_offset, 0, width, finalSize.Height));
 
 		return finalSize;
@@ -143,8 +145,8 @@ public sealed partial class ScrollingTextBlock : Control
 
 	private static Color GetEdgeColor(double hiddenWidth) =>
 		Color.FromArgb(
-			(byte)Math.Round(byte.MaxValue * (1 - Math.Min(hiddenWidth / FadeWidth, 1)), MidpointRounding.ToEven), 0, 0,
-			0);
+			(byte)Math.Round(byte.MaxValue * (1 - Math.Min(hiddenWidth / FadeWidth, 1)), MidpointRounding.ToEven),
+			0, 0, 0);
 
 	private void StopScrolling()
 	{

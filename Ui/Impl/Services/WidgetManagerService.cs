@@ -24,6 +24,7 @@ public sealed class WidgetManagerService : DisposableObject, IScopedObject
 	private readonly Dictionary<Type, WidgetEntry> _entriesByType = [];
 	private readonly IServiceProvider _services;
 	private readonly Dictionary<Type, WidgetViewModel> _widgetsByType = [];
+
 	private int _topZIndex;
 
 	public WidgetManagerService(IServiceProvider services, DispatcherService dispatcher)

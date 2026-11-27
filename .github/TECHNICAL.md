@@ -376,9 +376,10 @@ sequenceDiagram
 | `KickOccupantAction`       | Removes a player from their plot (owner or host) |
 | `PostChatMessageAction`    | Posts a chat message (filtered by the host)      |
 | `SetProfanityFilterAction` | Toggles the profanity filter (host only)         |
+| `SetGravityAction`         | Sets the world's gravity (host only)             |
 
-Snapshots (`Replication/Snapshots/`): `PlotsSnapshot`, `CharactersSnapshot`, `ChatSnapshot`, and
-`ProfanityFilterSnapshot`.
+Snapshots (`Replication/Snapshots/`): `PlotsSnapshot`, `CharactersSnapshot`, `ChatSnapshot`,
+`ProfanityFilterSnapshot`, and `GravitySnapshot`.
 
 ### Channels
 

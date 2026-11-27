@@ -200,8 +200,9 @@ password only controls who can join, so don't use one that matters elsewhere.
 - **Dedicated server:** run the executable headless with user arguments, e.g.,
   `Ensemble.x86_64 --headless -- --port=7777 --password=abc --max-clients=8` (add `--upnp` to forward the port, or
   `--profanity-filter=false` to turn off the profanity filter). Every argument has a short form, e.g.,
-  `--p=7777 --pw=abc` (`j`, `mc`, `n`, `p`, `pf`, `pw`, and `u`). The same arguments work without `--headless`: a
-  regular window then hosts as a player (`--port`, with `--name`), or joins (`--join`), instead of opening the menu.
+  `--p=7777 --pw=abc` (`j`, `mc`, `n`, `p`, `pf`, `pw`, `sp`, and `u`). The same arguments work without `--headless`:
+  a regular window then hosts as a player (`--port`, with `--name`), joins (`--join`), or starts single-player
+  (`--single-player`) instead of opening the menu; `restart()` in the console uses them to come back to your session.
   A `-server` download is always headless, so it can leave `--headless` out.
 
 Players who join late receive the current state of every plot. Plot changes, placements, and deletions are synchronized,
@@ -216,7 +217,9 @@ one window, run `host_server() join_mp("127.0.0.1")`: it starts a headless serve
 `ban_addr("address", "reason")` bans an address directly, kicking anyone connected from it, `dmp_bans()` lists the bans,
 and `unban_addr("address")` and `unban_all()` lift them. Players can be kicked off plots with `kick_occupant(player)`,
 which plot owners can also use on their own plots. Display names are remembered between sessions. The host has authority
-over the session: they can clear any plot they occupy, and their chat messages bypass the profanity filter.
+over the session: they can clear any plot they occupy, change the gravity with `set_grav(3.7)` (Mars-like; `set_grav()`
+resets it), and their chat messages bypass the profanity filter. Ending a session others are in, by Quit Session or by
+closing the window, asks first.
 
 Chat happens in the Text Chat widget, which opens in multiplayer: press `/` to type and `Enter` to send (a message the
 host turns away, say for sending too fast, comes back to the box to send again). Nametags are colored per display name,

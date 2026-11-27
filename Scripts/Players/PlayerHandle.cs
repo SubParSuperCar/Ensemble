@@ -16,6 +16,8 @@ public partial class PlayerHandle : Node3D
 {
 	private const double ResetHoldDuration = 1d;
 
+	private const string ColliderName = "Collider";
+
 	private static readonly StringName ResetAction = "character_reset";
 	private static readonly StringName FlashlightAction = "character_flashlight_toggle";
 
@@ -225,7 +227,7 @@ public partial class PlayerHandle : Node3D
 
 	private Aabb CalculateBodyBounds()
 	{
-		var collider = Body.GetNode<CollisionShape3D>("Collider");
+		var collider = Body.GetNode<CollisionShape3D>(ColliderName);
 		return collider.Transform * collider.Shape.GetDebugMesh().GetAabb();
 	}
 

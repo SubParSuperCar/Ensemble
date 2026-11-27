@@ -22,7 +22,7 @@ script = ExtResource("1_62e8s")
 AssetId = 7
 AssetName = &"Hemisphere"
 Description = &"Half a ball, flat side down."
-MaxInstanceCount = 750
+MaxInstanceCount = 1000
 Density = 250.0
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=1757739895]

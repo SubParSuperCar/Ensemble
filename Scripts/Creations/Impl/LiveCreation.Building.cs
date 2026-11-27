@@ -139,6 +139,7 @@ public partial class LiveCreation
 		{
 			Name = id.ToString(CultureInfo.InvariantCulture),
 			Id = id,
+			Creation = this,
 			Transform = Origin,
 			Freeze = true,
 			CollisionLayer = PhysicsLayers.DynamicInstances,

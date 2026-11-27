@@ -25,6 +25,8 @@ public partial class Assembly : RigidBody3D
 	/// <summary>The group's index in weld order, which every peer derives alike.</summary>
 	public int Id { get; init; }
 
+	public LiveCreation Creation { get; init; } = null!;
+
 	/// <summary>The bounds of the pieces' colliders, in the body's space, once built.</summary>
 	public Aabb Bounds { get; private set; }
 

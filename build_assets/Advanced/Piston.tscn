@@ -37,17 +37,17 @@ Shaft = NodePath("Base/Shaft")
 ShaftEnd = NodePath("Plate/Shaft End")
 AssetId = 20
 AssetName = &"Piston"
-Description = &"Pushes its plate out to its target length while\nits extend key is held (T by default), and back in\nwith its retract key (G), like a hydraulic ram;\nreleased, it retracts unless it holds. Lengths are\nend to end, in cubes (it\'s one cube long when in),\nspeed in cubes per second, and force in newtons,\nso a heavy enough load pushes it back."
+Description = &"Pushes its plate out to its max length while its\nextend key is held (T by default), and back in\nwith its retract key (G), like a hydraulic ram;\nreleased, it retracts unless it holds. Max Length\nis how far the plate goes out, in cubes (0 is all\nthe way in), speed is in cubes per second, and\nforce in newtons, so a heavy enough load pushes\nit back."
 Properties = Dictionary[StringName, Variant]({
 &"autoRetract": true,
 &"extendKey": 84,
-&"force": 1000.0,
+&"force": 2000.0,
+&"maxLength": 2.0,
 &"retractKey": 71,
-&"speed": 1.0,
-&"targetLength": 2.0,
+&"speed": 2.0,
 &"toggles": false
 })
-MaxInstanceCount = 200
+MaxInstanceCount = 500
 
 [node name="Base" type="StaticBody3D" parent="." unique_id=1838132400]
 script = ExtResource("2_03uev")

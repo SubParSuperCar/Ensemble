@@ -42,7 +42,7 @@ Properties = Dictionary[StringName, Variant]({
 &"torque": 1000.0,
 &"torqueFalloff": false
 })
-MaxInstanceCount = 200
+MaxInstanceCount = 500
 metadata/_custom_type_script = "uid://chfhof1o4nmth"
 
 [node name="Base" type="StaticBody3D" parent="." unique_id=1141149626]

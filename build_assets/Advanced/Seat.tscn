@@ -34,26 +34,26 @@ Properties = Dictionary[StringName, Variant]({
 &"_materialId": -1,
 &"hasControls": true
 })
-MaxInstanceCount = 50
+MaxInstanceCount = 100
 
 [node name="Cushion Collider" type="CollisionShape3D" parent="." unique_id=483904584]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -0.001)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, -0.001)
 shape = SubResource("BoxShape3D_cushion")
 
 [node name="Cushion Mesh" type="MeshInstance3D" parent="." unique_id=944428852]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.4, 0)
 mesh = SubResource("BoxMesh_cushion")
 
 [node name="Back Collider" type="CollisionShape3D" parent="." unique_id=643087035]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.2)
 shape = SubResource("BoxShape3D_back")
 
 [node name="Back Mesh" type="MeshInstance3D" parent="." unique_id=1749384292]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, -0.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -0.2)
 mesh = SubResource("BoxMesh_back")
 
 [node name="Sit Area" type="Area3D" parent="." unique_id=1650976914]
-transform = Transform3D(1, 0, 0, 0, 0.9969173, 0.0784591, 0, -0.0784591, 0.9969173, 0, 0.4, 0.125)
+transform = Transform3D(1, 0, 0, 0, 0.9969173, 0.0784591, 0, -0.0784591, 0.9969173, 0, 0.1, 0.125)
 
 [node name="Touch" type="CollisionShape3D" parent="Sit Area" unique_id=683124591]
 shape = SubResource("BoxShape3D_touch")

@@ -1,7 +1,9 @@
-// Bends a CylinderMesh (along Y, 1 unit tall) into a helix that stands on the node's origin and reaches up
-// helix_length, so each instance stretches on its own while sharing one material (e.g., a spring's coil). The cylinder
-// is the tube: its height runs along the helix and its round section stays the tube's, so it needs enough rings for
-// smooth turns (about 24 a turn). Set a custom AABB on the instance, as the helix reaches beyond the cylinder's own.
+// Bends a CylinderMesh (along Y, 1 unit tall) into a helix that stands on the node's origin and reaches up as far as
+// the node is scaled along its Y, so each instance stretches on its own while sharing one material (e.g., a spring's
+// coil), and physics interpolation stretches it smoothly between ticks. The scale is divided back out, so the tube
+// stays round. The cylinder is the tube: its height runs along the helix and its round section stays the tube's, so it
+// needs enough rings for smooth turns (about 24 a turn). Set a custom AABB on the instance, as the helix reaches beyond
+// the cylinder's own.
 
 uniform vec3 color : source_color = vec3(1.0);
 uniform float turns = 5.0;
@@ -25,11 +27,12 @@ uniform float opacity : hint_range(0.0, 1.0) = 1.0;
 varying vec3 lab;
 #endif
 
-// From the bottom of the tube to its top
-instance uniform float helix_length = 1.0;
-
 void vertex()
 {
+	// From the bottom of the tube to its top
+	float helix_length = max(length(MODEL_MATRIX[1].xyz), 0.0001);
+	vec3 unscale = vec3(1.0, helix_length, 1.0);
+
 	float along = VERTEX.y + 0.5;
 	float around = atan(VERTEX.z, VERTEX.x);
 	float spin = turns * TAU;
@@ -50,8 +53,9 @@ void vertex()
 	// right-handed, so triangles keep facing outward
 	vec3 offset = cos(around) * normal - sin(around) * binormal;
 
-	VERTEX = center + tube_radius * offset;
-	NORMAL = offset;
+	// The model matrix's stretch along Y, undone in advance; normals take the inverse of what it does to them
+	VERTEX = (center + tube_radius * offset) / unscale;
+	NORMAL = offset * unscale;
 
 #ifdef FILL
 	lab = axial_lab(MODEL_NORMAL_MATRIX * NORMAL);

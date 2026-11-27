@@ -7,11 +7,11 @@ using Godot;
 namespace EnsembleRoot.BuildAssets.Advanced;
 
 /// <summary>
-///     A plate pushed out of its base along the ram, like a hydraulic ram: while driven, out to its target length or
+///     A plate pushed out of its base along the ram, like a hydraulic ram: while driven, out to its maximum length or
 ///     back in, at its speed, with no more than its force, so a heavy enough load still pushes it in. Otherwise it
-///     retracts, unless it holds where it is; holding both keys holds it too. Lengths are end to end, in grid units,
-///     and its keys toggle like a motor's if it toggles. While live, the shaft between base and plate stretches with
-///     them.
+///     retracts, unless it holds where it is; holding both keys holds it too. Its length is how far the plate is out
+///     from fully in, in grid units, and its keys toggle like a motor's if it toggles. While live, the shaft between
+///     base and plate stretches with them.
 /// </summary>
 public partial class Piston : AssetHandle, ISimulationTicked, IReplicatedState
 {
@@ -19,11 +19,11 @@ public partial class Piston : AssetHandle, ISimulationTicked, IReplicatedState
 	private const string RetractBinding = "retractKey";
 	private const string TogglesKey = "toggles";
 	private const string AutoRetractKey = "autoRetract";
-	private const string TargetLengthKey = "targetLength";
+	private const string MaxLengthKey = "maxLength";
 	private const string SpeedKey = "speed";
 	private const string ForceKey = "force";
 
-	// The longest it may get end to end, like a suspension; its speed, read in meters per second; and newtons
+	// The farthest its plate may go out; its speed, read in meters per second; and newtons
 	private const float MaxReach = 8 * GridToWorldScale;
 	private const float MaxSpeed = 16f;
 	private const float MaxForce = 20_000f;
@@ -116,7 +116,7 @@ public partial class Piston : AssetHandle, ISimulationTicked, IReplicatedState
 			Basis.FromScale(new Vector3(1, length, 1)), _shaftBottom with { Y = _shaftBottom.Y + length / 2 });
 	}
 
-	// The joint measures the plate's travel from where it was built, so it takes each length less the built one
+	// The joint measures the plate's travel from where it was built, all the way in
 	protected override void OnInitialized()
 	{
 		if (!IsLive)
@@ -129,8 +129,7 @@ public partial class Piston : AssetHandle, ISimulationTicked, IReplicatedState
 		_autoRetracts = Instance.Properties.GetValue(AutoRetractKey).AsBool();
 		_speed = GetLengthProperty(SpeedKey, 0, MaxSpeed);
 
-		var builtLength = BoundaryAabb.Size.Y;
-		_reach = GetLengthProperty(TargetLengthKey, builtLength, MaxReach) - builtLength;
+		_reach = GetLengthProperty(MaxLengthKey, 0, MaxReach);
 
 		// Nothing has moved yet, so this is the plate as built
 		var baseInverse = Base.Assembly!.GlobalTransform.AffineInverse();

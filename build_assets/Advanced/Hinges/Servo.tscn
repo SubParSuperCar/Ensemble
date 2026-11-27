@@ -42,7 +42,7 @@ Properties = Dictionary[StringName, Variant]({
 &"toggles": false,
 &"torque": 3000.0
 })
-MaxInstanceCount = 200
+MaxInstanceCount = 500
 
 [node name="Base" type="StaticBody3D" parent="." unique_id=977297970]
 script = ExtResource("2_opxt8")

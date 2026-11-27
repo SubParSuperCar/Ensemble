@@ -197,9 +197,11 @@ Baja Builders did it (a model, two parts, and a constraint):
   end in grid units, up to 8 (4 m), read through `AssetHandle.GetLengthProperty`; the plates never come closer than 0.1
   m, so its `Spring` lets its assemblies collide.
 - `Coil`, a cylinder bent into a helix by `shaders/helix.gdshader`, stands on the bottom plate and reaches `Coil End`, a
-  marker on the top plate. Its color, turns, helix radius, and tube thickness are material parameters, and its length an
-  instance parameter, so each coil stretches on its own with one shared material. While live, the script sets the length
-  every frame from where the plates are drawn.
+  marker on the top plate. Its color, turns, helix radius, and tube thickness are material parameters, and its length is
+  its node's scale along Y, which the shader divides back out so the tube stays round, so each coil stretches on its own
+  with one shared material. While live, the script sets it every physics tick, in the bottom plate's space, so physics
+  interpolation stretches it between ticks along with the plates (an instance uniform jumped from tick to tick while
+  the plates glided, so fast plates showed the coil a tick behind).
 
 ### Materials (the material bank)
 
@@ -420,9 +422,10 @@ Measured in a prototype with the game's physics settings; each point is what an 
   instead), and with both it stays put (D11). The widest limit lets it turn a full circle.
 - **Pistons:** the 6DOF joint's linear motor takes its force limit in newtons, unlike a hinge's impulse per tick, and a
   positive target velocity moves `node_b` out along the joint's axis. Godot reports no extension either, so the script
-  finds it from the two assemblies' transforms, and the servo's P-controller aims at the target length while extending,
-  and at fully in while retracting or released (a property can make it hold instead). Its limits stop it at fully in and
-  just past its reach, and its shaft stretches between base and plate on every peer, as a suspension's coil does.
+  finds it from the two assemblies' transforms, and the servo's P-controller aims at its maximum length (measured out
+  from fully in, unlike a suspension's end-to-end lengths) while extending, and at fully in while retracting or released
+  (a property can make it hold instead). Its limits stop it at fully in and just past its reach, and its shaft stretches
+  between base and plate on every peer, as a suspension's coil does.
 - **Anchors** hold their assembly frozen with an `OwnershipFlag`, so several on one assembly don't undo each other. A
   frozen assembly counts as at rest, so it streams only keepalives. Whether it's switched on is an asset state.
 - **Pieces keep a clearance (D16):** a motor's head and base stay collidable, with a little more than Jolt's contact
@@ -530,10 +533,13 @@ What each needs, for asset authors and for the code (each waits for its model):
 - **Thruster (next):** pushes along its marker while its key is held (or latched, as motors toggle), with its thrust as
   a property. Its flame follows input, which only the simulator has (D8), so it replicates its throttle as an asset
   state.
-- **Hover Thruster (built):** casts its ray from its face each tick, on the simulator alone, and pushes back the harder
-  the nearer what it hits, like a spring that only pushes, damped by its closing speed so it settles instead of bobbing.
-  Its power, which its keys raise and lower, scales its range and force, and is an asset state. At its instance cap, the
-  rays and pushes cost on the order of a millisecond per physics tick.
+- **Hover Thruster (built):** casts one ray from the middle of its face each tick, on the simulator alone, and pushes
+  back the harder the nearer what it hits, like a spring that only pushes, damped by its closing speed so it settles
+  instead of bobbing. Its power, which its keys raise and lower over its wind-up time, scales its range and force, and
+  is an asset state. What it pushes off of its own creation is pushed back at the hit (its reaction force, on by
+  default), so a creation can't push itself along, and engines built from thrusters stay put; other creations' bodies
+  are only pushed by their own simulators, so they get no reaction. It can ignore other creations, seeing past their
+  bodies one cast at a time. Hundreds of them cost on the order of a millisecond per physics tick.
 - **Airfoil (built):** the Wing Panel is the first, a plain plate. Lift is about the airflow's square, so the airspeed
   it counts is capped, which keeps a light surface's drag from overshooting within a tick, and its lift and drag scales
   are clamped (`GetNumberProperty`), so no property launches it.

@@ -27,7 +27,7 @@ Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
 &"_materialId": -1
 })
-MaxInstanceCount = 750
+MaxInstanceCount = 1000
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=753983193]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.001, 0)

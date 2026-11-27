@@ -30,7 +30,7 @@ script = ExtResource("1_cnceo")
 AssetId = 16
 AssetName = &"Free Hinge"
 Description = &"Lets whatever is welded to its head spin freely,\nwith no motor to drive it: for free wheels, doors,\nand flaps."
-MaxInstanceCount = 200
+MaxInstanceCount = 500
 
 [node name="Base" type="StaticBody3D" parent="." unique_id=1906701301]
 script = ExtResource("2_opxt8")

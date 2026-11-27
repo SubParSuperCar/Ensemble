@@ -8,6 +8,9 @@ namespace EnsembleRoot.Scripts.Players;
 
 public partial class PlayerHandle
 {
+	// Meters between the heights tried when standing up, fine enough that the settling cast is short
+	private const float StandUpStep = 1 / 8f;
+
 	private static readonly StringName SeatLeaveAction = "character_seat_leave";
 
 	private static readonly Dictionary<StringName, Key[]> KeysByAction = [];
@@ -149,15 +152,37 @@ public partial class PlayerHandle
 		return position with { Y = Math.Max(top, position.Y) + BodyBounds.Size.Y };
 	}
 
-	// The engine finds where the character fits, against whatever is really there: it lands on top of what's above the
-	// seat, or back at the seat if nothing is
+	// The engine finds where the character fits, against whatever is really there: at the lowest height above the seat
+	// with room for it (beside a roof, not on it), settled down onto what's below, or back at the seat if nothing is
 	private void StandUp(Vector3 above, Vector3 seat)
 	{
-		Jump(above);
+		var start = FindRoom(seat, above.Y) ?? above;
+		Jump(start);
 
 		var collision = new KinematicCollision3D();
-		var isBlocked = Body.TestMove(Body.GlobalTransform, seat - above, collision);
+		var isBlocked = Body.TestMove(Body.GlobalTransform, seat - start, collision);
 
-		Jump(isBlocked ? above + collision.GetTravel() : seat);
+		Jump(isBlocked ? start + collision.GetTravel() : seat);
+	}
+
+	private Vector3? FindRoom(Vector3 seat, float top)
+	{
+		var collider = Body.GetNode<CollisionShape3D>(ColliderName);
+		var space = GetWorld3D().DirectSpaceState;
+
+		using var query = new PhysicsShapeQueryParameters3D();
+		query.Shape = collider.Shape;
+		query.CollisionMask = Body.CollisionMask;
+
+		for (var height = seat.Y; height <= top; height += StandUpStep)
+		{
+			var position = seat with { Y = height };
+			query.Transform = new Transform3D(Body.GlobalBasis, position) * collider.Transform;
+
+			if (space.IntersectShape(query, 1).Count is 0)
+				return position;
+		}
+
+		return null;
 	}
 }

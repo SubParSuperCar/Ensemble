@@ -22,7 +22,7 @@ Properties = Dictionary[StringName, Variant]({
 &"dragScale": 1.0,
 &"liftScale": 1.0
 })
-MaxInstanceCount = 400
+MaxInstanceCount = 500
 metadata/_custom_type_script = "uid://chfhof1o4nmth"
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=270833242]

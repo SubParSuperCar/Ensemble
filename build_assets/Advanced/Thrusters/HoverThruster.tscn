@@ -70,14 +70,17 @@ script = ExtResource("1_yi3qk")
 Ray = NodePath("Ray")
 AssetId = 23
 AssetName = &"Hover Thruster"
-Description = &"Pushes itself away from whatever its face points\nat within range, the harder the nearer, like a\ncushion of air: point it down to hover. Its power\nstarts at half and rises or falls while its keys\nare held (Shift and Ctrl by default), scaling both\nits range (Max Length at full power, in cubes) and\nits push (Max Force at full power, in newtons)."
+Description = &"Pushes itself away from whatever its face points\nat within range, the harder the nearer, like a\ncushion of air: point it down to hover. It senses\nwith one ray from the middle of its face, not\nwith the whole face. Its power starts at half and\nrises or falls while its keys are held (Shift and\nCtrl by default), taking Wind Up Time, in\nseconds, from none to full, and scales both its\nrange (Max Length at full power, in cubes) and its\npush (Max Force at full power, in newtons). With\nReaction Force, a part of its own creation that it\npushes off is pushed back, as it would be for\nreal, so it can't push the creation along by\nitself; it can also ignore other creations."
 Properties = Dictionary[StringName, Variant]({
-&"maxForce": 1000.0,
+&"ignoresOtherCreations": false,
+&"maxForce": 2000.0,
 &"maxLength": 4.0,
 &"powerDownKey": 4194326,
-&"powerUpKey": 4194325
+&"powerUpKey": 4194325,
+&"reactionForce": true,
+&"windUpTime": 2.0
 })
-MaxInstanceCount = 200
+MaxInstanceCount = 500
 metadata/_custom_type_script = "uid://chfhof1o4nmth"
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=2091407826]

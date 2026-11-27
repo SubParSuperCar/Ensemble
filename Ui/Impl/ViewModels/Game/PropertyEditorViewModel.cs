@@ -198,12 +198,14 @@ public sealed partial class PropertyEditorViewModel : ViewModelBase, IWidget
 
 		if (
 			@event is not InputEventKey { Echo: false, Pressed: true } key || _listeningItem is not { } item ||
-			(key.Keycode is not Key.Escape && !InputState.IsBindable(key.Keycode)))
+			(key.Keycode is not (Key.Escape or Key.Delete) && !InputState.IsBindable(key.Keycode)))
 			return;
 
 		_heldKey = key.Keycode;
 
-		if (key.Keycode is not Key.Escape)
+		if (key.Keycode is Key.Delete)
+			item.Unbind();
+		else if (key.Keycode is not Key.Escape)
 			item.Bind(key.Keycode);
 
 		StopListening();
@@ -315,6 +317,9 @@ public sealed partial class KeyPropertyItem(PropertyKey key, Action<KeyPropertyI
 	protected override string TypeName => "Key";
 
 	internal void Bind(Key key) => Commit((long)key);
+
+	// No key is bindable as this, so nothing presses it
+	internal void Unbind() => Commit(None);
 
 	protected override void Load(CoreVariant value)
 	{

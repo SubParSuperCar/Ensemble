@@ -28,14 +28,12 @@ public partial class Suspension : AssetHandle
 	// How far the helix shader sinks the coil's ends past the plates' faces
 	private const float CoilSink = 1 / 20f;
 
-	private static readonly StringName HelixLengthParameter = "helix_length";
-
 	private float _coilLength;
 	private Vector3 _coilOrigin;
 
 	[Export] public Generic6DofJoint3D Spring { get; set; } = null!;
 
-	/// <summary>The coil, standing on the bottom plate, and drawn by the helix shader.</summary>
+	/// <summary>The coil, standing on the bottom plate, drawn by the helix shader as long as its Y scale.</summary>
 	[Export]
 	public MeshInstance3D Coil { get; set; } = null!;
 
@@ -50,23 +48,29 @@ public partial class Suspension : AssetHandle
 		_coilOrigin = Coil.Position;
 	}
 
-	// On physics ticks, in the bottom plate's space, so the coil interpolates along with the plates it spans
+	// On physics ticks, in the bottom plate's space, so the coil interpolates along with the plates it spans; its
+	// length is its scale, as an instance uniform would jump from tick to tick while the plates glide between them
 	public override void _PhysicsProcess(double delta)
 	{
 		var bottom = Coil.GetParentNode3D().GlobalTransform;
 		var span = bottom.AffineInverse() * CoilEnd.GlobalPosition - _coilOrigin;
-
-		Coil.Transform = new Transform3D(new Basis(new Quaternion(Vector3.Up, span.Normalized())), _coilOrigin);
-
 		var length = span.Length();
+
+		Coil.Transform = new Transform3D(
+			new Basis(new Quaternion(Vector3.Up, span / length)) * Basis.FromScale(new Vector3(1, length, 1)),
+			_coilOrigin);
 
 		// ReSharper disable once CompareOfFloatsByEqualityOperator
 		if (length == _coilLength)
 			return;
 
+		// In the coil's own space, which its scale stretches
 		_coilLength = length;
-		Coil.SetInstanceShaderParameter(HelixLengthParameter, length);
-		Coil.CustomAabb = Coil.CustomAabb with { Size = Coil.CustomAabb.Size with { Y = length + 2 * CoilSink } };
+		Coil.CustomAabb = Coil.CustomAabb with
+		{
+			Position = Coil.CustomAabb.Position with { Y = -CoilSink / length },
+			Size = Coil.CustomAabb.Size with { Y = 1 + 2 * CoilSink / length }
+		};
 	}
 
 	// The joint measures the top plate's travel from where it was built, so it takes each length less the built one
@@ -99,5 +103,7 @@ public partial class Suspension : AssetHandle
 		Spring.SetParamY(Generic6DofJoint3D.Param.LinearSpringDamping, damping);
 	}
 
-	private static float MeasureCoil(Transform3D coil, Transform3D end) => (coil.AffineInverse() * end.Origin).Y;
+	// In meters, without the coil's stretch
+	private static float MeasureCoil(Transform3D coil, Transform3D end) =>
+		(coil.Orthonormalized().AffineInverse() * end.Origin).Y;
 }

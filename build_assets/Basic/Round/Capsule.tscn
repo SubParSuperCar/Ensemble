@@ -23,9 +23,9 @@ AssetName = &"Capsule (Pill)"
 Description = &"A rounded rod, two cubes long."
 Properties = Dictionary[StringName, Variant]({
 &"_colorHex": "FFFFFF",
-&"_materialId": 0
+&"_materialId": -1
 })
-MaxInstanceCount = 500
+MaxInstanceCount = 1000
 
 [node name="Collider" type="CollisionShape3D" parent="." unique_id=2123749390]
 shape = SubResource("CapsuleShape3D_nw72c")

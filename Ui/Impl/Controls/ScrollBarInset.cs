@@ -6,7 +6,8 @@ namespace EnsembleRoot.Ui.Controls;
 
 /// <summary>
 ///     Keeps things clear of a scroll viewer's vertical scroll bar while it's visible: overlays (e.g., buttons over
-///     scrollable content), by adding its width to their right margins, or the content, by a gap beside it.
+///     scrollable content), by adding its width to their right margins, or the content, by a gap beside it that its
+///     own right margin counts toward.
 /// </summary>
 /// <remarks>
 ///     Measures the scroll bar itself, since logical scrollers (e.g., AvaloniaEdit's) report viewports narrower than
@@ -34,10 +35,9 @@ public static class ScrollBarInset
 	public static void ApplyGap(ScrollViewer scrollViewer, Control content, double gap)
 	{
 		var margin = content.Margin;
+		var gapped = new Thickness(margin.Left, margin.Top, Math.Max(margin.Right, gap), margin.Bottom);
 
-		Watch(scrollViewer, scrollBar =>
-			content.Margin = new Thickness(
-				margin.Left, margin.Top, margin.Right + (scrollBar.IsVisible ? gap : 0), margin.Bottom));
+		Watch(scrollViewer, scrollBar => content.Margin = scrollBar.IsVisible ? gapped : margin);
 	}
 
 	private static void Watch(ScrollViewer scrollViewer, Action<ScrollBar> update) =>

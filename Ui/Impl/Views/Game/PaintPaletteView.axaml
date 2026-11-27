@@ -246,12 +246,20 @@
                     Classes.dimmed="{Binding !IsMaterialApplied}"
                     VerticalSpacing="2">
 
-                    <TextBox
-                        DockPanel.Dock="Top"
-                        Text="{Binding MaterialQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        PlaceholderText="Filter by Name or ID&#x2026;"
-                        GotFocus="OnMaterialFilterGotFocus"
-                        ToolTip.Tip="Filters the materials below by name or internal ID." />
+                    <DockPanel DockPanel.Dock="Top" HorizontalSpacing="2">
+                        <PathIcon
+                            DockPanel.Dock="Right"
+                            Data="{StaticResource TipIcon}"
+                            ToolTip.Tip="Default isn't a material of its own: it keeps whatever material each asset was made with, such as the wheel's rubber."
+                            Background="Transparent"
+                            Width="16" Height="16" />
+
+                        <TextBox
+                            Text="{Binding MaterialQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            PlaceholderText="Filter by Name or ID&#x2026;"
+                            GotFocus="OnMaterialFilterGotFocus"
+                            ToolTip.Tip="Filters the materials below by name or internal ID." />
+                    </DockPanel>
 
                     <TextBlock
                         DockPanel.Dock="Bottom"

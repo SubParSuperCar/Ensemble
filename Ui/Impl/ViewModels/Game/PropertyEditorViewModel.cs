@@ -7,6 +7,7 @@ using EnsembleRoot.Common.Input;
 using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Tooling.Tools;
 using EnsembleRoot.Ui.Abstractions;
+using EnsembleRoot.Ui.Controls;
 using EnsembleRoot.Ui.Extensions;
 using EnsembleRoot.Ui.Services;
 using Godot;
@@ -334,8 +335,13 @@ public sealed partial class DecimalPropertyItem(PropertyKey key) : PropertyItem(
 
 	protected override string TypeName => "Decimal";
 
+	// Rounded as the box shows it, so leaving the box untouched doesn't commit the rounding
 	protected override void Load(CoreVariant value) =>
-		Value = value.IsNull ? null : (decimal)Math.Clamp((double)value, -Limit, Limit);
+		Value = value.IsNull
+			? null
+			: decimal.Round(
+				(decimal)Math.Clamp((double)value, -Limit, Limit), NumberBoxes.MaxDecimalPlaces,
+				MidpointRounding.ToEven);
 
 	partial void OnValueChanged(decimal? value)
 	{

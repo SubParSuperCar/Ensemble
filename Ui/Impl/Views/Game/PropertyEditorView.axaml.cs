@@ -11,8 +11,10 @@ namespace EnsembleRoot.Ui.Views;
 
 public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyEditorViewModel>
 {
+	private const string NameMinWidthKey = "NameMinWidth";
 	private const string NameMaxWidthKey = "NameMaxWidth";
-	private const double NameWidthShare = 3 / 7d;
+	private const double NameMinWidthShare = 1 / 3d;
+	private const double NameMaxWidthShare = 1 / 2d;
 	private const double ScrollBarGap = 2d;
 
 	private readonly PressFlash _copyFlash;
@@ -52,9 +54,13 @@ public sealed partial class PropertyEditorView : UserControl, IViewFor<PropertyE
 			? BindingOperations.GetBindingExpressionBase(number, NumericUpDown.ValueProperty)
 			: BindingOperations.GetBindingExpressionBase(source, TextBox.TextProperty);
 
-	// Long names take up to a share of the list's width, and scroll while hovered past that
-	private void OnItemsSizeChanged(object? sender, SizeChangedEventArgs e) =>
-		Items.Resources[NameMaxWidthKey] = e.NewSize.Width * NameWidthShare;
+	// Names take at least a share of the list's width, so the editors start near its middle, and long ones take up to
+	// a larger share and scroll while hovered past that
+	private void OnItemsSizeChanged(object? sender, SizeChangedEventArgs e)
+	{
+		Items.Resources[NameMinWidthKey] = e.NewSize.Width * NameMinWidthShare;
+		Items.Resources[NameMaxWidthKey] = e.NewSize.Width * NameMaxWidthShare;
+	}
 
 	private void OnFilterBoxGotFocus(object? sender, FocusChangedEventArgs e) => _viewModel?.FilterQuery = string.Empty;
 

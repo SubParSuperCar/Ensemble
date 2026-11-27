@@ -68,7 +68,22 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 	/// </summary>
 	public Vector3 GetMinimumTranslation(Obb obstacle, Vector3 normal)
 	{
-		var translation = Vector3.Zero;
+		if (GetShortestPush(obstacle, normal, false) is { } push)
+			return push;
+
+		var distance = GetSeparationDistance(obstacle, normal);
+		return float.IsFinite(distance) ? normal * distance : Vector3.Zero;
+	}
+
+	/// <summary>
+	///     Gets the shortest translation perpendicular to the unit <paramref name="normal" /> that separates this box
+	///     from <paramref name="obstacle" />, unless every such way moves it farther than its own size.
+	/// </summary>
+	public Vector3? GetTangentialTranslation(Obb obstacle, Vector3 normal) => GetShortestPush(obstacle, normal, true);
+
+	private Vector3? GetShortestPush(Obb obstacle, Vector3 normal, bool isTangential)
+	{
+		Vector3? translation = null;
 		var shortest = float.PositiveInfinity;
 		Span<Vector3> axes = stackalloc Vector3[MaxAxisCount];
 
@@ -81,20 +96,24 @@ public readonly record struct Obb(Vector3 Center, Basis Basis, Vector3 Extents)
 			var penetration = Radius(axis) + obstacle.Radius(axis) - MathF.Abs(offset);
 			var sign = Mathf.IsZeroApprox(offset) ? axis.Dot(normal) >= 0 ? 1 : -1 : MathF.Sign(offset);
 			var push = axis * (sign * penetration);
-			var along = push.Dot(normal);
 
-			if ((along < 0 && !Mathf.IsZeroApprox(along)) || penetration >= shortest)
+			if (penetration >= shortest || !IsAllowed(push, axis, normal, penetration, isTangential))
 				continue;
 
 			shortest = penetration;
 			translation = push;
 		}
 
-		if (!float.IsPositiveInfinity(shortest))
-			return translation;
+		return translation;
+	}
 
-		var distance = GetSeparationDistance(obstacle, normal);
-		return float.IsFinite(distance) ? normal * distance : Vector3.Zero;
+	private bool IsAllowed(Vector3 push, Vector3 axis, Vector3 normal, float penetration, bool isTangential)
+	{
+		if (isTangential)
+			return Mathf.IsZeroApprox(axis.Dot(normal)) && penetration <= 2 * Radius(axis);
+
+		var along = push.Dot(normal);
+		return along >= 0 || Mathf.IsZeroApprox(along);
 	}
 
 	private bool Overlaps(Obb other, float tolerance)

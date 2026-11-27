@@ -16,13 +16,16 @@ namespace EnsembleRoot.Scripts.Plots.Placement;
 ///         </item>
 ///         <item>
 ///             Resolve: each overlapping obstacle pushes the box out by its SAT minimum translation, never against the
-///             normal (see <see cref="Obb.GetMinimumTranslation" />).
+///             normal (see <see cref="Obb.GetMinimumTranslation" />). An obstacle standing in front of the surface
+///             pushes it along the surface instead, by at most the box's own size, so the box stays on what the
+///             cursor points at rather than climbing onto a thin obstacle beside it.
 ///         </item>
 ///         <item>
 ///             Snap: per axis, whichever box edge lands nearer a line of the plot's grid wins, so thin boxes can share
 ///             a cell, and a box spanning whole cells is on the grid whatever it touches. Edges round away from the
 ///             surface and from the obstacles Resolve pushed out of. Spans within <see cref="SnapTolerance" /> of
-///             whole cells snap as exactly whole, centering their slack.
+///             whole cells snap as exactly whole, centering their slack. Along the surface, a box thinner than half a
+///             cell can also center in a cell, so a plate stands at either side or the middle.
 ///         </item>
 ///         <item>Raise: the box is lifted onto the plot floor if below it.</item>
 ///         <item>
@@ -64,9 +67,11 @@ public sealed class PlacementSolver
 	// A null cell size skips snapping
 	public Obb Settle(Obb box, ObbGrid obstacles, float floor, Vector3 normal, float? cellSize)
 	{
+		var surface = box.Center.Dot(normal) - box.Radius(normal);
+
 		for (var pass = 0; pass < MaxSettlePasses; pass++)
 		{
-			var resolved = Resolve(box, obstacles, normal);
+			var resolved = Resolve(box, obstacles, normal, surface);
 			resolved = Snap(resolved, cellSize, normal, resolved.Center - box.Center);
 
 			box = RaiseTo(resolved, floor);
@@ -99,7 +104,7 @@ public sealed class PlacementSolver
 		return point;
 	}
 
-	private Obb Resolve(Obb box, ObbGrid obstacles, Vector3 normal)
+	private Obb Resolve(Obb box, ObbGrid obstacles, Vector3 normal, float surface)
 	{
 		for (var pass = 0; pass < MaxResolvePasses; pass++)
 		{
@@ -112,7 +117,10 @@ public sealed class PlacementSolver
 				if (!box.Overlaps(obstacle))
 					continue;
 
-				var translation = box.GetMinimumTranslation(obstacle, normal);
+				var translation = IsInFront(obstacle, normal, surface) &&
+					box.GetTangentialTranslation(obstacle, normal) is { } sideways
+						? sideways
+						: box.GetMinimumTranslation(obstacle, normal);
 
 				if (translation == Vector3.Zero)
 					continue;
@@ -144,12 +152,24 @@ public sealed class PlacementSolver
 			var tolerance = Epsilon + MathF.Abs(extent - envelope[axis]);
 			var low = SnapEdge(center[axis] - extent, size, direction, tolerance) + extent;
 			var high = SnapEdge(center[axis] + extent, size, direction, tolerance) - extent;
+			var nearest = MathF.Abs(low - center[axis]) <= MathF.Abs(high - center[axis]) ? low : high;
 
-			center[axis] = MathF.Abs(low - center[axis]) <= MathF.Abs(high - center[axis]) ? low : high;
+			if (normal[axis] is 0 && 4 * extent < size)
+			{
+				var middle = SnapEdge(center[axis] - size / 2, size, direction, tolerance) + size / 2;
+
+				if (MathF.Abs(middle - center[axis]) < MathF.Abs(nearest - center[axis]))
+					nearest = middle;
+			}
+
+			center[axis] = nearest;
 		}
 
 		return box.At(center);
 	}
+
+	private static bool IsInFront(Obb obstacle, Vector3 normal, float surface) =>
+		obstacle.Center.Dot(normal) - obstacle.Radius(normal) >= surface - Epsilon;
 
 	private static float GetSnapExtent(float extent, float cellSize)
 	{

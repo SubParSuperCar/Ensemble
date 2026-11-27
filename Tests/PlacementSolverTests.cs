@@ -103,6 +103,32 @@ public sealed class PlacementSolverTests
 		Assert.Equal(0.75f, box.Center.Y);
 	}
 
+	// A plate lying on the floor beside the cursor pushes the new one along the floor, not up onto itself
+	[Fact]
+	public void Settle_BesideThinObstacle_StaysOnSurface()
+	{
+		var obstacles = new ObbGrid();
+		obstacles.Add(0, Slab(new Vector3(0.5f, 0.05f, 0.5f), 0.1f));
+
+		var box = _solver.Settle(Slab(new Vector3(1.2f, 0.05f, 0.5f), 0.1f), obstacles, 0f, Vector3.Up, 1f);
+
+		Assert.Equal(new Vector3(1.5f, 0.05f, 0.5f), box.Center);
+	}
+
+	// A plate standing on its edge snaps to either side of its cell or to the middle, whichever is nearest
+	[Theory]
+	[InlineData(0.1f, 0.05f)]
+	[InlineData(0.4f, 0.5f)]
+	[InlineData(0.6f, 0.5f)]
+	[InlineData(0.9f, 0.95f)]
+	public void Settle_StandingPlate_SnapsToSideOrMiddle(float x, float expected)
+	{
+		var plate = new Obb(new Vector3(x, 0.5f, 0.5f), Basis.Identity, new Vector3(0.05f, 0.5f, 0.5f));
+		var box = _solver.Settle(plate, new ObbGrid(), 0f, Vector3.Up, 1f);
+
+		Assert.Equal(expected, box.Center.X, 1e-5f);
+	}
+
 	[Fact]
 	public void Settle_SameInput_SameResultFromAnyHitOnAFace()
 	{

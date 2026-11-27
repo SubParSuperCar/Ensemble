@@ -14,6 +14,12 @@ namespace EnsembleRoot.Execution;
 
 public static partial class LuaExecutor
 {
+	private const double DefaultTraceSeconds = 5d;
+	private const double MaxTraceSeconds = 60d;
+
+	// Of each frame's time, beyond which frames mostly wait rather than work
+	private const double WaitingShare = 1 / 2d;
+
 	private static ValueTask<int> clr_log(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		// Deferred, so the run's own result line is cleared too
@@ -95,9 +101,21 @@ public static partial class LuaExecutor
 	private static ValueTask<int> help(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
 		var query = context.GetArgumentOrDefault(0, string.Empty);
-		var functions = Functions
+		var matches = Functions
 			.Where(entry => entry.Function.Name.Contains(query, StringComparison.OrdinalIgnoreCase))
-			.Select(static entry => $"-> {entry.Function.Name}({entry.Parameters}): {entry.Description}");
+			.ToArray();
+
+		if (context.GetArgumentOrDefault(1, false))
+		{
+			Log.Information(
+				"Custom functions ({Count}): {Names}", matches.Length,
+				string.Join(", ", matches.Select(static entry => entry.Function.Name)));
+
+			return context.ReturnNothing();
+		}
+
+		var functions = matches.Select(static entry =>
+			$"-> {entry.Function.Name}({entry.Parameters}): {entry.Description}");
 
 		Log.Information(
 			"Custom functions (\"?\" = optional, \"|\" = or, \"{{...}}\" = options table, \"loc_\" = local only, " +
@@ -113,6 +131,84 @@ public static partial class LuaExecutor
 		Log.Information("Lua: \"{Message}\"", string.Join(' ', values));
 
 		return context.ReturnNothing();
+	}
+
+	private static async ValueTask<int> trace_frames(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var seconds = context.GetArgumentOrDefault(0, DefaultTraceSeconds);
+
+		if (seconds is not (> 0 and <= MaxTraceSeconds))
+		{
+			Log.Error("Invalid trace length: {Seconds} s (takes more than 0, up to {Max})", seconds, MaxTraceSeconds);
+			return context.Return();
+		}
+
+		Log.Information("Tracing frames for {Seconds} s...", seconds);
+		FrameTrace trace;
+
+		PauseBudget();
+
+		try
+		{
+			trace = await TraceFramesAsync(seconds, cancellationToken).ConfigureAwait(true);
+		}
+		finally
+		{
+			ResumeBudget();
+		}
+
+		var intervals = trace.IntervalsMs;
+		var count = intervals.Count;
+
+		Log.Information(
+			"Traced {Count} frame(s): {Fps:F1} FPS, {FrameMs:F3} ms per frame (median {MedianMs:F3}, 99th " +
+			"percentile {SlowMs:F3}, worst {WorstMs:F3}); on average {ProcessMs:F3} ms processing, {PhysicsMs:F3} " +
+			"ms in physics, {RenderMs:F3} ms rendering on the CPU, and {GpuMs:F3} ms on the GPU; VSync {Vsync} at " +
+			"{RefreshRate:F0} Hz, max FPS {MaxFps}",
+			count, count / seconds, intervals.Average(), intervals[count / 2], intervals[(int)(count * 0.99)],
+			intervals[^1], trace.ProcessMs, trace.PhysicsMs, trace.RenderMs, trace.GpuMs,
+			DisplayServer.WindowGetVsyncMode(), DisplayServer.ScreenGetRefreshRate(), Engine.MaxFps);
+
+		var workMs = Math.Max(trace.ProcessMs + trace.PhysicsMs + trace.RenderMs, trace.GpuMs);
+
+		if (workMs < intervals.Average() * WaitingShare)
+			Log.Information(
+				"Frames spend most of their time waiting, not working: something paces them, such as VSync, a frame " +
+				"cap, the compositor, or the graphics driver");
+
+		return context.Return();
+	}
+
+	// Averages per frame, over which the GPU's trailing time evens out
+	private static async Task<FrameTrace> TraceFramesAsync(double seconds, CancellationToken cancellationToken)
+	{
+		var intervals = new List<double>();
+		var (processMs, physicsMs, renderMs, gpuMs) = (0d, 0d, 0d, 0d);
+		var stopwatch = Stopwatch.StartNew();
+
+		// The first read starts the measuring, so the frames waited for are measured
+		_ = FrameTimes.RenderGpuMs;
+
+		for (var last = stopwatch.Elapsed; stopwatch.Elapsed.TotalSeconds < seconds || intervals.Count is 0;)
+		{
+			await DelayAsync(TimeSpan.Zero, cancellationToken).ConfigureAwait(true);
+
+			var now = stopwatch.Elapsed;
+			intervals.Add((now - last).TotalMilliseconds);
+			last = now;
+
+			processMs += FrameTimes.ProcessMs;
+			physicsMs += FrameTimes.PhysicsMs;
+			renderMs += FrameTimes.RenderCpuMs;
+			gpuMs += FrameTimes.RenderGpuMs;
+		}
+
+		stopwatch.Stop();
+		intervals.Sort();
+
+		var count = intervals.Count;
+		return new FrameTrace(intervals, processMs / count, physicsMs / count, renderMs / count, gpuMs / count);
 	}
 
 	private static void DumpTable(StringBuilder lines, LuaTable table, string path, HashSet<LuaTable> visited)
@@ -141,4 +237,12 @@ public static partial class LuaExecutor
 				DumpTable(lines, childTable!, childPath, visited);
 		}
 	}
+
+	/// <param name="IntervalsMs">Sorted, shortest first.</param>
+	private sealed record FrameTrace(
+		List<double> IntervalsMs,
+		double ProcessMs,
+		double PhysicsMs,
+		double RenderMs,
+		double GpuMs);
 }

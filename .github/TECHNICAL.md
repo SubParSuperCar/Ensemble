@@ -610,13 +610,14 @@ yields, and `print` and returned values show what tables hold.
 
 | Group       | Functions                                                                                          |
 |-------------|----------------------------------------------------------------------------------------------------|
-| App         | `quit`, `restart`, `set_clock_offset`, `set_discord_on`, `set_vol`, `tts`, `wait`                  |
+| App         | `quit`, `restart`, `set_clock_offset`, `set_culture`, `set_discord_on`, `set_vol`, `tts`, `wait`   |
 | Building    | `add_inst`, `clr_insts`, `dmp_assets`, `dmp_insts`, `dmp_mats`, `rm_insts`, `set_inst_prop`        |
 | Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_level`,            |
 |             | `set_profanity_filter_on`                                                                          |
-| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`                         |
+| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`, `trace_frames`         |
 | Display     | `cap_fps`, `dmp_draw_modes`, `dmp_vsync_modes`, `dmp_window_modes`, `set_cam_fov`,                 |
-|             | `set_draw_mode`, `set_ui_dark_theme_on`, `set_ui_scale`, `set_vsync_mode`, `set_window_mode`       |
+|             | `set_draw_mode`, `set_mouse_sens`, `set_stats_on`, `set_ui_dark_theme_on`, `set_ui_scale`,         |
+|             | `set_vsync_mode`, `set_window_mode`                                                                |
 | Moderation  | `ban_addr`, `ban_peer`, `dmp_bans`, `kick_peer`, `unban_addr`, `unban_all`                         |
 | Network     | `dmp_peers`, `log_lan_ip4_addr`, `log_wan_ip4_addr`, `set_net_sim`                                 |
 | Plots       | `dmp_creation`, `dmp_plots`, `kick_occupant`, `set_plot`, `set_plot_simulator`, `set_plot_spawned` |
@@ -625,7 +626,7 @@ yields, and `print` and returned values show what tables hold.
 | Sessions    | `host_mp`, `host_server`, `join_mp`, `start_sp`, `stop_servers`, `stop_session`                    |
 | Tools       | `paint_all`, `redo`, `set_construct_asset`, `set_construct_rot`, `set_paint`, `set_tool_on`,       |
 |             | `undo`                                                                                             |
-| World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_sky_time`,              |
+| World       | `loc_add_rand_insts`, `loc_clr_insts`, `loc_stress_test`, `perf_mod`, `set_grav`, `set_sky_time`,  |
 |             | `set_static_shader_on`, `set_time_scale`, `tp_char`                                                |
 
 - **Conventions:** functions log their results (`dmp_` ones dump state for reading) and return nothing unless noted,
@@ -639,14 +640,20 @@ yields, and `print` and returned values show what tables hold.
   runs) and returns once its UDP port is bound, so `host_server() join_mp("127.0.0.1")` tests multiplayer from one
   window; servers stop with `stop_servers()` or when the game quits, and log to the usual files.
   `set_tool_on("construct", true)` and the `set_construct_` functions drive the tools as the tool bar does (mutex
-  included), and `undo` / `redo` walk the same history; headless servers have no tools.
+  included), and `undo` / `redo` walk the same history; headless servers have no tools. `restart()` relaunches with
+  the game's own command-line args, or without any, with those of a session like the current one (`--single-player`,
+  `--port=...`, or `--join=...`, which `CommandLineSession` reads in a regular window too), so it comes back to play.
 - **Scripts:** files in `user://scripts/` run with `run_script("name")` (in the calling script's environment) and load
   as modules with `require("name")`, so setups and helpers can be kept and shared. Each console run still starts a fresh
   Lua state, so globals don't carry over between runs.
 - **Creations:**
   `save_creation("name", { plot_id = 1, compression = "zstandard", level = 19, password = "secret", checksum = true })`
   saves a plot (every option is optional) to `user://creations/`, as JSON if the name ends in `.json` and binary
-  (`.ensb`) otherwise; `CreationSaves` (in `Scripts`) owns the files, so the console only parses and reports.
+  (`.ensb`) otherwise, unless `format` says which; `preset = "optimal"` picks Zstandard, as strong as stays quick for
+  the creation's size, and a checksum, and any other option set overrides it. Loading tells the formats apart by their
+  content, never the name, and `dmp_saves()` lists each save's format, compression, and protection, with its instance
+  count and creation date unless it's encrypted. `CreationSaves` (in `Scripts`) owns the files, so the console only
+  parses and reports.
   `load_creation("name", "password")` adds a save to the local plot through `AddInstancesAction` batches, so placement
   rules apply and others see it; `loc_load_creation(plot_id, "name")` adds it directly. Loads skip unknown assets and
   invalid values, and add to what is already there (`clr_insts()` first to replace it). Overwriting a save first copies
@@ -665,7 +672,10 @@ yields, and `print` and returned values show what tables hold.
   silently.
 - **Startup report:** the OS, hardware, build, and commit are logged at startup, so bug reports carry their context,
   with the GPU the game actually renders on beside the ones installed.
-- **Stats overlay:** frame and process times, memory, draw calls, and network traffic, in the top-left corner.
+- **Stats overlay:** frame, process, physics, render, and GPU times, VSync and the refresh rate, memory, draw calls, and
+  network traffic, in the top-left corner (`F3` or `set_stats_on` hides it, remembered across launches; hidden, it
+  costs nothing). `trace_frames(seconds)` measures every frame for a while and says whether frames spend their time
+  working or waiting, which tells a slow game from one something paces (VSync, a cap, the compositor, the driver).
 
 ---
 

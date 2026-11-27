@@ -2,7 +2,9 @@ using System.Diagnostics;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Messages;
 using EnsembleRoot.GdCore.Plots;
+using EnsembleRoot.Replication.Actions;
 using EnsembleRoot.Scripts.World;
+using EnsembleRoot.Sessions.Actions;
 using EnsembleRoot.Sessions.Api;
 using Godot;
 using Lua;
@@ -165,6 +167,26 @@ public static partial class LuaExecutor
 	}
 
 	// Peers keep their own time, so a host slowed alone would fall behind its own creations' streams
+	private static ValueTask<int> set_grav(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var gravity = context.GetArgumentOrDefault(0, WorldHandle.DefaultGravity);
+
+		if (WorldManager.Instance?.World is null)
+		{
+			Log.Error("{Function} needs a session", nameof(set_grav));
+			return context.ReturnNothing();
+		}
+
+		if (gravity is not (>= 0 and <= SetGravityAction.MaxGravity))
+		{
+			Log.Error("Invalid gravity: {Gravity} m/s² (takes 0 to {Max})", gravity, SetGravityAction.MaxGravity);
+			return context.ReturnNothing();
+		}
+
+		new SetGravityAction(gravity).Submit();
+		return context.ReturnNothing();
+	}
+
 	private static ValueTask<int> set_time_scale(
 		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{

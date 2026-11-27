@@ -10,6 +10,19 @@ namespace EnsembleRoot.Scripts.World;
 [GlobalClass]
 public partial class WorldHandle : Node3D
 {
+	public static readonly float DefaultGravity = ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
+
+	/// <summary>The world's downward pull, in m/s². Kept here too, so reading it costs no interop.</summary>
+	public float Gravity
+	{
+		get;
+		set
+		{
+			field = value;
+			PhysicsServer3D.AreaSetParam(GetWorld3D().Space, PhysicsServer3D.AreaParameter.Gravity, value);
+		}
+	} = DefaultGravity;
+
 	public override void _Ready()
 	{
 #if DEBUG
@@ -24,8 +37,9 @@ public partial class WorldHandle : Node3D
 	{
 		GSessionManager.SnapshotsFinished -= OnSnapshotsFinished;
 
-		// A slowed world's speed ends with it
+		// A slowed world's speed and changed gravity end with it, as the physics space outlives it
 		Engine.TimeScale = 1;
+		Gravity = DefaultGravity;
 	}
 
 	// Clients only have the real state once their snapshots are restored

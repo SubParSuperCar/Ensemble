@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using EnsembleRoot.Saving.SerDes;
 using ZstdSharp;
 
 namespace EnsembleRoot.Saving.Pipeline;
@@ -44,40 +45,68 @@ internal static class SaveCodec
 		stream.Write(bytes);
 	}
 
-	public static CreationSaveData Read(ISaveSerializer serializer, Stream stream, LoadOptions options)
+	public static CreationSaveData Read(ISaveSerializer serializer, Stream stream, LoadOptions options) =>
+		ReportTruncation(() =>
+		{
+			using var payload = ReadPayload(stream, options);
+			return serializer.Deserialize(payload);
+		});
+
+	/// <summary>Reads a save of either format, told apart by how its payload starts.</summary>
+	public static (SaveFormat Format, CreationSaveData Data) Read(Stream stream, LoadOptions options) =>
+		ReportTruncation(() =>
+		{
+			using var payload = ReadPayload(stream, options);
+
+			Span<byte> start = stackalloc byte[BinarySaveSerializer.MagicSize];
+			var count = payload.ReadAtLeast(start, start.Length, false);
+			payload.Position = 0;
+
+			var format = BinarySaveSerializer.StartsWithMagic(start[..count]) ? SaveFormat.Binary : SaveFormat.Json;
+			return (format, SaveFile.GetSerializer(format).Deserialize(payload));
+		});
+
+	private static T ReportTruncation<T>(Func<T> read)
 	{
 		try
 		{
-			var hasEnvelope = SaveEnvelope.TryReadHeader(stream, out var header);
-			using var payload = ReadToEnd(stream);
-
-			if (!hasEnvelope)
-				return serializer.Deserialize(payload);
-
-			var bytes = payload.GetBuffer().AsSpan(0, (int)payload.Length);
-
-			if (header.Encryption is not EncryptionType.None)
-			{
-				using var decrypted = new MemoryStream(SaveCrypto.Decrypt(bytes, header, options), false);
-				return Decompress(serializer, decrypted, header.Compression);
-			}
-
-			// ReSharper disable once InvertIf
-			if (header.Checksum is { } expected)
-			{
-				Span<byte> actual = stackalloc byte[SaveEnvelope.ChecksumSize];
-				SHA256.HashData(bytes, actual);
-
-				if (!CryptographicOperations.FixedTimeEquals(actual, expected))
-					throw new InvalidDataException("Save file is corrupt: checksum mismatch.");
-			}
-
-			return Decompress(serializer, payload, header.Compression);
+			return read();
 		}
 		catch (EndOfStreamException exception)
 		{
 			throw new InvalidDataException("Save file is truncated.", exception);
 		}
+	}
+
+	private static Stream ReadPayload(Stream stream, LoadOptions options)
+	{
+		var hasEnvelope = SaveEnvelope.TryReadHeader(stream, out var header);
+		var payload = ReadToEnd(stream);
+
+		if (!hasEnvelope)
+			return payload;
+
+		var bytes = payload.GetBuffer().AsSpan(0, (int)payload.Length);
+
+		if (header.Encryption is not EncryptionType.None)
+		{
+			var decrypted = new MemoryStream(SaveCrypto.Decrypt(bytes, header, options), false);
+			payload.Dispose();
+
+			return Decompress(decrypted, header.Compression);
+		}
+
+		// ReSharper disable once InvertIf
+		if (header.Checksum is { } expected)
+		{
+			Span<byte> actual = stackalloc byte[SaveEnvelope.ChecksumSize];
+			SHA256.HashData(bytes, actual);
+
+			if (!CryptographicOperations.FixedTimeEquals(actual, expected))
+				throw new InvalidDataException("Save file is corrupt: checksum mismatch.");
+		}
+
+		return Decompress(payload, header.Compression);
 	}
 
 	private static void Compress(ISaveSerializer serializer, Stream target, CreationSaveData data, SaveOptions options)
@@ -88,15 +117,14 @@ internal static class SaveCodec
 		serializer.Serialize(compressor ?? target, data);
 	}
 
-	private static CreationSaveData Decompress(ISaveSerializer serializer, Stream source, CompressionType compression)
+	private static Stream Decompress(Stream source, CompressionType compression)
 	{
-		using var decompressor = SaveCompression.CreateDecompressorOrNull(source, compression);
+		if (SaveCompression.CreateDecompressorOrNull(source, compression) is not { } decompressor)
+			return source;
 
-		if (decompressor is null)
-			return serializer.Deserialize(source);
-
-		using var payload = ReadDecompressed(decompressor);
-		return serializer.Deserialize(payload);
+		using (source)
+		using (decompressor)
+			return ReadDecompressed(decompressor);
 	}
 
 	// The decoders report corrupt data with their own exception types

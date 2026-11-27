@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Globalization;
 using EnsembleRoot.Common.Interop;
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.GdCore.Assets;
 using EnsembleRoot.GdCore.Utils;
 using EnsembleRoot.Replication.Actions;
@@ -21,18 +23,41 @@ public static partial class LuaExecutor
 	private const string DeletionTitle = "Permanently Delete Saved Creation";
 
 	private const string PlotIdKey = "plot_id";
+	private const string PresetKey = "preset";
+	private const string FormatKey = "format";
 	private const string CompressionKey = "compression";
 	private const string LevelKey = "level";
 	private const string ChecksumKey = "checksum";
 
-	private static readonly string[] SaveKeys = [PlotIdKey, CompressionKey, LevelKey, PasswordKey, ChecksumKey];
+	private const string OptimalPreset = "optimal";
 
-	private static ValueTask<int> dmp_saves(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	private static readonly string[] SaveKeys =
+		[PlotIdKey, PresetKey, FormatKey, CompressionKey, LevelKey, PasswordKey, ChecksumKey];
+
+	private static async ValueTask<int> dmp_saves(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		var (path, files) = ListFiles(CreationsDir, "*");
-		Log.Information("Saved creations in {Path}:\n{Files}", path, files);
+		var directory = new DirectoryInfo(ProjectSettings.GlobalizePath(CreationsDir));
+		IEnumerable<FileInfo> files = directory.Exists
+			? directory.GetFiles().OrderBy(static file => file.Name, StringComparer.Ordinal)
+			: [];
 
-		return context.ReturnNothing();
+		var lines = new List<string>();
+
+		PauseBudget();
+
+		try
+		{
+			foreach (var file in files)
+				lines.Add(await DescribeSaveAsync(file, cancellationToken).ConfigureAwait(true));
+		}
+		finally
+		{
+			ResumeBudget();
+		}
+
+		Log.Information("Saved creations in {Path}:\n{Files}", directory.FullName, string.Join('\n', lines));
+		return context.Return();
 	}
 
 	private static async ValueTask<int> load_creation(
@@ -107,8 +132,8 @@ public static partial class LuaExecutor
 		var table = context.GetArgumentOrDefault<LuaTable?>(1);
 
 		if (
-			GetCreationPath(name) is not { } path || !TryReadSaveOptions(table, out var plotId, out var options) ||
-			FindPlot(plotId, nameof(save_creation)) is not { } plot)
+			GetCreationPath(name) is not { } path || !TryReadSaveRequest(table, out var request) ||
+			FindPlot(request.PlotId, nameof(save_creation)) is not { } plot)
 			return context.Return();
 
 		if (plot.Instances.Count is 0)
@@ -117,6 +142,8 @@ public static partial class LuaExecutor
 			return context.Return();
 		}
 
+		var options = request.ToOptions(plot.Instances.Count);
+
 		var stopwatch = Stopwatch.StartNew();
 		(int Count, string? BackupPath) saved;
 
@@ -124,7 +151,8 @@ public static partial class LuaExecutor
 
 		try
 		{
-			saved = await CreationSaves.SaveAsync(plot, path, options, cancellationToken).ConfigureAwait(true);
+			saved = await CreationSaves.SaveAsync(plot, path, options, request.Format, cancellationToken)
+				.ConfigureAwait(true);
 		}
 		catch (Exception exception) when (CreationSaves.IsSaveError(exception))
 		{
@@ -296,10 +324,9 @@ public static partial class LuaExecutor
 		return (specs, skippedInstances, skippedValues);
 	}
 
-	private static bool TryReadSaveOptions(LuaTable? table, out int? plotId, out SaveOptions options)
+	private static bool TryReadSaveRequest(LuaTable? table, out SaveRequest request)
 	{
-		plotId = null;
-		options = SaveOptions.Default;
+		request = new SaveRequest();
 
 		foreach (var (key, value) in table ?? [])
 		{
@@ -309,23 +336,31 @@ public static partial class LuaExecutor
 			switch (key.Type is LuaValueType.String ? key.Read<string>() : null)
 			{
 				case PlotIdKey when number is { } id:
-					plotId = id;
+					request = request with { PlotId = id };
 					break;
 
-				case CompressionKey when ToCompression(text) is { } compression:
-					options = options with { Compression = compression };
+				case PresetKey when string.Equals(text, OptimalPreset, StringComparison.OrdinalIgnoreCase):
+					request = request with { IsOptimal = true };
+					break;
+
+				case FormatKey when ToEnum(value, Enum.GetValues<SaveFormat>()) is { } format:
+					request = request with { Format = format };
+					break;
+
+				case CompressionKey when ToEnum(value, Enum.GetValues<CompressionType>()) is { } compression:
+					request = request with { Compression = compression };
 					break;
 
 				case LevelKey when number is { } level:
-					options = options with { CompressionLevel = level };
+					request = request with { Level = level };
 					break;
 
 				case PasswordKey when text is { Length: > 0 }:
-					options = options with { Encryption = new SaveEncryption.Password(text) };
+					request = request with { Password = text };
 					break;
 
 				case ChecksumKey when value.Type is LuaValueType.Boolean:
-					options = options with { UseChecksum = value.Read<bool>() };
+					request = request with { UseChecksum = value.Read<bool>() };
 					break;
 
 				default:
@@ -337,12 +372,41 @@ public static partial class LuaExecutor
 		return true;
 	}
 
+	private static async Task<string> DescribeSaveAsync(FileInfo file, CancellationToken cancellationToken)
+	{
+		var size = ByteFormat.Humanize((ulong)file.Length);
+		var line = string.Create(
+			CultureInfo.InvariantCulture, $"{file.Name} ({size}, modified {file.LastWriteTime:yyyy-MM-dd HH:mm:ss})");
+
+		try
+		{
+			var summary = await CreationSaves.SummarizeAsync(file.FullName, cancellationToken).ConfigureAwait(true);
+			return $"{line}: {FormatSummary(summary)}";
+		}
+		catch (Exception exception) when (CreationSaves.IsSaveError(exception))
+		{
+			return $"{line}: unreadable ({exception.Message})";
+		}
+	}
+
+	private static string FormatSummary(SaveSummary summary)
+	{
+		var envelope = summary.Compression is CompressionType.None
+			? summary.HasChecksum ? "checksummed" : "uncompressed"
+			: summary.HasChecksum
+				? $"{summary.Compression}, checksummed"
+				: summary.Compression.ToString();
+
+		if (summary.IsEncrypted)
+			return $"encrypted, {envelope}";
+
+		return string.Create(
+			CultureInfo.InvariantCulture,
+			$"{summary.Format}, {envelope}, {summary.InstanceCount} instance(s), created {summary.UtcCreatedAt:u}");
+	}
+
 	private static string? GetCreationPath(string name) =>
 		GetUserFilePath(CreationsDir, name, CreationSaves.BinaryExtension);
-
-	// TryParse also takes any number, defined or not
-	private static CompressionType? ToCompression(string? text) =>
-		Enum.TryParse(text, true, out CompressionType compression) && Enum.IsDefined(compression) ? compression : null;
 
 	/// <summary>Asks a Yes / No question, true only for an explicit Yes.</summary>
 	/// <remarks>
@@ -375,6 +439,30 @@ public static partial class LuaExecutor
 		{
 			Log.Error(exception, "Failed to show the {Title} dialog", title);
 			return false;
+		}
+	}
+
+	/// <summary>What save_creation is asked for: unset options follow the preset, and the format the name.</summary>
+	private readonly record struct SaveRequest(
+		int? PlotId,
+		bool IsOptimal,
+		SaveFormat? Format,
+		CompressionType? Compression,
+		int? Level,
+		string? Password,
+		bool? UseChecksum)
+	{
+		public SaveOptions ToOptions(int instanceCount)
+		{
+			var preset = IsOptimal ? SaveOptions.Optimal(instanceCount) : SaveOptions.Default;
+
+			return preset with
+			{
+				Compression = Compression ?? preset.Compression,
+				CompressionLevel = Level ?? preset.CompressionLevel,
+				Encryption = Password is null ? null : new SaveEncryption.Password(Password),
+				UseChecksum = UseChecksum ?? preset.UseChecksum
+			};
 		}
 	}
 }

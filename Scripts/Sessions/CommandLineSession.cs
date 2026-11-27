@@ -18,7 +18,7 @@ namespace EnsembleRoot.Scripts.Sessions;
 /// <remarks>
 ///     A headless server always starts one, hosting a dedicated session unless told to join, and quits when it ends.
 ///     A regular client only starts one when given a port or an address (hosting as a player), e.g., to try a host
-///     and a client side by side, and returns to the menu when it ends.
+///     and a client side by side, or <c lang="shell">--single-player</c>, and returns to the menu when it ends.
 /// </remarks>
 [GlobalClass]
 [Autoload(Order = AutoloadOrder.Late + 2, FailurePolicy = AutoloadFailurePolicy.FailFast)]
@@ -32,6 +32,7 @@ public partial class CommandLineSession : Node, IAutoload
 
 	private const string JoinArg = "join";
 	private const string NameArg = "name";
+	private const string SinglePlayerArg = "single-player";
 
 	private static readonly Dictionary<string, string> ArgAliases = new(StringComparer.OrdinalIgnoreCase)
 	{
@@ -41,6 +42,7 @@ public partial class CommandLineSession : Node, IAutoload
 		["p"] = PortArg,
 		["pf"] = ProfanityFilterArg,
 		["pw"] = PasswordArg,
+		["sp"] = SinglePlayerArg,
 		["u"] = UpnpArg
 	};
 
@@ -57,16 +59,18 @@ public partial class CommandLineSession : Node, IAutoload
 			args[ArgAliases.GetValueOrDefault(name, name)] = rest is [var value] ? value : string.Empty;
 		}
 
-		// A headless server quits when its session ends; a regular client opens the menu unless asked to host or join
+		// A headless server quits when its session ends; a regular client opens the menu unless asked for a session
 		if (Main.IsHeadlessServer)
 			GSessionManager.SessionFailed += OnSessionFailed;
-		else if (!args.ContainsKey(JoinArg) && !args.ContainsKey(PortArg))
+		else if (!args.ContainsKey(JoinArg) && !args.ContainsKey(PortArg) && !args.ContainsKey(SinglePlayerArg))
 			return;
 
 		var password = args.GetValueOrDefault(PasswordArg);
 		var displayName = args.GetValueOrDefault(NameArg);
 
-		if (args.GetValueOrDefault(JoinArg) is { } join)
+		if (!Main.IsHeadlessServer && args.ContainsKey(SinglePlayerArg))
+			GSessionManager.StartSinglePlayer(displayName);
+		else if (args.GetValueOrDefault(JoinArg) is { } join)
 		{
 			if (HostEndPoint.TryParse(join, out var endPoint))
 				GSessionManager.JoinMultiPlayer(new JoinConfig(endPoint.Host, endPoint.Port, password), displayName);
@@ -90,6 +94,48 @@ public partial class CommandLineSession : Node, IAutoload
 	/// <summary>Formats a user arg as this class reads it, e.g., to start another instance.</summary>
 	public static string FormatArg(string name, string? value = null) =>
 		value is null ? $"--{name}" : $"--{name}={value}";
+
+	/// <summary>
+	///     Formats the user args that start a session like the current one: the same kind, port or address, password,
+	///     and name. None outside a session.
+	/// </summary>
+	public static IReadOnlyList<string> FormatCurrentSession()
+	{
+		var args = new List<string>();
+
+		switch (GSessionManager.Config)
+		{
+			case HostConfig host:
+				args.Add(FormatArg(PortArg, host.Port.ToString(CultureInfo.InvariantCulture)));
+
+				if (host.MaxClientCount is { } count)
+					args.Add(FormatArg(MaxClientsArg, count.ToString(CultureInfo.InvariantCulture)));
+
+				if (host.IsUpnpEnabled)
+					args.Add(FormatArg(UpnpArg));
+
+				break;
+
+			case JoinConfig join:
+				args.Add(FormatArg(JoinArg, new HostEndPoint(join.Address, join.Port).ToString()));
+				break;
+
+			case null when GSessionManager.Mode is SessionMode.SinglePlayer:
+				args.Add(FormatArg(SinglePlayerArg));
+				break;
+
+			default:
+				return args;
+		}
+
+		if (GSessionManager.Config?.Password is { Length: > 0 } password)
+			args.Add(FormatArg(PasswordArg, password));
+
+		if (GSessionManager.LocalPeer?.DisplayName is { Length: > 0 } name)
+			args.Add(FormatArg(NameArg, name));
+
+		return args;
+	}
 
 	public override void _ExitTree() => GSessionManager.SessionFailed -= OnSessionFailed;
 

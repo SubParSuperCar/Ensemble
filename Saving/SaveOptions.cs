@@ -28,6 +28,10 @@ public abstract record SaveEncryption
 
 public sealed record SaveOptions
 {
+	// Zstandard's 19 saves about a tenth more than its 9 at ten times the time, which is under a fifth of a second up
+	// to this many instances
+	private const int MaxStrongCompressionCount = 4096;
+
 	public static SaveOptions Default { get; } = new();
 
 	public CompressionType Compression { get; init; } = CompressionType.None;
@@ -42,6 +46,15 @@ public sealed record SaveOptions
 
 	/// <remarks>Ignored when encrypted, since AES-GCM already authenticates the payload.</remarks>
 	public bool UseChecksum { get; init; }
+
+	/// <summary>Compact and checked: Zstandard, as strong as stays quick for the save's size, and a checksum.</summary>
+	public static SaveOptions Optimal(int instanceCount) =>
+		new()
+		{
+			Compression = CompressionType.Zstandard,
+			CompressionLevel = instanceCount <= MaxStrongCompressionCount ? 19 : 9,
+			UseChecksum = true
+		};
 }
 
 public sealed record LoadOptions

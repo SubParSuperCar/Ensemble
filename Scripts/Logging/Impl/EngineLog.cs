@@ -6,13 +6,13 @@ using Serilog.Events;
 namespace EnsembleRoot.Scripts.Logging;
 
 /// <summary>
-///     Forwards the engine's own output (Godot's errors and warnings, its addons', and prints) to the game's logs, so the
-///     log files and the in-game log output carry them too.
+///     Forwards the engine's own output (Godot's errors and warnings, its addons', and prints) to the game's logs, so
+///     the log files and the in-game log output carry them too.
 /// </summary>
 /// <remarks>
 ///     The engine writes them to the terminal and the editor itself, so the sinks writing there skip them
-///     (<see cref="IsFromEngine" />), and what <see cref="LogSink" /> prints through the engine isn't forwarded back. Prints
-///     are verbose, as the editor's verbose output is hundreds of lines. The engine calls in from any thread.
+///     (<see cref="IsFromEngine" />), and what <see cref="LogSink" /> prints through the engine isn't forwarded back.
+///     Prints are verbose, as the editor's verbose output is hundreds of lines. The engine calls in from any thread.
 /// </remarks>
 internal sealed partial class EngineLog : Godot.Logger
 {

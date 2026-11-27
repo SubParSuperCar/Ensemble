@@ -14,6 +14,12 @@ namespace EnsembleRoot.Scripts.Cameras;
 [GlobalClass]
 public partial class PopperCam : SpringArm3D
 {
+	internal const float MinMouseSensitivity = 1 / 16f;
+	internal const float MaxMouseSensitivity = 16f;
+
+	private const string Section = "camera";
+	private const string MouseSensitivityKey = "mouse_sensitivity";
+
 	private static readonly StringName OrbitAction = "camera_orbit";
 	private static readonly StringName YawLeftAction = "camera_yaw_left";
 	private static readonly StringName YawRightAction = "camera_yaw_right";
@@ -52,6 +58,17 @@ public partial class PopperCam : SpringArm3D
 	public float DollySmoothingRate { get; set; } = 32f;
 
 	internal PlayerHandle? Player { get; set; }
+
+	/// <summary>Scales how far moving the mouse turns the camera, remembered across launches.</summary>
+	internal static float MouseSensitivity
+	{
+		get => field is 0 ? field = RestoreMouseSensitivity() : field;
+		set
+		{
+			field = value;
+			UserData.SetValue(Section, MouseSensitivityKey, value);
+		}
+	}
 
 	public override void _Ready()
 	{
@@ -98,7 +115,7 @@ public partial class PopperCam : SpringArm3D
 					break;
 
 				case InputEventMouseMotion motion when Input.IsActionPressed(OrbitAction):
-					var radiansPerPixel = float.Tau * OrbitRatio / _viewportDiagonal;
+					var radiansPerPixel = float.Tau * OrbitRatio * MouseSensitivity / _viewportDiagonal;
 					_yaw -= motion.Relative.X * radiansPerPixel;
 					_pitch = Math.Clamp(_pitch - motion.Relative.Y * radiansPerPixel, -PitchMinMax, PitchMinMax);
 					break;
@@ -157,6 +174,13 @@ public partial class PopperCam : SpringArm3D
 
 		var length = MathF.Exp(logLength);
 		_targetLength = delta < 0 && length <= DollyMin ? 0 : length;
+	}
+
+	// The user data file is hand-editable, so it's clamped
+	private static float RestoreMouseSensitivity()
+	{
+		var sensitivity = UserData.GetValue(Section, MouseSensitivityKey, 1f).AsSingle();
+		return float.IsFinite(sensitivity) ? Math.Clamp(sensitivity, MinMouseSensitivity, MaxMouseSensitivity) : 1;
 	}
 
 	private void RecalculateViewportDiagonal()

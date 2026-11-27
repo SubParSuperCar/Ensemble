@@ -49,6 +49,40 @@ public sealed class SaveTests : IDisposable
 		AssertEquivalent(original, serializer.Load(_path));
 	}
 
+	// Names can mislead (a renamed file, or a binary save named *.json), so loading goes by content
+	[Theory]
+	[InlineData(nameof(BinarySaveSerializer), CompressionType.None, false)]
+	[InlineData(nameof(BinarySaveSerializer), CompressionType.Zstandard, true)]
+	[InlineData(nameof(JsonSaveSerializer), CompressionType.None, false)]
+	[InlineData(nameof(JsonSaveSerializer), CompressionType.Brotli, true)]
+	public void SaveFile_EitherFormat_LoadsAndSummarizes(string format, CompressionType compression, bool checksum)
+	{
+		var original = CreateSaveData();
+		var options = new SaveOptions { Compression = compression, UseChecksum = checksum };
+		CreateSerializer(format).Save(_path, original, options);
+
+		AssertEquivalent(original, SaveFile.Load(_path));
+
+		var summary = SaveFile.Summarize(_path);
+		var expectedFormat = format is nameof(BinarySaveSerializer) ? SaveFormat.Binary : SaveFormat.Json;
+
+		Assert.Equal(
+			new SaveSummary(
+				expectedFormat, compression, false, checksum, original.Instances.Count, original.UtcCreatedAt),
+			summary);
+	}
+
+	[Fact]
+	public void SaveFile_Encrypted_SummarizesWithoutPassword()
+	{
+		new BinarySaveSerializer().Save(
+			_path, CreateSaveData(),
+			new SaveOptions { Compression = CompressionType.Zstandard, Encryption = CreatePassword() });
+
+		Assert.Equal(
+			new SaveSummary(null, CompressionType.Zstandard, true, false, null, null), SaveFile.Summarize(_path));
+	}
+
 	[Theory]
 	[InlineData(Password, Password)]
 	[InlineData("caf\u0065\u0301", "caf\u00E9")]

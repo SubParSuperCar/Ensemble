@@ -1,13 +1,12 @@
 using System.Text.Json;
 using EnsembleRoot.GdCore.Plots;
 using EnsembleRoot.Saving;
-using EnsembleRoot.Saving.SerDes;
 
 namespace EnsembleRoot.Scripts.Plots;
 
 /// <summary>
-///     Saved creations, as files in <see cref="CreationsDir" />: JSON when named *.json, binary otherwise. Saving over
-///     a file keeps the old one as a backup.
+///     Saved creations, as files in <see cref="CreationsDir" />: JSON when named *.json, binary otherwise, unless asked
+///     for the other. Loading reads either, whatever the name. Saving over a file keeps the old one as a backup.
 /// </summary>
 public static class CreationSaves
 {
@@ -25,8 +24,9 @@ public static class CreationSaves
 	///     Key derivation and compression take a while, so they run off the main thread.
 	/// </summary>
 	public static async Task<(int Count, string? BackupPath)> SaveAsync(
-		GdPlot plot, string path, SaveOptions options, CancellationToken cancellationToken)
+		GdPlot plot, string path, SaveOptions options, SaveFormat? format, CancellationToken cancellationToken)
 	{
+		var serializer = SaveFile.GetSerializer(format ?? GetFormat(path));
 		var data = SaveConverter.ToSaveData(plot.Instances.Source, GTimeProvider);
 		var backupPath = File.Exists(path) ? GetBackupPath(path) : null;
 
@@ -39,7 +39,7 @@ public static class CreationSaves
 				if (backupPath is not null)
 					File.Copy(path, backupPath, true);
 
-				GetSerializer(path).Save(path, data, options);
+				serializer.Save(path, data, options);
 			},
 			cancellationToken).ConfigureAwait(false);
 
@@ -48,15 +48,18 @@ public static class CreationSaves
 
 	public static Task<CreationSaveData> LoadAsync(
 		string path, string? password, CancellationToken cancellationToken) =>
-		Task.Run(() => GetSerializer(path).Load(path, new LoadOptions { Password = password }), cancellationToken);
+		Task.Run(() => SaveFile.Load(path, new LoadOptions { Password = password }), cancellationToken);
+
+	public static Task<SaveSummary> SummarizeAsync(string path, CancellationToken cancellationToken) =>
+		Task.Run(() => SaveFile.Summarize(path), cancellationToken);
+
+	public static SaveFormat GetFormat(string path) =>
+		string.Equals(Path.GetExtension(path), JsonExtension, StringComparison.OrdinalIgnoreCase)
+			? SaveFormat.Json
+			: SaveFormat.Binary;
 
 	/// <summary>Gets whether an exception comes from a bad file, password, or option, as opposed to a bug.</summary>
 	public static bool IsSaveError(Exception exception) =>
 		exception is IOException or UnauthorizedAccessException or InvalidDataException or JsonException
 			or ArgumentException;
-
-	private static ISaveSerializer GetSerializer(string path) =>
-		string.Equals(Path.GetExtension(path), JsonExtension, StringComparison.OrdinalIgnoreCase)
-			? new JsonSaveSerializer()
-			: new BinarySaveSerializer();
 }

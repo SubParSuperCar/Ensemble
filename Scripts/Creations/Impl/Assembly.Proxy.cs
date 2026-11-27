@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using EnsembleRoot.Scripts.World;
 using Godot;
 
 namespace EnsembleRoot.Scripts.Creations;
@@ -9,13 +10,13 @@ public partial class Assembly
 	private const float ProxySnapDistance = 8f;
 	private const double MaxProxyExtrapolation = 1 / 10d;
 
-	// A velocity change beyond twice gravity's means the body hit something between the two states, so a curve would
-	// overshoot into it
-	private static readonly float MaxCurvedAcceleration =
-		2 * ProjectSettings.GetSetting("physics/3d/default_gravity").AsSingle();
-
 	private readonly ProxyState[] _proxyStates = new ProxyState[ProxyBufferSize];
 	private int _proxyStateCount;
+
+	// A velocity change beyond twice gravity's means the body hit something between the two states, so a curve would
+	// overshoot into it. Weaker gravity than the default changes nothing an impact would.
+	private static float MaxCurvedAcceleration =>
+		2 * MathF.Max(WorldManager.Instance?.World?.Gravity ?? 0, WorldHandle.DefaultGravity);
 
 	/// <summary>Where a proxy was last put, known without asking Godot, so a settled proxy costs no interop.</summary>
 	internal Transform3D ProxyTransform { get; private set; }

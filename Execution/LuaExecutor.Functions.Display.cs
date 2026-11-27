@@ -1,6 +1,7 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Messages;
+using EnsembleRoot.Scripts.Cameras;
 using Godot;
 using Lua;
 using Serilog;
@@ -68,6 +69,32 @@ public static partial class LuaExecutor
 		camera.Fov = (float)degrees;
 		Log.Information("Set camera FOV to {Degrees} degree(s)", degrees);
 
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_mouse_sens(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var sensitivity = context.GetArgumentOrDefault(0, 1f);
+
+		if (sensitivity is not (>= PopperCam.MinMouseSensitivity and <= PopperCam.MaxMouseSensitivity))
+		{
+			Log.Error(
+				"Invalid mouse sensitivity: {Sensitivity} (takes {Min} to {Max})", sensitivity,
+				PopperCam.MinMouseSensitivity, PopperCam.MaxMouseSensitivity);
+
+			return context.ReturnNothing();
+		}
+
+		PopperCam.MouseSensitivity = sensitivity;
+		Log.Information("Set mouse sensitivity to {Sensitivity}x", sensitivity);
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_stats_on(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		WeakReferenceMessenger.Default.Send(new SetStatsShownMessage(context.GetArgument<bool>(0)));
 		return context.ReturnNothing();
 	}
 

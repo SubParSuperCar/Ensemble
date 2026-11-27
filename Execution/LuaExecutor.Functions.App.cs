@@ -1,7 +1,10 @@
 using System.Diagnostics;
+using System.Globalization;
 using EnsembleRoot.Common.Audio;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Common.Time;
 using EnsembleRoot.Scripts.DiscordRichPresence;
+using EnsembleRoot.Scripts.Sessions;
 using Godot;
 using Lua;
 using Serilog;
@@ -66,11 +69,38 @@ public static partial class LuaExecutor
 
 	private static ValueTask<int> restart(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
 	{
-		Log.Information("Restarting...");
+		// The engine's arguments leave out the game's own, which follow "--". Without any of its own, the game comes
+		// back to a session like the current one.
+		string[] userArgs = OS.GetCmdlineUserArgs() is { Length: > 0 } given
+			? given
+			: [.. CommandLineSession.FormatCurrentSession()];
 
-		// The engine's arguments leave out the game's own, which follow "--"
-		OS.SetRestartOnExit(true, [.. OS.GetCmdlineArgs(), "--", .. OS.GetCmdlineUserArgs()]);
+		Log.Information("Restarting...");
+		OS.SetRestartOnExit(true, [.. OS.GetCmdlineArgs(), "--", .. userArgs]);
 		GMain.Quit();
+
+		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_culture(LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var name = context.GetArgumentOrDefault<string?>(0);
+		CultureInfo? culture;
+
+		try
+		{
+			culture = name is null ? null : AppCulture.Find(name);
+		}
+		catch (CultureNotFoundException)
+		{
+			Log.Error("Unknown culture: {Name} (e.g., en-US, uk-UA, or invariant)", name);
+			return context.ReturnNothing();
+		}
+
+		AppCulture.Set(culture);
+		Log.Information(
+			"Set culture to {Culture} ({Sample})", CultureInfo.CurrentCulture.DisplayName,
+			string.Create(CultureInfo.CurrentCulture, $"{1234.5:N1}"));
 
 		return context.ReturnNothing();
 	}

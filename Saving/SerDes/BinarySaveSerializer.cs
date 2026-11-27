@@ -20,6 +20,8 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 	private const byte FormatVersion = 0;
 	private const int MaxPreallocatedCount = 1 << 12;
 
+	internal const int MagicSize = 4;
+
 	private static ReadOnlySpan<byte> Magic => "ENSB"u8;
 
 	public void Serialize(Stream stream, CreationSaveData data)
@@ -84,6 +86,8 @@ public sealed class BinarySaveSerializer : ISaveSerializer
 
 		return save;
 	}
+
+	internal static bool StartsWithMagic(ReadOnlySpan<byte> start) => start.StartsWith(Magic);
 
 	private static void WriteInstance(BinaryWriter writer, SaveInstance instance)
 	{

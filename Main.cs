@@ -3,6 +3,7 @@ using System.Globalization;
 using EnsembleRoot.Autoloading;
 using EnsembleRoot.Common.Audio;
 using EnsembleRoot.Common.Interop;
+using EnsembleRoot.Common.Text;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Watchdog;
 using EnsembleRoot.Sessions;
@@ -49,6 +50,7 @@ public partial class Main : Node
 	{
 		Console.WriteLine($"Starting {nameof(Main)}... (IsHeadlessServer={IsHeadlessServer})");
 		Volume.Restore();
+		AppCulture.Restore();
 
 		if (IsHeadlessServer)
 			Load();

@@ -6,7 +6,10 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using EnsembleRoot.Common.Input;
+using EnsembleRoot.Common.Messages;
+using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Ui.Abstractions;
 using EnsembleRoot.Ui.Attributes;
 using EnsembleRoot.Ui.Extensions;
@@ -25,9 +28,13 @@ public sealed partial class MainViewModel : ViewModelBase
 	private const int TerminalHeight = 720;
 	private const int TerminalCursorBlinkRateMs = (int)TimeSpan.MillisecondsPerSecond / 3;
 
+	private const string Section = "ui";
+	private const string IsStatsShownKey = "is_stats_shown";
+
 	private static readonly StringName ToggleConsoleAction = "ui_console_toggle";
 	private static readonly StringName OpenTerminalAction = "ui_terminal_open";
 	private static readonly StringName TogglePhotoModeAction = "ui_photo_mode_toggle";
+	private static readonly StringName ToggleStatsAction = "ui_stats_toggle";
 
 	private static readonly TimeSpan PhotoModeHintDuration = TimeSpan.FromSeconds(3);
 
@@ -46,13 +53,16 @@ public sealed partial class MainViewModel : ViewModelBase
 		_services = services;
 		_dispatcher = dispatcher;
 
-		Stats = services.Create<StatViewModel>();
+		UpdateStats(UserData.GetValue(Section, IsStatsShownKey, true).AsBool());
 		Clock = services.Create<ClockViewModel>();
 		Toaster = services.Create<ToasterViewModel>();
 
 		dispatcher.Input += OnInput;
 		dispatcher.Notification += OnNotification;
 		_photoModeTimer.Tick += OnPhotoModeTimerTick;
+
+		WeakReferenceMessenger.Default.Register<MainViewModel, SetStatsShownMessage>(
+			this, static (viewModel, message) => viewModel.SetStatsShown(message.Value));
 
 		if (GSessionManager.IsActive)
 			OnSessionStarted();
@@ -101,6 +111,8 @@ public sealed partial class MainViewModel : ViewModelBase
 
 		_photoModeTimer.Stop();
 		_photoModeTimer.Tick -= OnPhotoModeTimerTick;
+
+		WeakReferenceMessenger.Default.Unregister<SetStatsShownMessage>(this);
 
 		Main = null;
 		Stats = null;
@@ -152,6 +164,19 @@ public sealed partial class MainViewModel : ViewModelBase
 		// Only a session has a world to show without the UI
 		else if (Input.IsActionJustPressedByEvent(TogglePhotoModeAction, @event) && GSessionManager.IsActive)
 			IsPhotoMode = !IsPhotoMode;
+		else if (Input.IsActionJustPressedByEvent(ToggleStatsAction, @event))
+			SetStatsShown(Stats is null);
+	}
+
+	// Hidden stats aren't gathered at all
+	private void UpdateStats(bool isShown) => Stats = isShown ? Stats ?? _services.Create<StatViewModel>() : null;
+
+	private void SetStatsShown(bool isShown)
+	{
+		UpdateStats(isShown);
+		UserData.SetValue(Section, IsStatsShownKey, isShown);
+
+		Log.Information("{State} the stats overlay", isShown ? "Showed" : "Hid");
 	}
 
 	private void OnNotification(int what)

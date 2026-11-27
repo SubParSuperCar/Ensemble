@@ -79,8 +79,10 @@ public sealed partial class StatViewModel : ViewModelBase
 		var dram = $"{ByteFormat.Humanize((ulong)_process.PrivateMemorySize64)} (PWS)";
 #endif
 
-		var processTimeMs = GetMonitorMs(Performance.Monitor.TimeProcess);
-		var physicsTimeMs = GetMonitorMs(Performance.Monitor.TimePhysicsProcess);
+		var processTimeMs = FrameTimes.ProcessMs;
+		var physicsTimeMs = FrameTimes.PhysicsMs;
+		var renderCpuMs = FrameTimes.RenderCpuMs;
+		var gpuMs = FrameTimes.RenderGpuMs;
 		var uiProcessTimeMs = Performance.HasCustomMonitor(Ui.ProcessTimeMonitor)
 			? Performance.GetCustomMonitor(Ui.ProcessTimeMonitor).AsDouble() * TimeSpan.MillisecondsPerSecond
 			: 0d;
@@ -92,6 +94,9 @@ public sealed partial class StatViewModel : ViewModelBase
 			("Physics Time", string.Create(CultureInfo.InvariantCulture, $"{physicsTimeMs:F3} msec")),
 			("UI Frame Rate", string.Create(CultureInfo.InvariantCulture, $"{uiFps:F3} FPS ({uiFrameTimeMs:F3} mspf)")),
 			("UI Proc. Time", string.Create(CultureInfo.InvariantCulture, $"{uiProcessTimeMs:F3} msec")),
+			("Render Time", string.Create(CultureInfo.InvariantCulture, $"{renderCpuMs:F3} msec")),
+			("GPU Time", string.Create(CultureInfo.InvariantCulture, $"{gpuMs:F3} msec")),
+			("VSync", FormatVsync()),
 			("Used DRAM", dram),
 			("Used VRAM", ByteFormat.Humanize((ulong)Performance.GetMonitor(Performance.Monitor.RenderVideoMemUsed))),
 			("C# Heap Size", ByteFormat.Humanize((ulong)GC.GetTotalMemory(false))),
@@ -132,8 +137,17 @@ public sealed partial class StatViewModel : ViewModelBase
 				$"{speed:F2} m/s, {speed * MpsToMph:F1} mi/h, {speed * MpsToKph:F1} km/h")));
 	}
 
-	private static double GetNow() => Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
+	// A frame rate pinned near the refresh rate, with a GPU and CPU to spare, points at the pacing
+	private static string FormatVsync()
+	{
+		var vsync = string.Create(
+			CultureInfo.InvariantCulture,
+			$"{DisplayServer.WindowGetVsyncMode()} at {DisplayServer.ScreenGetRefreshRate():F0} Hz");
 
-	private static double GetMonitorMs(Performance.Monitor monitor) =>
-		Performance.GetMonitor(monitor) * TimeSpan.MillisecondsPerSecond;
+		return Engine.MaxFps > 0
+			? string.Create(CultureInfo.InvariantCulture, $"{vsync}, capped at {Engine.MaxFps} FPS")
+			: vsync;
+	}
+
+	private static double GetNow() => Time.GetTicksUsec() / (double)TimeSpan.MicrosecondsPerSecond;
 }

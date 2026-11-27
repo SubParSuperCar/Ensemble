@@ -257,15 +257,18 @@ with `set_profanity_filter_level`.
 | Chat (with the widget open)           | `/` to type, `Enter` to send, `Esc` to stop typing         |
 | Console / system terminal             | `` ` `` or `F9` / `F8`                                     |
 | Hide or show the UI (photo mode)      | `F1`                                                       |
+| Hide or show the stats overlay        | `F3`                                                       |
 | Back (menus)                          | `Backspace`                                                |
 | Start (or restart) single-player game | `Esc` (outside multiplayer; restarting discards the build) |
 
 While you control a creation, any key it binds drives it instead of doing what's above. The camera also zooms with `-`
 `=` and `Page Down` `Page Up`, and most actions have gamepad bindings. Run `dmp_inp_map()` in the console for the full
 input map, and `help()` for every console function (or `help("creation")` for those whose names match). To keep a build,
-run `save_creation("castle")`; `load_creation("castle")` adds it to your plot again, even in another session. Saving
-over it keeps the previous version as `castle.bak.ensb`; `rm_creation("castle")` moves it to your Recycle Bin (or
-Trash), and `rm_creation("castle", true)` deletes it for good once you confirm.
+run `save_creation("castle")` (or `save_creation("castle", { preset = "optimal" })` for a smaller, checked file);
+`load_creation("castle")` adds it to your plot again, even in another session. Saving over it keeps the previous version
+as `castle.bak.ensb`; `rm_creation("castle")` moves it to your Recycle Bin (or Trash), and `rm_creation("castle", true)`
+deletes it for good once you confirm. Numbers read with your system's decimal separator unless you pick another culture
+(`set_culture("invariant")` for a period), and `set_mouse_sens(2)` doubles how fast the mouse turns the camera.
 
 </details>
 

@@ -55,8 +55,9 @@ Everyone gets a plot, and everything you place on it is shared live with everyon
 single-player, or host a session and invite your friends. If you played Baja Builders, you'll feel at home: the ideas
 are the same, without Roblox's limits.
 
-- **Build** with blocks, wedges, cylinders, cones, spheres, and more. Pieces snap neatly to the grid, as finely as you
-  like, rotate on any axis, and never clip into one another.
+- **Build** with blocks, wedges, beams, posts, cylinders, cones, spheres, wheels, and more. Pieces snap neatly to the
+  grid (whose finest lines follow your snapping), as finely as you like, rotate on any axis, and never clip into one
+  another; thin plates also snap to the middle of a cell. Number boxes take arithmetic, like `1/3`.
 - **Bring it to life** by spawning your plot: touching pieces weld together, each piece weighs what its material does,
   and the whole creation tips, falls, and rolls for real, in multiplayer too, with moving parts like springy
   suspensions. Despawn it to keep building.
@@ -64,8 +65,9 @@ are the same, without Roblox's limits.
   join with a single code. Sessions can have passwords and player limits, and run on dedicated servers.
 - **Chat** with Roblox-style colored nametags, an optional profanity filter (hosts choose), and an optional "read aloud"
   mode that speaks new messages.
-- **Drive** what you build: bind motors and servos to keys, touch a seat to sit, and whoever has sat longest in a seat
-  with controls takes the wheel. Anchors hold what you've built in place.
+- **Drive and fly** what you build: bind motors, servos, pistons, and hover thrusters to keys (or to none), shape
+  wings from wing panels that lift and drag in the airflow, touch a seat to sit, and whoever has sat longest in a seat
+  with controls takes the wheel. Anchors hold what you've built in place, and hosts can change the gravity.
 - **Crash** it: creations collide with the terrain, with characters, and with one another, whoever built them.
 - **Paint** pieces with the Paint tool: choose any color and a material (such as rubber or ice) in its palette, then
   click a piece, sweep across several, or box-select them. Tap `Ctrl` for the eyedropper, then click a piece to pick
@@ -73,11 +75,11 @@ are the same, without Roblox's limits.
 - **Explore** a world with terrain and a full day-night cycle that can follow your real clock.
 - **Arrange your screen** with movable, resizable windows (called widgets), in light or dark themes that follow your
   system's accent color.
-- **Tinker** with a built-in Lua console (which also saves and loads creations for now), and even a web browser and
-  system terminal inside the game.
+- **Tinker** with a built-in Lua console (which also saves and loads creations for now, traces frame times, and sets
+  things like your mouse sensitivity and number format), and even a web browser and system terminal inside the game.
 
-More moving parts (like thrusters and propellers), a Saves menu, a real map, and more building tools are on the way; see
-the [**roadmap**](./ROADMAP.md).
+More moving parts (like rocket thrusters and propellers), a Saves menu, a Move tool, a real map, and more building
+tools are on the way; see the [**roadmap**](./ROADMAP.md).
 
 ---
 

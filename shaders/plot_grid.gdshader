@@ -7,8 +7,10 @@ render_mode unshaded, blend_mix, depth_draw_never, cull_back;
 
 uniform vec3 color : source_color = vec3(1.0);
 
-// Per level, finest first: the spacing between lines and their width in meters, and their opacity as it should look
-uniform vec3 spacings = vec3(0.0625, 0.5, 4.0);
+// Per level, finest first: the spacing between lines and their width in meters, and their opacity as it should look.
+// The finest spacing is each plot's own, so a tool can show its snapping increment on one plot.
+instance uniform float fine_spacing = 0.0625;
+uniform vec2 spacings = vec2(0.5, 4.0);
 uniform vec3 widths = vec3(0.0078125, 0.015625, 0.03125);
 uniform vec3 opacities = vec3(0.333333, 0.666667, 1.0);
 
@@ -36,7 +38,7 @@ void fragment()
 
 	// The strongest level wins where lines cross, so crossings don't stack
 	ALPHA = max(
-		level_alpha(spacings.x, widths.x, opacities.x, footprints),
-		max(level_alpha(spacings.y, widths.y, opacities.y, footprints),
-			level_alpha(spacings.z, widths.z, opacities.z, footprints)));
+		level_alpha(fine_spacing, widths.x, opacities.x, footprints),
+		max(level_alpha(spacings.x, widths.y, opacities.y, footprints),
+			level_alpha(spacings.y, widths.z, opacities.z, footprints)));
 }

@@ -56,7 +56,15 @@ public partial class ConstructTool : ToolBase
 
 	public RotationSpace RotationSpace { get; set; } = RotationSpace.Global;
 
-	public float? SnappingIncrementLinear { get; set; } = DefaultSnappingIncrementLinear;
+	public float? SnappingIncrementLinear
+	{
+		get;
+		set
+		{
+			field = value;
+			UpdateGrid();
+		}
+	} = DefaultSnappingIncrementLinear;
 	public float SnappingIncrementAngularRadians { get; set; } = DefaultSnappingIncrementAngularRadians;
 
 	public int AssetId { get; private set; }
@@ -134,8 +142,23 @@ public partial class ConstructTool : ToolBase
 			RebuildPreview();
 	}
 
-	protected override void OnEnable() => UpdateActive();
-	protected override void OnDisable() => UpdateActive();
+	protected override void OnEnable()
+	{
+		UpdateActive();
+		UpdateGrid();
+	}
+
+	protected override void OnDisable()
+	{
+		UpdateActive();
+		UpdateGrid();
+	}
+
+	// While placing, the plot's finest lines are where edges snap, unless that's coarser than its cells
+	private void UpdateGrid() =>
+		PlotGrids.FineSpacing = IsEnabled && IsSnapping
+			? MathF.Min(SnappingIncrementLinear!.Value, 1) * GridToWorldScale
+			: null;
 
 	private void UpdateActive()
 	{

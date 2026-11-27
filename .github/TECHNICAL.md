@@ -486,9 +486,10 @@ graph LR
   the local plot is editable (not spawned), and optionally come back after a despawn (`RestoreOnDespawn`).
 - `ConstructTool` shows a translucent preview with an axial highlight, holds the asset by its origin at the cursor,
   snaps edges (not centers) to the plot grid, resolves overlaps with oriented bounding boxes, and supports
-  `RotateX/Y/Z()` and `ResetRotation()` in global or local space. A shader material fades only if its
-  `translucent_shader` metadata names a translucent variant of its shader with an `opacity` uniform (such as the
-  coil's), so opaque instances never pay for transparency.
+  `RotateX/Y/Z()` and `ResetRotation()` in global or local space. While it's enabled, the local plot's finest grid
+  lines follow its snapping increment, up to a cell (`PlotGrids`, an instance uniform of the shared grid material).
+  A shader material fades only if its `translucent_shader` metadata names a translucent variant of its shader with an
+  `opacity` uniform (such as the coil's), so opaque instances never pay for transparency.
 - `MultiSelector` holds a selection shared across tools: `Shift`-clicking toggles an instance, clicking a selected
   instance acts on the whole selection, and clicking anything else clears it. `MarqueeSelector` boxes instances by
   `Ctrl`-dragging (Baja Builders parity) for the active tool: the selecting tools select them, and the PaintTool paints

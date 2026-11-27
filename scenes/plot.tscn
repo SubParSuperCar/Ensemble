@@ -14,7 +14,7 @@ size = Vector3(32, 0.001, 32)
 render_priority = 0
 shader = ExtResource("4_grid")
 shader_parameter/color = Color(0.86599994, 1, 0.32999998, 1)
-shader_parameter/spacings = Vector3(0.0625, 0.5, 4)
+shader_parameter/spacings = Vector2(0.5, 4)
 shader_parameter/widths = Vector3(0.0078125, 0.015625, 0.03125)
 shader_parameter/opacities = Vector3(0.333333, 0.666667, 1)
 

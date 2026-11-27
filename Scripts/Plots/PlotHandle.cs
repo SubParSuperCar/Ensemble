@@ -10,6 +10,10 @@ namespace EnsembleRoot.Scripts.Plots;
 [GlobalClass]
 public partial class PlotHandle : Node3D
 {
+	private const string FloorMeshPath = "Floor/Mesh";
+
+	private static readonly StringName FineGridSpacingParameter = "fine_spacing";
+
 	private Transform3D? _originTransform;
 	private PlotOutline? _outline;
 	private GdPlot _plot = null!;
@@ -64,6 +68,11 @@ public partial class PlotHandle : Node3D
 
 	public Transform3D GridToWorld(Vector3 gridPosition, Quaternion rotation) =>
 		OriginTransform * new Transform3D(new Basis(rotation), gridPosition * GridToWorldScale);
+
+	/// <summary>Sets the spacing of the floor grid's finest lines in meters, or the grid's own with null.</summary>
+	public void SetFineGridSpacing(float? spacing) =>
+		GetNode<MeshInstance3D>(FloorMeshPath).SetInstanceShaderParameter(
+			FineGridSpacingParameter, spacing is { } meters ? meters : default(Variant));
 
 	public void SetOutline(Color? color, bool hasMarchingAnts)
 	{

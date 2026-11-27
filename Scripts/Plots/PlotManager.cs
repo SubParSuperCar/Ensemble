@@ -57,14 +57,18 @@ public partial class PlotManager : Node
 	public override void _Ready()
 	{
 		UpdateOutlines();
-
 		PlotOutlines.Changed += UpdateOutlines;
+
+		UpdateGrids();
+		PlotGrids.Changed += UpdateGrids;
+
 		LocalPlotChanged += OnLocalPlotChanged;
 	}
 
 	public override void _ExitTree()
 	{
 		PlotOutlines.Changed -= UpdateOutlines;
+		PlotGrids.Changed -= UpdateGrids;
 		LocalPlotChanged -= OnLocalPlotChanged;
 
 		if (ReferenceEquals(GPlotManager, this))
@@ -90,11 +94,21 @@ public partial class PlotManager : Node
 				creation.WakeAssemblies(bounds);
 	}
 
-	private void OnLocalPlotChanged(GdPlot? _) => UpdateOutlines();
+	private void OnLocalPlotChanged(GdPlot? _)
+	{
+		UpdateOutlines();
+		UpdateGrids();
+	}
 
 	private void UpdateOutlines()
 	{
 		foreach (var (id, handle) in _handlesById)
 			handle.SetOutline(PlotOutlines.GetColor(id), PlotOutlines.IsHovered(id));
+	}
+
+	private void UpdateGrids()
+	{
+		foreach (var (id, handle) in _handlesById)
+			handle.SetFineGridSpacing(id == LocalPlot?.Id ? PlotGrids.FineSpacing : null);
 	}
 }

@@ -155,7 +155,10 @@ public partial class Ui : Control
 		if (
 			@event is InputEventMouseButton { Pressed: true, ButtonIndex: <= MouseButton.Middle } press &&
 			_host.MakeInputLocal(press) is InputEventMouseButton local && !_host._HasPoint(local.Position))
+		{
 			_host.GetTopLevel().FocusManager.Focus(null);
+			_dispatcher?.OnPressedOutside();
+		}
 
 		_dispatcher?.OnInput(@event);
 	}

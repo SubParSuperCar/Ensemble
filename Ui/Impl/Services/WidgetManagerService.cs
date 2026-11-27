@@ -12,14 +12,27 @@ using Serilog;
 
 namespace EnsembleRoot.Ui.Services;
 
-/// <summary>Opens, closes, and stacks widgets, at most one per view model type, for its scope's lifetime.</summary>
-public sealed class WidgetManagerService(IServiceProvider services) : DisposableObject, IScopedObject
+/// <summary>
+///     Opens, closes, and stacks widgets, at most one per view model type, for its scope's lifetime. A press outside
+///     the UI leaves none active, as clicking a desktop does.
+/// </summary>
+public sealed class WidgetManagerService : DisposableObject, IScopedObject
 {
 	private const DynamicallyAccessedMemberTypes Constructors = DynamicallyAccessedMemberTypes.PublicConstructors;
 
+	private readonly DispatcherService _dispatcher;
 	private readonly Dictionary<Type, WidgetEntry> _entriesByType = [];
+	private readonly IServiceProvider _services;
 	private readonly Dictionary<Type, WidgetViewModel> _widgetsByType = [];
 	private int _topZIndex;
+
+	public WidgetManagerService(IServiceProvider services, DispatcherService dispatcher)
+	{
+		_services = services;
+		_dispatcher = dispatcher;
+
+		dispatcher.PressedOutside += Deactivate;
+	}
 
 	public ObservableCollection<WidgetEntry> Entries { get; } = [];
 	public ObservableCollection<WidgetViewModel> Widgets { get; } = [];
@@ -32,7 +45,7 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		if (_entriesByType.TryGetValue(typeof(TViewModel), out var entry))
 			return entry;
 
-		entry = new WidgetEntry(this, typeof(TViewModel), TViewModel.Descriptor, services.Create<TViewModel>);
+		entry = new WidgetEntry(this, typeof(TViewModel), TViewModel.Descriptor, _services.Create<TViewModel>);
 		var index = Entries.Count(other => StringComparer.OrdinalIgnoreCase.Compare(other.Title, entry.Title) < 0);
 
 		_entriesByType.Add(entry.Type, entry);
@@ -124,8 +137,16 @@ public sealed class WidgetManagerService(IServiceProvider services) : Disposable
 		widget.ZIndex = ++_topZIndex;
 	}
 
+	internal void Deactivate()
+	{
+		Active?.IsActive = false;
+		Active = null;
+	}
+
 	protected override void OnDispose()
 	{
+		_dispatcher.PressedOutside -= Deactivate;
+
 		foreach (var (type, _) in _widgetsByType)
 			Close(type, true);
 	}

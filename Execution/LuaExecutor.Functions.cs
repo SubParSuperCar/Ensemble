@@ -138,6 +138,8 @@ public static partial class LuaExecutor
 		(new LuaFunction(nameof(set_vol), set_vol), "volume?",
 			"Sets the game's volume from 0 to 1, remembered across launches (none resets it)"),
 		(new LuaFunction(nameof(set_vsync_mode), set_vsync_mode), "mode", "Sets the VSync mode by name or number"),
+		(new LuaFunction(nameof(set_watchdog_on), set_watchdog_on), "is_on, token",
+			"Turns the hang watchdog off or back on for a token (any string); it stays off while any token keeps it off"),
 		(new LuaFunction(nameof(set_window_mode), set_window_mode), "mode",
 			"Sets the window mode (e.g., \"fullscreen\" or \"windowed\") by name or number"),
 		(new LuaFunction(nameof(start_sp), start_sp), "name?",

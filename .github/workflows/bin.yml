@@ -20,10 +20,25 @@ concurrency:
 
 # A step shared between jobs is a YAML anchor (&name) where it first appears and an alias (*name) after
 jobs:
+  # NativeAOT links against the runner's glibc, which a player's must be as new as, so these are the oldest images.
+  # Arm devices (a Raspberry Pi, a Windows laptop on Arm) get a lean package alone.
   linux:
-    name: Linux (x86_64)
-    runs-on: ubuntu-latest
+    name: Linux (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-22.04
+            extras: true
+          - arch: arm64
+            runner: ubuntu-22.04-arm
+
+    env:
+      ARCH: ${{ matrix.arch }}
 
     steps:
       - &checkout
@@ -107,23 +122,31 @@ jobs:
           "${GODOT}" --headless --path . --import || true
           "${GODOT}" --headless --path . --import || true
           mkdir -p out
-          "${GODOT}" --headless --path . --export-release "Linux (x86_64)" "${PWD}/out/Ensemble.x86_64"
-          test -s out/Ensemble.x86_64
+          "${GODOT}" --headless --path . --export-release "Linux (${ARCH})" "${PWD}/out/Ensemble.${ARCH}"
+          test -s "out/Ensemble.${ARCH}"
           cd out
           shopt -s nullglob
           for d in data_*/; do cp -a "${d}." . && find "${d}" -mindepth 1 -delete; done
-          chmod +x Ensemble.x86_64 Ensemble.sh
+          chmod +x "Ensemble.${ARCH}" Ensemble.sh
+
+      - name: Package debug
+        if: matrix.extras
+        run: |
+          set -euo pipefail
+          cd out
+          cp ../.github/scripts/symbolize.sh .
+          zip -6 -ry "../Ensemble-${ID}-linux-${ARCH}-debug.zip" .
+          rm symbolize.sh
 
       - name: Package
         run: |
           set -euo pipefail
           cd out
-          cp ../.github/scripts/symbolize.sh .
-          zip -6 -ry "../Ensemble-${ID}-linux-x86_64-debug.zip" .
-          rm -f ./*.pdb ./*.dbg ./*.xml symbolize.sh
-          zip -6 -ry "../Ensemble-${ID}-linux-x86_64.zip" .
+          rm -f ./*.pdb ./*.dbg ./*.xml
+          zip -6 -ry "../Ensemble-${ID}-linux-${ARCH}.zip" .
 
       - name: Export server
+        if: matrix.extras
         timeout-minutes: 30
         env:
           EnsembleServer: true
@@ -154,8 +177,8 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: Ensemble-${{ env.ID }}-linux-x86_64
-          path: Ensemble-${{ env.ID }}-linux-x86_64*.zip
+          name: Ensemble-${{ env.ID }}-linux-${{ matrix.arch }}
+          path: Ensemble-${{ env.ID }}-linux-${{ matrix.arch }}*.zip
           if-no-files-found: error
 
   macos:
@@ -259,15 +282,25 @@ jobs:
           if-no-files-found: error
 
   windows:
-    name: Windows (x86_64)
-    runs-on: windows-latest
+    name: Windows (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
 
-    # MSBuild's reused nodes and the compiler server outlive Godot's internal publish holding the step's piped output,
-    # which PowerShell waits on, so each export sat idle for their quarter-hour timeouts
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runner: windows-latest
+            godot: win64
+            extras: true
+          - arch: arm64
+            runner: windows-11-arm
+            godot: windows_arm64
+
     env:
-      MSBUILDDISABLENODEREUSE: 1
-      UseSharedCompilation: false
+      ARCH: ${{ matrix.arch }}
+      GODOT_BUILD: ${{ matrix.godot }}
 
     defaults:
       run:
@@ -285,12 +318,12 @@ jobs:
       - name: Set up Godot
         run: |
           $base = "https://github.com/godotengine/godot-builds/releases/download/$env:GODOT_VERSION-stable"
-          Invoke-WebRequest "$base/Godot_v$env:GODOT_VERSION-stable_mono_win64.zip" -OutFile godot.zip
+          Invoke-WebRequest "$base/Godot_v$env:GODOT_VERSION-stable_mono_$env:GODOT_BUILD.zip" -OutFile godot.zip
           Invoke-WebRequest "$base/Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz" -OutFile templates.tpz
           Invoke-WebRequest "$base/SHA512-SUMS.txt" -OutFile SHA512-SUMS.txt
           $sums = Get-Content SHA512-SUMS.txt
           $files = @{
-            'godot.zip' = "Godot_v$env:GODOT_VERSION-stable_mono_win64.zip"
+            'godot.zip' = "Godot_v$env:GODOT_VERSION-stable_mono_$env:GODOT_BUILD.zip"
             'templates.tpz' = "Godot_v$env:GODOT_VERSION-stable_mono_export_templates.tpz"
           }
           foreach ($file in $files.GetEnumerator()) {
@@ -304,7 +337,7 @@ jobs:
           $dest = "$env:APPDATA\Godot\export_templates\$env:GODOT_VERSION.stable.mono"
           New-Item -ItemType Directory -Force $dest | Out-Null
           Move-Item C:\tpl\templates\* $dest -Force
-          $name = "Godot_v$env:GODOT_VERSION-stable_mono_win64"
+          $name = "Godot_v$env:GODOT_VERSION-stable_mono_$env:GODOT_BUILD"
           "GODOT=C:\godot\$name\${name}_console.exe" | Out-File $env:GITHUB_ENV -Append -Encoding utf8
 
       - *terrain3d
@@ -321,11 +354,10 @@ jobs:
           # scripts, which drop exported node arrays (e.g., Paintable.Excluded)
           dotnet build EnsembleGame.csproj
           if ($LASTEXITCODE -ne 0) { throw "dotnet build failed with exit code $LASTEXITCODE" }
-          dotnet build-server shutdown
-          & $env:GODOT --headless --path . --import | Out-Host
-          & $env:GODOT --headless --path . --import | Out-Host
+          .github\scripts\godot.ps1 --import
+          .github\scripts\godot.ps1 --import
           New-Item -ItemType Directory -Force out | Out-Null
-          & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64)" "$PWD\out\Ensemble.exe" | Out-Host
+          .github\scripts\godot.ps1 --export-release "Microslop Windows ($env:ARCH)" "$PWD\out\Ensemble.exe"
           if ($LASTEXITCODE -ne 0) { throw "Godot export failed with exit code $LASTEXITCODE" }
           if (-not (Test-Path out\Ensemble.exe) -or (Get-Item out\Ensemble.exe).Length -eq 0) {
             throw "Ensemble.exe missing or empty after export"
@@ -336,23 +368,29 @@ jobs:
             Remove-Item "$($_.FullName)\*" -Recurse -Force
           }
 
+      - name: Package debug
+        if: matrix.extras
+        run: |
+          $PSNativeCommandUseErrorActionPreference = $false
+          Set-Location out
+          7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-${env:ARCH}-debug.zip" . > $null
+
       - name: Package
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
           Set-Location out
-          7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64-debug.zip" . > $null
           Remove-Item *.pdb, *.xml -Force -ErrorAction SilentlyContinue
-          7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-x86_64.zip" . > $null
+          7z a -tzip -mx=5 -mmt=on "..\Ensemble-${env:ID}-windows-${env:ARCH}.zip" . > $null
 
       - name: Export server
+        if: matrix.extras
         timeout-minutes: 30
         env:
           EnsembleServer: true
         run: |
           $PSNativeCommandUseErrorActionPreference = $false
           New-Item -ItemType Directory -Force server | Out-Null
-          & $env:GODOT --headless --path . --export-release "Microslop Windows (x86_64) Server" `
-            "$PWD\server\Ensemble.exe" | Out-Host
+          .github\scripts\godot.ps1 --export-release "Microslop Windows (x86_64) Server" "$PWD\server\Ensemble.exe"
           if ($LASTEXITCODE -ne 0) { throw "Godot export failed with exit code $LASTEXITCODE" }
           if (-not (Test-Path server\Ensemble.exe) -or (Get-Item server\Ensemble.exe).Length -eq 0) {
             throw "Server's Ensemble.exe missing or empty after export"
@@ -385,8 +423,8 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: Ensemble-${{ env.ID }}-windows-x86_64
-          path: Ensemble-${{ env.ID }}-windows-x86_64*.zip
+          name: Ensemble-${{ env.ID }}-windows-${{ matrix.arch }}
+          path: Ensemble-${{ env.ID }}-windows-${{ matrix.arch }}*.zip
           if-no-files-found: error
 
   jit:
@@ -483,88 +521,9 @@ jobs:
 
       - *smoke-windows
 
-  # Arm devices (a Raspberry Pi, a Windows laptop on Arm) run the JIT build: NativeAOT has no official Arm toolchain
-  # here. It's exported on Arm, so the Linux build's smoke test runs natively.
-  jit-arm64:
-    name: JIT (Linux + Windows, arm64)
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
-
-    steps:
-      - *checkout
-
-      - *godot-version
-
-      - *build-id
-
-      - *dotnet
-
-      - *godot-linux
-
-      - *terrain3d
-
-      - *threaded-import
-
-      - name: Export
-        timeout-minutes: 45
-        run: |
-          set -euo pipefail
-          dotnet restore EnsembleGame.csproj
-          dotnet build EnsembleGame.csproj -c ExportDebug --no-restore
-          # The headless editor loads the Debug build's scripts; without them, scenes export through placeholder
-          # scripts, which drop exported node arrays (e.g., Paintable.Excluded)
-          dotnet build EnsembleGame.csproj --no-restore
-          "${GODOT}" --headless --path . --import || true
-          "${GODOT}" --headless --path . --import || true
-          mkdir -p out
-          "${GODOT}" --headless --path . --export-debug "Linux (arm64)" "${PWD}/out/Ensemble.arm64"
-          "${GODOT}" --headless --path . --export-debug "Microslop Windows (arm64)" "${PWD}/out/Ensemble.exe"
-          test -s out/Ensemble.arm64
-          test -s out/Ensemble.exe
-          test -s out/data_EnsembleGame_linuxbsd_arm64/EnsembleGame.dll
-          test -s out/data_EnsembleGame_windows_arm64/EnsembleGame.dll
-          chmod +x out/Ensemble.arm64 out/Ensemble.sh
-
-      - name: Package
-        run: |
-          set -euo pipefail
-          cd out
-          zip -6 -ry "../Ensemble-${ID}-jit-arm64.zip" .
-
-      - *smoke-linux
-
-      - name: Upload
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: Ensemble-${{ env.ID }}-jit-arm64
-          path: Ensemble-${{ env.ID }}-jit-arm64.zip
-          if-no-files-found: error
-
-  jit-windows-arm64:
-    name: JIT (Windows smoke test, arm64)
-    needs: jit-arm64
-    runs-on: windows-11-arm
-    timeout-minutes: 15
-
-    defaults:
-      run:
-        shell: pwsh
-
-    steps:
-      - name: Download
-        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          pattern: Ensemble-*-jit-arm64
-          merge-multiple: true
-
-      - name: Extract
-        run: 7z x -oout (Get-ChildItem *-jit-arm64.zip).FullName > $null
-
-      - *smoke-windows
-
   publish:
     name: Publish
-    needs: [ linux, macos, windows, jit, jit-windows, jit-arm64, jit-windows-arm64 ]
+    needs: [ linux, macos, windows, jit, jit-windows ]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 15

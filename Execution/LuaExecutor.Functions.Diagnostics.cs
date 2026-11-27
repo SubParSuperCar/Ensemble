@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using EnsembleRoot.Common.Logging;
 using EnsembleRoot.Common.Utils;
+using EnsembleRoot.Scripts.Watchdog;
 using Godot;
 using Lua;
 using Serilog;
@@ -131,6 +132,25 @@ public static partial class LuaExecutor
 		Log.Information("Lua: \"{Message}\"", string.Join(' ', values));
 
 		return context.ReturnNothing();
+	}
+
+	private static ValueTask<int> set_watchdog_on(
+		LuaFunctionExecutionContext context, CancellationToken cancellationToken)
+	{
+		var isOn = context.GetArgument<bool>(0);
+
+		// Holds are told apart by reference, and each call brings its own copy of the token
+		var token = string.Intern(context.GetArgument<string>(1));
+		var hasChanged = isOn ? Watchdog.Suspension.Release(token) : Watchdog.Suspension.Acquire(token);
+
+		var count = Watchdog.Suspension.Count;
+
+		if (count is 0)
+			Log.Information("Watchdog on");
+		else
+			Log.Information("Watchdog off, held by {Count} token(s)", count);
+
+		return new ValueTask<int>(context.Return(hasChanged));
 	}
 
 	private static async ValueTask<int> trace_frames(

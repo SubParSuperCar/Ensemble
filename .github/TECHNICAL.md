@@ -616,7 +616,8 @@ yields, and `print` and returned values show what tables hold.
 | Building    | `add_inst`, `clr_insts`, `dmp_assets`, `dmp_insts`, `dmp_mats`, `rm_insts`, `set_inst_prop`        |
 | Chat        | `chat`, `dmp_chat`, `set_chat_log_on`, `set_chat_tts_on`, `set_profanity_filter_level`,            |
 |             | `set_profanity_filter_on`                                                                          |
-| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`, `trace_frames`         |
+| Diagnostics | `clr_log`, `dmp_asm_info`, `dmp_env`, `dmp_inp_map`, `gc`, `help`, `print`, `set_watchdog_on`,     |
+|             | `trace_frames`                                                                                     |
 | Display     | `cap_fps`, `dmp_draw_modes`, `dmp_vsync_modes`, `dmp_window_modes`, `set_cam_fov`,                 |
 |             | `set_draw_mode`, `set_mouse_sens`, `set_stats_on`, `set_ui_anims_on`, `set_ui_dark_theme_on`,      |
 |             | `set_ui_scale`, `set_vsync_mode`, `set_window_mode`                                                |
@@ -670,8 +671,9 @@ yields, and `print` and returned values show what tables hold.
   tracks as segments of its document, so they move with each edit. The engine's own output (Godot's and its addons'
   errors, warnings, and prints) reaches the files and the log view too, through a Godot `Logger` (`EngineLog`); the
   console and the editor already show it, so their sinks skip it.
-- **Watchdog:** a background thread fails fast if the main thread stops responding for 20 seconds, instead of hanging
-  silently.
+- **Watchdog:** a background thread fails fast if the main thread stops responding for a while, instead of hanging
+  silently. The game's own blocking dialogs hold it off, and `set_watchdog_on(false, token)` does too (e.g., on hardware
+  slow enough to stall that long while loading), until `set_watchdog_on(true, token)` with the same token.
 - **Startup report:** the OS, hardware, build, and commit are logged at startup, so bug reports carry their context,
   with the GPU the game actually renders on beside the ones installed.
 - **Stats overlay:** frame, process, physics, render, and GPU times, VSync and the refresh rate, memory, draw calls, and
@@ -695,17 +697,18 @@ content versions leave room to migrate old saves.
 
 ## Builds and CI
 
-- **Release builds** are NativeAOT-compiled and fully trimmed per platform: Windows and Linux (`x86_64`) and macOS
-  (universal), each with a lean ZIP and a `-debug` ZIP carrying symbols. `GdIgnore/PatchExport.cs` flattens the export
-  layout at first launch.
-- **JIT builds** bundle Windows and Linux in one download per architecture, with every assembly as a separate file:
-  `x86_64` for testing, and `arm64`, the only build for Arm devices, exported and smoke-tested on an Arm runner
-  (Terrain3D's Arm libraries come from the same fork as the others).
-- **Dedicated server builds** exist for each of the above. Exporting with `EnsembleServer=true` in the environment and
-  a `Server` preset defines `DEDICATED_SERVER`, which leaves out the UI, tools, Lua console, and the packages only they
-  use, and Godot's dedicated-server mode strips textures and meshes and starts headless. `Ui.cs` and `AvaloniaLoader.cs`
-  stay as empty stand-ins, since Godot resources name them. `resources/` and `world.tscn` aren't stripped: a placeholder
-  can't stand in for a material a C# property or Terrain3D types exactly.
+- **Release builds** are NativeAOT-compiled and fully trimmed per platform: Windows and Linux (`x86_64` and `arm64`) and
+  macOS (universal), each with a lean ZIP, and `x86_64` and macOS with a `-debug` ZIP carrying symbols. Each exports on
+  its own architecture's runner (Terrain3D's Arm libraries come from the same fork as the others), and Linux on the
+  oldest image, since NativeAOT links against the runner's glibc. `GdIgnore/PatchExport.cs` flattens the export layout
+  at first launch.
+- **The JIT build** bundles Windows and Linux (`x86_64`) in one download for testing, with every assembly as a separate
+  file.
+- **Dedicated server builds** exist for `x86_64`, macOS, and the JIT build. Exporting with `EnsembleServer=true` in the
+  environment and a `Server` preset defines `DEDICATED_SERVER`, which leaves out the UI, tools, Lua console, and the
+  packages only they use, and Godot's dedicated-server mode strips textures and meshes and starts headless. `Ui.cs` and
+  `AvaloniaLoader.cs` stay as empty stand-ins, since Godot resources name them. `resources/` and `world.tscn` aren't
+  stripped: a placeholder can't stand in for a material a C# property or Terrain3D types exactly.
 - **CI** (GitHub Actions): `test.yml` runs the tests and builds the server on every push; `bin.yml` builds every tag (or
   on demand, which publishes nothing unless asked to push to itch.io), smoke-tests every package by booting a headless
   server, publishes a release with checksums, and pushes the builds to itch.io; a tag with a suffix (`v1.2.3-rc.1`) is

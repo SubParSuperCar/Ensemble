@@ -166,10 +166,10 @@ Ensemble's test map:
 On startup, Ensemble asks GitHub for the latest release and offers each newer version once. If Discord is running, it
 also shares your activity (e.g., "In the Main Menu" or "Playing Multi-Player") without names or addresses.
 
-Each platform provides a lean ZIP and a `-debug` ZIP that also includes symbol files. There are also `-jit` ZIPs: one
-for `x86_64` testing and troubleshooting, and one that runs on Arm devices (`-jit-arm64`), such as a Raspberry Pi or a
-Windows laptop on Arm; see [**Platform Support**](#platform-support) before choosing one. To host without playing, each
-platform and the `x86_64` JIT build also have a much smaller `-server` ZIP.
+Each platform provides a lean ZIP; Windows and Linux have one for `x86_64` and one for Arm devices (`arm64`), such as a
+Raspberry Pi or a Windows laptop on Arm. The `x86_64` and macOS builds also have a `-debug` ZIP that includes symbol
+files, and a much smaller `-server` ZIP to host without playing. The `-jit-x86_64` ZIPs are for testing and
+troubleshooting; see [**Platform Support**](#platform-support) before choosing one.
 
 > [!IMPORTANT]
 > macOS builds need one extra step before they'll open &mdash; see [**Bypassing Gatekeeper on
@@ -287,8 +287,8 @@ deletes it for good once you confirm. Numbers read with your system's decimal se
 
 | Platform | Architecture(s)                | Graphics API                                                    |
 |----------|--------------------------------|-----------------------------------------------------------------|
-| Windows  | `x86_64`; `arm64` (JIT build)  | Vulkan                                                          |
-| Linux    | `x86_64`; `arm64` (JIT build)  | Vulkan                                                          |
+| Windows  | `x86_64`, `arm64`              | Vulkan                                                          |
+| Linux    | `x86_64`, `arm64`              | Vulkan                                                          |
 | macOS    | Universal (`x86_64` + `arm64`) | Metal (native, default); Vulkan via MoltenVK renders without UI |
 
 Ensemble renders through [Godot](https://godotengine.org)'s rendering hardware interface, with an embedded [Avalonia
@@ -299,23 +299,24 @@ Linux. On macOS, both default to Apple's native Metal API. For troubleshooting, 
 [MoltenVK](https://github.com/KhronosGroup/MoltenVK) instead, but without the Avalonia UI, since SkiaSharp's macOS build
 has no Vulkan support.
 
-Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple Silicon.
+Minimum macOS version: **11.0 (Big Sur)** on Intel, **13.0 (Ventura)** on Apple Silicon. Linux needs **glibc 2.35** or
+newer (e.g., Ubuntu 22.04, Debian 12, or Raspberry Pi OS Bookworm).
+
+The `arm64` builds run on 64-bit Arm Linux with Vulkan, such as a Raspberry Pi 4 or 5 on a 64-bit OS, and on Windows on
+Arm. Native message boxes aren't available there. On modest hardware, `perf_mod()` in the console trades looks for frame
+rate, and `set_watchdog_on(false, "slow")` keeps a long load from tripping the hang watchdog until
+`set_watchdog_on(true, "slow")`.
 
 ### JIT Build
 
 The regular builds are compiled ahead of time with NativeAOT: fast to start and run, but one download per platform. The
-`-jit` ZIP instead runs Ensemble's code on the regular .NET runtime, which compiles it just in time (JIT). It is slower
-to start, larger, and **not recommended for playing** on `x86_64`, but it bundles both Windows and Linux in one download
+`-jit-x86_64` ZIP instead runs Ensemble's code on the regular .NET runtime, which compiles it just in time (JIT). It is
+slower to start, larger, and **not recommended for playing**, but it bundles both Windows and Linux in one download
 and keeps every assembly and debug symbol as a separate file, which helps with testing and troubleshooting. It is also a
 debug build: `F12` opens Avalonia's developer tools, the UI shows render overlays, `Pause` deliberately hangs the main
 thread to test the watchdog, which then ends the game, and single-player starts with test assets and players. Run
-`Ensemble.exe` (Windows), `Ensemble.x86_64`, or `Ensemble.arm64` (Linux) from the extracted folder; each uses its own
-self-contained .NET runtime in its `data_EnsembleGame_<platform>_<architecture>` folder, so keep those folders next to
-the executables.
-
-The `-jit-arm64` ZIP is the only build for Arm (there's no official NativeAOT toolchain for it here): 64-bit Arm Linux
-with Vulkan, such as a Raspberry Pi 4 or 5 on a 64-bit OS, and Windows on Arm. Native message boxes aren't available
-there. On modest hardware, `perf_mod()` in the console trades looks for frame rate.
+`Ensemble.exe` (Windows) or `Ensemble.x86_64` (Linux) from the extracted folder; each uses its own self-contained .NET
+runtime in its `data_EnsembleGame_<platform>_x86_64` folder, so keep those folders next to the executables.
 
 ### Debug Symbols
 

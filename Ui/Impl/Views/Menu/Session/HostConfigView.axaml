@@ -33,7 +33,7 @@
         <CheckBox
             Content="Auto Forward Port (UPnP)"
             IsChecked="{Binding IsUpnpEnabled}"
-            ToolTip.Tip="Asks your router to forward the port so players outside your network can join. Remembered for next time.&#x0a;Uncheck if you forward the port manually, play over LAN, or prefer not to change router settings."
+            ToolTip.Tip="Asks your router to forward the port so players outside&#x0a;your network can join. Remembered for next time.&#x0a;Uncheck if you forward the port manually, play over LAN,&#x0a;or prefer not to change router settings."
             FontSize="20" />
 
         <StackPanel>
@@ -62,7 +62,7 @@
             <NumericUpDown
                 Value="{Binding MaxClients}"
                 PlaceholderText="&lt;Unlimited&gt;"
-                ToolTip.Tip="The most players that can be connected at once, excluding you.&#x0a;Leave empty for no limit."
+                ToolTip.Tip="The most players that can be connected at once,&#x0a;excluding you.&#x0a;Leave empty for no limit."
                 Minimum="1" Maximum="4095"
                 Increment="1"
                 FormatString="0" ParsingNumberStyle="Integer" />
@@ -71,7 +71,7 @@
         <CheckBox
             Content="Profanity Filter"
             IsChecked="{Binding IsProfanityFilterEnabled}"
-            ToolTip.Tip="Masks profanity in chat and gives players with inappropriate names the default name instead. Remembered for next time.&#x0a;You can also toggle it during the session in the chat's options."
+            ToolTip.Tip="Masks profanity in chat and gives players with&#x0a;inappropriate names the default name instead. Remembered&#x0a;for next time.&#x0a;You can also toggle it during the session in the chat's&#x0a;options."
             FontSize="20" />
 
         <StackPanel>
@@ -80,7 +80,7 @@
             <TextBox
                 Text="{Binding DisplayName}"
                 PlaceholderText="&lt;Short GUID&gt;"
-                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
+                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned&#x0a;player ID."
                 MaxLength="{x:Static s:SessionManager.MaxDisplayNameLength}" />
         </StackPanel>
 

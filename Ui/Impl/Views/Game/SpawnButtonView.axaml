@@ -26,7 +26,7 @@
             <Button
                 Classes.spawned="{Binding IsSpawned}"
                 Command="{Binding ToggleCommand}"
-                ToolTip.Tip="Spawns your plot's creation, or despawns it to keep building. (Owner only)"
+                ToolTip.Tip="Spawns your plot's creation, or despawns it to keep&#x0a;building. (Owner only)"
                 HorizontalContentAlignment="Stretch"
                 MinWidth="128"
                 LetterSpacing="-1">

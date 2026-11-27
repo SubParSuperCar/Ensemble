@@ -89,7 +89,7 @@
                     <Button
                         Name="MaximizeButton"
                         Command="{Binding ToggleMaximizedCommand}"
-                        ToolTip.Tip="Maximizes or restores this widget. (Or double-click the header)"
+                        ToolTip.Tip="Maximizes or restores this widget.&#x0a;(Or double-click the header)"
                         CornerRadius="4.5,0,0,0"
                         IsVisible="{Binding Descriptor.IsResizable}">
 

@@ -32,7 +32,7 @@
                     Grid.Column="2"
                     Content="Paste"
                     Command="{Binding PasteCommand}"
-                    ToolTip.Tip="Pastes the copied properties onto the selected assets that have them.&#x0a;(Bound to V or Ctrl+V)"
+                    ToolTip.Tip="Pastes the copied properties onto the selected assets&#x0a;that have them.&#x0a;(Bound to V or Ctrl+V)"
                     IsEnabled="{Binding IsPasteEnabled}" />
 
                 <DropDownButton Grid.Column="3" ToolTip.Tip="Property Editor options.">
@@ -41,7 +41,7 @@
                             <CheckBox
                                 Content="Show Internal"
                                 IsChecked="{Binding IsInternalShown}"
-                                ToolTip.Tip="Also lists the engine's own properties, such as an asset's color and material." />
+                                ToolTip.Tip="Also lists the engine's own properties, such as an&#x0a;asset's color and material." />
                         </Flyout>
                     </DropDownButton.Flyout>
                 </DropDownButton>
@@ -99,7 +99,7 @@
                                 Content="{Binding Text}"
                                 Command="{Binding ToggleListeningCommand}"
                                 Click="OnKeyButtonClick"
-                                ToolTip.Tip="Click, then press the key to bind, or Delete for none. Escape or another click cancels."
+                                ToolTip.Tip="Click, then press the key to bind, or Delete for none.&#x0a;Escape or another click cancels."
                                 HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"
                                 Focusable="False" />
@@ -157,7 +157,7 @@
                                     <PathIcon
                                         DockPanel.Dock="Right"
                                         Data="{StaticResource WarningIcon}"
-                                        ToolTip.Tip="The selected assets differ in this property. Setting it sets it on all of them."
+                                        ToolTip.Tip="The selected assets differ in this property. Setting it&#x0a;sets it on all of them."
                                         Background="Transparent"
                                         VerticalAlignment="Center"
                                         Width="16" Height="16"

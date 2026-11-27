@@ -99,7 +99,7 @@
                     <Button
                         Content="Doc-Files"
                         Command="{Binding GoToDocFileViewerCommand}"
-                        ToolTip.Tip="Opens the documentation viewer, including README.md, licenses, etc." />
+                        ToolTip.Tip="Opens the documentation viewer, including README.md,&#x0a;licenses, etc." />
 
                     <Button
                         Content="Settings"
@@ -110,7 +110,7 @@
                 <Button
                     Content="Web Browser"
                     Command="{Binding GoToWebBrowserCommand}"
-                    ToolTip.Tip="Opens the web browser.&#x0a;It currently needs Linux and WPE WebKit 2.52 or older (install it via your package manager)." />
+                    ToolTip.Tip="Opens the web browser.&#x0a;It currently needs Linux and WPE WebKit 2.52 or older&#x0a;(install it via your package manager)." />
 
                 <Border Classes="danger">
                     <Button

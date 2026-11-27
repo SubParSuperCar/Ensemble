@@ -142,6 +142,7 @@ public partial class PlotHandle
 			return;
 
 		_sinceSimulatorHeard += delta;
+
 		if (_sinceSimulatorHeard < SimulatorTimeout)
 			return;
 

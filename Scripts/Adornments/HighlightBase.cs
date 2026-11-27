@@ -228,9 +228,6 @@ public abstract partial class HighlightBase : MeshInstance3D
 		ClearFill();
 	}
 
-	public override void _Process(double delta) =>
-		SetParameter(PulseTimeParameter, Stopwatch.GetElapsedTime(_pulseStartTimestamp).TotalSeconds);
-
 	public override void _Notification(int what)
 	{
 		switch ((long)what)
@@ -245,6 +242,9 @@ public abstract partial class HighlightBase : MeshInstance3D
 				break;
 		}
 	}
+
+	public override void _Process(double delta) =>
+		SetParameter(PulseTimeParameter, Stopwatch.GetElapsedTime(_pulseStartTimestamp).TotalSeconds);
 
 	protected void SetParameter(StringName name, Variant value)
 	{

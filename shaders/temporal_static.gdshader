@@ -46,7 +46,6 @@ void fragment()
 		highlight_threshold - highlight_softness, highlight_threshold + highlight_softness, bright_sharp);
 
 	float highlight_soft = smoothstep(highlight_threshold * 0.75, highlight_threshold + 0.15, bright_soft);
-
 	float activity = max(highlight, highlight_soft * 0.65);
 
 	float variation = unit_float(pcg2d(px).x);
@@ -56,7 +55,6 @@ void fragment()
 	int row_offset = int(floor(frame * movement));
 
 	float noise = unit_float(pcg2d(px + uvec2(0u, uint(row_offset))).x);
-
 	noise = clamp((noise - 0.5) * static_contrast + static_brightness, 0.0, 1.0);
 
 	COLOR = vec4(vec3(noise), 1.0);

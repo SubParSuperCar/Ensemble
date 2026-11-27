@@ -22,7 +22,7 @@ public partial class Paintable : AssetComponent
 
 	[Export] public Array<GeometryInstance3D> Excluded { get; set; } = [];
 
-	// Reads the color as RRGGBBAA. Opt-in, as transparent rendering costs more
+	// Reads the color as RRGGBBAA. Opt-in, as transparent rendering costs more.
 	[Export] public bool HasAlpha { get; set; }
 
 	public override void _ExitTree() => _properties?.Changed -= OnPropertyChanged;
@@ -48,7 +48,6 @@ public partial class Paintable : AssetComponent
 		CollectGeometries(handle);
 
 		handle.Properties.TryGetValue(ColorKey, out var hex);
-
 		Paint(
 			hex.AsString(),
 			handle.Properties.TryGetValue(MaterialBank.PropertyKey, out var material)
@@ -59,7 +58,6 @@ public partial class Paintable : AssetComponent
 	protected override void OnInitialized()
 	{
 		CollectGeometries(Handle);
-
 		_properties = Handle.Instance.Properties;
 
 		Apply();

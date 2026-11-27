@@ -172,7 +172,6 @@ public partial class ChatManager : Node, IAutoload
 				Log.Warning("The chat log reached its size limit; chat logging stops for this session");
 
 				StopLog();
-
 				return;
 			}
 

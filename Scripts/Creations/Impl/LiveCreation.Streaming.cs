@@ -228,7 +228,7 @@ public partial class LiveCreation
 
 	// The host may relay only some streams, which the replay then needs to stay behind in proportion. Only moving
 	// states count, as a resting creation's keepalives would add latency to its next move, and a lost packet only
-	// nudges this
+	// nudges this.
 	private void UpdateReplayDelay(ushort sequence)
 	{
 		if (!_receivedStates.Exists(static state => state.IsMoving))

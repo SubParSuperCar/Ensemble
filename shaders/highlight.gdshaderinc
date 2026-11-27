@@ -1,7 +1,7 @@
 #include "res://shaders/color.gdshaderinc"
 
 // #FF0000, #00C000, and #0080FF, as the Asset Selector's rotation buttons. Pure green reads far brighter than pure red,
-// and pure blue far darker
+// and pure blue far darker.
 const mat3 AXIS_COLORS = mat3(vec3(1.0, 0.0, 0.0), vec3(0.0, 0.752941, 0.0), vec3(0.0, 0.501961, 1.0));
 
 // Colored by axis, or else by the sRGB tint

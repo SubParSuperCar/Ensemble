@@ -19,7 +19,7 @@ public partial class Servo : DrivenHinge
 	// Past the servo's reach, so the joint's limit only catches what overpowers the motor, without fighting it
 	private const float LimitMargin = 1 / 16f;
 
-	// Per second, of the angle left to go. Any higher and the arm chatters, as the motor answers a physics tick late
+	// Per second, of the angle left to go. Any higher and the arm chatters, as the motor answers a physics tick late.
 	private const float Gain = 8f;
 
 	// Radians close enough to stop writing to the joint, so that a settled creation can fall asleep
@@ -83,6 +83,7 @@ public partial class Servo : DrivenHinge
 	{
 		var relative = (Base.Assembly!.State.Transform.Basis.Inverse() * Head.Assembly!.State.Transform.Basis)
 			.GetRotationQuaternion();
+
 		var turn = relative * _builtRotation.Inverse();
 
 		return Mathf.Wrap(2 * MathF.Atan2(new Vector3(turn.X, turn.Y, turn.Z).Dot(_axis), turn.W), -float.Pi, float.Pi);

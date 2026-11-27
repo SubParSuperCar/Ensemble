@@ -16,7 +16,7 @@ float line_coverage(float distance, float width, float footprint)
 }
 
 // Evenly spaced lines through position 0. Lines under two pixels apart can't be told apart (the Nyquist limit), so
-// they blend into their average coverage by one pixel apart, an even tint instead of moire
+// they blend into their average coverage by one pixel apart, an even tint instead of moire.
 float grid_coverage(float position, float spacing, float width, float footprint)
 {
 	float distance = (fract(position / spacing + 0.5) - 0.5) * spacing;

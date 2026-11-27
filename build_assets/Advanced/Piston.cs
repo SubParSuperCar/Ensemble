@@ -2,6 +2,7 @@ using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Creations;
 using Godot;
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable MemberCanBePrivate.Global
 
 namespace EnsembleRoot.BuildAssets.Advanced;
@@ -107,7 +108,6 @@ public partial class Piston : AssetHandle, ISimulationTicked, IReplicatedState
 		var end = Shaft.GetParentNode3D().GlobalTransform.AffineInverse() * ShaftEnd.GlobalPosition;
 		var length = end.Y - _shaftBottom.Y;
 
-		// ReSharper disable once CompareOfFloatsByEqualityOperator
 		if (length == _shaftLength)
 			return;
 
@@ -128,7 +128,6 @@ public partial class Piston : AssetHandle, ISimulationTicked, IReplicatedState
 
 		_autoRetracts = Instance.Properties.GetValue(AutoRetractKey).AsBool();
 		_speed = GetLengthProperty(SpeedKey, 0, MaxSpeed);
-
 		_reach = GetLengthProperty(MaxLengthKey, 0, MaxReach);
 
 		// Nothing has moved yet, so this is the plate as built
@@ -152,8 +151,7 @@ public partial class Piston : AssetHandle, ISimulationTicked, IReplicatedState
 	}
 
 	// A positive target velocity moves node B out along the joint's Y axis. Writing to a joint wakes its bodies, so
-	// only changes are written, and an idle creation can fall asleep
-	// ReSharper disable once CompareOfFloatsByEqualityOperator
+	// only changes are written, and an idle creation can fall asleep.
 	private void SetVelocity(float velocity)
 	{
 		if (velocity == _velocity)

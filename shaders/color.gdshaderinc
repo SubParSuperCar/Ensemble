@@ -13,7 +13,7 @@ float opacity_to_alpha(float opacity)
 }
 
 // Bjorn Ottosson's Oklab, where equal steps look equally different, so a gradient through it changes evenly. Each
-// matrix's vectors are its rows, applied as v * M
+// matrix's vectors are its rows, applied as v * M.
 const mat3 LINEAR_TO_LMS = mat3(
 	vec3(0.4122214708, 0.5363325363, 0.0514459929), vec3(0.2119034982, 0.6806995451, 0.1073969566),
 	vec3(0.0883024619, 0.2817188376, 0.6299787005));

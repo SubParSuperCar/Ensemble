@@ -49,6 +49,7 @@ public partial class Motor : DrivenHinge
 
 		var spin =
 			(Head.Assembly!.State.AngularVelocity - Base.Assembly!.State.AngularVelocity).Dot(Hinge.GlobalBasis.Z);
+
 		return Torque * Math.Clamp(1 - spin / (Direction * Speed), 0, 1);
 	}
 }

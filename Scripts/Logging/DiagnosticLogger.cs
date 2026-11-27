@@ -45,7 +45,6 @@ public partial class DiagnosticLogger : Node, IAutoload
 		var stopwatch = Stopwatch.StartNew();
 
 		var entries = new List<Entry>();
-
 		AddSoftwareInfo(entries);
 
 		// Hardware.Info shells out or uses WMI, either of which can fail, so the rest of the report still goes out
@@ -59,7 +58,6 @@ public partial class DiagnosticLogger : Node, IAutoload
 		}
 
 		entries.AddRange(renderer);
-
 		AddLocaleInfo(entries);
 
 		Log.Information("\n{Report}", BuildReport(entries));
@@ -150,6 +148,7 @@ public partial class DiagnosticLogger : Node, IAutoload
 		var adapters = hardware.NetworkAdapterList
 			.Where(static adapter => !string.IsNullOrWhiteSpace(adapter.Name) && adapter.Name is not "lo")
 			.OrderBy(static adapter => adapter.Name, StringComparer.OrdinalIgnoreCase);
+
 		foreach (var adapter in adapters)
 			Add(entries, "NIC", adapter.Name);
 	}
@@ -171,9 +170,11 @@ public partial class DiagnosticLogger : Node, IAutoload
 
 		Add(entries, "Render GPU",
 			$"{RenderingServer.GetVideoAdapterName()} ({RenderingServer.GetVideoAdapterVendor()}, {type})");
+
 		Add(entries, "Render API",
 			$"{RenderingServer.GetCurrentRenderingDriverName()} {RenderingServer.GetVideoAdapterApiVersion()} " +
 			$"({RenderingServer.GetCurrentRenderingMethod()})");
+
 		Add(entries, "GPU Driver", string.Join(' ', OS.GetVideoAdapterDriverInfo()));
 	}
 

@@ -42,7 +42,6 @@ public partial class PlotHandle : Node3D
 		var boundary = GetNode<CollisionShape3D>("Boundary/Definition");
 		BoundaryTransform = boundary.GlobalTransform;
 		BoundarySize = boundary.Shape.GetDebugMesh().GetAabb().Size;
-
 		GridBoundarySize = BoundarySize / GridToWorldScale;
 
 		ReadyInstances();

@@ -2,6 +2,7 @@ using EnsembleRoot.Scripts.Assets;
 using EnsembleRoot.Scripts.Creations;
 using Godot;
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable MemberCanBeProtected.Global
 
@@ -81,8 +82,7 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked, IRep
 	protected abstract void Drive(bool isDirectionChanged, in SimulationTick tick);
 
 	// A positive target velocity spins node B backward about the joint's Z axis. Writing to a joint wakes its bodies,
-	// so only changes are written, and an idle creation can fall asleep
-	// ReSharper disable once CompareOfFloatsByEqualityOperator
+	// so only changes are written, and an idle creation can fall asleep.
 	protected void SetVelocity(float velocity)
 	{
 		if (velocity == _velocity)
@@ -92,7 +92,6 @@ public abstract partial class DrivenHinge : AssetHandle, ISimulationTicked, IRep
 		Hinge.SetParam(HingeJoint3D.Param.MotorTargetVelocity, -velocity);
 	}
 
-	// ReSharper disable once CompareOfFloatsByEqualityOperator
 	protected void SetTorque(float torque, double delta)
 	{
 		var impulse = torque * (float)delta;

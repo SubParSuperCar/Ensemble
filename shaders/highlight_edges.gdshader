@@ -29,7 +29,7 @@ vec3 face_distances(vec3 position)
 }
 
 // Coverage of the edges running along the X, Y, and Z axes. Each face shows its half of a line twice edge_thickness
-// wide, centered on the edge it shares with its neighbor
+// wide, centered on the edge it shares with its neighbor.
 vec3 edge_masks(vec3 d)
 {
 	vec3 distance_to_edge = max(d.yxx, d.zzy);
@@ -60,7 +60,7 @@ vec3 argmax(vec3 v)
 
 // Antialiased dashes along an edge, marching toward its positive end. Every axis's dashes are found before choosing
 // one, as the edge axis jumps between neighboring pixels at a line's border, and a derivative across that jump would
-// smear a dash over the gaps
+// smear a dash over the gaps.
 float ants(vec3 edge_axis)
 {
 	// A triangle wave, as it stays continuous where a sawtooth would wrap and break fwidth

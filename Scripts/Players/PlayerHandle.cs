@@ -53,7 +53,6 @@ public partial class PlayerHandle : Node3D
 	public override void _EnterTree()
 	{
 		_player = GPlayers.GetPlayer(Id)!;
-
 		_occupant = GPlots.GetOccupant(Id)!;
 
 		OnPlotChanged(_occupant.Plot);
@@ -153,7 +152,6 @@ public partial class PlayerHandle : Node3D
 		}
 
 		_standUp = null;
-
 		Body.Velocity = Vector3.Zero;
 		Jump(position);
 

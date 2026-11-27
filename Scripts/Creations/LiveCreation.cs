@@ -4,6 +4,8 @@ using EnsembleRoot.Scripts.Plots;
 using Godot;
 using Serilog;
 
+// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+
 namespace EnsembleRoot.Scripts.Creations;
 
 /// <summary>
@@ -61,7 +63,6 @@ public partial class LiveCreation : Node3D
 	/// </summary>
 	internal void HandOff(bool isSimulated)
 	{
-		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		foreach (var assembly in _assemblies)
 			if (!assembly.IsKilled)
 				assembly.HandOff(isSimulated, _clock);
@@ -86,7 +87,6 @@ public partial class LiveCreation : Node3D
 			if (handle.Assembly is { IsKilled: false })
 				ticked.Tick(tick);
 
-		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		foreach (var assembly in _assemblies)
 			if (!assembly.IsKilled)
 				assembly.EndTick();
@@ -99,7 +99,6 @@ public partial class LiveCreation : Node3D
 	// A plain loop, as a query here allocated every tick.
 	private void KillLostAssemblies()
 	{
-		// ReSharper disable once ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
 		foreach (var assembly in _assemblies)
 		{
 			if (assembly.IsKilled)
@@ -124,7 +123,7 @@ public partial class LiveCreation : Node3D
 		VacateSeats(assembly);
 
 		Log.Debug(
-			"Killed {Reason} assembly {AssemblyId} of plot {PlotId}", isBlownUp ? "blown-up" : "fallen", assembly.Id,
-			Plot.Id);
+			"Killed {Reason} assembly {AssemblyId} of plot {PlotId}",
+			isBlownUp ? "blown-up" : "fallen", assembly.Id, Plot.Id);
 	}
 }

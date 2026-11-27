@@ -10,8 +10,8 @@ namespace EnsembleRoot.BuildAssets.Advanced.Thrusters;
 ///     Pushes itself away from whatever its ray hits within its range, the harder the nearer, like a spring that only
 ///     pushes, damped so it settles instead of bobbing. Its power, which starts at half, scales both its range and its
 ///     force, and its keys raise or lower it while held, from none to full in its wind-up time. Its range is in grid
-///     units, and its force in newtons. A part of its own creation it pushes off is pushed back unless it doesn't
-///     react, and it can see past other creations.
+///     units, and its force in newtons. If it reacts, a part of its own creation it pushes off is pushed back, and
+///     it can see past other creations.
 /// </summary>
 public partial class HoverThruster : AssetHandle, ISimulationTicked, IReplicatedState
 {

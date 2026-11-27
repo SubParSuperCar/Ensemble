@@ -27,7 +27,7 @@ internal sealed partial class EngineLog : Godot.Logger
 	public override void _LogMessage(string message, bool error)
 	{
 		if (!LogSink.IsEmitting)
-			_log.Write(error ? LogEventLevel.Warning : LogEventLevel.Verbose, "{Message:l}", message.TrimEnd());
+			Write(error ? LogEventLevel.Warning : LogEventLevel.Verbose, message.TrimEnd());
 	}
 
 	public override void _LogError(
@@ -39,8 +39,12 @@ internal sealed partial class EngineLog : Godot.Logger
 
 		var level = (ErrorType)errorType is ErrorType.Warning ? LogEventLevel.Warning : LogEventLevel.Error;
 
-		_log.Write(
-			level, "{Message:l} (at {Function} in {File}:{Line})", string.IsNullOrEmpty(rationale) ? code : rationale,
-			function, file, line);
+		Write(level, $"{(string.IsNullOrEmpty(rationale) ? code : rationale)} (at {function} in {file}:{line})");
 	}
+
+	// As the template itself, escaped, so the log view shows it as plain text rather than a value it colors
+	// ReSharper disable once TemplateIsNotCompileTimeConstantProblem
+	private void Write(LogEventLevel level, string text) =>
+		_log.Write(
+			level, text.Replace("{", "{{", StringComparison.Ordinal).Replace("}", "}}", StringComparison.Ordinal));
 }

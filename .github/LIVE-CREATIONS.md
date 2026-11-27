@@ -536,10 +536,11 @@ What each needs, for asset authors and for the code (each waits for its model):
 - **Hover Thruster (built):** casts one ray from the middle of its face each tick, on the simulator alone, and pushes
   back the harder the nearer what it hits, like a spring that only pushes, damped by its closing speed so it settles
   instead of bobbing. Its power, which its keys raise and lower over its wind-up time, scales its range and force, and
-  is an asset state. What it pushes off of its own creation is pushed back at the hit (its reaction force, on by
-  default), so a creation can't push itself along, and engines built from thrusters stay put; other creations' bodies
-  are only pushed by their own simulators, so they get no reaction. It can ignore other creations, seeing past their
-  bodies one cast at a time. Hundreds of them cost on the order of a millisecond per physics tick.
+  is an asset state. With its reaction force (off by default, as players of similar games expect), what it pushes off
+  of its own creation is pushed back at the hit, so a creation can't push itself along, and engines built from
+  thrusters stay put; other creations' bodies are only pushed by their own simulators, so they get no reaction. It can
+  ignore other creations, seeing past their bodies one cast at a time. Hundreds of them cost on the order of a
+  millisecond per physics tick.
 - **Airfoil (built):** the Wing Panel is the first, a plain plate. Lift is about the airflow's square, so the airspeed
   it counts is capped, which keeps a light surface's drag from overshooting within a tick, and its lift and drag scales
   are clamped (`GetNumberProperty`), so no property launches it.

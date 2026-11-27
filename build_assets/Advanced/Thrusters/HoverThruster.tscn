@@ -77,7 +77,7 @@ Properties = Dictionary[StringName, Variant]({
 &"maxLength": 4.0,
 &"powerDownKey": 4194326,
 &"powerUpKey": 4194325,
-&"reactionForce": true,
+&"reactionForce": false,
 &"windUpTime": 2.0
 })
 MaxInstanceCount = 500

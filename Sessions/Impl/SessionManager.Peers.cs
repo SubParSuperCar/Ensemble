@@ -27,6 +27,7 @@ public partial class SessionManager
 
 	public IReadOnlyDictionary<int, Peer> Peers => _peersById;
 	public Peer? LocalPeer => GetPeer(LocalPeerId);
+	public int RemotePeerCount => _peersById.Count - (_peersById.ContainsKey(LocalPeerId) ? 1 : 0);
 
 	/// <remarks>An empty display name is valid, leaving the game to derive one from the player ID.</remarks>
 	public static bool IsValidDisplayName(string? displayName) =>

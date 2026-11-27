@@ -12,5 +12,11 @@ public sealed partial class GameView : UserControl, IViewFor<GameViewModel>
 		InitializeComponent();
 	}
 
-	private void OnMenuButtonDoubleTapped(object? sender, TappedEventArgs e) => GSessionManager.StopSession();
+	private static async Task QuitSessionAsync()
+	{
+		if (await Main.ConfirmEndingSessionAsync("End Session?", "Quitting the session").ConfigureAwait(true))
+			GSessionManager.StopSession();
+	}
+
+	private void OnMenuButtonDoubleTapped(object? sender, TappedEventArgs e) => _ = QuitSessionAsync();
 }

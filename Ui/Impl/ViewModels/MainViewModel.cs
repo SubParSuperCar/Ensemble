@@ -156,7 +156,7 @@ public sealed partial class MainViewModel : ViewModelBase
 
 	private void OnNotification(int what)
 	{
-		if (what != Node.NotificationWMCloseRequest)
+		if (what != NotificationQuitting)
 			return;
 
 		foreach (var window in _terminals.ToArray())

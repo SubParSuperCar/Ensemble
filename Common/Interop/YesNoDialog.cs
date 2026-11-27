@@ -40,6 +40,11 @@ internal static class YesNoDialog
 		return response is 1;
 	}
 
+	/// <summary>Asks on the thread pool, so the calling thread (e.g., the game's) keeps running meanwhile.</summary>
+	/// <inheritdoc cref="Ask" />
+	public static Task<bool> AskAsync(string title, string message, MessageBoxIconType icon, bool isYesDefault) =>
+		Task.Run(() => Ask(title, message, icon, isYesDefault));
+
 	private static string RemoveQuotes(string text) =>
 		text
 			.Replace("\"", string.Empty, StringComparison.Ordinal)

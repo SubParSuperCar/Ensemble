@@ -105,7 +105,7 @@ public partial class SessionManager : Node
 
 	public override void _Notification(int what)
 	{
-		if (what != NotificationWMCloseRequest)
+		if (what != NotificationQuitting)
 			return;
 
 		StopSession();

@@ -137,7 +137,7 @@ public partial class Ui : Control
 
 		// Unsubscribes the view models and services from static and autoload events. Not in _ExitTree, since quitting
 		// frees the autoloads first.
-		if (what != NotificationWMCloseRequest)
+		if (what != NotificationQuitting)
 			return;
 
 		_viewModel?.PropertyChanged -= OnViewModelPropertyChanged;

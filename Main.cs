@@ -5,6 +5,7 @@ using EnsembleRoot.Common.Audio;
 using EnsembleRoot.Common.Interop;
 using EnsembleRoot.Common.Utils;
 using EnsembleRoot.Scripts.Watchdog;
+using EnsembleRoot.Sessions;
 using Godot;
 using Serilog;
 using TinyDialogsNet;
@@ -20,6 +21,7 @@ public partial class Main : Node
 {
 	private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(3);
 
+	private bool _isConfirmingQuit;
 	private bool _isQuitting;
 	private bool _isShutDown;
 
@@ -66,10 +68,36 @@ public partial class Main : Node
 	public override void _Notification(int what)
 	{
 		if (what == NotificationWMCloseRequest)
+			_ = OnCloseRequestedAsync();
+		else if (what == NotificationQuitting)
 			_ = OnQuitAsync();
 	}
 
-	public void Quit() => GetTree().Root.PropagateNotification((int)NotificationWMCloseRequest);
+	public void Quit() => GetTree().Root.PropagateNotification(NotificationQuitting);
+
+	/// <summary>
+	///     Asks the player to confirm ending a session they host while others are connected, as it ends for them too.
+	///     True when confirmed, or when no one else is affected.
+	/// </summary>
+	public static async Task<bool> ConfirmEndingSessionAsync(string title, string action)
+	{
+		if (IsHeadlessServer || SessionManager.Instance is not { IsServer: true, RemotePeerCount: > 0 and var count })
+			return true;
+
+		var message = string.Create(
+			CultureInfo.InvariantCulture,
+			$"{count} other player(s) are in the session you host. {action} ends it for all of them.\n\nContinue?");
+
+		try
+		{
+			return await YesNoDialog.AskAsync(title, message, MessageBoxIconType.Warning, false).ConfigureAwait(true);
+		}
+		catch (Exception exception)
+		{
+			Log.Error(exception, "Failed to show dialog");
+			return false;
+		}
+	}
 
 	public static void FailFast(Exception? exception = null)
 	{
@@ -174,6 +202,24 @@ public partial class Main : Node
 
 			default:
 				throw new UnreachableException();
+		}
+	}
+
+	private async Task OnCloseRequestedAsync()
+	{
+		if (_isConfirmingQuit)
+			return;
+
+		_isConfirmingQuit = true;
+
+		try
+		{
+			if (await ConfirmEndingSessionAsync("Quit Ensemble?", "Quitting").ConfigureAwait(true))
+				Quit();
+		}
+		finally
+		{
+			_isConfirmingQuit = false;
 		}
 	}
 

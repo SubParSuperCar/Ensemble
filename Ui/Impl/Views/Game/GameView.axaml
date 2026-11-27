@@ -21,7 +21,7 @@
                 <Button
                     Content="&lt;- Menu | Quit Session (2x)"
                     DoubleTapped="OnMenuButtonDoubleTapped"
-                    ToolTip.Tip="Stops the current session and returns to the menu. (Double-click)"
+                    ToolTip.Tip="Stops the current session and returns to the menu. (Double-click)&#x0a;&#x0a;If you host it, it ends for everyone connected, so you're asked first while anyone is."
                     Background="{DynamicResource TranslucentBackgroundBrush}" />
             </Border>
 

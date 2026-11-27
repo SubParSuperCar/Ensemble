@@ -56,6 +56,12 @@ public static class Constants
 
 	public static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(3 / 16d);
 
+	/// <summary>
+	///     Propagated through the tree once the game has decided to quit, past the engine's own notifications. The
+	///     window's close request only asks, as the player may cancel it.
+	/// </summary>
+	public const int NotificationQuitting = 1 << 20;
+
 	/// <remarks>Also the multi-player handshake version: peers must match exactly.</remarks>
 	public static string GameVersion => field ??= ProjectSettings.GetSetting("application/config/version").AsString();
 

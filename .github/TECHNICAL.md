@@ -698,16 +698,19 @@ content versions leave room to migrate old saves.
 - **Release builds** are NativeAOT-compiled and fully trimmed per platform: Windows and Linux (`x86_64`) and macOS
   (universal), each with a lean ZIP and a `-debug` ZIP carrying symbols. `GdIgnore/PatchExport.cs` flattens the export
   layout at first launch.
-- **A JIT build** bundles Windows and Linux in one download, with every assembly as a separate file, for testing.
+- **JIT builds** bundle Windows and Linux in one download per architecture, with every assembly as a separate file:
+  `x86_64` for testing, and `arm64`, the only build for Arm devices, exported and smoke-tested on an Arm runner
+  (Terrain3D's Arm libraries come from the same fork as the others).
 - **Dedicated server builds** exist for each of the above. Exporting with `EnsembleServer=true` in the environment and
   a `Server` preset defines `DEDICATED_SERVER`, which leaves out the UI, tools, Lua console, and the packages only they
   use, and Godot's dedicated-server mode strips textures and meshes and starts headless. `Ui.cs` and `AvaloniaLoader.cs`
   stay as empty stand-ins, since Godot resources name them. `resources/` and `world.tscn` aren't stripped: a placeholder
   can't stand in for a material a C# property or Terrain3D types exactly.
 - **CI** (GitHub Actions): `test.yml` runs the tests and builds the server on every push; `bin.yml` builds every tag (or
-  on demand), smoke-tests every package by booting a headless server, publishes a release with checksums, and pushes
-  the builds to itch.io; `src.yml` publishes source archives, and `cloc.yml` tracks lines of code. Dependabot keeps
-  packages and actions current.
+  on demand, which publishes nothing unless asked to push to itch.io), smoke-tests every package by booting a headless
+  server, publishes a release with checksums, and pushes the builds to itch.io; a tag with a suffix (`v1.2.3-rc.1`) is
+  a pre-release instead, which skips itch.io and the game's update check. `src.yml` publishes source archives, and
+  `cloc.yml` tracks lines of code. Dependabot keeps packages and actions current.
 - **Updates:** the game checks GitHub for newer releases on startup and offers each one once.
 
 ---

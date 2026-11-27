@@ -54,7 +54,7 @@
                     Text="{Binding Message}"
                     PlaceholderText="Press '/' to chat&#x2026;"
                     KeyDown="OnMessageBoxKeyDown"
-                    ToolTip.Tip="Type a message, then press Enter to send it.&#x0a;(Esc to stop typing)"
+                    ToolTip.Tip="Type a message, then press Enter to send it. (Esc to stop typing)"
                     VerticalContentAlignment="Center"
                     MaxLength="{x:Static t:ChatText.MaxLength}" />
 
@@ -79,13 +79,13 @@
                                 <CheckBox
                                     Content="Profanity Filter"
                                     IsChecked="{Binding IsProfanityFilterEnabled}"
-                                    ToolTip.Tip="Masks profanity in chat and replaces inappropriate&#x0a;player names. (Host only)"
+                                    ToolTip.Tip="Masks profanity in chat and replaces inappropriate player names. (Host only)"
                                     IsVisible="{Binding IsHost}" />
 
                                 <CheckBox
                                     Content="Log to File"
                                     IsChecked="{Binding IsFileLoggingEnabled}"
-                                    ToolTip.Tip="Saves each session's chat to a text file in the user&#x0a;data folder." />
+                                    ToolTip.Tip="Saves each session's chat to a text file in the user data folder." />
 
                                 <CheckBox
                                     Content="Read Aloud"

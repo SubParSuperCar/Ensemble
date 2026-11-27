@@ -28,7 +28,7 @@
 
                     <TextBlock
                         Text="Peer ID&#x0a;&#x2193;"
-                        ToolTip.Tip="The player's connection ID in this session. The host is&#x0a;always 1."
+                        ToolTip.Tip="The player's connection ID in this session. The host is always 1."
                         TextAlignment="Right" />
 
                     <TextBlock
@@ -150,7 +150,7 @@
                     Grid.Column="1"
                     Content="Copy Join Code"
                     Command="{Binding CopyJoinCodeCommand}"
-                    ToolTip.Tip="Copies the join code (your public address and port) to&#x0a;the clipboard."
+                    ToolTip.Tip="Copies the join code (your public address and port) to the clipboard."
                     Padding="6,0"
                     FontSize="12"
                     IsVisible="{Binding JoinCode, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />

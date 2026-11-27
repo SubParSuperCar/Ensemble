@@ -81,7 +81,7 @@
                         Content="Place (1)"
                         Command="{Binding ToggleConstructToolCommand}"
                         IsChecked="{Binding IsConstructToolEnabled}"
-                        ToolTip.Tip="Toggles the placement (construct/ctor) tool.&#x0a;(Bound to 1 / One)" />
+                        ToolTip.Tip="Toggles the placement (construct/ctor) tool. (Bound to 1 / One)" />
                 </Border>
 
                 <Border
@@ -93,7 +93,7 @@
                         Content="Delete (2)"
                         Command="{Binding ToggleDestructToolCommand}"
                         IsChecked="{Binding IsDestructToolEnabled}"
-                        ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)&#x0a;&#x0a;Click an asset to delete it, or Shift-click to&#x0a;(de)select it.&#x0a;Ctrl-drag to box-select (hold Shift to toggle instead);&#x0a;Esc cancels.&#x0a;Click a selected asset to delete the whole selection." />
+                        ToolTip.Tip="Toggles the deletion (destruct) tool. (Bound to 2 / Two)&#x0a;&#x0a;Click an asset to delete it, or Shift-click to (de)select it.&#x0a;Ctrl-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;Click a selected asset to delete the whole selection." />
                 </Border>
 
                 <Border
@@ -105,7 +105,7 @@
                         Content="Edit (3)"
                         Command="{Binding TogglePropertyToolCommand}"
                         IsChecked="{Binding IsPropertyToolEnabled}"
-                        ToolTip.Tip="Toggles the editing (property) tool. (Bound to 3 / Three)&#x0a;&#x0a;Click an asset to select it, or Shift-click to&#x0a;(de)select it.&#x0a;Ctrl-drag to box-select (hold Shift to toggle instead);&#x0a;Esc cancels.&#x0a;C or Ctrl+C copies the selection's shared properties;&#x0a;V or Ctrl+V pastes them onto the selection." />
+                        ToolTip.Tip="Toggles the editing (property) tool. (Bound to 3 / Three)&#x0a;&#x0a;Click an asset to select it, or Shift-click to (de)select it.&#x0a;Ctrl-drag to box-select (hold Shift to toggle instead); Esc cancels.&#x0a;C or Ctrl+C copies the selection's shared properties;&#x0a;V or Ctrl+V pastes them onto the selection." />
                 </Border>
 
                 <Border
@@ -117,7 +117,7 @@
                         Content="Paint (4)"
                         Command="{Binding TogglePaintToolCommand}"
                         IsChecked="{Binding IsPaintToolEnabled}"
-                        ToolTip.Tip="Toggles the painting (paint) tool. (Bound to 4 / Four)&#x0a;&#x0a;Click an asset to paint it, or drag across assets to&#x0a;paint each one.&#x0a;Ctrl-drag to paint a box, or tap Ctrl for the eyedropper&#x0a;to pick up an asset's paint; Esc cancels." />
+                        ToolTip.Tip="Toggles the painting (paint) tool. (Bound to 4 / Four)&#x0a;&#x0a;Click an asset to paint it, or drag across assets to paint each one.&#x0a;Ctrl-drag to paint a box, or tap Ctrl for the eyedropper to pick up an asset's paint; Esc cancels." />
                 </Border>
 
                 <Border Grid.Column="4" BorderBrush="#E0C000" BorderThickness="{StaticResource BorderThickness}">
@@ -144,7 +144,7 @@
                     <Button
                         Content="-&gt;"
                         Command="{Binding RedoCommand}"
-                        ToolTip.Tip="Redoes your last undone tool edit on this plot.&#x0a;(Bound to Ctrl+X or Ctrl+Y)"
+                        ToolTip.Tip="Redoes your last undone tool edit on this plot. (Bound to Ctrl+X or Ctrl+Y)"
                         IsEnabled="{Binding IsRedoEnabled}" />
                 </StackPanel>
 
@@ -152,7 +152,7 @@
                     <CheckBox
                         Content="Mut.Ex."
                         IsChecked="{Binding IsMutexEnforced}"
-                        ToolTip.Tip="Mutual Exclusion: Toggles whether only one tool can be&#x0a;enabled at a time.&#x0a;Disables all other tools when you enable one." />
+                        ToolTip.Tip="Mutual Exclusion: Toggles whether only one tool can be enabled at a time.&#x0a;Disables all other tools when you enable one." />
 
                     <CheckBox
                         Content="Restore"

@@ -64,7 +64,7 @@
         <TextBlock
             Name="SourceLabel"
             Text="&#x2199; Game and Engine Logs"
-            ToolTip.Tip="The game's logs and the engine's errors, warnings, and&#x0a;prints (verbose), as the log files hold them."
+            ToolTip.Tip="The game's logs, plus everything the engine reports&#x0a;(its errors, its warnings, and its prints as verbose)."
             Background="#80000000" Foreground="Cyan"
             HorizontalAlignment="Right" VerticalAlignment="Top"
             Margin="0,2,2,0"
@@ -93,7 +93,7 @@
             <NumericUpDown
                 Value="{Binding #Output.FontSize, Mode=TwoWay}"
                 PlaceholderText="&lt;Font Size Px.&gt;"
-                ToolTip.Tip="Sets the output font size, in device-independent pixels&#x0a;(scaled with the UI)."
+                ToolTip.Tip="Sets the output font size, in device-independent pixels (scaled with the UI)."
                 Background="{DynamicResource TranslucentBackgroundBrush}"
                 Minimum="1"
                 Increment="0.5" />

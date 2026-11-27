@@ -57,14 +57,14 @@
             <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="2">
                 <TextBox
                     Text="{Binding ColorText, UpdateSourceTrigger=LostFocus}"
-                    ToolTip.Tip="The brush's color as text. Type hex&#x0a;(#RRGGBB or #RRGGBBAA) or values separated by&#x0a;commas (R, G, B, A, or H, S, V, A in HSV mode), then&#x0a;press Enter."
+                    ToolTip.Tip="The brush's color as text. Type hex (#RRGGBB or #RRGGBBAA) or values separated by&#x0a;commas (R, G, B, A, or H, S, V, A in HSV mode), then press Enter."
                     VerticalContentAlignment="Center" />
 
                 <ComboBox
                     Grid.Column="1"
                     Classes="below"
                     SelectedIndex="{Binding ModeIndex}"
-                    ToolTip.Tip="How the color reads: as RGB or HSV values (and sliders),&#x0a;or as hex."
+                    ToolTip.Tip="How the color reads: as RGB or HSV values (and sliders), or as hex."
                     VerticalAlignment="Stretch">
 
                     <ComboBoxItem Content="RGB" />
@@ -76,7 +76,7 @@
                     Grid.Column="2"
                     Content="Eyedropper"
                     IsChecked="{Binding IsEyedropping}"
-                    ToolTip.Tip="Takes the paint of the next asset you click as the&#x0a;brush's (Esc cancels).&#x0a;(Bound to a tap of Ctrl)" />
+                    ToolTip.Tip="Takes the paint of the next asset you click as the brush's (Esc cancels).&#x0a;(Bound to a tap of Ctrl)" />
 
                 <DropDownButton Grid.Column="3" ToolTip.Tip="What the brush applies (and the eyedropper takes).">
                     <DropDownButton.Flyout>
@@ -250,7 +250,7 @@
                         <PathIcon
                             DockPanel.Dock="Right"
                             Data="{StaticResource TipIcon}"
-                            ToolTip.Tip="Default isn't a material of its own: it keeps whatever&#x0a;material each asset was made with, such as the wheel's&#x0a;rubber."
+                            ToolTip.Tip="Default isn't a material of its own: it keeps whatever material&#x0a;each asset was made with, such as the wheel's rubber."
                             Background="Transparent"
                             Width="16" Height="16" />
 

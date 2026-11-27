@@ -96,7 +96,7 @@
             <TextBox
                 Text="{Binding DisplayName}"
                 PlaceholderText="&lt;Short GUID&gt;"
-                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned&#x0a;player ID."
+                ToolTip.Tip="The name shown to other players. Remembered for next time.&#x0a;Leave empty to derive one from your server-assigned player ID."
                 MaxLength="{x:Static s:SessionManager.MaxDisplayNameLength}" />
         </StackPanel>
 

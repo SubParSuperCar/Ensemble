@@ -89,7 +89,7 @@
                     Name="LinearIncrementBox"
                     Value="{Binding LinearSnappingIncrement}"
                     PlaceholderText="&lt;Lin. Incr.&gt;"
-                    ToolTip.Tip="The grid snapping increment, in cubes&#x0a;(half a meter each). Zero disables snapping.&#x0a;Right-click to reset it to one cube."
+                    ToolTip.Tip="The grid snapping increment, in cubes (half a meter each).&#x0a;Zero disables snapping. Right-click to reset it to one cube."
                     Minimum="0" Maximum="10"
                     Increment="0.125" />
 
@@ -107,7 +107,7 @@
                     <ComboBox
                         ItemsSource="{Binding RotationSpaces}"
                         SelectedItem="{Binding RotationSpace}"
-                        ToolTip.Tip="Selects whether the buttons rotate around global or&#x0a;local axes." />
+                        ToolTip.Tip="Selects whether the buttons rotate around global or local axes." />
 
                     <!-- Equal cells, as the letters' widths differ -->
                     <UniformGrid Rows="1" ColumnSpacing="2">

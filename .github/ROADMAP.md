@@ -279,8 +279,9 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - [ ] (M) Save migrations - each save records the game version that wrote it, beside its content `Version`, and loading
   passes older saves through a translation layer, one step per change, so renamed or re-meant properties (the Piston's
   `targetLength` becoming `maxLength`, measured from fully in), moved origins (the Seat's), and retired assets carry
-  over instead of being dropped or misplaced. Breaking changes are fine while saves are few and the game is an alpha;
-  this comes before that stops
+  over instead of being dropped or misplaced. The layer works on `CreationSaveData`, which is apart from Core and the
+  same whatever the file's format. Breaking changes are fine while saves are few and the game is an alpha; this comes
+  before that stops
 - [ ] (S) I/O resilience audit - corrupt or failing files and network I/O never take the game down
 - [ ] (S) Audit global using static (Globals / Constants / GContext / Sentinels) - keep only what must be global
 - [x] (S) Fold bin.yml's repeated steps (checkout, Godot version, build ID, .NET and Godot setup, smoke tests) into YAML

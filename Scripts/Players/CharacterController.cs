@@ -58,7 +58,8 @@ public partial class CharacterController : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		Visible = Camera.GlobalPosition.DistanceTo(GlobalPosition) > FirstPersonInvisibleProximityThreshold;
+		var isFirstPerson = Camera.GlobalPosition.DistanceTo(GlobalPosition) <= FirstPersonInvisibleProximityThreshold;
+		Visible = !isFirstPerson;
 
 		if (IsSeated)
 			return;
@@ -74,26 +75,35 @@ public partial class CharacterController : CharacterBody3D
 			? Vector2.Zero
 			: Input.GetVector(MoveLeftAction, MoveRightAction, MoveForwardAction, MoveBackwardAction);
 
+		var cameraYaw = Camera.GlobalRotation.Y;
+
 		if (inputDirection != Vector2.Zero)
 		{
-			var cameraYaw = Camera.GlobalRotation.Y;
 			var moveDirection = new Vector3(inputDirection.X, 0, inputDirection.Y).Rotated(Vector3.Up, cameraYaw);
 
 			var speed = Input.IsActionPressed(RunAction) ? RunSpeed : WalkSpeed;
 			velocity.X = moveDirection.X * speed;
 			velocity.Z = moveDirection.Z * speed;
 
-			var rotation = Rotation;
-			var turnAngle = MathF.Atan2(moveDirection.X, moveDirection.Z);
-			rotation.Y = Mathf.LerpAngle(rotation.Y, turnAngle, Smoothing.GetWeight(TurnRate, delta));
-
-			Rotation = rotation;
+			if (!isFirstPerson)
+			{
+				var turnAngle = MathF.Atan2(moveDirection.X, moveDirection.Z);
+				Rotation = Rotation with
+				{
+					Y = Mathf.LerpAngle(Rotation.Y, turnAngle, Smoothing.GetWeight(TurnRate, delta))
+				};
+			}
 		}
 		else
 		{
 			velocity.X = 0;
 			velocity.Z = 0;
 		}
+
+		// In first person, the character faces wherever the camera does, moving or not. The camera looks down its
+		// -Z, and the character faces its +Z.
+		if (isFirstPerson)
+			Rotation = Rotation with { Y = Mathf.Wrap(cameraYaw + float.Pi, -float.Pi, float.Pi) };
 
 		Velocity = velocity;
 		MoveAndSlide();

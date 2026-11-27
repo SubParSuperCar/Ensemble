@@ -28,6 +28,11 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Shared placement rules (`PlotPlacement`) - bounds, overlap, and quotas, also validated server-side
     - [x] (M) Asset Selector UI - categorized tree of placeable assets, feeds the tool
     - [ ] (S) Fade the placement preview in and out as it appears and disappears
+    - [ ] (M) Mirror mode - each placement (and its deletion) also happens mirrored across the plot's middle, along X,
+      Z, or both, so a symmetrical car or plane is built one side at a time; mirrored rotations need assets'
+      handedness (a wedge mirrors into a rotated wedge, but not every asset has a mirror twin)
+    - [ ] (M) Surface-aligned rotation - an option to turn the preview to the hovered face's normal (Flightpoint
+      parity), toggled from the Asset Selector, whose footer may need a second row for it
     - [x] (S) Press feedback - the Asset Selector's X / Y / Z buttons (and the Property Editor's Copy / Paste) briefly
       swap their foreground and background when used, by click or keybind, so each press is visible
 - PropertyTool (Edit) - view/modify asset properties not prefixed with an underscore
@@ -41,11 +46,12 @@ The tool suite, in rough intended order of implementation.
     - [x] (S) Reset buttons - a Property Editor row can reset its property to the asset's default (as Lua's
       `set_inst_prop` does with `nil`), for the whole selection, when its assets agree on one default and some
       instance differs from it
-    - [ ] (M) Property limits (deferred) - per-asset ranges (min, max, maybe a step) for numeric properties, authored in
-      the inspector like other asset settings, so a new `AssetHandle` needs no code for basic limits. The Property
-      Editor reads them for its ranges (and sliders where both ends are set), and the asset's getters clamp to them;
-      Core never enforces them. Dependent limits (e.g., Suspension's `targetLength` within its minimum and
-      `maxLength`) stay in code
+    - [ ] (M) Property metadata (deferred) - per asset, not per instance: ranges (min, max, maybe a step) for numeric
+      properties, descriptions, units, and named choices for integers (enum- and flag-like), authored in the
+      inspector like other asset settings, so a new `AssetHandle` needs no code for basic limits. The Property Editor
+      reads them for its ranges, sliders where both ends are set (exponential where a range spans magnitudes, like
+      force), tooltips, and dropdowns, and the asset's getters clamp to them; Core never enforces them. Dependent
+      limits (e.g., Suspension's `targetLength` within its minimum and `maxLength`) stay in code
 - PaintTool (Paint) - drives the `_colorHex` / `_materialId` asset attributes, which `Paintable` assets follow
   (materials come from the `MaterialBank`: a look plus density, friction, and bounce)
     - [x] (M) The tool - a brush (a color and a material, each applied or not) painted by click, by stroke (every
@@ -56,7 +62,13 @@ The tool suite, in rough intended order of implementation.
       (remembered across launches), and a searchable grid of materials with rendered previews and their stats
     - [x] (S) Paintable alpha - an opt-in `Paintable` setting under which `_colorHex` is `RRGGBBAA` instead of `RRGGBB`,
       so only assets meant to be see-through pay for transparent rendering (the Torus is the first)
-- [ ] TransformTool (Move) - move a whole creation or a selection; possible copy/paste
+- [ ] TransformTool (Move; the name is open) - select instances (or all of them), then move and rotate the selection
+  by the same snapping as placement, and duplicate it, so one reusable section is built once
+    - [ ] (S) Core moves - `IInstances.Move(id, position, rotation)` and a `Moved` event, keeping the instance's ID and
+      properties (today a move would be a remove and an add, which renumbers it and resets anything keyed by its ID)
+    - [ ] (M) `MoveInstancesAction` - up to 256 references and their new transforms, validated against the plot's
+      boxes as a whole (instances in the selection don't block each other), undone by moving back
+    - [ ] (M) Duplicating - an `AddInstancesAction` of the selection's specs at the new transform
 - [x] (M) Shared ToolCommon - TriggerAction, collision masks, etc.
 - [x] (M) MultiSelector - shared multi-selection state across tools, Baja Builders click semantics
 - [x] (M) Marquee Selector - Ctrl+drag to box-select, Shift to toggle-select, Esc to cancel, Baja Builders parity
@@ -117,6 +129,10 @@ snapshots live in `Replication/`, and actions are submitted with `new SetPlotAct
   functions
 - [x] (S) Profanity filter - host-chosen (remembered), masks chat profanity and replaces inappropriate display names
 - [ ] (M) Chat bubbles over players
+- [ ] (S) Quota options - a host or single-player choice to raise (say, double) or lift the asset and plot instance
+  limits for bigger creations, off by default, as big ones can slow everyone down
+- [ ] (S) Idle and disconnect timeouts - a host option to kick players idle for a while, and a configurable timeout
+  for dropped connections (ENet's peer timeout limits), so a stuttering client isn't dropped too soon or too late
 - [ ] (M) Plot join consent - joining a plot that has an owner asks them "Let <name> join your plot?" (Accept / Deny);
   no answer within 10 s denies it, and the host joins any plot without asking. A host-validated request / answer
   pair (one pending request per player, dropped when either leaves or the plot's owner changes), plus the prompt's
@@ -180,6 +196,17 @@ Spawned plots become live creations: welded assemblies simulated by one peer and
   disagree; waves stay visual until matching them in C# is worth it. Swimming or wading characters, splashes, and
   underwater fog are separate items
 - [ ] (M) Characters riding moving creations (platform velocity)
+- [ ] (M) Toy-like mass - creations weigh far more than in Plane Crazy and similar games (a hover thruster struggles
+  with a few cubes), so densities, forces, and the character's push may be rebalanced together toward a lighter,
+  more toy-like feel, before many saves depend on today's
+- [ ] (S) Free Prismatic - to the Suspension what the Free Hinge is to the Motor: a linear joint without a spring,
+  with a maximum length (the owner models it)
+- [ ] (S) Hover Thruster glow - its nozzles tint with its power (blue, white, yellow, orange, red), which is already
+  an asset state, so every peer sees it
+- [ ] (S) Wide detection - a Hover Thruster option to sense with a shape cast as wide as its face instead of one ray
+- [ ] (M) More assets - an Offsetter (holds a positional and / or rotational offset between its sides; Plane Crazy's
+  Motor Lock by default), rope, conveyors, control surfaces, ballast and helium, a magnet (poles that attract and
+  repel, maybe metal materials), lights, a gyro, text blocks, and later a camera
 - [x] (M) Anchors - an asset that freezes its assembly while it holds it, switched by a key
 - [ ] (M) Flip button - lets a seated simulator right the assembly their seat is on, beside the Spawn / Despawn button
 
@@ -195,6 +222,11 @@ Known hard parts:
 - (WIP) (M) Plot spawn / despawn - `SetPlotSpawnedAction`, the floating Spawn / Despawn button (owner only), and
   `set_plot_spawned` done; an emptied plot despawns. Next: live asset logic (see [**Live physics**](#live-physics))
 - [ ] (M) Player models - replace the placeholder crystal, with animation state to replicate
+- [ ] (M) Tutorial - building a basic car, plane, and engine, that controls need a seat, and who gets the input (the
+  longest-seated rider of a seat with controls)
+- [ ] (S) Ratcheting camera - the camera doesn't pop in past an obstruction behind it (a pole, a pillar): it stays
+  behind it until zoomed in, and zooming back out stops at it, so players place the camera instead of the camera
+  jumping
 - [ ] (L) A real map, built with Unibuilder
 - [ ] (L) Speaker asset (and/or a music player widget) - plays audio to nearby players. Open problems: moderating
   inappropriate audio, replicating playback, and storing / fetching the audio in the first place
@@ -208,7 +240,9 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
 - (WIP) (L) Widget system - scoped `WidgetManagerService`, one widget per view model, draggable / resizable /
   maximizable frames with fades, a collapsible widget drawer with badges; Plot Selector, Asset Selector, Property
   Editor, Paint Palette, Web Browser, Lua Editor, Log Output, and Text Chat are widgets. Next: settings, docs, and
-  persisted layouts
+  persisted layouts (an option in the widget drawer to keep widgets' places and sizes across sessions and launches)
+- [ ] (S) Tray icon menu - Avalonia's `TrayIcon`, which supports KDE and other Linux desktops where Godot's doesn't,
+  with actions such as quitting, and a shorter tooltip
 - [x] (M) Developer console - Lua functions for sessions (`start_sp`, `host_mp`, `join_mp`, and `host_server` for a
   local headless server to join), the tools and their history, creations, plots, and moderation; `help()` with
   descriptions, readable tables in `print` and results, and `user://scripts/` for `run_script` and `require`
@@ -270,6 +304,8 @@ Avalonia + Estragonia. MVVM, NavigatorService, ViewLocatorService in place.
       milliseconds
     - Full access cuts both ways: a snippet can corrupt state or crash the game. Lua's `io` and `os` are unrestricted
       already, so the trust model is the same: it's your own console
+- [ ] (L) Logic - components that plug into assets like motors (buttons, levers, AND / OR / NAND gates, arithmetic),
+  so signals drive creations at variable speeds (Mechanica and Benchwork on Roblox), a large expansion of the game
 - [ ] (L) In-world screens (low priority) - Avalonia UI rendered onto 3D meshes, e.g., a "monitor" asset showing the
   console, Lua editor, chat, or system terminal, for whole in-game workstations (with speakers). Estragonia is
   brittle about when Avalonia controls get instantiated, so the timing needs care first

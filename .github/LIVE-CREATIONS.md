@@ -596,6 +596,8 @@ proportional to what moves and thinks, not to what exists.
 | 0.58.1  | The Servo, Free Hinge, and Anchor; riders and coils interpolate with what carries them         |
 | 0.58.2  | Relay budgets per peer, asset states that survive hand-offs, and seated input                  |
 | 0.60.0  | The Piston, body state and forces, the Hover Thruster, and the Airfoil (the Wing Panel)        |
+| 0.60.1  | Hover Thrusters that react on their own creation, wind up, and see past others; gravity as a   |
+|         | world setting; coils stretch by their scale; riders stand up beside a roof, not on it          |
 | Next    | The Thruster, propellers, and buoyancy                                                         |
 
 ## 13. Decisions
